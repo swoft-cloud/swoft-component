@@ -52,7 +52,7 @@ class HandlerMapping implements HandlerMappingInterface
      * @return mixed
      * @throws \InvalidArgumentException
      */
-    public function getHandler(...$params)
+    public function getHandler(...$params): array
     {
         list($group, $command) = $this->getGroupAndCommand();
         $route = $this->getCommandString($group, $command);
@@ -122,10 +122,10 @@ class HandlerMapping implements HandlerMappingInterface
      * @return mixed
      * @throws \InvalidArgumentException
      */
-    private function match($route)
+    public function match(string $route): array
     {
-        if (! isset($this->routes[$route])) {
-            throw new \InvalidArgumentException('the func of command is not exist，command=' . $route);
+        if (!isset($this->routes[$route])) {
+            return [];
         }
 
         return $this->routes[$route];

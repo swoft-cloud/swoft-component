@@ -41,8 +41,7 @@ class Command
      */
     public function run()
     {
-        $cmd = input()->getCommand();
-        if (empty($cmd)) {
+        if (!$cmd = \input()->getCommand()) {
             $this->baseCommand();
 
             return;
@@ -50,7 +49,13 @@ class Command
 
         /* @var HandlerMapping $router */
         $router = App::getBean('commandRoute');
-        $handler = $router->getHandler();
+
+        if (!$handler = $router->getHandler()) {
+            \output()->colored("The entered command does not exist! command = $cmd", 'error');
+            $this->showCommandList(false);
+
+            return;
+        }
 
         list($className, $method) = $handler;
 
@@ -113,14 +118,14 @@ class Command
         // 命令显示结构
         $commandList = [
             'Description:' => [$classDesc],
-            'Usage:'       => [ \input()->getCommand() . ':{command} [arguments] [options]'],
+            'Usage:'       => [\input()->getCommand() . ':{command} [arguments] [options]'],
             'Commands:'    => $methodCommands,
             'Options:'     => [
                 '-h, --help' => 'Show help of the command group or specified command action',
             ],
         ];
 
-        output()->writeList($commandList);
+        \output()->writeList($commandList);
     }
 
     /**
@@ -168,15 +173,16 @@ class Command
             $commands['Example:'] = [$docs['Example']];
         }
 
-        output()->writeList($commands);
+        \output()->writeList($commands);
     }
 
     /**
      * show all commands for the console app
      *
+     * @param bool $showLogo
      * @throws \ReflectionException
      */
-    private function showCommandList()
+    public function showCommandList(bool $showLogo = true)
     {
         $commands = $this->parserCmdAndDesc();
 
@@ -190,7 +196,9 @@ class Command
         ];
 
         // show logo
-        \output()->writeLogo();
+        if ($showLogo) {
+            \output()->writeLogo();
+        }
 
         // output list
         \output()->writeList($commandList, 'comment', 'info');
