@@ -19,3 +19,6 @@ e.g. Add [swoft/pipeline](https://github.com/swoft-cloud/swoft-pipeline) compone
 > e.g. Add `Remote` first, `git remote add -f pipeline git@github.com:swoft-cloud/swoft-pipeline.git`,  
 > after this, you can use `pipeline` as `[repository]`,  
 > for example `git subtree push --prefix=src/pipeline pipeline master`
+
+## Release a new version of component
+After `#Sync changes to the Original Repository of Component`, you just need to Release a new version in the original repository of component.
