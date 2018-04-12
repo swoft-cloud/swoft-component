@@ -18,7 +18,9 @@
         "psr/http-message": "^1.0",
         "psr/http-server-middleware": "^1.0",
         "zendframework/zend-mime": "^2.7",
-        "psr/simple-cache": "^1.0.0"
+        "psr/simple-cache": "^1.0.0",
+        "seld/phar-utils": "^1.0",
+        "text/template": "~2.3"
     },
     "require-dev": {
         "eaglewu/swoole-ide-helper": "dev-master",
@@ -87,8 +89,7 @@
             "src/view/src/Helper/Functions.php",
             "src/websocket-server/src/Helper/Functions.php",
             "src/process/src/Helper/Functions.php",
-            "src/service-governance/src/Helper/Functions.php",
-            "src/websocket-server/src/Helper/Functions.php"
+            "src/service-governance/src/Helper/Functions.php"
         ]
     },
     "autoload-dev": {
