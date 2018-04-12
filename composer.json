@@ -1,0 +1,62 @@
+{
+  "name": "swoft/component",
+  "type": "library",
+  "keywords": ["php", "swoole", "swoft"],
+  "description": "microservice framework base on swoole",
+  "license": "Apache-2.0",
+  "require": {
+    "php": ">=7.0",
+    "phpseclib/phpseclib": "2.0.0",
+    "doctrine/annotations": "^1.4",
+    "php-di/phpdoc-reader": "^2.0",
+    "monolog/monolog": "^1.23",
+    "vlucas/phpdotenv": "^2.4",
+    "psr/http-message": "^1.0",
+    "psr/http-server-middleware": "^1.0",
+    "zendframework/zend-mime": "^2.7"
+  },
+  "require-dev": {
+    "eaglewu/swoole-ide-helper": "dev-master",
+    "phpunit/phpunit": "^5.7",
+    "friendsofphp/php-cs-fixer": "^2.10"
+  },
+  "replace": {
+    "swoft/rpc": "self.version",
+    "swoft/rpc-server": "self.version",
+    "swoft/rpc-client": "self.version",
+    "swoft/http-server": "self.version",
+    "swoft/http-client": "self.version",
+    "swoft/task": "self.version",
+    "swoft/http-message": "self.version",
+    "swoft/view": "self.version",
+    "swoft/db": "self.version",
+    "swoft/cache": "self.version",
+    "swoft/redis": "self.version",
+    "swoft/console": "self.version",
+    "swoft/devtool": "self.version",
+    "swoft/session": "self.version",
+    "swoft/i18n": "self.version",
+    "swoft/process": "self.version",
+    "swoft/memory": "self.version",
+    "swoft/service-governance": "self.version"
+  },
+  "autoload": {
+    "psr-4": {
+    },
+    "files": [
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+    }
+  },
+  "repositories": {
+    "packagist": {
+      "type": "composer",
+      "url": "https://packagist.phpcomposer.com"
+    }
+  },
+  "scripts": {
+    
+  }
+}
