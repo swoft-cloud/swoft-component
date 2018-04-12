@@ -45,7 +45,8 @@
         "swoft/task": "self.version",
         "swoft/view": "self.version",
         "swoft/process": "self.version",
-        "swoft/service-governance": "self.version"
+        "swoft/service-governance": "self.version",
+        "swoft/websocket-server": "self.version"
     },
     "autoload": {
         "psr-4": {
@@ -68,7 +69,8 @@
             "Swoft\\Task\\": "src/task/src/",
             "Swoft\\View\\": "src/view/src/",
             "Swoft\\Process\\": "src/process/src/",
-            "Swoft\\Sg\\": "src/service-governance/src/"
+            "Swoft\\Sg\\": "src/service-governance/src/",
+            "Swoft\\WebSocket\\Server\\": "src/websocket-server/src/"
         },
         "files": [
             "src/cache/src/Helper/Functions.php",
@@ -85,7 +87,8 @@
             "src/view/src/Helper/Functions.php",
             "src/websocket-server/src/Helper/Functions.php",
             "src/process/src/Helper/Functions.php",
-            "src/service-governance/src/Helper/Functions.php"
+            "src/service-governance/src/Helper/Functions.php",
+            "src/websocket-server/src/Helper/Functions.php"
         ]
     },
     "autoload-dev": {
