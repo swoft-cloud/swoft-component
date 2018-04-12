@@ -10,7 +10,7 @@ e.g. Add [swoft/pipeline](https://github.com/swoft-cloud/swoft-pipeline) compone
 ## Commit changes
 Just use `git commit` as usual, and Push to this repository
 
-## Sync changes to the Original Repository of Conponent
+## Sync changes to the Original Repository of Component
 `git subtree push --prefix=src/$Folder [repository] [ref]`  
 e.g. Add [swoft/pipeline](https://github.com/swoft-cloud/swoft-pipeline) component as an Sub Repository, `git subtree push --prefix=src/pipeline git@github.com:swoft-cloud/swoft-pipeline master`
 
