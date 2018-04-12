@@ -4,7 +4,7 @@ All components will NOT be modified in the original repository of component, SHO
 
 # Usage
 ## Add an Repository as an Sub Repository
-`git subtree add --prefix=src/$Folder [repository] [ref] --squash`  
+`git subtree add --prefix=src/[folder] [repository] [ref] --squash`  
 e.g. Add [swoft/pipeline](https://github.com/swoft-cloud/swoft-pipeline) component as an Sub Repository, `git subtree add --prefix=src/pipeline git@github.com:swoft-cloud/swoft-pipeline master --squash`
 
 ## Commit changes
