@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace SwoftTest\Db\Cases\Mysql;
 
 use Swoft\Db\QueryBuilder;
@@ -52,7 +53,7 @@ class ActiveRecordTest extends AbstractMysqlCase
                 'sex'         => 1,
                 'description' => 'this my desc2',
                 'age'         => 100,
-            ]
+            ],
         ];
 
         $result = User::batchInsert($values)->getResult();
@@ -156,15 +157,15 @@ class ActiveRecordTest extends AbstractMysqlCase
         $newUser = User::findById($id)->getResult();
         $this->assertEquals($newName, $newUser->getName());
 
-        $userObj=User::findById($id)->getResult();
+        $userObj = User::findById($id)->getResult();
         $userObj->setName('update');
 
-        $result= $userObj->update()->getResult();
+        $result = $userObj->update()->getResult();
 
-        $userObj=User::findById($id)->getResult();
+        $userObj = User::findById($id)->getResult();
         $userObj->setName('update');
 
-        $result2= $userObj->update()->getResult();
+        $result2 = $userObj->update()->getResult();
 
         $this->assertEquals(1, $result);
         $this->assertEquals(0, $result2);
@@ -246,7 +247,7 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         $users     = User::findByIds($ids)->getResult();
         $userEmpty = User::findByIds([999999999999])->getResult();
-        $users2     = User::findByIds($ids, ['fields' => ['id'], 'orderby' => ['id' => 'asc'], 'limit' => 2])->getResult();
+        $users2    = User::findByIds($ids, ['fields' => ['id'], 'orderby' => ['id' => 'asc'], 'limit' => 2])->getResult();
 
         sort($ids);
         $resultIds = [];
@@ -341,10 +342,18 @@ class ActiveRecordTest extends AbstractMysqlCase
         $user['desc'] = 'this my desc9';
         $user['age']  = 99;
 
-        $uid = $user->save()->getResult();
+        $uid    = $user->save()->getResult();
         $result = User::deleteOne(['name' => 'name2testDeleteOne', 'age' => 99, 'id' => $uid])->getResult();
         $this->assertEquals($result, 1);
     }
+
+    public function testDeleteOneByCo()
+    {
+        go(function () {
+            $this->testDeleteOne();
+        });
+    }
+
 
     /**
      * @dataProvider mysqlProviders
@@ -358,6 +367,18 @@ class ActiveRecordTest extends AbstractMysqlCase
     }
 
     /**
+     * @dataProvider mysqlProviders
+     *
+     * @param array $ids
+     */
+    public function testDeleteAllByCo(array $ids)
+    {
+        go(function () use ($ids) {
+            $this->testDeleteAll($ids);
+        });
+    }
+
+    /**
      * @dataProvider mysqlProvider
      *
      * @param int $id
@@ -365,9 +386,21 @@ class ActiveRecordTest extends AbstractMysqlCase
     public function testUpdateOne(int $id)
     {
         $result = User::updateOne(['name' => 'testUpdateOne'], ['id' => $id])->getResult();
-        $user = User::findById($id)->getResult();
+        $user   = User::findById($id)->getResult();
         $this->assertEquals(1, $result);
         $this->assertEquals($user['name'], 'testUpdateOne');
+    }
+
+    /**
+     * @dataProvider mysqlProvider
+     *
+     * @param int $id
+     */
+    public function testUpdateOneByCo(int $id)
+    {
+        go(function () use ($id) {
+            $this->testUpdateOne($id);
+        });
     }
 
     /**
@@ -378,7 +411,7 @@ class ActiveRecordTest extends AbstractMysqlCase
     public function testUpdateAll(array $ids)
     {
         $result = User::updateAll(['name' => 'testUpdateAll'], ['id' => $ids])->getResult();
-        $count = User::findAll(['name' => 'testUpdateAll', 'id' => $ids])->getResult();
+        $count  = User::findAll(['name' => 'testUpdateAll', 'id' => $ids])->getResult();
         $this->assertEquals(2, $result);
         $this->assertCount(2, $count);
     }
@@ -390,11 +423,23 @@ class ActiveRecordTest extends AbstractMysqlCase
      */
     public function testFindOne(int $id)
     {
-        $user = User::findOne(['id' => $id, 'name' => 'name'], ['id'=> 'desc', 'age' => 'desc'])->getResult();
+        $user  = User::findOne(['id' => $id, 'name' => 'name'], ['id' => 'desc', 'age' => 'desc'])->getResult();
         $user2 = User::findOne(['id' => $id], ['fields' => ['id', 'name']])->getResult();
         $this->assertEquals($id, $user['id']);
         $this->assertEquals($id, $user2['id']);
         $this->assertEquals(null, $user2['desc']);
+    }
+
+    /**
+     * @dataProvider mysqlProvider
+     *
+     * @param int $id
+     */
+    public function testFindOneByCo(int $id)
+    {
+        go(function () use ($id) {
+            $this->testFindOne($id);
+        });
     }
 
     /**
@@ -412,7 +457,7 @@ class ActiveRecordTest extends AbstractMysqlCase
             'offset'  => 0,
             'fields'  => ['id', 'name'],
         ];
-        $result = User::findAll(['name' => 'name'], $options)->getResult();
+        $result  = User::findAll(['name' => 'name'], $options)->getResult();
         $this->assertCount(2, $result);
 
         $ids = [];
@@ -426,14 +471,32 @@ class ActiveRecordTest extends AbstractMysqlCase
         $this->assertTrue($ids[0] > $ids[1]);
     }
 
+    /**
+     * @dataProvider mysqlProviders
+     *
+     * @param array $ids
+     */
+    public function testFindAllByCo(array $ids)
+    {
+        go(function () use ($ids) {
+            $this->testFindAll($ids);
+        });
+    }
+
     public function testExist()
     {
         $user = new User();
-        $id = $user->fill(['name' => 'existTest'])->save()->getResult();
+        $id   = $user->fill(['name' => 'existTest'])->save()->getResult();
         $this->assertTrue(User::exist($id)->getResult());
         $this->assertFalse(User::exist('NotExistId')->getResult());
     }
 
+    public function testExistByCo()
+    {
+        go(function () {
+            $this->testExist();
+        });
+    }
 
     /**
      * @dataProvider mysqlProviders
@@ -444,6 +507,18 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         $count = User::count('id', ['id' => $ids])->getResult();
         $this->assertEquals(2, $count);
+    }
+
+    /**
+     * @dataProvider mysqlProviders
+     *
+     * @param array $ids
+     */
+    public function testCountByCo(array $ids)
+    {
+        go(function () use ($ids) {
+            $this->testCount($ids);
+        });
     }
 
 }

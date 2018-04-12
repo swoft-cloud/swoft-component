@@ -60,7 +60,7 @@ abstract class DbResult extends AbstractResult
      */
     public function setDecorators(array $decorators): self
     {
-        $this->decorators = $decorators;
+        $this->decorators = array_reverse($decorators);
         return $this;
     }
 

@@ -176,9 +176,9 @@ class Db
             return self::RETURN_ROWS;
         }
 
-        if (strpos($sql, 'SELECT') === 0 && strpos($sql, 'LIMIT 0,1')) {
-            return self::RETURN_ONE;
-        }
+//        if (strpos($sql, 'SELECT') === 0 && strpos($sql, 'LIMIT 0,1')) {
+//            return self::RETURN_ONE;
+//        }
 
         return self::RETURN_FETCH;
     }

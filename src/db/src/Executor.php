@@ -218,8 +218,8 @@ class Executor
     public static function count(string $className, string $column, array $condition): ResultInterface
     {
         $instance = self::getInstance($className);
-        $query = Query::table($className)->selectInstance($instance)->condition($condition)->addDecorator(function ($result) {
-            if (isset($result['count'])) {
+        $query = Query::table($className)->selectInstance($instance)->condition($condition)->addDecorator(function ($result){
+            if(isset($result['count'])){
                 return $result['count'];
             }
             return 0;
@@ -240,7 +240,12 @@ class Executor
         list($tableName, , $columnId) = self::getTable($className);
         $instance = self::getInstance($className);
 
-        $query = Query::table($tableName)->className($className)->where($columnId, $id)->selectInstance($instance);
+        $query = Query::table($tableName)->className($className)->where($columnId, $id)->selectInstance($instance)->addDecorator(function ($result){
+            if(isset($result[0])){
+                return $result[0];
+            }
+            return null;
+        });
 
         $options['limit'] = 1;
         $query = self::applyOptions($query, $options);
@@ -277,7 +282,12 @@ class Executor
     public static function findOne(string $className, array $condition = [], array $options = [])
     {
         $instance = self::getInstance($className);
-        $query = Query::table($className)->className($className)->selectInstance($instance);
+        $query = Query::table($className)->className($className)->selectInstance($instance)->addDecorator(function ($result){
+            if(isset($result[0])){
+                return $result[0];
+            }
+            return null;
+        });
 
         if (!empty($condition)) {
             $query = $query->condition($condition);

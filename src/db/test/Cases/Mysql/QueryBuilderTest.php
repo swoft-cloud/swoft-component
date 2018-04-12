@@ -26,7 +26,7 @@ class QueryBuilderTest extends AbstractMysqlCase
      */
     public function testDbSelect(int $id)
     {
-        $result = Query::table(User::class)->where('id', $id)->limit(1)->get()->getResult();
+        $result = Query::table(User::class)->where('id', $id)->one()->getResult();
         $this->assertEquals($id, $result['id']);
     }
 
@@ -120,7 +120,7 @@ class QueryBuilderTest extends AbstractMysqlCase
         $userid = Query::table(User::class)->selectDb('test2')->insert($data)->getResult();
 
         $user  = User::findById($userid)->getResult();
-        $user2 = Query::table(User::class)->selectDb('test2')->where('id', $userid)->limit(1)->get()->getResult();
+        $user2 = Query::table(User::class)->selectDb('test2')->where('id', $userid)->one()->getResult();
 
         $this->assertEquals($user2['description'], 'this my desc table');
         $this->assertEquals($user2['id'], $userid);
@@ -142,7 +142,7 @@ class QueryBuilderTest extends AbstractMysqlCase
             'age'         => mt_rand(1, 100),
         ];
         $result = Query::table('user2')->insert($data)->getResult();
-        $user2  = Query::table('user2')->where('id', $result)->limit(1)->get()->getResult();
+        $user2  = Query::table('user2')->where('id', $result)->one()->getResult();
         $this->assertEquals($user2['id'], $result);
     }
 
@@ -164,7 +164,7 @@ class QueryBuilderTest extends AbstractMysqlCase
         $userid = Query::table(User::class)->selectInstance('other')->insert($data)->getResult();
 
         $user  = OtherUser::findById($userid)->getResult();
-        $user2 = Query::table(User::class)->selectInstance('other')->where('id', $userid)->limit(1)->get()->getResult();
+        $user2 = Query::table(User::class)->selectInstance('other')->where('id', $userid)->one()->getResult();
         $this->assertEquals($user2['description'], 'this my desc instance');
         $this->assertEquals($user2['id'], $userid);
     }
@@ -186,12 +186,12 @@ class QueryBuilderTest extends AbstractMysqlCase
             'age'         => $age,
         ];
         $userid = Query::table(User::class)->insert($data)->getResult();
-        $user   = Query::table(User::class)->condition(['name' => 'nameQuery', 'age' => $age])->limit(1)->get()->getResult();
+        $user   = Query::table(User::class)->condition(['name' => 'nameQuery', 'age' => $age])->one()->getResult();
 
         $this->assertEquals('nameQuery', $user['name']);
         $this->assertEquals($age, $user['age']);
 
-        $user2 = Query::table(User::class)->where('id', $userid)->condition(['name' => 'nameQuery', 'age' => $age])->limit(1)->get()->getResult();
+        $user2 = Query::table(User::class)->where('id', $userid)->condition(['name' => 'nameQuery', 'age' => $age])->one()->getResult();
         $this->assertEquals('nameQuery', $user2['name']);
         $this->assertEquals($age, $user2['age']);
     }
@@ -237,7 +237,7 @@ class QueryBuilderTest extends AbstractMysqlCase
         ];
 
         $userid = Query::table(User::class)->insert($data)->getResult();
-        $user   = Query::table(User::class)->condition(['age', '<', $age])->andWhere('id', $userid)->limit(1)->orderBy('id', 'desc')->get()->getResult();
+        $user   = Query::table(User::class)->condition(['age', '<', $age])->andWhere('id', $userid)->orderBy('id', 'desc')->one()->getResult();
         $this->assertEquals($userid, $user['id']);
     }
 

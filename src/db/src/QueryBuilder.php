@@ -276,6 +276,24 @@ class QueryBuilder implements QueryBuilderInterface
     protected $className = '';
 
     /**
+     * @var \Closure
+     */
+    protected $oneDecorator = null;
+
+    /**
+     * QueryBuilder constructor.
+     */
+    public function __construct()
+    {
+        $this->oneDecorator = function ($result) {
+            if (isset($result[0])) {
+                return $result[0];
+            }
+            return [];
+        };
+    }
+
+    /**
      * @param array $values
      *
      * @return ResultInterface
@@ -352,6 +370,18 @@ class QueryBuilder implements QueryBuilderInterface
         }
 
         return $this->execute();
+    }
+
+    /**
+     * @param array $columns
+     *
+     * @return ResultInterface
+     */
+    public function one(array $columns = ['*'])
+    {
+        $this->limit(1);
+        $this->addDecorator($this->oneDecorator);
+        return $this->get($columns);
     }
 
     /**
@@ -1091,6 +1121,8 @@ class QueryBuilder implements QueryBuilderInterface
         $this->aggregate['count'] = [$column, $alias];
         $this->limit(1);
 
+        $this->addDecorator($this->oneDecorator);
+
         return $this->execute();
     }
 
@@ -1104,7 +1136,7 @@ class QueryBuilder implements QueryBuilderInterface
     {
         $this->aggregate['max'] = [$column, $alias];
         $this->limit(1);
-
+        $this->addDecorator($this->oneDecorator);
         return $this->execute();
     }
 
@@ -1118,6 +1150,8 @@ class QueryBuilder implements QueryBuilderInterface
     {
         $this->aggregate['min'] = [$column, $alias];
         $this->limit(1);
+
+        $this->addDecorator($this->oneDecorator);
 
         return $this->execute();
     }
@@ -1133,6 +1167,7 @@ class QueryBuilder implements QueryBuilderInterface
         $this->aggregate['avg'] = [$column, $alias];
         $this->limit(1);
 
+        $this->addDecorator($this->oneDecorator);
         return $this->execute();
     }
 
@@ -1146,7 +1181,7 @@ class QueryBuilder implements QueryBuilderInterface
     {
         $this->aggregate['sum'] = [$column, $alias];
         $this->limit(1);
-
+        $this->addDecorator($this->oneDecorator);
         return $this->execute();
     }
 
