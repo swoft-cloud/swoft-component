@@ -3,7 +3,7 @@ This reposiory is used to manage all swoft components.
 All components will NOT be modified in the original repository of component, SHOULD ALWAYS be modified in this repository, also commit and push to this repository, and use `git subtree push` to sync changes to the original repository of component.
 
 # Usage
-## Add an Repository as an Sub Repository
+## Add an Sub Repository
 `git subtree add --prefix=src/[folder] [repository] [ref] --squash`  
 e.g. Add [swoft/pipeline](https://github.com/swoft-cloud/swoft-pipeline) component as an Sub Repository, `git subtree add --prefix=src/pipeline git@github.com:swoft-cloud/swoft-pipeline master --squash`
 
