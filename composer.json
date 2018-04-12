@@ -64,7 +64,8 @@
             "Swoft\\Session\\": "src/session/src/",
             "Swoft\\Task\\": "src/task/src/",
             "Swoft\\View\\": "src/view/src/",
-            "Swoft\\Process\\": "src/process/src/"
+            "Swoft\\Process\\": "src/process/src/",
+            "Swoft\\Sg\\": "src/service-governance/src/"
         },
         "files": [
             "src/cache/src/Helper/Functions.php",
@@ -80,7 +81,8 @@
             "src/task/src/Helper/Functions.php",
             "src/view/src/Helper/Functions.php",
             "src/websocket-server/src/Helper/Functions.php",
-            "src/process/src/Helper/Functions.php"
+            "src/process/src/Helper/Functions.php",
+            "src/service-governance/src/Helper/Functions.php"
         ]
     },
     "autoload-dev": {
