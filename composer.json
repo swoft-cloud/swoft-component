@@ -79,7 +79,8 @@
             "src/session/src/Helper/Functions.php",
             "src/task/src/Helper/Functions.php",
             "src/view/src/Helper/Functions.php",
-            "src/websocket-server/src/Helper/Functions.php"
+            "src/websocket-server/src/Helper/Functions.php",
+            "src/process/src/Helper/Functions.php"
         ]
     },
     "autoload-dev": {
