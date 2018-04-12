@@ -1,4 +1,4 @@
-# Component
+# Swoft Component
 
 This reposiory is used to manage all swoft components.  
 
