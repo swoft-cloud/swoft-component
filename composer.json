@@ -54,6 +54,11 @@
         "psr-4": {
         }
     },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    },
     "repositories": {
         "packagist": {
             "type": "composer",
