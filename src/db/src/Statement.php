@@ -585,9 +585,9 @@ class Statement implements StatementInterface
             return sprintf('LIMIT %d', $limit['limit']);
         }
 
-        $limit     = $limit['limit'];
+        $size      = $limit['limit'];
         $offset    = $limit['offset'];
-        $statement = sprintf('LIMIT %d,%d', $offset, $limit);
+        $statement = sprintf('LIMIT %d,%d', $offset, $size);
 
         return $statement;
     }

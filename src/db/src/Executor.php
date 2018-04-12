@@ -322,6 +322,17 @@ class Executor
     }
 
     /**
+     * @param string $className
+     *
+     * @return QueryBuilder
+     */
+    public static function query(string $className)
+    {
+        $instance = self::getInstance($className);
+        return  Query::table($className)->className($className)->selectInstance($instance);
+    }
+
+    /**
      * @param object $entity 实体对象
      * @param int    $type   类型，1=insert 3=delete|find 2=update
      *

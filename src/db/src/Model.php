@@ -229,7 +229,7 @@ class Model implements \ArrayAccess, \Iterator, Arrayable
      */
     public static function query(): QueryBuilder
     {
-        return Query::table(static::class)->className(static::class);
+        return Executor::query(static::class);
     }
 
     /**

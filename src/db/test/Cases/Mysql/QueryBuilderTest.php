@@ -7,9 +7,11 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace SwoftTest\Db\Cases\Mysql;
 
 use Swoft\Db\Query;
+use Swoft\Db\QueryBuilder;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\OtherUser;
 use SwoftTest\Db\Testing\Entity\User;
@@ -252,14 +254,14 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         $age  = mt_rand(1, 100);
         $data = [
-            'name'        => 'nameQuery',
+            'name'        => 'testCondtion2AndByF3',
             'sex'         => 1,
             'description' => 'this my desc instance',
             'age'         => $age - 1,
         ];
 
         $userid = Query::table(User::class)->insert($data)->getResult();
-        $users  = Query::table(User::class)->condition(['age', 'between', $age-1, $age + 1])->orderBy('id', 'desc')->get()->getResult();
+        $users  = Query::table(User::class)->condition(['id', 'between', $userid - 1, $userid + 1])->orderBy('id', 'desc')->get()->getResult();
         $this->assertTrue(count($users) > 1);
     }
 
@@ -348,6 +350,30 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         go(function () use ($ids) {
             $this->testCondtion5AndByF3($ids);
+        });
+    }
+
+    /**
+     * @dataProvider mysqlProviders
+     *
+     * @param array $ids
+     */
+    public function testLimit(array $ids)
+    {
+        sort($ids);
+        $result = Query::table(User::class)->whereIn('id', $ids)->orderBy('id', 'asc')->limit(1, 1)->get()->getResult();
+        $this->assertEquals($ids[1], $result[0]['id']);
+    }
+
+    /**
+     * @dataProvider mysqlProviders
+     *
+     * @param array $ids
+     */
+    public function testLimitByCo(array $ids)
+    {
+        go(function ()use ($ids){
+            $this->testLimit($ids);
         });
     }
 }

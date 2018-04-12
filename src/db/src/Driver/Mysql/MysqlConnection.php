@@ -104,6 +104,9 @@ class MysqlConnection extends AbstractDbConnection
     public function receive()
     {
         $result = $this->connection->recv();
+        if ($result === false) {
+            App::error('Mysql recv error，connectError=' . $this->connection->connect_error . ' error=' . $this->connection->error);
+        }
         $this->connection->setDefer(false);
 
         $this->recv = true;
