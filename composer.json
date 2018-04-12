@@ -63,7 +63,8 @@
             "Swoft\\Rpc\\Server\\": "src/rpc-server/src/",
             "Swoft\\Session\\": "src/session/src/",
             "Swoft\\Task\\": "src/task/src/",
-            "Swoft\\View\\": "src/view/src/"
+            "Swoft\\View\\": "src/view/src/",
+            "Swoft\\Process\\": "src/view/src/"
         },
         "files": [
             "src/cache/src/Helper/Functions.php",
