@@ -64,7 +64,7 @@
             "Swoft\\Session\\": "src/session/src/",
             "Swoft\\Task\\": "src/task/src/",
             "Swoft\\View\\": "src/view/src/",
-            "Swoft\\Process\\": "src/view/src/"
+            "Swoft\\Process\\": "src/process/src/"
         },
         "files": [
             "src/cache/src/Helper/Functions.php",
