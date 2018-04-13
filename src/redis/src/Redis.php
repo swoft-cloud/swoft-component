@@ -10,7 +10,6 @@ use Swoft\Core\ResultInterface;
 use Swoft\Pool\ConnectionInterface;
 use Swoft\Pool\PoolInterface;
 use Swoft\Redis\Pool\RedisPool;
-use Swoft\Redis\Pool\Config\RedisPoolConfig;
 
 /**
  * Redis
