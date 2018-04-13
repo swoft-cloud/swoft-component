@@ -4,8 +4,8 @@ namespace Swoft\Devtool\Bootstrap\Listener;
 
 use Swoft\App;
 use Swoft\Bean\Annotation\ServerListener;
-use Swoft\Bean\BeanFactory;
 use Swoft\Bootstrap\Listeners\Interfaces\BeforeStartInterface;
+// use Swoft\Bootstrap\Listeners\Interfaces\StartInterface;
 use Swoft\Bootstrap\Listeners\Interfaces\WorkerStartInterface;
 use Swoft\Bootstrap\SwooleEvent;
 use Swoft\Bootstrap\Server\AbstractServer;
@@ -19,6 +19,7 @@ use Swoole\Server;
  * @package Swoft\Devtool\Bootstrap\Listener
  * @ServerListener(event={
  *     SwooleEvent::ON_BEFORE_START,
+ *     SwooleEvent::ON_START,
  *     SwooleEvent::ON_WORKER_START
  * })
  */
@@ -28,7 +29,7 @@ class ServerStartListener implements BeforeStartInterface, WorkerStartInterface
      * @param AbstractServer $server
      * @throws \InvalidArgumentException
      */
-    public function onBeforeStart(AbstractServer &$server)
+    public function onBeforeStart(AbstractServer $server)
     {
         // DevTool::$table = new Table('runtime-devtool', 8 * 1024);
     }
