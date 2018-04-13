@@ -10,6 +10,7 @@
 
 namespace SwoftTest\Db\Cases\Mysql;
 
+use Swoft\Db\Query;
 use Swoft\Db\QueryBuilder;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\User;
@@ -519,6 +520,17 @@ class ActiveRecordTest extends AbstractMysqlCase
         go(function () use ($ids) {
             $this->testCount($ids);
         });
+    }
+
+    /**
+     * @dataProvider mysqlProviders
+     *
+     * @param array $ids
+     */
+    public function testQueryCount(array $ids)
+    {
+        $count = Query::table(User::class)->condition(['id' => $ids])->count()->getResult();
+        $this->assertEquals(2, $count);
     }
 
 }

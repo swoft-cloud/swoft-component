@@ -218,12 +218,7 @@ class Executor
     public static function count(string $className, string $column, array $condition): ResultInterface
     {
         $instance = self::getInstance($className);
-        $query = Query::table($className)->selectInstance($instance)->condition($condition)->addDecorator(function ($result){
-            if(isset($result['count'])){
-                return $result['count'];
-            }
-            return 0;
-        });
+        $query = Query::table($className)->selectInstance($instance)->condition($condition);
 
         return $query->count($column);
     }
