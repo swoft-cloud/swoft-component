@@ -98,6 +98,18 @@ if (! function_exists('bean')) {
     }
 }
 
+if (! function_exists('config')) {
+    /**
+     * Get config object from container
+     *
+     * @return \Swoft\Core\Config
+     */
+    function config(): \Swoft\Core\Config
+    {
+        return \Swoft\App::getBean('config');
+    }
+}
+
 if (! function_exists('alias')) {
     /**
      * Get alias

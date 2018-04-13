@@ -19,7 +19,6 @@ use Swoole\Server;
  * @package Swoft\Devtool\Bootstrap\Listener
  * @ServerListener(event={
  *     SwooleEvent::ON_BEFORE_START,
- *     SwooleEvent::ON_START,
  *     SwooleEvent::ON_WORKER_START
  * })
  */
@@ -41,6 +40,12 @@ class ServerStartListener implements BeforeStartInterface, WorkerStartInterface
      */
     public function onWorkerStart(Server $server, int $workerId, bool $isWorker)
     {
+        $enable = \config()->get('devtool.enable', true);
+
+        if (!$enable) {
+            return;
+        }
+
         \output()->writeln(\sprintf(
             'Children process start successful. ' .
             'PID <magenta>%s</magenta>, Worker Id <magenta>%s</magenta>, Role <info>%s</info>',
