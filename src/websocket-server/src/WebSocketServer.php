@@ -42,6 +42,9 @@ class WebSocketServer extends HttpServer
      */
     public function start()
     {
+        // add server type
+        $this->serverSetting['server_type'] = self::TYPE_WS;
+
         if (!empty($this->setting['open_http2_protocol'])) {
             $this->wsSettings['type'] = SWOOLE_SOCK_TCP | SWOOLE_SSL;
         }
