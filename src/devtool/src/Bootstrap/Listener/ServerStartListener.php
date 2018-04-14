@@ -55,13 +55,13 @@ class ServerStartListener implements BeforeStartInterface, WorkerStartInterface
         // if websocket is enabled. register a ws route
         if ($isWorker && App::hasBean('wsRouter')) {
             /* @see \Swoft\WebSocket\Server\Router\HandlerMapping::add() */
-            App::getBean('wsRouter')->add(DevTool::ROUTE_PREFIX, DevToolController::class);
+            \bean('wsRouter')->add(DevTool::ROUTE_PREFIX, DevToolController::class);
         }
 
         // push processor to logger
         $logger = App::getLogger();
         $logger->pushProcessor(function (array $record) {
-            \var_dump($record);
+            // \var_dump($record);
         });
     }
 }
