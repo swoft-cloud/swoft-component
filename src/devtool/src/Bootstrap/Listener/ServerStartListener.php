@@ -5,7 +5,6 @@ namespace Swoft\Devtool\Bootstrap\Listener;
 use Swoft\App;
 use Swoft\Bean\Annotation\ServerListener;
 use Swoft\Bootstrap\Listeners\Interfaces\BeforeStartInterface;
-// use Swoft\Bootstrap\Listeners\Interfaces\StartInterface;
 use Swoft\Bootstrap\Listeners\Interfaces\WorkerStartInterface;
 use Swoft\Bootstrap\SwooleEvent;
 use Swoft\Bootstrap\Server\AbstractServer;
