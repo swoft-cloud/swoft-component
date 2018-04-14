@@ -40,9 +40,7 @@ class ServerStartListener implements BeforeStartInterface, WorkerStartInterface
      */
     public function onWorkerStart(Server $server, int $workerId, bool $isWorker)
     {
-        $enable = \config()->get('devtool.enable', true);
-
-        if (!$enable) {
+        if (!$enable = \config('devtool.enable', true)) {
             return;
         }
 
@@ -59,5 +57,11 @@ class ServerStartListener implements BeforeStartInterface, WorkerStartInterface
             /* @see \Swoft\WebSocket\Server\Router\HandlerMapping::add() */
             App::getBean('wsRouter')->add(DevTool::ROUTE_PREFIX, DevToolController::class);
         }
+
+        // push processor to logger
+        $logger = App::getLogger();
+        $logger->pushProcessor(function (array $record) {
+            \var_dump($record);
+        });
     }
 }
