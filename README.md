@@ -56,7 +56,7 @@ We do **NOT** suggest modify code in the original repository, but if you do, you
 
 > Note that `--squash` option is required.
 
-e.g.
+e.g. Pull [swoft/pipeline](https://github.com/swoft-cloud/swoft-pipeline) repository into `src/pipeline`
 
 ```bash
 git subtree pull --prefix=src/pipeline git@github.com:swoft-cloud/swoft-pipeline master --squash
