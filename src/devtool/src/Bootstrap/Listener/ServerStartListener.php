@@ -5,7 +5,6 @@ namespace Swoft\Devtool\Bootstrap\Listener;
 use Swoft\App;
 use Swoft\Bean\Annotation\ServerListener;
 use Swoft\Bean\Annotation\Value;
-use Swoft\Bootstrap\Listeners\Interfaces\BeforeStartInterface;
 use Swoft\Bootstrap\Listeners\Interfaces\WorkerStartInterface;
 use Swoft\Bootstrap\SwooleEvent;
 use Swoft\Bootstrap\Server\AbstractServer;
@@ -22,22 +21,13 @@ use Swoole\Server;
  *     SwooleEvent::ON_WORKER_START
  * })
  */
-class ServerStartListener implements BeforeStartInterface, WorkerStartInterface
+class ServerStartListener implements WorkerStartInterface
 {
     /**
      * @Value("{$config.devtool.appLogToConsole}")
      * @var bool
      */
     public $appLogToConsole = false;
-
-    /**
-     * @param AbstractServer $server
-     * @throws \InvalidArgumentException
-     */
-    public function onBeforeStart(AbstractServer $server)
-    {
-        // DevTool::$table = new Table('runtime-devtool', 8 * 1024);
-    }
 
     /**
      * @param Server $server
@@ -63,11 +53,5 @@ class ServerStartListener implements BeforeStartInterface, WorkerStartInterface
             /* @see \Swoft\WebSocket\Server\Router\HandlerMapping::add() */
             \bean('wsRouter')->add(DevTool::ROUTE_PREFIX, DevToolController::class);
         }
-
-        // push processor to logger
-        $logger = App::getLogger();
-        $logger->pushProcessor(function (array $record) {
-            // \var_dump($record);
-        });
     }
 }
