@@ -17,7 +17,6 @@ use Swoole\Server;
  * Class ServerStartListener
  * @package Swoft\Devtool\Bootstrap\Listener
  * @ServerListener(event={
- *     SwooleEvent::ON_BEFORE_START,
  *     SwooleEvent::ON_WORKER_START
  * })
  */
