@@ -5,10 +5,10 @@ namespace Swoft\Bootstrap\Boots;
 use Swoft\Bean\Annotation\Bootstrap;
 
 /**
- * @Bootstrap(order=1)
- * @author    huangzhhui <huangzhwork@gmail.com>
+ * @Bootstrap(order=2)
+ * @author huangzhhui <huangzhwork@gmail.com>
  */
-class InitMbFunsEncoding implements Bootable
+class InitPhpEnv implements Bootable
 {
     /**
      * bootstrap
@@ -16,6 +16,6 @@ class InitMbFunsEncoding implements Bootable
     public function bootstrap()
     {
         \mb_internal_encoding('UTF-8');
-        \date_default_timezone_set('Asia/Shanghai');
+        \date_default_timezone_set(\env('TIME_ZONE') ?: 'Asia/Shanghai');
     }
 }
