@@ -52,7 +52,11 @@ After `Sync changes to the Original Repository of Component`, you just need to R
 
 ### Pull changes from original repository
 
-We do **NOT** suggest modify code in the original repository, but if you do, you could use `git subtree pull --prefix=src/[folder] [repository] [ref] --squash` command to merge it.
+We do **NOT** suggest modify code in the original repository, but if you do, you could use the command below to merge it.
+
+```bash
+git subtree pull --prefix=src/[folder] [repository] [ref] --squash
+```
 
 > Note that `--squash` option is required.
 
