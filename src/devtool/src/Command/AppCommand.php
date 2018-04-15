@@ -46,10 +46,10 @@ class AppCommand
 
     /**
      * Print current system environment information
-     * @param Output $out
+     * @param Output $output
      * @throws \RuntimeException
      */
-    public function env(Output $out)
+    public function env(Output $output)
     {
         $buffer = [];
         // sys info
@@ -73,15 +73,15 @@ class AppCommand
             $buffer[] = \sprintf('  <comment>%s</comment> %s', $name, $value);
         }
 
-        $out->writeln($buffer);
+        $output->writeln($buffer);
     }
 
     /**
      * Check current operating environment information
-     * @param Output $out
+     * @param Output $output
      * @throws \RuntimeException
      */
-    public function check(Output $out)
+    public function check(Output $output)
     {
         // env check
         list($code, $return,) = ProcessHelper::run('php --ri swoole');
@@ -122,7 +122,7 @@ class AppCommand
 
         $buffer[] = "\nCheck total: <bold>$total</bold>, Pass the check: <success>$pass</success>";
 
-        $out->writeln($buffer);
+        $output->writeln($buffer);
     }
 
     /**
