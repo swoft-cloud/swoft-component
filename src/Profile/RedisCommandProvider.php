@@ -18,6 +18,9 @@ class RedisCommandProvider extends RedisProfile
      */
     protected $processor;
 
+    /**
+     * @return array
+     */
     public function getSupportedCommands(): array
     {
         return [

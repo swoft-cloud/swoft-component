@@ -2,8 +2,14 @@
 
 namespace Swoft\Redis\Operator;
 
+/**
+ * Command
+ */
 abstract class Command implements CommandInterface
 {
+    /**
+     * @var array
+     */
     private $arguments = array();
 
     /**

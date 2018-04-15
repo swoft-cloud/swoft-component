@@ -2,10 +2,9 @@
 
 namespace Swoft\Redis\Profile;
 
-use Swoft\Bean\Annotation\Inject;
+use Swoft\Redis\Exception\RedisException;
 use Swoft\Redis\Operator\CommandInterface;
 use Swoft\Redis\Operator\Processor\PrefixProcessor;
-use Swoft\Redis\Exception\RedisException;
 
 abstract class RedisProfile implements ProfileInterface
 {
@@ -16,20 +15,18 @@ abstract class RedisProfile implements ProfileInterface
      */
     private $commands;
 
+    /**
+     * @var PrefixProcessor
+     */
     protected $processor;
 
+    /**
+     * Init
+     */
     public function init()
     {
         $this->commands = $this->getSupportedCommands();
     }
-
-    /**
-     * Returns a map of all the commands supported by the profile and their
-     * actual PHP classes.
-     *
-     * @return array
-     */
-    abstract protected function getSupportedCommands(): array;
 
     /**
      * {@inheritdoc}
@@ -51,6 +48,8 @@ abstract class RedisProfile implements ProfileInterface
         }
 
         $commandClass = $this->commands[$commandID];
+
+        /* @var CommandInterface $command*/
         $command      = new $commandClass();
         $command->setArguments($arguments);
 
@@ -76,4 +75,12 @@ abstract class RedisProfile implements ProfileInterface
     {
         return $this->processor;
     }
+
+    /**
+     * Returns a map of all the commands supported by the profile and their
+     * actual PHP classes.
+     *
+     * @return array
+     */
+    abstract protected function getSupportedCommands(): array;
 }
