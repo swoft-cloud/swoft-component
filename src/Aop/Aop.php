@@ -50,6 +50,7 @@ class Aop implements AopInterface
      */
     public function execute($target, string $method, array $params)
     {
+        var_dump(get_class($target) . '::' .$method);
         $class = \get_class($target);
 
         // If doesn't have any advices, then execute the origin method

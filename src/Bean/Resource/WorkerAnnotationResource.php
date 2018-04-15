@@ -22,7 +22,7 @@ class WorkerAnnotationResource extends AnnotationResource
     public function registerNamespace()
     {
         $hostDir = \dirname(__FILE__, 5);
-        if ('swoft' === \basename($hostDir)) {
+        if (\in_array(\basename($hostDir), ['swoft', 'src'])) {
             //install by composer
             $componentDirs = scandir($hostDir, null);
         } else {
