@@ -21,12 +21,7 @@ class EventFireListener implements EventHandlerInterface
      * @var bool
      */
     public $logEventToConsole = false;
-
-    // public function init()
-    // {
-    //     $this->logEventToConsole = \bean('config')->get('devtool.logEventToConsole', true);
-    // }
-
+    
     /**
      * @param EventInterface $event
      */
