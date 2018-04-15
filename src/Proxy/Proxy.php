@@ -24,7 +24,7 @@ class Proxy
         $reflectionMethods = $reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC | \ReflectionMethod::IS_PROTECTED);
 
         // Proxy property
-        $proxyId = uniqid('', false);
+        $proxyId = \uniqid('', false);
         $proxyClassName = \basename(str_replace("\\", '/', $className));
         $proxyClassName = $proxyClassName . '_' . $proxyId;
         $handlerPropertyName = '__handler_' . $proxyId;
@@ -92,8 +92,7 @@ class Proxy
                 $template .= "{
                 // return \$this->{$handlerPropertyName}->invoke('{$methodName}', func_get_args());
                 return \$this->__proxy('{$methodName}', func_get_args());
-            }
-            ";
+            }";
             } else {
                 // overrided method
                 $template .= "{
@@ -101,7 +100,6 @@ class Proxy
                 return \$this->__proxy('{$methodName}', func_get_args());
             }
             ";
-            }
         }
 
         return $template;
