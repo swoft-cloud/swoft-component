@@ -50,7 +50,7 @@ git subtree push --prefix=src/pipeline git@github.com:swoft-cloud/swoft-pipeline
 
 After `Sync changes to the Original Repository of Component`, you just need to Release a new version in the original repository of component.
 
-### Pull changes from original repository
+### Pull changes from the Original Repository of Component
 
 We do **NOT** suggest modify code in the original repository, but if you do, you could use the command below to merge it.
 
