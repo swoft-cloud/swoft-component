@@ -4,6 +4,7 @@ namespace Swoft\Devtool\Bootstrap\Listener;
 
 use Swoft\App;
 use Swoft\Bean\Annotation\ServerListener;
+use Swoft\Bean\Annotation\Value;
 use Swoft\Bootstrap\Listeners\Interfaces\BeforeStartInterface;
 use Swoft\Bootstrap\Listeners\Interfaces\WorkerStartInterface;
 use Swoft\Bootstrap\SwooleEvent;
@@ -23,6 +24,12 @@ use Swoole\Server;
  */
 class ServerStartListener implements BeforeStartInterface, WorkerStartInterface
 {
+    /**
+     * @Value("{$config.devtool.appLogToConsole}")
+     * @var bool
+     */
+    public $appLogToConsole = false;
+
     /**
      * @param AbstractServer $server
      * @throws \InvalidArgumentException

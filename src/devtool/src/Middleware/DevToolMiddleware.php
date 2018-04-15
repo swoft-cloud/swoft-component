@@ -33,7 +33,7 @@ class DevToolMiddleware implements MiddlewareInterface
      * @Value("{$config.devtool.logHttpRequestToConsole}")
      * @var bool
      */
-    public $logHttpRequestToConsole = true;
+    public $logHttpRequestToConsole = false;
 
     // public function __construct()
     // {

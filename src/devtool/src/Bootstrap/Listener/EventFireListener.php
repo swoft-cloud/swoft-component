@@ -20,7 +20,7 @@ class EventFireListener implements EventHandlerInterface
      * @Value("{$config.devtool.logEventToConsole}")
      * @var bool
      */
-    public $logEventToConsole = true;
+    public $logEventToConsole = false;
 
     // public function init()
     // {
