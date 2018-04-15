@@ -57,6 +57,7 @@ class EventManager implements EventManagerInterface
         }
 
         $this->basicEvent = new Event;
+        var_dump('__construct');
     }
 
     public function __destruct()
@@ -236,6 +237,7 @@ class EventManager implements EventManagerInterface
     {
         if (!$event instanceof EventInterface) {
             $event = (string)$event;
+            echo '<pre>';var_dump($this->basicEvent);echo '</pre>';exit();
 
             if (isset($this->events[$event])) {
                 $event = $this->events[$event];

@@ -2,6 +2,7 @@
 
 namespace Swoft\Core;
 
+use Swoft\Aop\Aop;
 use Swoft\App;
 use Swoft\Bean\Collector\ListenerCollector;
 use Swoft\Event\AppEvent;

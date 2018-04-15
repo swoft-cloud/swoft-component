@@ -59,6 +59,7 @@ class JoinPoint implements JoinPointInterface
      */
     public function __construct($target, string $method, array $args, $return = null, $catch = null)
     {
+        var_dump($method);
         $this->args   = $args;
         $this->return = $return;
         $this->target = $target;

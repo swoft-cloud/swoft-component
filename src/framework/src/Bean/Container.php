@@ -12,6 +12,7 @@ use Swoft\Bean\ObjectDefinition\PropertyInjection;
 use Swoft\Bean\Resource\DefinitionResource;
 use Swoft\Bean\Resource\ServerAnnotationResource;
 use Swoft\Bean\Resource\WorkerAnnotationResource;
+use Swoft\Log\FileHandler;
 use Swoft\Proxy\Handler\AopHandler;
 use Swoft\Proxy\Proxy;
 
