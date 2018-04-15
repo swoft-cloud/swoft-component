@@ -35,11 +35,6 @@ class DevToolMiddleware implements MiddlewareInterface
      */
     public $logHttpRequestToConsole = false;
 
-    // public function __construct()
-    // {
-    //     $this->logHttpRequestToConsole = \bean('config')->get('devtool.logHttpRequestToConsole', true);
-    // }
-
     /**
      * @param \Psr\Http\Message\ServerRequestInterface|Request $request
      * @param \Psr\Http\Server\RequestHandlerInterface $handler
@@ -48,7 +43,7 @@ class DevToolMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        // before request handle
+        // Before request
         $path = $request->getUri()->getPath();
 
         if ($this->logHttpRequestToConsole) {
@@ -59,7 +54,7 @@ class DevToolMiddleware implements MiddlewareInterface
             ]);
         }
 
-        // if not is ajax, always render vue index file.
+        // If it is not an ajax request, then render vue index file.
         if (0 === \strpos($path, DevTool::ROUTE_PREFIX) && !$request->isAjax()) {
             $json = $request->query('json');
 
@@ -70,7 +65,7 @@ class DevToolMiddleware implements MiddlewareInterface
 
         $response = $handler->handle($request);
 
-        // after request handle
+        // After request
         return $response->withAddedHeader('Swoft-DevTool-Version', '1.0.0');
     }
 }
