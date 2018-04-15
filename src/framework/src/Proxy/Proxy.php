@@ -3,7 +3,6 @@
 namespace Swoft\Proxy;
 
 use Swoft\Proxy\Handler\HandlerInterface;
-use SwoftTest\Aop\NestBean;
 
 /**
  * Proxy factory
@@ -34,7 +33,7 @@ class Proxy
         $template
             = "class $proxyClassName extends $className {
         
-            use \Swoft\Aop\AopTrait;
+            use \\Swoft\\Aop\\AopTrait;
 
             private \$$handlerPropertyName;
             public function __construct(\$handler)
@@ -51,7 +50,7 @@ class Proxy
         $template .= self::getMethodsTemplate($reflectionMethods, $proxyId);
         $template .= '}';
 
-        file_put_contents(alias('@runtime/') . $proxyClassName, $template);
+//        file_put_contents(alias('@runtime/') . $proxyClassName, $template);
         eval($template);
         $newRc = new \ReflectionClass($proxyClassName);
 
@@ -95,16 +94,13 @@ class Proxy
                 $template
                     .= "{
                 // return \$this->{$handlerPropertyName}->invoke('{$methodName}', func_get_args());
-                return \$this->__proxy('{$methodName}', func_get_args());
-            }";
+                return \$this->__proxy('{$methodName}', func_get_args());}";
             } else {
                 // overrided method
                 $template
                     .= "{
                 return \$this->{$handlerPropertyName}->invoke('{$methodName}', func_get_args());
-                return \$this->__proxy('{$methodName}', func_get_args());
-            }
-            ";
+                return \$this->__proxy('{$methodName}', func_get_args());}";
             }
         }
 

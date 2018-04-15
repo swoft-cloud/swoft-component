@@ -18,23 +18,24 @@ trait AopTrait
      *
      * @param string $method The execution method
      * @param array  $params The parameters of execution method
+     *
      * @return mixed
      * @throws \ReflectionException
      */
     public function __proxy(string $method, array $params)
     {
-        var_dump(\get_class($this) . '::' . $method);
         /** @var Aop $map */
-        $aop = \bean(Aop::class);
-        $map = $aop->getMap();
+        $aop   = \bean(Aop::class);
+        $map   = $aop->getMap();
         $class = $this->getOriginalClassName();
         // If doesn't have any advices, then execute the origin method
-        if (! isset($map[$class][$method]) || empty($map[$class][$method])) {
+        if (!isset($map[$class][$method]) || empty($map[$class][$method])) {
             return parent::$method(...$params);
         }
 
         // Apply advices's functionality
         $advices = $map[$class][$method];
+
         return $this->__doAdvice($method, $params, $advices);
     }
 
@@ -42,6 +43,7 @@ trait AopTrait
      * @param string $method  The execution method
      * @param array  $params  The parameters of execution method
      * @param array  $advices The advices of this object method
+     *
      * @return mixed
      * @throws \Throwable
      */
@@ -53,13 +55,13 @@ trait AopTrait
         try {
 
             // Around
-            if (isset($advice['around']) && ! empty($advice['around'])) {
-                $result = $this->_doPoint($advice['around'], $method, $params, $advice, $advices);
+            if (isset($advice['around']) && !empty($advice['around'])) {
+                $result = $this->__doPoint($advice['around'], $method, $params, $advice, $advices);
             } else {
                 // Before
-                if ($advice['before'] && ! empty($advice['before'])) {
+                if (isset($advice['before']) && !empty($advice['before'])) {
                     // The result of before point will not effect origin object method
-                    $this->_doPoint($advice['before'], $method, $params, $advice, $advices);
+                    $this->__doPoint($advice['before'], $method, $params, $advice, $advices);
                 }
                 if (0 === \count($advices)) {
                     $result = parent::$method(...$params);
@@ -69,20 +71,20 @@ trait AopTrait
             }
 
             // After
-            if (isset($advice['after']) && ! empty($advice['after'])) {
-                $this->_doPoint($advice['after'], $method, $params, $advice, $advices, $result);
+            if (isset($advice['after']) && !empty($advice['after'])) {
+                $this->__doPoint($advice['after'], $method, $params, $advice, $advices, $result);
             }
         } catch (\Throwable $t) {
-            if (isset($advice['afterThrowing']) && ! empty($advice['afterThrowing'])) {
-                return $this->_doPoint($advice['afterThrowing'], $method, $params, $advice, $advices, null, $t);
+            if (isset($advice['afterThrowing']) && !empty($advice['afterThrowing'])) {
+                return $this->__doPoint($advice['afterThrowing'], $method, $params, $advice, $advices, null, $t);
             } else {
                 throw $t;
             }
         }
 
         // afterReturning
-        if (isset($advice['afterReturning']) && ! empty($advice['afterReturning'])) {
-            return $this->_doPoint($advice['afterReturning'], $method, $params, $advice, $advices, $result);
+        if (isset($advice['afterReturning']) && !empty($advice['afterReturning'])) {
+            return $this->__doPoint($advice['afterReturning'], $method, $params, $advice, $advices, $result);
         }
 
         return $result;
@@ -91,13 +93,14 @@ trait AopTrait
     /**
      * Do pointcut
      *
-     * @param array     $pointAdvice the pointcut advice
-     * @param string    $method      The execution method
-     * @param array     $args        The parameters of execution method
-     * @param array     $advice      the advice of pointcut
-     * @param array     $advices     The advices of this object method
-     * @param mixed     $return
-     * @param Throwable $catch       The  Throwable object caught
+     * @param array      $pointAdvice the pointcut advice
+     * @param string     $method      The execution method
+     * @param array      $args        The parameters of execution method
+     * @param array      $advice      the advice of pointcut
+     * @param array      $advices     The advices of this object method
+     * @param mixed      $return
+     * @param \Throwable $catch       The  Throwable object caught
+     *
      * @return mixed
      * @throws \ReflectionException
      */
@@ -108,12 +111,12 @@ trait AopTrait
         array $advice,
         array $advices,
         $return = null,
-        Throwable $catch = null
+        \Throwable $catch = null
     ) {
         list($aspectClass, $aspectMethod) = $pointAdvice;
 
-        $reflectionClass = new \ReflectionClass($aspectClass);
-        $reflectionMethod = $reflectionClass->getMethod($aspectMethod);
+        $reflectionClass      = new \ReflectionClass($aspectClass);
+        $reflectionMethod     = $reflectionClass->getMethod($aspectMethod);
         $reflectionParameters = $reflectionMethod->getParameters();
 
         // Bind the param of method

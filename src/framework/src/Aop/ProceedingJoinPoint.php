@@ -36,7 +36,6 @@ class ProceedingJoinPoint extends JoinPoint implements ProceedingJoinPointInterf
      */
     public function __construct($target, string $method, array $args, array $advice, array $advices)
     {
-        var_dump($method);
         parent::__construct($target, $method, $args, null);
         $this->advice  = $advice;
         $this->advices = $advices;
