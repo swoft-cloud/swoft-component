@@ -54,7 +54,7 @@ class HttpResult extends AbstractResult implements HttpResultInterface
         $headers = curl_getinfo($client);
         curl_close($client);
         $response = $this->createResponse()
-                         ->withBody(new SwooleStream($this->data ?? ''))
+                         ->withBody(new SwooleStream($this->result ?? ''))
                          ->withStatus($status)
                          ->withHeaders($headers ?? []);
 
