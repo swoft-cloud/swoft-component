@@ -10,7 +10,7 @@ class AppEvent
     /**
      * Application loader event
      */
-    const APPLICATION_LOADER = "applicationLoader";
+    const APPLICATION_LOADER = 'applicationLoader';
 
     /**
      * Pipe message event

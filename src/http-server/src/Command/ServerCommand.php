@@ -30,12 +30,13 @@ class ServerCommand
     {
         $httpServer = $this->getHttpServer();
 
-        // Sever 配置参数
-        $serverStatus = $httpServer->getServerSetting();
-
         // 是否正在运行
         if ($httpServer->isRunning()) {
+            $serverStatus = $httpServer->getServerSetting();
+
             \output()->writeln("<error>The server have been running!(PID: {$serverStatus['masterPid']})</error>", true, true);
+        } else {
+            $serverStatus = $httpServer->getServerSetting();
         }
 
         // 启动参数
