@@ -186,9 +186,9 @@ class RequestContext
      */
     public static function getSpanid(): int
     {
-        $contextData = (int)self::getCoroutineContext(self::DATA_KEY);
-        $spanid = $contextData['spanid'] ?? 0;
-        return $spanid;
+        $contextData = self::getCoroutineContext(self::DATA_KEY);
+
+        return $contextData['spanid'] ? (int)$contextData['spanid'] : 0;
     }
 
     /**

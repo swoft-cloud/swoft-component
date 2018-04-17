@@ -27,6 +27,7 @@ composer require swoft/devtool
 
 ```php
 'devtool' => [
+    'enable' => true,
     'logEventToConsole' => true,
     'logHttpRequestToConsole' => true,
 ],

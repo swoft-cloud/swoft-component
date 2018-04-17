@@ -6,4 +6,4 @@
 Docker Compose: `docker-compose up`
 
 ## Standard of Script
-1. All `TestCase` should be extends `\Swoft\Test\AbstractTestCase` class
+1. All `TestCase` should be extends `\SwoftTest\HttpClient\AbstractTestCase` abstract class

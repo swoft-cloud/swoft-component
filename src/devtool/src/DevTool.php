@@ -1,12 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2018/3/21
- * Time: 下午7:59
- */
 
 namespace Swoft\Devtool;
+
+use Swoft\App;
+use Swoft\Console\Helper\ConsoleUtil;
+use Swoft\Core\Coroutine;
 
 /**
  * Class DevTool
@@ -18,4 +16,25 @@ final class DevTool
     const ROUTE_PREFIX = '/__devtool';
 
     public static $table;
+
+    /**
+     * @param string $msg
+     * @param array $data
+     * @param string $type
+     * @param array $opts
+     */
+    public static function log(string $msg, array $data = [], string $type = 'debug', array $opts = [])
+    {
+        if (App::$server && !App::$server->isDaemonize()) {
+            ConsoleUtil::log($msg, $data, $type, [
+                'DevTool',
+                'WorkerId' => App::getWorkerId(),
+                'CoId' => Coroutine::tid()
+            ]);
+        }
+
+        // if ($logger = App::getLogger()) {
+        //     $logger->log($type, $msg, $data);
+        // }
+    }
 }

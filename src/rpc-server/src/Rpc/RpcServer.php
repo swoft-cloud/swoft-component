@@ -12,12 +12,14 @@ use Swoft\Bootstrap\Server\AbstractServer;
  */
 class RpcServer extends AbstractServer
 {
-
     /**
      * Start server
      */
     public function start()
     {
+        // add server type
+        $this->serverSetting['server_type'] = self::TYPE_RPC;
+
         $this->server = new Server($this->tcpSetting['host'], $this->tcpSetting['port'], $this->tcpSetting['mode'], $this->tcpSetting['type']);
 
         // Bind event callback

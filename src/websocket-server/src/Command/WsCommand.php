@@ -30,12 +30,13 @@ class WsCommand
     {
         $server = $this->createServerManager();
 
-        // Sever 配置参数
-        $serverOpts = $server->getServerSetting();
-
         // 是否正在运行
         if ($server->isRunning()) {
+            $serverOpts = $server->getServerSetting();
+
             \output()->writeln("<error>The server have been running!(PID: {$serverOpts['masterPid']})</error>", true, true);
+        } else {
+            $serverOpts = $server->getServerSetting();
         }
 
         // 启动参数

@@ -28,6 +28,9 @@ class HttpServer extends AbstractServer
      */
     public function start()
     {
+        // add server type
+        $this->serverSetting['server_type'] = self::TYPE_HTTP;
+
     	if (!empty($this->setting['open_http2_protocol'])) {
     		$this->httpSetting['type'] = SWOOLE_SOCK_TCP|SWOOLE_SSL;
 		}

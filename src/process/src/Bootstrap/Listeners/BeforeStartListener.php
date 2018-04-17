@@ -19,7 +19,7 @@ class BeforeStartListener implements BeforeStartInterface
     /**
      * @param AbstractServer $server
      */
-    public function onBeforeStart(AbstractServer &$server)
+    public function onBeforeStart(AbstractServer $server)
     {
         // add process
         $this->addProcess($server);
