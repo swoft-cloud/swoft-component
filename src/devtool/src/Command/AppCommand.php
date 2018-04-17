@@ -5,6 +5,7 @@ namespace Swoft\Devtool\Command;
 use Swoft\App;
 use Swoft\Console\Bean\Annotation\Mapping;
 use Swoft\Console\Output\Output;
+use Swoft\Devtool\Helper\DevToolHelper;
 use Swoft\Devtool\PharCompiler;
 use Swoft\Helper\DirHelper;
 use Swoft\Console\Bean\Annotation\Command;
@@ -145,6 +146,37 @@ class AppCommand
         }
 
         return [(bool)$condition, $result . $des];
+    }
+
+    /**
+     * List all swoft components
+     * @param Output $output
+     * @return int
+     */
+    public function components(Output $output): int
+    {
+        $lockFile = \alias('@root/composer.lock');
+
+        if (!\is_file($lockFile)) {
+            $output->colored("composer.lock file not exists. File: $lockFile", 'warning');
+            return -1;
+        }
+
+        $buffer = [];
+        $map = DevToolHelper::parseComposerLockFile($lockFile);
+
+        foreach ($map as $item) {
+            $buffer[] = \sprintf(
+                '<info>%s</info> - <bold>%s</bold> (published at: %s)',
+                \str_pad($item['name'], '20'),
+                $item['version'],
+                \substr($item['time'], 0, 19)
+            );
+        }
+
+        $output->writeln($buffer);
+
+        return 0;
     }
 
     /**
