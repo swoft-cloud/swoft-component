@@ -238,14 +238,77 @@ class SwoftDevCommand
     }
 
     /**
-     * Generate classes API documents
+     * Generate classes API documents by 'sami/sami'
+     * @Mapping("gen-api")
      * @Options
-     *   -d, --driver STRING   The driver for generate classes documents. allow: sami
+     *   --sami STRING       The sami.phar package absolute path.
+     *   --force BOOL        The option forces a rebuild docs. default: <info>False</info>
+     *   --dry-run BOOL      Just print all the commands, but do not execute them. default: <info>False</info>
+     *   --show-result BOOL  Display result for the docs generate. default: <info>False</info>
+     * @Example
+     *   {fullCommand} --sami ~/Workspace/php/tools/sami.phar --force --show-result
+     *
+     *   About sami:
+     *    - An API documentation generator
+     *    - github https://github.com/FriendsOfPHP/Sami
+     *    - download `curl -O http://get.sensiolabs.org/sami.phar`
+     * @param Input $input
+     * @param Output $output
+     * @return int
+     * @throws \RuntimeException
      */
-    public function genApi()
+    public function genApi(Input $input, Output $output): int
     {
         $this->checkEnv();
 
+        $option = '';
+
+        if (!$samiPath = $input->getOpt('sami')) {
+            $output->colored("Please input the sami.phar path by option '--sami'", 'error');
+
+            return -1;
+        }
+
+        if (!\is_file($samiPath)) {
+            $output->colored('The sami.phar file is not exists! File: ' . $samiPath, 'error');
+
+            return -1;
+        }
+
+        $tryRun = (bool)$input->getOpt('dry-run', false);
+        $config = COMPONENT_DIR . '/sami.doc.inc';
+        $workDir = $this->componentDir;
+
+        if ($input->getOpt('force')) {
+            $option .= ' --force';
+        }
+
+        // php ~/Workspace/php/tools/sami.phar render --force
+        $command = \sprintf(
+            'php ~/Workspace/php/tools/sami.phar %s %s%s',
+            'update',
+            $config,
+            $option
+        );
+
+        $output->writeln("> <cyan>$command</cyan>");
+
+        // if '--dry-run' is true. do not exec.
+        if (!$tryRun) {
+            list($code, $ret,) = ProcessHelper::run($command, $workDir);
+
+            if ($code !== 0) {
+                throw new \RuntimeException("Exec command failed. command: $command return: \n$ret");
+            }
+
+            if ($input->getOpt('show-result')) {
+                $output->writeln(\PHP_EOL . $ret);
+            }
+        }
+
+        $output->colored("\nOK, Classes reference documents generated!");
+
+        return 0;
     }
 
     private function checkEnv()
