@@ -2,6 +2,7 @@
 
 namespace Swoft\Proxy;
 
+use Swoft\Event\EventManager;
 use Swoft\Proxy\Handler\HandlerInterface;
 
 /**
@@ -13,12 +14,11 @@ class Proxy
      * Return a proxy instance
      *
      * @param string           $className
-     * @param HandlerInterface $handler
      *
-     * @return object
+     * @return string
      * @throws \ReflectionException
      */
-    public static function newProxyInstance(string $className, HandlerInterface $handler)
+    public static function newProxyInstance(string $className)
     {
         $reflectionClass   = new \ReflectionClass($className);
         $reflectionMethods = $reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC | \ReflectionMethod::IS_PROTECTED);
@@ -27,7 +27,6 @@ class Proxy
         $proxyId             = \uniqid('', false);
         $proxyClassName      = \basename(str_replace("\\", '/', $className));
         $proxyClassName      = $proxyClassName . '_' . $proxyId;
-        $handlerPropertyName = '__handler_' . $proxyId;
 
         // Base class template
         $template
@@ -35,14 +34,13 @@ class Proxy
         
             use \\Swoft\\Aop\\AopTrait;
 
-            private \$$handlerPropertyName;
-            public function __construct(\$handler)
-            {
-                \$this->{$handlerPropertyName} = \$handler;
-            }
-            
             public function getOriginalClassName(): string {
                 return \"{$className}\";
+            }
+            
+            public function __invokeTarget(string \$method, array \$args)
+            {
+                return parent::{\$method}(...\$args);
             }
         ";
 
@@ -52,9 +50,10 @@ class Proxy
 
 //        file_put_contents(alias('@runtime/') . $proxyClassName, $template);
         eval($template);
-        $newRc = new \ReflectionClass($proxyClassName);
 
-        return $newRc->newInstance($handler);
+        return $proxyClassName;
+//        $newRc = new \ReflectionClass($proxyClassName);
+//        return $newRc->newInstance();
     }
 
     /**
@@ -68,7 +67,6 @@ class Proxy
     private static function getMethodsTemplate(array $reflectionMethods, string $proxyId): string
     {
         $template            = '';
-        $handlerPropertyName = '__handler_' . $proxyId;
         foreach ($reflectionMethods as $reflectionMethod) {
             $methodName = $reflectionMethod->getName();
 
@@ -93,13 +91,11 @@ class Proxy
             if (\in_array($methodName, ['method1', 'method2'])) {
                 $template
                     .= "{
-                // return \$this->{$handlerPropertyName}->invoke('{$methodName}', func_get_args());
                 return \$this->__proxy('{$methodName}', func_get_args());}";
             } else {
                 // overrided method
                 $template
                     .= "{
-                return \$this->{$handlerPropertyName}->invoke('{$methodName}', func_get_args());
                 return \$this->__proxy('{$methodName}', func_get_args());}";
             }
         }

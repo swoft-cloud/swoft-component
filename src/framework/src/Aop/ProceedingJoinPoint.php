@@ -3,6 +3,7 @@
 namespace Swoft\Aop;
 
 use Swoft\App;
+use SwoftTest\Aop\AllPointAspect;
 
 /**
  * the proceedingJoinPoint of class
@@ -59,13 +60,17 @@ class ProceedingJoinPoint extends JoinPoint implements ProceedingJoinPointInterf
         }
 
         if (empty($this->advices)) {
+
             // execute
             $methodParams = !empty($params) ? $params : $this->args;
-            $result       = $this->target->{$this->method}(...$methodParams);
+            $result       = $this->target->__invokeTarget($this->method, $methodParams);
         } else {
+
+
             /* @var \Swoft\Aop\Aop $aop */
-            $aop    = App::getBean(Aop::class);
-            $result = $aop->doAdvice($this->target, $this->method, $this->args, $this->advices);
+//            $aop    = App::getBean(Aop::class);
+//            $result = $aop->doAdvice($this->target, $this->method, $this->args, $this->advices);
+            $result = $this->target->__doAdvice($this->method, $this->args, $this->advices);
         }
 
         return $result;

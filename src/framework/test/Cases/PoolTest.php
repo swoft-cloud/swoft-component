@@ -30,6 +30,7 @@ class PoolTest extends AbstractTestCase
     {
         /* @var \Swoft\Pool\PoolProperties $pConfig */
         $pConfig = App::getBean(PropertyPoolConfig::class);
+
         $this->assertEquals($pConfig->getName(), 'test');
         $this->assertEquals($pConfig->getProvider(), 'p');
         $this->assertEquals($pConfig->getTimeout(), 1);

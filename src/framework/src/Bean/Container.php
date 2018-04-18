@@ -12,9 +12,11 @@ use Swoft\Bean\ObjectDefinition\PropertyInjection;
 use Swoft\Bean\Resource\DefinitionResource;
 use Swoft\Bean\Resource\ServerAnnotationResource;
 use Swoft\Bean\Resource\WorkerAnnotationResource;
+use Swoft\Event\EventManager;
 use Swoft\Log\FileHandler;
 use Swoft\Proxy\Handler\AopHandler;
 use Swoft\Proxy\Proxy;
+use SwoftTest\Aop\AllPointAspect2;
 
 /**
  * 全局容器
@@ -65,6 +67,7 @@ class Container
      */
     public function get(string $name)
     {
+
         // 已经创建
         if (isset($this->singletonEntries[$name])) {
             return $this->singletonEntries[$name];
@@ -193,7 +196,13 @@ class Container
             $constructorParameters = $this->injectConstructor($constructorInject);
         }
 
-        $reflectionClass = new \ReflectionClass($className);
+        $proxyClass = $className;
+        if ($name != Aop::class) {
+            $proxyClass = $this->proxyBean($name, $className);
+        }
+
+
+        $reflectionClass = new \ReflectionClass($proxyClass);
         $properties = $reflectionClass->getProperties();
 
         // new实例
@@ -206,10 +215,6 @@ class Container
         // 执行初始化方法
         if ($isExeMethod) {
             $object->{$this->initMethod}();
-        }
-
-        if (!$object instanceof AopInterface) {
-            $object = $this->proxyBean($name, $className, $object);
         }
 
         // 单例处理
@@ -225,11 +230,10 @@ class Container
      *
      * @param string $name
      * @param string $className
-     * @param object $object
-     * @return object
+     * @return string
      * @throws \ReflectionException
      */
-    private function proxyBean(string $name, string $className, $object)
+    private function proxyBean(string $name, string $className)
     {
         /* @var Aop $aop */
         $aop = App::getBean(Aop::class);
@@ -243,9 +247,7 @@ class Container
             $aop->match($name, $className, $method, $annotations);
         }
 
-        $handler = new AopHandler($object);
-
-        return Proxy::newProxyInstance(\get_class($object), $handler);
+        return Proxy::newProxyInstance($className);
     }
 
     /**

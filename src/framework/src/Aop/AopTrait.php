@@ -10,6 +10,8 @@
 
 namespace Swoft\Aop;
 
+use SwoftTest\Aop\AllPointAspect;
+
 trait AopTrait
 {
 
@@ -35,6 +37,7 @@ trait AopTrait
 
         // Apply advices's functionality
         $advices = $map[$class][$method];
+
 
         return $this->__doAdvice($method, $params, $advices);
     }
@@ -148,9 +151,7 @@ trait AopTrait
             }
             $aspectArgs[] = null;
         }
-
         $aspect = \bean($aspectClass);
-
         return $aspect->$aspectMethod(...$aspectArgs);
     }
 
