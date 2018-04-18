@@ -647,7 +647,7 @@ class Statement implements StatementInterface
 
         $statement .= $this->getInsert();
         if (!empty($statement)) {
-            $statement = 'INSERT ' . $statement;
+            $statement = 'INSERT INTO ' . $statement;
         }
 
         return $statement;
