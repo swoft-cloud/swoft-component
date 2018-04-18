@@ -30,9 +30,9 @@ class AppCommand
      */
     public function initApp()
     {
-        output()->writeln('Create runtime directories: ', false);
+        \output()->writeln('Create runtime directories: ', false);
 
-        $tmpDir = App::getAlias('@runtime');
+        $tmpDir = \alias('@runtime');
         $dirs = [
             'logs',
             'uploadfiles'
@@ -200,13 +200,13 @@ class AppCommand
      */
     public function pack(): int
     {
-        $time = microtime(1);
+        $time = \microtime(1);
         $workDir = input()->getPwd();
 
         $dir = \input()->getOpt('dir') ?: $workDir;
         $cpr = $this->configCompiler($dir);
 
-        $counter = null;
+        // $counter = 0;
         $refresh = input()->getOpt('refresh');
         $pharFile = $workDir . '/' . (\input()->sameOpt(['o', 'output']) ?: 'app.phar');
 

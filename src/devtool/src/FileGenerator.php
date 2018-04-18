@@ -64,7 +64,7 @@ class FileGenerator
             $firstChar = $partFile[0];
 
             if ($firstChar === '@') {
-                $partFile = App::getAlias($partFile);
+                $partFile = \alias($partFile);
             } elseif ($firstChar !== '/') {
                 $relativePath = \dirname($this->getTplFile());
                 $partFile = \realpath($relativePath . '/' . $partFile);
