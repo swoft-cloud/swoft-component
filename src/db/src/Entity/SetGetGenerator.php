@@ -176,6 +176,47 @@ class SetGetGenerator
             $enumParam = explode(',', str_replace('\'', '', $enumParam));
             // TODO $enumParam never use ?
         }
+        
+         //字段类型
+        $dbtype = !empty($dbType) ? $dbType : ($isEnum ? '"feature-enum"' : (\is_int($default) ? '"int"' : '"string"'));
+
+        //设置默认值
+        if($default === false || empty($default))
+        {
+            switch ($dbtype)
+            {
+                case "Types::INT":
+                case "Types::NUMBER":
+                case "Types::BOOLEAN":
+                    $default = '0';
+                    break;
+                case "Types::FLOAT":
+                    $default = '0.0';
+                    break;
+                case "Types::DATETIME":
+                    $default = '\''. date('Y-m-d H:i:s') .'\'';
+                    break;
+                default:
+                    $default = '\'\'';
+                    break;
+            }
+        }
+        else
+        {
+            $default = trim($default);
+            switch ($dbtype)
+            {
+                case "Types::INT":
+                case "Types::NUMBER":
+                case "Types::BOOLEAN":
+                case "Types::FLOAT":
+                    $default = $default;
+                    break;
+                 default:
+                    $default = '\''. $default .'\'';
+                    break;
+            }
+        }
 
         $this->checkAliasProperty($aliasProperty);
 
@@ -195,10 +236,10 @@ class SetGetGenerator
                 $primaryKey ? "     * @Id()\n" : '',
                 $property,
                 $aliasProperty,
-                !empty($dbType) ? $dbType : ($isEnum ? '"feature-enum"' : (\is_int($default) ? '"int"' : '"string"')),
+                $dbtype,
                 $length !== null ? ", length={$length}" : '',
                 $required ? "     * @Required()\n" : '',
-                $default !== false ? (\is_int($default) ? " = {$default};" : (trim($default) === '' ? ' = \'\';' : " = '{$default}';")) : ($required ? ' = \'\';' : ';')
+                " = {$default};"
             ], $propertyStub);
     }
 
