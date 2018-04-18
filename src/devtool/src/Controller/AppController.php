@@ -124,7 +124,7 @@ class AppController
      */
     public function pathAliases(): array
     {
-        return \aliases();
+        return App::getAliases();
     }
 
     /**
