@@ -41,7 +41,6 @@ class HandlerMapping implements HandlerMappingInterface
      */
     private $delimiter = ':';
 
-
     /**
      * @var array
      */
@@ -78,12 +77,12 @@ class HandlerMapping implements HandlerMappingInterface
     }
 
     /**
-     * @param string $comamnd
+     * @param string $command
      * @return bool
      */
-    public function isDefaultCommand(string $comamnd): bool
+    public function isDefaultCommand(string $command): bool
     {
-        return $comamnd === $this->defaultCommand;
+        return $command === $this->defaultCommand;
     }
 
     /**
@@ -91,12 +90,12 @@ class HandlerMapping implements HandlerMappingInterface
      */
     private function getGroupAndCommand(): array
     {
-        $cmd = input()->getCommand();
+        $cmd = \input()->getCommand();
         if (\in_array($cmd, self::DEFAULT_METHODS, true)) {
             return [$this->defaultGroup, $cmd];
         }
 
-        $commandAry = explode($this->delimiter, $cmd);
+        $commandAry = \explode($this->delimiter, $cmd);
         if (\count($commandAry) >= 2) {
             list($group, $command) = $commandAry;
         } else {
@@ -175,8 +174,8 @@ class HandlerMapping implements HandlerMappingInterface
         $reg = '/^.*\\\(\w+)' . $this->suffix . '$/';
         $prefix = '';
 
-        if ($result = preg_match($reg, $className, $match)) {
-            $prefix = lcfirst($match[1]);
+        if ($result = \preg_match($reg, $className, $match)) {
+            $prefix = \lcfirst($match[1]);
         }
 
         return $prefix;
@@ -189,6 +188,6 @@ class HandlerMapping implements HandlerMappingInterface
      */
     private function getCommandString(string $group, string $command): string
     {
-        return sprintf('%s%s%s', $group, $this->delimiter, $command);
+        return \sprintf('%s%s%s', $group, $this->delimiter, $command);
     }
 }

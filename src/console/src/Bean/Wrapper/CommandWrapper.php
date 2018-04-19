@@ -8,17 +8,12 @@ use Swoft\Console\Bean\Annotation\Mapping;
 
 /**
  * the wrapper of command
- *
- * @uses      CommandWrapper
- * @version   2018年01月22日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
+ * @author stelin <phpcrazy@126.com>
  */
 class CommandWrapper extends AbstractWrapper
 {
     /**
-     * 类注解
+     * Class annotation
      *
      * @var array
      */
@@ -27,14 +22,7 @@ class CommandWrapper extends AbstractWrapper
     ];
 
     /**
-     * 属性注解
-     *
-     * @var array
-     */
-    protected $propertyAnnotations = [];
-
-    /**
-     * 方法注解
+     * Method annotation
      *
      * @var array
      */
@@ -43,7 +31,7 @@ class CommandWrapper extends AbstractWrapper
     ];
 
     /**
-     * 是否解析类注解
+     * Whether to parse the class annotation
      *
      * @param array $annotations
      * @return bool
@@ -54,7 +42,7 @@ class CommandWrapper extends AbstractWrapper
     }
 
     /**
-     * 是否解析属性注解
+     * Whether to parse the attribute annotation
      *
      * @param array $annotations
      * @return bool
@@ -65,7 +53,7 @@ class CommandWrapper extends AbstractWrapper
     }
 
     /**
-     * 是否解析方法注解
+     * Whether to parse method annotations
      *
      * @param array $annotations
      * @return bool

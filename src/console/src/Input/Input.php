@@ -6,70 +6,68 @@ use Swoft\Bean\Annotation\Bean;
 use Swoft\Console\Helper\CommandHelper;
 
 /**
- * 参数输入
+ * Parameter input
  * @Bean()
  */
 class Input implements InputInterface
 {
     /**
-     * 资源句柄
+     * Resource handle
      *
      * @var resource
      */
     protected $handle = STDIN;
 
     /**
-     * 当前目录
+     * Current directory
      *
      * @var
      */
     private $pwd;
 
     /**
-     * 完整脚本
+     * Full script
      *
      * @var string
      */
     private $fullScript;
 
     /**
-     * 脚本
+     * script
      *
      * @var string
      */
     private $script;
 
     /**
-     * 执行的命令
+     * Executed command
      *
      * @var string
      */
     private $command;
 
     /**
-     * 输入参数集合
+     * Input parameter set
      *
      * @var array
      */
     private $args = [];
 
     /**
-     * 短参数
+     * Short options
      *
      * @var array
      */
     private $sOpts = [];
 
     /**
-     * 长参数
+     * Long options
      *
      * @var array
      */
     private $lOpts = [];
 
     /**
-     * 初始化
-     *
      * @param null|array $argv
      */
     public function __construct($argv = null)
@@ -79,18 +77,18 @@ class Input implements InputInterface
             $argv = $_SERVER['argv'];
         }
 
-        // 初始化
+        // init
         $this->pwd = $this->getPwd();
         $this->fullScript = implode(' ', $argv);
         $this->script = array_shift($argv);
 
-        // 解析参数和选项
+        // Parse parameters and options
         list($this->args, $this->sOpts, $this->lOpts) = CommandHelper::parse($argv);
         $this->command = isset($this->args[0]) ? array_shift($this->args) : null;
     }
 
     /**
-     * 读取用户的输入信息
+     * Read user input
      *
      * @param null $question 信息
      * @param bool $nl       是否换行
@@ -98,12 +96,12 @@ class Input implements InputInterface
      */
     public function read($question = null, $nl = false): string
     {
-        fwrite($this->handle, $question . ($nl ? "\n" : ''));
-        return trim(fgets($this->handle));
+        \fwrite($this->handle, $question . ($nl ? "\n" : ''));
+        return trim(\fgets($this->handle));
     }
 
     /**
-     * 所有参数
+     * Get all arguments
      *
      * @return array
      */
@@ -115,7 +113,7 @@ class Input implements InputInterface
     /**
      * 是否存在某个参数
      *
-     * @param string $name 参数名称
+     * @param string $name Argument name
      * @return bool
      */
     public function hasArg(string $name): bool
@@ -126,8 +124,8 @@ class Input implements InputInterface
     /**
      * 获取某个参数
      *
-     * @param int|null|string $name    参数名称
-     * @param null            $default 默认值
+     * @param int|null|string $name    Argument name
+     * @param null            $default Default value
      * @return mixed|null
      */
     public function getArg($name, $default = null)
@@ -152,10 +150,10 @@ class Input implements InputInterface
     }
 
     /**
-     * 获取相同的参数功能值
+     * Get the same parameter function value
      *
-     * @param array $names   不同的参数名称
-     * @param null  $default 默认值
+     * @param array $names   Different parameter names
+     * @param null  $default Default value
      * @return mixed|null
      */
     public function getSameArg(array $names, $default = null)
@@ -164,10 +162,10 @@ class Input implements InputInterface
     }
 
     /**
-     * 获取相同参数的值
+     * Get the value of the same parameter
      *
-     * @param array $names   不同的参数名称
-     * @param null  $default 默认值
+     * @param array $names   Different parameter names
+     * @param null  $default Default value
      * @return mixed|null
      */
     public function sameArg(array $names, $default = null)
@@ -182,10 +180,10 @@ class Input implements InputInterface
     }
 
     /**
-     * 获取选项
+     * Get Option
      *
-     * @param string $name    名称
-     * @param null   $default 默认值
+     * @param string $name    The name
+     * @param null   $default Default value
      * @return mixed|null
      */
     public function getOpt(string $name, $default = null)
@@ -217,7 +215,7 @@ class Input implements InputInterface
     /**
      * 是否存在某个选项
      *
-     * @param string $name 名称
+     * @param string $name The name
      * @return bool
      */
     public function hasOpt(string $name): bool
@@ -226,10 +224,10 @@ class Input implements InputInterface
     }
 
     /**
-     * 获取相同的选项
+     * Get the value of the same option
      *
-     * @param array $names   不同选项名称
-     * @param mixed $default 默认值
+     * @param array $names   Different option names. e.g ['h', 'help']
+     * @param mixed $default Default value
      * @return bool|mixed|null
      */
     public function getSameOpt(array $names, $default = null)
@@ -238,10 +236,10 @@ class Input implements InputInterface
     }
 
     /**
-     * 获取相同的选项
+     * Get the value of the same option
      *
-     * @param array $names   不同选项名称
-     * @param mixed $default 默认值
+     * @param array $names   Different option names. e.g ['h', 'help']
+     * @param mixed $default Default value
      * @return bool|mixed|null
      */
     public function sameOpt(array $names, $default = null)
@@ -258,8 +256,8 @@ class Input implements InputInterface
     /**
      * 获取短选项
      *
-     * @param string $name    名称
-     * @param null   $default 默认值
+     * @param string $name    The name
+     * @param null   $default Default value
      * @return mixed|null
      */
     public function getShortOpt(string $name, $default = null)
@@ -270,7 +268,7 @@ class Input implements InputInterface
     /**
      * 是否存在某个短选项
      *
-     * @param string $name 名称
+     * @param string $name The name
      * @return bool
      */
     public function hasSOpt(string $name): bool
@@ -301,8 +299,8 @@ class Input implements InputInterface
     /**
      * 获取某个长选项
      *
-     * @param string $name    名称
-     * @param null   $default 默认值
+     * @param string $name    The name
+     * @param null   $default Default value
      * @return mixed|null
      */
     public function getLongOpt(string $name, $default = null)
@@ -313,7 +311,7 @@ class Input implements InputInterface
     /**
      * 是否存在某个长选项
      *
-     * @param string $name 名称
+     * @param string $name The name
      * @return bool
      */
     public function hasLOpt(string $name): bool
@@ -322,7 +320,7 @@ class Input implements InputInterface
     }
 
     /**
-     * 所有长选项
+     * All long options
      *
      * @return array
      */
@@ -332,7 +330,7 @@ class Input implements InputInterface
     }
 
     /**
-     * 所有长选项
+     * All long options
      *
      * @return array
      */
@@ -342,18 +340,16 @@ class Input implements InputInterface
     }
 
     /**
-     * 所有长和短选项
+     * All long and short options
      *
      * @return array
      */
     public function getOpts(): array
     {
-        return array_merge($this->sOpts, $this->lOpts);
+        return \array_merge($this->sOpts, $this->lOpts);
     }
 
     /**
-     * 全脚本
-     *
      * @return string
      */
     public function getFullScript(): string
@@ -362,8 +358,6 @@ class Input implements InputInterface
     }
 
     /**
-     * 脚本
-     *
      * @return string
      */
     public function getScript(): string
@@ -372,7 +366,7 @@ class Input implements InputInterface
     }
 
     /**
-     * 当前执行的命令
+     * Currently executing command
      *
      * @param string $default
      * @return string
@@ -383,24 +377,24 @@ class Input implements InputInterface
     }
 
     /**
-     * 当前执行目录
+     * Current execution directory
      *
      * @return string
      */
     public function getPwd(): string
     {
-        if (! $this->pwd) {
-            $this->pwd = getcwd();
+        if (!$this->pwd) {
+            $this->pwd = \getcwd();
         }
 
         return $this->pwd;
     }
 
     /**
-     * 获取某个参数值
+     * Get argument value
      *
-     * @param string $name    名称
-     * @param null   $default 默认值
+     * @param string $name    The name
+     * @param null   $default Default value
      * @return mixed|null
      */
     public function get(string $name, $default = null)

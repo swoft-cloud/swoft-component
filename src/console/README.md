@@ -10,9 +10,15 @@ Swoft Console Component
 composer require swoft/console
 ```
 
-## Document
+## Resources
 
-Please see [document site](https://doc.swoft.org)
+* [Documentation](https://doc.swoft.org)
+* [Contributing](https://github.com/swoft-cloud/swoft/blob/master/CONTRIBUTING.md)
+* [Report Issues][issues] and [Send Pull Requests][pulls] in the [Main Swoft Repository][repository]
+
+[pulls]: https://github.com/swoft-cloud/swoft-component/pulls
+[repository]: https://github.com/swoft-cloud/swoft
+[issues]: https://github.com/swoft-cloud/swoft/issues
 
 ## LICENSE
 
