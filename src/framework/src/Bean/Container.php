@@ -3,7 +3,6 @@
 namespace Swoft\Bean;
 
 use Swoft\Aop\Aop;
-use Swoft\Aop\AopInterface;
 use Swoft\App;
 use Swoft\Bean\Annotation\Scope;
 use Swoft\Bean\ObjectDefinition\ArgsInjection;
@@ -12,20 +11,10 @@ use Swoft\Bean\ObjectDefinition\PropertyInjection;
 use Swoft\Bean\Resource\DefinitionResource;
 use Swoft\Bean\Resource\ServerAnnotationResource;
 use Swoft\Bean\Resource\WorkerAnnotationResource;
-use Swoft\Event\EventManager;
-use Swoft\Log\FileHandler;
-use Swoft\Proxy\Handler\AopHandler;
 use Swoft\Proxy\Proxy;
-use SwoftTest\Aop\AllPointAspect2;
 
 /**
- * 全局容器
- *
- * @uses      Container
- * @version   2017年08月17日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
+ * Container
  */
 class Container
 {
@@ -170,6 +159,22 @@ class Container
     }
 
     /**
+     * @return array
+     */
+    public function getBeanNames(): array
+    {
+        return \array_keys($this->definitions);
+    }
+
+    /**
+     * @return array
+     */
+    public function getProperties(): array
+    {
+        return $this->properties;
+    }
+
+    /**
      * 创建bean
      *
      * @param string           $name             名称
@@ -198,9 +203,8 @@ class Container
 
         $proxyClass = $className;
         if ($name != Aop::class) {
-            $proxyClass = $this->proxyBean($name, $className);
+            $proxyClass = $this->getProxyClass($name, $className);
         }
-
 
         $reflectionClass = new \ReflectionClass($proxyClass);
         $properties = $reflectionClass->getProperties();
@@ -223,31 +227,6 @@ class Container
         }
 
         return $object;
-    }
-
-    /**
-     * proxy bean
-     *
-     * @param string $name
-     * @param string $className
-     * @return string
-     * @throws \ReflectionException
-     */
-    private function proxyBean(string $name, string $className)
-    {
-        /* @var Aop $aop */
-        $aop = App::getBean(Aop::class);
-
-        $rc = new \ReflectionClass($className);
-        $rms = $rc->getMethods();
-        foreach ($rms as $rm) {
-            $method = $rm->getName();
-            $annotations = Collector::$methodAnnotations[$className][$method] ?? [];
-            $annotations = array_unique($annotations);
-            $aop->match($name, $className, $method, $annotations);
-        }
-
-        return Proxy::newProxyInstance($className);
     }
 
     /**
@@ -392,18 +371,27 @@ class Container
     }
 
     /**
-     * @return array
+     * proxy bean
+     *
+     * @param string $name
+     * @param string $className
+     * @return string
+     * @throws \ReflectionException
      */
-    public function getBeanNames(): array
+    private function getProxyClass(string $name, string $className)
     {
-        return \array_keys($this->definitions);
-    }
+        /* @var Aop $aop */
+        $aop = App::getBean(Aop::class);
 
-    /**
-     * @return array
-     */
-    public function getProperties(): array
-    {
-        return $this->properties;
+        $rc = new \ReflectionClass($className);
+        $rms = $rc->getMethods();
+        foreach ($rms as $rm) {
+            $method = $rm->getName();
+            $annotations = Collector::$methodAnnotations[$className][$method] ?? [];
+            $annotations = array_unique($annotations);
+            $aop->match($name, $className, $method, $annotations);
+        }
+
+        return Proxy::newProxyClass($className);
     }
 }

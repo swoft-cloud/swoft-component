@@ -10,8 +10,9 @@
 
 namespace Swoft\Aop;
 
-use SwoftTest\Aop\AllPointAspect;
-
+/**
+ * AopTrait
+ */
 trait AopTrait
 {
 

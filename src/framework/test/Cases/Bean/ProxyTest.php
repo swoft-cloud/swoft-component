@@ -24,10 +24,6 @@ class ProxyTest extends ProxyBase
 {
     use ProxyTrait;
 
-//    public function __construct($c1, $c2)
-//    {
-//    }
-
     public function __set($name, $value)
     {
         // TODO: Implement __set() method.

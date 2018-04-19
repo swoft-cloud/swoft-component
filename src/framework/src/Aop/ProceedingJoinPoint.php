@@ -3,16 +3,9 @@
 namespace Swoft\Aop;
 
 use Swoft\App;
-use SwoftTest\Aop\AllPointAspect;
 
 /**
- * the proceedingJoinPoint of class
- *
- * @uses      ProceedingJoinPoint
- * @version   2017年12月24日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
+ * ProceedingJoinPoint
  */
 class ProceedingJoinPoint extends JoinPoint implements ProceedingJoinPointInterface
 {
@@ -59,17 +52,11 @@ class ProceedingJoinPoint extends JoinPoint implements ProceedingJoinPointInterf
             $aspect->$aspectMethod();
         }
 
+        // execute
         if (empty($this->advices)) {
-
-            // execute
             $methodParams = !empty($params) ? $params : $this->args;
             $result       = $this->target->__invokeTarget($this->method, $methodParams);
         } else {
-
-
-            /* @var \Swoft\Aop\Aop $aop */
-//            $aop    = App::getBean(Aop::class);
-//            $result = $aop->doAdvice($this->target, $this->method, $this->args, $this->advices);
             $result = $this->target->__doAdvice($this->method, $this->args, $this->advices);
         }
 

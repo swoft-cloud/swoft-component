@@ -2,9 +2,6 @@
 
 namespace Swoft\Proxy;
 
-use Swoft\Event\EventManager;
-use Swoft\Proxy\Handler\HandlerInterface;
-
 /**
  * Proxy factory
  */
@@ -13,20 +10,20 @@ class Proxy
     /**
      * Return a proxy instance
      *
-     * @param string           $className
+     * @param string $className
      *
      * @return string
      * @throws \ReflectionException
      */
-    public static function newProxyInstance(string $className)
+    public static function newProxyClass(string $className)
     {
         $reflectionClass   = new \ReflectionClass($className);
         $reflectionMethods = $reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC | \ReflectionMethod::IS_PROTECTED);
 
         // Proxy property
-        $proxyId             = \uniqid('', false);
-        $proxyClassName      = \basename(str_replace("\\", '/', $className));
-        $proxyClassName      = $proxyClassName . '_' . $proxyId;
+        $proxyId        = \uniqid('', false);
+        $proxyClassName = \basename(str_replace("\\", '/', $className));
+        $proxyClassName = $proxyClassName . '_' . $proxyId;
 
         // Base class template
         $template
@@ -48,12 +45,10 @@ class Proxy
         $template .= self::getMethodsTemplate($reflectionMethods, $proxyId);
         $template .= '}';
 
-//        file_put_contents(alias('@runtime/') . $proxyClassName, $template);
+        // Load class
         eval($template);
 
         return $proxyClassName;
-//        $newRc = new \ReflectionClass($proxyClassName);
-//        return $newRc->newInstance();
     }
 
     /**
@@ -66,7 +61,7 @@ class Proxy
      */
     private static function getMethodsTemplate(array $reflectionMethods, string $proxyId): string
     {
-        $template            = '';
+        $template = '';
         foreach ($reflectionMethods as $reflectionMethod) {
             $methodName = $reflectionMethod->getName();
 
