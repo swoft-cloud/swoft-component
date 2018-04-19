@@ -314,4 +314,12 @@ abstract class AbstractServer implements ServerInterface
     {
         return $this->serverSetting['pname'];
     }
+
+    /**
+     * @return string
+     */
+    public function getServerType(): string
+    {
+        return $this->serverSetting['server_type'] ?? 'unknown';
+    }
 }

@@ -6,7 +6,7 @@ use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bootstrap\Boots\Bootable;
-use Swoft\Bootstrap\Boots\InitMbFunsEncoding;
+use Swoft\Bootstrap\Boots\InitPhpEnv;
 use Swoft\Bootstrap\Boots\LoadEnv;
 use Swoft\Bootstrap\Boots\LoadInitConfiguration;
 use Swoft\Console\Input\Input;
@@ -103,8 +103,9 @@ class HandlerAdapter
      *
      * @param mixed $class
      * @param string $method
-     * @param bool   $server
-     * @param array  $bindParams
+     * @param bool $server
+     * @param array $bindParams
+     * @throws \ReflectionException
      */
     private function executeCommand($class, string $method, bool $server, $bindParams)
     {
@@ -118,7 +119,8 @@ class HandlerAdapter
      *
      * @param string $class
      * @param string $command
-     * @param bool   $server
+     * @param bool $server
+     * @throws \ReflectionException
      */
     private function beforeCommand(string $class, string $command, bool $server)
     {
@@ -164,12 +166,12 @@ class HandlerAdapter
     private function bootstrap()
     {
         $defaultItems = [
-            InitMbFunsEncoding::class,
             LoadEnv::class,
+            InitPhpEnv::class,
             LoadInitConfiguration::class,
         ];
         foreach ($defaultItems as $bootstrapItem) {
-            if (class_exists($bootstrapItem)) {
+            if (\class_exists($bootstrapItem)) {
                 $itemInstance = new $bootstrapItem();
                 if ($itemInstance instanceof Bootable) {
                     $itemInstance->bootstrap();

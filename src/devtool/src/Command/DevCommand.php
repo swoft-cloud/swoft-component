@@ -2,7 +2,6 @@
 
 namespace Swoft\Devtool\Command;
 
-use Swoft\App;
 use Swoft\Console\Bean\Annotation\Command;
 use Swoft\Console\Helper\ConsoleUtil;
 use Swoft\Console\Input\Input;
@@ -66,8 +65,8 @@ class DevCommand
             list($assetDir, $targetDir) = $config[$assetDir];
         }
 
-        $assetDir = App::getAlias($assetDir);
-        $targetDir = App::getAlias($targetDir);
+        $assetDir = \alias($assetDir);
+        $targetDir = \alias($targetDir);
 
         $force = \input()->sameOpt(['f', 'force'], false);
 
@@ -97,7 +96,7 @@ class DevCommand
 
         DirHelper::mkdir($targetDir);
 
-        list($code, , $error) = ProcessHelper::run($command, App::getAlias('@root'));
+        list($code, , $error) = ProcessHelper::run($command, \alias('@root'));
 
         if ($code !== 0) {
             \output()->colored("Publish assets to $targetDir is failed!", 'error');

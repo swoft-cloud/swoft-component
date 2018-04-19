@@ -165,7 +165,7 @@ class AppController
      */
     public function components(): array
     {
-        $lockFile = App::getAlias('@root/composer.lock');
+        $lockFile = \alias('@root/composer.lock');
 
         return DevToolHelper::parseComposerLockFile($lockFile);
     }
