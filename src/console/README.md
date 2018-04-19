@@ -14,11 +14,11 @@ composer require swoft/console
 
 * [Documentation](https://doc.swoft.org)
 * [Contributing](https://github.com/swoft-cloud/swoft/blob/master/CONTRIBUTING.md)
-* [Report issues][issue] and [send Pull Requests][pr] in the [main Swoft repository][repo]
+* [Report Issues][issues] and [Send Pull Requests][pulls] in the [Main Swoft Repository][repository]
 
-[pr]: https://github.com/swoft-cloud/swoft-component/pulls
-[repo]: https://github.com/swoft-cloud/swoft
-[issue]: https://github.com/swoft-cloud/swoft/issues
+[pulls]: https://github.com/swoft-cloud/swoft-component/pulls
+[repository]: https://github.com/swoft-cloud/swoft
+[issues]: https://github.com/swoft-cloud/swoft/issues
 
 ## LICENSE
 
