@@ -10,6 +10,7 @@
 
 namespace Swoft\Db;
 
+use function foo\func;
 use Swoft\App;
 use Swoft\Db\Bean\Collector\EntityCollector;
 use Swoft\Db\Exception\DbException;
@@ -351,6 +352,8 @@ class QueryBuilder implements QueryBuilderInterface
             }
             $this->select[$column] = $alias;
         }
+
+        $this->addGetDecorator();
 
         return $this->execute();
     }
@@ -1375,14 +1378,39 @@ class QueryBuilder implements QueryBuilderInterface
         });
     }
 
+    /**
+     * Add one decorator
+     */
     protected function addOneDecorator()
     {
         $this->addDecorator(function ($result) {
+            if (isset($result[0]) && !empty($this->className)) {
+                return EntityHelper::arrayToEntity($result[0], $this->className);
+            }
+
+            if (empty($result) && !empty($this->className)) {
+                return null;
+            }
+
             if (isset($result[0])) {
                 return $result[0];
             }
 
-            return [];
+            return $result;
+        });
+    }
+
+    /**
+     * Add get decorator
+     */
+    protected function addGetDecorator()
+    {
+        $this->addDecorator(function ($result) {
+            if (!empty($this->className) && !empty($result)) {
+                return EntityHelper::listToEntity($result, $this->className);
+            }
+
+            return $result;
         });
     }
 }
