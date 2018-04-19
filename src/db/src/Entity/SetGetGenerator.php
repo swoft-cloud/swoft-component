@@ -160,7 +160,7 @@ class SetGetGenerator
     private function parseProperty(string $propertyStub, array $fieldInfo)
     {
         $property      = $fieldInfo['name'];
-        $aliasProperty = $property;
+        $aliasProperty = $this->toCamelCase($property);
         $primaryKey    = $fieldInfo['key'] === 'PRI';
         $required      = $primaryKey ? false : ($fieldInfo['nullable'] === 'NO');
         $default       = strtolower($fieldInfo['default']) !== 'null' ? $fieldInfo['default'] : false;
@@ -213,13 +213,9 @@ class SetGetGenerator
     {
         $property      = $fieldInfo['name'];
         $comment       = $fieldInfo['column_comment'];
-        $aliasProperty = $property;
+        $aliasProperty = $this->toCamelCase($property);
         $this->checkAliasProperty($aliasProperty);
-        $function         = explode('_', $aliasProperty);
-        $function         = array_map(function ($word) {
-            return ucfirst($word);
-        }, $function);
-        $function         = implode('', $function);
+        $function         = $this->toPascalCase($aliasProperty);
         $function         = 'set' . $function;
         $primaryKey       = $fieldInfo['key'] === 'PRI';
         $type             = $this->schema->phpSchema[$fieldInfo['type']] ?? 'mixed';
@@ -249,13 +245,9 @@ class SetGetGenerator
     {
         $property      = $fieldInfo['name'];
         $comment       = $fieldInfo['column_comment'];
-        $aliasProperty = $property;
+        $aliasProperty = $this->toCamelCase($property);
         $this->checkAliasProperty($aliasProperty);
-        $function         = explode('_', $aliasProperty);
-        $function         = array_map(function ($word) {
-            return ucfirst($word);
-        }, $function);
-        $function         = implode('', $function);
+        $function         = $this->toPascalCase($aliasProperty);
         $function         = 'get' . $function;
         $default          = !empty($fieldInfo['default']) ? $fieldInfo['default'] : false;
         $primaryKey       = $fieldInfo['key'] === 'PRI';
@@ -332,5 +324,33 @@ class SetGetGenerator
     private function generateProperty(): string
     {
         return file_get_contents($this->folder . $this->propertyStubFile);
+    }
+
+    /**
+     * 将下划线命名法转为帕斯卡命名法
+     *
+     * @param $string
+     * @return string
+     */
+    private function toPascalCase($string): string
+    {
+        $stringWithSpace = str_replace('_', ' ', $string);
+        $stringUcwords = ucwords($stringWithSpace);
+        $string = str_replace(' ', '', $stringUcwords);
+        return $string;
+    }
+
+    /**
+     * 将下划线命名法转为驼峰命名法
+     *
+     * @param $string
+     * @return string
+     */
+    private function toCamelCase($string): string
+    {
+        $string = preg_replace_callback('/([-_]+([a-z]{1}))/i',function($matches){
+            return strtoupper($matches[2]);
+        },$string);
+        return $string;
     }
 }

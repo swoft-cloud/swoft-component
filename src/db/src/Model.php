@@ -292,7 +292,7 @@ class Model implements \ArrayAccess, \Iterator, Arrayable
                 continue;
             }
 
-            $data[$propertyName] = $this->$methodName();
+            $data[$column['column']] = $this->$methodName();
         }
 
         return $data;
