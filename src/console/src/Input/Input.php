@@ -113,7 +113,7 @@ class Input implements InputInterface
     /**
      * 是否存在某个参数
      *
-     * @param string $name 参数名称
+     * @param string $name Argument name
      * @return bool
      */
     public function hasArg(string $name): bool
@@ -124,8 +124,8 @@ class Input implements InputInterface
     /**
      * 获取某个参数
      *
-     * @param int|null|string $name    参数名称
-     * @param null            $default 默认值
+     * @param int|null|string $name    Argument name
+     * @param null            $default Default value
      * @return mixed|null
      */
     public function getArg($name, $default = null)
@@ -150,10 +150,10 @@ class Input implements InputInterface
     }
 
     /**
-     * 获取相同的参数功能值
+     * Get the same parameter function value
      *
-     * @param array $names   不同的参数名称
-     * @param null  $default 默认值
+     * @param array $names   Different parameter names
+     * @param null  $default Default value
      * @return mixed|null
      */
     public function getSameArg(array $names, $default = null)
@@ -162,10 +162,10 @@ class Input implements InputInterface
     }
 
     /**
-     * 获取相同参数的值
+     * Get the value of the same parameter
      *
-     * @param array $names   不同的参数名称
-     * @param null  $default 默认值
+     * @param array $names   Different parameter names
+     * @param null  $default Default value
      * @return mixed|null
      */
     public function sameArg(array $names, $default = null)
@@ -180,10 +180,10 @@ class Input implements InputInterface
     }
 
     /**
-     * 获取选项
+     * Get Option
      *
-     * @param string $name    名称
-     * @param null   $default 默认值
+     * @param string $name    The name
+     * @param null   $default Default value
      * @return mixed|null
      */
     public function getOpt(string $name, $default = null)
@@ -215,7 +215,7 @@ class Input implements InputInterface
     /**
      * 是否存在某个选项
      *
-     * @param string $name 名称
+     * @param string $name The name
      * @return bool
      */
     public function hasOpt(string $name): bool
@@ -224,10 +224,10 @@ class Input implements InputInterface
     }
 
     /**
-     * 获取相同的选项
+     * Get the value of the same option
      *
-     * @param array $names   不同选项名称
-     * @param mixed $default 默认值
+     * @param array $names   Different option names. e.g ['h', 'help']
+     * @param mixed $default Default value
      * @return bool|mixed|null
      */
     public function getSameOpt(array $names, $default = null)
@@ -236,10 +236,10 @@ class Input implements InputInterface
     }
 
     /**
-     * 获取相同的选项
+     * Get the value of the same option
      *
-     * @param array $names   不同选项名称
-     * @param mixed $default 默认值
+     * @param array $names   Different option names. e.g ['h', 'help']
+     * @param mixed $default Default value
      * @return bool|mixed|null
      */
     public function sameOpt(array $names, $default = null)
@@ -256,8 +256,8 @@ class Input implements InputInterface
     /**
      * 获取短选项
      *
-     * @param string $name    名称
-     * @param null   $default 默认值
+     * @param string $name    The name
+     * @param null   $default Default value
      * @return mixed|null
      */
     public function getShortOpt(string $name, $default = null)
@@ -268,7 +268,7 @@ class Input implements InputInterface
     /**
      * 是否存在某个短选项
      *
-     * @param string $name 名称
+     * @param string $name The name
      * @return bool
      */
     public function hasSOpt(string $name): bool
@@ -299,8 +299,8 @@ class Input implements InputInterface
     /**
      * 获取某个长选项
      *
-     * @param string $name    名称
-     * @param null   $default 默认值
+     * @param string $name    The name
+     * @param null   $default Default value
      * @return mixed|null
      */
     public function getLongOpt(string $name, $default = null)
@@ -311,7 +311,7 @@ class Input implements InputInterface
     /**
      * 是否存在某个长选项
      *
-     * @param string $name 名称
+     * @param string $name The name
      * @return bool
      */
     public function hasLOpt(string $name): bool
@@ -320,7 +320,7 @@ class Input implements InputInterface
     }
 
     /**
-     * 所有长选项
+     * All long options
      *
      * @return array
      */
@@ -330,7 +330,7 @@ class Input implements InputInterface
     }
 
     /**
-     * 所有长选项
+     * All long options
      *
      * @return array
      */
@@ -340,13 +340,13 @@ class Input implements InputInterface
     }
 
     /**
-     * 所有长和短选项
+     * All long and short options
      *
      * @return array
      */
     public function getOpts(): array
     {
-        return array_merge($this->sOpts, $this->lOpts);
+        return \array_merge($this->sOpts, $this->lOpts);
     }
 
     /**
@@ -393,8 +393,8 @@ class Input implements InputInterface
     /**
      * Get argument value
      *
-     * @param string $name    名称
-     * @param null   $default 默认值
+     * @param string $name    The name
+     * @param null   $default Default value
      * @return mixed|null
      */
     public function get(string $name, $default = null)

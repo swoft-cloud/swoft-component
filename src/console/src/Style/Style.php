@@ -108,7 +108,7 @@ class Style
     /**
      * 根据信息，新增一个tag颜色标签
      *
-     * @param string $name    名称
+     * @param string $name    The name
      * @param string $fg      前景色
      * @param string $bg      背景色
      * @param array  $options 颜色选项
