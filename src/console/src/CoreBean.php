@@ -13,7 +13,10 @@ use Swoft\Core\BootBeanInterface;
  */
 class CoreBean implements BootBeanInterface
 {
-    public function beans()
+    /**
+     * @return array
+     */
+    public function beans(): array
     {
         return [
             'commandRoute' => [

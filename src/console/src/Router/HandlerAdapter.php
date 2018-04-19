@@ -86,8 +86,8 @@ class HandlerAdapter
      *
      * @param mixed $class
      * @param string $method
-     * @param bool   $server
-     * @param array  $bindParams
+     * @param bool $server
+     * @param array $bindParams
      */
     private function executeCommandByCoroutine($class, string $method, bool $server, $bindParams)
     {
@@ -132,14 +132,14 @@ class HandlerAdapter
 
         // 初始化
         $spanId = 0;
-        $logId = uniqid();
+        $logId = \uniqid('', false);
 
         $uri = $class . '->' . $command;
         $contextData = [
             'logid'       => $logId,
             'spanid'      => $spanId,
             'uri'         => $uri,
-            'requestTime' => microtime(true),
+            'requestTime' => \microtime(true),
         ];
 
         RequestContext::setContextData($contextData);

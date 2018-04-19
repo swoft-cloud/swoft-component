@@ -6,70 +6,68 @@ use Swoft\Bean\Annotation\Bean;
 use Swoft\Console\Helper\CommandHelper;
 
 /**
- * 参数输入
+ * Parameter input
  * @Bean()
  */
 class Input implements InputInterface
 {
     /**
-     * 资源句柄
+     * Resource handle
      *
      * @var resource
      */
     protected $handle = STDIN;
 
     /**
-     * 当前目录
+     * Current directory
      *
      * @var
      */
     private $pwd;
 
     /**
-     * 完整脚本
+     * Full script
      *
      * @var string
      */
     private $fullScript;
 
     /**
-     * 脚本
+     * script
      *
      * @var string
      */
     private $script;
 
     /**
-     * 执行的命令
+     * Executed command
      *
      * @var string
      */
     private $command;
 
     /**
-     * 输入参数集合
+     * Input parameter set
      *
      * @var array
      */
     private $args = [];
 
     /**
-     * 短参数
+     * Short options
      *
      * @var array
      */
     private $sOpts = [];
 
     /**
-     * 长参数
+     * Long options
      *
      * @var array
      */
     private $lOpts = [];
 
     /**
-     * 初始化
-     *
      * @param null|array $argv
      */
     public function __construct($argv = null)
@@ -79,18 +77,18 @@ class Input implements InputInterface
             $argv = $_SERVER['argv'];
         }
 
-        // 初始化
+        // init
         $this->pwd = $this->getPwd();
         $this->fullScript = implode(' ', $argv);
         $this->script = array_shift($argv);
 
-        // 解析参数和选项
+        // Parse parameters and options
         list($this->args, $this->sOpts, $this->lOpts) = CommandHelper::parse($argv);
         $this->command = isset($this->args[0]) ? array_shift($this->args) : null;
     }
 
     /**
-     * 读取用户的输入信息
+     * Read user input
      *
      * @param null $question 信息
      * @param bool $nl       是否换行
@@ -98,12 +96,12 @@ class Input implements InputInterface
      */
     public function read($question = null, $nl = false): string
     {
-        fwrite($this->handle, $question . ($nl ? "\n" : ''));
-        return trim(fgets($this->handle));
+        \fwrite($this->handle, $question . ($nl ? "\n" : ''));
+        return trim(\fgets($this->handle));
     }
 
     /**
-     * 所有参数
+     * Get all arguments
      *
      * @return array
      */
@@ -352,8 +350,6 @@ class Input implements InputInterface
     }
 
     /**
-     * 全脚本
-     *
      * @return string
      */
     public function getFullScript(): string
@@ -362,8 +358,6 @@ class Input implements InputInterface
     }
 
     /**
-     * 脚本
-     *
      * @return string
      */
     public function getScript(): string
@@ -372,7 +366,7 @@ class Input implements InputInterface
     }
 
     /**
-     * 当前执行的命令
+     * Currently executing command
      *
      * @param string $default
      * @return string
@@ -383,21 +377,21 @@ class Input implements InputInterface
     }
 
     /**
-     * 当前执行目录
+     * Current execution directory
      *
      * @return string
      */
     public function getPwd(): string
     {
-        if (! $this->pwd) {
-            $this->pwd = getcwd();
+        if (!$this->pwd) {
+            $this->pwd = \getcwd();
         }
 
         return $this->pwd;
     }
 
     /**
-     * 获取某个参数值
+     * Get argument value
      *
      * @param string $name    名称
      * @param null   $default 默认值
