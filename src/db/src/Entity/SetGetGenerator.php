@@ -9,7 +9,6 @@
  */
 namespace Swoft\Db\Entity;
 
-use Swoft\App;
 use Swoft\Helper\StringHelper;
 
 /**
@@ -131,7 +130,7 @@ class SetGetGenerator
             $this->getterStub
         ], $entityStub);
 
-        file_put_contents(App::getAlias('@entityPath') . "/{$entityClass}.php", $entityFile);
+        file_put_contents(alias('@entityPath') . "/{$entityClass}.php", $entityFile);
     }
 
     /**
