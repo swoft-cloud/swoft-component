@@ -66,6 +66,7 @@ class RequestParser implements RequestParserInterface
     {
         return [
             'application/json' => RequestJsonParser::class,
+            'application/xml'=>RequestXmlParser::class,
         ];
     }
 }
