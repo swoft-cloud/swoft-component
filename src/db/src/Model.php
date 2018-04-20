@@ -12,6 +12,7 @@ namespace Swoft\Db;
 use Swoft\Contract\Arrayable;
 use Swoft\Core\ResultInterface;
 use Swoft\Db\Bean\Collector\EntityCollector;
+use Swoft\Helper\StringHelper;
 
 /**
  * ActiveRecord
@@ -287,11 +288,8 @@ class Model implements \ArrayAccess, \Iterator, Arrayable
 
         $data = [];
         foreach ($columns as $propertyName => $column) {
-            $function   = explode('_', $propertyName);
-            $function   = array_map(function ($word) {
-               return ucfirst($word);
-            }, $function);
-            $methodName = 'get' . implode('', $function);
+            $methodName = 'get' . \ucfirst(StringHelper::camel($propertyName));
+            
             if (!isset($column['column']) || !\method_exists($this, $methodName)) {
                 continue;
             }
@@ -307,7 +305,7 @@ class Model implements \ArrayAccess, \Iterator, Arrayable
      */
     public function toJson(): string
     {
-        return json_encode($this->toArray(), JSON_UNESCAPED_UNICODE);
+        return \json_encode($this->toArray(), \JSON_UNESCAPED_UNICODE);
     }
 
     /**
@@ -396,7 +394,7 @@ class Model implements \ArrayAccess, \Iterator, Arrayable
      */
     public function valid(): bool
     {
-        return ($this->current() !== false);
+        return $this->current() !== false;
     }
 
     /**
