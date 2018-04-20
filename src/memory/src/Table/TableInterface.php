@@ -63,7 +63,7 @@ interface TableInterface
     public function column(string $name, int $type, int $size = 0): bool;
 
     /**
-     * Create table by columes
+     * Create table by columns
      *
      * @return bool
      */
@@ -108,18 +108,18 @@ interface TableInterface
      *
      * @param string    $key    Index key
      * @param string    $field  Field of Index
-     * @param int|float $incrby Increase value, the value type should follow the original type of column
+     * @param int|float $incrBy Increase value, the value type should follow the original type of column
      * @return bool|int|float Will return false when failure, return the value after increased when success
      */
-    public function incr(string $key, string $field, $incrby = 1);
+    public function incr(string $key, string $field, $incrBy = 1);
 
     /**
      * Decrease
      *
      * @param string    $key    Index key
      * @param string    $field  Field of Index
-     * @param int|float $decrby Decrease value, the value type should follow the original type of column
+     * @param int|float $decrBy Decrease value, the value type should follow the original type of column
      * @return bool|int|float Will return false when failure, return the value after decreased when success
      */
-    public function decr(string $key, string $field, $decrby = 1);
+    public function decr(string $key, string $field, $decrBy = 1);
 }

@@ -45,7 +45,7 @@ class Table implements TableInterface
      * Table columns
      *
      * @var array $column
-     * @struct
+     * @example
      * [
      *     'field' => ['type', 'size']
      * ]
@@ -63,8 +63,8 @@ class Table implements TableInterface
      * Table constructor.
      *
      * @param string $name
-     * @param int    $size
-     * @param array  $columns
+     * @param int $size
+     * @param array $columns
      * @throws Exception\InvalidArgumentException
      */
     public function __construct(string $name = '', int $size = 0, array $columns = [])
@@ -85,20 +85,6 @@ class Table implements TableInterface
         $this->table = $table;
 
         return $this;
-    }
-
-    /**
-     * Get the memory table instance
-     *
-     * @return SwooleTable
-     * @throws Exception\RuntimeException When memory table have not been create
-     */
-    public function getTable(): SwooleTable
-    {
-        if (! $this->isCreate()) {
-            throw new Exception\RuntimeException('Memory table have not been create');
-        }
-        return $this->table;
     }
 
     /**
@@ -138,6 +124,20 @@ class Table implements TableInterface
     }
 
     /**
+     * Get the memory table instance
+     *
+     * @return SwooleTable
+     * @throws Exception\RuntimeException When memory table have not been create
+     */
+    public function getTable(): SwooleTable
+    {
+        if (!$this->isCreate()) {
+            throw new Exception\RuntimeException('Memory table have not been create');
+        }
+        return $this->table;
+    }
+
+    /**
      * Get memory table size that have been set
      *
      * @return mixed
@@ -148,7 +148,7 @@ class Table implements TableInterface
     }
 
     /**
-     * Set memory table columns struct
+     * Set memory table columns structure
      *
      * @param array $columns
      * @return Table;
@@ -165,7 +165,7 @@ class Table implements TableInterface
     }
 
     /**
-     * Get memory table columns struct
+     * Get memory table columns structure
      *
      * @return mixed
      */
@@ -178,8 +178,8 @@ class Table implements TableInterface
      * Add a column
      *
      * @param string $name Column name
-     * @param int    $type Column type
-     * @param int    $size Max length of column (in bits)
+     * @param int $type Column type
+     * @param int $size Max length of column (in bits)
      * @return bool
      * @throws Exception\InvalidArgumentException
      */
@@ -191,7 +191,7 @@ class Table implements TableInterface
     }
 
     /**
-     * Create table by columes
+     * Create table by columns
      *
      * @return bool
      * @throws Exception\RuntimeException When memory table have been created
@@ -203,7 +203,7 @@ class Table implements TableInterface
             throw new Exception\RuntimeException('Memory table have been created, cannot recreated');
         }
 
-        // Init memory table instace
+        // Init memory table instance
         $table = new SwooleTable($this->getSize());
         $this->setTable($table);
 
@@ -224,14 +224,14 @@ class Table implements TableInterface
     /**
      * Set data
      *
-     * @param string $key  Index key
-     * @param array  $data Index data
+     * @param string $key Index key
+     * @param array $data Index data
      * @return bool
      * @throws Exception\RuntimeException When memory table have not been create
      */
     public function set(string $key, array $data): bool
     {
-        if (! $this->isCreate()) {
+        if (!$this->isCreate()) {
             throw new Exception\RuntimeException('Memory table have not been create');
         }
         return $this->getTable()->set($key, $data);
@@ -240,7 +240,7 @@ class Table implements TableInterface
     /**
      * Get data by key and field
      *
-     * @param string $key   Index key
+     * @param string $key Index key
      * @param string $field Filed name of Index
      * @return array|false Will return an array when success, return false when failure
      * @throws Exception\RuntimeException When memory table have not been create
@@ -277,29 +277,29 @@ class Table implements TableInterface
     /**
      * Increase
      *
-     * @param string    $key    Index key
-     * @param string    $field  Field of Index
-     * @param int|float $incrby Increase value, the value type should follow the original type of column
+     * @param string $key Index key
+     * @param string $field Field of Index
+     * @param int|float $incrBy Increase value, the value type should follow the original type of column
      * @return bool|int|float Will return false when failure, return the value after increased when success
      * @throws Exception\RuntimeException When memory table have not been create
      */
-    public function incr(string $key, string $field, $incrby = 1)
+    public function incr(string $key, string $field, $incrBy = 1)
     {
-        return $this->getTable()->incr($key, $field, $incrby);
+        return $this->getTable()->incr($key, $field, $incrBy);
     }
 
     /**
      * Decrease
      *
-     * @param string    $key    Index key
-     * @param string    $field  Field of Index
-     * @param int|float $decrby Decrease value, the value type should follow the original type of column
-     * @return bool|int|float Will return false when failure, return the value after decreased when success
+     * @param string $key Index key
+     * @param string $field Field of Index
+     * @param int|float $decrBy Decrease value, the value type should follow the original type of column
+     * @return bool|int|float|mixed Will return false when failure, return the value after decreased when success
      * @throws Exception\RuntimeException When memory table have not been create
      */
-    public function decr(string $key, string $field, $decrby = 1)
+    public function decr(string $key, string $field, $decrBy = 1)
     {
-        return $this->getTable()->decr($key, $field, $decrby);
+        return $this->getTable()->decr($key, $field, $decrBy);
     }
 
     /**
@@ -330,7 +330,7 @@ class Table implements TableInterface
     {
         switch ($type) {
             case self::TYPE_INT:
-                if (! \in_array($size, [
+                if (!\in_array($size, [
                     self::ONE_INT_LENGTH,
                     self::TWO_INT_LENGTH,
                     self::FOUR_INT_LENGTH,
@@ -357,7 +357,7 @@ class Table implements TableInterface
      * Invoke
      *
      * @param string $method
-     * @param array  $args
+     * @param array $args
      * @return mixed
      * @throws Exception\RuntimeException
      */
@@ -373,12 +373,14 @@ class Table implements TableInterface
      * __get
      *
      * @param string $name
+     * @return mixed
      * @throws Exception\RuntimeException
      */
     public function __get(string $name)
     {
         $method = 'get' . ucfirst($name);
-        if (! method_exists($this, $method)) {
+
+        if (!\method_exists($this, $method)) {
             throw new Exception\RuntimeException(sprintf('Call to undefined property %s', $name));
         }
 
@@ -387,14 +389,15 @@ class Table implements TableInterface
 
     /**
      * @param string $name
-     * @param mixed  $value
+     * @param mixed $value
      * @return mixed
      * @throws Exception\RuntimeException
      */
     public function __set($name, $value)
     {
         $method = 'set' . ucfirst($name);
-        if (! method_exists($this, $method)) {
+
+        if (!\method_exists($this, $method)) {
             throw new Exception\RuntimeException(sprintf('Call to undefined property %s', $name));
         }
 
