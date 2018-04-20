@@ -287,7 +287,11 @@ class Model implements \ArrayAccess, \Iterator, Arrayable
 
         $data = [];
         foreach ($columns as $propertyName => $column) {
-            $methodName = sprintf('get%s', ucfirst($propertyName));
+            $function   = explode('_', $propertyName);
+            $function   = array_map(function ($word) {
+               return ucfirst($word);
+            }, $function);
+            $methodName = 'get' . implode('', $function);
             if (!isset($column['column']) || !\method_exists($this, $methodName)) {
                 continue;
             }
