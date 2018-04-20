@@ -55,8 +55,12 @@ class EntityHelper
             }
 
             $field        = $entities[$className]['column'][$col];
-            $setterMethod = 'set' . ucfirst($field);
-
+            $function         = explode('_', $field);
+            $function         = array_map(function ($word) {
+                return ucfirst($word);
+            }, $function);
+            $setterMethod = 'set' . implode('', $function);
+            
             $type  = $entities[$className]['field'][$field]['type'];
             $value = self::trasferTypes($type, $value);
 
@@ -83,7 +87,7 @@ class EntityHelper
         if ($type === Types::INT || $type === Types::NUMBER) {
             $value = (int)$value;
         } elseif ($type === Types::STRING) {
-            $value = (string)$value;
+            $value = is_null($value) ? (unset)$value : (string)$value;
         } elseif ($type === Types::BOOLEAN) {
             $value = (bool)$value;
         } elseif ($type === Types::FLOAT) {
