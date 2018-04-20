@@ -17,17 +17,17 @@ class PrefixProcessor implements ProcessorInterface
      * @Inject()
      * @var RedisPoolConfig
      */
-    private $redisPoolConfig;
+    protected $redisPoolConfig;
 
     /**
      * @var string
      */
-    private $prefix;
+    protected $prefix;
 
     /**
      * @var array
      */
-    private $commands;
+    protected $commands;
 
     /**
      * Init
