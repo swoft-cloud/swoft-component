@@ -5,9 +5,6 @@ namespace SwoftTest\I18n;
 use Swoft\App;
 use Swoft\I18n\Translator;
 
-/**
- * @author    huangzhhui <huangzhwork@gmail.com>
- */
 class TranslatorTest extends AbstractTestCase
 {
     /**
