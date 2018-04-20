@@ -19,7 +19,7 @@ class Process
     /**
      * @var string
      */
-    private $name = "";
+    private $name = '';
 
     /**
      * @var bool

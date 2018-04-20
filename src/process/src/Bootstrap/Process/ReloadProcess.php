@@ -10,7 +10,7 @@ use Swoft\Process\ProcessInterface;
 
 
 /**
- * Relaod process
+ * Reload process
  *
  * @Process(name="reload", boot=true)
  */
@@ -21,13 +21,12 @@ class ReloadProcess implements ProcessInterface
      */
     public function run(SwoftProcess $process)
     {
-        $pname = App::$server->getPname();
-        $processName = sprintf('%s reload process', $pname);
+        $processName = sprintf('%s reload process', App::$server->getPname());
         $process->name($processName);
 
-        /* @var \Swoft\Process\Bootstrap\Reload $relaod */
-        $relaod = App::getBean(Reload::class);
-        $relaod->run();
+        /* @var \Swoft\Process\Bootstrap\Reload $reload */
+        $reload = App::getBean(Reload::class);
+        $reload->run();
     }
 
     /**

@@ -2,12 +2,12 @@
 
 namespace Swoft\Process;
 
-use Swoft\App;
 use Swoft\Helper\PhpHelper;
 use Swoole\Process as SwooleProcess;
 
 /**
- * The process
+ * Class Process
+ * @package Swoft\Process
  */
 class Process
 {
@@ -51,14 +51,14 @@ class Process
     /**
      * Execute an external program
      *
-     * @param string $execfile
+     * @param string $execFile
      * @param array  $args
      *
      * @return bool
      */
-    public function exec(string $execfile, array $args): bool
+    public function exec(string $execFile, array $args): bool
     {
-        return $this->process->exec($execfile, $args);
+        return $this->process->exec($execFile, $args);
     }
 
     /**
@@ -96,14 +96,14 @@ class Process
     }
 
     /**
-     * Enable message queuing as interprocess communication
+     * Enable message queuing as internal process communication
      *
-     * @param int $msgkey
+     * @param int $msgKey
      * @param int $mode
      */
-    public function useQueue(int $msgkey = 0, int $mode = 2)
+    public function useQueue(int $msgKey = 0, int $mode = 2)
     {
-        $this->process->useQueue($msgkey, $mode);
+        $this->process->useQueue($msgKey, $mode);
     }
 
     /**
@@ -174,13 +174,13 @@ class Process
 
     /**
      * @param int $pid
-     * @param int $signo
+     * @param int $sigNo
      *
      * @return bool
      */
-    public static function kill(int $pid, int $signo = SIGTERM): bool
+    public static function kill(int $pid, int $sigNo = SIGTERM): bool
     {
-        return SwooleProcess::kill($pid, $signo);
+        return SwooleProcess::kill($pid, $sigNo);
     }
 
     /**
@@ -194,22 +194,22 @@ class Process
     }
 
     /**
-     * @param bool $nochdir
-     * @param bool $noclose
+     * @param bool $noChdir
+     * @param bool $noClose
      *
      */
-    public static function daemon(bool $nochdir = false, bool $noclose = false)
+    public static function daemon(bool $noChdir = false, bool $noClose = false)
     {
-        SwooleProcess::daemon($nochdir, $noclose);
+        SwooleProcess::daemon($noChdir, $noClose);
     }
 
     /**
-     * @param int      $signo
+     * @param int      $sigNo
      * @param callable $callback
      */
-    public static function signal(int $signo, callable $callback)
+    public static function signal(int $sigNo, callable $callback)
     {
-        SwooleProcess::signal($signo, $callback);
+        SwooleProcess::signal($sigNo, $callback);
     }
 
     /**
@@ -228,7 +228,7 @@ class Process
      *
      * @return bool
      */
-    public static function setaffinity(array $cpuSet): bool
+    public static function setAffinity(array $cpuSet): bool
     {
         return SwooleProcess::setaffinity($cpuSet);
     }

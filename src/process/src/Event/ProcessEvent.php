@@ -10,10 +10,10 @@ class ProcessEvent
     /**
      * Before process
      */
-    const BEFORE_PROCESS = "beforeProcess";
+    const BEFORE_PROCESS = 'beforeProcess';
 
     /**
      * After process
      */
-    const AFTER_PROCESS = "afterProcess";
+    const AFTER_PROCESS = 'afterProcess';
 }

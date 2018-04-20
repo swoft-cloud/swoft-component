@@ -17,22 +17,22 @@ use Swoft\Process\Event\ProcessEvent;
 class BeforeProcessListener implements EventHandlerInterface
 {
     /**
-     * 事件回调
+     * Event callback
      *
-     * @param EventInterface $event 事件对象
+     * @param EventInterface $event Event object
      * @return void
      */
     public function handle(EventInterface $event)
     {
         $params = $event->getParams();
 
-        if (count($params) < 1) {
+        if (\count($params) < 1) {
             return;
         }
 
-        // 初始化
+        // init
         $spanid = 0;
-        $logid = uniqid();
+        $logid = uniqid('', false);
 
         $processName = $params[0];
         $uri = 'process-' . $processName;
@@ -48,7 +48,7 @@ class BeforeProcessListener implements EventHandlerInterface
         App::getLogger()->setFlushInterval($flushInterval);
         RequestContext::setContextData($contextData);
 
-        // 日志初始化
+        // Log initialization
         App::getLogger()->initialize();
     }
 }

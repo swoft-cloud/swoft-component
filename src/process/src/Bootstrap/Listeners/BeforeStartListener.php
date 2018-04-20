@@ -18,6 +18,8 @@ class BeforeStartListener implements BeforeStartInterface
 {
     /**
      * @param AbstractServer $server
+     * @throws \InvalidArgumentException
+     * @throws \Swoft\Process\Exception\ProcessException
      */
     public function onBeforeStart(AbstractServer $server)
     {
@@ -27,8 +29,10 @@ class BeforeStartListener implements BeforeStartInterface
 
     /**
      * @param AbstractServer $server
+     * @throws \InvalidArgumentException
+     * @throws \Swoft\Process\Exception\ProcessException
      */
-    private function addProcess(AbstractServer &$server)
+    private function addProcess(AbstractServer $server)
     {
         $processes = ProcessCollector::getCollector();
 
@@ -39,7 +43,7 @@ class BeforeStartListener implements BeforeStartInterface
 
             $processObject = App::getBean($name);
 
-            if (!$processObject->check() || !$boot) {
+            if (!$boot || !$processObject->check()) {
                 continue;
             }
 

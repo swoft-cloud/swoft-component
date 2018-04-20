@@ -27,7 +27,7 @@ class ProcessParser extends AbstractParser
      *
      * @return array
      */
-    public function parser(string $className, $objectAnnotation = null, string $propertyName = "", string $methodName = "", $propertyValue = null)
+    public function parser(string $className, $objectAnnotation = null, string $propertyName = '', string $methodName = '', $propertyValue = null): array
     {
         $scope    = Scope::PROTOTYPE;
         $name     = $objectAnnotation->getName();
@@ -35,6 +35,6 @@ class ProcessParser extends AbstractParser
 
         ProcessCollector::collect($className, $objectAnnotation, $propertyName, $methodName, $propertyValue);
 
-        return [$beanName, $scope, ""];
+        return [$beanName, $scope, ''];
     }
 }
