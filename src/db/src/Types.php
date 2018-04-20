@@ -14,7 +14,7 @@ namespace Swoft\Db;
  */
 class Types
 {
-    const INT = 'integer';
+    const INT = 'int';
 
     const NUMBER = 'number';
 
