@@ -29,6 +29,7 @@
     },
     "replace": {
         "swoft/framework": "self.version",
+        "swoft/aop": "self.version",
         "swoft/cache": "self.version",
         "swoft/console": "self.version",
         "swoft/data-parser": "self.version",
@@ -53,6 +54,7 @@
     "autoload": {
         "psr-4": {
             "Swoft\\": "src/framework/src/",
+            "Swoft\\Aop\\": "src/aop/src/Aop",
             "Swoft\\Cache\\": "src/cache/src/",
             "Swoft\\Console\\": "src/console/src/",
             "Swoft\\DataParser\\": "src/data-parser/src/",
@@ -71,6 +73,7 @@
             "Swoft\\Task\\": "src/task/src/",
             "Swoft\\View\\": "src/view/src/",
             "Swoft\\Process\\": "src/process/src/",
+            "Swoft\\Proxy\\": "src/aop/src/Proxy",
             "Swoft\\Sg\\": "src/service-governance/src/",
             "Swoft\\WebSocket\\Server\\": "src/websocket-server/src/"
         },
