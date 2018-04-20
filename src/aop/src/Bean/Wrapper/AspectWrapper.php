@@ -12,6 +12,7 @@ use Swoft\Aop\Bean\Annotation\Inject;
 use Swoft\Aop\Bean\Annotation\PointAnnotation;
 use Swoft\Aop\Bean\Annotation\PointBean;
 use Swoft\Aop\Bean\Annotation\PointExecution;
+use Swoft\Bean\Wrapper\AbstractWrapper;
 
 /**
  * Class AspectWrapper

@@ -3,17 +3,13 @@
 namespace Swoft\Aop\Bean\Parser;
 
 use Swoft\Aop\Bean\Annotation\Aspect;
-use Swoft\Aop\Bean\Annotation\Scope;
+use Swoft\Bean\Annotation\Scope;
 use Swoft\Aop\Bean\Collector\AspectCollector;
 
 /**
- * the aspect of parser
+ * Class AspectParser
  *
- * @uses      AspectParser
- * @version   2017年12月24日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
+ * @package Swoft\Aop\Bean\Parser
  */
 class AspectParser extends AbstractParser
 {
