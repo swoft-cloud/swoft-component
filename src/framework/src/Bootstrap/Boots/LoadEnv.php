@@ -28,11 +28,11 @@ class LoadEnv implements Bootable
     {
         $baseDir = $this->getEnvBaseDir();
         $appEnv = env('APP_ENV');
-        if ($appEnv && $this->isAvailableFile($appEnvFilePath = $baseDir . DS . '.env.' . $appEnv)) {
-            return $appEnvFilePath;
-        } else {
-            return $baseDir . DS . '.env';
+        $file = '.env';
+        if ($appEnv && $this->isAvailableFile($baseDir . DS . '.env.' . $appEnv)) {
+            $file .= '.' . $appEnv;
         }
+        return $file;
     }
 
     /**
