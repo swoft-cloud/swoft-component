@@ -8,7 +8,6 @@ use Swoft\Bean\Annotation\Bootstrap;
 
 /**
  * @Bootstrap(order=1)
- * @author    huangzhhui <huangzhwork@gmail.com>
  */
 class LoadEnv implements Bootable
 {
@@ -17,11 +16,39 @@ class LoadEnv implements Bootable
      */
     public function bootstrap()
     {
-        $file = '.env';
-        $filePath = App::getAlias('@root') . DS . $file;
-
-        if (\file_exists($filePath) && \is_readable($filePath)) {
-            (new Dotenv(App::getAlias('@root'), $file))->load();
+        if ($this->isAvailableFile($file = $this->getEnvFile())) {
+            (new Dotenv($this->getEnvBaseDir(), $file))->load();
         }
+    }
+
+    /**
+     * @return string
+     */
+    protected function getEnvFile(): string
+    {
+        $baseDir = $this->getEnvBaseDir();
+        $appEnv = env('APP_ENV');
+        if ($appEnv && $this->isAvailableFile($appEnvFilePath = $baseDir . DS . '.env.' . $appEnv)) {
+            return $appEnvFilePath;
+        } else {
+            return $baseDir . DS . '.env';
+        }
+    }
+
+    /**
+     * @param $file
+     * @return bool
+     */
+    protected function isAvailableFile($file): bool
+    {
+        return \file_exists($file) && \is_readable($file);
+    }
+
+    /**
+     * @return string
+     */
+    protected function getEnvBaseDir(): string
+    {
+        return App::hasAlias('@env') ? alias('@env', '') : alias('@root', '');
     }
 }
