@@ -16,14 +16,14 @@ use Swoft\Process\Event\ProcessEvent;
 class AfterProcessListener implements EventHandlerInterface
 {
     /**
-     * 事件回调
+     * Event callback
      *
-     * @param EventInterface $event 事件对象
+     * @param EventInterface $event Event object
      * @return void
      */
     public function handle(EventInterface $event)
     {
-        // 日志初始化
+        // init log
         App::getLogger()->appendNoticeLog(true);
     }
 }

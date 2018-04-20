@@ -12,9 +12,9 @@ use Swoft\Process\Event\ProcessEvent;
 use Swoft\Process\Exception\ProcessException;
 use Swoole\Process as SwooleProcess;
 
-
 /**
- * The process builder
+ * Class ProcessBuilder - The process builder
+ * @package Swoft\Process
  */
 class ProcessBuilder
 {
@@ -27,6 +27,8 @@ class ProcessBuilder
      * @param string $name
      *
      * @return Process
+     * @throws \InvalidArgumentException
+     * @throws ProcessException
      */
     public static function create(string $name): Process
     {
@@ -34,7 +36,8 @@ class ProcessBuilder
             return self::$processes[$name];
         }
 
-        list($name, $boot, $pipe, $inout, $co) = self::getProcessMaping($name);
+        list($name, $boot, $pipe, $inout, $co) = self::getProcessMapping($name);
+
         $swooleProcess = new SwooleProcess(function (SwooleProcess $swooleProcess) use ($name, $co, $boot) {
             $process = new Process($swooleProcess);
             if ($co) {
@@ -44,6 +47,7 @@ class ProcessBuilder
             }
             self::runProcessByDefault($name, $process, $boot);
         }, $inout, $pipe);
+
         $process = new Process($swooleProcess);
         self::$processes[$name] = $process;
 
@@ -59,7 +63,7 @@ class ProcessBuilder
     public static function get(string $name): Process
     {
         if (!isset(self::$processes[$name])) {
-            throw new ProcessException(sprintf('The %s process is not create, you must to create by first !', $name));
+            throw new ProcessException(\sprintf('The %s process is not create, you must to create by first !', $name));
         }
 
         return self::$processes[$name];
@@ -71,7 +75,7 @@ class ProcessBuilder
      * @return array
      * @throws ProcessException
      */
-    private static function getProcessMaping(string $name): array
+    private static function getProcessMapping(string $name): array
     {
         $collector = ProcessCollector::getCollector();
         if (!isset($collector[$name])) {
@@ -79,8 +83,11 @@ class ProcessBuilder
         }
 
         $process = $collector[$name];
-        if (!isset($process['name']) || !isset($process['boot']) || !isset($process['pipe']) || !isset($process['inout']) || !isset($process['co'])) {
-            throw new ProcessException(sprintf('The %s process is ncomplete ! data=%s', $name, json_encode($process, JSON_UNESCAPED_UNICODE)));
+
+        if (!isset($process['name'], $process['boot'], $process['pipe'], $process['inout'], $process['co'])) {
+            throw new ProcessException(
+                \sprintf('The %s process is un-complete ! data=%s', $name, \json_encode($process, JSON_UNESCAPED_UNICODE))
+            );
         }
 
         $data = [
@@ -105,26 +112,32 @@ class ProcessBuilder
             /* @var \Swoft\Process\ProcessInterface $processObject */
             $processObject = App::getBean($name);
             self::beforeProcess($name, $boot);
+
             if($processObject->check()){
                 PhpHelper::call([$processObject, 'run'], [$process]);
             }
+
             self::afterProcess();
         });
     }
 
     /**
-     * @param string  $name
+     * @param string $name
      * @param Process $process
-     * @param bool    $boot
+     * @param bool $boot
+     * @throws \InvalidArgumentException
+     * @throws \ReflectionException
      */
     private static function runProcessByDefault(string $name, Process $process, bool $boot)
     {
         /* @var \Swoft\Process\ProcessInterface $processObject */
         $processObject = App::getBean($name);
         self::beforeProcess($name, $boot);
+
         if($processObject->check()){
             PhpHelper::call([$processObject, 'run'], [$process]);
         }
+
         self::afterProcess();
     }
 
@@ -132,7 +145,9 @@ class ProcessBuilder
      * After process
      *
      * @param string $processName
-     * @param bool   $boot
+     * @param bool $boot
+     * @throws \InvalidArgumentException
+     * @throws \ReflectionException
      */
     private static function beforeProcess(string $processName, $boot)
     {
@@ -147,9 +162,9 @@ class ProcessBuilder
         App::trigger(ProcessEvent::BEFORE_PROCESS, null, $processName);
     }
 
-
     /**
      * After process
+     * @throws \InvalidArgumentException
      */
     private static function afterProcess()
     {
@@ -158,12 +173,16 @@ class ProcessBuilder
 
     /**
      * Wait child process
+     * @param string $name
+     * @param $boot
      */
     private static function waitChildProcess(string $name, $boot)
     {
         /* @var \Swoft\Process\ProcessInterface $processObject */
         $processObject = App::getBean($name);
-        if (($hasWait = method_exists($processObject, 'wait')) || $boot) {
+        $hasWait = \method_exists($processObject, 'wait');
+
+        if ($hasWait || $boot) {
             Process::signal(SIGCHLD, function($sig) use ($name, $processObject, $hasWait) {
                 while($ret =  Process::wait(false)) {
                     if ($hasWait) {
@@ -172,7 +191,7 @@ class ProcessBuilder
 
                     unset(self::$processes[$name]);
                 }
-            }); 
+            });
         }
     }
 }

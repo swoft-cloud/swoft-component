@@ -24,7 +24,7 @@ class ProcessCollector implements CollectorInterface
      *
      * @return void
      */
-    public static function collect(string $className, $objectAnnotation = null, string $propertyName = "", string $methodName = "", $propertyValue = null)
+    public static function collect(string $className, $objectAnnotation = null, string $propertyName = '', string $methodName = '', $propertyValue = null)
     {
         if ($objectAnnotation instanceof Process) {
 
@@ -53,9 +53,8 @@ class ProcessCollector implements CollectorInterface
     /**
      * @return array
      */
-    public static function getCollector()
+    public static function getCollector(): array
     {
         return self::$processes;
     }
-
 }

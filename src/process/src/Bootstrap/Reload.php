@@ -10,11 +10,6 @@ use Swoft\Helper\FileHelper;
  * 文件更新自动监听
  *
  * @Bean()
- * @uses      Reload
- * @version   2017年08月25日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 class Reload
 {
@@ -40,7 +35,7 @@ class Reload
     private $interval = 3;
 
     /**
-     * 初始化方法
+     * @throws \InvalidArgumentException
      */
     public function init()
     {

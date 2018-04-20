@@ -5,7 +5,7 @@ namespace Swoft\Process\Exception;
 use Swoft\Exception\Exception;
 
 /**
- * The process exceptioin
+ * The process exception
  */
 class ProcessException extends Exception
 {
