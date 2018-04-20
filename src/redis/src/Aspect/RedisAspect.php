@@ -3,10 +3,10 @@
 namespace Swoft\Redis\Aspect;
 
 use Swoft\Aop\JoinPoint;
-use Swoft\Bean\Annotation\AfterReturning;
-use Swoft\Bean\Annotation\Aspect;
-use Swoft\Bean\Annotation\Before;
-use Swoft\Bean\Annotation\PointBean;
+use Swoft\Aop\Bean\Annotation\AfterReturning;
+use Swoft\Aop\Bean\Annotation\Aspect;
+use Swoft\Aop\Bean\Annotation\Before;
+use Swoft\Aop\Bean\Annotation\PointBean;
 use Swoft\Log\Log;
 
 /**
@@ -16,12 +16,6 @@ use Swoft\Log\Log;
  * @PointBean({
  *     RedisCache::class
  * })
- *
- * @uses      RedisAspect
- * @version   2018年01月03日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 class RedisAspect
 {

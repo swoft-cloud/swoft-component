@@ -11,7 +11,7 @@ use Swoft\Bean\ObjectDefinition\PropertyInjection;
 use Swoft\Bean\Resource\DefinitionResource;
 use Swoft\Bean\Resource\ServerAnnotationResource;
 use Swoft\Bean\Resource\WorkerAnnotationResource;
-use Swoft\Proxy\Proxy;
+use Swoft\Aop\Proxy\Proxy;
 
 /**
  * Container
@@ -64,6 +64,7 @@ class Container
 
         // 未定义
         if (!isset($this->definitions[$name])) {
+            var_dump(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT));
             throw new \InvalidArgumentException(sprintf('Bean %s not exist', $name));
         }
 
@@ -202,7 +203,7 @@ class Container
         }
 
         $proxyClass = $className;
-        if ($name != Aop::class) {
+        if ($name !== Aop::class && App::hasBean(Aop::class)) {
             $proxyClass = $this->getProxyClass($name, $className);
         }
 

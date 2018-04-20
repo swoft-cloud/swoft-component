@@ -1,6 +1,6 @@
 <?php
 
-namespace Swoft\Proxy;
+namespace Swoft\Aop\Proxy;
 
 /**
  * Proxy factory
