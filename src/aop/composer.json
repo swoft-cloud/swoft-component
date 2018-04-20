@@ -9,7 +9,9 @@
     ],
     "description": "Aop Component for Swoft",
     "license": "Apache-2.0",
-    "require": {},
+    "require": {
+        "swoft/framework": "^1.1.16"
+    },
     "autoload": {
         "psr-4": {
             "Swoft\\Aop\\": "src"
