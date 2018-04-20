@@ -17,11 +17,11 @@ use Swoft\Event\EventInterface;
 class EventFireListener implements EventHandlerInterface
 {
     /**
-     * @Value("{$config.devtool.logEventToConsole}")
+     * @Value("${config.devtool.logEventToConsole}")
      * @var bool
      */
     public $logEventToConsole = false;
-    
+
     /**
      * @param EventInterface $event
      */

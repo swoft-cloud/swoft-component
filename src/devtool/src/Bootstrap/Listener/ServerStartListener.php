@@ -23,7 +23,7 @@ use Swoole\Server;
 class ServerStartListener implements WorkerStartInterface
 {
     /**
-     * @Value("{$config.devtool.appLogToConsole}")
+     * @Value("${config.devtool.appLogToConsole}")
      * @var bool
      */
     public $appLogToConsole = false;

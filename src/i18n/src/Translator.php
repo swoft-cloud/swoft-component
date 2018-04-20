@@ -2,7 +2,6 @@
 
 namespace Swoft\I18n;
 
-use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\Value;
 use Swoft\Helper\ArrayHelper;
@@ -36,7 +35,7 @@ class Translator
      * @Value(name="${config.translator.defaultCategory}", env="${TRANSLATOR_DEFAULT_CATEGORY}")
      * @var string
      */
-    private $defualtCategory = 'default';
+    private $defaultCategory = 'default';
 
     /**
      * @Value(name="${config.translator.defaultLanguage}", env="${TRANSLATOR_DEFAULT_LANG}")
@@ -50,13 +49,16 @@ class Translator
      */
     public function init()
     {
-        $sourcePath = App::getAlias($this->languageDir);
-        if (! $sourcePath || ! file_exists($sourcePath)) {
+        $sourcePath = \alias($this->languageDir);
+
+        if (!$sourcePath || !\file_exists($sourcePath)) {
             return;
         }
-        if (! is_readable($sourcePath)) {
+
+        if (!\is_readable($sourcePath)) {
             throw new \RuntimeException(sprintf('%s dir is not readable', $sourcePath));
         }
+
         $this->loadLanguages($sourcePath);
     }
 
@@ -69,6 +71,7 @@ class Translator
         if ($this->loaded === false) {
             $iterator = new \RecursiveDirectoryIterator($sourcePath);
             $files = new \RecursiveIteratorIterator($iterator);
+
             foreach ($files as $file) {
                 // Only load php file
                 // TODO add .mo .po support
@@ -95,10 +98,12 @@ class Translator
     public function translate(string $key, array $params, string $locale = null): string
     {
         $realKey = $this->getRealKey($key, $locale);
+
         if (!ArrayHelper::has($this->messages, $realKey)) {
             $exceptionMessage = sprintf('Translate error, key %s does not exist', $realKey);
             throw new \InvalidArgumentException($exceptionMessage);
         }
+
         $message = ArrayHelper::get($this->messages, $realKey);
         if (!\is_string($message)) {
             throw new \InvalidArgumentException(sprintf('Message type error, possibly incorrectly key'));
@@ -119,7 +124,7 @@ class Translator
             $locale = $this->defaultLanguage;
         }
         if (strpos($key, '.') === false) {
-            $key = implode([$this->defualtCategory, $key], '.');
+            $key = implode([$this->defaultCategory, $key], '.');
         }
 
         return implode('.', [$locale, $key]);
@@ -135,7 +140,7 @@ class Translator
     private function formatMessage(string $message, array $params): string
     {
         $params = array_values($params);
-        array_unshift($params, $message);
-        return sprintf(...$params);
+
+        return sprintf($message, ...$params);
     }
 }
