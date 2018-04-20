@@ -288,7 +288,7 @@ class Model implements \ArrayAccess, \Iterator, Arrayable
 
         $data = [];
         foreach ($columns as $propertyName => $column) {
-            $methodName = 'get' . \ucfirst(StringHelper::camel($propertyName));
+            $methodName = StringHelper::camel('get' . $propertyName);
             
             if (!isset($column['column']) || !\method_exists($this, $methodName)) {
                 continue;
