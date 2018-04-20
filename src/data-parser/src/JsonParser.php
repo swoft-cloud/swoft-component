@@ -32,21 +32,21 @@ class JsonParser implements ParserInterface
     }
 
     /**
-     * @param string $data
-     * @return mixed
-     */
-    public function decode(string $data)
-    {
-        return \json_decode($data, $this->assoc);
-    }
-
-    /**
      * @param mixed $data
      * @return string
      */
     public function encode($data): string
     {
         return \json_encode($data);
+    }
+
+    /**
+     * @param string $data
+     * @return mixed
+     */
+    public function decode(string $data)
+    {
+        return \json_decode($data, $this->assoc);
     }
 
     /**

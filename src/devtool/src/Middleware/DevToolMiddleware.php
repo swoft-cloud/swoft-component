@@ -59,7 +59,7 @@ class DevToolMiddleware implements MiddlewareInterface
             $json = $request->query('json');
 
             if (null === $json) {
-                return \view(App::getAlias('@devtool/web/dist/index.html'), []);
+                return \view(\alias('@devtool/web/dist/index.html'), []);
             }
         }
 

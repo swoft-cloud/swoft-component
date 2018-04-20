@@ -25,7 +25,7 @@ class ConsulPptConfig
      * @Value(name="${config.provider.consul.address}")
      * @var string
      */
-    private $address = 'http://127.0.0.1:80';
+    protected $address = 'http://127.0.0.1:80';
 
     /**
      * the tags of register service
@@ -33,7 +33,7 @@ class ConsulPptConfig
      * @Value(name="${config.provider.consul.tags}")
      * @var array
      */
-    private $tags = [];
+    protected $tags = [];
 
     /**
      * the timeout of consul
@@ -41,7 +41,7 @@ class ConsulPptConfig
      * @Value(name="${config.provider.consul.timeout}")
      * @var int
      */
-    private $timeout = 300;
+    protected $timeout = 300;
 
     /**
      * the interval of register service
@@ -49,7 +49,7 @@ class ConsulPptConfig
      * @Value(name="${config.provider.consul.interval}")
      * @var int
      */
-    private $interval = 3;
+    protected $interval = 3;
 
     public function getServiceList(string $serviceName, ...$params)
     {

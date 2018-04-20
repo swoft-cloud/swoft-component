@@ -2,11 +2,11 @@
 
 simple data parser for php
 
-driver
+driver list:
 
 - json(by `json_encode`)
 - php(by `serialize`)
-- swoole(by extension `swoole_serialize`)
+- swoole(by extension `swoole` OR `swoole_serialize`)
 - msgpack(by extension `msgpack`)
 
 ## Install
@@ -31,6 +31,16 @@ $encoded = $parser->encode($data);
 // decode
 $decoded = $parser->encode($encoded);
 ```
+
+## Resources
+
+* [Documentation](https://doc.swoft.org)
+* [Contributing](https://github.com/swoft-cloud/swoft/blob/master/CONTRIBUTING.md)
+* [Report Issues][issues] and [Send Pull Requests][pulls] in the [Main Swoft Repository][repository]
+
+[pulls]: https://github.com/swoft-cloud/swoft-component/pulls
+[repository]: https://github.com/swoft-cloud/swoft
+[issues]: https://github.com/swoft-cloud/swoft/issues
 
 ## Unit testing
 

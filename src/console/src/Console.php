@@ -4,7 +4,6 @@ namespace Swoft\Console;
 
 use Swoft\App;
 use Swoft\Console\Bean\Collector\CommandCollector;
-use Swoft\Core\Coroutine;
 
 /**
  * Console
@@ -21,6 +20,8 @@ class Console implements ConsoleInterface
 
     /**
      * @return void
+     * @throws \ReflectionException
+     * @throws \InvalidArgumentException
      */
     public function run()
     {
