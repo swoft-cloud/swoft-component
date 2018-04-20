@@ -30,7 +30,7 @@ use Swoft\Http\Message\Server\Request;
 class DevToolMiddleware implements MiddlewareInterface
 {
     /**
-     * @Value("{$config.devtool.logHttpRequestToConsole}")
+     * @Value("${config.devtool.logHttpRequestToConsole}")
      * @var bool
      */
     public $logHttpRequestToConsole = false;
