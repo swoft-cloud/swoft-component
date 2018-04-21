@@ -11,15 +11,6 @@ namespace Swoft\Db\Entity;
 
 use Swoft\Helper\StringHelper;
 
-/**
- * Stub操作类
- *
- * @uses      SetGetGenerator
- * @version   2017年11月7日
- * @author    caiwh <471113744@qq.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
- */
 class SetGetGenerator
 {
     /**
