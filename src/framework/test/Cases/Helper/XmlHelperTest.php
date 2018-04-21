@@ -14,10 +14,6 @@ use SwoftTest\AbstractTestCase;
 class XmlHelperTest extends AbstractTestCase
 {
     /**
-     * User: sl
-     * Date: 2018/4/20
-     * Time: 下午2:45
-     * @author April2 <ott321@yeah.net>
      * @test
      * @covers XmlHelper::encode()
      */
@@ -29,10 +25,6 @@ class XmlHelperTest extends AbstractTestCase
     }
 
     /**
-     * User: sl
-     * Date: 2018/4/20
-     * Time: 下午3:30
-     * @author April2 <ott321@yeah.net>
      * @test
      * @covers XmlHelper::decode()
      */
