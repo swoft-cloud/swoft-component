@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: sl
- * Date: 2018/4/20
- * Time: 下午3:07
- * @author April2 <ott321@yeah.net>
- */
 namespace SwoftTest\Helper;
 
 use Swoft\Helper\XmlHelper;
