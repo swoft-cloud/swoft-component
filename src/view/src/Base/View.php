@@ -8,18 +8,13 @@ use Swoft\Helper\FileHelper;
  * Class ViewRenderer - Render PHP view scripts
  *
  * @package Swoft\Web
- * @uses      View
- * @version   2017年08月14日
- * @author    inhere <in.798@qq.com>
- * @copyright Copyright 2010-2016 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
-class View extends AbstractViewInterface
+class View implements ViewInterface
 {
-    /** @var string 视图存放基础路径 */
+    /** @var string View storage base path */
     protected $viewsPath;
 
-    /** @var null|string 默认布局文件 */
+    /** @var null|string Default layout file */
     protected $layout;
 
     /** @var array Attributes for the view */
@@ -46,9 +41,10 @@ class View extends AbstractViewInterface
      * @param array $data extract data to view, cannot contain view as a key
      * @param string|null|false $layout override default layout file
      * @return string
+     * @throws \RuntimeException
      * @throws \Throwable
      */
-    public function render(string $view, array $data = [], $layout = null)
+    public function render(string $view, array $data = [], $layout = null): string
     {
         $output = $this->fetch($view, $data);
 
@@ -64,9 +60,10 @@ class View extends AbstractViewInterface
      * @param $view
      * @param array $data
      * @return string
+     * @throws \RuntimeException
      * @throws \Throwable
      */
-    public function renderPartial($view, array $data = [])
+    public function renderPartial($view, array $data = []): string
     {
         return $this->fetch($view, $data);
     }
@@ -76,9 +73,10 @@ class View extends AbstractViewInterface
      * @param array $data
      * @param string|null $layout override default layout file
      * @return string
+     * @throws \RuntimeException
      * @throws \Throwable
      */
-    public function renderBody($content, array $data = [], $layout = null)
+    public function renderBody($content, array $data = [], $layout = null): string
     {
         return $this->renderContent($content, $data, $layout);
     }
@@ -88,15 +86,16 @@ class View extends AbstractViewInterface
      * @param array $data
      * @param string|null $layout override default layout file
      * @return string
+     * @throws \RuntimeException
      * @throws \Throwable
      */
-    public function renderContent($content, array $data = [], $layout = null)
+    public function renderContent($content, array $data = [], $layout = null):string
     {
         // render layout
         if ($layout = $layout ? : $this->layout) {
             $mark = $this->placeholder;
             $main = $this->fetch($layout, $data);
-            $content = preg_replace("/$mark/", $content, $main, 1);
+            $content = \preg_replace("/$mark/", $content, $main, 1);
         }
 
         return $content;
@@ -106,14 +105,15 @@ class View extends AbstractViewInterface
      * @param $view
      * @param array $data
      * @param bool $outputIt
-     * @return string|null
+     * @return string
+     * @throws \RuntimeException
      * @throws \Throwable
      */
-    public function include($view, array $data = [], $outputIt = true)
+    public function include($view, array $data = [], $outputIt = true): string
     {
         if ($outputIt) {
             echo $this->fetch($view, $data);
-            return null;
+            return '';
         }
 
         return $this->fetch($view, $data);
@@ -126,13 +126,14 @@ class View extends AbstractViewInterface
      * @param string $view
      * @param array $data
      * @return mixed
+     * @throws \RuntimeException
      * @throws \Throwable
      */
-    public function fetch($view, array $data = [])
+    public function fetch(string $view, array $data = [])
     {
         $file = $this->getViewFile($view);
 
-        if (! is_file($file)) {
+        if (!\is_file($file)) {
             throw new \RuntimeException("cannot render '$view' because the view file does not exist. File: $file");
         }
 
@@ -143,14 +144,14 @@ class View extends AbstractViewInterface
             }
         }
         */
-        $data = array_merge($this->attributes, $data);
+        $data = \array_merge($this->attributes, $data);
 
         try {
-            ob_start();
+            \ob_start();
             $this->protectedIncludeScope($file, $data);
-            $output = ob_get_clean();
+            $output = \ob_get_clean();
         } catch (\Throwable $e) { // PHP 7+
-            ob_end_clean();
+            \ob_end_clean();
             throw $e;
         }
 
@@ -158,10 +159,11 @@ class View extends AbstractViewInterface
     }
 
     /**
-     * @param $view
+     * @param string $view
      * @return string
+     * @throws \InvalidArgumentException
      */
-    public function getViewFile($view)
+    public function getViewFile(string $view): string
     {
         $view = $this->getRealView($view);
 
@@ -174,7 +176,7 @@ class View extends AbstractViewInterface
      */
     protected function protectedIncludeScope($file, array $data)
     {
-        extract($data, EXTR_OVERWRITE);
+        \extract($data, EXTR_OVERWRITE);
         include $file;
     }
 
@@ -183,7 +185,7 @@ class View extends AbstractViewInterface
      *
      * @return array
      */
-    public function getAttributes()
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
@@ -228,8 +230,9 @@ class View extends AbstractViewInterface
      * Get the view path
      *
      * @return string
+     * @throws \InvalidArgumentException
      */
-    public function getViewsPath()
+    public function getViewsPath(): string
     {
         return App::getAlias($this->viewsPath);
     }
@@ -242,14 +245,14 @@ class View extends AbstractViewInterface
     public function setViewsPath($viewsPath)
     {
         if ($viewsPath) {
-            $this->viewsPath = rtrim($viewsPath, '/\\') . '/';
+            $this->viewsPath = \rtrim($viewsPath, '/\\') . '/';
         }
     }
 
     /**
      * Get the layout file
      *
-     * @return string
+     * @return string|null
      */
     public function getLayout()
     {
@@ -263,7 +266,7 @@ class View extends AbstractViewInterface
      */
     public function setLayout($layout)
     {
-        $this->layout = rtrim($layout, '/\\');
+        $this->layout = \rtrim($layout, '/\\');
     }
 
     /**
@@ -286,12 +289,12 @@ class View extends AbstractViewInterface
      * @param string $view
      * @return string
      */
-    protected function getRealView($view)
+    protected function getRealView(string $view): string
     {
         $sfx = FileHelper::getSuffix($view, true);
         $ext = $this->suffix;
 
-        if ($sfx === $ext || in_array($sfx, $this->suffixes, true)) {
+        if ($sfx === $ext || \in_array($sfx, $this->suffixes, true)) {
             return $view;
         }
 

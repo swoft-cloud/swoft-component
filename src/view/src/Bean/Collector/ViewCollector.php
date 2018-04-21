@@ -43,7 +43,7 @@ class ViewCollector implements CollectorInterface
     /**
      * @return array
      */
-    public static function getCollector()
+    public static function getCollector(): array
     {
         return self::$views;
     }
