@@ -9,22 +9,24 @@ use Swoft\Helper\DirHelper;
 
 /**
  * @Bootstrap(order=3)
- * @uses      LoadInitConfiguration
- * @version   2017-11-02
  * @author    huangzhhui <huangzhwork@gmail.com>
- * @copyright Copyright 2010-2017 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 class LoadInitConfiguration implements Bootable
 {
+    /**
+     * @throws \InvalidArgumentException
+     */
     public function bootstrap()
     {
         $path = App::getAlias('@configs');
-        $excludeFiles = [
+
+        $excludes = [
             $path . DS . 'define.php',
         ];
+
         $config = new Config();
-        $config->load($path, $excludeFiles, DirHelper::SCAN_CURRENT_DIR, Config::STRUCTURE_SEPARATE);
+        $config->load($path, $excludes, DirHelper::SCAN_CURRENT_DIR, Config::STRUCTURE_SEPARATE);
+
         App::setAppProperties($config);
     }
 }

@@ -15,5 +15,5 @@ use Swoft\Bootstrap\Server\AbstractServer;
  */
 interface BeforeStartInterface
 {
-    public function onBeforeStart(AbstractServer &$server);
+    public function onBeforeStart(AbstractServer $server);
 }

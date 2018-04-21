@@ -2,6 +2,12 @@
 
 namespace Swoft\Helper;
 
+use Swoft\Contract\Arrayable;
+
+/**
+ * Class ArrayHelper
+ * @package Swoft\Helper
+ */
 class ArrayHelper
 {
     /**
@@ -19,6 +25,7 @@ class ArrayHelper
     {
         if (\is_array($object)) {
             if ($recursive) {
+                /** @var array $object */
                 foreach ($object as $key => $value) {
                     if (\is_array($value) || \is_object($value)) {
                         $object[$key] = static::toArray($value, $properties, true);
@@ -27,7 +34,9 @@ class ArrayHelper
             }
 
             return $object;
-        } elseif (\is_object($object)) {
+        }
+
+        if (\is_object($object)) {
             if (!empty($properties)) {
                 $className = \get_class($object);
                 if (!empty($properties[$className])) {
@@ -44,18 +53,19 @@ class ArrayHelper
                 }
             }
             if ($object instanceof Arrayable) {
-                $result = $object->toArray([], [], $recursive);
+                $result = $object->toArray();
             } else {
                 $result = [];
+                /** @var array $object */
                 foreach ($object as $key => $value) {
                     $result[$key] = $value;
                 }
             }
 
             return $recursive ? static::toArray($result, $properties) : $result;
-        } else {
-            return [$object];
         }
+
+        return [$object];
     }
 
     /**
@@ -142,7 +152,8 @@ class ArrayHelper
         }
 
         if (\is_array($key)) {
-            $lastKey = array_pop($key);
+            $lastKey = \array_pop($key);
+            /** @var array $key */
             foreach ($key as $keyPart) {
                 $array = static::getValue($array, $keyPart);
             }
@@ -544,7 +555,7 @@ class ArrayHelper
      *                                         Please refer to [PHP manual](http://php.net/manual/en/function.sort.php)
      *                                         for more details. When sorting by multiple keys with different sort flags, use an array of sort flags.
      *
-     * @throws InvalidParamException if the $direction or $sortFlag parameters do not have
+     * @throws \InvalidArgumentException if the $direction or $sortFlag parameters do not have
      * correct number of elements as that of $key.
      */
     public static function multisort(&$array, $key, $direction = SORT_ASC, $sortFlag = SORT_REGULAR)
@@ -557,17 +568,17 @@ class ArrayHelper
         if (is_scalar($direction)) {
             $direction = array_fill(0, $n, $direction);
         } elseif (\count($direction) !== $n) {
-            throw new InvalidParamException('The length of $direction parameter must be the same as that of $keys.');
+            throw new \InvalidArgumentException('The length of $direction parameter must be the same as that of $keys.');
         }
         if (is_scalar($sortFlag)) {
             $sortFlag = array_fill(0, $n, $sortFlag);
         } elseif (\count($sortFlag) !== $n) {
-            throw new InvalidParamException('The length of $sortFlag parameter must be the same as that of $keys.');
+            throw new \InvalidArgumentException('The length of $sortFlag parameter must be the same as that of $keys.');
         }
         $args = [];
-        foreach ($keys as $i => $key) {
+        foreach ($keys as $i => $k) {
             $flag   = $sortFlag[$i];
-            $args[] = static::getColumn($array, $key);
+            $args[] = static::getColumn($array, $k);
             $args[] = $direction[$i];
             $args[] = $flag;
         }
@@ -579,7 +590,7 @@ class ArrayHelper
         $args[] = SORT_NUMERIC;
 
         $args[] = &$array;
-        \call_user_func_array('array_multisort', $args);
+        array_multisort(...$args);
     }
 
     /**
@@ -669,10 +680,10 @@ class ArrayHelper
      * @param boolean            $strict   Whether to enable strict (`===`) comparison.
      *
      * @return boolean `true` if `$needle` was found in `$haystack`, `false` otherwise.
-     * @throws InvalidParamException if `$haystack` is neither traversable nor an array.
+     * @throws \InvalidArgumentException if `$haystack` is neither traversable nor an array.
      * @see   http://php.net/manual/en/function.in-array.php
      */
-    public static function isIn($needle, $haystack, $strict = false)
+    public static function isIn($needle, $haystack, $strict = false): bool
     {
         if ($haystack instanceof \Traversable) {
             foreach ($haystack as $value) {
@@ -683,7 +694,7 @@ class ArrayHelper
         } elseif (\is_array($haystack)) {
             return \in_array($needle, $haystack, $strict);
         } else {
-            throw new InvalidParamException('Argument $haystack must be an array or implement Traversable');
+            throw new \InvalidArgumentException('Argument $haystack must be an array or implement Traversable');
         }
 
         return false;
@@ -715,7 +726,7 @@ class ArrayHelper
      * @param array|\Traversable $haystack The set of value to search.
      * @param boolean            $strict   Whether to enable strict (`===`) comparison.
      *
-     * @throws InvalidParamException if `$haystack` or `$needles` is neither traversable nor an array.
+     * @throws \InvalidArgumentException if `$haystack` or `$needles` is neither traversable nor an array.
      * @return boolean `true` if `$needles` is a subset of `$haystack`, `false` otherwise.
      */
     public static function isSubset($needles, $haystack, $strict = false)
@@ -729,7 +740,7 @@ class ArrayHelper
 
             return true;
         } else {
-            throw new InvalidParamException('Argument $needles must be an array or implement Traversable');
+            throw new \InvalidArgumentException('Argument $needles must be an array or implement Traversable');
         }
     }
 

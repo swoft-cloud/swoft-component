@@ -105,10 +105,12 @@ abstract class ConnectionPool implements PoolInterface
     public function getConnectionAddress():string
     {
         $serviceList  = $this->getServiceList();
-        $balancerType = $this->poolConfig->getBalancer();
-        $balancer     = balancer()->select($balancerType);
-
-        return $balancer->select($serviceList);
+        if (App::hasBean('balancerSelector')) {
+            $balancerType = $this->poolConfig->getBalancer();
+            $balancer     = balancer()->select($balancerType);
+            return $balancer->select($serviceList);
+        }
+        return current($serviceList);
     }
 
     /**
@@ -125,7 +127,7 @@ abstract class ConnectionPool implements PoolInterface
     protected function getServiceList()
     {
         $name = $this->poolConfig->getName();
-        if ($this->poolConfig->isUseProvider()) {
+        if ($this->poolConfig->isUseProvider() && App::hasBean('providerSelector')) {
             $type = $this->poolConfig->getProvider();
 
             return provider()->select($type)->getServiceList($name);

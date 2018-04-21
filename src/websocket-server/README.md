@@ -2,7 +2,7 @@
 
 websocket server for swoft
 
-# Install
+## Install
 
 - composer command
 
@@ -10,17 +10,17 @@ websocket server for swoft
 composer require swoft/websocket-server
 ```
 
-# Document
+## Document
 
 Please see [document site](https://doc.swoft.org)
 
-# unit testing
+## Unit testing
 
 ```bash
 phpunit 
 ```
 
-# LICENSE
+## LICENSE
 
 The Component is open-sourced software licensed under the [Apache license](LICENSE).
 
