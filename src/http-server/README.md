@@ -1,6 +1,6 @@
 # Swoft http server
 
-Swoft Http server Component
+Swoft Http Server Component
 
 ## Install
 
@@ -10,15 +10,15 @@ Swoft Http server Component
 composer require swoft/http-server
 ```
 
-## Document
+## Resources
 
-Please see [document site](https://doc.swoft.org)
+* [Documentation](https://doc.swoft.org)
+* [Contributing](https://github.com/swoft-cloud/swoft/blob/master/CONTRIBUTING.md)
+* [Report Issues][issues] and [Send Pull Requests][pulls] in the [Main Swoft Repository][repository]
 
-## Unit testing
-
-```bash
-phpunit
-```
+[pulls]: https://github.com/swoft-cloud/swoft-component/pulls
+[repository]: https://github.com/swoft-cloud/swoft
+[issues]: https://github.com/swoft-cloud/swoft/issues
 
 ## LICENSE
 

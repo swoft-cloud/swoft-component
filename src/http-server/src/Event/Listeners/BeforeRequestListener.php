@@ -9,40 +9,32 @@ use Swoft\Event\EventInterface;
 use Swoft\Http\Server\Event\HttpServerEvent;
 
 /**
- * 请求前
- *
  * @Listener(HttpServerEvent::BEFORE_REQUEST)
- * @uses      BeforeRequestListener
- * @version   2017年08月30日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 class BeforeRequestListener implements EventHandlerInterface
 {
     /**
-     * 事件回调
+     * Event callback
      *
-     * @param EventInterface $event      事件对象
+     * @param EventInterface $event Event object
      */
     public function handle(EventInterface $event)
     {
         // header获取日志ID和spanid请求跨度ID
-        $logid = RequestContext::getRequest()->getHeaderLine('logid');
-        $spanid = RequestContext::getRequest()->getHeaderLine('spanid');
-        if (empty($logid)) {
-            $logid = uniqid();
+        $logId = RequestContext::getRequest()->getHeaderLine('logid');
+        $spanId = RequestContext::getRequest()->getHeaderLine('spanid');
+
+        if (!$logId) {
+            $logId = uniqid('', false);
         }
-        if (empty($spanid)) {
-            $spanid = 0;
-        }
+
         $uri = RequestContext::getRequest()->getUri();
 
         $contextData = [
-            'logid'       => $logid,
-            'spanid'      => $spanid,
+            'logid'       => $logId,
+            'spanid'      => $spanId ?: 0,
             'uri'         => $uri,
-            'requestTime' => microtime(true),
+            'requestTime' => \microtime(true),
         ];
 
         RequestContext::setContextData($contextData);
