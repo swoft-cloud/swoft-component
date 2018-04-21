@@ -65,10 +65,12 @@ class XmlHelper
     protected static function parseToArray($data)
     {
         $res = null;
+        
         if (\is_object($data)) {
             $data = (array)$data;
         }
-        if (is_array($data)) {
+        
+        if (\is_array($data)) {
             foreach ($data as $key=>$val) {
                 if (\is_iterable($val)) {
                     $res[$key] = self::parseToArray($val);
@@ -77,6 +79,7 @@ class XmlHelper
                 }
             }
         }
+        
         return $res;
     }
 
