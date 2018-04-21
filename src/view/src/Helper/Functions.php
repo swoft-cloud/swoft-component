@@ -3,8 +3,8 @@
 if (!function_exists('view')) {
 
     /**
-     * @param string      $template
-     * @param array       $data
+     * @param string $template
+     * @param array $data
      * @param string|null $layout
      *
      * @return \Swoft\Http\Message\Server\Response
@@ -18,7 +18,7 @@ if (!function_exists('view')) {
         $view     = \Swoft\App::getBean('view');
         $response = \Swoft\Core\RequestContext::getResponse();
 
-        $content  = $view->render(\Swoft\App::getAlias($template), $data, $layout);
+        $content  = $view->render(\alias($template), $data, $layout);
         $response = $response->withContent($content)->withoutHeader('Content-Type')->withAddedHeader('Content-Type', 'text/html');
 
         return $response;

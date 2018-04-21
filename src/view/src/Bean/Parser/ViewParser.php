@@ -19,18 +19,19 @@ class ViewParser extends AbstractParser
     /**
      * 解析注解
      *
-     * @param string      $className
-     * @param View        $objectAnnotation
-     * @param string      $propertyName
-     * @param string      $methodName
+     * @param string $className
+     * @param View $objectAnnotation
+     * @param string $propertyName
+     * @param string $methodName
      * @param string|null $propertyValue
      * @return void
+     * @throws \InvalidArgumentException
      */
     public function parser(
         string $className,
         $objectAnnotation = null,
-        string $propertyName = "",
-        string $methodName = "",
+        string $propertyName = '',
+        string $methodName = '',
         $propertyValue = null
     ) {
         ViewCollector::collect($className, $objectAnnotation, $propertyName, $methodName, $propertyValue);

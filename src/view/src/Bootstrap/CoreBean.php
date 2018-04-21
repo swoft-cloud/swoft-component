@@ -13,11 +13,10 @@ use Swoft\View\Base\View;
  */
 class CoreBean implements BootBeanInterface
 {
-
     /**
      * @return array
      */
-    public function beans():array
+    public function beans(): array
     {
         return [
             'view'         => [

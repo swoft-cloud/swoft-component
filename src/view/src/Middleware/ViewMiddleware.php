@@ -22,10 +22,12 @@ use Swoft\View\Bean\Collector\ViewCollector;
 class ViewMiddleware implements MiddlewareInterface
 {
     /**
-     * @param \Psr\Http\Message\ServerRequestInterface     $request
+     * @param \Psr\Http\Message\ServerRequestInterface $request
      * @param \Psr\Http\Server\RequestHandlerInterface $handler
      *
      * @return \Psr\Http\Message\ResponseInterface
+     * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -37,9 +39,11 @@ class ViewMiddleware implements MiddlewareInterface
 
     /**
      * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @param \Psr\Http\Message\ResponseInterface      $response
+     * @param \Psr\Http\Message\ResponseInterface|\Swoft\Http\Message\Server\Response $response
      *
      * @return \Psr\Http\Message\ResponseInterface|\Swoft\Http\Message\Server\Response
+     * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     private function responseView(ServerRequestInterface $request, ResponseInterface $response)
     {
@@ -47,8 +51,8 @@ class ViewMiddleware implements MiddlewareInterface
         $collector        = ViewCollector::getCollector();
         $controllerClass  = RequestContext::getContextDataByKey('controllerClass');
         $controllerAction = RequestContext::getContextDataByKey('controllerAction');
-        $template         = $collector[$controllerClass]['view'][$controllerAction]['template'] ?? "";
-        $layout           = $collector[$controllerClass]['view'][$controllerAction]['layout'] ?? "";
+        $template         = $collector[$controllerClass]['view'][$controllerAction]['template'] ?? '';
+        $layout           = $collector[$controllerClass]['view'][$controllerAction]['layout'] ?? '';
 
         // accept and the of response
         $accepts       = $request->getHeader('accept');
@@ -60,10 +64,10 @@ class ViewMiddleware implements MiddlewareInterface
 
         // the condition of view
         $isTextHtml = !empty($currentAccept) && $response->isMatchAccept($currentAccept, 'text/html');
-        $isTempalte = $controllerClass && $response->isArrayable($data) && $template;
+        $isTemplate = $controllerClass && $response->isArrayable($data) && $template;
 
         // show view
-        if ($isTextHtml && $isTempalte) {
+        if ($isTextHtml && $isTemplate) {
             if ($data instanceof Arrayable) {
                 $data = $data->toArray();
             }
@@ -71,8 +75,12 @@ class ViewMiddleware implements MiddlewareInterface
             /* @var \Swoft\View\Base\View $view */
             $view    = App::getBean('view');
             $content = $view->render($template, $data, $layout);
-            $response = $response->withContent($content)->withAttribute($responseAttribute, null);
-            $response = $response->withoutHeader('Content-Type')->withAddedHeader('Content-Type', 'text/html');
+
+            $response = $response
+                ->withContent($content)
+                ->withAttribute($responseAttribute, null)
+                ->withoutHeader('Content-Type')
+                ->withAddedHeader('Content-Type', 'text/html');
         }
 
         return $response;
