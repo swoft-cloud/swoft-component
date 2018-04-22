@@ -55,7 +55,7 @@ class User extends Model
      * @Column(name="description", type="string")
      * @var string
      */
-    private $desc = '';
+    private $desc;
 
     /**
      * @var mixed
@@ -129,7 +129,7 @@ class User extends Model
     /**
      * @return string
      */
-    public function getDesc(): string
+    public function getDesc()
     {
         return $this->desc;
     }

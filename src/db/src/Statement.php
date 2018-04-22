@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Db;
 
 /**
@@ -137,7 +138,7 @@ class Statement implements StatementInterface
         $statement .= $this->getUpdateString();
 
         // set语句
-        if ($this->builder->getUpdateValues()) {
+        if ($this->builder->getUpdateValues() || $this->builder->getCounterValues()) {
             $statement .= ' ' . $this->getUpdateValuesString();
         }
 
@@ -234,6 +235,7 @@ class Statement implements StatementInterface
     /**
      * @param array $select
      * @param array $aggregate
+     *
      * @return array
      */
     protected function getAggregateStatement(array $select, array $aggregate): array
@@ -411,7 +413,7 @@ class Statement implements StatementInterface
      */
     protected function getWhereString(): string
     {
-        $where = $this->builder->getWhere();
+        $where     = $this->builder->getWhere();
         $statement = $this->getCriteriaString($where);
 
         if (!empty($statement)) {
@@ -537,7 +539,7 @@ class Statement implements StatementInterface
      */
     protected function getHavingString(): string
     {
-        $having = $this->builder->getHaving();
+        $having    = $this->builder->getHaving();
         $statement = $this->getCriteriaString($having);
         if (!empty($statement)) {
             $statement = 'HAVING ' . $statement;
@@ -612,6 +614,7 @@ class Statement implements StatementInterface
         }
 
         $statement = substr($statement, 0, -2);
+
         return $statement;
     }
 
@@ -628,6 +631,30 @@ class Statement implements StatementInterface
         $statement = substr($statement, 0, -2);
         if (!empty($statement)) {
             $statement = 'SET ' . $statement;
+        }
+
+        if (empty($statement)) {
+            $statement .= ' set ';
+        }
+        $statement .= $this->getCounterValueString();
+
+        return $statement;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getCounterValueString(): string
+    {
+        $statement = '';
+        $values    = $this->builder->getCounterValues();
+        foreach ($values as $coloumn => $value) {
+            $statement .= !empty($statement) ? ',' : $statement;
+            if ($value > 0) {
+                $statement .= sprintf(' %s = %s+%d ', $coloumn, $coloumn, $value);
+            } else {
+                $statement .= sprintf(' %s = %s-%d ', $coloumn, $coloumn, abs($value));
+            }
         }
 
         return $statement;
@@ -800,7 +827,7 @@ class Statement implements StatementInterface
      */
     protected function getFrom(): string
     {
-        $from  = $this->builder->getFrom();
+        $from = $this->builder->getFrom();
 
         return $from['table'] ?? '';
     }
@@ -812,7 +839,7 @@ class Statement implements StatementInterface
      */
     protected function getFromAlias(): string
     {
-        $from  = $this->builder->getFrom();
+        $from = $this->builder->getFrom();
 
         return $from['alias']??'';
     }
@@ -821,6 +848,7 @@ class Statement implements StatementInterface
      * 字符串转换
      *
      * @param $value
+     *
      * @return string
      */
     protected function getQuoteValue($value): string

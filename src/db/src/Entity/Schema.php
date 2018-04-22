@@ -9,16 +9,6 @@
  */
 namespace Swoft\Db\Entity;
 
-/**
- * 数据库字段映射关系
- *
- * @uses      Schema
- * @version   2017年11月14日
- * @author    caiwh <471113744@qq.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
- */
-
 abstract class Schema
 {
     // PHP类型
