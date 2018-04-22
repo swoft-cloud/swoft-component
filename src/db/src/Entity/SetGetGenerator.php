@@ -9,7 +9,7 @@
  */
 namespace Swoft\Db\Entity;
 
-use Swoft\App;
+use Swoft\Helper\StringHelper;
 
 class SetGetGenerator
 {
@@ -121,7 +121,7 @@ class SetGetGenerator
             $this->getterStub
         ], $entityStub);
 
-        file_put_contents(App::getAlias('@entityPath') . "/{$entityClass}.php", $entityFile);
+        file_put_contents(alias('@entityPath') . "/{$entityClass}.php", $entityFile);
     }
 
     /**
@@ -151,10 +151,10 @@ class SetGetGenerator
     private function parseProperty(string $propertyStub, array $fieldInfo)
     {
         $property      = $fieldInfo['name'];
-        $aliasProperty = $property;
+        $aliasProperty = StringHelper::camel($property);
         $primaryKey    = $fieldInfo['key'] === 'PRI';
         $required      = $primaryKey ? false : ($fieldInfo['nullable'] === 'NO');
-        $default       = strtolower($fieldInfo['default']) !== 'null' ? $fieldInfo['default'] : false;
+        $default       = $fieldInfo['default']) ?? '';
         $dbType        = $this->schema->dbSchema[$fieldInfo['type']] ?? '';
         $phpType       = $this->schema->phpSchema[$fieldInfo['type']] ?? 'mixed';
         $length        = $fieldInfo['length'];
@@ -166,6 +166,47 @@ class SetGetGenerator
             $enumParam = $matches[1][0];
             $enumParam = explode(',', str_replace('\'', '', $enumParam));
             // TODO $enumParam never use ?
+        }
+        
+         //字段类型
+        $dbtype = !empty($dbType) ? $dbType : ($isEnum ? '"feature-enum"' : (\is_int($default) ? '"int"' : '"string"'));
+
+        //设置默认值
+        if(in_array(strtolower($default), ['\'\'','""', 'null']) || empty($default))
+        {
+            switch ($dbtype)
+            {
+                case "Types::INT":
+                case "Types::NUMBER":
+                case "Types::BOOLEAN":
+                    $default = '0';
+                    break;
+                case "Types::FLOAT":
+                    $default = '0.0';
+                    break;
+                case "Types::DATETIME":
+                    $default = '\''. date('Y-m-d H:i:s') .'\'';
+                    break;
+                default:
+                    $default = '\'\'';
+                    break;
+            }
+        }
+        else
+        {
+            $default = trim($default);
+            switch ($dbtype)
+            {
+                case "Types::INT":
+                case "Types::NUMBER":
+                case "Types::BOOLEAN":
+                case "Types::FLOAT":
+                    $default = $default;
+                    break;
+                 default:
+                    $default = json_encode($default);
+                    break;
+            }
         }
 
         $this->checkAliasProperty($aliasProperty);
@@ -186,10 +227,10 @@ class SetGetGenerator
                 $primaryKey ? "     * @Id()\n" : '',
                 $property,
                 $aliasProperty,
-                !empty($dbType) ? $dbType : ($isEnum ? '"feature-enum"' : (\is_int($default) ? '"int"' : '"string"')),
+                $dbtype,
                 $length !== null ? ", length={$length}" : '',
                 $required ? "     * @Required()\n" : '',
-                $default !== false ? (\is_int($default) ? " = {$default};" : (trim($default) === '' ? ' = \'\';' : " = '{$default}';")) : ($required ? ' = \'\';' : ';')
+                " = {$default};"
             ], $propertyStub);
     }
 
@@ -204,13 +245,9 @@ class SetGetGenerator
     {
         $property      = $fieldInfo['name'];
         $comment       = $fieldInfo['column_comment'];
-        $aliasProperty = $property;
+        $aliasProperty = StringHelper::camel($property);
         $this->checkAliasProperty($aliasProperty);
-        $function         = explode('_', $aliasProperty);
-        $function         = array_map(function ($word) {
-            return ucfirst($word);
-        }, $function);
-        $function         = implode('', $function);
+        $function         = StringHelper::snake($aliasProperty);
         $function         = 'set' . $function;
         $primaryKey       = $fieldInfo['key'] === 'PRI';
         $type             = $this->schema->phpSchema[$fieldInfo['type']] ?? 'mixed';
@@ -240,13 +277,9 @@ class SetGetGenerator
     {
         $property      = $fieldInfo['name'];
         $comment       = $fieldInfo['column_comment'];
-        $aliasProperty = $property;
+        $aliasProperty = StringHelper::camel($property);
         $this->checkAliasProperty($aliasProperty);
-        $function         = explode('_', $aliasProperty);
-        $function         = array_map(function ($word) {
-            return ucfirst($word);
-        }, $function);
-        $function         = implode('', $function);
+        $function         = StringHelper::snake($aliasProperty);
         $function         = 'get' . $function;
         $default          = !empty($fieldInfo['default']) ? $fieldInfo['default'] : false;
         $primaryKey       = $fieldInfo['key'] === 'PRI';
@@ -324,4 +357,5 @@ class SetGetGenerator
     {
         return file_get_contents($this->folder . $this->propertyStubFile);
     }
+
 }
