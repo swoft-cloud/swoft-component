@@ -204,7 +204,7 @@ class SetGetGenerator
                     $default = $default;
                     break;
                  default:
-                    $default = '\''. str_replace('\'', '', $default) .'\'';
+                    $default = json_encode($default);
                     break;
             }
         }
