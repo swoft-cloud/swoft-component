@@ -2,12 +2,14 @@
 
 namespace Swoft\Http\Server\Router;
 
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Core\RequestContext;
 use Swoft\Exception\InvalidArgumentException;
 use Swoft\Helper\PhpHelper;
+use Swoft\Helper\StringHelper;
 use Swoft\Http\Message\Router\HandlerAdapterInterface;
 use Swoft\Http\Message\Server\Request;
 use Swoft\Http\Message\Server\Response;
@@ -20,7 +22,7 @@ use Swoft\Http\Server\Payload;
  * http handler adapter
  *
  * @Bean("httpHandlerAdapter")
- * @author    stelin <phpcrazy@126.com>
+ * @author stelin <phpcrazy@126.com>
  */
 class HandlerAdapter implements HandlerAdapterInterface
 {
@@ -28,14 +30,14 @@ class HandlerAdapter implements HandlerAdapterInterface
      * execute handler with controller and action
      * @param ServerRequestInterface $request request object
      * @param array $routeInfo handler info
-     * @return Response
+     * @return Response|ResponseInterface
      * @throws \Swoft\Exception\InvalidArgumentException
      * @throws \InvalidArgumentException
      * @throws \Swoft\Http\Server\Exception\MethodNotAllowedException
      * @throws \Swoft\Http\Server\Exception\RouteNotFoundException
      * @throws \ReflectionException
      */
-    public function doHandler(ServerRequestInterface $request, array $routeInfo)
+    public function doHandler(ServerRequestInterface $request, array $routeInfo): ResponseInterface
     {
         /**
          * @var int $status
@@ -52,7 +54,7 @@ class HandlerAdapter implements HandlerAdapterInterface
         // method not allowed
         if ($status === HandlerMapping::METHOD_NOT_ALLOWED) {
             throw new MethodNotAllowedException(sprintf(
-                "Method '%s' not allowed for access %s, Allow: %s",
+                "Method '%s' not allowed for %s, Allow: %s",
                 $request->getMethod(),
                 $path,
                 \implode(',', $routeInfo[2])
@@ -61,10 +63,6 @@ class HandlerAdapter implements HandlerAdapterInterface
 
         // handler info
         list($handler, $matches) = $this->createHandler($path, $info);
-
-        if (\is_array($handler)) {
-            $handler = $this->defaultHandler($handler);
-        }
 
         // execute handler
         $params   = $this->bindParams($request, $handler, $matches);
@@ -112,7 +110,7 @@ class HandlerAdapter implements HandlerAdapterInterface
             $segments = $handler;
         } elseif (\is_string($handler)) {
             // e.g `Controllers\Home@index` Or only `Controllers\Home`
-            $segments = explode('@', trim($handler));
+            $segments = \explode('@', trim($handler));
         } else {
             App::error('Invalid route handler for URI: ' . $path);
             throw new \InvalidArgumentException('Invalid route handler for URI: ' . $path);
@@ -125,41 +123,32 @@ class HandlerAdapter implements HandlerAdapterInterface
             $action = $segments[1];
         } elseif (isset($matches[0])) {
             // use dynamic action
-            $action = array_shift($matches);
+            $action = \array_shift($matches);
         }
 
-        $action     = HandlerMapping::convertNodeStr($action);
+        // use default action
+        if (!$action) {
+            /** @var HandlerMapping $httpRouter */
+            $httpRouter = App::getBean('httpRouter');
+            $action = $httpRouter->defaultAction;
+        }
+
+        $action     = StringHelper::camel($action);
         $controller = App::getBean($className);
-        $handler    = [$controller, $action];
+
+        if (!\method_exists($controller, $action)) {
+            throw new InvalidArgumentException("The controller action method '$action' does not exist!");
+        }
+
+        $handler = [$controller, $action];
 
         // Set Controller and Action info to Request Context
         RequestContext::setContextData([
             'controllerClass'  => $className,
-            'controllerAction' => $action ?: 'index',
+            'controllerAction' => $action,
         ]);
 
         return [$handler, $matches];
-    }
-
-    /**
-     * default handler
-     *
-     * @param array $handler handler info
-     *
-     * @return array
-     * @throws \Swoft\Exception\InvalidArgumentException
-     */
-    private function defaultHandler(array $handler): array
-    {
-        list($controller, $actionId) = $handler;
-        $httpRouter = App::getBean('httpRouter');
-
-        $actionId = empty($actionId) ? $httpRouter->defaultAction : $actionId;
-        if (!method_exists($controller, $actionId)) {
-            throw new InvalidArgumentException("the {$actionId} of action is not exist!");
-        }
-
-        return [$controller, $actionId];
     }
 
     /**
@@ -184,7 +173,7 @@ class HandlerAdapter implements HandlerAdapterInterface
         }
 
         $bindParams = [];
-        // $matches    = $info['matches'] ?? [];
+        $request    = $request->withAttribute(AttributeEnum::ROUTER_PARAMS, $matches);
         $response   = RequestContext::getResponse();
 
         // binding params

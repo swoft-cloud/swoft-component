@@ -20,7 +20,7 @@ class RequestJsonParser implements RequestParserInterface
      */
     public function parse(ServerRequestInterface $request): ServerRequestInterface
     {
-        if ($request instanceof Request && strtoupper($request->getMethod()) !== 'GET') {
+        if ($request instanceof Request && \strtoupper($request->getMethod()) !== 'GET') {
             $bodyStream = $request->getBody();
             $bodyContent = $bodyStream->getContents();
             try {
@@ -28,6 +28,7 @@ class RequestJsonParser implements RequestParserInterface
             } catch (\Exception $e) {
                 $bodyParams = $bodyContent;
             }
+
             return $request->withBodyParams($bodyParams);
         }
 
