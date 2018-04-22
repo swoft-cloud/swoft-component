@@ -12,6 +12,7 @@ namespace Swoft\Db\Helper;
 use Swoft\Db\Bean\Collector\EntityCollector;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Types;
+use Swoft\Helper\StringHelper;
 
 /**
  * EntityHelper
@@ -55,17 +56,18 @@ class EntityHelper
             }
 
             $field        = $entities[$className]['column'][$col];
-            $setterMethod = 'set' . ucfirst($field);
-
+            $setterMethod = StringHelper::camel('set_' . $field);
+            
             $type  = $entities[$className]['field'][$field]['type'];
             $value = self::trasferTypes($type, $value);
 
-            if (method_exists($object, $setterMethod)) {
-                $attrs[$field] = $value;
+            if (\method_exists($object, $setterMethod)) {
+                $attrs[$col] = $value;
+
                 $object->$setterMethod($value);
             }
         }
-        if (method_exists($object, 'setAttrs')) {
+        if (\method_exists($object, 'setAttrs')) {
             $object->setAttrs($attrs);
         }
 
@@ -83,7 +85,7 @@ class EntityHelper
         if ($type === Types::INT || $type === Types::NUMBER) {
             $value = (int)$value;
         } elseif ($type === Types::STRING) {
-            $value = (string)$value;
+            $value = null === $value ? null : (string)$value;
         } elseif ($type === Types::BOOLEAN) {
             $value = (bool)$value;
         } elseif ($type === Types::FLOAT) {
@@ -124,7 +126,7 @@ class EntityHelper
      */
     private static function formatParamsKey($key): string
     {
-        if (\is_string($key) && strpos($key, ':') === false) {
+        if (\is_string($key) && \strpos($key, ':') === false) {
             return ':' . $key;
         }
 

@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Db\Entity;
 
 use Swoft\Helper\StringHelper;
@@ -108,7 +109,7 @@ class SetGetGenerator
             '{{entityDate}}',
             '{{property}}',
             '{{setter}}',
-            '{{getter}}'
+            '{{getter}}',
         ], [
             $usesContent,
             $extends,
@@ -118,7 +119,7 @@ class SetGetGenerator
             $entityDate,
             $this->propertyStub,
             $this->setterStub,
-            $this->getterStub
+            $this->getterStub,
         ], $entityStub);
 
         file_put_contents(alias('@entityPath') . "/{$entityClass}.php", $entityFile);
@@ -185,7 +186,7 @@ class SetGetGenerator
                 '{{type}}',
                 '{{length}}',
                 "{{@Required}}\n",
-                '{{hasDefault}}'
+                '{{hasDefault}}',
             ], [
                 $formatComment,
                 $primaryKey ? "     * @Id()\n" : '',
@@ -220,13 +221,13 @@ class SetGetGenerator
                 '{{function}}',
                 '{{attribute}}',
                 '{{type}}',
-                '{{hasReturnType}}'
+                '{{hasReturnType}}',
             ], [
                 !empty($comment) ? "     * {$comment}\n":'',
                 $function,
                 $aliasProperty,
                 $type !== 'mixed' ? "{$type} " : '',
-                $primaryKey ? '' : ': self'
+                $primaryKey ? '' : ': self',
             ], $setterStub);
     }
 
