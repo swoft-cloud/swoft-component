@@ -13,6 +13,9 @@ class AttributeEnum
      */
     const ROUTER_ATTRIBUTE = 'requestHandler';
 
+    /** @var string The matched params key of the router */
+    const ROUTER_PARAMS = '_params';
+
     /**
      * The attribute of response data
      *

@@ -60,7 +60,6 @@ class ServerDispatcher implements DispatcherInterface
             $request = RequestContext::getRequest();
             $requestHandler = new RequestHandler($middlewares, $this->handlerAdapter);
             $response = $requestHandler->handle($request);
-
         } catch (\Throwable $throwable) {
             /* @var ErrorHandler $errorHandler */
             $errorHandler = \bean(ErrorHandler::class);

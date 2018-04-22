@@ -16,9 +16,7 @@ class RequestParser implements RequestParserInterface
      *
      * @var array
      */
-    protected $parsers = [
-
-    ];
+    protected $parsers = [];
 
     /**
      * The of header
@@ -36,7 +34,7 @@ class RequestParser implements RequestParserInterface
         $contentType = $request->getHeaderLine($this->headerKey);
         $parsers = $this->mergeParsers();
 
-        if (! isset($parsers[$contentType])) {
+        if (!isset($parsers[$contentType])) {
             return $request;
         }
 
@@ -52,7 +50,7 @@ class RequestParser implements RequestParserInterface
      *
      * @return array
      */
-    private function mergeParsers(): array
+    protected function mergeParsers(): array
     {
         return ArrayHelper::merge($this->parsers, $this->defaultParsers());
     }

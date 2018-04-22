@@ -34,7 +34,7 @@ class UserMiddleware implements MiddlewareInterface
         $actionMiddlewares = [];
         if (isset($info['handler']) && \is_string($info['handler'])) {
             // Extract action info from router handler
-            $exploded             = explode('@', $info['handler']);
+            $exploded             = \explode('@', $info['handler']);
             $controllerClass      = $exploded[0] ?? '';
             $action               = $exploded[1] ?? '';
 
@@ -44,12 +44,12 @@ class UserMiddleware implements MiddlewareInterface
             // Get group middleware from Collector
             if ($controllerClass) {
                 $collect = $collectedMiddlewares['group'] ?? [];
-                $collect && $actionMiddlewares = array_merge($actionMiddlewares, $collect);
+                $collect && $actionMiddlewares = \array_merge($actionMiddlewares, $collect);
             }
             // Get the specified action middleware from Collector
             if ($action) {
                 $collect = $collectedMiddlewares['actions'][$action]??[];
-                $collect && $actionMiddlewares = array_merge($actionMiddlewares, $collect ?? []);
+                $collect && $actionMiddlewares = \array_merge($actionMiddlewares, $collect ?? []);
             }
         }
         if (!empty($actionMiddlewares) && $handler instanceof RequestHandler) {

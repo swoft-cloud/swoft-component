@@ -7,12 +7,6 @@ use Swoft\Http\Message\Router\HandlerMappingInterface;
 /**
  * handler mapping of http
  *
- * @uses      HandlerMapping
- * @version   2017年07月14日
- * @author    inhere <in.798@qq.com>
- * @copyright Copyright 2010-2016 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
- *
  * @method get(string $route, mixed $handler, array $opts = [])
  * @method post(string $route, mixed $handler, array $opts = [])
  * @method put(string $route, mixed $handler, array $opts = [])
@@ -36,6 +30,11 @@ class HandlerMapping extends AbstractRouter implements HandlerMappingInterface
      * @var int
      */
     public $tmpCacheNumber = 200;
+
+    /**
+     * @var string
+     */
+    public $defaultAction = 'index';
 
     /**
      * There are last route caches. like static routes
@@ -210,7 +209,7 @@ class HandlerMapping extends AbstractRouter implements HandlerMappingInterface
         }
 
         $path = $this->formatUriPath($path, $this->ignoreLastSlash);
-        $method = strtoupper($method);
+        $method = \strtoupper($method);
 
         // find in route caches.
         if ($this->cacheRoutes && isset($this->cacheRoutes[$path][$method])) {
@@ -226,8 +225,8 @@ class HandlerMapping extends AbstractRouter implements HandlerMappingInterface
         $allowedMethods = [];
 
         // eg '/article/12'
-        if ($pos = strpos($path, '/', 1)) {
-            $first = substr($path, 1, $pos - 1);
+        if ($pos = \strpos($path, '/', 1)) {
+            $first = \substr($path, 1, $pos - 1);
         }
 
         // is a regular dynamic route(the first node is 1th level index key).
@@ -355,7 +354,7 @@ class HandlerMapping extends AbstractRouter implements HandlerMappingInterface
                 $allowedMethods .= $conf['methods'];
 
                 if (false !== \strpos($conf['methods'], $method . ',')) {
-                    $this->filterMatches($matches, $conf);
+                    $conf = $this->filterMatches($matches, $conf);
 
                     if ($this->tmpCacheNumber > 0) {
                         $this->cacheMatchedParamRoute($path, $method, $conf);
@@ -366,7 +365,10 @@ class HandlerMapping extends AbstractRouter implements HandlerMappingInterface
             }
         }
 
-        return [self::NOT_FOUND, \explode(',', \trim($allowedMethods, ','))];
+        return [
+            self::NOT_FOUND,
+            $allowedMethods ? \explode(',', \trim($allowedMethods, ',')) : []
+        ];
     }
 
     /**
@@ -383,7 +385,7 @@ class HandlerMapping extends AbstractRouter implements HandlerMappingInterface
             }
 
             if (\preg_match($conf['regex'], $path, $matches)) {
-                $this->filterMatches($matches, $conf);
+                $conf = $this->filterMatches($matches, $conf);
 
                 if ($this->tmpCacheNumber > 0) {
                     $this->cacheMatchedParamRoute($path, $method, $conf);

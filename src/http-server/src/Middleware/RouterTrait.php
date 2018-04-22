@@ -30,10 +30,9 @@ trait RouterTrait
 
         /* @var \Swoft\Http\Server\Router\HandlerMapping $httpRouter */
         $httpRouter = App::getBean('httpRouter');
-        $httpHandler = $httpRouter->getHandler($path, $method);
-        $request = $request->withAttribute(AttributeEnum::ROUTER_ATTRIBUTE, $httpHandler);
+        $routeInfo = $httpRouter->getHandler($path, $method);
 
-        return $request;
+        return $request->withAttribute(AttributeEnum::ROUTER_ATTRIBUTE, $routeInfo);
     }
 
 }
