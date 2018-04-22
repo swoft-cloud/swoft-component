@@ -34,7 +34,6 @@ class Executor
 
         $fields = $fields ?? [];
         $query = Query::table($table)->selectInstance($instance);
-
         return $query->insert($fields);
     }
 
@@ -141,7 +140,7 @@ class Executor
         // 构建update查询器
         $instance = self::getInstance($className);
         $fields = $fields ?? [];
-        $query    = Query::table($table)->where($idColumn, $idValue)->selectInstance($instance);
+        $query    = Query::table($table)->className($className)->where($idColumn, $idValue)->selectInstance($instance);
 
         return $query->update($fields);
     }
@@ -318,10 +317,29 @@ class Executor
 
     /**
      * @param string $className
+     * @param array  $counters
+     * @param array  $condition
+     *
+     * @return ResultInterface
+     */
+    public static function counter(string $className, array $counters, array $condition = [])
+    {
+        $instance = self::getInstance($className);
+        $query = Query::table($className)->className($className)->selectInstance($instance);
+
+        if (!empty($condition)) {
+            $query = $query->condition($condition);
+        }
+
+        return $query->counter($counters);
+    }
+
+    /**
+     * @param string $className
      *
      * @return QueryBuilder
      */
-    public static function query(string $className)
+    public static function query(string $className):QueryBuilder
     {
         $instance = self::getInstance($className);
         return  Query::table($className)->className($className)->selectInstance($instance);
@@ -379,10 +397,35 @@ class Executor
         // 如果是更新找到变化的字段
         if ($type === 2) {
             $oldFields    = $entity->getAttrs();
-            $changeFields = array_diff($changeFields, $oldFields);
+            $changeFields = self::getUpdateFields($oldFields, $changeFields);
         }
 
         return [$table, $idColumn, $idValue, $changeFields];
+    }
+
+    /**
+     * @param array $oldFields
+     * @param array $changeFields
+     *
+     * @return array
+     */
+    private static function getUpdateFields(array $oldFields, array $changeFields)
+    {
+        $newFields = [];
+        foreach ($oldFields as $fieldName => $fieldValue){
+            if(!isset($changeFields[$fieldName])){
+                continue;
+            }
+
+            $changeValue = $changeFields[$fieldName];
+            if($changeValue == $fieldValue){
+                continue;
+            }
+
+            $newFields[$fieldName] = $changeValue;
+        }
+
+        return $newFields;
     }
 
     /**

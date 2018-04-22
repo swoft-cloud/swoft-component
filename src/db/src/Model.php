@@ -175,6 +175,17 @@ class Model implements \ArrayAccess, \Iterator, Arrayable
     }
 
     /**
+     * @param array $counters
+     * @param array $condition
+     *
+     * @return ResultInterface
+     */
+    public static function counter(array $counters, array $condition = []):ResultInterface
+    {
+        return Executor::counter(static::class, $counters, $condition);
+    }
+
+    /**
      * @param array $condition
      * @param array $options
      *
@@ -284,7 +295,6 @@ class Model implements \ArrayAccess, \Iterator, Arrayable
     {
         $entities = EntityCollector::getCollector();
         $columns  = $entities[static::class]['field'];
-
         $data = [];
         foreach ($columns as $propertyName => $column) {
             $methodName = sprintf('get%s', ucfirst($propertyName));
@@ -292,7 +302,8 @@ class Model implements \ArrayAccess, \Iterator, Arrayable
                 continue;
             }
 
-            $data[$propertyName] = $this->$methodName();
+            $columnName = $column['column'];
+            $data[$columnName] = $this->$methodName();
         }
 
         return $data;

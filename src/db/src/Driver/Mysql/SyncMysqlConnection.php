@@ -7,12 +7,14 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Db\Driver\Mysql;
 
 use Swoft\App;
 use Swoft\Db\AbstractDbConnection;
 use Swoft\Db\Bean\Annotation\Connection;
 use Swoft\Db\Driver\DriverType;
+use Swoft\Db\Exception\MysqlException;
 
 /**
  * Mysql sync connection
@@ -85,7 +87,7 @@ class SyncMysqlConnection extends AbstractDbConnection
         $result = $this->stmt->execute();
 
         if ($result !== true) {
-            App::error('Sync mysql execute error，sql=' . $this->stmt->debugDumpParams());
+            throw new MysqlException('Sync mysql execute error，sql=' . $this->stmt->debugDumpParams());
         }
         $this->pushSqlToStack($this->sql);
 
