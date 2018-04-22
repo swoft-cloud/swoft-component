@@ -9,7 +9,7 @@
  */
 namespace Swoft\Db\Entity;
 
-use Swoft\App;
+use Swoft\Helper\StringHelper;
 
 class SetGetGenerator
 {
@@ -121,7 +121,7 @@ class SetGetGenerator
             $this->getterStub
         ], $entityStub);
 
-        file_put_contents(App::getAlias('@entityPath') . "/{$entityClass}.php", $entityFile);
+        file_put_contents(alias('@entityPath') . "/{$entityClass}.php", $entityFile);
     }
 
     /**
@@ -151,7 +151,7 @@ class SetGetGenerator
     private function parseProperty(string $propertyStub, array $fieldInfo)
     {
         $property      = $fieldInfo['name'];
-        $aliasProperty = $property;
+        $aliasProperty = StringHelper::camel($property);
         $primaryKey    = $fieldInfo['key'] === 'PRI';
         $required      = $primaryKey ? false : ($fieldInfo['nullable'] === 'NO');
         $default       = $fieldInfo['default']) ?? '';
@@ -245,13 +245,9 @@ class SetGetGenerator
     {
         $property      = $fieldInfo['name'];
         $comment       = $fieldInfo['column_comment'];
-        $aliasProperty = $property;
+        $aliasProperty = StringHelper::camel($property);
         $this->checkAliasProperty($aliasProperty);
-        $function         = explode('_', $aliasProperty);
-        $function         = array_map(function ($word) {
-            return ucfirst($word);
-        }, $function);
-        $function         = implode('', $function);
+        $function         = StringHelper::snake($aliasProperty);
         $function         = 'set' . $function;
         $primaryKey       = $fieldInfo['key'] === 'PRI';
         $type             = $this->schema->phpSchema[$fieldInfo['type']] ?? 'mixed';
@@ -281,13 +277,9 @@ class SetGetGenerator
     {
         $property      = $fieldInfo['name'];
         $comment       = $fieldInfo['column_comment'];
-        $aliasProperty = $property;
+        $aliasProperty = StringHelper::camel($property);
         $this->checkAliasProperty($aliasProperty);
-        $function         = explode('_', $aliasProperty);
-        $function         = array_map(function ($word) {
-            return ucfirst($word);
-        }, $function);
-        $function         = implode('', $function);
+        $function         = StringHelper::snake($aliasProperty);
         $function         = 'get' . $function;
         $default          = !empty($fieldInfo['default']) ? $fieldInfo['default'] : false;
         $primaryKey       = $fieldInfo['key'] === 'PRI';
@@ -365,4 +357,5 @@ class SetGetGenerator
     {
         return file_get_contents($this->folder . $this->propertyStubFile);
     }
+
 }

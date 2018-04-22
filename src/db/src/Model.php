@@ -295,7 +295,8 @@ class Model implements \ArrayAccess, \Iterator, Arrayable
             if (!\method_exists($this, $methodName)) {
                 continue;
             }
-            $data[$propertyName] = $this->$methodName();
+          
+            $data[$column['column']] = $this->$methodName();
         }
 
         return $data;
