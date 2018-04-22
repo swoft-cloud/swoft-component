@@ -151,26 +151,6 @@ class HandlerAdapter implements HandlerAdapterInterface
     }
 
     /**
-     * default handler
-     *
-     * @param array $handler handler info
-     * @return array
-     * @throws \Swoft\Exception\InvalidArgumentException
-     */
-    private function defaultHandler(array $handler): array
-    {
-        list($controller, $action) = $handler;
-        $httpRouter = \bean('httpRouter');
-
-        $action = empty($action) ? $httpRouter->defaultAction : $action;
-        if (! method_exists($controller, $action)) {
-            throw new InvalidArgumentException(sprintf('Action %s::%s() not exist', $controller, $action));
-        }
-
-        return [$controller, $action];
-    }
-
-    /**
      * binding params of action method
      *
      * @param ServerRequestInterface $request request object
