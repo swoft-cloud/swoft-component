@@ -173,7 +173,7 @@ class HandlerAdapter implements HandlerAdapterInterface
         }
 
         $bindParams = [];
-        $request    = $request->withAttribute(AttributeEnum::ROUTER_PARAMs, $matches);
+        $request    = $request->withAttribute(AttributeEnum::ROUTER_PARAMS, $matches);
         $response   = RequestContext::getResponse();
 
         // binding params

@@ -27,14 +27,14 @@ class ServerDispatcher implements DispatcherInterface
      *
      * @var array
      */
-    private $middlewares = [];
+    protected $middlewares = [];
 
     /**
      * Handler adapter
      *
      * @var string
      */
-    private $handlerAdapter = HandlerAdapterMiddleware::class;
+    protected $handlerAdapter = HandlerAdapterMiddleware::class;
 
     /**
      * Do dispatcher
@@ -60,7 +60,6 @@ class ServerDispatcher implements DispatcherInterface
             $request = RequestContext::getRequest();
             $requestHandler = new RequestHandler($middlewares, $this->handlerAdapter);
             $response = $requestHandler->handle($request);
-
         } catch (\Throwable $throwable) {
             /* @var ErrorHandler $errorHandler */
             $errorHandler = App::getBean(ErrorHandler::class);

@@ -16,16 +16,14 @@ class RequestParser implements RequestParserInterface
      *
      * @var array
      */
-    private $parsers = [
-
-    ];
+    protected $parsers = [];
 
     /**
      * The of header
      *
      * @var string
      */
-    private $headerKey = 'Content-type';
+    protected $headerKey = 'Content-type';
 
     /**
      * @param \Psr\Http\Message\ServerRequestInterface $request
@@ -36,7 +34,7 @@ class RequestParser implements RequestParserInterface
         $contentType = $request->getHeaderLine($this->headerKey);
         $parsers = $this->mergeParsers();
 
-        if (! isset($parsers[$contentType])) {
+        if (!isset($parsers[$contentType])) {
             return $request;
         }
 
@@ -52,7 +50,7 @@ class RequestParser implements RequestParserInterface
      *
      * @return array
      */
-    private function mergeParsers(): array
+    protected function mergeParsers(): array
     {
         return ArrayHelper::merge($this->parsers, $this->defaultParsers());
     }

@@ -25,10 +25,10 @@ class CoreBean implements BootBeanInterface
                 'class' => ServerDispatcher::class,
             ],
             'httpRouter'       => [
-                'class'          => HandlerMapping::class,
+                'class' => HandlerMapping::class,
             ],
             'requestParser'    => [
-                'class'   => RequestParser::class,
+                'class' => RequestParser::class,
             ],
         ];
     }
