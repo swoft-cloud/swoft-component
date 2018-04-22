@@ -24,7 +24,7 @@ class HandlerMapping implements HandlerMappingInterface
      *  ...
      * ]
      */
-    private $routes = [];
+    protected $routes = [];
 
     /**
      * @param string $path

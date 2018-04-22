@@ -20,12 +20,12 @@ class BalancerSelector implements SelectorInterface
     /**
      * @var string
      */
-    private $balancer = self::TYPE_RANDOM;
+    protected $balancer = self::TYPE_RANDOM;
 
     /**
      * @var array
      */
-    private $balancers = [
+    protected $balancers = [
 
     ];
 

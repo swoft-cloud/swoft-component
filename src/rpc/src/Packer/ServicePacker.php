@@ -16,12 +16,12 @@ class ServicePacker implements PackerInterface
     /**
      * @var string
      */
-    private $type = 'json';
+    protected $type = 'json';
 
     /**
      * @var array
      */
-    private $packers = [];
+    protected $packers = [];
 
     /**
      * @param mixed $data

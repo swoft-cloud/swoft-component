@@ -98,7 +98,7 @@ class Redis implements CacheInterface
     /**
      * @var string
      */
-    private $poolName = RedisPool::class;
+    protected $poolName = RedisPool::class;
 
     /**
      * Get the value related to the specified key
