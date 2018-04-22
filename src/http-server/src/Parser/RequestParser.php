@@ -16,7 +16,7 @@ class RequestParser implements RequestParserInterface
      *
      * @var array
      */
-    private $parsers = [
+    protected $parsers = [
 
     ];
 
@@ -25,7 +25,7 @@ class RequestParser implements RequestParserInterface
      *
      * @var string
      */
-    private $headerKey = 'Content-type';
+    protected $headerKey = 'Content-type';
 
     /**
      * @param \Psr\Http\Message\ServerRequestInterface $request
