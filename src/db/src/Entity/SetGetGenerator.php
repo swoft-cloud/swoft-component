@@ -154,7 +154,7 @@ class SetGetGenerator
         $aliasProperty = $property;
         $primaryKey    = $fieldInfo['key'] === 'PRI';
         $required      = $primaryKey ? false : ($fieldInfo['nullable'] === 'NO');
-        $default       = strtolower($fieldInfo['default']) !== 'null' ? $fieldInfo['default'] : false;
+        $default       = $fieldInfo['default']) ?? '';
         $dbType        = $this->schema->dbSchema[$fieldInfo['type']] ?? '';
         $phpType       = $this->schema->phpSchema[$fieldInfo['type']] ?? 'mixed';
         $length        = $fieldInfo['length'];
@@ -172,7 +172,7 @@ class SetGetGenerator
         $dbtype = !empty($dbType) ? $dbType : ($isEnum ? '"feature-enum"' : (\is_int($default) ? '"int"' : '"string"'));
 
         //设置默认值
-        if(in_array($default, ['\'\'','""'] || empty($default))
+        if(in_array(strtolower($default), ['\'\'','""', 'null']) || empty($default))
         {
             switch ($dbtype)
             {
@@ -204,7 +204,7 @@ class SetGetGenerator
                     $default = $default;
                     break;
                  default:
-                    $default = json_encode($default);
+                    $default = '\''. str_replace('\'', '', $default) .'\'';
                     break;
             }
         }
