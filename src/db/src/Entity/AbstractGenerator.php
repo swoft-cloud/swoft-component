@@ -91,7 +91,8 @@ abstract class AbstractGenerator
         $this->entityDate = date('Y年m月d日');
         $this->fields     = $fields;
         $removeTablePrefix = $this->removeTablePrefix;
-
+        
+        $entityClass = $this->entity;
         if (!empty($removeTablePrefix)) {
             $entityClass = StringHelper::replaceFirst($removeTablePrefix, '', $this->entity);
         }

@@ -104,7 +104,7 @@ class SetGetGenerator
             '{{uses}}',
             '{{extends}}',
             '{{entity}}',
-            '{{entityName}}',
+            "{{entityName}}\n",
             '{{entityClass}}',
             '{{entityDate}}',
             '{{property}}',
@@ -114,7 +114,7 @@ class SetGetGenerator
             $usesContent,
             $extends,
             $entity,
-            $entityName,
+            !empty($entityName) ? " * {$entityName}\n\n" : '',
             $entityClass,
             $entityDate,
             $this->propertyStub,
@@ -168,42 +168,11 @@ class SetGetGenerator
             $enumParam = explode(',', str_replace('\'', '', $enumParam));
             // TODO $enumParam never use ?
         }
+        
+         //字段类型
+        $dbType = !empty($dbType) ? $dbType : ($isEnum ? '"feature-enum"' : (\is_int($default) ? '"int"' : '"string"'));
 
-        //字段类型
-        $dbtype = !empty($dbType) ? $dbType : ($isEnum ? '"feature-enum"' : (\is_int($default) ? '"int"' : '"string"'));
-
-        //设置默认值
-        if (in_array(strtolower($default), ['\'\'', '""', 'null']) || empty($default)) {
-            switch ($dbtype) {
-                case "Types::INT":
-                case "Types::NUMBER":
-                case "Types::BOOLEAN":
-                    $default = '0';
-                    break;
-                case "Types::FLOAT":
-                    $default = '0.0';
-                    break;
-                case "Types::DATETIME":
-                    $default = '\'' . date('Y-m-d H:i:s') . '\'';
-                    break;
-                default:
-                    $default = '\'\'';
-                    break;
-            }
-        } else {
-            $default = trim($default);
-            switch ($dbtype) {
-                case "Types::INT":
-                case "Types::NUMBER":
-                case "Types::BOOLEAN":
-                case "Types::FLOAT":
-                    $default = $default;
-                    break;
-                default:
-                    $default = json_encode($default);
-                    break;
-            }
-        }
+        $default = $this->setDefault($dbType, $default);
 
         $this->checkAliasProperty($aliasProperty);
 
@@ -223,10 +192,10 @@ class SetGetGenerator
                 $primaryKey ? "     * @Id()\n" : '',
                 $property,
                 $aliasProperty,
-                $dbtype,
+                $dbType,
                 $length !== null ? ", length={$length}" : '',
                 $required ? "     * @Required()\n" : '',
-                " = {$default};",
+                $default === '\'\'' ? ';' : " = {$default};"
             ], $propertyStub);
     }
 
@@ -243,18 +212,18 @@ class SetGetGenerator
         $comment       = $fieldInfo['column_comment'];
         $aliasProperty = StringHelper::camel($property);
         $this->checkAliasProperty($aliasProperty);
-        $function         = StringHelper::snake($aliasProperty);
-        $function         = 'set' . $function;
+        $function         = StringHelper::camel($aliasProperty);
+        $function         = 'set' . ucfirst($function);
         $primaryKey       = $fieldInfo['key'] === 'PRI';
         $type             = $this->schema->phpSchema[$fieldInfo['type']] ?? 'mixed';
         $this->setterStub .= PHP_EOL . str_replace([
-                '{{comment}}',
+                "{{comment}}\n",
                 '{{function}}',
                 '{{attribute}}',
                 '{{type}}',
                 '{{hasReturnType}}',
             ], [
-                $comment,
+                !empty($comment) ? "     * {$comment}\n":'',
                 $function,
                 $aliasProperty,
                 $type !== 'mixed' ? "{$type} " : '',
@@ -275,23 +244,30 @@ class SetGetGenerator
         $comment       = $fieldInfo['column_comment'];
         $aliasProperty = StringHelper::camel($property);
         $this->checkAliasProperty($aliasProperty);
-        $function         = StringHelper::snake($aliasProperty);
-        $function         = 'get' . $function;
-        $default          = !empty($fieldInfo['default']) ? $fieldInfo['default'] : false;
+        $function         = StringHelper::camel($aliasProperty);
+        $function         = 'get' . ucfirst($function);
+        $default       = $fieldInfo['default'] ?? '';
+        $dbType        = $this->schema->dbSchema[$fieldInfo['type']] ?? '';
         $primaryKey       = $fieldInfo['key'] === 'PRI';
         $returnType       = $this->schema->phpSchema[$fieldInfo['type']] ?? 'mixed';
+
+         //字段类型
+        $dbType = !empty($dbType) ? $dbType : ($isEnum ? '"feature-enum"' : (\is_int($default) ? '"int"' : '"string"'));
+
+        $default = $this->setDefault($dbType, $default);
+
         $this->getterStub .= PHP_EOL . str_replace([
-                '{{comment}}',
+                "{{comment}}\n",
                 '{{function}}',
                 '{{attribute}}',
                 '{{coReturnType}}',
                 '{{returnType}}',
             ], [
-                $comment,
+                !empty($comment) ? "     * {$comment}\n":'',
                 $function,
                 $aliasProperty,
-                $returnType,
-                $returnType !== 'mixed' && !$primaryKey && $default !== false ? ": {$returnType}" : '',
+                $returnType !== 'mixed' && !$primaryKey && $default !== '\'\'' ? $returnType : 'mixed',
+                $returnType !== 'mixed' && !$primaryKey && $default !== '\'\'' ? ": {$returnType}" : '',
             ], $getterStub);
     }
 
@@ -353,5 +329,54 @@ class SetGetGenerator
     {
         return file_get_contents($this->folder . $this->propertyStubFile);
     }
+    
+    /**
+     * 设置默认值
+     *
+     * @param string $dbType 数据库类型
+     * @param mixed  $default 默认值
+     *
+     * @return miexed
+     */
+    private function setDefault($dbType, $default)
+    {
+        if(in_array(strtolower($default), ['\'\'','""', 'null']) || empty($default))
+        {
+            switch ($dbType)
+            {
+                case "Types::INT":
+                case "Types::NUMBER":
+                case "Types::BOOLEAN":
+                    $default = '0';
+                    break;
+                case "Types::FLOAT":
+                    $default = '0.0';
+                    break;
+                case "Types::DATETIME":
+                    $default = '\''. date('Y-m-d H:i:s') .'\'';
+                    break;
+                default:
+                    $default = '\'\'';
+                    break;
+            }
+        }
+        else
+        {
+            $default = trim($default);
+            switch ($dbType)
+            {
+                case "Types::INT":
+                case "Types::NUMBER":
+                case "Types::BOOLEAN":
+                case "Types::FLOAT":
+                    $default = $default;
+                    break;
+                 default:
+                    $default = json_encode($default);
+                    break;
+            }
+        }
 
+        return $default;
+    }
 }

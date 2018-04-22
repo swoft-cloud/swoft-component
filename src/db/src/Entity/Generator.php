@@ -32,6 +32,11 @@ class Generator extends AbstractGenerator implements GeneratorInterface
     private $tables = [];
 
     /**
+     * @var string $removeTablePrefix 需要移除的表前缀
+     */
+    private $removeTablePrefix = '';
+
+    /**
      * @const string SchemaTables表
      */
     const SCHEMA_TABLES = 'information_schema.`tables`';
@@ -185,6 +190,30 @@ class Generator extends AbstractGenerator implements GeneratorInterface
     public function gettablesDisabled(): array
     {
         return $this->tablesDisabled;
+    }
+
+    /**
+     * 设置移除的表前缀
+     *
+     * @param string $value 移除的表前缀
+     *
+     * @return $this;
+     */
+    public function setremoveTablePrefix(string $value): self
+    {
+        $this->removeTablePrefix = $value;
+
+        return $this;
+    }
+
+    /**
+     * 返回移除的表前缀
+     *
+     * @retrun string 
+     */
+    public function getremoveTablePrefix(): string
+    {
+        return $this->removeTablePrefix;
     }
 
     /**

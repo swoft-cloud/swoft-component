@@ -4,15 +4,12 @@ namespace App\Models\Entity;
 
 {{uses}}
 /**
- * {{entityName}}
- *
+{{entityName}}
  * @Entity()
  * @Table(name="{{entity}}")
  * @uses      {{entityClass}}
  * @version   {{entityDate}}
  */
 class {{entityClass}} extends {{extends}}
-{{{property}}
- {{setter}}
- {{getter}}
+{{{property}}{{setter}}{{getter}}
 }
