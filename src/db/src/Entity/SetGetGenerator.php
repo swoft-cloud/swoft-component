@@ -211,7 +211,7 @@ class SetGetGenerator
         $comment       = $fieldInfo['column_comment'];
         $aliasProperty = StringHelper::camel($property);
         $this->checkAliasProperty($aliasProperty);
-        $function         = StringHelper::snake($aliasProperty);
+        $function         = StringHelper::camel($aliasProperty);
         $function         = 'set' . ucfirst($function);
         $primaryKey       = $fieldInfo['key'] === 'PRI';
         $type             = $this->schema->phpSchema[$fieldInfo['type']] ?? 'mixed';
@@ -243,7 +243,7 @@ class SetGetGenerator
         $comment       = $fieldInfo['column_comment'];
         $aliasProperty = StringHelper::camel($property);
         $this->checkAliasProperty($aliasProperty);
-        $function         = StringHelper::snake($aliasProperty);
+        $function         = StringHelper::camel($aliasProperty);
         $function         = 'get' . ucfirst($function);
         $default       = $fieldInfo['default'] ?? '';
         $dbType        = $this->schema->dbSchema[$fieldInfo['type']] ?? '';
