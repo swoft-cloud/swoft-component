@@ -9,6 +9,8 @@
  */
 namespace Swoft\Db\Entity;
 
+use Swoft\Helper\StringHelper;
+
 abstract class AbstractGenerator
 {
     /**
@@ -91,7 +93,7 @@ abstract class AbstractGenerator
         $removeTablePrefix = $this->removeTablePrefix;
 
         if (!empty($removeTablePrefix)) {
-            $entityClass = str_replace($removeTablePrefix, '', $this->entity);
+            $entityClass = StringHelper::replaceFirst($removeTablePrefix, '', $this->entity);
         }
         $this->entityClass = explode('_', $entityClass);
         $this->entityClass = array_map(function ($word) {
