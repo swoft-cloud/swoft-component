@@ -199,6 +199,7 @@ abstract class AbstractRouter implements RouterInterface
         $props = [
             'name' => 1,
             'matchAll' => 1,
+            'defaultAction' => 1,
             'tmpCacheNumber' => 1,
             'ignoreLastSlash' => 1,
             'notAllowedAsNotFound' => 1,
@@ -272,14 +273,14 @@ abstract class AbstractRouter implements RouterInterface
             throw new \InvalidArgumentException('The method and route handler is not allow empty.');
         }
 
-        $allow = self::ALLOWED_METHODS_STR . ',';
         $hasAny = false;
+        $methods = \array_map(function ($m) use (&$hasAny) {
+            $m = \strtoupper(\trim($m));
 
-        $methods = \array_map(function ($m) use ($allow, &$hasAny) {
-            $m = \strtoupper(trim($m));
-
-            if (!$m || false === \strpos($allow, $m . ',')) {
-                throw new \InvalidArgumentException("The method [$m] is not supported, Allow: " . trim($allow, ','));
+            if (!$m || false === \strpos(self::ALLOWED_METHODS_STR . ',', $m . ',')) {
+                throw new \InvalidArgumentException(
+                    "The method [$m] is not supported, Allow: " . self::ALLOWED_METHODS_STR
+                );
             }
 
             if (!$hasAny && $m === self::ANY) {
@@ -328,12 +329,14 @@ abstract class AbstractRouter implements RouterInterface
     /**
      * @param array $matches
      * @param array $conf
+     * @return array
      */
-    protected function filterMatches(array $matches, array &$conf)
+    protected function filterMatches(array $matches, array $conf): array
     {
         if (!$matches) {
             $conf['matches'] = [];
-            return;
+
+            return $conf;
         }
 
         // clear all int key
@@ -345,6 +348,8 @@ abstract class AbstractRouter implements RouterInterface
         } else {
             $conf['matches'] = $matches;
         }
+
+        return $conf;
     }
 
     /**

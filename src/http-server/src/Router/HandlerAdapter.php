@@ -9,12 +9,14 @@
  */
 namespace Swoft\Http\Server\Router;
 
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Core\RequestContext;
 use Swoft\Exception\InvalidArgumentException;
 use Swoft\Helper\PhpHelper;
+use Swoft\Helper\StringHelper;
 use Swoft\Http\Message\Router\HandlerAdapterInterface;
 use Swoft\Http\Message\Server\Request;
 use Swoft\Http\Message\Server\Response;
@@ -41,7 +43,7 @@ class HandlerAdapter implements HandlerAdapterInterface
      * @throws \Swoft\Http\Server\Exception\RouteNotFoundException
      * @throws \ReflectionException
      */
-    public function doHandler(ServerRequestInterface $request, array $routeInfo)
+    public function doHandler(ServerRequestInterface $request, array $routeInfo): ResponseInterface
     {
         /**
          * @var int    $status
@@ -62,10 +64,6 @@ class HandlerAdapter implements HandlerAdapterInterface
 
         // handler info
         list($handler, $matches) = $this->createHandler($path, $info);
-
-        if (\is_array($handler)) {
-            $handler = $this->defaultHandler($handler);
-        }
 
         // execute handler
         $params = $this->bindParams($request, $handler, $matches);
@@ -110,8 +108,8 @@ class HandlerAdapter implements HandlerAdapterInterface
         if (\is_array($handler)) {
             $segments = $handler;
         } elseif (\is_string($handler)) {
-            // e.g. `Controllers\Home@index` Or only `Controllers\Home`
-            $segments = explode('@', trim($handler));
+            // e.g `Controllers\Home@index` Or only `Controllers\Home`
+            $segments = \explode('@', trim($handler));
         } else {
             App::error('Invalid route handler for URI: ' . $path);
             throw new \InvalidArgumentException('Invalid route handler for URI: ' . $path);
@@ -124,17 +122,29 @@ class HandlerAdapter implements HandlerAdapterInterface
             $action = $segments[1];
         } elseif (isset($matches[0])) {
             // use dynamic action
-            $action = array_shift($matches);
+            $action = \array_shift($matches);
         }
 
-        $action = HandlerMapping::convertNodeStr($action);
+        // use default action
+        if (!$action) {
+            /** @var HandlerMapping $httpRouter */
+            $httpRouter = App::getBean('httpRouter');
+            $action = $httpRouter->defaultAction;
+        }
+
+        $action     = StringHelper::camel($action);
         $controller = \bean($className);
+
+        if (!\method_exists($controller, $action)) {
+            throw new InvalidArgumentException("The controller action method '$action' does not exist!");
+        }
+
         $handler = [$controller, $action];
 
         // Set Controller and Action info to Request Context
         RequestContext::setContextData([
             'controllerClass'  => $className,
-            'controllerAction' => $action ? : 'index',
+            'controllerAction' => $action,
         ]);
 
         return [$handler, $matches];
@@ -181,8 +191,8 @@ class HandlerAdapter implements HandlerAdapterInterface
         }
 
         $bindParams = [];
-        // $matches    = $info['matches'] ?? [];
-        $response = RequestContext::getResponse();
+        $request    = $request->withAttribute(AttributeEnum::ROUTER_PARAMS, $matches);
+        $response   = RequestContext::getResponse();
 
         // binding params
         foreach ($reflectParams as $key => $reflectParam) {

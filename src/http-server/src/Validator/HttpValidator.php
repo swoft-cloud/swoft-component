@@ -28,7 +28,7 @@ class HttpValidator extends AbstractValidator
          */
         list($validators, $request, $matches) = $params;
 
-        if (! \is_array($validators)) {
+        if (!\is_array($validators)) {
             return $request;
         }
 
@@ -53,10 +53,12 @@ class HttpValidator extends AbstractValidator
     {
         $get = $request->getQueryParams();
         $post = $request->getParsedBody();
+
         foreach ($validatorAry as $name => $info) {
-            $default = array_pop($info['params']);
+            $default = \array_pop($info['params']);
+
             if ($type === ValidatorFrom::GET) {
-                if (! isset($get[$name])) {
+                if (!isset($get[$name])) {
                     $request = $request->addQueryParam($name, $default);
                     $this->doValidation($name, $default, $info);
                     continue;
@@ -65,8 +67,9 @@ class HttpValidator extends AbstractValidator
 
                 continue;
             }
+
             if ($type === ValidatorFrom::POST && \is_array($post)) {
-                if (! isset($post[$name])) {
+                if (!isset($post[$name])) {
                     $request = $request->addParserBody($name, $default);
                     $this->doValidation($name, $default, $info);
                     continue;
@@ -74,8 +77,9 @@ class HttpValidator extends AbstractValidator
                 $this->doValidation($name, $post[$name], $info);
                 continue;
             }
+
             if ($type === ValidatorFrom::PATH) {
-                if (! isset($matches[$name])) {
+                if (!isset($matches[$name])) {
                     continue;
                 }
                 $this->doValidation($name, $matches[$name], $info);
