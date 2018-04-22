@@ -32,7 +32,7 @@ class Schema extends \Swoft\Db\Entity\Schema
         'datetime' => 'Types::DATETIME',
         'float'    => 'Types::FLOAT',
         'number'   => 'Types::NUMBER',
-        'decimal'  => 'Types::NUMBER',
+        'decimal'  => 'Types::FLOAT',
         'bool'     => 'Types::BOOLEAN',
         'tinyint'  => 'Types::INT',
     ];
@@ -48,7 +48,7 @@ class Schema extends \Swoft\Db\Entity\Schema
         'datetime' => self::TYPE_STRING,
         'float'    => self::TYPE_FLOAT,
         'number'   => self::TYPE_INT,
-        'decimal'  => self::TYPE_INT,
+        'decimal'  => self::TYPE_FLOAT,
         'bool'     => self::TYPE_BOOL,
         'tinyint'  => self::TYPE_INT
     ];

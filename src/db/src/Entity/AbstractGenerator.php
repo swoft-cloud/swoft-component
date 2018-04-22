@@ -9,15 +9,8 @@
  */
 namespace Swoft\Db\Entity;
 
-/**
- * 抽象生成实体操作类
- *
- * @uses      AbstractGenerator
- * @version   2017年11月06日
- * @author    caiwh <471113744@qq.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
- */
+use Swoft\Helper\StringHelper;
+
 abstract class AbstractGenerator
 {
     /**
@@ -97,8 +90,12 @@ abstract class AbstractGenerator
         $this->entityName = $entityName;
         $this->entityDate = date('Y年m月d日');
         $this->fields     = $fields;
+        $removeTablePrefix = $this->removeTablePrefix;
 
-        $this->entityClass = explode('_', $this->entity);
+        if (!empty($removeTablePrefix)) {
+            $entityClass = StringHelper::replaceFirst($removeTablePrefix, '', $this->entity);
+        }
+        $this->entityClass = explode('_', $entityClass);
         $this->entityClass = array_map(function ($word) {
             return ucfirst($word);
         }, $this->entityClass);

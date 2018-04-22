@@ -55,6 +55,7 @@ class EntityCommand
      * --include  指定特定的数据表，多表之间用逗号分隔
      * -e  排除指定的数据表，多表之间用逗号分隔
      * --exclude  排除指定的数据表，多表之间用逗号分隔
+     * --remove-table-prefix 去除前缀
      *
      * @Example
      * php bin/swoft entity:create -d test
@@ -63,12 +64,13 @@ class EntityCommand
     {
         $this->initDatabase();
 
-        $database = '';
+        $database = $removeTablePrefix = '';
         $tablesEnabled = $tablesDisabled = [];
 
         $this->parseDatabaseCommand($database);
         $this->parseEnableTablesCommand($tablesEnabled);
         $this->parseDisableTablesCommand($tablesDisabled);
+        $this->parseRemoveTablePrefix($removeTablePrefix);
 
         if (empty($database)) {
             output()->writeln('databases doesn\'t not empty!');
@@ -76,6 +78,7 @@ class EntityCommand
             $this->generatorEntity->db = $database;
             $this->generatorEntity->tablesEnabled = $tablesEnabled;
             $this->generatorEntity->tablesDisabled = $tablesDisabled;
+            $this->generatorEntity->removeTablePrefix = $removeTablePrefix;
             $this->generatorEntity->execute($this->schema);
         }
     }
@@ -136,6 +139,17 @@ class EntityCommand
         if (input()->hasSOpt('e') || input()->hasLOpt('exclude')) {
             $tablesDisabled = input()->hasSOpt('e') ? input()->getShortOpt('e') : input()->getLongOpt('exclude');
             $tablesDisabled = !empty($tablesDisabled) ? explode(',', $tablesDisabled) : [];
+        }
+    }
+
+    /**
+     * 移除表前缀
+     *
+     * @param string &$removeTablePrefix 需要移除的前缀
+     */
+    private function parseRemoveTablePrefix(&$removeTablePrefix) {
+        if (input()->hasLOpt('remove-table-prefix')) {
+            $removeTablePrefix = (string)input()->getLongOpt('remove-table-prefix');
         }
     }
 }
