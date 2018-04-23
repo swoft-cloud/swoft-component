@@ -134,7 +134,7 @@ class BeanFactory implements BeanFactoryInterface
         $config     = new Config();
         $dir        = App::getAlias('@properties');
 
-        if (is_readable($dir)) {
+        if (\is_readable($dir)) {
             $config->load($dir);
             $properties = $config->toArray();
         }

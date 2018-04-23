@@ -16,10 +16,10 @@ class CoreBean implements BootBeanInterface
     /**
      * @return array
      */
-    public function beans()
+    public function beans(): array
     {
         return [
-            'servicePacker'     => [
+            'servicePacker' => [
                 'class'   => ServicePacker::class,
             ]
         ];

@@ -10,7 +10,6 @@ use Swoft\Bean\Annotation\Bean;
 use Swoft\Contract\Arrayable;
 use Swoft\Core\RequestContext;
 use Swoft\Http\Server\AttributeEnum;
-use Swoft\Http\Server\Middleware\AcceptMiddleware;
 use Swoft\Http\Message\Middleware\MiddlewareInterface;
 use Swoft\View\Bean\Collector\ViewCollector;
 
@@ -56,7 +55,7 @@ class ViewMiddleware implements MiddlewareInterface
 
         // accept and the of response
         $accepts       = $request->getHeader('accept');
-        $currentAccept = current($accepts);
+        $currentAccept = \current($accepts);
 
         /* @var \Swoft\Http\Message\Server\Response $response */
         $responseAttribute = AttributeEnum::RESPONSE_ATTRIBUTE;
