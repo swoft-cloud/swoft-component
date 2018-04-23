@@ -83,17 +83,20 @@ class RequestHandler implements RequestHandlerInterface
      * @param null $offset
      * @return $this
      */
-    public function insertMiddlewares(array $middlewares, $offset = null)
+    public function insertMiddlewares(array $middlewares, $offset = null): self
     {
         null === $offset && $offset = $this->offset;
-        $chunkArray = array_chunk($this->middlewares, $offset);
+        $chunkArray = \array_chunk($this->middlewares, $offset);
         $after = [];
         $before = $chunkArray[0];
+
         if (isset($chunkArray[1])) {
-            $after = $chunkArray[1];
+            $after = (array)$chunkArray[1];
         }
-        $middlewares = array_merge((array)$before, $middlewares, (array)$after);
+
+        $middlewares = \array_merge((array)$before, $middlewares, $after);
         $this->middlewares = $middlewares;
+
         return $this;
     }
 }
