@@ -20,7 +20,7 @@ class XmlHelper
      * @param string $xml
      * @return array
      */
-    public static function decode(string $xml):array
+    public static function decode(string $xml): array
     {
         return self::xmlToArray($xml);
     }
@@ -29,7 +29,7 @@ class XmlHelper
      * @param array $data
      * @return string
      */
-    public static function encode(array $data):string
+    public static function encode(array $data): string
     {
         $xml = '<xml>';
         $xml .= self::arrayToXml($data);
@@ -41,7 +41,7 @@ class XmlHelper
      * @param string $xml
      * @return array
      */
-    public static function xmlToArray(string $xml):array
+    public static function xmlToArray(string $xml): array
     {
         $res = [];
         //如果为空,一般是xml有空格之类的,导致解析失败
@@ -59,7 +59,7 @@ class XmlHelper
      * @param $data
      * @return array
      */
-    protected static function parseToArray($data):array
+    protected static function parseToArray($data): array
     {
         $res = null;
         if (is_object($data)) {
@@ -81,7 +81,7 @@ class XmlHelper
      * @param array $data
      * @return string
      */
-    public static function arrayToXml(array $data):string
+    public static function arrayToXml(array $data): string
     {
         $xml = '';
         if (!empty($data)) {
@@ -92,11 +92,20 @@ class XmlHelper
                 } elseif (is_numeric($val)) {
                     $xml .= $val;
                 } else {
-                    $xml .= sprintf('<![CDATA[%s]]>', $val);
+                    $xml .= self::characterDataReplace($val);
                 }
                 $xml .= "</$key>";
             }
         }
         return $xml;
+    }
+
+    /**
+     * @param string $string
+     * @return string
+     */
+    protected static function characterDataReplace(string $string):string
+    {
+        return sprintf('<![CDATA[%s]]>', $string);
     }
 }
