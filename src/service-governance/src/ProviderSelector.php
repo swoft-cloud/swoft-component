@@ -27,10 +27,7 @@ class ProviderSelector implements SelectorInterface
     /**
      * @var array
      */
-    protected $providers
-        = [
-
-        ];
+    protected $providers = [];
 
     /**
      * Select a provider by Selector
