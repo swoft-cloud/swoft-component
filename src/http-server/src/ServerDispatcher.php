@@ -62,7 +62,7 @@ class ServerDispatcher implements DispatcherInterface
             $response = $requestHandler->handle($request);
         } catch (\Throwable $throwable) {
             /* @var ErrorHandler $errorHandler */
-            $errorHandler = App::getBean(ErrorHandler::class);
+            $errorHandler = \bean(ErrorHandler::class);
             $response = $errorHandler->handle($throwable);
         }
 

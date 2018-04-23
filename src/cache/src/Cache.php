@@ -19,18 +19,18 @@ class Cache
     /**
      * @var string
      */
-    private $driver = 'redis';
+    protected $driver = 'redis';
 
     /**
      * @var array
      */
-    private $drivers = [];
+    protected $drivers = [];
 
     /**
      * TODO add serializer mechanism
      * @var null|string
      */
-    private $serializer = null;
+    protected $serializer = null;
 
     /**
      * Persists data in the cache, uniquely referenced by a key with an optional expiration TTL time.

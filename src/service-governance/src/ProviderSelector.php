@@ -22,15 +22,12 @@ class ProviderSelector implements SelectorInterface
      *
      * @var string
      */
-    private $provider = self::TYPE_CONSUL;
+    protected $provider = self::TYPE_CONSUL;
 
     /**
      * @var array
      */
-    private $providers
-        = [
-
-        ];
+    protected $providers = [];
 
     /**
      * Select a provider by Selector

@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Http\Server\Router;
 
 use Psr\Http\Message\ResponseInterface;
@@ -19,18 +26,17 @@ use Swoft\Http\Server\Exception\RouteNotFoundException;
 use Swoft\Http\Server\Payload;
 
 /**
- * http handler adapter
- *
+ * HTTP handler adapter
  * @Bean("httpHandlerAdapter")
- * @author stelin <phpcrazy@126.com>
  */
 class HandlerAdapter implements HandlerAdapterInterface
 {
     /**
-     * execute handler with controller and action
-     * @param ServerRequestInterface $request request object
-     * @param array $routeInfo handler info
-     * @return Response|ResponseInterface
+     * Execute handler with controller and action
+     *
+     * @param ServerRequestInterface $request   request object
+     * @param array                  $routeInfo handler info
+     * @return Response
      * @throws \Swoft\Exception\InvalidArgumentException
      * @throws \InvalidArgumentException
      * @throws \Swoft\Http\Server\Exception\MethodNotAllowedException
@@ -40,7 +46,7 @@ class HandlerAdapter implements HandlerAdapterInterface
     public function doHandler(ServerRequestInterface $request, array $routeInfo): ResponseInterface
     {
         /**
-         * @var int $status
+         * @var int    $status
          * @var string $path
          * @var array  $info
          */
@@ -53,33 +59,27 @@ class HandlerAdapter implements HandlerAdapterInterface
 
         // method not allowed
         if ($status === HandlerMapping::METHOD_NOT_ALLOWED) {
-            throw new MethodNotAllowedException(sprintf(
-                "Method '%s' not allowed for %s, Allow: %s",
-                $request->getMethod(),
-                $path,
-                \implode(',', $routeInfo[2])
-            ));
+            throw new MethodNotAllowedException(sprintf("Method '%s' not allowed for access %s, Allow: %s", $request->getMethod(), $path, \implode(',', $routeInfo[2])));
         }
 
         // handler info
         list($handler, $matches) = $this->createHandler($path, $info);
 
         // execute handler
-        $params   = $this->bindParams($request, $handler, $matches);
+        $params = $this->bindParams($request, $handler, $matches);
         $response = PhpHelper::call($handler, $params);
 
         // response
-        if (!$response instanceof Response) {
-            /* @var Response $newResponse*/
+        if (! $response instanceof Response) {
+            /* @var Response $newResponse */
             $newResponse = RequestContext::getResponse();
 
             // if is Payload
             if ($response instanceof Payload) {
-                $response = $newResponse
-                    ->withStatus($response->getStatus())
-                    ->withAttribute(AttributeEnum::RESPONSE_ATTRIBUTE , $response->data);
+                $response = $newResponse->withStatus($response->getStatus())
+                                        ->withAttribute(AttributeEnum::RESPONSE_ATTRIBUTE, $response->data);
             } else {
-                $response = $newResponse->withAttribute(AttributeEnum::RESPONSE_ATTRIBUTE , $response);
+                $response = $newResponse->withAttribute(AttributeEnum::RESPONSE_ATTRIBUTE, $response);
             }
         }
 
@@ -91,7 +91,6 @@ class HandlerAdapter implements HandlerAdapterInterface
      *
      * @param string $path url path
      * @param array  $info path info
-     *
      * @return array
      * @throws \InvalidArgumentException
      */
@@ -116,7 +115,7 @@ class HandlerAdapter implements HandlerAdapterInterface
             throw new \InvalidArgumentException('Invalid route handler for URI: ' . $path);
         }
 
-        $action    = '';
+        $action = '';
         $className = $segments[0];
         if (isset($segments[1])) {
             // Already assign action
@@ -134,7 +133,7 @@ class HandlerAdapter implements HandlerAdapterInterface
         }
 
         $action     = StringHelper::camel($action);
-        $controller = App::getBean($className);
+        $controller = \bean($className);
 
         if (!\method_exists($controller, $action)) {
             throw new InvalidArgumentException("The controller action method '$action' does not exist!");
@@ -155,9 +154,8 @@ class HandlerAdapter implements HandlerAdapterInterface
      * binding params of action method
      *
      * @param ServerRequestInterface $request request object
-     * @param mixed $handler handler
-     * @param array $matches route params info
-     *
+     * @param mixed                  $handler handler
+     * @param array                  $matches route params info
      * @return array
      * @throws \ReflectionException
      */
@@ -179,7 +177,7 @@ class HandlerAdapter implements HandlerAdapterInterface
         // binding params
         foreach ($reflectParams as $key => $reflectParam) {
             $reflectType = $reflectParam->getType();
-            $name        = $reflectParam->getName();
+            $name = $reflectParam->getName();
 
             // undefined type of the param
             if ($reflectType === null) {
@@ -215,7 +213,6 @@ class HandlerAdapter implements HandlerAdapterInterface
      *
      * @param string $type  the type of param
      * @param mixed  $value the value of param
-     *
      * @return bool|float|int|string
      */
     private function parserParamType(string $type, $value)
@@ -245,7 +242,6 @@ class HandlerAdapter implements HandlerAdapterInterface
      * the default value of param
      *
      * @param string $type the type of param
-     *
      * @return bool|float|int|string
      */
     private function getDefaultValue(string $type)

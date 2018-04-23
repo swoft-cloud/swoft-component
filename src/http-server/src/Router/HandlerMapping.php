@@ -20,7 +20,7 @@ use Swoft\Http\Message\Router\HandlerMappingInterface;
 class HandlerMapping extends AbstractRouter implements HandlerMappingInterface
 {
     /** @var int */
-    private $cacheCounter = 0;
+    protected $cacheCounter = 0;
 
     /** @var int */
     protected $routeCounter = 0;

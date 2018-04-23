@@ -22,29 +22,29 @@ class HandlerMapping implements HandlerMappingInterface
     /**
      * @var string
      */
-    private $suffix = 'Command';
+    protected $suffix = 'Command';
 
     /**
      * the default group of command
      */
-    private $defaultGroup = 'server';
+    protected $defaultGroup = 'server';
 
     /**
      * the default command
      */
-    private $defaultCommand = 'index';
+    protected $defaultCommand = 'index';
 
     /**
      * the delimiter
      *
      * @var string
      */
-    private $delimiter = ':';
+    protected $delimiter = ':';
 
     /**
      * @var array
      */
-    private $routes = [];
+    protected $routes = [];
 
     /**
      * @param array ...$params

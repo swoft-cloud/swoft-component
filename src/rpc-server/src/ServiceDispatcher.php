@@ -27,14 +27,14 @@ class ServiceDispatcher implements DispatcherInterface
      *
      * @var array
      */
-    private $middlewares = [];
+    protected $middlewares = [];
 
     /**
      * The default of handler adapter
      *
      * @var string
      */
-    private $handlerAdapter = HandlerAdapterMiddleware::class;
+    protected $handlerAdapter = HandlerAdapterMiddleware::class;
 
     /**
      * @param array ...$params

@@ -15,12 +15,12 @@ class EventManager implements EventManagerInterface
     /**
      * @var self
      */
-    private $parent;
+    protected $parent;
 
     /**
      * @var EventInterface
      */
-    private $basicEvent;
+    protected $basicEvent;
 
     /**
      * 预定义的事件存储
