@@ -604,6 +604,9 @@ class Statement implements StatementInterface
         $columns      = $values['columns'];
         $columnValues = $values['values'];
 
+        $columns   = array_map(function ($v) {
+            return "`{$v}`";
+        }, $columns);
         $statement .= sprintf('(%s)', implode(',', $columns));
         $statement .= ' values ';
         foreach ($columnValues as $row) {
@@ -674,7 +677,7 @@ class Statement implements StatementInterface
 
         $statement .= $this->getInsert();
         if (!empty($statement)) {
-            $statement = 'INSERT ' . $statement;
+            $statement = 'INSERT INTO ' . $statement;
         }
 
         return $statement;

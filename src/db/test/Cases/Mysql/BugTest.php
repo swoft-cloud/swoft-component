@@ -173,7 +173,7 @@ class BugTest extends AbstractMysqlCase
         $user = User::findById($uid)->getResult();
         $this->assertEquals($user['name'], 'new Name');
         $this->assertEquals($user['age'], $age);
-        $this->assertEquals($user['description'], 'desc');
+        $this->assertEquals($user['desc'], 'desc');
 
         $user->setDesc('new desc one');
         $result = $user->update()->getResult();
@@ -183,7 +183,7 @@ class BugTest extends AbstractMysqlCase
         $user = User::findById($uid)->getResult();
         $this->assertEquals($user['name'], 'new Name');
         $this->assertEquals($user['age'], $age);
-        $this->assertEquals($user['description'], 'new desc one');
+        $this->assertEquals($user['desc'], 'new desc one');
     }
 
     public function testUpdateNotDefaultByCo()

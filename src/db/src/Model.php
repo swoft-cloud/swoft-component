@@ -306,8 +306,7 @@ class Model implements \ArrayAccess, \Iterator, Arrayable
                 continue;
             }
 
-            $columnName = $column['column'];
-            $data[$columnName] = $this->$methodName();
+            $data[$propertyName] = $this->$methodName();
         }
 
         return $data;

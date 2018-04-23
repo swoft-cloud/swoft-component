@@ -31,7 +31,7 @@ class EntityTest extends AbstractMysqlCase
             'id'   => 12,
             'name' => 'name',
             'sex'  => 1,
-            'description' => 'this my desc',
+            'desc' => 'this my desc',
             'age'  => $age,
         ];
         $this->assertEquals($data, $array);
@@ -49,7 +49,7 @@ class EntityTest extends AbstractMysqlCase
 
         $json   = $user->toJson();
         $string = $user->__toString();
-        $data   = '{"id":12,"name":"name","age":' . $age . ',"sex":1,"description":"this my desc"}';
+        $data   = '{"id":12,"name":"name","age":' . $age . ',"sex":1,"desc":"this my desc"}';
         $this->assertEquals($data, $json);
         $this->assertEquals($data, $string);
     }
@@ -101,7 +101,7 @@ class EntityTest extends AbstractMysqlCase
         $resultUser = User::findById($result)->getResult();
         $this->assertEquals('name', $resultUser['name']);
         $this->assertEquals(1, $resultUser['sex']);
-        $this->assertEquals('desc2', $resultUser['description']);
+        $this->assertEquals('desc2', $resultUser['desc']);
         $this->assertEquals(100, $resultUser['age']);
 
 
@@ -116,7 +116,7 @@ class EntityTest extends AbstractMysqlCase
 
         $this->assertEquals('name2', $resultUser2['name']);
         $this->assertEquals(1, $resultUser2['sex']);
-        $this->assertEquals('this my desc9', $resultUser2['description']);
+        $this->assertEquals('this my desc9', $resultUser2['desc']);
         $this->assertEquals(99, $resultUser2['age']);
     }
 }
