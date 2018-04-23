@@ -25,7 +25,7 @@ class JsonPackerTest extends AbstractTestCase
             '1',
             1,
             1.1234,
-            bool,
+            false,
             [
                 'a',
                 1,
