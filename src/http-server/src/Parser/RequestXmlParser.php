@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Http\Server\Parser;
 
 use Psr\Http\Message\ServerRequestInterface;
@@ -28,8 +29,7 @@ class RequestXmlParser implements RequestParserInterface
     public function parse(ServerRequestInterface $request): ServerRequestInterface
     {
         if ($request instanceof Request) {
-            $bodyStream = $request->getBody();
-            $bodyContent = $bodyStream->getContents();
+            $bodyContent = $request->getBody()->getContents();
             try {
                 $bodyParams = XmlHelper::decode($bodyContent);
             } catch (\Exception $e) {

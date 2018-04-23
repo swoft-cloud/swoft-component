@@ -20,7 +20,7 @@ class XmlHelper
      * @param string $xml
      * @return array
      */
-    public static function decode(string $xml)
+    public static function decode(string $xml):array
     {
         return self::xmlToArray($xml);
     }
@@ -29,11 +29,11 @@ class XmlHelper
      * @param array $data
      * @return string
      */
-    public static function encode(array $data)
+    public static function encode(array $data):string
     {
         $xml = '<xml>';
-        $xml.= self::arrayToXml($data);
-        $xml.='</xml>';
+        $xml .= self::arrayToXml($data);
+        $xml .= '</xml>';
         return $xml;
     }
 
@@ -41,12 +41,12 @@ class XmlHelper
      * @param string $xml
      * @return array
      */
-    public static function xmlToArray(string $xml)
+    public static function xmlToArray(string $xml):array
     {
         $res = [];
         //如果为空,一般是xml有空格之类的,导致解析失败
         $data = @(array)simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA | LIBXML_NOBLANKS);
-        if (isset($data[0]) && $data[0] ===false) {
+        if (isset($data[0]) && $data[0] === false) {
             $data = null;
         }
         if ($data) {
@@ -59,14 +59,14 @@ class XmlHelper
      * @param $data
      * @return array
      */
-    protected static function parseToArray($data)
+    protected static function parseToArray($data):array
     {
         $res = null;
         if (is_object($data)) {
             $data = (array)$data;
         }
         if (is_array($data)) {
-            foreach ($data as $key=>$val) {
+            foreach ($data as $key => $val) {
                 if (is_iterable($val)) {
                     $res[$key] = self::parseToArray($val);
                 } else {
@@ -81,20 +81,20 @@ class XmlHelper
      * @param array $data
      * @return string
      */
-    public static function arrayToXml(array $data)
+    public static function arrayToXml(array $data):string
     {
         $xml = '';
         if (!empty($data)) {
-            foreach ($data as $key=>$val) {
-                $xml.="<$key>";
+            foreach ($data as $key => $val) {
+                $xml .= "<$key>";
                 if (is_iterable($val)) {
-                    $xml.=self::arrayToXml($val);
+                    $xml .= self::arrayToXml($val);
                 } elseif (is_numeric($val)) {
-                    $xml.=$val;
+                    $xml .= $val;
                 } else {
-                    $xml.=sprintf('<![CDATA[%s]]>', $val);
+                    $xml .= sprintf('<![CDATA[%s]]>', $val);
                 }
-                $xml.="</$key>";
+                $xml .= "</$key>";
             }
         }
         return $xml;
