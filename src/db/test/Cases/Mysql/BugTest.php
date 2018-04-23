@@ -192,4 +192,18 @@ class BugTest extends AbstractMysqlCase
             $this->testUpdateNotDefault();
         });
     }
+
+    public function testLike()
+    {
+        $user = new User();
+        $user->setName('name');
+        $user->setSex(1);
+        $user->setAge(mt_rand(90, 120));
+        $user->setDesc('testLikeData');
+        $uid = $user->save()->getResult();
+
+        /* @var User $qbUser */
+        $qbUser = Query::table(User::class)->where('id', $uid)->andwhere('description', '%tLikeD%', Qb::LIKE)->one()->getResult();
+        $this->assertEquals($qbUser['id'], $uid);
+    }
 }
