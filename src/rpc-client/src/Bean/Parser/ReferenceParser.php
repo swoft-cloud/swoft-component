@@ -12,14 +12,15 @@ use Swoft\Rpc\Client\Bean\Collector\ReferenceCollector;
 class ReferenceParser extends AbstractParser
 {
     /**
-     * @param string    $className
+     * @param string $className
      * @param Reference $objectAnnotation
-     * @param string    $propertyName
-     * @param string    $methodName
-     * @param null      $propertyValue
+     * @param string $propertyName
+     * @param string $methodName
+     * @param null $propertyValue
      * @return array
+     * @throws \Swoft\Rpc\Client\Exception\RpcClientException
      */
-    public function parser(string $className, $objectAnnotation = null, string $propertyName = '', string $methodName = '', $propertyValue = null)
+    public function parser(string $className, $objectAnnotation = null, string $propertyName = '', string $methodName = '', $propertyValue = null): array
     {
         $referenceClass = ReferenceCollector::collect($className, $objectAnnotation, $propertyName, $methodName, $propertyValue);
         return [$referenceClass, true];

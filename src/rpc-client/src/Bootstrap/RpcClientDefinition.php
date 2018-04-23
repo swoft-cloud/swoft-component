@@ -16,7 +16,7 @@ class RpcClientDefinition implements DefinitionInterface
     /**
      * array
      */
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         $definitions = [];
         $collector   = ReferenceCollector::getCollector();

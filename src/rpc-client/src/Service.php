@@ -29,7 +29,7 @@ class Service
     /**
      * The name of service
      *
-     * @var string``
+     * @var string
      */
     protected $name;
 
@@ -105,7 +105,7 @@ class Service
             App::profileEnd($profileKey);
             $client->release(true);
 
-            App::debug(sprintf('%s call %s success, data=%', $this->interface, $func, json_encode($data, JSON_UNESCAPED_UNICODE)));
+            App::debug(sprintf('%s call %s success, data=%s', $this->interface, $func, \json_encode($data, JSON_UNESCAPED_UNICODE)));
             $result = $packer->unpack($result);
             $data   = $packer->checkData($result);
         } catch (\Throwable $throwable) {
@@ -125,18 +125,18 @@ class Service
      * @return ResultInterface
      * @throws RpcClientException
      */
-    function __call(string $name, array $arguments)
+    public function __call(string $name, array $arguments)
     {
         $method = $name;
         $prefix = self::DEFER_PREFIX;
-        if (strpos($name, $prefix) !== 0) {
+        if (\strpos($name, $prefix) !== 0) {
             throw new RpcClientException(sprintf('the method of %s is not exist! ', $name));
         }
 
-        if ($name == $prefix) {
-            $method = array_shift($arguments);
-        } elseif (strpos($name, $prefix) === 0) {
-            $method = lcfirst(ltrim($name, $prefix));
+        if ($name === $prefix) {
+            $method = \array_shift($arguments);
+        } elseif (\strpos($name, $prefix) === 0) {
+            $method = \lcfirst(ltrim($name, $prefix));
         }
 
         return $this->deferCall($method, $arguments);
@@ -151,7 +151,7 @@ class Service
      * @throws \Throwable
      * @return ResultInterface
      */
-    private function deferCall(string $func, array $params)
+    private function deferCall(string $func, array $params): ResultInterface
     {
         $profileKey = $this->interface . '->' . $func;
         $fallback   = $this->getFallbackHandler($func);
@@ -192,7 +192,7 @@ class Service
      *
      * @return ResultInterface
      */
-    private function getResult(ConnectionInterface $connection = null, string $profileKey = '', $result = null)
+    private function getResult(ConnectionInterface $connection = null, string $profileKey = '', $result = null): ResultInterface
     {
         if (App::isCoContext()) {
             $serviceCoResult = new ServiceCoResult($result, $connection, $profileKey);
@@ -218,8 +218,9 @@ class Service
 
     /**
      * @return PoolInterface
+     * @throws \Swoft\Exception\InvalidArgumentException
      */
-    private function getPool()
+    private function getPool(): PoolInterface
     {
         if (empty($this->poolName)) {
             return App::getPool($this->name);
@@ -231,10 +232,10 @@ class Service
     /**
      * @return string
      */
-    private function getPackerName()
+    private function getPackerName(): string
     {
         if (empty($this->packerName)) {
-            return "";
+            return '';
         }
 
         return $this->packerName;
@@ -252,14 +253,14 @@ class Service
         }
 
         $fallback   = \fallback($this->fallback);
-        $interfaces = class_implements(static::class);
+        $interfaces = \class_implements(static::class);
         foreach ($interfaces as $interface) {
-            if (is_subclass_of($fallback, $interface)) {
+            if (\is_subclass_of($fallback, $interface)) {
                 return [$fallback, $method];
             }
         }
 
-        App::warning(sprintf('The %s class does not implement the %s interface', get_parent_class($fallback), JsonHelper::encode($interfaces, JSON_UNESCAPED_UNICODE)));
+        App::warning(sprintf('The %s class does not implement the %s interface', \get_parent_class($fallback), JsonHelper::encode($interfaces, JSON_UNESCAPED_UNICODE)));
 
         return null;
     }

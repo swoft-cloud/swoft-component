@@ -41,8 +41,8 @@ abstract class AbstractConnection implements ConnectionInterface
      */
     public function __construct(PoolInterface $connectPool)
     {
-        $this->lastTime     = time();
-        $this->connectionId = uniqid();
+        $this->lastTime     = \time();
+        $this->connectionId = \uniqid('', false);
         $this->pool         = $connectPool;
         $this->createConnection();
     }
