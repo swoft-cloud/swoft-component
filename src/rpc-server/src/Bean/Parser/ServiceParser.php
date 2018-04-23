@@ -13,12 +13,13 @@ use Swoft\Rpc\Server\Bean\Annotation\Service;
 class ServiceParser extends AbstractParser
 {
     /**
-     * @param string  $className
+     * @param string $className
      * @param Service $objectAnnotation
-     * @param string  $propertyName
-     * @param string  $methodName
-     * @param null    $propertyValue
+     * @param string $propertyName
+     * @param string $methodName
+     * @param null $propertyValue
      * @return mixed
+     * @throws \ReflectionException
      */
     public function parser(
         string $className,

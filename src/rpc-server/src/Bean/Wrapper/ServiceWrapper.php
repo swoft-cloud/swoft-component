@@ -15,48 +15,45 @@ use Swoft\Bean\Wrapper\AbstractWrapper;
 use Swoft\Rpc\Server\Bean\Annotation\Service;
 
 /**
- * Servic eWrapper
+ * Service eWrapper
  */
 class ServiceWrapper extends AbstractWrapper
 {
     /**
-     * 类注解
+     * Class annotation
      *
      * @var array
      */
-    protected $classAnnotations
-        = [
-            Service::class,
-            Middleware::class,
-            Middlewares::class,
-        ];
+    protected $classAnnotations = [
+        Service::class,
+        Middleware::class,
+        Middlewares::class,
+    ];
 
     /**
-     * 属性注解
+     * Property annotations
      *
      * @var array
      */
-    protected $propertyAnnotations
-        = [
-            Inject::class,
-            Value::class,
-        ];
+    protected $propertyAnnotations = [
+        Inject::class,
+        Value::class,
+    ];
 
     /**
-     * 方法注解
+     * Method annotation
      *
      * @var array
      */
-    protected $methodAnnotations
-        = [
-            Middleware::class,
-            Middlewares::class,
-            Strings::class,
-            Floats::class,
-            Number::class,
-            Integer::class,
-            Enum::class
-        ];
+    protected $methodAnnotations = [
+        Middleware::class,
+        Middlewares::class,
+        Strings::class,
+        Floats::class,
+        Number::class,
+        Integer::class,
+        Enum::class
+    ];
 
     /**
      * 是否解析类注解

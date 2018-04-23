@@ -24,6 +24,7 @@ class HandlerMapping implements HandlerMappingInterface
      *
      * @return array
      * @throws \InvalidArgumentException
+     * @throws RpcServerException
      */
     public function getHandler(...$params): array
     {
@@ -34,7 +35,7 @@ class HandlerMapping implements HandlerMappingInterface
     /**
      * Auto register routes
      *
-     * @param array $serviceMapping
+     * @param array[] $serviceMapping
      */
     public function register(array $serviceMapping)
     {
@@ -67,6 +68,7 @@ class HandlerMapping implements HandlerMappingInterface
     public function match(string $interfaceClass, string $version, string $method): array
     {
         $serviceKey = $this->getServiceKey($interfaceClass, $version, $method);
+
         if (!isset($this->routes[$serviceKey])) {
             throw new RpcServerException(sprintf('The %s of %s %s is not exist! ', $method, $interfaceClass, $version));
         }

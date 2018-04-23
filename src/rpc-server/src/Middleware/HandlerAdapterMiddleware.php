@@ -30,8 +30,7 @@ class HandlerAdapterMiddleware implements MiddlewareInterface
 
         /* @var \Swoft\Rpc\Server\Router\HandlerAdapter $handlerAdapter */
         $handlerAdapter = App::getBean('serviceHandlerAdapter');
-        $response       = $handlerAdapter->doHandler($request, $serviceHandler);
 
-        return $response;
+        return $handlerAdapter->doHandler($request, $serviceHandler);
     }
 }

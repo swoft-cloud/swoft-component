@@ -46,14 +46,14 @@ class ServiceDispatcher implements DispatcherInterface
         /**
          * @var Server $server
          * @var int    $fd
-         * @var int    $fromid
+         * @var int    $fromId
          * @var string $data
          */
-        list($server, $fd, $fromid, $data) = $params;
+        list($server, $fd, $fromId, $data) = $params;
 
         try {
             // request middlewares
-            $serviceRequest = $this->getRequest($server, $fd, $fromid, $data);
+            $serviceRequest = $this->getRequest($server, $fd, $fromId, $data);
             $middlewares = $this->requestMiddleware();
             $requestHandler = new RequestHandler($middlewares, $this->handlerAdapter);
 
@@ -63,14 +63,14 @@ class ServiceDispatcher implements DispatcherInterface
         } catch (\Throwable $t) {
             $message = sprintf('%s %s %s', $t->getMessage(), $t->getFile(), $t->getLine());
             $data = ResponseHelper::formatData('', $message, $t->getCode());
-            $data = service_packer()->pack($data);
+            $data = \service_packer()->pack($data);
         } finally {
-
             // Release system resources
             App::trigger(AppEvent::RESOURCE_RELEASE);
 
             $server->send($fd, $data);
         }
+
         App::trigger(RpcServerEvent::AFTER_RECEIVE);
     }
 
@@ -81,7 +81,7 @@ class ServiceDispatcher implements DispatcherInterface
      */
     public function requestMiddleware(): array
     {
-        return array_merge($this->preMiddleware(), $this->middlewares, $this->afterMiddleware());
+        return \array_merge($this->preMiddleware(), $this->middlewares, $this->afterMiddleware());
     }
 
     /**
@@ -113,20 +113,20 @@ class ServiceDispatcher implements DispatcherInterface
     /**
      * @param \Swoole\Server $server
      * @param int            $fd
-     * @param int            $fromid
+     * @param int            $fromId
      * @param string         $data
      * @return Request
      */
-    private function getRequest(Server $server, int $fd, int $fromid, string $data): Request
+    private function getRequest(Server $server, int $fd, int $fromId, string $data): Request
     {
         $serviceRequest = new Request('get', '/');
 
         return $serviceRequest->withAttribute(PackerMiddleware::ATTRIBUTE_SERVER, $server)
                               ->withAttribute(PackerMiddleware::ATTRIBUTE_FD, $fd)
-                              ->withAttribute(PackerMiddleware::ATTRIBUTE_FROMID, $fromid)
+                              ->withAttribute(PackerMiddleware::ATTRIBUTE_FROMID, $fromId)
                               ->withAttribute(PackerMiddleware::ATTRIBUTE_DATA, $data);
     }
-    
+
     /**
      * @return array
      */

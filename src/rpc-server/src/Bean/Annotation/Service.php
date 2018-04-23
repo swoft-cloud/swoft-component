@@ -13,7 +13,7 @@ class Service
     /**
      * @var string
      */
-    private $version = "0";
+    private $version = '0';
 
     /**
      * Service constructor.

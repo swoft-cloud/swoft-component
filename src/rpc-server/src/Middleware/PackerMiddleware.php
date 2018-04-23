@@ -34,9 +34,9 @@ class PackerMiddleware implements MiddlewareInterface
     const ATTRIBUTE_FD = 'serviceRequestFd';
 
     /**
-     * the fromid param of service
+     * the fromId param of service
      */
-    const ATTRIBUTE_FROMID = 'serviceRequestFromid';
+    const ATTRIBUTE_FROMID = 'serviceRequestFromId';
 
     /**
      * the data param of service
@@ -46,10 +46,12 @@ class PackerMiddleware implements MiddlewareInterface
     /**
      * packer middleware
      *
-     * @param \Psr\Http\Message\ServerRequestInterface     $request
+     * @param \Psr\Http\Message\ServerRequestInterface $request
      * @param \Psr\Http\Server\RequestHandlerInterface $handler
      *
      * @return \Psr\Http\Message\ResponseInterface
+     * @throws \InvalidArgumentException
+     * @throws \Swoft\Rpc\Exception\RpcException
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

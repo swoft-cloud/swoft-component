@@ -24,24 +24,26 @@ class RouterMiddleware implements MiddlewareInterface
     /**
      * the attributed key of service
      */
-    const ATTRIBUTE = "serviceHandler";
+    const ATTRIBUTE = 'serviceHandler';
 
     /**
      * get handler from router
      *
-     * @param \Psr\Http\Message\ServerRequestInterface     $request
+     * @param \Psr\Http\Message\ServerRequestInterface $request
      * @param \Psr\Http\Server\RequestHandlerInterface $handler
      *
      * @return \Psr\Http\Message\ResponseInterface
+     * @throws \InvalidArgumentException
+     * @throws \Swoft\Rpc\Server\Exception\RpcServerException
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         // service data
         $data = $request->getAttribute(PackerMiddleware::ATTRIBUTE_DATA);
 
-        $method    = $data['method']??"";
-        $version   = $data['version']??"";
-        $interface = $data['interface']??"";
+        $method    = $data['method']?? '';
+        $version   = $data['version']?? '';
+        $interface = $data['interface']?? '';
 
         /* @var \Swoft\Rpc\Server\Router\HandlerMapping $serviceRouter */
         $serviceRouter  = App::getBean('serviceRouter');
