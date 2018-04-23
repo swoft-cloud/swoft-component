@@ -1,9 +1,9 @@
 <?php
 return [
-    "version"           => '1.0',
+    'version' => '1.0',
     'autoInitBean'      => true,
     'beanScan'          => [
-        'Swoft\\Rpc\\Client\\Testing' => BASE_PATH."/Testing"
+        'Swoft\\Rpc\\Client\\Testing' => BASE_PATH. '/Testing'
     ],
     'I18n'              => [
         'sourceLanguage' => '@root/resources/messages/',
@@ -15,5 +15,5 @@ return [
             'timeout' => 3000
         ]
     ],
-    'cache' => require dirname(__FILE__) . DS . "cache.php",
+    'cache' => require __DIR__ . DS . 'cache.php',
 ];

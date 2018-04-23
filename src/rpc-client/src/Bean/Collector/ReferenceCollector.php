@@ -8,7 +8,7 @@ use Swoft\Rpc\Client\Bean\Annotation\Reference;
 use Swoft\Rpc\Client\Exception\RpcClientException;
 
 /**
- * The collector referece
+ * The collector reference
  */
 class ReferenceCollector implements CollectorInterface
 {
@@ -22,10 +22,12 @@ class ReferenceCollector implements CollectorInterface
      * @param object $objectAnnotation
      * @param string $propertyName
      * @param string $methodName
-     * @param null   $propertyValue
+     * @param null $propertyValue
      *
      * @return mixed
      * @throws RpcClientException
+     * @throws \ReflectionException
+     * @throws \PhpDocReader\AnnotationException
      */
     public static function collect(string $className, $objectAnnotation = null, string $propertyName = '', string $methodName = '', $propertyValue = null)
     {
@@ -41,7 +43,7 @@ class ReferenceCollector implements CollectorInterface
             $packer        = $objectAnnotation->getBreaker();
             $fallback      = $objectAnnotation->getFallback();
 
-            $className      = sprintf("%s.%s.%s.%s.%s.%s", $name, $propertyClass, $version, $pool, $breaker, $packer);
+            $className      = sprintf('%s.%s.%s.%s.%s.%s', $name, $propertyClass, $version, $pool, $breaker, $packer);
             $className      = md5($className);
             $proxyClassName = str_replace("\\", '_', $propertyClass);
             $className      = $proxyClassName . '_' . $className;
@@ -72,7 +74,7 @@ class ReferenceCollector implements CollectorInterface
     /**
      * @return array
      */
-    public static function getCollector()
+    public static function getCollector(): array
     {
         return self::$references;
     }

@@ -13,32 +13,32 @@ class Reference
     /**
      * @var string
      */
-    private $name = "";
+    private $name = '';
 
     /**
      * @var string
      */
-    private $version = "0";
+    private $version = '0';
 
     /**
      * @var string
      */
-    private $pool = "";
+    private $pool = '';
 
     /**
      * @var string
      */
-    private $breaker = "";
+    private $breaker = '';
 
     /**
      * @var string
      */
-    private $packer = "";
+    private $packer = '';
 
     /**
      * @var string
      */
-    private $fallback = "";
+    private $fallback = '';
 
     public function __construct(array $values)
     {

@@ -25,8 +25,8 @@ class ServiceCoResult extends AbstractResult
     {
         try {
             $result = $this->recv();
-            App::debug('service result =' . json_encode($result));
-            $packer = service_packer();
+            App::debug('service result =' . \json_encode($result));
+            $packer = \service_packer();
             $result = $packer->unpack($result);
             $data   = $packer->checkData($result);
         } catch (\Throwable $throwable) {

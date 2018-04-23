@@ -10,6 +10,7 @@ class ServiceProxy
     /**
      * @param string $className
      * @param string $interfaceClass
+     * @throws \ReflectionException
      */
     public static function loadProxyClass(string $className, string $interfaceClass)
     {
@@ -20,7 +21,7 @@ class ServiceProxy
 
         // the template of methods
         $template .= self::getMethodsTemplate($reflectionMethods);
-        $template .= "}";
+        $template .= '}';
 
         eval($template);
     }
@@ -34,11 +35,11 @@ class ServiceProxy
      */
     private static function getMethodsTemplate(array $reflectionMethods): string
     {
-        $template = "";
+        $template = '';
         foreach ($reflectionMethods as $reflectionMethod) {
             $methodName = $reflectionMethod->getName();
 
-            // not to overrided method
+            // not to override method
             if ($reflectionMethod->isConstructor() || $reflectionMethod->isStatic() || strpos($methodName, '__') !== false) {
                 continue;
             }
@@ -52,13 +53,12 @@ class ServiceProxy
             $reflectionMethodReturn = $reflectionMethod->getReturnType();
             if ($reflectionMethodReturn !== null) {
                 $returnType = $reflectionMethodReturn->__toString();
-                $returnType = ($returnType == 'self') ? $reflectionMethod->getDeclaringClass()->getName() : $returnType;
+                $returnType = $returnType === 'self' ? $reflectionMethod->getDeclaringClass()->getName() : $returnType;
                 $template   .= " : $returnType";
             }
 
-            // overrided method
-            $template
-                .= "{
+            // override method
+            $template .= "{
                 \$params = func_get_args();
                 return \$this->call('{$methodName}', \$params);
             }
@@ -77,9 +77,9 @@ class ServiceProxy
      */
     private static function getParameterTemplate(\ReflectionMethod $reflectionMethod): string
     {
-        $template             = "";
+        $template             = '';
         $reflectionParameters = $reflectionMethod->getParameters();
-        $paramCount           = count($reflectionParameters);
+        $paramCount           = \count($reflectionParameters);
         foreach ($reflectionParameters as $reflectionParameter) {
             $paramCount--;
             // the type of parameter
@@ -99,8 +99,8 @@ class ServiceProxy
                 $template .= " \${$paramName} ";
             }
 
-            // the deault of parameter
-            if ($reflectionParameter->isOptional() && $reflectionParameter->isVariadic() == false) {
+            // the default of parameter
+            if ($reflectionParameter->isOptional() && $reflectionParameter->isVariadic() === false) {
                 $template .= self::getParameterDefault($reflectionParameter);
             }
 
@@ -113,7 +113,7 @@ class ServiceProxy
     }
 
     /**
-     * the template of deault
+     * the template of default
      *
      * @param \ReflectionParameter $reflectionParameter
      *
@@ -121,24 +121,24 @@ class ServiceProxy
      */
     private static function getParameterDefault(\ReflectionParameter $reflectionParameter): string
     {
-        $template     = "";
+        $template     = '';
         $defaultValue = $reflectionParameter->getDefaultValue();
         if ($reflectionParameter->isDefaultValueConstant()) {
             $defaultConst = $reflectionParameter->getDefaultValueConstantName();
             $template     = " = {$defaultConst}";
-        } elseif (is_bool($defaultValue)) {
-            $value    = ($defaultValue) ? "true" : "false";
+        } elseif (\is_bool($defaultValue)) {
+            $value    = $defaultValue ? 'true' : 'false';
             $template = " = {$value}";
-        } elseif (is_string($defaultValue)) {
+        } elseif (\is_string($defaultValue)) {
             $template = " = ''";
-        } elseif (is_int($defaultValue)) {
-            $template = " = 0";
-        } elseif (is_array($defaultValue)) {
-            $template = " = []";
-        } elseif (is_float($defaultValue)) {
-            $template = " = []";
-        } elseif (is_object($defaultValue) || is_null($defaultValue)) {
-            $template = " = null";
+        } elseif (\is_int($defaultValue)) {
+            $template = ' = 0';
+        } elseif (\is_array($defaultValue)) {
+            $template = ' = []';
+        } elseif (\is_float($defaultValue)) {
+            $template = ' = []';
+        } elseif (\is_object($defaultValue) || null === $defaultValue) {
+            $template = ' = null';
         }
 
         return $template;

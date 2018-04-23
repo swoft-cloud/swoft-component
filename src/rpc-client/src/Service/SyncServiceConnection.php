@@ -23,18 +23,21 @@ class SyncServiceConnection extends AbstractServiceConnection
     {
         $address = $this->pool->getConnectionAddress();
         $timeout = $this->pool->getTimeout();
-        list($host, $port) = explode(":", $address);
+        list($host, $port) = \explode(':', $address);
 
-        $remoteSocket = sprintf('tcp://%s:%d', $host, $port);
-        $fp           = stream_socket_client($remoteSocket, $errno, $errstr, $timeout);
+        $remoteSocket = \sprintf('tcp://%s:%d', $host, $port);
+
+        $fp = \stream_socket_client($remoteSocket, $errno, $errstr, $timeout);
         if (!$fp) {
-            throw new RpcServerException(sprintf('stream_socket_client connect error errno=%s msg=%s', $errno, $errstr));
+            throw new RpcServerException(\sprintf('stream_socket_client connect error errno=%s msg=%s', $errno, $errstr));
         }
+
         $this->connection = $fp;
     }
 
     /**
      * Reconnect
+     * @throws RpcServerException
      */
     public function reconnect()
     {
@@ -47,11 +50,8 @@ class SyncServiceConnection extends AbstractServiceConnection
     public function check(): bool
     {
         $result = @stream_socket_get_name($this->connection, true);
-        if ($result === false) {
-            return false;
-        }
 
-        return true;
+        return !($result === false);
     }
 
     /**
