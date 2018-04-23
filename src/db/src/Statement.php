@@ -458,7 +458,7 @@ class Statement implements StatementInterface
             // 没有括号
             $useConnector = true;
             $value        = $this->getCriteriaWithoutBracket($criterion['operator'], $criterion['value'], $criterion['column']);
-            $statement    .= $criterion['column'] . ' ' . $criterion['operator'] . ' ' . $value;
+            $statement    .= '`' . $criterion['column'] . '` ' . $criterion['operator'] . ' ' . $value;
         }
 
         return $statement;
@@ -629,7 +629,7 @@ class Statement implements StatementInterface
         $statement = '';
         $values    = $this->builder->getUpdateValues();
         foreach ($values as $column => $value) {
-            $statement .= $column . ' ' . QueryBuilder::OPERATOR_EQ . ' ' . $this->getQuoteValue($value) . ', ';
+            $statement .= '`' . $column . '` ' . QueryBuilder::OPERATOR_EQ . ' ' . $this->getQuoteValue($value) . ', ';
         }
         $statement = substr($statement, 0, -2);
         if (!empty($statement)) {
@@ -654,9 +654,9 @@ class Statement implements StatementInterface
         foreach ($values as $coloumn => $value) {
             $statement .= !empty($statement) ? ',' : $statement;
             if ($value > 0) {
-                $statement .= sprintf(' %s = %s+%d ', $coloumn, $coloumn, $value);
+                $statement .= sprintf(' `%s` = `%s`+%d ', $coloumn, $coloumn, $value);
             } else {
-                $statement .= sprintf(' %s = %s-%d ', $coloumn, $coloumn, abs($value));
+                $statement .= sprintf(' `%s` = `%s`-%d ', $coloumn, $coloumn, abs($value));
             }
         }
 
