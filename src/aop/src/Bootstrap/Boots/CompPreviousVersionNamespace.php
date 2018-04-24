@@ -24,30 +24,30 @@ class CompPreviousVersionNamespace implements Bootable
     public function bootstrap()
     {
         $map = [
-            Proxy\Proxy::class                      => 'Swoft\Proxy\Proxy',
-            Wrapper\AspectWrapper::class            => 'Swoft\Bean\Wrapper',
-            Parser\AfterParser::class               => 'Swoft\Bean\Parser\AfterParser',
-            Parser\AfterReturningParser::class      => 'Swoft\Bean\Parser\AfterReturningParser',
-            Parser\AfterThrowingParser::class       => 'Swoft\Bean\Parser\AfterThrowingParser',
-            Parser\ArroundParser::class             => 'Swoft\Bean\Parser\ArroundParser',
-            Parser\AspectParser::class              => 'Swoft\Bean\Parser\AspectParser',
-            Parser\BeforeParser::class              => 'Swoft\Bean\Parser\BeforeParser',
-            Parser\PointAnnotationParser::class     => 'Swoft\Bean\Parser\PointAnnotationParser',
-            Parser\PointBeanParser::class           => 'Swoft\Bean\Parser\PointBeanParser',
-            Parser\PointExecutionParser::class      => 'Swoft\Bean\Parser\PointExecutionParser',
-            Collector\AspectCollector::class        => 'Swoft\Bean\Collector\AspectCollector',
-            Annotation\AfterParser::class           => 'Swoft\Bean\Parser\After',
-            Annotation\AfterReturningParser::class  => 'Swoft\Bean\Parser\AfterReturning',
-            Annotation\AfterThrowingParser::class   => 'Swoft\Bean\Parser\AfterThrowing',
-            Annotation\ArroundParser::class         => 'Swoft\Bean\Parser\Arround',
-            Annotation\AspectParser::class          => 'Swoft\Bean\Parser\Aspect',
-            Annotation\BeforeParser::class          => 'Swoft\Bean\Parser\Before',
-            Annotation\PointAnnotationParser::class => 'Swoft\Bean\Parser\PointAnnotation',
-            Annotation\PointBeanParser::class       => 'Swoft\Bean\Parser\PointBean',
-            Annotation\PointExecutionParser::class  => 'Swoft\Bean\Parser\PointExecution',
+            Proxy\Proxy::class                  => 'Swoft\Proxy\Proxy',
+            Wrapper\AspectWrapper::class        => 'Swoft\Bean\Wrapper',
+            Parser\AfterParser::class           => 'Swoft\Bean\Parser\AfterParser',
+            Parser\AfterReturningParser::class  => 'Swoft\Bean\Parser\AfterReturningParser',
+            Parser\AfterThrowingParser::class   => 'Swoft\Bean\Parser\AfterThrowingParser',
+            Parser\AroundParser::class          => 'Swoft\Bean\Parser\AroundParser',
+            Parser\AspectParser::class          => 'Swoft\Bean\Parser\AspectParser',
+            Parser\BeforeParser::class          => 'Swoft\Bean\Parser\BeforeParser',
+            Parser\PointAnnotationParser::class => 'Swoft\Bean\Parser\PointAnnotationParser',
+            Parser\PointBeanParser::class       => 'Swoft\Bean\Parser\PointBeanParser',
+            Parser\PointExecutionParser::class  => 'Swoft\Bean\Parser\PointExecutionParser',
+            Collector\AspectCollector::class    => 'Swoft\Bean\Collector\AspectCollector',
+            Annotation\After::class             => 'Swoft\Bean\Parser\After',
+            Annotation\AfterReturning::class    => 'Swoft\Bean\Parser\AfterReturning',
+            Annotation\AfterThrowing::class     => 'Swoft\Bean\Parser\AfterThrowing',
+            Annotation\Around::class            => 'Swoft\Bean\Parser\Around',
+            Annotation\Aspect::class            => 'Swoft\Bean\Parser\Aspect',
+            Annotation\Before::class            => 'Swoft\Bean\Parser\Before',
+            Annotation\PointAnnotation::class   => 'Swoft\Bean\Parser\PointAnnotation',
+            Annotation\PointBean::class         => 'Swoft\Bean\Parser\PointBean',
+            Annotation\PointExecution::class    => 'Swoft\Bean\Parser\PointExecution',
         ];
         foreach ($map as $original => $alias) {
-            \class_alias($original, $alias);
+            \class_alias($original, $alias, true);
         }
     }
 }
