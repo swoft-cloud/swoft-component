@@ -35,6 +35,8 @@ class Schema extends \Swoft\Db\Entity\Schema
         'decimal'  => 'Types::FLOAT',
         'bool'     => 'Types::BOOLEAN',
         'tinyint'  => 'Types::INT',
+        'mediumint'=> 'Types::INT',
+        'smallint' => 'Types::INT,'
     ];
 
     /**
@@ -50,6 +52,8 @@ class Schema extends \Swoft\Db\Entity\Schema
         'number'   => self::TYPE_INT,
         'decimal'  => self::TYPE_FLOAT,
         'bool'     => self::TYPE_BOOL,
-        'tinyint'  => self::TYPE_INT
+        'tinyint'  => self::TYPE_INT,
+        'mediumint'=> self::TYPE_INT,
+        'smallint' => self::TYPE_INT
     ];
 }
