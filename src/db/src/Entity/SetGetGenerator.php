@@ -172,7 +172,7 @@ class SetGetGenerator
          //字段类型
         $dbType = !empty($dbType) ? $dbType : ($isEnum ? '"feature-enum"' : (\is_int($default) ? '"int"' : '"string"'));
 
-        $default = $this->setDefault($dbType, $default);
+        $default = $this->setDefault($dbType, $default, $primaryKey);
 
         $this->checkAliasProperty($aliasProperty);
 
@@ -242,6 +242,7 @@ class SetGetGenerator
     {
         $property      = $fieldInfo['name'];
         $comment       = $fieldInfo['column_comment'];
+        $primaryKey    = $fieldInfo['key'] === 'PRI';
         $aliasProperty = StringHelper::camel($property);
         $this->checkAliasProperty($aliasProperty);
         $function         = StringHelper::camel($aliasProperty);
@@ -254,7 +255,7 @@ class SetGetGenerator
          //字段类型
         $dbType = !empty($dbType) ? $dbType : ($isEnum ? '"feature-enum"' : (\is_int($default) ? '"int"' : '"string"'));
 
-        $default = $this->setDefault($dbType, $default);
+        $default = $this->setDefault($dbType, $default, $primaryKey);
 
         $this->getterStub .= PHP_EOL . str_replace([
                 "{{comment}}\n",
@@ -335,11 +336,16 @@ class SetGetGenerator
      *
      * @param string $dbType 数据库类型
      * @param mixed  $default 默认值
+     * @param bool   $primaryKey 主键
      *
      * @return miexed
      */
-    private function setDefault($dbType, $default)
+    private function setDefault($dbType, $default, $primaryKey)
     {
+        if ($primaryKey) {
+            return '\'\'';
+        }
+
         if(in_array(strtolower($default), ['\'\'','""', 'null']) || empty($default))
         {
             switch ($dbType)
