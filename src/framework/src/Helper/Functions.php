@@ -102,7 +102,7 @@ if (! function_exists('config')) {
     /**
      * Get config value from app config
      *
-     * @param string $key
+     * @param string     $key
      * @param null|mixed $default
      * @return mixed
      */
@@ -153,12 +153,13 @@ if (! function_exists('response')) {
 
 if (! function_exists('defer')) {
     /**
-     * Get the current Response object from RequestContext
+     * Push a callable to defer stack
      *
-     * @return \Psr\Http\Message\ResponseInterface|\Swoft\Http\Message\Server\Response
+     * @param callable $value
+     * @return \Swoft\Defer\Defer
      */
-    function defer()
+    function defer(callable $value)
     {
-        return \Swoft\Core\RequestContext::getDefer();
+        return \Swoft\Core\RequestContext::getDefer()->push($value);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Swoft\Http\Server\Http;
 
-use Swoft\App;
 use Swoft\Bean\Collector\SwooleListenerCollector;
 use Swoft\Bootstrap\SwooleEvent;
 use Swoft\Exception\RuntimeException;
@@ -91,7 +90,7 @@ class HttpServer extends AbstractServer
         $psr7Response = new \Swoft\Http\Message\Server\Response($response);
 
         /** @var \Swoft\Http\Server\ServerDispatcher $dispatcher */
-        $dispatcher = App::getBean('serverDispatcher');
+        $dispatcher = \bean('serverDispatcher');
         $dispatcher->dispatch($psr7Request, $psr7Response);
     }
 }

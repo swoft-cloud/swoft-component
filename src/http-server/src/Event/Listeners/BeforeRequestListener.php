@@ -4,6 +4,7 @@ namespace Swoft\Http\Server\Event\Listeners;
 
 use Swoft\Bean\Annotation\Listener;
 use Swoft\Core\RequestContext;
+use Swoft\Defer\Defer;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Http\Server\Event\HttpServerEvent;
@@ -38,5 +39,6 @@ class BeforeRequestListener implements EventHandlerInterface
         ];
 
         RequestContext::setContextData($contextData);
+        RequestContext::setDefer(new Defer());
     }
 }

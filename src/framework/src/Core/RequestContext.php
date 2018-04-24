@@ -61,7 +61,7 @@ class RequestContext
      */
     public static function getDefer(): Defer
     {
-        return self::getCoroutineContext(self::DATA_KEY);
+        return self::getCoroutineContext(self::DEFER_KEY);
     }
 
     /**
