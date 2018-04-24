@@ -232,8 +232,6 @@ class WebSocketServer extends HttpServer
     public function sendToSome(string $data, array $receivers = [], array $excluded = [], int $sender = 0, int $pageSize = 50): int
     {
         $count = 0;
-        // $res = $data;
-        // $len = \strlen($res);
         $fromUser = $sender < 1 ? 'SYSTEM' : $sender;
 
         // to receivers
