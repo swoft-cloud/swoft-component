@@ -6,7 +6,7 @@ use Swoft\Bean\CollectorInterface;
 use Swoft\Rpc\Server\Bean\Annotation\Service;
 
 /**
- * Service colletor
+ * Service collector
  */
 class ServiceCollector implements CollectorInterface
 {
@@ -17,18 +17,17 @@ class ServiceCollector implements CollectorInterface
 
     /**
      * @param string $className
-     * @param null   $objectAnnotation
+     * @param null $objectAnnotation
      * @param string $propertyName
      * @param string $methodName
-     * @param null   $propertyValue
+     * @param null $propertyValue
      *
-     * @return void
+     * @throws \ReflectionException
      */
     public static function collect(string $className, $objectAnnotation = null, string $propertyName = '', string $methodName = '', $propertyValue = null)
     {
         // collect service
         if ($objectAnnotation instanceof Service) {
-
             $rc = new \ReflectionClass($className);
             $interfaces = $rc->getInterfaceNames();
             $methods = $rc->getMethods(\ReflectionMethod::IS_PUBLIC);
@@ -40,8 +39,6 @@ class ServiceCollector implements CollectorInterface
                     self::$serviceMapping[$interfaceClass][$version][$methodName] = [$className, $methodName];
                 }
             }
-
-            return;
         }
     }
 

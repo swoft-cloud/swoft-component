@@ -10,7 +10,7 @@ use Swoft\Event\EventInterface;
 use Swoft\Rpc\Server\Bean\Collector\ServiceCollector;
 
 /**
- * The listener of applicatioin loader
+ * The listener of application loader
  * @Listener(AppEvent::APPLICATION_LOADER)
  */
 class ApplicationLoaderListener implements EventHandlerInterface

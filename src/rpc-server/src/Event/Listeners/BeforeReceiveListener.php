@@ -22,18 +22,18 @@ class BeforeReceiveListener implements EventHandlerInterface
     {
         $params = $event->getParams();
 
-        if (! isset($params[0])) {
+        if (!isset($params[0])) {
             return;
         }
 
         $data = $params[0];
-        $logid = $data['logid'] ?? uniqid('', true);
-        $spanid = $data['spanid'] ?? 0;
+        $logId = $data['logid'] ?? uniqid('', true);
+        $spanId = $data['spanid'] ?? 0;
         $uri = $data['func'] ?? 'null';
 
         $contextData = [
-            'logid'       => $logid,
-            'spanid'      => $spanid,
+            'logid'       => $logId,
+            'spanid'      => $spanId,
             'uri'         => $uri,
             'requestTime' => microtime(true),
         ];

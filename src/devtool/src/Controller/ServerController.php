@@ -19,6 +19,7 @@ use Swoft\Http\Server\Bean\Annotation\Controller;
 use Swoft\Http\Server\Bean\Annotation\RequestMapping;
 use Swoft\Http\Server\Bean\Annotation\RequestMethod;
 use Swoft\Http\Server\Payload;
+use Swoft\Task\Bean\Collector\TaskCollector;
 
 /**
  * Class ServerController
@@ -102,20 +103,29 @@ class ServerController
     }
 
     /**
-     * get crontab list
-     * @RequestMapping(route="crontab", method=RequestMethod::GET)
+     * get app tasks
+     * @RequestMapping(route="work/tasks", method=RequestMethod::GET)
+     * @param Request $request
+     * @return array
+     * @throws \Swoft\Exception\InvalidArgumentException
+     */
+    public function tasks(Request $request): array
+    {
+        $collector = TaskCollector::getCollector();
+
+        return $collector['task'] ?? [];
+    }
+
+    /**
+     * get cronTab list
+     * @RequestMapping(route="crontab/tasks", method=RequestMethod::GET)
      * @return array
      */
-    public function crontab(): array
+    public function cronTab(): array
     {
-        if (!App::hasBean('crontab')) {
-            return [];
-        }
+        $collector = TaskCollector::getCollector();
 
-        /** @var \Swoft\Task\Crontab\Crontab $cronTab */
-        $cronTab = \bean('crontab');
-
-        return $cronTab->getTasks();
+        return $collector['crons'] ?? [];
     }
 
     /**

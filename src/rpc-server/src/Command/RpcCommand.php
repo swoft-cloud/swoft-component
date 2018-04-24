@@ -20,6 +20,7 @@ class RpcCommand
      * @Example
      *   {fullCommand}
      *   {fullCommand} -d
+     * @throws \InvalidArgumentException
      */
     public function start()
     {
@@ -62,7 +63,8 @@ class RpcCommand
      * @Options
      *   -t     Only to reload task processes, default to reload worker and task
      * @Example
-     * php swoft.php rpc:reload
+     *   php {fullCommand}
+     * @throws \InvalidArgumentException
      */
     public function reload()
     {
@@ -87,6 +89,7 @@ class RpcCommand
      *
      * @Usage {fullCommand}
      * @Example {fullCommand}
+     * @throws \InvalidArgumentException
      */
     public function stop()
     {
@@ -123,6 +126,7 @@ class RpcCommand
      * @Example
      *   {fullCommand}
      *   {fullCommand} -d
+     * @throws \InvalidArgumentException
      */
     public function restart()
     {
@@ -140,13 +144,14 @@ class RpcCommand
 
     /**
      * @return RpcServer
+     * @throws \InvalidArgumentException
      */
     private function getRpcServer(): RpcServer
     {
         $script = \input()->getScript();
         $rpcServer = new RpcServer();
         $rpcServer->setScriptFile($script);
-        
+
         return $rpcServer;
     }
 

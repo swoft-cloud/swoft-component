@@ -89,6 +89,17 @@ class AppController
 
     /**
      * get app beans
+     * @RequestMapping(route="pool/{name}/stat", method=RequestMethod::GET)
+     * @param string $name
+     * @return array
+     */
+    public function poolStat(string $name): array
+    {
+        return [];
+    }
+
+    /**
+     * get app beans
      * @RequestMapping(route="beans", method=RequestMethod::GET)
      * @param Request $request
      * @return array

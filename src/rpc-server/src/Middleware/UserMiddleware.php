@@ -30,15 +30,16 @@ class UserMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $serviceHandler = $request->getAttribute(RouterMiddleware::ATTRIBUTE);
-        list($className, $funcName) = $serviceHandler;
+        list($className, $funcName) = $request->getAttribute(RouterMiddleware::ATTRIBUTE);
 
         $middlewares         = [];
         $collector           = MiddlewareCollector::getCollector();
-        $middlewareCollector = $collector[$className]['middlewares']??[];
+        $middlewareCollector = $collector[$className]['middlewares'] ?? [];
         $groupMiddlewares    = $middlewareCollector['group'] ?? [];
-        $funcMiddlewares     = $middlewareCollector['actions'][$funcName]??[];
-        $middlewares = array_merge($middlewares, $groupMiddlewares, $funcMiddlewares);
+        $funcMiddlewares     = $middlewareCollector['actions'][$funcName] ?? [];
+
+        $middlewares = \array_merge($middlewares, $groupMiddlewares, $funcMiddlewares);
+
         if (!empty($middlewares) && $handler instanceof RequestHandler) {
             $handler->insertMiddlewares($middlewares);
         }

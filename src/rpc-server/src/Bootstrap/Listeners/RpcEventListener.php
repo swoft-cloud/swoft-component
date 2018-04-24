@@ -7,6 +7,7 @@ use Swoft\Bean\Annotation\SwooleListener;
 use Swoft\Bootstrap\Listeners\Interfaces\CloseInterface;
 use Swoft\Bootstrap\Listeners\Interfaces\ConnectInterface;
 use Swoft\Bootstrap\Listeners\Interfaces\ReceiveInterface;
+use Swoft\Console\Helper\ConsoleUtil;
 use Swoole\Server;
 use Swoft\Bootstrap\SwooleEvent;
 
@@ -26,9 +27,11 @@ class RpcEventListener implements ReceiveInterface,ConnectInterface,CloseInterfa
      * RPC 请求每次启动一个协程来处理
      *
      * @param Server $server
-     * @param int    $fd
-     * @param int    $fromId
+     * @param int $fd
+     * @param int $fromId
      * @param string $data
+     * @throws \InvalidArgumentException
+     * @throws \Swoft\Rpc\Exception\RpcException
      */
     public function onReceive(Server $server, int $fd, int $fromId, string $data)
     {
@@ -42,12 +45,12 @@ class RpcEventListener implements ReceiveInterface,ConnectInterface,CloseInterfa
      *
      * @param Server $server
      * @param int    $fd
-     * @param int    $from_id
+     * @param int    $fromId
      *
      */
-    public function onConnect(Server $server, int $fd, int $from_id)
+    public function onConnect(Server $server, int $fd, int $fromId)
     {
-        var_dump('connnect------');
+        ConsoleUtil::log("A client connects to the server, fd=$fd fromId=$fromId");
     }
 
     /**
@@ -60,6 +63,6 @@ class RpcEventListener implements ReceiveInterface,ConnectInterface,CloseInterfa
      */
     public function onClose(Server $server, int $fd, int $reactorId)
     {
-        var_dump('close------');
+        ConsoleUtil::log("A client disconnected from server, fd=$fd reactorId=$reactorId");
     }
 }
