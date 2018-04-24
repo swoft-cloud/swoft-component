@@ -45,17 +45,17 @@ class ServerDispatcher implements DispatcherInterface
      */
     public function dispatch(...$params): ResponseInterface
     {
-        /**
-         * @var RequestInterface $request
-         * @var ResponseInterface $response
-         */
-        list($request, $response) = $params;
-
         try {
-            // before dispatcher
+            /**
+             * @var RequestInterface $request
+             * @var ResponseInterface $response
+             */
+            list($request, $response) = $params;
+
+            // Before server dispatch
             $this->beforeDispatch($request, $response);
 
-            // request middlewares
+            // Request middlewares
             $middlewares = $this->requestMiddleware();
             $request = RequestContext::getRequest();
             $requestHandler = new RequestHandler($middlewares, $this->handlerAdapter);
@@ -66,18 +66,19 @@ class ServerDispatcher implements DispatcherInterface
             $response = $errorHandler->handle($throwable);
         }
 
+        // After server dispatch
         $this->afterDispatch($response);
 
         return $response;
     }
 
     /**
-     * @param $middleware
+     * @param string $middleware
      * @param string|null $name
      */
-    public function addMiddleware($middleware, string $name = null)
+    public function addMiddleware(string $middleware, string $name = null)
     {
-        // set key, can allow override it
+        // Set middleware name to override if existed
         if ($name) {
             $this->middlewares[$name] = $middleware;
         } else {

@@ -150,3 +150,15 @@ if (! function_exists('response')) {
         return \Swoft\Core\RequestContext::getResponse();
     }
 }
+
+if (! function_exists('defer')) {
+    /**
+     * Get the current Response object from RequestContext
+     *
+     * @return \Psr\Http\Message\ResponseInterface|\Swoft\Http\Message\Server\Response
+     */
+    function defer()
+    {
+        return \Swoft\Core\RequestContext::getDefer();
+    }
+}

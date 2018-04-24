@@ -11,6 +11,7 @@
     "require": {
         "php": ">=7.0",
         "swoft/aop": "^1.0",
+        "swoft/defer": "^1.0",
         "phpseclib/phpseclib": "2.0.0",
         "doctrine/annotations": "^1.4",
         "php-di/phpdoc-reader": "^2.0",
