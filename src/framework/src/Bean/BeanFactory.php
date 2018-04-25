@@ -3,7 +3,6 @@
 namespace Swoft\Bean;
 
 use Swoft\Aop\Aop;
-use Swoft\App;
 use Swoft\Bean\Collector\BootBeanCollector;
 use Swoft\Bean\Collector\DefinitionCollector;
 use Swoft\Core\Config;
@@ -58,7 +57,7 @@ class BeanFactory implements BeanFactoryInterface
         self::$container->addDefinitions($componentDefinitions);
 
         /* @var Aop $aop Init reload AOP */
-        $aop = App::getBean(Aop::class);
+        $aop = self::getBean(Aop::class);
         $aop->init();
 
         self::$container->initBeans();
@@ -94,7 +93,7 @@ class BeanFactory implements BeanFactoryInterface
     private static function getWorkerDefinition(): array
     {
         $configDefinitions = [];
-        $beansDir          = App::getAlias('@beans');
+        $beansDir          = alias('@beans');
 
         if (\is_readable($beansDir)) {
             $config = new Config();
@@ -113,7 +112,7 @@ class BeanFactory implements BeanFactoryInterface
      */
     private static function getServerDefinition(): array
     {
-        $file             = App::getAlias('@console');
+        $file             = alias('@console');
         $configDefinition = [];
 
         if (\is_readable($file)) {
@@ -132,7 +131,7 @@ class BeanFactory implements BeanFactoryInterface
     {
         $properties = [];
         $config     = new Config();
-        $dir        = App::getAlias('@properties');
+        $dir        = alias('@properties');
 
         if (\is_readable($dir)) {
             $config->load($dir);
@@ -159,7 +158,7 @@ class BeanFactory implements BeanFactoryInterface
         $bootBeans = $collector[$type];
         foreach ($bootBeans as $beanName) {
             /* @var \Swoft\Core\BootBeanInterface $bootBean */
-            $bootBean  = App::getBean($beanName);
+            $bootBean  = self::getBean($beanName);
             $beans     = $bootBean->beans();
             $coreBeans = ArrayHelper::merge($coreBeans, $beans);
         }
@@ -177,7 +176,7 @@ class BeanFactory implements BeanFactoryInterface
 
         foreach ($collector as $className => $beanName) {
             /* @var \Swoft\Bean\DefinitionInterface $definition */
-            $definition = App::getBean($beanName);
+            $definition = self::getBean($beanName);
 
             $definitions = ArrayHelper::merge($definitions, $definition->getDefinitions());
         }
