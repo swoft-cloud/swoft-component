@@ -18,17 +18,18 @@ class PipeMessageListener implements EventHandlerInterface
 {
     /**
      * @param \Swoft\Event\EventInterface $event
+     * @throws \Swoft\Task\Exception\TaskException
      */
     public function handle(EventInterface $event)
     {
         $params = $event->getParams();
-        if (count($params) < 3) {
+        if (\count($params) < 3) {
             return;
         }
 
         list($type, $data, $srcWorkerId) = $params;
 
-        if ($type != PipeMessage::MESSAGE_TYPE_TASK) {
+        if ($type !== PipeMessage::MESSAGE_TYPE_TASK) {
             return;
         }
 
@@ -38,7 +39,7 @@ class PipeMessageListener implements EventHandlerInterface
         $timeout    = $data['timeout'];
         $methodName = $data['method'];
 
-        // delever task
+        // deliver task
         Task::deliver($taskName, $methodName, $params, $type, $timeout);
     }
 }
