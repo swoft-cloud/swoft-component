@@ -100,7 +100,9 @@ class WebSocketServer extends HttpServer
             return;
         }
 
-        ConsoleUtil::log($msg, $data, $type);
+        if (\config('debug')) {
+            ConsoleUtil::log($msg, $data, $type);
+        }
     }
 
     /*****************************************************************************
@@ -199,17 +201,17 @@ class WebSocketServer extends HttpServer
         $this->log("(broadcast)The #{$fromUser} send a message to all users. Data: {$data}");
 
         while (true) {
-            $connList = $this->server->connection_list($startFd, $pageSize);
+            $fdList = $this->server->connection_list($startFd, $pageSize);
 
-            if ($connList === false || ($num = \count($connList)) === 0) {
+            if ($fdList === false || ($num = \count($fdList)) === 0) {
                 break;
             }
 
             $count += $num;
-            $startFd = \end($connList);
+            $startFd = \end($fdList);
 
-            /** @var $connList array */
-            foreach ($connList as $fd) {
+            /** @var $fdList array */
+            foreach ($fdList as $fd) {
                 $info = $this->getClientInfo($fd);
 
                 if ($info && $info['websocket_status'] > 0) {
@@ -250,25 +252,23 @@ class WebSocketServer extends HttpServer
 
         // to special users
         $startFd = 0;
+        $excluded = $excluded ? (array)\array_flip($excluded) : [];
+
         $this->log("(broadcast)The #{$fromUser} send the message to everyone except some people. Data: {$data}");
 
         while (true) {
-            $connList = $this->server->connection_list($startFd, $pageSize);
+            $fdList = $this->server->connection_list($startFd, $pageSize);
 
-            if ($connList === false || ($num = \count($connList)) === 0) {
+            if ($fdList === false || ($num = \count($fdList)) === 0) {
                 break;
             }
 
             $count += $num;
-            $startFd = \end($connList);
+            $startFd = \end($fdList);
 
-            /** @var $connList array */
-            foreach ($connList as $fd) {
+            /** @var $fdList array */
+            foreach ($fdList as $fd) {
                 if (isset($excluded[$fd])) {
-                    continue;
-                }
-
-                if ($receivers && !isset($receivers[$fd])) {
                     continue;
                 }
 

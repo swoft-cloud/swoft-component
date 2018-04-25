@@ -90,7 +90,11 @@ trait WebSocketEventTrait
 
         WebSocketContext::setMeta($fd, true, 'handshake');
 
-        $this->log("Handshake: Client #{$fd} handshake successful! path {$meta['path']}, co Id #$cid, Meta:", $meta, 'debug');
+        $this->log(
+            "Handshake: Client #{$fd} handshake successful! path {$meta['path']}, co Id #$cid, Meta:",
+            WebSocketContext::getMeta(null, $fd),
+            'debug'
+        );
 
         // Handshaking successful, Manually triggering the open event
         $this->server->defer(function () use ($psr7Req, $fd) {
@@ -186,7 +190,7 @@ trait WebSocketEventTrait
 
         if ($fdInfo['websocket_status'] > 0) {
             $total = $this->count();
-            $this->log("onClose: Client #{$fd} connection will close. client count $total, client info:", $fdInfo, 'debug');
+            $this->log("onClose: Client #{$fd} connection has been closed. client count $total, client info:", $fdInfo, 'debug');
 
             if (!$meta = WebSocketContext::getMeta(null, $fd)) {
                 $this->log("onClose: Client #{$fd} connection meta info has been lost");
