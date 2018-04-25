@@ -52,7 +52,7 @@ class CircuitBreaker
     public $serviceName = 'breakerService';
 
     /**
-     * @var CircuitBreakerState 熔断器状态，开启、半开、关闭
+     * @var CircuitBreakerState 熔断器状态, 开启、半开、关闭
      */
     private $circuitState;
 
@@ -98,11 +98,11 @@ class CircuitBreaker
     /**
      * 熔断器调用
      *
-     * @param mixed $callback 回调函数
-     * @param array $params   参数
-     * @param mixed $fallback 失败回调
+     * @param mixed $callback Callback
+     * @param array $params   parameters
+     * @param mixed $fallback Fallback callback
      *
-     * @return mixed 返回结果
+     * @return mixed
      */
     public function call($callback, array $params = [], $fallback = null)
     {
@@ -160,7 +160,7 @@ class CircuitBreaker
      */
     public function switchToCloseState()
     {
-        App::debug($this->serviceName . '服务，当前[' . $this->getCurrentState() . ']，熔断器状态切换，切换到[关闭]状态');
+        App::debug($this->serviceName . 'service, current[' . $this->getCurrentState() . '], Fuse state switching, switch to [close]');
         $this->circuitState = new CloseState($this);
     }
 
@@ -169,7 +169,7 @@ class CircuitBreaker
      */
     public function switchToOpenState()
     {
-        App::debug($this->serviceName . '服务，当前[' . $this->getCurrentState() . ']，熔断器状态切换，切换到[开启]状态');
+        App::debug($this->serviceName . 'service, current[' . $this->getCurrentState() . '], Fuse state switching, switch to [open]');
         $this->circuitState = new OpenState($this);
     }
 
@@ -178,13 +178,13 @@ class CircuitBreaker
      */
     public function switchToHalfState()
     {
-        App::debug($this->serviceName . '服务，当前[' . $this->getCurrentState() . ']，熔断器状态切换，切换到[半开]状态');
+        App::debug($this->serviceName . 'service, current[' . $this->getCurrentState() . '], Fuse state switching, switch to [half]');
 
         $this->circuitState = new HalfOpenState($this);
     }
 
     /**
-     * 降级处理
+     * fallback processing
      *
      * @param mixed $fallback
      * @param array $params
@@ -194,13 +194,13 @@ class CircuitBreaker
     public function fallback($fallback = null, array $params = [])
     {
         if ($fallback === null) {
-            App::debug($this->serviceName . '服务，当前[' . $this->getCurrentState() . ']，服务降级处理，fallback未定义');
+            App::debug($this->serviceName . ' service, current[' . $this->getCurrentState() . '], service fallback processing, fallback undefined');
             return null;
         }
 
         if (\is_array($fallback) && \count($fallback) === 2) {
             list($className, $method) = $fallback;
-            App::debug($this->serviceName . '服务，服务降级处理，执行fallback, class=' . $className . ' method=' . $method);
+            App::debug($this->serviceName . ' service, service fallback processing, exec fallback, class=' . $className . ' method=' . $method);
 
             return $className->$method(...$params);
         }
@@ -218,6 +218,7 @@ class CircuitBreaker
         if ($this->circuitState instanceof CloseState) {
             return self::CLOSE;
         }
+
         if ($this->circuitState instanceof HalfOpenState) {
             return self::HALF_OPEN_STATE;
         }
@@ -225,6 +226,7 @@ class CircuitBreaker
         if ($this->circuitState instanceof OpenState) {
             return self::OPEN;
         }
+
         return self::PENDING;
     }
 

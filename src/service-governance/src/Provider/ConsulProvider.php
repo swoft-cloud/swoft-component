@@ -176,7 +176,7 @@ class ConsulProvider implements ProviderInterface
         $result     = $httpClient->get($url)->getResult();
         $services   = (array)\json_decode($result, true);
 
-        // 数据格式化
+        // Data formatting
         $nodes = [];
         foreach ($services as $service) {
             if (!isset($service['Service'])) {
@@ -263,9 +263,9 @@ class ConsulProvider implements ProviderInterface
     }
 
     /**
-     * CURL注册服务
+     * CURL Registration service
      *
-     * @param array $service 服务信息集合
+     * @param array $service Service information collection
      * @param string $url consulURI
      * @throws \Swoft\HttpClient\Exception\RuntimeException
      * @throws \RuntimeException

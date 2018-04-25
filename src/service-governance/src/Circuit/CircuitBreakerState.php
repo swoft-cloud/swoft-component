@@ -3,19 +3,19 @@
 namespace Swoft\Sg\Circuit;
 
 /**
- * 熔断器状态 close open half-open
+ * circuit breaker - close open half-open
  */
 abstract class CircuitBreakerState
 {
     /**
-     * @var CircuitBreaker 熔断器
+     * @var CircuitBreaker circuit breaker
      */
     protected $circuitBreaker;
 
     /**
      * CircuitBreakerState constructor.
      *
-     * @param CircuitBreaker $circuitBreaker 熔断器
+     * @param CircuitBreaker $circuitBreaker circuit breaker
      */
     public function __construct(CircuitBreaker $circuitBreaker)
     {
@@ -24,7 +24,7 @@ abstract class CircuitBreakerState
     }
 
     /**
-     * 熔断器服务名称
+     * circuit breaker service name
      *
      * @return string
      */
@@ -33,5 +33,11 @@ abstract class CircuitBreakerState
         return $this->circuitBreaker->serviceName;
     }
 
+    /**
+     * @param callable|array|mixed $callback
+     * @param array $params
+     * @param null $fallback
+     * @return mixed
+     */
     abstract public function doCall($callback, array $params = [], $fallback = null);
 }
