@@ -14,33 +14,43 @@ class Proxy
      *
      * @param string           $className
      * @param HandlerInterface $handler
+     *
      * @return object
      * @throws \ReflectionException
      */
     public static function newProxyInstance(string $className, HandlerInterface $handler)
     {
-        $reflectionClass = new \ReflectionClass($className);
+        $reflectionClass   = new \ReflectionClass($className);
         $reflectionMethods = $reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC | \ReflectionMethod::IS_PROTECTED);
 
         // Proxy property
-        $id = \uniqid('', false);
-        $proxyClassName = \basename(str_replace("\\", '/', $className));
-        $proxyClassName = $proxyClassName . '_' . $id;
-        $handlerPropertyName = '__handler_' . $id;
+        $proxyId             = \uniqid('', false);
+        $proxyClassName      = \basename(str_replace("\\", '/', $className));
+        $proxyClassName      = $proxyClassName . '_' . $proxyId;
+        $handlerPropertyName = '__handler_' . $proxyId;
 
         // Base class template
-        $template = "class $proxyClassName extends $className {
+        $template
+            = "class $proxyClassName extends $className {
+        
+            use \\Swoft\\Aop\\AopTrait;
+
             private \$$handlerPropertyName;
             public function __construct(\$handler)
             {
                 \$this->{$handlerPropertyName} = \$handler;
             }
+            
+            public function getOriginalClassName(): string {
+                return \"{$className}\";
+            }
         ";
 
         // Methods
-        $template .= self::getMethodsTemplate($reflectionMethods, $handlerPropertyName);
+        $template .= self::getMethodsTemplate($reflectionMethods, $proxyId);
         $template .= '}';
 
+//        file_put_contents(alias('@runtime/') . $proxyClassName, $template);
         eval($template);
         $newRc = new \ReflectionClass($proxyClassName);
 
@@ -51,12 +61,14 @@ class Proxy
      * Return the template of method
      *
      * @param \ReflectionMethod[] $reflectionMethods
-     * @param string              $handlerPropertyName
+     * @param string              $proxyId
+     *
      * @return string
      */
-    private static function getMethodsTemplate(array $reflectionMethods, string $handlerPropertyName): string
+    private static function getMethodsTemplate(array $reflectionMethods, string $proxyId): string
     {
-        $template = '';
+        $template            = '';
+        $handlerPropertyName = '__handler_' . $proxyId;
         foreach ($reflectionMethods as $reflectionMethod) {
             $methodName = $reflectionMethod->getName();
 
@@ -75,14 +87,21 @@ class Proxy
             if ($reflectionMethodReturn !== null) {
                 $returnType = $reflectionMethodReturn->__toString();
                 $returnType = $returnType === 'self' ? $reflectionMethod->getDeclaringClass()->getName() : $returnType;
-                $template .= " : $returnType";
+                $template   .= " : $returnType";
             }
 
-            // override method
-            $template .= "{
+            if (\in_array($methodName, ['method1', 'method2'])) {
+                $template
+                    .= "{
+                // return \$this->{$handlerPropertyName}->invoke('{$methodName}', func_get_args());
+                return \$this->__proxy('{$methodName}', func_get_args());}";
+            } else {
+                // overrided method
+                $template
+                    .= "{
                 return \$this->{$handlerPropertyName}->invoke('{$methodName}', func_get_args());
+                return \$this->__proxy('{$methodName}', func_get_args());}";
             }
-            ";
         }
 
         return $template;
@@ -92,19 +111,20 @@ class Proxy
      * Return the template of parameter
      *
      * @param \ReflectionMethod $reflectionMethod
+     *
      * @return string
      */
     private static function getParameterTemplate(\ReflectionMethod $reflectionMethod): string
     {
-        $template = '';
+        $template             = '';
         $reflectionParameters = $reflectionMethod->getParameters();
-        $paramCount = \count($reflectionParameters);
+        $paramCount           = \count($reflectionParameters);
         foreach ($reflectionParameters as $reflectionParameter) {
             $paramCount--;
             // Parameter type
             $type = $reflectionParameter->getType();
             if ($type !== null) {
-                $type = $type->__toString();
+                $type     = $type->__toString();
                 $template .= " $type ";
             }
 
@@ -135,17 +155,18 @@ class Proxy
      * Get default value of parameter
      *
      * @param \ReflectionParameter $reflectionParameter
+     *
      * @return string
      */
     private static function getParameterDefaultValue(\ReflectionParameter $reflectionParameter): string
     {
-        $template = '';
+        $template     = '';
         $defaultValue = $reflectionParameter->getDefaultValue();
         if ($reflectionParameter->isDefaultValueConstant()) {
             $defaultConst = $reflectionParameter->getDefaultValueConstantName();
-            $template = " = {$defaultConst}";
+            $template     = " = {$defaultConst}";
         } elseif (\is_bool($defaultValue)) {
-            $value = $defaultValue ? 'true' : 'false';
+            $value    = $defaultValue ? 'true' : 'false';
             $template = " = {$value}";
         } elseif (\is_string($defaultValue)) {
             $template = " = ''";
