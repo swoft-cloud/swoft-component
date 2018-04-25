@@ -43,7 +43,6 @@ interface HandlerInterface
     /**
      * @param Server $server
      * @param Frame $frame
-     * @return mixed
      */
     public function onMessage(Server $server, Frame $frame);
 
