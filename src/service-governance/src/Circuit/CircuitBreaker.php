@@ -11,7 +11,7 @@ use Swoole\Lock;
 class CircuitBreaker
 {
     /**
-     * Disabled
+     * Close state
      */
     const CLOSE = 'close';
 
@@ -31,33 +31,33 @@ class CircuitBreaker
     const PENDING = 'pending';
 
     /**
-     * @var int Bad request count
+     * @var int Bad request counter
      */
     public $failCounter = 0;
 
     /**
-     * @var int Successful request count
+     * @var int Successful request counter
      */
     public $successCounter = 0;
 
 
     /**
-     * @var int Switching on state to half open state
+     * @var int Switching Open state to Half Open state
      */
     public $switchOpenToHalfOpenTime = 0;
 
     /**
-     * @var string service name
+     * @var string Service name
      */
     public $serviceName = 'breakerService';
 
     /**
-     * @var CircuitBreakerState 熔断器状态, 开启、半开、关闭
+     * @var CircuitBreakerState Current circuit breaker state
      */
     private $circuitState;
 
     /**
-     * @var \Swoole\Lock 半开状态锁
+     * @var \Swoole\Lock Lock of half open state
      */
     protected $halfOpenLock;
 
@@ -96,7 +96,7 @@ class CircuitBreaker
     }
 
     /**
-     * 熔断器调用
+     * Circuit call method
      *
      * @param mixed $callback Callback
      * @param array $params   parameters
@@ -110,7 +110,7 @@ class CircuitBreaker
     }
 
     /**
-     * Failure count
+     * Increment Failure count
      */
     public function incFailCount()
     {
@@ -118,7 +118,7 @@ class CircuitBreaker
     }
 
     /**
-     * Success count
+     * Increment Success count
      */
     public function incSuccessCount()
     {
@@ -126,7 +126,7 @@ class CircuitBreaker
     }
 
     /**
-     * Is it off
+     * Is it close state
      *
      * @return bool
      */
@@ -136,7 +136,7 @@ class CircuitBreaker
     }
 
     /**
-     * Is it on
+     * Is it open state
      *
      * @return bool
      */
@@ -146,7 +146,7 @@ class CircuitBreaker
     }
 
     /**
-     * 是否是半开状态
+     * Is half open state
      *
      * @return bool
      */
@@ -156,7 +156,7 @@ class CircuitBreaker
     }
 
     /**
-     * Switch to off
+     * Switch to close state
      */
     public function switchToCloseState()
     {
@@ -165,7 +165,7 @@ class CircuitBreaker
     }
 
     /**
-     * Switch to on
+     * Switch to open state
      */
     public function switchToOpenState()
     {
@@ -174,7 +174,7 @@ class CircuitBreaker
     }
 
     /**
-     * 切换到半开
+     * Switch to half open state
      */
     public function switchToHalfState()
     {
@@ -184,7 +184,7 @@ class CircuitBreaker
     }
 
     /**
-     * fallback processing
+     * Fallback processing
      *
      * @param mixed $fallback
      * @param array $params
@@ -209,7 +209,7 @@ class CircuitBreaker
     }
 
     /**
-     * Current status
+     * Current state
      *
      * @return string
      */
@@ -240,7 +240,7 @@ class CircuitBreaker
     }
 
     /**
-     * Get the failure count
+     * Get the failure counter
      *
      * @return int
      */
@@ -250,7 +250,7 @@ class CircuitBreaker
     }
 
     /**
-     * Get success count
+     * Get the successful counter
      *
      * @return int
      */
@@ -310,7 +310,7 @@ class CircuitBreaker
     }
 
     /**
-     * 半开状态锁
+     * Get the lock of Half open state
      *
      * @return \Swoole\Lock
      */
