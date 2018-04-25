@@ -33,9 +33,9 @@ class EntityCommand
     private $generatorEntity;
 
     /**
-     * @var string $filePath 实体文件路径
+     * @var string $entityFilePath 实体文件路径
      */
-    private $filePath = '@app/Models/Entity';
+    private $entityFilePath = '@app/Models/Entity';
 
     /**
      * Auto create entity by table structure
@@ -56,6 +56,7 @@ class EntityCommand
      * -e  排除指定的数据表，多表之间用逗号分隔
      * --exclude  排除指定的数据表，多表之间用逗号分隔
      * --remove-table-prefix 去除前缀
+     * --entity-file-path 实体路径(必须在以@app开头并且在app目录下存在的目录,否则将会重定向到@app/Models/Entity)
      *
      * @Example
      * php bin/swoft entity:create -d test
@@ -67,6 +68,7 @@ class EntityCommand
         $database = $removeTablePrefix = '';
         $tablesEnabled = $tablesDisabled = [];
 
+        $this->parseEntityFilePath();
         $this->parseDatabaseCommand($database);
         $this->parseEnableTablesCommand($tablesEnabled);
         $this->parseDisableTablesCommand($tablesDisabled);
@@ -88,7 +90,6 @@ class EntityCommand
      */
     private function initDatabase(): bool
     {
-        App::setAlias('@entityPath', $this->filePath);
         $pool = App::getBean(DbPool::class);
         $schema = new Schema();
         $schema->setDriver('MYSQL');
@@ -97,6 +98,14 @@ class EntityCommand
         $this->generatorEntity = new Generator($syncDbConnect);
 
         return true;
+    }
+
+    /**
+     * 设置实体生成路径
+     */
+    private function setEntityFilePath()
+    {
+        App::setAlias('@entityPath', $this->entityFilePath);
     }
 
     /**
@@ -147,9 +156,27 @@ class EntityCommand
      *
      * @param string &$removeTablePrefix 需要移除的前缀
      */
-    private function parseRemoveTablePrefix(&$removeTablePrefix) {
+    private function parseRemoveTablePrefix(&$removeTablePrefix)
+    {
         if (input()->hasLOpt('remove-table-prefix')) {
             $removeTablePrefix = (string)input()->getLongOpt('remove-table-prefix');
         }
+    }
+
+    /**
+     * 实体生成路径
+     */
+    private function parseEntityFilePath()
+    {
+        if (input()->hasLOpt('entity-file-path')) {
+            $entityFilePath = (string)input()->getLongOpt('entity-file-path');
+            if (preg_match('/^@app(.*)/', $entityFilePath) && is_dir(alias($entityFilePath))) {
+                $this->entityFilePath = $entityFilePath;
+            }else{
+                output()->writeln('The directory does not exist, and the entity generated directory will be reset: ' . $this->entityFilePath);
+            }
+        }
+
+        $this->setEntityFilePath();
     }
 }

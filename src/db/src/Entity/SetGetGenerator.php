@@ -99,8 +99,11 @@ class SetGetGenerator
         }
 
         $this->parseFields($fields);
+        $namespace = preg_replace('/.+a(pp)(.*)(\/?)$/', 'A${1}${2}', alias('@entityPath'));
+        $namespace = str_replace('/', '\\', $namespace);
 
         $entityFile = str_replace([
+            '{{namespace}}',
             '{{uses}}',
             '{{extends}}',
             '{{entity}}',
@@ -111,6 +114,7 @@ class SetGetGenerator
             '{{setter}}',
             '{{getter}}',
         ], [
+            $namespace,
             $usesContent,
             $extends,
             $entity,

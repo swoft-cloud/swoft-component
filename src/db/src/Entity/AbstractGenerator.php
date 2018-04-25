@@ -9,6 +9,7 @@
  */
 namespace Swoft\Db\Entity;
 
+use Swoft\App;
 use Swoft\Helper\StringHelper;
 
 abstract class AbstractGenerator
@@ -96,11 +97,8 @@ abstract class AbstractGenerator
         if (!empty($removeTablePrefix)) {
             $entityClass = StringHelper::replaceFirst($removeTablePrefix, '', $this->entity);
         }
-        $this->entityClass = explode('_', $entityClass);
-        $this->entityClass = array_map(function ($word) {
-            return ucfirst($word);
-        }, $this->entityClass);
-        $this->entityClass = implode('', $this->entityClass);
+        $this->entityClass = StringHelper::camel($entityClass);
+        $this->entityClass = ucfirst($this->entityClass);
 
         $param = [
             $schema,
