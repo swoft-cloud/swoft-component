@@ -56,6 +56,7 @@ class EntityCommand
      * -e  排除指定的数据表，多表之间用逗号分隔
      * --exclude  排除指定的数据表，多表之间用逗号分隔
      * --remove-table-prefix 去除前缀
+     * --entity-file-path 实体路径(必须在以@app开头并且在app目录下存在的目录,否则将会重定向到@app/Models/Entity)
      *
      * @Example
      * php bin/swoft entity:create -d test
@@ -102,7 +103,7 @@ class EntityCommand
     /**
      * 设置实体生成路径
      */
-    private function setEntityFilePath(): void
+    private function setEntityFilePath()
     {
         App::setAlias('@entityPath', $this->entityFilePath);
     }
@@ -112,7 +113,7 @@ class EntityCommand
      *
      * @param string &$database 需要扫描的数据库
      */
-    private function parseDatabaseCommand(string &$database): void
+    private function parseDatabaseCommand(string &$database)
     {
         if (input()->hasSOpt('d') || input()->hasLOpt('database')) {
             $database = (string)\input()->getSameOpt(['d','database']);
@@ -124,7 +125,7 @@ class EntityCommand
      *
      * @param array &$tablesEnabled 需要扫描的表
      */
-    private function parseEnableTablesCommand(&$tablesEnabled): void
+    private function parseEnableTablesCommand(&$tablesEnabled)
     {
         if (input()->hasSOpt('i') || input()->hasLOpt('include')) {
             $tablesEnabled = input()->hasSOpt('i') ? input()->getShortOpt('i') : input()->getLongOpt('include');
@@ -142,7 +143,7 @@ class EntityCommand
      *
      * @param array &$tablesDisabled 不需要扫描的表
      */
-    private function parseDisableTablesCommand(&$tablesDisabled): void
+    private function parseDisableTablesCommand(&$tablesDisabled)
     {
         if (input()->hasSOpt('e') || input()->hasLOpt('exclude')) {
             $tablesDisabled = input()->hasSOpt('e') ? input()->getShortOpt('e') : input()->getLongOpt('exclude');
@@ -155,7 +156,7 @@ class EntityCommand
      *
      * @param string &$removeTablePrefix 需要移除的前缀
      */
-    private function parseRemoveTablePrefix(&$removeTablePrefix): void
+    private function parseRemoveTablePrefix(&$removeTablePrefix)
     {
         if (input()->hasLOpt('remove-table-prefix')) {
             $removeTablePrefix = (string)input()->getLongOpt('remove-table-prefix');
@@ -165,12 +166,14 @@ class EntityCommand
     /**
      * 实体生成路径
      */
-    private function parseEntityFilePath(): void
+    private function parseEntityFilePath()
     {
         if (input()->hasLOpt('entity-file-path')) {
             $entityFilePath = (string)input()->getLongOpt('entity-file-path');
-            if (preg_match('/^@app(.*)/', $entityFilePath) && is_dir(App::getAlias($entityFilePath))) {
+            if (preg_match('/^@app(.*)/', $entityFilePath) && is_dir(alias($entityFilePath))) {
                 $this->entityFilePath = $entityFilePath;
+            }else{
+                output()->writeln('The directory does not exist, and the entity generated directory will be reset: ' . $this->entityFilePath);
             }
         }
 
