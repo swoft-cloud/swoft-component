@@ -5,11 +5,11 @@ namespace Swoft\Sg\Circuit;
 use Swoft\App;
 
 /**
- * 开启状态及切换(open)
+ * Open state and switch(open)
  *
- * 1. 重置failCounter=0 successCounter=0
- * 2. 请求立即返回错误响应
- * 3. 定时器一定时间后切换为半开状态(open)
+ * 1. reset failCounter=0 successCounter=0
+ * 2. The request immediately returns an error response
+ * 3. The timer switches to the half-open state after a certain period of time(open)
  */
 class OpenState extends CircuitBreakerState
 {
@@ -26,7 +26,7 @@ class OpenState extends CircuitBreakerState
     {
         $data = $this->circuitBreaker->fallback();
 
-        App::trace($this->getServiceName() . ' service，current[open]，exec fallback 服务降级容错处理');
+        App::trace($this->getServiceName() . ' service，current[open]，exec fallback handle');
         // Turn on timer
         $nowTime = time();
 

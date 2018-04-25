@@ -6,15 +6,15 @@ use Swoft\App;
 use Swoole\Coroutine\Client;
 
 /**
- * 半开状态及切换(half-open)
+ * Half-open state and switching
  *
- * 1. 重置failCounter=0
- * 2. 重置successCounter=0
- * 3. 操作成功successCounter计数
- * 4. 操作失败failCounter计数
- * 5. 连续操作成功一定计数, 切换为close状态
- * 6. 连续操作失败一定计数, 切换为open
- * 7. 同一并发时间只有一个请求执行
+ * 1. Reset failCounter=0
+ * 2. Reset successCounter=0
+ * 3. Operation success counter
+ * 4. Operation fail counter
+ * 5. Successive operation succeeds a certain number of times, switching to the close state
+ * 6. Continuous operation failed a certain number of times, switch to open
+ * 7. Only one request is executed during the same concurrent time
  */
 class HalfOpenState extends CircuitBreakerState
 {

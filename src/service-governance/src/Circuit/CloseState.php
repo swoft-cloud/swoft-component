@@ -6,11 +6,11 @@ use Swoft\App;
 use Swoole\Coroutine\Client;
 
 /**
- * 关闭状态及切换(close)
+ * Closed state and switch(close)
  *
- * 1. 重置failCounter=0 successCount=0
- * 2. 操作失败, failCounter计数
- * 3. 操作失败一定计数, 切换为open开启状态
+ * 1. Reset failCounter=0 successCount=0
+ * 2. Operation failed, failCounter
+ * 3. The operation failed a certain number of times, switching to the open state
  */
 class CloseState extends CircuitBreakerState
 {
