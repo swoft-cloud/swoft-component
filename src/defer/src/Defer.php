@@ -3,12 +3,11 @@
 namespace Swoft\Defer;
 
 /**
- * @uses    Defer
+ * Class Defer
  * @author  huangzhhui <h@swoft.org>
  */
 class Defer
 {
-
     /**
      * @var \SplStack
      */
@@ -62,6 +61,7 @@ class Defer
     {
         while (! $this->stack->isEmpty()) {
             $current = $this->stack->pop();
+            
             if (\is_callable($current)) {
                 $current();
             }
