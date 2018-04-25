@@ -29,6 +29,11 @@ class ProviderSelector implements SelectorInterface
      */
     protected $providers = [];
 
+    public function init()
+    {
+        $this->providers = \array_merge($this->providers, $this->defaultProviders());
+    }
+
     /**
      * Select a provider by Selector
      *
@@ -36,13 +41,13 @@ class ProviderSelector implements SelectorInterface
      * @return ProviderInterface
      * @throws \Swoft\Exception\InvalidArgumentException
      */
-    public function select(string $type = null)
+    public function select(string $type = null): ProviderInterface
     {
         if (empty($type)) {
             $type = $this->provider;
         }
 
-        $providers = $this->mergeProviders();
+        $providers = $this->providers;
         if (!isset($providers[$type])) {
             throw new InvalidArgumentException(sprintf('Provider %s does not exist', $type));
         }
@@ -53,24 +58,30 @@ class ProviderSelector implements SelectorInterface
     }
 
     /**
-     * merge default and config packers
-     *
-     * @return array
-     */
-    private function mergeProviders()
-    {
-        return array_merge($this->providers, $this->defaultProvivers());
-    }
-
-    /**
      * the balancers of default
      *
      * @return array
      */
-    private function defaultProvivers()
+    private function defaultProviders(): array
     {
         return [
             self::TYPE_CONSUL => ConsulProvider::class,
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getProviders(): array
+    {
+        return $this->providers;
+    }
+
+    /**
+     * @param array $providers
+     */
+    public function setProviders(array $providers)
+    {
+        $this->providers = $providers;
     }
 }

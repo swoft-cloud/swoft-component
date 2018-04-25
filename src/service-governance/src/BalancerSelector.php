@@ -25,9 +25,12 @@ class BalancerSelector implements SelectorInterface
     /**
      * @var array
      */
-    protected $balancers = [
+    protected $balancers = [];
 
-    ];
+    public function init()
+    {
+        $this->balancers = \array_merge($this->balancers, $this->defaultBalancers());
+    }
 
     /**
      * get balancer
@@ -35,13 +38,16 @@ class BalancerSelector implements SelectorInterface
      * @param string $type
      *
      * @return BalancerInterface
+     * @throws \Swoft\Exception\InvalidArgumentException
      */
-    public function select(string $type = null)
+    public function select(string $type = null): BalancerInterface
     {
         if (empty($type)) {
             $type = $this->balancer;
         }
-        $balancers = $this->mergeBalancers();
+
+        $balancers = $this->balancers;
+
         if (!isset($balancers[$type])) {
             throw new InvalidArgumentException(sprintf('Balancer %s does not exist', $type));
         }
@@ -52,24 +58,30 @@ class BalancerSelector implements SelectorInterface
     }
 
     /**
-     * merge default and config packers
-     *
-     * @return array
-     */
-    private function mergeBalancers()
-    {
-        return array_merge($this->balancers, $this->defaultBalancers());
-    }
-
-    /**
      * the balancers of default
      *
      * @return array
      */
-    private function defaultBalancers()
+    private function defaultBalancers(): array
     {
         return [
             self::TYPE_RANDOM => RandomBalancer::class,
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getBalancers(): array
+    {
+        return $this->balancers;
+    }
+
+    /**
+     * @param array $balancers
+     */
+    public function setBalancers(array $balancers)
+    {
+        $this->balancers = $balancers;
     }
 }

@@ -27,9 +27,9 @@ class FallbackParser extends AbstractParser
         string $propertyName = '',
         string $methodName = '',
         $propertyValue = null
-    ) {
+    ): array {
         FallbackCollector::collect($className, $objectAnnotation, $propertyName, $methodName, $propertyValue);
 
-        return [$className, Scope::SINGLETON, ""];
+        return [$className, Scope::SINGLETON, ''];
     }
 }

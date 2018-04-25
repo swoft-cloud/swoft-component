@@ -16,7 +16,7 @@ class RoundRobinBalancer implements BalancerInterface
     {
         $currentIndex = $this->lastIndex;
         $value = $serviceList[$currentIndex];
-        if ($currentIndex + 1 > count($serviceList) - 1) {
+        if ($currentIndex + 1 > \count($serviceList) - 1) {
             $this->lastIndex = 0;
         } else {
             $this->lastIndex++;

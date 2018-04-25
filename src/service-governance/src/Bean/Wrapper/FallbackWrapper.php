@@ -15,24 +15,17 @@ class FallbackWrapper extends AbstractWrapper
     /**
      * @var array
      */
-    protected $classAnnotations
-        = [
-            Fallback::class,
-        ];
+    protected $classAnnotations = [
+        Fallback::class,
+    ];
 
     /**
      * @var array
      */
-    protected $propertyAnnotations
-        = [
-            Inject::class,
-            Value::class,
-        ];
-
-    /**
-     * @var array
-     */
-    protected $methodAnnotations = [];
+    protected $propertyAnnotations = [
+        Inject::class,
+        Value::class,
+    ];
 
     /**
      * @param array $annotations

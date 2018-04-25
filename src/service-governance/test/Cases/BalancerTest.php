@@ -19,7 +19,7 @@ class BalancerTest extends AbstractTestCase
         $list = [1, 2, 3];
         $balancer = new RandomBalancer();
         $value = $balancer->select($list);
-        $this->assertTrue(in_array($value, $list));
+        $this->assertTrue(\in_array($value, $list));
     }
 
     /**

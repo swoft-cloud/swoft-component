@@ -11,7 +11,7 @@ use Swoft\Sg\Bean\Annotation\Fallback;
 class FallbackCollector implements CollectorInterface
 {
     /**
-     * @var array
+     * @var array Fallback handler list
      */
     private static $fallbacks = [];
 
@@ -40,7 +40,7 @@ class FallbackCollector implements CollectorInterface
     /**
      * @return array
      */
-    public static function getCollector()
+    public static function getCollector(): array
     {
         return self::$fallbacks;
     }

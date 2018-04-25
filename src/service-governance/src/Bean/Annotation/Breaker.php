@@ -15,7 +15,7 @@ class Breaker
      *
      * @var string
      */
-    private $name = "";
+    private $name = '';
 
     /**
      * Breaker constructor.

@@ -16,9 +16,10 @@ class WorkerStartListener implements EventHandlerInterface
 {
     /**
      * @param \Swoft\Event\EventInterface $event
+     * @throws \Swoft\Exception\InvalidArgumentException
      */
     public function handle(EventInterface $event)
     {
-        provider()->select()->registerService();
+        \provider()->select()->registerService();
     }
 }

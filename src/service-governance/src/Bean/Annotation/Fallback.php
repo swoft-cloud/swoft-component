@@ -13,7 +13,7 @@ class Fallback
     /**
      * @var string
      */
-    private $name = "";
+    private $name = '';
 
     /**
      * Fallback constructor.

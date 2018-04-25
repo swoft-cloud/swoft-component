@@ -30,10 +30,10 @@ class ConsulProvider implements ProviderInterface
      * @Value(name="${config.provider.consul.address}", env="${CONSUL_ADDRESS}")
      * @var string
      */
-    private $address = "http://127.0.0.1";
+    private $address = 'http://127.0.0.1';
 
     /**
-     * Specifies the prot of the consul
+     * Specifies the port of the consul
      *
      * @Value(name="${config.provider.consul.port}", env="${CONSUL_PORT}")
      * @var int
@@ -129,12 +129,12 @@ class ConsulProvider implements ProviderInterface
     private $registerCheckTimeout = 1;
 
     /**
-     * Specifies the datacenter to query. This will default to the datacenter of the agent being queried
+     * Specifies the data-center to query. This will default to the data-center of the agent being queried
      *
      * @Value(name="${config.provider.consul.discovery.dc}", env="${CONSUL_DISCOVERY_DC}")
      * @var string
      */
-    private $discoveryDc = "";
+    private $discoveryDc = '';
 
     /**
      * Specifies a node name to sort the node list in ascending order based on the estimated round trip time from that node
@@ -142,7 +142,7 @@ class ConsulProvider implements ProviderInterface
      * @Value(name="${config.provider.consul.discovery.near}", env="${CONSUL_DISCOVERY_NEAR}")
      * @var string
      */
-    private $discoveryNear = "";
+    private $discoveryNear = '';
 
     /**
      * Specifies the tag to filter the list. This is specifies as part of the URL as a query parameter.
@@ -150,7 +150,7 @@ class ConsulProvider implements ProviderInterface
      * @Value(name="${config.provider.consul.discovery.tag}", env="${CONSUL_DISCOVERY_TAG}")
      * @var string
      */
-    private $discoveryTag = "";
+    private $discoveryTag = '';
 
     /**
      * Specifies that the server should return only nodes with all checks in the passing state
@@ -164,34 +164,38 @@ class ConsulProvider implements ProviderInterface
      * get service list
      *
      * @param string $serviceName
-     * @param array  $params
+     * @param array $params
      *
      * @return array
+     * @throws \InvalidArgumentException
      */
-    public function getServiceList(string $serviceName, ...$params)
+    public function getServiceList(string $serviceName, ...$params): array
     {
         $httpClient = new Client();
         $url        = $this->getDiscoveryUrl($serviceName);
         $result     = $httpClient->get($url)->getResult();
-        $services   = json_decode($result, true);
+        $services   = (array)\json_decode($result, true);
 
         // 数据格式化
         $nodes = [];
         foreach ($services as $service) {
             if (!isset($service['Service'])) {
-                App::warning("consul[Service] 服务健康节点集合，数据格式不不正确，Data=" . $result);
+                App::warning('consul[Service] service health node collection. The data format is not incorrect, Data=' . $result);
                 continue;
             }
+
             $serviceInfo = $service['Service'];
+
             if (!isset($serviceInfo['Address'], $serviceInfo['Port'])) {
-                App::warning("consul[Address] Or consul[Port] 服务健康节点集合，数据格式不不正确，Data=" . $result);
+                App::warning('consul[Address] Or consul[Port] service health node collection. The data format is not incorrect, Data=' . $result);
                 continue;
             }
+
             $address = $serviceInfo['Address'];
             $port    = $serviceInfo['Port'];
 
-            $uri     = implode(":", [$address, $port]);
-            $nodes[] = $uri;
+            // uri
+            $nodes[] = \implode(':', [$address, $port]);
         }
 
         return $nodes;
@@ -201,18 +205,18 @@ class ConsulProvider implements ProviderInterface
      * register service
      *
      * @param array ...$params
-     *
-     * @return bool
+     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     public function registerService(...$params)
     {
-        $hostName = gethostname();
+        $hostName = \gethostname();
         if (empty($this->registerId)) {
-            $this->registerId = sprintf('service-%s-%s', $this->registerName, $hostName);
+            $this->registerId = \sprintf('service-%s-%s', $this->registerName, $hostName);
         }
 
         if (empty($this->registerCheckId)) {
-            $this->registerCheckId = sprintf('check-%s-%s', $this->registerName, $hostName);
+            $this->registerCheckId = \sprintf('check-%s-%s', $this->registerName, $hostName);
         }
 
         $data = [
@@ -220,21 +224,19 @@ class ConsulProvider implements ProviderInterface
             'Name'              => $this->registerName,
             'Tags'              => $this->registerTags,
             'Address'           => $this->registerAddress,
-            'Port'              => intval($this->registerPort),
+            'Port'              => $this->registerPort,
             'EnableTagOverride' => $this->registerEnableTagOverride,
             'Check'             => [
                 'id'       => $this->registerCheckId,
                 'name'     => $this->registerCheckName,
                 'tcp'      => $this->registerCheckTcp,
-                'interval' => sprintf('%ss', $this->registerCheckInterval),
-                'timeout'  => sprintf('%ss', $this->registerCheckTimeout),
+                'interval' => \sprintf('%ss', $this->registerCheckInterval),
+                'timeout'  => \sprintf('%ss', $this->registerCheckTimeout),
             ],
         ];
 
-        $url = sprintf('%s:%d%s', $this->address, $this->port, self::REGISTER_PATH);
+        $url = \sprintf('%s:%d%s', $this->address, $this->port, self::REGISTER_PATH);
         $this->putService($data, $url);
-
-        return true;
     }
 
     /**
@@ -254,27 +256,34 @@ class ConsulProvider implements ProviderInterface
             $query['tag'] = $this->discoveryTag;
         }
 
-        $queryStr    = http_build_query($query);
-        $path        = sprintf('%s%s', self::DISCOVERY_PATH, $serviceName);
+        $queryStr    = \http_build_query($query);
+        $path        = \sprintf('%s%s', self::DISCOVERY_PATH, $serviceName);
 
-        return sprintf('%s:%d%s?%s', $this->address, $this->port, $path, $queryStr);
+        return \sprintf('%s:%d%s?%s', $this->address, $this->port, $path, $queryStr);
     }
 
     /**
      * CURL注册服务
      *
-     * @param array  $service 服务信息集合
-     * @param string $url     consulURI
+     * @param array $service 服务信息集合
+     * @param string $url consulURI
+     * @throws \Swoft\HttpClient\Exception\RuntimeException
+     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
      */
     private function putService(array $service, string $url)
     {
         $options = [
             'json' => $service,
         ];
+
         $httpClient = new Client();
         $result = $httpClient->put($url, $options)->getResult();
+
         if(empty($result)){
-            output()->writeln(sprintf('<success>RPC service register success by consul ! tcp=%s:%d</success>', $this->registerAddress, $this->registerPort));
+            \output()->writeln(
+                \sprintf('<success>RPC service register success by consul! tcp=%s:%d</success>', $this->registerAddress, $this->registerPort)
+            );
         }
     }
 }
