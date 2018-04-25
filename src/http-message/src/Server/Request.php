@@ -5,9 +5,9 @@ namespace Swoft\Http\Message\Server;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Swoft\Http\Message\Server\Concerns\InteractsWithInput;
-use Swoft\Http\Message\Uri\Uri;
 use Swoft\Http\Message\Stream\SwooleStream;
 use Swoft\Http\Message\Upload\UploadedFile;
+use Swoft\Http\Message\Uri\Uri;
 
 /**
  * @uses      Request
@@ -48,7 +48,7 @@ class Request extends \Swoft\Http\Message\Base\Request implements ServerRequestI
     /**
      * @var array
      */
-    private $serverParams;
+    private $serverParams = [];
 
     /**
      * @var array
@@ -79,6 +79,7 @@ class Request extends \Swoft\Http\Message\Base\Request implements ServerRequestI
         $request = new static($method, $uri, $headers, $body, $protocol);
         return $request->withCookieParams($swooleRequest->cookie ?? [])
                        ->withQueryParams($swooleRequest->get ?? [])
+                       ->withServerParams($server ?? [])
                        ->withParsedBody($swooleRequest->post ?? [])
                        ->withUploadedFiles(self::normalizeFiles($swooleRequest->files ?? []))
                        ->setSwooleRequest($swooleRequest);
@@ -226,6 +227,19 @@ class Request extends \Swoft\Http\Message\Base\Request implements ServerRequestI
     public function getServerParams()
     {
         return $this->serverParams;
+    }
+
+    /**
+     * Return an instance with the specified server params.
+     *
+     * @param array $serverParams
+     * @return static
+     */
+    public function withServerParams(array $serverParams)
+    {
+        $clone = clone $this;
+        $clone->serverParams = $serverParams;
+        return $clone;
     }
 
     /**
