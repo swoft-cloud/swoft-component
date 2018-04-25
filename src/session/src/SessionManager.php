@@ -13,7 +13,6 @@ use Swoft\Session\Handler\RedisSessionHandler;
  */
 class SessionManager
 {
-
     /**
      * The session handlers
      *
@@ -45,8 +44,8 @@ class SessionManager
         if (!isset($this->config['driver'])) {
             throw new \InvalidArgumentException('Session driver required');
         }
-        $handler = $this->getHandler($this->config['driver']);
-        return $handler;
+
+        return $this->getHandler($this->config['driver']);
     }
 
     /**
@@ -61,6 +60,7 @@ class SessionManager
         $name = strtolower($name);
         $this->isValidate($name);
         $class = $this->handlers[$name];
+
         return App::getBean($class);
     }
 
@@ -70,7 +70,7 @@ class SessionManager
      */
     protected function isValidate(string $name)
     {
-        if (!array_key_exists($name, $this->handlers)) {
+        if (!\array_key_exists($name, $this->handlers)) {
             throw new \InvalidArgumentException('Invalid session handler');
         }
     }

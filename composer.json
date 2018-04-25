@@ -20,7 +20,8 @@
         "zendframework/zend-mime": "^2.7",
         "psr/simple-cache": "^1.0.0",
         "seld/phar-utils": "^1.0",
-        "text/template": "~2.3"
+        "text/template": "~2.3",
+        "nesbot/carbon": "^1.22"
     },
     "require-dev": {
         "eaglewu/swoole-ide-helper": "dev-master",

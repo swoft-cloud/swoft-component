@@ -7,18 +7,13 @@ use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Session\Exception\RuntimeException;
 
-
 /**
  * @Bean()
- * @uses      FileSessionHandler
- * @version   2017年12月05日
+ * Class  FileSessionHandler
  * @author    huangzhhui <huangzhwork@gmail.com>
- * @copyright Copyright 2010-2017 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 class FileSessionHandler implements \SessionHandlerInterface
 {
-
     /**
      * @var string
      */
@@ -33,7 +28,8 @@ class FileSessionHandler implements \SessionHandlerInterface
      * FileSessionHandler constructor.
      *
      * @param string $path
-     * @param int    $minutes
+     * @param int $minutes
+     * @throws \InvalidArgumentException
      */
     public function __construct($path = null, $minutes = 15)
     {
@@ -65,7 +61,7 @@ class FileSessionHandler implements \SessionHandlerInterface
     /**
      * @inheritdoc
      */
-    public function gc($maxlifetime)
+    public function gc($maxLifetime)
     {
         return true;
     }
