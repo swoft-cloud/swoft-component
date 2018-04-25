@@ -33,9 +33,9 @@ class EntityCommand
     private $generatorEntity;
 
     /**
-     * @var string $filePath 实体文件路径
+     * @var string $entityFilePath 实体文件路径
      */
-    private $filePath = '@app/Models/Entity';
+    private $entityFilePath = '@app/Models/Entity';
 
     /**
      * Auto create entity by table structure
@@ -67,6 +67,7 @@ class EntityCommand
         $database = $removeTablePrefix = '';
         $tablesEnabled = $tablesDisabled = [];
 
+        $this->parseEntityFilePath();
         $this->parseDatabaseCommand($database);
         $this->parseEnableTablesCommand($tablesEnabled);
         $this->parseDisableTablesCommand($tablesDisabled);
@@ -88,7 +89,6 @@ class EntityCommand
      */
     private function initDatabase(): bool
     {
-        App::setAlias('@entityPath', $this->filePath);
         $pool = App::getBean(DbPool::class);
         $schema = new Schema();
         $schema->setDriver('MYSQL');
@@ -100,11 +100,19 @@ class EntityCommand
     }
 
     /**
+     * 设置实体生成路径
+     */
+    private function setEntityFilePath(): void
+    {
+        App::setAlias('@entityPath', $this->entityFilePath);
+    }
+
+    /**
      * 解析需要扫描的数据库
      *
      * @param string &$database 需要扫描的数据库
      */
-    private function parseDatabaseCommand(string &$database)
+    private function parseDatabaseCommand(string &$database): void
     {
         if (input()->hasSOpt('d') || input()->hasLOpt('database')) {
             $database = (string)\input()->getSameOpt(['d','database']);
@@ -116,7 +124,7 @@ class EntityCommand
      *
      * @param array &$tablesEnabled 需要扫描的表
      */
-    private function parseEnableTablesCommand(&$tablesEnabled)
+    private function parseEnableTablesCommand(&$tablesEnabled): void
     {
         if (input()->hasSOpt('i') || input()->hasLOpt('include')) {
             $tablesEnabled = input()->hasSOpt('i') ? input()->getShortOpt('i') : input()->getLongOpt('include');
@@ -134,7 +142,7 @@ class EntityCommand
      *
      * @param array &$tablesDisabled 不需要扫描的表
      */
-    private function parseDisableTablesCommand(&$tablesDisabled)
+    private function parseDisableTablesCommand(&$tablesDisabled): void
     {
         if (input()->hasSOpt('e') || input()->hasLOpt('exclude')) {
             $tablesDisabled = input()->hasSOpt('e') ? input()->getShortOpt('e') : input()->getLongOpt('exclude');
@@ -147,9 +155,25 @@ class EntityCommand
      *
      * @param string &$removeTablePrefix 需要移除的前缀
      */
-    private function parseRemoveTablePrefix(&$removeTablePrefix) {
+    private function parseRemoveTablePrefix(&$removeTablePrefix): void
+    {
         if (input()->hasLOpt('remove-table-prefix')) {
             $removeTablePrefix = (string)input()->getLongOpt('remove-table-prefix');
         }
+    }
+
+    /**
+     * 实体生成路径
+     */
+    private function parseEntityFilePath(): void
+    {
+        if (input()->hasLOpt('entity-file-path')) {
+            $entityFilePath = (string)input()->getLongOpt('entity-file-path');
+            if (preg_match('/^@app(.*)/', $entityFilePath) && is_dir(App::getAlias($entityFilePath))) {
+                $this->entityFilePath = $entityFilePath;
+            }
+        }
+
+        $this->setEntityFilePath();
     }
 }
