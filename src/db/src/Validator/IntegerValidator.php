@@ -13,7 +13,7 @@ use Swoft\Bean\Annotation\Bean;
 use Swoft\Exception\ValidatorException;
 
 /**
- * @Bean("DbIntegerValidator")
+ * @Bean("DbIntValidator")
  */
 class IntegerValidator implements ValidatorInterface
 {

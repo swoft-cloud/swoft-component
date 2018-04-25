@@ -420,7 +420,7 @@ class Executor
         foreach ($validates as $validate) {
             $name     = $validate['name'];
             $params   = $validate['value'];
-            $beanName = 'Validator' . $name;
+            $beanName = 'Db' . $name .'Validator';
 
             // 验证器未定义
             if (!BeanFactory::hasBean($beanName)) {
