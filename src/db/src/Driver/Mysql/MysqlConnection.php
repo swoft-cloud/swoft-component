@@ -91,7 +91,7 @@ class MysqlConnection extends AbstractDbConnection
         $this->formatSqlByParams($params);
         $result = $this->connection->query($this->sql);
         if ($result === false) {
-            App::error('Mysql execute error，connectError=' . $this->connection->connect_error . ' error=' . $this->connection->error);
+            throw new MysqlException('Mysql execute error，connectError=' . $this->connection->connect_error . ' error=' . $this->connection->error);
         }
 
         $this->pushSqlToStack($this->sql);
@@ -105,7 +105,7 @@ class MysqlConnection extends AbstractDbConnection
     {
         $result = $this->connection->recv();
         if ($result === false) {
-            App::error('Mysql recv error，connectError=' . $this->connection->connect_error . ' error=' . $this->connection->error);
+            throw new MysqlException('Mysql recv error，connectError=' . $this->connection->connect_error . ' error=' . $this->connection->error);
         }
         $this->connection->setDefer(false);
 
@@ -234,7 +234,12 @@ class MysqlConnection extends AbstractDbConnection
 
         $newParams = [];
         foreach ($params as $key => $value) {
-            $value = "'{$value}'";
+            if($value === null){
+                $value = " null ";
+            }else{
+                $value = "'{$value}'";
+            }
+
             if (\is_int($key)) {
                 $key = sprintf('?%d', $key);
             }
@@ -245,6 +250,7 @@ class MysqlConnection extends AbstractDbConnection
         if (strpos($this->sql, '?') !== false) {
             $this->transferQuestionMark();
         }
+
         $this->sql = strtr($this->sql, $newParams);
     }
 

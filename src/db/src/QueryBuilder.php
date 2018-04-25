@@ -11,12 +11,12 @@
 namespace Swoft\Db;
 
 use Swoft\App;
+use Swoft\Core\ResultInterface;
 use Swoft\Db\Bean\Collector\EntityCollector;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Exception\MysqlException;
 use Swoft\Db\Helper\DbHelper;
 use Swoft\Db\Helper\EntityHelper;
-use Swoft\Core\ResultInterface;
 
 /**
  * 查询器
@@ -161,6 +161,11 @@ class QueryBuilder implements QueryBuilderInterface
      * @var array
      */
     private $updateValues = [];
+
+    /**
+     * @var array
+     */
+    private $counterValues = [];
 
     /**
      * 是否是delete
@@ -315,12 +320,29 @@ class QueryBuilder implements QueryBuilderInterface
      * @param array $values
      *
      * @return ResultInterface
-     * @throws MysqlException
      */
     public function update(array $values): ResultInterface
     {
         $this->update       = $this->getTableName();
         $this->updateValues = $values;
+
+        return $this->execute();
+    }
+
+    /**
+     * @param mixed $column
+     * @param int   $amount
+     *
+     * @return \Swoft\Core\ResultInterface
+     */
+    public function counter($column, $amount = 1): ResultInterface
+    {
+        $this->update = $this->getTableName();
+        if (is_array($column)) {
+            $this->counterValues = $column;
+        } else {
+            $this->counterValues = [$column => $amount];
+        }
 
         return $this->execute();
     }
@@ -344,6 +366,15 @@ class QueryBuilder implements QueryBuilderInterface
      */
     public function get(array $columns = ['*']): ResultInterface
     {
+        if (empty($columns)) {
+            $columns = ['*'];
+        }
+
+        $isAllColumns = count($columns) == 1 && isset($columns[0]) && $columns[0] == '*';
+        if (!empty($this->className) && $isAllColumns) {
+            $columns = $this->getAllFields();
+        }
+
         foreach ($columns as $column => $alias) {
             if (\is_int($column)) {
                 $this->select[$alias] = null;
@@ -351,6 +382,8 @@ class QueryBuilder implements QueryBuilderInterface
             }
             $this->select[$column] = $alias;
         }
+
+        $this->addGetDecorator();
 
         return $this->execute();
     }
@@ -1217,7 +1250,7 @@ class QueryBuilder implements QueryBuilderInterface
 
     /**
      * @return string
-     * @throws \Swoft\Db\Exception\MysqlException
+     * @throws MysqlException
      */
     private function getTableName(): string
     {
@@ -1362,6 +1395,14 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
+     * @return array
+     */
+    public function getCounterValues(): array
+    {
+        return $this->counterValues;
+    }
+
+    /**
      * @param string $alias
      */
     protected function addAggregateDecorator(string $alias)
@@ -1375,14 +1416,65 @@ class QueryBuilder implements QueryBuilderInterface
         });
     }
 
+    /**
+     * Add one decorator
+     */
     protected function addOneDecorator()
     {
         $this->addDecorator(function ($result) {
+            if (isset($result[0]) && !empty($this->className)) {
+                return EntityHelper::arrayToEntity($result[0], $this->className);
+            }
+
+            if (empty($result) && !empty($this->className)) {
+                return null;
+            }
+
             if (isset($result[0])) {
                 return $result[0];
             }
 
-            return [];
+            return $result;
+        });
+    }
+
+    /**
+     * @param array $columns
+     *
+     * @return array
+     */
+    protected function getSelectFields($columns = ['*']): array
+    {
+        if (empty($columns)) {
+            $columns = ['*'];
+        }
+    }
+
+    /**
+     * @return array
+     */
+    protected function getAllFields(): array
+    {
+        $tableName    = $this->getTableName();
+        $entities     = EntityCollector::getCollector();
+        $entityClass  = $entities[$tableName];
+        $entityFields = $entities[$entityClass]['field']??[];
+        $entityFields = array_column($entityFields, 'column');
+
+        return $entityFields;
+    }
+
+    /**
+     * Add get decorator
+     */
+    protected function addGetDecorator()
+    {
+        $this->addDecorator(function ($result) {
+            if (!empty($this->className) && !empty($result)) {
+                return EntityHelper::listToEntity($result, $this->className);
+            }
+
+            return $result;
         });
     }
 }
