@@ -1,0 +1,36 @@
+{
+    "name": "swoft/defer",
+    "type": "library",
+    "keywords": [
+        "php",
+        "swoole",
+        "swoft",
+        "defer"
+    ],
+    "description": "Defer Component for Swoft",
+    "license": "Apache-2.0",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Swoft\\Defer\\": "src/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SwoftTest\\Defer\\": "test/Cases"
+        }
+    },
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://packagist.phpcomposer.com"
+        }
+    },
+    "scripts": {
+        "test": "./vendor/bin/phpunit -c phpunit.xml",
+        "cs-fix": "./vendor/bin/php-cs-fixer fix $1"
+    }
+}

@@ -5,6 +5,7 @@ namespace Swoft\Core;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Swoft\App;
+use Swoft\Defer\Defer;
 use Swoft\Helper\ArrayHelper;
 
 /**
@@ -30,6 +31,11 @@ class RequestContext
     const RESPONSE_KEY = 'response';
 
     /**
+     * Key of Defer
+     */
+    const DEFER_KEY = 'defer';
+
+    /**
      * @var array Coroutine context
      */
     private static $context;
@@ -51,6 +57,14 @@ class RequestContext
     }
 
     /**
+     * @return \Swoft\Defer\Defer
+     */
+    public static function getDefer(): Defer
+    {
+        return self::getCoroutineContext(self::DEFER_KEY);
+    }
+
+    /**
      * @return array|null
      */
     public static function getContextData()
@@ -65,8 +79,7 @@ class RequestContext
      */
     public static function setRequest(RequestInterface $request)
     {
-        $coroutineId = self::getCoroutineId();
-        self::$context[$coroutineId][self::REQUEST_KEY] = $request;
+        self::$context[self::getCoroutineId()][self::REQUEST_KEY] = $request;
     }
 
     /**
@@ -76,8 +89,15 @@ class RequestContext
      */
     public static function setResponse(ResponseInterface $response)
     {
-        $coroutineId = self::getCoroutineId();
-        self::$context[$coroutineId][self::RESPONSE_KEY] = $response;
+        self::$context[self::getCoroutineId()][self::RESPONSE_KEY] = $response;
+    }
+
+    /**
+     * @param \Swoft\Defer\Defer $defer
+     */
+    public static function setDefer(Defer $defer)
+    {
+        self::$context[self::getCoroutineId()][self::DEFER_KEY] = $defer;
     }
 
     /**
