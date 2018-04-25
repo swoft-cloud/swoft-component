@@ -13,7 +13,7 @@ use Swoft\Sg\Bean\Annotation\Breaker;
 class BreakerWrapper extends AbstractWrapper
 {
     /**
-     * 类注解
+     * Class annotation
      *
      * @var array
      */
@@ -22,7 +22,7 @@ class BreakerWrapper extends AbstractWrapper
     ];
 
     /**
-     * 属性注解
+     * Property annotations
      *
      * @var array
      */
@@ -32,15 +32,6 @@ class BreakerWrapper extends AbstractWrapper
     ];
 
     /**
-     * 方法注解
-     *
-     * @var array
-     */
-    protected $methodAnnotations = [];
-
-    /**
-     * 是否解析类注解
-     *
      * @param array $annotations
      * @return bool
      */
@@ -50,8 +41,6 @@ class BreakerWrapper extends AbstractWrapper
     }
 
     /**
-     * 是否解析属性注解
-     *
      * @param array $annotations
      * @return bool
      */
@@ -61,8 +50,6 @@ class BreakerWrapper extends AbstractWrapper
     }
 
     /**
-     * 是否解析方法注解
-     *
      * @param array $annotations
      * @return bool
      */

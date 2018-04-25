@@ -24,12 +24,12 @@ class BreakerParser extends AbstractParser
     public function parser(
         string $className,
         $objectAnnotation = null,
-        string $propertyName = "",
-        string $methodName = "",
+        string $propertyName = '',
+        string $methodName = '',
         $propertyValue = null
-    ) {
+    ): array {
         BreakerCollector::collect($className, $objectAnnotation, $propertyName, $methodName, $propertyValue);
 
-        return [$className, Scope::SINGLETON, ""];
+        return [$className, Scope::SINGLETON, ''];
     }
 }

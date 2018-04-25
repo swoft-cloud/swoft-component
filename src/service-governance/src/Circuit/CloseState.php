@@ -6,34 +6,34 @@ use Swoft\App;
 use Swoole\Coroutine\Client;
 
 /**
- * 关闭状态及切换(close)
+ * Closed state and switch(close)
  *
- * 1. 重置failCounter=0 successCount=0
- * 2. 操作失败，failCounter计数
- * 3. 操作失败一定计数，切换为open开启状态
+ * 1. Reset failCounter=0 successCount=0
+ * 2. Operation failed, failCounter
+ * 3. The operation failed a certain number of times, switching to the open state
  */
 class CloseState extends CircuitBreakerState
 {
     /**
-     * 熔断器调用
+     * call circuit breaker
      *
-     * @param mixed $callback 回调函数
-     * @param array $params 参数
-     * @param mixed $fallback 失败回调
+     * @param mixed $callback Callback
+     * @param array $params Parameters
+     * @param mixed $fallback Fallback callback
      *
-     * @return mixed 返回结果
+     * @return mixed
      */
-    public function doCall($callback, $params = [], $fallback = null)
+    public function doCall($callback, array $params = [], $fallback = null)
     {
         list($class, $method) = $callback;
 
         try {
-            if ($class == null) {
-                throw new \Exception($this->circuitBreaker->serviceName . "服务,连接建立失败(null)");
+            if (!$class) {
+                throw new \RuntimeException($this->circuitBreaker->serviceName . 'service, connection establishment failed(null)');
             }
 
-            if ($class instanceof Client && $class->isConnected() == false) {
-                throw new \Exception($this->circuitBreaker->serviceName . "服务,当前连接已断开");
+            if ($class instanceof Client && $class->isConnected() === false) {
+                throw new \RuntimeException($this->circuitBreaker->serviceName . 'service, The current connection has been disconnected');
             }
             $data = $class->$method(...$params);
         } catch (\Exception $e) {
@@ -41,18 +41,18 @@ class CloseState extends CircuitBreakerState
                 $this->circuitBreaker->incFailCount();
             }
 
-            App::error($this->circuitBreaker->serviceName . "服务，当前[关闭状态]，服务端调用失败，开始服务降级容错处理，error=" . $e->getMessage());
+            App::error($this->circuitBreaker->serviceName . 'service, current[close], Service call failed, Start service downgrade fault tolerance, error=' . $e->getMessage());
             $data = $this->circuitBreaker->fallback($fallback);
         }
 
         $failCount = $this->circuitBreaker->getFailCounter();
         $switchToFailCount = $this->circuitBreaker->getSwitchToFailCount();
         if ($failCount >= $switchToFailCount && $this->circuitBreaker->isClose()) {
-            App::trace($this->circuitBreaker->serviceName . "服务，当前[关闭状态]，服务失败次数达到上限，开始切换为开启状态，failCount=" . $failCount);
+            App::trace($this->circuitBreaker->serviceName . 'service, current[close], service failed to reach the limit, Start switching to on, failCount=' . $failCount);
             $this->circuitBreaker->switchToOpenState();
         }
 
-        App::trace($this->circuitBreaker->serviceName . "服务，当前[关闭状态]，failCount=" . $this->circuitBreaker->getFailCounter());
+        App::trace($this->circuitBreaker->serviceName . 'service, current[close], failCount=' . $this->circuitBreaker->getFailCounter());
         return $data;
     }
 }

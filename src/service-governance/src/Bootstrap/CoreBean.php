@@ -14,7 +14,6 @@ use Swoft\Sg\ProviderSelector;
  */
 class CoreBean implements BootBeanInterface
 {
-
     /**
      * @return array
      */

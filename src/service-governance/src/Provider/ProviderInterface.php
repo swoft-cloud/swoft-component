@@ -3,7 +3,7 @@
 namespace Swoft\Sg\Provider;
 
 /**
- * Provier interface
+ * Provider interface
  */
 interface ProviderInterface
 {
@@ -11,14 +11,12 @@ interface ProviderInterface
      * @param string $serviceName
      * @param array  ...$params
      *
-     * @return mixed
+     * @return array
      */
-    public function getServiceList(string $serviceName, ...$params);
+    public function getServiceList(string $serviceName, ...$params): array ;
 
     /**
      * @param array ...$params
-     *
-     * @return mixed
      */
     public function registerService(...$params);
 }
