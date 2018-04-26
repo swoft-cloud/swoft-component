@@ -61,7 +61,7 @@ class EntityHelper
             $type  = $entities[$className]['field'][$field]['type'];
             $value = self::trasferTypes($type, $value);
 
-            if (\method_exists($object, $setterMethod)) {
+            if (\method_exists($object, $setterMethod) && $value !== null) {
                 $attrs[$field] = $value;
 
                 $object->$setterMethod($value);

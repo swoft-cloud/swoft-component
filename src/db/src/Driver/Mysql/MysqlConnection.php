@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Db\Driver\Mysql;
 
 use Swoft\App;
@@ -14,6 +15,7 @@ use Swoft\Db\AbstractDbConnection;
 use Swoft\Db\Bean\Annotation\Connection;
 use Swoft\Db\Exception\MysqlException;
 use Swoole\Coroutine\Mysql;
+use Swoole\Coroutine\MySQL\Statement;
 
 /**
  * Mysql connection
@@ -38,13 +40,18 @@ class MysqlConnection extends AbstractDbConnection
     private $result;
 
     /**
+     * @var Statement
+     */
+    private $stmt;
+
+    /**
      * Prepare
      *
      * @param string $sql
      */
     public function prepare(string $sql)
     {
-        $this->sql  = $sql;
+        $this->sql = $sql;
     }
 
     /**
@@ -75,7 +82,7 @@ class MysqlConnection extends AbstractDbConnection
             throw new MysqlException('Database connection error，error=' . $mysql->connect_error);
         }
 
-        $this->originDb = $options['database'];
+        $this->originDb   = $options['database'];
         $this->connection = $mysql;
     }
 
@@ -88,13 +95,15 @@ class MysqlConnection extends AbstractDbConnection
      */
     public function execute(array $params = [])
     {
-        $this->formatSqlByParams($params);
-        $result = $this->connection->query($this->sql);
+        list($sql, $params) = $this->parseSqlAndParams($this->sql, $params);
+        $this->stmt = $this->connection->prepare($sql);
+        $result     = $this->stmt->execute($params);
         if ($result === false) {
             throw new MysqlException('Mysql execute error，connectError=' . $this->connection->connect_error . ' error=' . $this->connection->error);
         }
 
         $this->pushSqlToStack($this->sql);
+
         return $result;
     }
 
@@ -109,7 +118,7 @@ class MysqlConnection extends AbstractDbConnection
         }
         $this->connection->setDefer(false);
 
-        $this->recv = true;
+        $this->recv   = true;
         $this->result = $result;
 
         return $result;
@@ -186,7 +195,7 @@ class MysqlConnection extends AbstractDbConnection
     public function setDefer($defer = true)
     {
         $this->recv = false;
-        $result = $this->connection->setDefer($defer);
+        $result     = $this->connection->setDefer($defer);
     }
 
     /**
@@ -222,53 +231,39 @@ class MysqlConnection extends AbstractDbConnection
     }
 
     /**
-     * 格式化sql参数
+     * @param string $sql
+     * @param array  $params
      *
-     * @param array|null $params
+     * @return array
+     * @throws \Swoft\Db\Exception\MysqlException
      */
-    private function formatSqlByParams(array $params = null)
+    private function parseSqlAndParams(string $sql, array $params): array
     {
-        if (empty($params)) {
-            return;
+        $isIndexParam = strpos($sql, '?') !== false;
+        $isKeyParam   = strpos($sql, ':') !== false;
+        if ($isIndexParam && $isKeyParam) {
+            throw new MysqlException('Placeholder can only be "?"/":" One of them');
+        }
+        if ($isIndexParam) {
+            return [$sql, $params];
+        }
+
+        $sql    .= ' ';
+        $result = preg_match_all('/(\:.*?)[\s+|\,|\)]/', $sql, $ary);
+        if (!$result || !isset($ary[1])) {
+            return [$sql, $params];
         }
 
         $newParams = [];
-        foreach ($params as $key => $value) {
-            if($value === null){
-                $value = " null ";
-            }else{
-                $value = "'{$value}'";
+        foreach ($ary[1] as $name) {
+            if (!array_key_exists($name, $params)) {
+                throw new MysqlException($name . ' parameters must be passed');
             }
-
-            if (\is_int($key)) {
-                $key = sprintf('?%d', $key);
-            }
-            $newParams[$key] = $value;
+            $newParams[] = $params[$name];
         }
 
-        // ?方式传递参数
-        if (strpos($this->sql, '?') !== false) {
-            $this->transferQuestionMark();
-        }
+        $sql = str_replace($ary[1], '?', $sql);
 
-        $this->sql = strtr($this->sql, $newParams);
-    }
-
-    /**
-     * 格式化?标记
-     */
-    private function transferQuestionMark()
-    {
-        $sqlAry = explode('?', $this->sql);
-        $sql = '';
-        $maxBlock = \count($sqlAry);
-        for ($i = 0; $i < $maxBlock; $i++) {
-            $n = $i;
-            $sql .= $sqlAry[$i];
-            if ($maxBlock > $i + 1) {
-                $sql .= '?' . $n . ' ';
-            }
-        }
-        $this->sql = $sql;
+        return [$sql, $newParams];
     }
 }

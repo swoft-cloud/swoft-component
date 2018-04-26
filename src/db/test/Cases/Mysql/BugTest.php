@@ -206,4 +206,42 @@ class BugTest extends AbstractMysqlCase
         $qbUser = Query::table(User::class)->where('id', $uid)->andwhere('description', '%tLikeD%', Qb::LIKE)->one()->getResult();
         $this->assertEquals($qbUser['id'], $uid);
     }
+
+    /**
+     * @dataProvider mysqlProviders
+     *
+     * @param array $uids
+     */
+    public function testCon(array $uids)
+    {
+        $result1 = User::findById($uids[0]);
+        $result2 = User::findById($uids[1]);
+
+        $user = $result1->getResult();
+        $user2 = $result2->getResult();
+
+        $this->assertEquals($user['id'], $uids[0]);
+        $this->assertEquals($user2['id'], $uids[1]);
+    }
+
+    /**
+     * @dataProvider mysqlProviders
+     *
+     * @param array $uids
+     */
+    public function testConByCo(array $uids){
+        go(function ()use ($uids){
+            $this->testCon($uids);
+        });
+    }
+
+    /**
+     * @dataProvider mysqlProviders
+     *
+     * @param array $uids
+     */
+    public function testFindAll(array $uids){
+        $users = User::findAll()->getResult();
+        $this->assertGreaterThan(2, count($users));
+    }
 }
