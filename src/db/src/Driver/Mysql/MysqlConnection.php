@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Db\Driver\Mysql;
 
 use Swoft\App;
@@ -14,6 +15,7 @@ use Swoft\Db\AbstractDbConnection;
 use Swoft\Db\Bean\Annotation\Connection;
 use Swoft\Db\Exception\MysqlException;
 use Swoole\Coroutine\Mysql;
+use Swoole\Coroutine\MySQL\Statement;
 
 /**
  * Mysql connection
@@ -44,7 +46,7 @@ class MysqlConnection extends AbstractDbConnection
      */
     public function prepare(string $sql)
     {
-        $this->sql  = $sql;
+        $this->sql = $sql;
     }
 
     /**
@@ -75,7 +77,7 @@ class MysqlConnection extends AbstractDbConnection
             throw new MysqlException('Database connection error，error=' . $mysql->connect_error);
         }
 
-        $this->originDb = $options['database'];
+        $this->originDb   = $options['database'];
         $this->connection = $mysql;
     }
 
@@ -95,6 +97,7 @@ class MysqlConnection extends AbstractDbConnection
         }
 
         $this->pushSqlToStack($this->sql);
+
         return $result;
     }
 
@@ -109,7 +112,7 @@ class MysqlConnection extends AbstractDbConnection
         }
         $this->connection->setDefer(false);
 
-        $this->recv = true;
+        $this->recv   = true;
         $this->result = $result;
 
         return $result;
@@ -186,7 +189,7 @@ class MysqlConnection extends AbstractDbConnection
     public function setDefer($defer = true)
     {
         $this->recv = false;
-        $result = $this->connection->setDefer($defer);
+        $result     = $this->connection->setDefer($defer);
     }
 
     /**
@@ -234,9 +237,9 @@ class MysqlConnection extends AbstractDbConnection
 
         $newParams = [];
         foreach ($params as $key => $value) {
-            if($value === null){
+            if ($value === null) {
                 $value = " null ";
-            }else{
+            } else {
                 $value = "'{$value}'";
             }
 
@@ -259,11 +262,11 @@ class MysqlConnection extends AbstractDbConnection
      */
     private function transferQuestionMark()
     {
-        $sqlAry = explode('?', $this->sql);
-        $sql = '';
+        $sqlAry   = explode('?', $this->sql);
+        $sql      = '';
         $maxBlock = \count($sqlAry);
         for ($i = 0; $i < $maxBlock; $i++) {
-            $n = $i;
+            $n   = $i;
             $sql .= $sqlAry[$i];
             if ($maxBlock > $i + 1) {
                 $sql .= '?' . $n . ' ';
