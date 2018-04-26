@@ -6,6 +6,7 @@ use Swoft\Db\Exception\MysqlException;
 use Swoft\Db\Qb;
 use Swoft\Db\Query;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
+use SwoftTest\Db\Testing\Entity\Count;
 use SwoftTest\Db\Testing\Entity\User;
 
 /**
@@ -217,7 +218,7 @@ class BugTest extends AbstractMysqlCase
         $result1 = User::findById($uids[0]);
         $result2 = User::findById($uids[1]);
 
-        $user = $result1->getResult();
+        $user  = $result1->getResult();
         $user2 = $result2->getResult();
 
         $this->assertEquals($user['id'], $uids[0]);
@@ -229,8 +230,9 @@ class BugTest extends AbstractMysqlCase
      *
      * @param array $uids
      */
-    public function testConByCo(array $uids){
-        go(function ()use ($uids){
+    public function testConByCo(array $uids)
+    {
+        go(function () use ($uids) {
             $this->testCon($uids);
         });
     }
@@ -240,8 +242,22 @@ class BugTest extends AbstractMysqlCase
      *
      * @param array $uids
      */
-    public function testFindAll(array $uids){
+    public function testFindAll(array $uids)
+    {
         $users = User::findAll()->getResult();
         $this->assertGreaterThan(2, count($users));
+    }
+
+    /**
+     * @dataProvider relationProider
+     *
+     * @param int $uid
+     */
+    public function testLeftJoin(int $uid)
+    {
+        $result = Query::table(User::class, 'u')->leftJoin(Count::class, 'u.id=c.uid', 'c')->condition(['u.id' => $uid])->one(['u.*'])->getResult();
+        $this->assertEquals($result['id'], $uid);
+        $result = Query::table('user', 'u')->leftJoin('count', 'u.id=c.uid', 'c')->condition(['u.id' => $uid])->one(['u.*'])->getResult();
+        $this->assertEquals($result['id'], $uid);
     }
 }

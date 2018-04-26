@@ -458,7 +458,9 @@ class Statement implements StatementInterface
             // 没有括号
             $useConnector = true;
             $value        = $this->getCriteriaWithoutBracket($criterion['operator'], $criterion['value'], $criterion['column']);
-            $statement    .= '`' . $criterion['column'] . '` ' . $criterion['operator'] . ' ' . $value;
+            $column       = $criterion['column'];
+            $column       = strpos($column, '.') === false ? " `{$column}` " : $column;
+            $statement    .= $column . $criterion['operator'] . ' ' . $value;
         }
 
         return $statement;
