@@ -5,18 +5,13 @@ namespace Swoft\Session\Handler;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\Inject;
 
-
 /**
  * @Bean()
- * @uses      RedisSessionHandler
- * @version   2017年12月05日
- * @author    huangzhhui <huangzhwork@gmail.com>
- * @copyright Copyright 2010-2017 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
+ * Class RedisSessionHandler
+ * @author huangzhhui <huangzhwork@gmail.com>
  */
 class RedisSessionHandler implements \SessionHandlerInterface
 {
-
     /**
      * @var string
      */
@@ -61,13 +56,13 @@ class RedisSessionHandler implements \SessionHandlerInterface
      */
     public function destroy($sessionId)
     {
-        return (bool)$this->redis->delete($this->key($sessionId));
+        return $this->redis->delete($this->key($sessionId));
     }
 
     /**
      * @inheritdoc
      */
-    public function gc($maxlifetime)
+    public function gc($maxLifetime)
     {
         return true;
     }
@@ -94,7 +89,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
      */
     public function write($sessionId, $data)
     {
-        return (bool)$this->redis->set($this->key($sessionId), $this->serialize($data));
+        return $this->redis->set($this->key($sessionId), $this->serialize($data));
     }
 
     /**
@@ -103,7 +98,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
      */
     protected function key(string $sessionId): string
     {
-        return implode($this->glue, [$this->prefix, $sessionId]);
+        return \implode($this->glue, [$this->prefix, $sessionId]);
     }
 
     /**
@@ -114,7 +109,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
      */
     protected function serialize($value)
     {
-        return is_numeric($value) ? $value : serialize($value);
+        return \is_numeric($value) ? $value : \serialize($value);
     }
 
     /**
@@ -125,7 +120,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
      */
     protected function unserialize($value)
     {
-        return is_numeric($value) ? $value : unserialize($value, []);
+        return \is_numeric($value) ? $value : \unserialize($value, ['allowed_classes' => false]);
     }
 
 }

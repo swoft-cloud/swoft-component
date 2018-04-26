@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\Inject;
 use Swoft\Helper\ArrayHelper;
@@ -83,12 +82,13 @@ class SessionMiddleware implements MiddlewareInterface
             $this->collectGarbage($session);
         }
 
+        /** @var \Swoft\Http\Message\Server\Response $response */
         $response = $handler->handle($request);
 
         // Again, if the session has been configured we will need to close out the session
         // so that the attributes may be persisted to some storage medium. We will also
         // add the session identifier cookie to the application response headers now.
-        if ($isSessionAvailable) {
+        if ($isSessionAvailable && $session) {
             $this->storeCurrentUrl($request, $session);
 
             $response = $this->addCookieToResponse($request, $response, $session);
@@ -115,6 +115,7 @@ class SessionMiddleware implements MiddlewareInterface
         $handler = $this->sessionManager->createHandlerByConfig();
         $this->sessionStore = new SessionStore($name, $handler, $id);
         $this->sessionStore->start();
+
         return $this->sessionStore;
     }
 

@@ -2,30 +2,25 @@
 
 namespace Swoft\Session;
 
-
 /**
- * @uses      SessionInterface
- * @version   2018年02月01日
- * @author    huangzhhui <huangzhwork@gmail.com>
- * @copyright Copyright 2010-2018 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
+ * Class SessionInterface
+ * @author huangzhhui <huangzhwork@gmail.com>
  */
 interface SessionInterface
 {
-
     /**
      * Get the name of the session.
      *
      * @return string
      */
-    public function getName();
+    public function getName(): string ;
 
     /**
      * Get the current session ID.
      *
      * @return string
      */
-    public function getId();
+    public function getId(): string ;
 
     /**
      * Set the session ID.
@@ -40,21 +35,21 @@ interface SessionInterface
      *
      * @return bool
      */
-    public function start();
+    public function start(): bool ;
 
     /**
      * Save the session data to storage.
      *
      * @return bool
      */
-    public function save();
+    public function save(): bool ;
 
     /**
      * Get all of the session data.
      *
      * @return array
      */
-    public function all();
+    public function all(): array ;
 
     /**
      * Checks if a key exists.
@@ -62,7 +57,7 @@ interface SessionInterface
      * @param  string|array $key
      * @return bool
      */
-    public function exists($key);
+    public function exists($key): bool ;
 
     /**
      * Checks if an a key is present and not null.
@@ -70,7 +65,7 @@ interface SessionInterface
      * @param  string|array $key
      * @return bool
      */
-    public function has($key);
+    public function has($key): bool ;
 
     /**
      * Get an item from the session.
@@ -95,7 +90,7 @@ interface SessionInterface
      *
      * @return string
      */
-    public function token();
+    public function token(): string ;
 
     /**
      * Remove an item from the session, returning its value.
@@ -155,14 +150,14 @@ interface SessionInterface
      *
      * @return \SessionHandlerInterface
      */
-    public function getHandler();
+    public function getHandler(): \SessionHandlerInterface;
 
     /**
      * Determine if the session handler needs a request.
      *
      * @return bool
      */
-    public function handlerNeedsRequest();
+    public function handlerNeedsRequest(): bool ;
 
     /**
      * Set the request on the handler instance.
