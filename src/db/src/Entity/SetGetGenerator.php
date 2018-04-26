@@ -90,7 +90,8 @@ class SetGetGenerator
         string $entityClass,
         string $entityDate,
         array $fields
-    ) {
+    )
+    {
         $this->schema = $schema;
         $entityStub   = $this->generateModel();
         $usesContent  = '';
@@ -172,8 +173,8 @@ class SetGetGenerator
             $enumParam = explode(',', str_replace('\'', '', $enumParam));
             // TODO $enumParam never use ?
         }
-        
-         //字段类型
+
+        //字段类型
         $dbType = !empty($dbType) ? $dbType : ($isEnum ? '"feature-enum"' : (\is_int($default) ? '"int"' : '"string"'));
 
         $default = $this->setDefault($dbType, $default, $primaryKey);
@@ -227,7 +228,7 @@ class SetGetGenerator
                 '{{type}}',
                 '{{hasReturnType}}',
             ], [
-                !empty($comment) ? "     * {$comment}\n":'',
+                !empty($comment) ? "     * {$comment}\n" : '',
                 $function,
                 $aliasProperty,
                 $type !== 'mixed' ? "{$type} " : '',
@@ -249,15 +250,14 @@ class SetGetGenerator
         $primaryKey    = $fieldInfo['key'] === 'PRI';
         $aliasProperty = StringHelper::camel($property);
         $this->checkAliasProperty($aliasProperty);
-        $function         = StringHelper::camel($aliasProperty);
-        $function         = 'get' . ucfirst($function);
-        $default       = $fieldInfo['default'] ?? '';
-        $dbType        = $this->schema->dbSchema[$fieldInfo['type']] ?? '';
-        $primaryKey       = $fieldInfo['key'] === 'PRI';
-        $returnType       = $this->schema->phpSchema[$fieldInfo['type']] ?? 'mixed';
+        $function   = StringHelper::camel($aliasProperty);
+        $function   = 'get' . ucfirst($function);
+        $default    = $fieldInfo['default'] ?? '';
+        $dbType     = $this->schema->dbSchema[$fieldInfo['type']] ?? '';
+        $returnType = $this->schema->phpSchema[$fieldInfo['type']] ?? 'mixed';
 
-         //字段类型
-        $dbType = !empty($dbType) ? $dbType : ($isEnum ? '"feature-enum"' : (\is_int($default) ? '"int"' : '"string"'));
+        //字段类型
+        $dbType = !empty($dbType) ? $dbType : \is_int($default) ? '"int"' : '"string"';
 
         $default = $this->setDefault($dbType, $default, $primaryKey);
 
@@ -268,7 +268,7 @@ class SetGetGenerator
                 '{{coReturnType}}',
                 '{{returnType}}',
             ], [
-                !empty($comment) ? "     * {$comment}\n":'',
+                !empty($comment) ? "     * {$comment}\n" : '',
                 $function,
                 $aliasProperty,
                 $returnType !== 'mixed' && !$primaryKey && $default !== '\'\'' ? $returnType : 'mixed',
@@ -283,7 +283,8 @@ class SetGetGenerator
      *
      * @return bool
      */
-    private function checkAliasProperty(string &$aliasProperty): bool
+    private function checkAliasProperty(string &$aliasProperty)
+    : bool
     {
         preg_match_all('/\w+/', $aliasProperty, $match);
         $aliasProperty = implode('', $match[0]);
@@ -300,7 +301,8 @@ class SetGetGenerator
      *
      * return string
      */
-    private function generateModel(): string
+    private function generateModel()
+    : string
     {
         return file_get_contents($this->folder . $this->modelStubFile);
     }
@@ -310,7 +312,8 @@ class SetGetGenerator
      *
      * return string
      */
-    private function generateSetter(): string
+    private function generateSetter()
+    : string
     {
         return file_get_contents($this->folder . $this->setterStubFile);
     }
@@ -320,7 +323,8 @@ class SetGetGenerator
      *
      * @return string
      */
-    private function generateGetter(): string
+    private function generateGetter()
+    : string
     {
         return file_get_contents($this->folder . $this->getterStubFile);
     }
@@ -330,16 +334,17 @@ class SetGetGenerator
      *
      * @return string
      */
-    private function generateProperty(): string
+    private function generateProperty()
+    : string
     {
         return file_get_contents($this->folder . $this->propertyStubFile);
     }
-    
+
     /**
      * 设置默认值
      *
-     * @param string $dbType 数据库类型
-     * @param mixed  $default 默认值
+     * @param string $dbType     数据库类型
+     * @param mixed  $default    默认值
      * @param bool   $primaryKey 主键
      *
      * @return miexed
@@ -350,10 +355,8 @@ class SetGetGenerator
             return '\'\'';
         }
 
-        if(in_array(strtolower($default), ['\'\'','""', 'null']) || empty($default))
-        {
-            switch ($dbType)
-            {
+        if (in_array(strtolower($default), ['\'\'', '""', 'null']) || empty($default)) {
+            switch ($dbType) {
                 case "Types::INT":
                 case "Types::NUMBER":
                 case "Types::BOOLEAN":
@@ -363,25 +366,22 @@ class SetGetGenerator
                     $default = '0.0';
                     break;
                 case "Types::DATETIME":
-                    $default = '\''. date('Y-m-d H:i:s') .'\'';
+                    $default = '\'' . date('Y-m-d H:i:s') . '\'';
                     break;
                 default:
                     $default = '\'\'';
                     break;
             }
-        }
-        else
-        {
+        } else {
             $default = trim($default);
-            switch ($dbType)
-            {
+            switch ($dbType) {
                 case "Types::INT":
                 case "Types::NUMBER":
                 case "Types::BOOLEAN":
                 case "Types::FLOAT":
                     $default = $default;
                     break;
-                 default:
+                default:
                     $default = json_encode($default);
                     break;
             }
