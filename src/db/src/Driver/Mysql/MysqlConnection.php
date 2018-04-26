@@ -40,11 +40,6 @@ class MysqlConnection extends AbstractDbConnection
     private $result;
 
     /**
-     * @var Statement
-     */
-    private $stmt;
-
-    /**
      * Prepare
      *
      * @param string $sql
@@ -95,9 +90,8 @@ class MysqlConnection extends AbstractDbConnection
      */
     public function execute(array $params = [])
     {
-        list($sql, $params) = $this->parseSqlAndParams($this->sql, $params);
-        $this->stmt = $this->connection->prepare($sql);
-        $result     = $this->stmt->execute($params);
+        $this->formatSqlByParams($params);
+        $result = $this->connection->query($this->sql);
         if ($result === false) {
             throw new MysqlException('Mysql execute error，connectError=' . $this->connection->connect_error . ' error=' . $this->connection->error);
         }
@@ -231,39 +225,53 @@ class MysqlConnection extends AbstractDbConnection
     }
 
     /**
-     * @param string $sql
-     * @param array  $params
+     * 格式化sql参数
      *
-     * @return array
-     * @throws \Swoft\Db\Exception\MysqlException
+     * @param array|null $params
      */
-    private function parseSqlAndParams(string $sql, array $params): array
+    private function formatSqlByParams(array $params = null)
     {
-        $isIndexParam = strpos($sql, '?') !== false;
-        $isKeyParam   = strpos($sql, ':') !== false;
-        if ($isIndexParam && $isKeyParam) {
-            throw new MysqlException('Placeholder can only be "?"/":" One of them');
-        }
-        if ($isIndexParam) {
-            return [$sql, $params];
-        }
-
-        $sql    .= ' ';
-        $result = preg_match_all('/(\:.*?)[\s+|\,|\)]/', $sql, $ary);
-        if (!$result || !isset($ary[1])) {
-            return [$sql, $params];
+        if (empty($params)) {
+            return;
         }
 
         $newParams = [];
-        foreach ($ary[1] as $name) {
-            if (!array_key_exists($name, $params)) {
-                throw new MysqlException($name . ' parameters must be passed');
+        foreach ($params as $key => $value) {
+            if ($value === null) {
+                $value = " null ";
+            } else {
+                $value = "'{$value}'";
             }
-            $newParams[] = $params[$name];
+
+            if (\is_int($key)) {
+                $key = sprintf('?%d', $key);
+            }
+            $newParams[$key] = $value;
         }
 
-        $sql = str_replace($ary[1], '?', $sql);
+        // ?方式传递参数
+        if (strpos($this->sql, '?') !== false) {
+            $this->transferQuestionMark();
+        }
 
-        return [$sql, $newParams];
+        $this->sql = strtr($this->sql, $newParams);
+    }
+
+    /**
+     * 格式化?标记
+     */
+    private function transferQuestionMark()
+    {
+        $sqlAry   = explode('?', $this->sql);
+        $sql      = '';
+        $maxBlock = \count($sqlAry);
+        for ($i = 0; $i < $maxBlock; $i++) {
+            $n   = $i;
+            $sql .= $sqlAry[$i];
+            if ($maxBlock > $i + 1) {
+                $sql .= '?' . $n . ' ';
+            }
+        }
+        $this->sql = $sql;
     }
 }
