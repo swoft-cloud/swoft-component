@@ -56,7 +56,7 @@ abstract class AbstractMysqlCase extends AbstractTestCase
         $id = $user->save()->getResult();
 
         $count = new Count();
-        $count->setUid($id);
+        $count->setUid((int)$id);
         $count->setFans(mt_rand(1000, 10000));
         $count->setFollows(mt_rand(1000, 10000));
         $count->save()->getResult();

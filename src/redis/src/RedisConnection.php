@@ -6,9 +6,9 @@ use Swoft\App;
 use Swoft\Helper\PhpHelper;
 use Swoft\Pool\AbstractConnection;
 use Swoft\Redis\Exception\RedisException;
+use Swoft\Redis\Pool\Config\RedisPoolConfig;
 use Swoft\Redis\Profile\RedisCommandProvider;
 use Swoole\Coroutine\Redis as CoRedis;
-use Swoft\Redis\Pool\Config\RedisPoolConfig;
 
 /**
  * Redis connection
@@ -24,6 +24,8 @@ class RedisConnection extends AbstractConnection
 
     /**
      * Create connection
+     *
+     * @throws \Swoft\Redis\Exception\RedisException
      */
     public function createConnection()
     {
@@ -34,14 +36,14 @@ class RedisConnection extends AbstractConnection
         /* @var RedisPoolConfig $poolConfig */
         $poolConfig = $this->pool->getPoolConfig();
         $serialize  = $poolConfig->getSerialize();
-        $serialize  = ((int)$serialize == 0) ? false : true;
+        $serialize  = (int)$serialize !== 0;
 
         // create
         $redis  = new CoRedis();
         $host   = $config['host'];
         $port   = (int)$config['port'];
         $result = $redis->connect($host, $port, $serialize);
-        if ($result == false) {
+        if ($result === false) {
             $error = sprintf('Redis connection failure host=%s port=%d', $host, $port);
             App::error($error);
             throw new RedisException($error);
@@ -80,6 +82,7 @@ class RedisConnection extends AbstractConnection
     }
 
     /**
+     * @throws \Swoft\Redis\Exception\RedisException
      */
     public function reconnect()
     {
@@ -105,7 +108,7 @@ class RedisConnection extends AbstractConnection
      * @return array
      * @throws RedisException
      */
-    protected function parseUri(string $uri)
+    protected function parseUri(string $uri): array
     {
         $parseAry = parse_url($uri);
         if (!isset($parseAry['host']) || !isset($parseAry['port'])) {
@@ -117,8 +120,7 @@ class RedisConnection extends AbstractConnection
         $query = $parseAry['query']?? '';
         parse_str($query, $options);
         $configs = array_merge($parseAry, $options);
-        unset($configs['path']);
-        unset($configs['query']);
+        unset($configs['path'], $configs['query']);
 
         return $configs;
     }
@@ -131,11 +133,11 @@ class RedisConnection extends AbstractConnection
      */
     public function __call($method, $arguments)
     {
-        /* @var RedisCommandProvider $commandProvider */
-        $commandProvider = App::getBean(RedisCommandProvider::class);
-        $command         = $commandProvider->createCommand($method, $arguments);
-        $arguments       = $command->getArguments();
-        $method          = $command->getId();
+        /* @var RedisCommandProvider $provider */
+        $provider = \bean(RedisCommandProvider::class);
+        $command = $provider->createCommand($method, $arguments);
+        $arguments = $command->getArguments();
+        $method = $command->getId();
 
         return PhpHelper::call([$this->connection, $method], $arguments);
     }

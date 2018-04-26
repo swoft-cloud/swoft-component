@@ -72,6 +72,7 @@ class MysqlConnection extends AbstractDbConnection
 
         // error
         if ($mysql->connected === false) {
+            var_dump($options);
             throw new MysqlException('Database connection error，error=' . $mysql->connect_error);
         }
 

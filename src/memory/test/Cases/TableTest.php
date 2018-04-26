@@ -194,7 +194,7 @@ class TableTest extends AbstractTestCase
         $key = 'test';
         $notExistKey = 'notExist';
         $this->assertFalse($table->exist($key));
-        $result = $table->set('test', $columns);
+        $result = $table->set($key, $columns);
         $this->assertTrue($result);
         $this->assertTrue($table->exist($key));
         $this->assertEquals($string, $table->get($key, 'string'));
@@ -204,7 +204,9 @@ class TableTest extends AbstractTestCase
         $this->assertFalse($table->get($notExistKey, 'notExist'));
         $this->assertEquals($columns, $table->get($key));
         $this->assertEquals($columns, $table->get($key, null));
-        $this->assertFalse($table->get($key, false));
+        if (SWOOLE_VERSION < '2.1.3') {
+            $this->assertFalse($table->get($key, false));
+        }
 
         /**
          * Incr and Decr

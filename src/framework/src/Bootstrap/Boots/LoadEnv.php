@@ -16,7 +16,8 @@ class LoadEnv implements Bootable
      */
     public function bootstrap()
     {
-        if ($this->isAvailableFile($file = $this->getEnvFile())) {
+        $file = $this->getEnvFile();
+        if ($this->isAvailableFile($this->getEnvBaseDir() . DS . $file)) {
             (new Dotenv($this->getEnvBaseDir(), $file))->load();
         }
     }

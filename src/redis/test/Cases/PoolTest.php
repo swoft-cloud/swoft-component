@@ -26,11 +26,11 @@ class PoolTest extends AbstractTestCase
             '127.0.0.1:6379',
             '127.0.0.1:6379',
         ]);
-        $this->assertEquals($pConfig->getMaxActive(), 8);
-        $this->assertEquals($pConfig->getMaxWait(), 8);
+        $this->assertEquals($pConfig->getMaxActive(), 10);
+        $this->assertEquals($pConfig->getMaxWait(), 20);
         $this->assertEquals($pConfig->getMaxWaitTime(), 3);
         $this->assertEquals($pConfig->getMaxIdleTime(), 60);
-        $this->assertEquals($pConfig->getTimeout(), 8);
+        $this->assertEquals($pConfig->getTimeout(), 3);
     }
 
     public function testRedisPoolEnv()

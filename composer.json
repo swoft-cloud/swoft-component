@@ -20,7 +20,8 @@
         "zendframework/zend-mime": "^2.7",
         "psr/simple-cache": "^1.0.0",
         "seld/phar-utils": "^1.0",
-        "text/template": "~2.3"
+        "text/template": "~2.3",
+        "nesbot/carbon": "^1.26"
     },
     "require-dev": {
         "eaglewu/swoole-ide-helper": "dev-master",
@@ -98,6 +99,28 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "SwoftTest\\Cache\\": "src/cache/test/Cases",
+            "SwoftTest\\Console\\": "src/console/test/Cases",
+            "SwoftTest\\DataParser\\": "src/data-parser/test",
+            "SwoftTest\\Db\\": "src/db/test",
+            "SwoftTest\\Defer\\": "src/defer/test",
+            "SwoftTest\\Devtool\\": "src/devtool/test/Cases",
+            "SwoftTest\\": "src/framework/test/Cases",
+            "SwoftTest\\HttpClient\\": "src/http-client/test/Cases",
+            "SwoftTest\\HttpServer\\": "src/http-server/test/Cases",
+            "SwoftTest\\I18n\\": "src/i18n/test/Cases",
+            "SwoftTest\\Memory\\": "src/memory/test/Cases",
+            "SwoftTest\\Process\\": "src/process/test",
+            "SwoftTest\\Redis\\": "src/redis/test/Cases",
+            "SwoftTest\\Rpc\\": "src/rpc/test/Cases",
+            "SwoftTest\\Rpc\\Client\\": "src/rpc-client/test/Cases",
+            "SwoftTest\\RpcServer\\": "src/rpc-server/test/Cases",
+            "SwoftTest\\Sg\\": "src/service-governance/test/Cases",
+            "SwoftTest\\Session\\": "src/session/test/Cases",
+            "SwoftTest\\Task\\": "src/task/test/Cases",
+            "SwoftTest\\Trace\\": "src/trace/test/Cases",
+            "Swoft\\View\\Test\\": "src/view/test",
+            "SwoftTest\\WebSocket\\Server\\": "src/websocket-server/test/Cases"
         }
     },
     "extra": {
@@ -112,5 +135,7 @@
         }
     },
     "scripts": {
+        "test": "./vendor/bin/phpunit -c phpunit.xml",
+        "cs-fix": "./vendor/bin/php-cs-fixer fix $1"
     }
 }
