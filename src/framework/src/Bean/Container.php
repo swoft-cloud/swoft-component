@@ -2,6 +2,7 @@
 
 namespace Swoft\Bean;
 
+use Psr\Container\ContainerInterface;
 use Swoft\Aop\Aop;
 use Swoft\Aop\Proxy\Proxy;
 use Swoft\Bean\Annotation\Scope;
@@ -11,11 +12,13 @@ use Swoft\Bean\ObjectDefinition\PropertyInjection;
 use Swoft\Bean\Resource\DefinitionResource;
 use Swoft\Bean\Resource\ServerAnnotationResource;
 use Swoft\Bean\Resource\WorkerAnnotationResource;
+use Swoft\Exception\ContainerException;
 
 /**
- * Container
+ * Class Container
+ * @package Swoft\Bean
  */
-class Container
+class Container implements ContainerInterface
 {
     /**
      * Map of entries with Singleton scope that are already resolved.
@@ -51,11 +54,10 @@ class Container
      * @param string $name 名称
      * @return mixed
      * @throws \ReflectionException
-     * @throws \InvalidArgumentException
+     * @throws ContainerException
      */
-    public function get(string $name)
+    public function get($name)
     {
-
         // 已经创建
         if (isset($this->singletonEntries[$name])) {
             return $this->singletonEntries[$name];
@@ -63,13 +65,29 @@ class Container
 
         // 未定义
         if (!isset($this->definitions[$name])) {
-            throw new \InvalidArgumentException(sprintf('Bean %s not exist', $name));
+            throw new ContainerException(sprintf('Bean [%s] not exist', $name));
         }
 
         /* @var ObjectDefinition $objectDefinition */
         $objectDefinition = $this->definitions[$name];
 
         return $this->set($name, $objectDefinition);
+    }
+
+    /**
+     * Returns true if the container can return an entry for the given identifier.
+     * Returns false otherwise.
+     *
+     * `has($id)` returning true does not mean that `get($id)` will not throw an exception.
+     * It does however mean that `get($id)` will not throw a `NotFoundExceptionInterface`.
+     *
+     * @param string $id Identifier of the entry to look for.
+     *
+     * @return bool
+     */
+    public function has($id): bool
+    {
+        return isset($this->definitions[$id]);
     }
 
     /**
