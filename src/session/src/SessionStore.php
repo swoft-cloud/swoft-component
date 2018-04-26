@@ -122,10 +122,12 @@ class SessionStore implements SessionInterface
      *
      * @return bool
      */
-    public function save()
+    public function save(): bool
     {
         $this->getHandler()->write($this->getId(), serialize($this->attributes));
         $this->started = false;
+
+        return true;
     }
 
     /**
@@ -181,7 +183,9 @@ class SessionStore implements SessionInterface
      */
     public function put($key, $value = null)
     {
-        ! \is_array($key) && $key = [$key => $value];
+        !\is_array($key) && $key = [$key => $value];
+
+        /** @var array $key */
         foreach ($key as $k => $v) {
             $k && ArrayHelper::set($this->attributes, $k, $v);
         }
@@ -328,16 +332,17 @@ class SessionStore implements SessionInterface
     {
         $data = $this->handler->read($this->getId());
         if ($data) {
-            $data = @unserialize($data);
+            $data = \unserialize($data, ['allowed_classes' => false]);
             if ($data === false || null === $data || ! \is_array($data)) {
                 $data = [];
             }
         }
+
         return $data ? : [];
     }
 
     /**
-     * Generate a new random sessoion ID
+     * Generate a new random session ID
      *
      * @return string
      * @throws \RuntimeException
