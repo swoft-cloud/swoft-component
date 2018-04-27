@@ -29,7 +29,7 @@ class HandlerMapping extends AbstractRouter implements HandlerMappingInterface
      * The param route cache number.
      * @var int
      */
-    public $tmpCacheNumber = 200;
+    public $tmpCacheNumber = 300;
 
     /** @var string */
     public $defaultAction = 'index';
@@ -378,11 +378,11 @@ class HandlerMapping extends AbstractRouter implements HandlerMappingInterface
     protected function findInStaticRoutes(string $path, string $method)
     {
         // if flattenStatic is TRUE
-        if ($this->flattenStatic) {
+        if ($this->flatStaticRoutes) {
             $key = $path . '#' . $method;
 
             if (isset($this->flatStaticRoutes[$key])) {
-                return $this->staticRoutes[$key];
+                return $this->flatStaticRoutes[$key];
             }
         } elseif (isset($this->staticRoutes[$path][$method])) {
             return $this->staticRoutes[$path][$method];

@@ -147,12 +147,18 @@ abstract class AbstractRouter implements RouterInterface
      * Ignore last slash char('/'). If is True, will clear last '/'.
      * @var bool
      */
-    public $ignoreLastSlash = false;
+    public $ignoreLastSlash = true;
 
     /**
      * @var bool NotAllowed As NotFound. If True, only two status value will be return(FOUND, NOT_FOUND).
      */
     public $notAllowedAsNotFound = false;
+
+    /**
+     * Controller suffix, is valid when '$autoRoute' = true. eg: 'Controller'
+     * @var string
+     */
+    public $controllerSuffix = 'Controller';
 
     /**
      * object creator.
@@ -193,6 +199,7 @@ abstract class AbstractRouter implements RouterInterface
             'defaultAction' => 1,
             'ignoreLastSlash' => 1,
             'tmpCacheNumber' => 1,
+            'controllerSuffix' => 1,
             'notAllowedAsNotFound' => 1,
             'matchAll' => 1,
         ];

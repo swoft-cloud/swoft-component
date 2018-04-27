@@ -205,4 +205,20 @@ class HandlerMappingTest extends TestCase
         $this->assertSame(HandlerMapping::METHOD_NOT_ALLOWED, $status);
         $this->assertCount(3, $methods);
     }
+
+    public function testRouteCacheExists()
+    {
+        $router = $this->createRouter();
+
+        $ret = $router->match('/hi/tom');
+
+        $this->assertCount(3, $ret);
+        $this->assertCount(1, $router->getCacheRoutes());
+
+        list($status, $path, $route) = $ret;
+
+        $this->assertSame(HandlerMapping::FOUND, $status);
+        $this->assertSame('/hi/tom', $path);
+        $this->assertSame('handler3', $route['handler']);
+    }
 }
