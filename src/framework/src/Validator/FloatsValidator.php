@@ -13,13 +13,14 @@ class FloatsValidator implements ValidatorInterface
 {
     /**
      * @param array ...$params
+     *
      * @return mixed
      * @throws \Swoft\Exception\ValidatorException
      */
     public function validate(...$params)
     {
-        list($name, $value, $min, $max) = $params;
+        list($name, $value, $min, $max, $throws, $template) = $params;
 
-        return ValidatorHelper::validateFloat($name, $value, $min, $max);
+        return ValidatorHelper::validateFloat($name, $value, $min, $max, $throws, $template);
     }
 }
