@@ -495,6 +495,14 @@ class HandlerMapping extends AbstractRouter implements HandlerMappingInterface
         return $this->cacheCounter;
     }
 
+    /**
+     * @return int
+     */
+    public function count(): int
+    {
+        return $this->routeCounter;
+    }
+
     /*******************************************************************************
      * other helper methods(for swoft)
      ******************************************************************************/
