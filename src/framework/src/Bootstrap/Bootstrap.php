@@ -15,7 +15,9 @@ use Swoft\Bootstrap\Boots\Bootable;
 class Bootstrap implements Bootable
 {
     /**
-     * bootstrap
+     * Bootstrap
+     *
+     * @throws \InvalidArgumentException
      */
     public function bootstrap()
     {
@@ -27,6 +29,9 @@ class Bootstrap implements Bootable
         foreach ($bootstraps as $bootstrapBeanName => $name){
             /* @var Bootable $bootstrap*/
             $bootstrap = App::getBean($bootstrapBeanName);
+            if (! $bootstrap instanceof Bootable) {
+                throw new \InvalidArgumentException(sprintf('Bootstrap %s have to implement %s', $bootstrapBeanName, Bootable::class));
+            }
             $bootstrap->bootstrap();
         }
     }

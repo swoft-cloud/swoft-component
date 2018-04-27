@@ -95,9 +95,13 @@ class SessionManager
 
     /**
      * @return SessionInterface
+     * @throws \RuntimeException
      */
     public function getSession(): SessionInterface
     {
+        if (!$this->session instanceof SessionInterface) {
+            throw new \RuntimeException('Did you maybe forget to configure session middleware ?');
+        }
         return $this->session;
     }
 

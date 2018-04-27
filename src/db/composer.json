@@ -9,7 +9,7 @@
         "orm",
         "active record"
     ],
-    "description": "microservice framework base on swoole",
+    "description": "DB Component for Swoft",
     "license": "Apache-2.0",
     "require": {
         "ext-pdo": "*",

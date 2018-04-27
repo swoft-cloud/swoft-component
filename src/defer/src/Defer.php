@@ -46,11 +46,12 @@ class Defer
      * Add a defer call
      *
      * @param callable $value
-     * @return $this
+     * @param array    $parameters
+     * @return \Swoft\Defer\Defer
      */
-    public function push(callable $value): self
+    public function push(callable $value, array $parameters = []): self
     {
-        $this->stack->push($value);
+        $this->stack->push([$value, $parameters]);
         return $this;
     }
 
@@ -62,8 +63,12 @@ class Defer
         while (! $this->stack->isEmpty()) {
             $current = $this->stack->pop();
             
-            if (\is_callable($current)) {
-                $current();
+            if (\is_callable($current[0])) {
+                if (! empty($current[1])) {
+                    $current[0](...$current[1]);
+                } else {
+                    $current[0]();
+                }
             }
         }
     }
