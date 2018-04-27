@@ -29,7 +29,6 @@ class FileGeneratorTest extends TestCase
             ->setTplFilename('some')
             ->render($data);
 
-        \var_dump($code);
         $this->assertTrue(\strpos($code, $data['prefix']) > 0);
         $this->assertTrue(\strpos($code, $data['className']) > 0);
         $this->assertTrue(\strpos($code, $data['namespace']) > 0);

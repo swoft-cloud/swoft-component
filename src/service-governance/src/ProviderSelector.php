@@ -2,7 +2,6 @@
 
 namespace Swoft\Sg;
 
-use Swoft\App;
 use Swoft\Exception\InvalidArgumentException;
 use Swoft\Sg\Provider\ConsulProvider;
 use Swoft\Sg\Provider\ProviderInterface;
@@ -54,7 +53,7 @@ class ProviderSelector implements SelectorInterface
 
         $providerBeanName = $providers[$type];
 
-        return App::getBean($providerBeanName);
+        return \bean($providerBeanName);
     }
 
     /**

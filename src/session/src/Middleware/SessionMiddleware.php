@@ -20,8 +20,6 @@ use Swoft\Session\SessionStore;
 
 /**
  * @Bean()
- * Class StartSession
- * @author huangzhhui <huangzhwork@gmail.com>
  */
 class SessionMiddleware implements MiddlewareInterface
 {
@@ -70,6 +68,7 @@ class SessionMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        $this->config = $this->sessionManager->getConfig();
         $this->sessionHandled = true;
 
         $isSessionAvailable = $request instanceof Request && $this->sessionConfigured();

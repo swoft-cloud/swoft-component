@@ -61,25 +61,24 @@ class HttpCoResult extends AbstractResult implements HttpResultInterface
         $response = $this->createResponse()
                          ->withBody(new SwooleStream($result ?? ''))
                          ->withHeaders($headers ?? [])
-                         ->withStatus($this->deduceStatusCode($client));
+                         ->withStatus($this->transferStatusCode($this->connection->statusCode));
         return $response;
     }
 
     /**
-     * Transfer sockets error code to HTTP status code.
-     * TODO transfer more error code
-     *
-     * @param \Swoole\HttpClient $client
+     * @param int $statusCode
      * @return int
      */
-    private function deduceStatusCode($client): int
+    private function transferStatusCode(int $statusCode): int
     {
-        if ($client->errCode === 110) {
-            $status = 404;
-        } else {
-            $status = $client->statusCode;
+        if ($statusCode === -1) {
+            return 504;
+        } elseif ($statusCode === -2) {
+            return 408;
+        } elseif ($statusCode === -3) {
+            return 500;
         }
-        return $status > 0 ? $status : 500;
+        return $statusCode > 0 ? $statusCode : 500;
     }
 
 }
