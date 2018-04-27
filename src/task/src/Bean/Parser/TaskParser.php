@@ -26,7 +26,7 @@ class TaskParser extends AbstractParser
         string $propertyName = '',
         string $methodName = '',
         $propertyValue = null
-    ) {
+    ): array {
         $name = $objectAnnotation->getName();
         $beanName = empty($name) ? $className : $name;
 

@@ -26,7 +26,7 @@ class ParseCrontab
      *      +------------- sec (0-59)
      * @param int    $start_time     timestamp [default=current timestamp]
      *
-     * @return int unix timestamp - 下一分钟内执行是否需要执行任务，如果需要，则把需要在那几秒执行返回
+     * @return int|null unix timestamp - 下一分钟内执行是否需要执行任务，如果需要，则把需要在那几秒执行返回
      */
     public static function parse($crontab_string, $start_time = null)
     {
@@ -41,7 +41,7 @@ class ParseCrontab
                 trim($crontab_string)
             )
             ) {
-                self::$error = "Invalid cron string: " . $crontab_string;
+                self::$error = 'Invalid cron string: ' . $crontab_string;
                 return false;
             }
         }
@@ -52,16 +52,16 @@ class ParseCrontab
         $cron = preg_split("/[\s]+/i", trim($crontab_string));
         $start = empty($start_time) ? time() : $start_time;
 
-        if (count($cron) == 6) {
+        if (\count($cron) === 6) {
             $date = array(
-                'second'  => (empty($cron[0])) ? array(1 => 1) : self::parseCronNumber($cron[0], 0, 59),
+                'second'  => empty($cron[0]) ? array(1 => 1) : self::parseCronNumber($cron[0], 0, 59),
                 'minutes' => self::parseCronNumber($cron[1], 0, 59),
                 'hours'   => self::parseCronNumber($cron[2], 0, 23),
                 'day'     => self::parseCronNumber($cron[3], 1, 31),
                 'month'   => self::parseCronNumber($cron[4], 1, 12),
                 'week'    => self::parseCronNumber($cron[5], 0, 6),
             );
-        } elseif (count($cron) == 5) {
+        } elseif (\count($cron) === 5) {
             $date = array(
                 'second'  => array(1 => 1),
                 'minutes' => self::parseCronNumber($cron[0], 0, 59),
@@ -71,11 +71,11 @@ class ParseCrontab
                 'week'    => self::parseCronNumber($cron[4], 0, 6),
             );
         }
-        if (in_array(intval(date('i', $start)), $date['minutes'])
-            && in_array(intval(date('G', $start)), $date['hours'])
-            && in_array(intval(date('j', $start)), $date['day'])
-            && in_array(intval(date('w', $start)), $date['week'])
-            && in_array(intval(date('n', $start)), $date['month'])
+        if (\in_array((int)date('i', $start), $date['minutes'], true)
+            && \in_array((int)date('G', $start), $date['hours'], true)
+            && \in_array((int)date('j', $start), $date['day'], true)
+            && \in_array((int)date('w', $start), $date['week'], true)
+            && \in_array((int)date('n', $start), $date['month'], true)
         ) {
             return $date['second'];
         }
@@ -95,20 +95,20 @@ class ParseCrontab
     private static function parseCronNumber($s, $min, $max): array
     {
         $result = array();
-        $v1 = explode(",", $s);
+        $v1 = explode(',', $s);
         foreach ($v1 as $v2) {
-            $v3 = explode("/", $v2);
+            $v3 = explode('/', $v2);
             $step = empty($v3[1]) ? 1 : $v3[1];
-            $v4 = explode("-", $v3[0]);
-            $_min = count($v4) == 2 ? $v4[0] : ($v3[0] == "*" ? $min : $v3[0]);
-            $_max = count($v4) == 2 ? $v4[1] : ($v3[0] == "*" ? $max : $v3[0]);
+            $v4 = explode('-', $v3[0]);
+            $_min = \count($v4) === 2 ? $v4[0] : ($v3[0] === '*' ? $min : $v3[0]);
+            $_max = \count($v4) === 2 ? $v4[1] : ($v3[0] === '*' ? $max : $v3[0]);
             for ($i = $_min; $i <= $_max; $i += $step) {
-                if (intval($i) < $min) {
+                if ($i < $min) {
                     $result[$min] = $min;
-                } elseif (intval($i) > $max) {
+                } elseif ($i > $max) {
                     $result[$max] = $max;
                 } else {
-                    $result[$i] = intval($i);
+                    $result[$i] = (int)$i;
                 }
             }
         }
