@@ -44,7 +44,7 @@ class PoolTest extends AbstractTestCase
         $pConfig = App::getBean(DbEnvPoolConfig::class);
         $this->assertEquals($pConfig->getName(), 'master2');
         $this->assertEquals($pConfig->getProvider(), 'consul2');
-        $this->assertEquals($pConfig->getTimeout(), 2);
+        $this->assertEquals($pConfig->getTimeout(), 10);
         $this->assertEquals($pConfig->getUri(), [
             '127.0.0.1:3306/test?user=root&password=&charset=utf8',
             '127.0.0.1:3306/test?user=root&password=&charset=utf8',
@@ -79,7 +79,7 @@ class PoolTest extends AbstractTestCase
         $pConfig = App::getBean(DbSlaveEnvPoolConfig::class);
         $this->assertEquals($pConfig->getName(), 'slave2');
         $this->assertEquals($pConfig->getProvider(), 'consul2');
-        $this->assertEquals($pConfig->getTimeout(), 3);
+        $this->assertEquals($pConfig->getTimeout(), 10);
         $this->assertEquals($pConfig->getUri(), [
             '127.0.0.1:3306/test?user=root&password=&charset=utf8',
             '127.0.0.1:3306/test?user=root&password=&charset=utf8',

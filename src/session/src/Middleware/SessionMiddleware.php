@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\Inject;
 use Swoft\Helper\ArrayHelper;
@@ -21,11 +20,6 @@ use Swoft\Session\SessionStore;
 
 /**
  * @Bean()
- * @uses      StartSession
- * @version   2017年12月05日
- * @author    huangzhhui <huangzhwork@gmail.com>
- * @copyright Copyright 2010-2017 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 class SessionMiddleware implements MiddlewareInterface
 {
@@ -36,13 +30,6 @@ class SessionMiddleware implements MiddlewareInterface
      * @var string
      */
     CONST DEFAULT_SESSION_NAME = 'SWOFT_SESSION_ID';
-
-    /**
-     * Session configs
-     *
-     * @var array
-     */
-    protected $config = [];
 
     /**
      * Indicates if the session was handled for the current request.
@@ -74,32 +61,29 @@ class SessionMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $this->sessionHandled = true;
-
-        $isSessionAvailable = $request instanceof Request && $this->sessionConfigured();
+        $this->sessionHandled = $request instanceof Request && $this->sessionConfigured();
 
         // If a session driver has been configured, we will need to start the session here
         // so that the data is ready for an application. Note that the Laravel sessions
         // do not make use of PHP "native" sessions in any way since they are crappy.
-        if ($isSessionAvailable) {
+        if ($this->sessionHandled) {
             $this->sessionManager->setSession($session = $this->startSession($request));
-            // TODO move collect garbage to timer
-            $this->collectGarbage($session);
+            defer([$this, 'collectGarbage'], [$session]);
         }
 
+        /** @var \Swoft\Http\Message\Server\Response $response */
         $response = $handler->handle($request);
 
         // Again, if the session has been configured we will need to close out the session
         // so that the attributes may be persisted to some storage medium. We will also
         // add the session identifier cookie to the application response headers now.
-        if ($isSessionAvailable) {
+        if ($this->sessionHandled && $session) {
             $this->storeCurrentUrl($request, $session);
 
             $response = $this->addCookieToResponse($request, $response, $session);
 
             // Save session after response
-            // TODO use coroutine task to save the session data
-            $this->save();
+            defer([$this, 'save']);
         }
 
         return $response;
@@ -113,12 +97,13 @@ class SessionMiddleware implements MiddlewareInterface
      */
     private function startSession(Request $request): SessionInterface
     {
-        $name = $this->config['name'] ?? self::DEFAULT_SESSION_NAME;
+        $name = $this->sessionManager->getConfig()['name'] ?? self::DEFAULT_SESSION_NAME;
         // Get session id from request cookies
         $id = $request->cookie($name, null);
         $handler = $this->sessionManager->createHandlerByConfig();
         $this->sessionStore = new SessionStore($name, $handler, $id);
         $this->sessionStore->start();
+
         return $this->sessionStore;
     }
 
@@ -127,7 +112,7 @@ class SessionMiddleware implements MiddlewareInterface
      */
     private function sessionConfigured(): bool
     {
-        return true;
+        return isset($this->sessionManager->getConfig()['name'], $this->sessionManager->getConfig()['driver']);
     }
 
     /**
@@ -181,10 +166,11 @@ class SessionMiddleware implements MiddlewareInterface
      */
     protected function getCookieExpirationDate()
     {
-        if (!empty($this->config['expire_on_close'])) {
-            $expirationDate = 0;
+        if (!empty($this->sessionManager->getConfig()['expire_on_close'])) {
+            // Will set the cookies expired in Thu, 01-Jan-1970 00:00:01
+            $expirationDate = 1;
         } else {
-            $expirationDate = Carbon::now()->addMinutes(5 * 60);
+            $expirationDate = Carbon::now()->addSeconds(ArrayHelper::get($this->sessionManager->getConfig(), 'lifetime', 1200));
         }
         return $expirationDate;
     }
@@ -196,9 +182,7 @@ class SessionMiddleware implements MiddlewareInterface
      */
     protected function save()
     {
-        if ($this->sessionHandled && $this->sessionConfigured()) {
-            $this->sessionStore->save();
-        }
+        $this->sessionStore->save();
     }
 
     /**
@@ -208,7 +192,7 @@ class SessionMiddleware implements MiddlewareInterface
      */
     protected function getSessionLifetimeInSeconds(): int
     {
-        return ArrayHelper::get($this->config, 'lifetime', 120) * 60;
+        return ArrayHelper::get($this->sessionManager->getConfig(), 'lifetime', 120) * 60;
     }
 
 }

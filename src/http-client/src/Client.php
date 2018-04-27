@@ -279,6 +279,7 @@ class Client
             'http_errors' => true,
             'decode_content' => true,
             'verify' => true,
+            'timeout' => -1
         ];
 
         // TODO finish defaults config feature

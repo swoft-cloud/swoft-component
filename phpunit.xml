@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         bootstrap="./test/bootstrap.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false">
+    <testsuites>
+        <testsuite name="Tests">
+            <directory suffix="Test.php">./src/cache/test</directory>
+            <directory suffix="Test.php">./src/console/test</directory>
+            <directory suffix="Test.php">./src/data-parser/test</directory>
+            <directory suffix="Test.php">./src/db/test</directory>
+            <directory suffix="Test.php">./src/devtool/test</directory>
+            <directory suffix="Test.php">./src/framework/test</directory>
+            <directory suffix="Test.php">./src/http-client/test</directory>
+            <directory suffix="Test.php">./src/http-server/test</directory>
+            <directory suffix="Test.php">./src/i18n/test</directory>
+            <directory suffix="Test.php">./src/memory/test</directory>
+            <directory suffix="Test.php">./src/process/test</directory>
+            <directory suffix="Test.php">./src/redis/test</directory>
+            <directory suffix="Test.php">./src/rpc/test</directory>
+            <directory suffix="Test.php">./src/rpc-client/test</directory>
+            <directory suffix="Test.php">./src/rpc-server/test</directory>
+            <directory suffix="Test.php">./src/service-governance/test</directory>
+            <directory suffix="Test.php">./src/session/test</directory>
+            <directory suffix="Test.php">./src/task/test</directory>
+            <directory suffix="Test.php">./src/trace/test</directory>
+            <directory suffix="Test.php">./src/view/test</directory>
+            <directory suffix="Test.php">./src/websocket-server/test</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./app</directory>
+        </whitelist>
+    </filter>
+</phpunit>
