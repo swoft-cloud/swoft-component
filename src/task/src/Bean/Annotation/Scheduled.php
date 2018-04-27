@@ -18,7 +18,7 @@ class Scheduled
     /**
      * @var string
      */
-    private $description;
+    private $description = '';
 
     /**
      * Bean constructor.
