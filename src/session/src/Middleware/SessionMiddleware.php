@@ -70,14 +70,13 @@ class SessionMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $this->config = $this->sessionManager->getConfig();
-        $this->sessionHandled = true;
 
-        $isSessionAvailable = $request instanceof Request && $this->sessionConfigured();
+        $this->sessionHandled = $request instanceof Request && $this->sessionConfigured();
 
         // If a session driver has been configured, we will need to start the session here
         // so that the data is ready for an application. Note that the Laravel sessions
         // do not make use of PHP "native" sessions in any way since they are crappy.
-        if ($isSessionAvailable) {
+        if ($this->sessionHandled) {
             $this->sessionManager->setSession($session = $this->startSession($request));
             // TODO move collect garbage to timer
             $this->collectGarbage($session);
@@ -88,14 +87,13 @@ class SessionMiddleware implements MiddlewareInterface
         // Again, if the session has been configured we will need to close out the session
         // so that the attributes may be persisted to some storage medium. We will also
         // add the session identifier cookie to the application response headers now.
-        if ($isSessionAvailable) {
+        if ($this->sessionHandled) {
             $this->storeCurrentUrl($request, $session);
 
             $response = $this->addCookieToResponse($request, $response, $session);
 
             // Save session after response
-            // TODO use coroutine task to save the session data
-            $this->save();
+            defer([$this, 'save']);
         }
 
         return $response;
@@ -123,7 +121,7 @@ class SessionMiddleware implements MiddlewareInterface
      */
     private function sessionConfigured(): bool
     {
-        return true;
+        return isset($this->config['name'], $this->config['driver']);
     }
 
     /**
@@ -192,7 +190,7 @@ class SessionMiddleware implements MiddlewareInterface
      */
     protected function save()
     {
-        if ($this->sessionHandled && $this->sessionConfigured()) {
+        if ($this->sessionHandled) {
             $this->sessionStore->save();
         }
     }
