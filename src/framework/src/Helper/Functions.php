@@ -156,10 +156,11 @@ if (! function_exists('defer')) {
      * Push a callable to defer stack
      *
      * @param callable $value
+     * @param array    $parameters
      * @return \Swoft\Defer\Defer
      */
-    function defer(callable $value)
+    function defer(callable $value, array $parameters = [])
     {
-        return \Swoft\Core\RequestContext::getDefer()->push($value);
+        return \Swoft\Core\RequestContext::getDefer()->push($value, $parameters);
     }
 }

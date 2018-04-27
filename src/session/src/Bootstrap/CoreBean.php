@@ -21,7 +21,7 @@ class CoreBean implements BootBeanInterface
                 'class' => SessionManager::class,
                 'config' => [
                     'driver' => 'file',
-                    'lifetime' => 120,
+                    'lifetime' => 1200,
                     'expire_on_close' => false,
                     'encrypt' => false,
                     'storage' => '@runtime/sessions',
