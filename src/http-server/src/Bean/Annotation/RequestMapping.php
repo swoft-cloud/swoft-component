@@ -3,40 +3,33 @@
 namespace Swoft\Http\Server\Bean\Annotation;
 
 /**
- * action方法注解
+ * Action method annotation label
  *
  * @Annotation
  * @Target("METHOD")
- * @uses      RequestMapping
- * @version   2017年08月18日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 class RequestMapping
 {
     /**
-     * action路由规则
-     *
+     * action route path
      * @var string
      */
     private $route = '';
 
     /**
-     * 路由支持的HTTP方法集合
-     *
+     * allowed methods
      * @var array
      */
     private $method = [RequestMethod::GET, RequestMethod::POST];
 
     /**
-     * {"id"="\d+"}
+     * route param define. eg {"id"="\d+"}
      * @var array
      */
     private $params = [];
 
     /**
-     * {"id"=12}
+     * params default values. eg {"id"=12}
      * @var array
      */
     private $defaults = [];
@@ -71,8 +64,6 @@ class RequestMapping
     }
 
     /**
-     * 获取路由
-     *
      * @return string
      */
     public function getRoute(): string
@@ -81,8 +72,6 @@ class RequestMapping
     }
 
     /**
-     * 获取方法集合
-     *
      * @return array
      */
     public function getMethod(): array

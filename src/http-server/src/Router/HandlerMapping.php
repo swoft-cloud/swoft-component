@@ -537,70 +537,66 @@ class HandlerMapping extends AbstractRouter implements HandlerMappingInterface
             }
 
             // controller prefix
-            $controllerPrefix = $mapping['prefix'];
-            $controllerPrefix = $this->getControllerPrefix($controllerPrefix, $className);
-            $routes           = $mapping['routes'];
+            $controllerPrefix = $mapping['prefix'] ?: $this->getControllerPrefix($className);
 
             // 注册控制器对应的一组路由
-            $this->registerRoute($className, $routes, $controllerPrefix);
+            $this->registerRoute($className, $mapping['routes'], $controllerPrefix);
         }
     }
 
     /**
-     * 注册路由
-     * @param string $className 类名
-     * @param array $routes 控制器对应的路由组
-     * @param string $controllerPrefix 控制器prefix
+     * Registered route
+     * @param string $className Class name
+     * @param array $routes Route list in the controller
+     * @param string $controllerPrefix Controller prefix
      * @throws \LogicException
      * @throws \InvalidArgumentException
      */
     private function registerRoute(string $className, array $routes, string $controllerPrefix)
     {
-        $controllerPrefix = '/' . \trim($controllerPrefix, '/');
+        $routePrefix = '/' . \trim($controllerPrefix, '/');
 
         // Circular Registration Route
         foreach ($routes as $route) {
             if (!isset($route['route'], $route['method'], $route['action'])) {
                 continue;
             }
-            $mapRoute = $route['route'];
-            $method   = $route['method'];
+
+            $mapRoute = \trim($route['route']);
             $action   = $route['action'];
 
-            // 解析注入action名称
-            $mapRoute = empty($mapRoute) ? $action : $mapRoute;
+            if ($mapRoute === '@') {
+                $path = $routePrefix;
+            } else {
+                // 为空时，使用action名称When empty, use the action name
+                $other = $mapRoute ?: $action;
 
-            // '/'开头的路由是一个单独的路由 未使用'/'需要和控制器组拼成一个路由
-            $uri     = $mapRoute[0] === '/' ? $mapRoute : $controllerPrefix . '/' . $mapRoute;
+                // '/' 开头的路由是一个单独的路由 未使用'/' 需要和控制器prefix组拼成一个路由
+                $path = $other[0] === '/' ? $other : $routePrefix . '/' . $other;
+            }
+
             $handler = $className . '@' . $action;
 
-            // 注入路由规则
-            $this->map($method, $uri, $handler, [
+            // register route
+            $this->map($route['method'], $path, $handler, [
                 'params' => $route['params'] ?? []
             ]);
         }
     }
 
     /**
-     * 获取控制器prefix
+     * Get controller route prefix
      *
-     * @param string $controllerPrefix 注解控制器prefix
-     * @param string $className        控制器类名
-     *
+     * @param string $className        Controller class name
      * @return string
      */
-    private function getControllerPrefix(string $controllerPrefix, string $className): string
+    private function getControllerPrefix(string $className): string
     {
-        // 注解注入不为空，直接返回prefix
-        if (!empty($controllerPrefix)) {
-            return $controllerPrefix;
-        }
-
-        // 注解注入为空，解析控制器prefix
-        $reg    = '/^.*\\\(\w+)' . $this->controllerSuffix . '$/';
+        // 解析控制器prefix
+        $regex  = '/^.*\\\(\w+)' . $this->controllerSuffix . '$/';
         $prefix = '';
 
-        if ($result = \preg_match($reg, $className, $match)) {
+        if ($result = \preg_match($regex, $className, $match)) {
             $prefix = '/' . \lcfirst($match[1]);
         }
 
