@@ -6,16 +6,11 @@ use Swoft\Contract\Arrayable;
 use Swoft\Helper\JsonHelper;
 use Swoft\Helper\StringHelper;
 use Swoft\Http\Message\Cookie\Cookie;
-use Swoft\Http\Message\Stream\SwooleStream;
 
 /**
- * 响应response
+ * Class Response
  *
- * @uses      Response
- * @version   2017年05月11日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
+ * @package Swoft\Http\Message\Server
  */
 class Response extends \Swoft\Http\Message\Base\Response
 {
@@ -25,19 +20,14 @@ class Response extends \Swoft\Http\Message\Base\Response
     protected $exception;
 
     /**
-     * swoole响应请求
+     * Swoole Response
      *
      * @var \Swoole\Http\Response
      */
     protected $swooleResponse;
 
     /**
-     * @var array
-     */
-    protected $cookies = [];
-
-    /**
-     * 初始化响应请求
+     * Response constructor.
      *
      * @param \Swoole\Http\Response $response
      */
@@ -52,6 +42,7 @@ class Response extends \Swoft\Http\Message\Base\Response
      * @param string   $url
      * @param null|int $status
      * @return static
+     * @throws \InvalidArgumentException
      */
     public function redirect($url, $status = 302)
     {
@@ -61,11 +52,12 @@ class Response extends \Swoft\Http\Message\Base\Response
     }
 
     /**
-     * return a Raw format response
+     * Return a Raw content Response
      *
      * @param  string $data   The data
      * @param  int    $status The HTTP status code.
      * @return \Swoft\Http\Message\Server\Response when $data not jsonable
+     * @throws \InvalidArgumentException
      */
     public function raw(string $data = '', int $status = 200): Response
     {
@@ -85,7 +77,7 @@ class Response extends \Swoft\Http\Message\Base\Response
     }
 
     /**
-     * return a Json format response
+     * Return a Json format Response
      *
      * @param  array|Arrayable $data            The data
      * @param  int             $status          The HTTP status code.
@@ -93,7 +85,7 @@ class Response extends \Swoft\Http\Message\Base\Response
      * @return static when $data not jsonable
      * @throws \InvalidArgumentException
      */
-    public function json($data = [], int $status = 200, int $encodingOptions = JSON_UNESCAPED_UNICODE): Response
+    public function json(array $data = [], int $status = 200, int $encodingOptions = JSON_UNESCAPED_UNICODE): Response
     {
         $response = $this;
 
@@ -102,8 +94,8 @@ class Response extends \Swoft\Http\Message\Base\Response
         $this->getCharset() && $response = $response->withCharset($this->getCharset());
 
         // Content
-        if ($data && ($this->isArrayable($data) || is_string($data))) {
-            is_string($data) && $data = ['data' => $data];
+        if ($data && ($this->isArrayable($data) || \is_string($data))) {
+            \is_string($data) && $data = ['data' => $data];
             $content = JsonHelper::encode($data, $encodingOptions);
             $response = $response->withContent($content);
         } else {
@@ -118,7 +110,9 @@ class Response extends \Swoft\Http\Message\Base\Response
     }
 
     /**
-     * 处理 Response 并发送数据
+     * Handle Response and send
+     *
+     * @throws \RuntimeException
      */
     public function send()
     {
@@ -135,11 +129,11 @@ class Response extends \Swoft\Http\Message\Base\Response
         /**
          * Cookies
          */
-        foreach ((array)$this->cookies as $domain => $paths) {
+        foreach ($this->cookies ?? [] as $domain => $paths) {
             foreach ($paths ?? [] as $path => $item) {
                 foreach ($item ?? [] as $name => $cookie) {
                     if ($cookie instanceof Cookie) {
-                        $this->swooleResponse->cookie($cookie->getName(), $cookie->getValue() ? : 1, $cookie->getExpiresTime(), $cookie->getPath(), $cookie->getDomain(), $cookie->isSecure(), $cookie->isHttpOnly());
+                        $this->swooleResponse->cookie($cookie->getName(), $cookie->getValue(), $cookie->getExpiresTime(), $cookie->getPath(), $cookie->getDomain(), $cookie->isSecure(), $cookie->isHttpOnly());
                     }
                 }
             }
@@ -157,36 +151,6 @@ class Response extends \Swoft\Http\Message\Base\Response
     }
 
     /**
-     * 设置Body内容，使用默认的Stream
-     *
-     * @param string $content
-     * @return static
-     */
-    public function withContent($content): Response
-    {
-        if ($this->stream) {
-            return $this;
-        }
-
-        $new = clone $this;
-        $new->stream = new SwooleStream($content);
-        return $new;
-    }
-
-    /**
-     * Return an instance with specified cookies.
-     *
-     * @param Cookie $cookie
-     * @return static
-     */
-    public function withCookie(Cookie $cookie)
-    {
-        $clone = clone $this;
-        $clone->cookies[$cookie->getDomain()][$cookie->getPath()][$cookie->getName()] = $cookie;
-        return $clone;
-    }
-
-    /**
      * @return null|\Throwable
      */
     public function getException()
@@ -198,7 +162,7 @@ class Response extends \Swoft\Http\Message\Base\Response
      * @param \Throwable $exception
      * @return $this
      */
-    public function setException(\Throwable $exception)
+    public function setException(\Throwable $exception): self
     {
         $this->exception = $exception;
         return $this;
@@ -210,7 +174,7 @@ class Response extends \Swoft\Http\Message\Base\Response
      */
     public function isArrayable($value): bool
     {
-        return is_array($value) || $value instanceof Arrayable;
+        return \is_array($value) || $value instanceof Arrayable;
     }
 
     /**

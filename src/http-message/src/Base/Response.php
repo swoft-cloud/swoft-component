@@ -3,15 +3,13 @@
 namespace Swoft\Http\Message\Base;
 
 use Psr\Http\Message\ResponseInterface;
+use Swoft\Http\Message\Cookie\Cookie;
+use Swoft\Http\Message\Stream\SwooleStream;
 
 /**
- * Response父类
+ * Base Response
  *
- * @uses      Response
- * @version   2017年11月06日
- * @author    huangzhhui <huangzhhui@gmail.com>
- * @copyright Copyright 2010-2017 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
+ * @package Swoft\Http\Message\Base
  */
 class Response implements ResponseInterface
 {
@@ -97,7 +95,12 @@ class Response implements ResponseInterface
     /**
      * @var array
      */
-    private $attributes = [];
+    protected $attributes = [];
+
+    /**
+     * @var array
+     */
+    protected $cookies = [];
 
     /**
      * Retrieve attributes derived from the request.
@@ -109,7 +112,7 @@ class Response implements ResponseInterface
      *
      * @return array Attributes derived from the request.
      */
-    public function getAttributes()
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
@@ -145,7 +148,7 @@ class Response implements ResponseInterface
      * @param mixed  $value The value of the attribute.
      * @return static
      */
-    public function withAttribute($name, $value)
+    public function withAttribute(string $name, $value)
     {
         $clone = clone $this;
         $clone->attributes[$name] = $value;
@@ -257,10 +260,8 @@ class Response implements ResponseInterface
      * @return bool
      *
      * @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-     *
-     * @final since version 3.2
      */
-    public function isInvalid()
+    public function isInvalid(): bool
     {
         return $this->statusCode < 100 || $this->statusCode >= 600;
     }
@@ -269,10 +270,8 @@ class Response implements ResponseInterface
      * Is response informative?
      *
      * @return bool
-     *
-     * @final since version 3.3
      */
-    public function isInformational()
+    public function isInformational(): bool
     {
         return $this->statusCode >= 100 && $this->statusCode < 200;
     }
@@ -281,10 +280,8 @@ class Response implements ResponseInterface
      * Is response successful?
      *
      * @return bool
-     *
-     * @final since version 3.2
      */
-    public function isSuccessful()
+    public function isSuccessful(): bool
     {
         return $this->statusCode >= 200 && $this->statusCode < 300;
     }
@@ -293,10 +290,8 @@ class Response implements ResponseInterface
      * Is the response a redirect?
      *
      * @return bool
-     *
-     * @final since version 3.2
      */
-    public function isRedirection()
+    public function isRedirection(): bool
     {
         return $this->statusCode >= 300 && $this->statusCode < 400;
     }
@@ -305,10 +300,8 @@ class Response implements ResponseInterface
      * Is there a client error?
      *
      * @return bool
-     *
-     * @final since version 3.2
      */
-    public function isClientError()
+    public function isClientError(): bool
     {
         return $this->statusCode >= 400 && $this->statusCode < 500;
     }
@@ -317,10 +310,8 @@ class Response implements ResponseInterface
      * Was there a server side error?
      *
      * @return bool
-     *
-     * @final since version 3.3
      */
-    public function isServerError()
+    public function isServerError(): bool
     {
         return $this->statusCode >= 500 && $this->statusCode < 600;
     }
@@ -329,10 +320,8 @@ class Response implements ResponseInterface
      * Is the response OK?
      *
      * @return bool
-     *
-     * @final since version 3.2
      */
-    public function isOk()
+    public function isOk(): bool
     {
         return 200 === $this->statusCode;
     }
@@ -341,10 +330,8 @@ class Response implements ResponseInterface
      * Is the response forbidden?
      *
      * @return bool
-     *
-     * @final since version 3.2
      */
-    public function isForbidden()
+    public function isForbidden(): bool
     {
         return 403 === $this->statusCode;
     }
@@ -353,10 +340,8 @@ class Response implements ResponseInterface
      * Is the response a not found error?
      *
      * @return bool
-     *
-     * @final since version 3.2
      */
-    public function isNotFound()
+    public function isNotFound(): bool
     {
         return 404 === $this->statusCode;
     }
@@ -367,23 +352,56 @@ class Response implements ResponseInterface
      * @param string $location
      *
      * @return bool
-     *
-     * @final since version 3.2
      */
-    public function isRedirect($location = null)
+    public function isRedirect($location = null): bool
     {
-        return in_array($this->statusCode, array(201, 301, 302, 303, 307, 308)) && (null === $location ?: $location == $this->getHeaderLine('Location'));
+        return \in_array($this->statusCode, array(
+                201,
+                301,
+                302,
+                303,
+                307,
+                308
+            ), true) && (null === $location ?: $location === $this->getHeaderLine('Location'));
     }
 
     /**
      * Is the response empty?
      *
      * @return bool
-     *
-     * @final since version 3.2
      */
-    public function isEmpty()
+    public function isEmpty(): bool
     {
-        return in_array($this->statusCode, array(204, 304));
+        return \in_array($this->statusCode, array(204, 304), true);
+    }
+
+    /**
+     * 设置Body内容，使用默认的Stream
+     *
+     * @param string $content
+     * @return static
+     */
+    public function withContent($content)
+    {
+        if ($this->stream) {
+            return $this;
+        }
+
+        $new = clone $this;
+        $new->stream = new SwooleStream($content);
+        return $new;
+    }
+
+    /**
+     * Return an instance with specified cookies.
+     *
+     * @param Cookie $cookie
+     * @return static
+     */
+    public function withCookie(Cookie $cookie)
+    {
+        $clone = clone $this;
+        $clone->cookies[$cookie->getDomain()][$cookie->getPath()][$cookie->getName()] = $cookie;
+        return $clone;
     }
 }

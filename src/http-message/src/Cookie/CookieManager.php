@@ -36,9 +36,9 @@ class CookieManager
      * Notice that the Cookies from the Container only Response Cookies,
      * Not include Request Cookies
      *
-     * @return \ArrayIterator
+     * @return iterable
      */
-    public function all(): \ArrayIterator
+    public function all(): iterable
     {
         return $this->getContainer();
     }
@@ -89,9 +89,9 @@ class CookieManager
 
     /**
      * @param \ArrayIterator $container
-     * @return CookieManager
+     * @return $this
      */
-    public function setContainer($container): CookieManager
+    public function setContainer($container): self
     {
         $this->container = $container;
         return $this;
@@ -107,9 +107,9 @@ class CookieManager
 
     /**
      * @param \Psr\Http\Message\RequestInterface $request
-     * @return CookieManager
+     * @return $this
      */
-    public function setRequest($request): CookieManager
+    public function setRequest($request): self
     {
         $this->request = $request;
         return $this;

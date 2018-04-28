@@ -50,10 +50,12 @@ class SwoftMiddleware implements MiddlewareInterface
         $response = $handler->handle($request);
 
         // Handle CookieManager
-        $cookieManager = RequestContext::get('cookie');
-        if ($cookieManager instanceof CookieManager) {
-            foreach ($cookieManager->all() as $cookie) {
-                $response = $response->withCookie($cookie);
+        if ($response instanceof Response) {
+            $cookieManager = RequestContext::get('cookie');
+            if ($cookieManager instanceof CookieManager) {
+                foreach ($cookieManager->all() as $cookie) {
+                    $response = $response->withCookie($cookie);
+                }
             }
         }
 
