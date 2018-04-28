@@ -31,9 +31,9 @@ class Cookie
      * Creates cookie from raw header string.
      *
      * @param string $cookie
-     * @param bool $decode
-     *
+     * @param bool   $decode
      * @return static
+     * @throws \InvalidArgumentException
      */
     public static function fromString($cookie, $decode = false)
     {
@@ -134,7 +134,7 @@ class Cookie
             $sameSite = strtolower($sameSite);
         }
 
-        if (!in_array($sameSite, array(self::SAMESITE_LAX, self::SAMESITE_STRICT, null), true)) {
+        if (! \in_array($sameSite, array(self::SAMESITE_LAX, self::SAMESITE_STRICT, null), true)) {
             throw new \InvalidArgumentException('The "sameSite" parameter value is not valid.');
         }
 
@@ -189,7 +189,7 @@ class Cookie
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -219,7 +219,7 @@ class Cookie
      *
      * @return int
      */
-    public function getExpiresTime()
+    public function getExpiresTime(): int
     {
         return $this->expire;
     }
@@ -229,7 +229,7 @@ class Cookie
      *
      * @return int
      */
-    public function getMaxAge()
+    public function getMaxAge(): int
     {
         return 0 !== $this->expire ? $this->expire - time() : 0;
     }
@@ -239,7 +239,7 @@ class Cookie
      *
      * @return string
      */
-    public function getPath()
+    public function getPath(): string
     {
         return $this->path;
     }
@@ -249,7 +249,7 @@ class Cookie
      *
      * @return bool
      */
-    public function isSecure()
+    public function isSecure(): bool
     {
         return $this->secure;
     }
@@ -259,7 +259,7 @@ class Cookie
      *
      * @return bool
      */
-    public function isHttpOnly()
+    public function isHttpOnly(): bool
     {
         return $this->httpOnly;
     }
@@ -269,7 +269,7 @@ class Cookie
      *
      * @return bool
      */
-    public function isCleared()
+    public function isCleared(): bool
     {
         return $this->expire < time();
     }
@@ -279,7 +279,7 @@ class Cookie
      *
      * @return bool
      */
-    public function isRaw()
+    public function isRaw(): bool
     {
         return $this->raw;
     }

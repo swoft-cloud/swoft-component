@@ -7,6 +7,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
+use Swoft\Core\RequestContext;
+use Swoft\Http\Message\Server\Response;
 use Swoft\Http\Server\Exception\NotAcceptableException;
 use Swoft\Http\Message\Middleware\MiddlewareInterface;
 
@@ -45,6 +47,16 @@ class SwoftMiddleware implements MiddlewareInterface
 
         // Delegate to next handler
         $response = $handler->handle($request);
+
+        // Handle CookieManager
+        if ($response instanceof Response) {
+            $cookieList = RequestContext::getContextDataByKey('cookie');
+            if ($cookieList instanceof \ArrayIterator) {
+                foreach ($cookieList as $cookie) {
+                    $response = $response->withCookie($cookie);
+                }
+            }
+        }
 
         // Power by
         $response = $response->withAddedHeader('X-Powered-By', 'Swoft');
