@@ -2,18 +2,35 @@
 
 namespace Swoft\Http\Message\Cookie;
 
+use Psr\Http\Message\RequestInterface;
 use Swoft\Bean\Annotation\Bean;
-use Swoft\Core\RequestContext;
+use Swoft\Bean\Annotation\Scope;
 
 
 /**
  * Class CookieManager
- * @Bean("cookieManager")
- *
- * @package Swoft\Http\Message\Cookie
+ * @Bean(scope=Scope::PROTOTYPE)
  */
 class CookieManager
 {
+
+    /**
+     * @var \ArrayIterator
+     */
+    protected $container;
+
+    /**
+     * @var \Psr\Http\Message\RequestInterface
+     */
+    protected $request;
+
+    /**
+     * CookieManager constructor.
+     */
+    public function __construct()
+    {
+        $this->container = new \ArrayIterator();
+    }
 
     /**
      * Notice that the Cookies from the Container only Response Cookies,
@@ -46,9 +63,8 @@ class CookieManager
         bool $secure = false,
         bool $httpOnly = true
     ) {
-        if (! $domain) {
-            $request = RequestContext::getRequest();
-            $domain = $request->getUri()->getHost();
+        if (! $domain && $this->hasRequest()) {
+            $domain = $this->getRequest()->getUri()->getHost();
         }
         $cookie = new Cookie($name, $value, $expire, $path, $domain, $secure, $httpOnly);
         $this->getContainer()->offsetSet($name, $cookie);
@@ -64,24 +80,47 @@ class CookieManager
     }
 
     /**
-     * @return void
+     * @return \ArrayIterator
      */
-    public function clear()
+    public function getContainer(): \ArrayIterator
     {
-        RequestContext::setContextDataByKey('cookie', null);
+        return $this->container;
     }
 
     /**
-     * @return \ArrayIterator
+     * @param \ArrayIterator $container
+     * @return CookieManager
      */
-    protected function getContainer(): \ArrayIterator
+    public function setContainer($container): CookieManager
     {
-        $list = RequestContext::getContextDataByKey('cookie');
-        if (! $list instanceof \ArrayIterator) {
-            $list = new \ArrayIterator();
-            RequestContext::setContextDataByKey('cookie', $list);
-        }
-        return $list;
+        $this->container = $container;
+        return $this;
+    }
+
+    /**
+     * @return \Psr\Http\Message\RequestInterface
+     */
+    public function getRequest(): RequestInterface
+    {
+        return $this->request;
+    }
+
+    /**
+     * @param \Psr\Http\Message\RequestInterface $request
+     * @return CookieManager
+     */
+    public function setRequest($request): CookieManager
+    {
+        $this->request = $request;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasRequest(): bool
+    {
+        return $this->request instanceof RequestInterface;
     }
 
 }

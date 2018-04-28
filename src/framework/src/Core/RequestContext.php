@@ -4,7 +4,6 @@ namespace Swoft\Core;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Swoft\App;
 use Swoft\Defer\Defer;
 use Swoft\Helper\ArrayHelper;
 
@@ -116,6 +115,26 @@ class RequestContext
     }
 
     /**
+     * @param string $key
+     * @param mixed  $value
+     */
+    public static function set(string $key, $value)
+    {
+        return self::setContextDataByKey($key, $value);
+    }
+
+    /**
+     * @param string $key
+     * @param mixed  $default
+     * @param bool   $rememberDefault
+     * @return mixed
+     */
+    public static function get(string $key, $default = null, bool $rememberDefault = false)
+    {
+        return self::getContextDataByKey($key, $default, $rememberDefault);
+    }
+
+    /**
      * Update context data by key
      *
      * @param string $key
@@ -132,15 +151,18 @@ class RequestContext
      *
      * @param string $key
      * @param mixed  $default
+     * @param bool   $rememberDefault
      * @return mixed
      */
-    public static function getContextDataByKey(string $key, $default = null)
+    public static function getContextDataByKey(string $key, $default = null, bool $rememberDefault = false)
     {
         $coroutineId = self::getCoroutineId();
         if (isset(self::$context[$coroutineId][self::DATA_KEY][$key])) {
             return self::$context[$coroutineId][self::DATA_KEY][$key];
         }
-
+        if ($rememberDefault) {
+            self::$context[$coroutineId][self::DATA_KEY][$key] = $default;
+        }
         return $default;
     }
 
