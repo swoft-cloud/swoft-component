@@ -177,8 +177,7 @@ if (! function_exists('cookie')) {
         if (! class_exists(\Swoft\Http\Message\Cookie\CookieManager::class)) {
             throw new \RuntimeException('CookieManager not exist, Did you forget to require swoft\http-message ?');
         }
-        $key = 'cookie';
-        $manager = RequestContext::get($key, value(function () {
+        $manager = RequestContext::get('cookie', value(function () {
             /** @var \Swoft\Http\Message\Cookie\CookieManager $manager */
             $manager = \bean(\Swoft\Http\Message\Cookie\CookieManager::class);
             $request = RequestContext::getRequest();
