@@ -40,7 +40,7 @@ class SwoftMiddleware implements MiddlewareInterface
 
         // Parser
         /* @var \Swoft\Http\Server\Parser\RequestParserInterface $requestParser */
-        $requestParser = App::getBean('requestParser');
+        $requestParser = \bean('requestParser');
         $request = $requestParser->parse($request);
 
         // Router
@@ -50,12 +50,10 @@ class SwoftMiddleware implements MiddlewareInterface
         $response = $handler->handle($request);
 
         // Handle CookieManager
-        if ($response instanceof Response) {
-            $cookieManager = RequestContext::getContextDataByKey('cookie');
-            if ($cookieManager instanceof CookieManager) {
-                foreach ($cookieManager->all() as $cookie) {
-                    $response = $response->withCookie($cookie);
-                }
+        $cookieManager = RequestContext::get('cookie');
+        if ($cookieManager instanceof CookieManager) {
+            foreach ($cookieManager->all() as $cookie) {
+                $response = $response->withCookie($cookie);
             }
         }
 
