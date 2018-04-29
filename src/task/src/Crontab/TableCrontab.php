@@ -4,6 +4,10 @@ namespace Swoft\Task\Crontab;
 
 use Swoft\Memory\Table;
 
+/**
+ * Class TableCrontab
+ * @package Swoft\Task\Crontab
+ */
 class TableCrontab
 {
     /**
@@ -14,25 +18,25 @@ class TableCrontab
     /**
      * @var TableCrontab $instance 实例对象
      */
-    private static $instance = null;
+    private static $instance;
 
     /**
-     * @var int $taskCount 最大任务数
+     * @var int $taskCount Maximum number of tasks
      */
     public static $taskCount = 1024;
 
     /**
-     * @var int $taskQueue 最大队列数
+     * @var int $taskQueue Maximum number of queues
      */
     public static $taskQueue = 1024;
 
     /**
-     * @var \Swoft\Memory\Table $originTable 内存任务表
+     * @var \Swoft\Memory\Table $originTable Memory task table
      */
     private $originTable;
 
     /**
-     * @var \Swoft\Memory\Table $runTimeTable 内存运行表
+     * @var \Swoft\Memory\Table $runTimeTable Memory operation table
      */
     private $runTimeTable;
 
@@ -60,23 +64,25 @@ class TableCrontab
     /**
      * 创建配置表
      *
-     * @param int $taskCount 最大任务数
+     * @param int $taskCount Maximum number of tasks
      * @param int $taskQueue 最大队列数
      */
     public static function init(int $taskCount = null, int $taskQueue = null)
     {
-        self::$taskCount = $taskCount == null ? self::$taskCount : $taskCount;
-        self::$taskQueue = $taskQueue == null ? self::$taskQueue : $taskQueue;
+        self::$taskCount = $taskCount ?? self::$taskCount;
+        self::$taskQueue = $taskQueue ?? self::$taskQueue;
+
         self::getInstance();
+
         self::$instance->initTables();
     }
 
     /**
      * 获取实例对象
      */
-    public static function getInstance()
+    public static function getInstance(): self
     {
-        if (!(self::$instance instanceof self)) {
+        if (!self::$instance instanceof self) {
             self::$instance = new self;
         }
 
@@ -94,9 +100,10 @@ class TableCrontab
     }
 
     /**
-     * 获取内存任务表实例
+     * Get memory task table instance
+     * @return Table
      */
-    public function getOriginTable()
+    public function getOriginTable(): Table
     {
         return $this->originTable;
     }
@@ -116,15 +123,17 @@ class TableCrontab
      *
      * @return Table
      */
-    public function getRunTimeTable()
+    public function getRunTimeTable(): Table
     {
         return $this->runTimeTable;
     }
 
     /**
      * 初始化任务表
+     * @throws \Swoft\Memory\Exception\RuntimeException
+     * @throws \Swoft\Memory\Exception\InvalidArgumentException
      */
-    private function initTables()
+    private function initTables(): bool
     {
         return $this->createOriginTable() && $this->createRunTimeTable();
     }
@@ -133,6 +142,8 @@ class TableCrontab
      * 创建originTable
      *
      * @return bool
+     * @throws \Swoft\Memory\Exception\RuntimeException
+     * @throws \Swoft\Memory\Exception\InvalidArgumentException
      */
     private function createOriginTable(): bool
     {
@@ -145,6 +156,8 @@ class TableCrontab
      * 创建runTimeTable
      *
      * @return bool
+     * @throws \Swoft\Memory\Exception\RuntimeException
+     * @throws \Swoft\Memory\Exception\InvalidArgumentException
      */
     private function createRunTimeTable(): bool
     {

@@ -14,7 +14,7 @@ use Swoft\Task\Bean\Annotation\Scheduled;
 class TaskWrapper extends AbstractWrapper
 {
     /**
-     * 类注解
+     * Class annotation
      *
      * @var array
      */
@@ -23,7 +23,7 @@ class TaskWrapper extends AbstractWrapper
     ];
 
     /**
-     * 属性注解
+     * Property annotations
      *
      * @var array
      */
@@ -33,7 +33,7 @@ class TaskWrapper extends AbstractWrapper
     ];
 
     /**
-     * 方法注解
+     * Method annotation
      *
      * @var array
      */
@@ -42,8 +42,6 @@ class TaskWrapper extends AbstractWrapper
     ];
 
     /**
-     * 是否解析类注解
-     *
      * @param array $annotations
      * @return bool
      */
@@ -53,8 +51,6 @@ class TaskWrapper extends AbstractWrapper
     }
 
     /**
-     * 是否解析属性注解
-     *
      * @param array $annotations
      * @return bool
      */
@@ -64,8 +60,6 @@ class TaskWrapper extends AbstractWrapper
     }
 
     /**
-     * 是否解析方法注解
-     *
      * @param array $annotations
      * @return bool
      */

@@ -11,16 +11,10 @@ use Swoft\Task\Bean\Annotation\Task;
  */
 class TaskCollector implements CollectorInterface
 {
-
     /**
      * @var array
      */
     private static $tasks = [];
-
-    /**
-     * @var array
-     */
-    private static $crons = [];
 
     /**
      * @param string $className
@@ -90,6 +84,7 @@ class TaskCollector implements CollectorInterface
             'task'      => $taskName,
             'method'    => $methodName,
             'className' => $className,
+            'description' => $objectAnnotation->getDescription(),
         ];
     }
 
@@ -100,5 +95,4 @@ class TaskCollector implements CollectorInterface
     {
         return self::$tasks;
     }
-
 }

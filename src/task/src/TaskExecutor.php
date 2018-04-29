@@ -26,15 +26,14 @@ class TaskExecutor
      */
     public function run(string $data)
     {
-        $data = TaskHelper::unpack($data);
+        $map = TaskHelper::unpack($data);
 
-        $name   = $data['name'];
-        $type   = $data['type'];
-        $method = $data['method'];
-        $params = $data['params'];
-        $logid  = $data['logid'] ?? uniqid('', true);
-        $spanid = $data['spanid'] ?? 0;
-
+        $name   = $map['name'];
+        $type   = $map['type'];
+        $method = $map['method'];
+        $params = $map['params'];
+        $logId  = $map['logid'] ?? uniqid('', true);
+        $spanId = $map['spanid'] ?? 0;
 
         $collector = TaskCollector::getCollector();
         if (!isset($collector['task'][$name])) {
@@ -45,9 +44,9 @@ class TaskExecutor
         $task = App::getBean($name);
 
         if ($coroutine) {
-            $result = $this->runCoTask($task, $method, $params, $logid, $spanid, $name, $type);
+            $result = $this->runCoTask($task, $method, $params, $logId, $spanId, $name, $type);
         } else {
-            $result = $this->runSyncTask($task, $method, $params, $logid, $spanid, $name, $type);
+            $result = $this->runSyncTask($task, $method, $params, $logId, $spanId, $name, $type);
         }
 
         return $result;
@@ -57,16 +56,16 @@ class TaskExecutor
      * @param object $task
      * @param string $method
      * @param array  $params
-     * @param string $logid
-     * @param int    $spanid
+     * @param string $logId
+     * @param int    $spanId
      * @param string $name
      * @param string $type
      *
      * @return mixed
      */
-    private function runSyncTask($task, string $method, array $params, string $logid, int $spanid, string $name, string $type)
+    private function runSyncTask($task, string $method, array $params, string $logId, int $spanId, string $name, string $type)
     {
-        $this->beforeTask($logid, $spanid, $name, $method, $type, get_parent_class($task));
+        $this->beforeTask($logId, $spanId, $name, $method, $type, \get_parent_class($task));
         $result = PhpHelper::call([$task, $method], $params);
         $this->afterTask($type);
 
@@ -77,38 +76,40 @@ class TaskExecutor
      * @param object $task
      * @param string $method
      * @param array  $params
-     * @param string $logid
-     * @param int    $spanid
+     * @param string $logId
+     * @param int    $spanId
      * @param string $name
      * @param string $type
      *
      * @return bool
      */
-    private function runCoTask($task, string $method, array $params, string $logid, int $spanid, string $name, string $type)
+    private function runCoTask($task, string $method, array $params, string $logId, int $spanId, string $name, string $type): bool
     {
-        return Coroutine::create(function () use ($task, $method, $params, $logid, $spanid, $name, $type) {
-            $this->beforeTask($logid, $spanid, $name, $method, $type, get_parent_class($task));
+        return Coroutine::create(function () use ($task, $method, $params, $logId, $spanId, $name, $type) {
+            $this->beforeTask($logId, $spanId, $name, $method, $type, \get_parent_class($task));
             PhpHelper::call([$task, $method], $params);
             $this->afterTask($type);
         });
     }
 
     /**
-     * @param string $logid
-     * @param int    $spanid
+     * @param string $logId
+     * @param int $spanId
      * @param string $name
      * @param string $method
      * @param string $type
      * @param string $taskClass
+     * @throws \InvalidArgumentException
      */
-    private function beforeTask(string $logid, int $spanid, string $name, string $method, string $type, string $taskClass)
+    private function beforeTask(string $logId, int $spanId, string $name, string $method, string $type, string $taskClass)
     {
-        $event = new BeforeTaskEvent(TaskEvent::BEFORE_TASK, $logid, $spanid, $name, $method, $type, $taskClass);
+        $event = new BeforeTaskEvent(TaskEvent::BEFORE_TASK, $logId, $spanId, $name, $method, $type, $taskClass);
         App::trigger($event);
     }
 
     /**
      * @param string $type
+     * @throws \InvalidArgumentException
      */
     private function afterTask(string $type)
     {

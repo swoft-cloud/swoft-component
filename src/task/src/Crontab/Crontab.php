@@ -145,10 +145,11 @@ class Crontab
 
     /**
      * 清理执行任务表
+     * @throws \Swoft\Memory\Exception\RuntimeException
      */
     private function cleanRunTimeTable()
     {
-        foreach ($this->getRunTimeTable()->table as $key => $value) {
+        foreach ($this->getRunTimeTable()->getTable() as $key => $value) {
             if ($value['runStatus'] === self::FINISH) {
                 $this->getRunTimeTable()->del($key);
             }
@@ -202,18 +203,23 @@ class Crontab
 
     /**
      * 获取内存中的任务信息
+     * @throws \InvalidArgumentException
      */
     public function loadTableTask()
     {
-        $originTableTasks = $this->getOriginTable()->table;
+        /** @var array $originTableTasks */
+        $originTableTasks = $this->getOriginTable()->getTable();
         if (\count($originTableTasks) > 0) {
             $time = time();
             $this->checkTaskQueue(true);
+
             foreach ($originTableTasks as $id => $task) {
                 $parseResult = ParseCrontab::parse($task['rule'], $time);
                 if ($parseResult === false) {
                     throw new \InvalidArgumentException(ParseCrontab::$error);
-                } elseif (! empty($parseResult) && \is_array($parseResult)) {
+                }
+
+                if ($parseResult && \is_array($parseResult)) {
                     $this->initRunTimeTableData($task, $parseResult);
                 }
             }
@@ -229,7 +235,7 @@ class Crontab
      */
     private function initRunTimeTableData(array $task, array $parseResult): bool
     {
-        $runTimeTableTasks = $this->getRunTimeTable()->table;
+        $runTimeTableTasks = $this->getRunTimeTable()->getTable();
 
         $min = date('YmdHi');
         $sec = strtotime(date('Y-m-d H:i'));
@@ -254,6 +260,7 @@ class Crontab
      *
      * @param bool $reStart 是否重新开始检测
      * @return bool
+     * @throws \InvalidArgumentException
      */
     private function checkTaskQueue(bool $reStart): bool
     {
@@ -278,11 +285,13 @@ class Crontab
      * 获取要执行的任务
      *
      * @return array
+     * @throws \Swoft\Memory\Exception\RuntimeException
      */
     public function getExecTasks(): array
     {
         $data = [];
-        $runTimeTableTasks = $this->getRunTimeTable()->table;
+        /** @var array $runTimeTableTasks */
+        $runTimeTableTasks = $this->getRunTimeTable()->getTable();
         if (\count($runTimeTableTasks) <= 0) {
             return $data;
         }
@@ -291,7 +300,7 @@ class Crontab
 
         foreach ($runTimeTableTasks as $key => $value) {
             if ($value['minute'] == $min) {
-                if (time() == $value['sec'] && $value['runStatus'] == self::NORMAL) {
+                if (\time() == $value['sec'] && $value['runStatus'] == self::NORMAL) {
                     $data[] = [
                         'key'        => $key,
                         'taskClass'  => $value['taskClass'],
@@ -314,7 +323,7 @@ class Crontab
      * @param int $key 主键
      * @return bool
      */
-    public function startTask($key)
+    public function startTask($key): bool
     {
         return $this->getRunTimeTable()->set($key, ['runStatus' => self::START]);
     }
@@ -325,7 +334,7 @@ class Crontab
      * @param int $key 主键
      * @return bool
      */
-    public function finishTask($key)
+    public function finishTask($key): bool
     {
         return $this->getRunTimeTable()->set($key, ['runStatus' => self::FINISH]);
     }
