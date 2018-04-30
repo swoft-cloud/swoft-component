@@ -19,6 +19,32 @@ class BugTest extends AbstractMysqlCase
      *
      * @param int $uid
      */
+    public function testJoin(int $uid)
+    {
+        $data  = Query::table('user', 'u')->leftJoin('count', 'u.id=c.uid', 'c')->condition(['u.id' => $uid])->one()->getResult();
+        $data2 = Query::table('user', 'u')->leftJoin('count', ['u.id=c.uid'], 'c')->condition(['u.id' => $uid])->one()->getResult();
+
+        $this->assertEquals($data['id'], $uid);
+        $this->assertEquals($data2['id'], $uid);
+    }
+
+    /**
+     * @dataProvider relationProider
+     *
+     * @param int $uid
+     */
+    public function testJoinByCo(int $uid)
+    {
+        go(function () use ($uid) {
+            $this->testJoinByCo($uid);
+        });
+    }
+
+    /**
+     * @dataProvider relationProider
+     *
+     * @param int $uid
+     */
     public function testQueryCount(int $uid)
     {
         $count = User::query()->count()->getResult();

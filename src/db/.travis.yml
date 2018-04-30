@@ -32,7 +32,12 @@ before_install:
                   `fans` INT (1) NOT NULL DEFAULT '0',
                   `follows` INT (1) NOT NULL DEFAULT '0',
                   PRIMARY KEY (`uid`)
-                ) ENGINE = INNODB DEFAULT CHARSET = utf8 ;'
+                ) ENGINE = INNODB DEFAULT CHARSET = utf8 ;
+                CREATE TABLE `prefix` (
+                  `s_id` int(11) NOT NULL AUTO_INCREMENT,
+                  `s_name` varchar(20) DEFAULT NULL,
+                  PRIMARY KEY (`s_id`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8'
     - mysql -e 'CREATE DATABASE IF NOT EXISTS test2;
                 USE test2;
                 CREATE TABLE IF NOT EXISTS `user` (

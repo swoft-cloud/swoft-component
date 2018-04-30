@@ -570,7 +570,7 @@ class Executor
         $fields     = $entities[$className]['field'];
         $idProperty = $entities[$className]['table']['id'];
         $tableName  = $entities[$className]['table']['name'];
-        $idColumn   = $entities[$className]['column'][$idProperty];
+        $idColumn   = $fields[$idProperty]['column'];
 
         return [$tableName, $idProperty, $idColumn, $fields];
     }
