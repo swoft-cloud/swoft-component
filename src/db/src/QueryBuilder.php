@@ -1426,6 +1426,12 @@ class QueryBuilder implements QueryBuilderInterface
                 return EntityHelper::arrayToEntity($result[0], $this->className);
             }
 
+            if (isset($result[0]) && empty($this->join)) {
+                $tableName = $this->getTableName();
+
+                return EntityHelper::formatRowByType($result[0], $tableName);
+            }
+
             if (empty($result) && !empty($this->className)) {
                 return null;
             }
@@ -1436,18 +1442,6 @@ class QueryBuilder implements QueryBuilderInterface
 
             return $result;
         });
-    }
-
-    /**
-     * @param array $columns
-     *
-     * @return array
-     */
-    protected function getSelectFields($columns = ['*']): array
-    {
-        if (empty($columns)) {
-            $columns = ['*'];
-        }
     }
 
     /**
@@ -1472,6 +1466,11 @@ class QueryBuilder implements QueryBuilderInterface
         $this->addDecorator(function ($result) {
             if (!empty($this->className) && !empty($result)) {
                 return EntityHelper::listToEntity($result, $this->className);
+            }
+
+            if (!empty($result) && empty($this->join)) {
+                $tableName = $this->getTableName();
+                $result    = EntityHelper::formatListByType($result, $tableName);
             }
 
             return $result;
