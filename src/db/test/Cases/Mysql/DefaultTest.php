@@ -79,7 +79,11 @@ class DefaultTest extends AbstractMysqlCase
         $result = $newDetable->update()->getResult();
         $this->assertEquals(1, $result);
 
+        /* @var Detable $detable */
         $detable = Detable::findById($did)->getResult();
+        $this->assertEquals($detable->getDName(), null);
+        $this->assertEquals($detable['dAmount'], null);
+        $this->assertEquals($detable['dCount'], null);
         $this->assertEquals($detable['amount'], 12.1);
 
         $ret = Detable::updateOne(['d_name' => 'dname...'], ['s_id' => $did])->getResult();

@@ -130,7 +130,9 @@ class EntityHelper
      */
     public static function trasferTypes($type, $value)
     {
-        if ($type === Types::INT || $type === Types::NUMBER) {
+        if ($value === null) {
+            $value = null;
+        } elseif ($type === Types::INT || $type === Types::NUMBER) {
             $value = (int)$value;
         } elseif ($type === Types::STRING) {
             $value = null === $value ? null : (string)$value;
