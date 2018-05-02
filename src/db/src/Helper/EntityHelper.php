@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Db\Helper;
 
 use Swoft\Db\Bean\Collector\EntityCollector;
@@ -19,6 +20,53 @@ use Swoft\Helper\StringHelper;
  */
 class EntityHelper
 {
+    /**
+     * @param array  $result
+     * @param string $className
+     *
+     * @return array
+     */
+    public static function formatListByType(array $result, string $className): array
+    {
+        if (empty($result)) {
+            return [];
+        }
+
+        $rowList = [];
+        foreach ($result as $row) {
+            $rowList[] = self::formatRowByType($row, $className);
+        }
+
+        return $rowList;
+    }
+
+    /**
+     * @param array  $row
+     * @param string $className
+     *
+     * @return array
+     */
+    public static function formatRowByType(array $row, string $className): array
+    {
+        $rowAry   = [];
+        $entities = EntityCollector::getCollector();
+        if (!isset($entities[$className])) {
+            return $row;
+        }
+
+        if (strpos($className, '\\') === false) {
+            $className = $entities[$className];
+        }
+        foreach ($row as $name => $value) {
+            $field = $entities[$className]['column'][$name];
+            $type  = $entities[$className]['field'][$field]['type'];
+
+            $rowAry[$name] = self::trasferTypes($type, $value);
+        }
+
+        return $rowAry;
+    }
+
     /**
      * @param array  $result
      * @param string $className
@@ -57,7 +105,7 @@ class EntityHelper
 
             $field        = $entities[$className]['column'][$col];
             $setterMethod = StringHelper::camel('set_' . $field);
-            
+
             $type  = $entities[$className]['field'][$field]['type'];
             $value = self::trasferTypes($type, $value);
 
@@ -82,7 +130,9 @@ class EntityHelper
      */
     public static function trasferTypes($type, $value)
     {
-        if ($type === Types::INT || $type === Types::NUMBER) {
+        if ($value === null) {
+            $value = null;
+        } elseif ($type === Types::INT || $type === Types::NUMBER) {
             $value = (int)$value;
         } elseif ($type === Types::STRING) {
             $value = null === $value ? null : (string)$value;

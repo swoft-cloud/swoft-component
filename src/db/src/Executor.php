@@ -14,6 +14,7 @@ use Swoft\App;
 use Swoft\Bean\BeanFactory;
 use Swoft\Core\ResultInterface;
 use Swoft\Db\Bean\Collector\EntityCollector;
+use Swoft\Db\Exception\MysqlException;
 use Swoft\Db\Validator\ValidatorInterface;
 use Swoft\Exception\ValidatorException;
 
@@ -380,6 +381,12 @@ class Executor
             // 实体属性对应值
             $proValue = self::getEntityProValue($entity, $proName);
 
+            self::validate($proAry, $proValue);
+
+            if($type === 1 && $proValue === null){
+                continue;
+            }
+
             // insert逻辑
             if ($type === 1 && $id === $proName && $default === $proValue) {
                 continue;
@@ -395,9 +402,6 @@ class Executor
                 continue;
             }
 
-            // 属性值验证
-            self::validate($proAry, $proValue);
-
             // id值赋值
             if ($idColumn === $column) {
                 $idValue = $proValue;
@@ -412,7 +416,6 @@ class Executor
             $oldFields    = self::getDbOldFields(get_class($entity), $oldFields);
             $changeFields = self::getUpdateFields($oldFields, $changeFields);
         }
-
         return [$table, $idColumn, $idValue, $changeFields];
     }
 
@@ -468,7 +471,7 @@ class Executor
      * @param array $columnAry     属性字段验证规则
      * @param mixed $propertyValue 数组字段值
      *
-     * @throws ValidatorException
+     * @throws MysqlException
      */
     private static function validate(array $columnAry, $propertyValue)
     {
@@ -481,7 +484,11 @@ class Executor
 
         // 必须传值验证
         if ($propertyValue === null && $required) {
-            throw new ValidatorException('数据字段验证失败，column=' . $column . '字段必须设置值');
+            throw new MysqlException(sprintf('The %s must pass values', $column));
+        }
+
+        if($propertyValue === null){
+            return ;
         }
 
         // 类型验证器
@@ -570,7 +577,7 @@ class Executor
         $fields     = $entities[$className]['field'];
         $idProperty = $entities[$className]['table']['id'];
         $tableName  = $entities[$className]['table']['name'];
-        $idColumn   = $entities[$className]['column'][$idProperty];
+        $idColumn   = $fields[$idProperty]['column'];
 
         return [$tableName, $idProperty, $idColumn, $fields];
     }

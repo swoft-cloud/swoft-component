@@ -19,6 +19,31 @@ class BugTest extends AbstractMysqlCase
      *
      * @param int $uid
      */
+    public function testJoin(int $uid)
+    {
+        $data  = Query::table('user', 'u')->leftJoin('count', 'u.id=c.uid', 'c')->condition(['u.id' => $uid])->one()->getResult();
+        $data2 = Query::table('user', 'u')->leftJoin('count', ['u.id=c.uid'], 'c')->condition(['u.id' => $uid])->one()->getResult();
+        $this->assertEquals($data['id'], $uid);
+        $this->assertEquals($data2['id'], $uid);
+    }
+
+    /**
+     * @dataProvider relationProider
+     *
+     * @param int $uid
+     */
+    public function testJoinByCo(int $uid)
+    {
+        go(function () use ($uid) {
+            $this->testJoin($uid);
+        });
+    }
+
+    /**
+     * @dataProvider relationProider
+     *
+     * @param int $uid
+     */
     public function testQueryCount(int $uid)
     {
         $count = User::query()->count()->getResult();
@@ -259,5 +284,46 @@ class BugTest extends AbstractMysqlCase
         $this->assertEquals($result['id'], $uid);
         $result = Query::table('user', 'u')->leftJoin('count', 'u.id=c.uid', 'c')->condition(['u.id' => $uid])->one(['u.*'])->getResult();
         $this->assertEquals($result['id'], $uid);
+    }
+
+    /**
+     * @dataProvider relationProider
+     *
+     * @param int $uid
+     */
+    public function testListType(int $uid)
+    {
+        /* @var User $user*/
+        $user = User::findById($uid)->getResult();
+        $userAry = $user->toArray();
+
+        $this->assertTrue(is_int($userAry['age']));
+        $this->assertTrue(is_int($userAry['sex']));
+        $this->assertTrue(is_string($userAry['desc']));
+
+        $row = Query::table(User::class)->where('id', $uid)->one()->getResult();
+
+        $this->assertTrue(is_int($row['age']));
+        $this->assertTrue(is_int($row['sex']));
+        $this->assertTrue(is_string($row['description']));
+
+        $rows = Query::table(User::class)->where('id', $uid)->get()->getResult();
+        foreach ($rows as $userRow){
+            $this->assertTrue(is_int($userRow['age']));
+            $this->assertTrue(is_int($userRow['sex']));
+            $this->assertTrue(is_string($userRow['description']));
+        }
+    }
+
+    /**
+     * @dataProvider relationProider
+     *
+     * @param int $uid
+     */
+    public function testListTypeByCo(int $uid)
+    {
+        go(function () use ($uid){
+            $this->testListType($uid);
+        });
     }
 }

@@ -304,13 +304,13 @@ class Statement implements StatementInterface
     {
         $statement = '';
         $join      = $this->builder->getJoin();
-        foreach ($join as $i => $join) {
+        foreach ($join as $i => $joinItem) {
 
             // join信息
-            $type     = $join['type'];
-            $table    = $join['table'];
-            $alias    = $join['alias'];
-            $criteria = $join['criteria'];
+            $type     = $joinItem['type'];
+            $table    = $joinItem['table'];
+            $alias    = $joinItem['alias'];
+            $criteria = $joinItem['criteria'];
 
             // join类型
             $statement .= ' ' . $type . ' ' . $table;
@@ -376,11 +376,12 @@ class Statement implements StatementInterface
         $joinCriteria      = '';
         $previousJoinIndex = $joinIndex - 1;
 
-        if (array_key_exists($previousJoinIndex, $this->join)) {
+        $join = $this->builder->getJoin();
+        if (array_key_exists($previousJoinIndex, $join)) {
             // 上一个join存在
-            $previousTable = $this->join[$previousJoinIndex]['table'];
-            if ($this->join[$previousJoinIndex]['alias'] !== null) {
-                $previousTable = $this->join[$previousJoinIndex]['alias'];
+            $previousTable = $join[$previousJoinIndex]['table'];
+            if ($join[$previousJoinIndex]['alias'] !== null) {
+                $previousTable = $join[$previousJoinIndex]['alias'];
             }
         } elseif ($this->isSelect()) {
             // 查询
@@ -397,12 +398,11 @@ class Statement implements StatementInterface
         }
 
         // 上一个inner关联存在
-        if ($previousTable) {
+        if ($previousTable && strpos($column, '.') === false) {
             $joinCriteria .= $previousTable . '.';
         }
 
         $joinCriteria .= $column . ' ' . QueryBuilder::OPERATOR_EQ . ' ' . $table . '.' . $column;
-
         return $joinCriteria;
     }
 
