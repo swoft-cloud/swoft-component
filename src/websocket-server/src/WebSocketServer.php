@@ -100,7 +100,9 @@ class WebSocketServer extends HttpServer
             return;
         }
 
-        ConsoleUtil::log($msg, $data, $type);
+        if (\config('debug')) {
+            ConsoleUtil::log($msg, $data, $type);
+        }
     }
 
     /*****************************************************************************
@@ -108,36 +110,51 @@ class WebSocketServer extends HttpServer
      ****************************************************************************/
 
     /**
+     * @param string $fd
+     * @param string $data
+     * @param bool $isBinary
+     * @param bool $finish
+     * @return bool
+     */
+    public function push(string $fd, string $data, $isBinary = false, bool $finish = true): bool
+    {
+        if (!$this->server->exist($fd)) {
+            return false;
+        }
+
+        return $this->server->push($fd, $data, $isBinary, $finish);
+    }
+
+    /**
      * send message to client(s)
      * @param string $data
      * @param int|array $receivers
-     * @param int|array $expected
+     * @param int|array $excluded
      * @param int $sender
+     * @param int $pageSize
      * @return int
      */
-    public function send(string $data, $receivers = 0, $expected = 0, int $sender = 0): int
+    public function send(string $data, $receivers = 0, $excluded = 0, int $sender = 0, int $pageSize = 50): int
     {
         if (!$data) {
             return 0;
         }
 
         $receivers = (array)$receivers;
-        $expected = (array)$expected;
+        $excluded = (array)$excluded;
 
         // only one receiver
         if (1 === \count($receivers)) {
-            return $this->sendTo(array_shift($receivers), $data, $sender);
+            return $this->sendTo((int)\array_shift($receivers), $data, $sender);
         }
 
         // to all
-        if (!$expected && !$receivers) {
-            $this->sendToAll($data, $sender);
-            // to some
-        } else {
-            $this->sendToSome($data, $receivers, $expected, $sender);
+        if (!$excluded && !$receivers) {
+            return $this->sendToAll($data, $sender, $pageSize);
         }
 
-        return $this->getErrorNo();
+        // to some
+        return $this->sendToSome($data, $receivers, $excluded, $sender, $pageSize);
     }
 
     /**
@@ -155,18 +172,18 @@ class WebSocketServer extends HttpServer
 
         $this->log("(private)The #{$fromUser} send message to the user #{$receiver}. Data: {$data}");
 
-        return $this->server->push($receiver, $data, $opcode, $finish) ? 0 : -500;
+        return $this->server->push($receiver, $data, $opcode, $finish) ? 1 : 0;
     }
 
     /**
-     * broadcast message 广播消息
+     * broadcast message, will exclude self.
      * @param string $data 消息数据
      * @param int $sender 发送者
      * @param int[] $receivers 指定接收者们
-     * @param int[] $expected 要排除的接收者
+     * @param int[] $excluded 要排除的接收者
      * @return int Return socket last error number code.  gt 0 on failure, eq 0 on success
      */
-    public function broadcast(string $data, array $receivers = [], array $expected = [], int $sender = 0): int
+    public function broadcast(string $data, array $receivers = [], array $excluded = [], int $sender = 0): int
     {
         if (!$data) {
             return 0;
@@ -174,26 +191,30 @@ class WebSocketServer extends HttpServer
 
         // only one receiver
         if (1 === \count($receivers)) {
-            return $this->sendTo(\array_shift($receivers), $data, $sender);
+            return $this->sendTo((int)\array_shift($receivers), $data, $sender);
         }
 
         // to all
-        if (!$expected && !$receivers) {
-            $this->sendToAll($data, $sender);
-            // to some
-        } else {
-            $this->sendToSome($data, $receivers, $expected, $sender);
+        if (!$excluded && !$receivers) {
+            return $this->sendToAll($data, $sender);
         }
 
-        return $this->getErrorNo();
+        if ($sender) {
+            $excluded[] = $sender;
+        }
+
+        // to some
+        return $this->sendToSome($data, $receivers, $excluded, $sender);
     }
 
     /**
+     * send message to all connections
      * @param string $data
      * @param int $sender
+     * @param int $pageSize
      * @return int
      */
-    public function sendToAll(string $data, int $sender = 0): int
+    public function sendToAll(string $data, int $sender = 0, int $pageSize = 50): int
     {
         $startFd = 0;
         $count = 0;
@@ -201,17 +222,17 @@ class WebSocketServer extends HttpServer
         $this->log("(broadcast)The #{$fromUser} send a message to all users. Data: {$data}");
 
         while (true) {
-            $connList = $this->server->connection_list($startFd, 50);
+            $fdList = $this->server->connection_list($startFd, $pageSize);
 
-            if ($connList === false || ($num = \count($connList)) === 0) {
+            if ($fdList === false || ($num = \count($fdList)) === 0) {
                 break;
             }
 
             $count += $num;
-            $startFd = \end($connList);
+            $startFd = \end($fdList);
 
-            /** @var $connList array */
-            foreach ($connList as $fd) {
+            /** @var $fdList array */
+            foreach ($fdList as $fd) {
                 $info = $this->getClientInfo($fd);
 
                 if ($info && $info['websocket_status'] > 0) {
@@ -226,15 +247,14 @@ class WebSocketServer extends HttpServer
     /**
      * @param string $data
      * @param array $receivers
-     * @param array $expected
+     * @param array $excluded
      * @param int $sender
+     * @param int $pageSize
      * @return int
      */
-    public function sendToSome(string $data, array $receivers = [], array $expected = [], int $sender = 0): int
+    public function sendToSome(string $data, array $receivers = [], array $excluded = [], int $sender = 0, int $pageSize = 50): int
     {
         $count = 0;
-        $res = $data;
-        $len = \strlen($res);
         $fromUser = $sender < 1 ? 'SYSTEM' : $sender;
 
         // to receivers
@@ -242,9 +262,9 @@ class WebSocketServer extends HttpServer
             $this->log("(broadcast)The #{$fromUser} gave some specified user sending a message. Data: {$data}");
 
             foreach ($receivers as $receiver) {
-                if (WebSocketContext::has($receiver)) {
+                if ($this->exist($receiver)) {
                     $count++;
-                    $this->server->push($receiver, $res, $len);
+                    $this->server->push($receiver, $data);
                 }
             }
 
@@ -253,25 +273,23 @@ class WebSocketServer extends HttpServer
 
         // to special users
         $startFd = 0;
+        $excluded = $excluded ? (array)\array_flip($excluded) : [];
+
         $this->log("(broadcast)The #{$fromUser} send the message to everyone except some people. Data: {$data}");
 
         while (true) {
-            $connList = $this->server->connection_list($startFd, 50);
+            $fdList = $this->server->connection_list($startFd, $pageSize);
 
-            if ($connList === false || ($num = \count($connList)) === 0) {
+            if ($fdList === false || ($num = \count($fdList)) === 0) {
                 break;
             }
 
             $count += $num;
-            $startFd = \end($connList);
+            $startFd = \end($fdList);
 
-            /** @var $connList array */
-            foreach ($connList as $fd) {
-                if (isset($expected[$fd])) {
-                    continue;
-                }
-
-                if ($receivers && !isset($receivers[$fd])) {
+            /** @var $fdList array */
+            foreach ($fdList as $fd) {
+                if (isset($excluded[$fd])) {
                     continue;
                 }
 
