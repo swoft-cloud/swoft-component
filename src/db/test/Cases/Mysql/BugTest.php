@@ -35,7 +35,7 @@ class BugTest extends AbstractMysqlCase
     public function testJoinByCo(int $uid)
     {
         go(function () use ($uid) {
-            $this->testJoinByCo($uid);
+            $this->testJoin($uid);
         });
     }
 

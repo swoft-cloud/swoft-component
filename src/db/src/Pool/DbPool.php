@@ -27,7 +27,7 @@ use Swoft\Pool\ConnectionPool;
 class DbPool extends ConnectionPool
 {
     /**
-     * The config of pool
+     * The config of poolbPool
      *
      * @Inject()
      *

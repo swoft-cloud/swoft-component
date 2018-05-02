@@ -90,8 +90,7 @@ class SetGetGenerator
         string $entityClass,
         string $entityDate,
         array $fields
-    )
-    {
+    ) {
         $this->schema = $schema;
         $entityStub   = $this->generateModel();
         $usesContent  = '';
@@ -159,8 +158,8 @@ class SetGetGenerator
         $property      = $fieldInfo['name'];
         $aliasProperty = StringHelper::camel($property);
         $primaryKey    = $fieldInfo['key'] === 'PRI';
-        $required      = $primaryKey ? false : ($fieldInfo['nullable'] === 'NO');
-        $default       = $fieldInfo['default'] ?? '';
+        $required      = $primaryKey ? false : ($fieldInfo['nullable'] === 'NO' && $fieldInfo['default'] === null);
+        $default       = $fieldInfo['default'];
         $dbType        = $this->schema->dbSchema[$fieldInfo['type']] ?? '';
         $phpType       = $this->schema->phpSchema[$fieldInfo['type']] ?? 'mixed';
         $length        = $fieldInfo['length'];
@@ -177,12 +176,11 @@ class SetGetGenerator
         //字段类型
         $dbType = !empty($dbType) ? $dbType : ($isEnum ? '"feature-enum"' : (\is_int($default) ? '"int"' : '"string"'));
 
-        $default = $this->setDefault($dbType, $default, $primaryKey);
-
         $this->checkAliasProperty($aliasProperty);
 
         $formatComment = "     * @var {$phpType} \${$aliasProperty} {$comment}\n";
 
+        $default            = $this->parserDefault($dbType, $default, $primaryKey);
         $this->propertyStub .= PHP_EOL . str_replace([
                 "{{comment}}\n",
                 "{{@Id}}\n",
@@ -190,6 +188,7 @@ class SetGetGenerator
                 '{{aliasProperty}}',
                 '{{type}}',
                 '{{length}}',
+                '{{default}}',
                 "{{@Required}}\n",
                 '{{hasDefault}}',
             ], [
@@ -199,9 +198,41 @@ class SetGetGenerator
                 $aliasProperty,
                 $dbType,
                 $length !== null ? ", length={$length}" : '',
+                $default !== null ? ", default={$default}" : '',
                 $required ? "     * @Required()\n" : '',
-                $default === '\'\'' ? ';' : " = {$default};"
+                ';',
             ], $propertyStub);
+    }
+
+    private function parserDefault($dbType, $default, $primaryKey)
+    {
+        if ($primaryKey) {
+            return null;
+        }
+
+        if ($default === null) {
+            return null;
+        }
+
+        $default = trim($default);
+
+        switch ($dbType) {
+            case "Types::INT":
+            case "Types::NUMBER":
+                $default = (int)$default;
+                break;
+            case "Types::BOOLEAN":
+                $default = (bool)$default;
+                break;
+            case "Types::FLOAT":
+                $default = (float)$default;
+                break;
+            default:
+                $default = sprintf('"%s"', $default);
+                break;
+        }
+
+        return $default;
     }
 
     /**
@@ -272,7 +303,7 @@ class SetGetGenerator
                 $function,
                 $aliasProperty,
                 $returnType !== 'mixed' && !$primaryKey && $default !== '\'\'' ? $returnType : 'mixed',
-                $returnType !== 'mixed' && !$primaryKey && $default !== '\'\'' ? ": {$returnType}" : '',
+                '',
             ], $getterStub);
     }
 
@@ -283,8 +314,7 @@ class SetGetGenerator
      *
      * @return bool
      */
-    private function checkAliasProperty(string &$aliasProperty)
-    : bool
+    private function checkAliasProperty(string &$aliasProperty): bool
     {
         preg_match_all('/\w+/', $aliasProperty, $match);
         $aliasProperty = implode('', $match[0]);
@@ -301,8 +331,7 @@ class SetGetGenerator
      *
      * return string
      */
-    private function generateModel()
-    : string
+    private function generateModel(): string
     {
         return file_get_contents($this->folder . $this->modelStubFile);
     }
@@ -312,8 +341,7 @@ class SetGetGenerator
      *
      * return string
      */
-    private function generateSetter()
-    : string
+    private function generateSetter(): string
     {
         return file_get_contents($this->folder . $this->setterStubFile);
     }
@@ -323,8 +351,7 @@ class SetGetGenerator
      *
      * @return string
      */
-    private function generateGetter()
-    : string
+    private function generateGetter(): string
     {
         return file_get_contents($this->folder . $this->getterStubFile);
     }
@@ -334,8 +361,7 @@ class SetGetGenerator
      *
      * @return string
      */
-    private function generateProperty()
-    : string
+    private function generateProperty(): string
     {
         return file_get_contents($this->folder . $this->propertyStubFile);
     }
