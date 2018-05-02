@@ -45,7 +45,7 @@ before_install:
                   `d_count` int(11) DEFAULT '0',
                   `dn_amount` float DEFAULT NULL,
                   `dn_count` int(11) DEFAULT NULL,
-                  `title` varchar(20) NOT NULL DEFAULT '',
+                  `title` varchar(20) NOT NULL DEFAULT "",
                   `count` int(11) NOT NULL DEFAULT '0',
                   `amount` float NOT NULL DEFAULT '0',
                   `books` int(11) NOT NULL,
