@@ -24,7 +24,6 @@ abstract class AbstractGenerator
         'Swoft\Db\Bean\Annotation\Id',
         'Swoft\Db\Bean\Annotation\Required',
         'Swoft\Db\Bean\Annotation\Table',
-        'Swoft\Db\Types'
     ];
 
     /**

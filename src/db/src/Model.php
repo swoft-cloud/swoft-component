@@ -17,7 +17,7 @@ use Swoft\Helper\StringHelper;
 /**
  * ActiveRecord
  */
-class Model implements \ArrayAccess, \Iterator, Arrayable
+class Model implements \ArrayAccess, \Iterator, Arrayable,\JsonSerializable
 {
     /**
      * Old data
@@ -306,18 +306,24 @@ class Model implements \ArrayAccess, \Iterator, Arrayable
                 continue;
             }
 
-            $data[$propertyName] = $this->$methodName();
+            $value = $this->$methodName();
+            if($value === null){
+                continue;
+            }
+            $data[$propertyName] = $value;
         }
 
         return $data;
     }
 
     /**
+     * @param int $options
+     *
      * @return string
      */
-    public function toJson(): string
+    public function toJson(int $options = JSON_UNESCAPED_UNICODE): string
     {
-        return \json_encode($this->toArray(), \JSON_UNESCAPED_UNICODE);
+        return \json_encode($this->jsonSerialize(), $options);
     }
 
     /**
@@ -417,5 +423,10 @@ class Model implements \ArrayAccess, \Iterator, Arrayable
     public function rewind()
     {
         reset($this->attrs);
+    }
+
+    function jsonSerialize()
+    {
+        return $this->toArray();
     }
 }

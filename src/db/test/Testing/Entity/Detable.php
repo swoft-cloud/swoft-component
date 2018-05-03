@@ -8,94 +8,93 @@ use Swoft\Db\Bean\Annotation\Entity;
 use Swoft\Db\Bean\Annotation\Id;
 use Swoft\Db\Bean\Annotation\Required;
 use Swoft\Db\Bean\Annotation\Table;
-use Swoft\Db\Types;
 
 /**
  * @Entity()
  * @Table(name="detable")
  * @uses      Detable
- * @version   2018年05月02日
+ * @version   2018年05月03日
  */
 class Detable extends Model
 {
     /**
      * @var int $sId
      * @Id()
-     * @Column(name="s_id", type=Types::INT)
+     * @Column(name="s_id", type="integer")
      */
     private $sId;
 
     /**
      * @var string $dName
-     * @Column(name="d_name", type=Types::STRING, length=20)
+     * @Column(name="d_name", type="string", length=20)
      */
     private $dName;
 
     /**
      * @var float $dAmount
-     * @Column(name="d_amount", type=Types::FLOAT, default=0)
+     * @Column(name="d_amount", type="float", default="0")
      */
     private $dAmount;
 
     /**
      * @var int $dCount
-     * @Column(name="d_count", type=Types::INT, default=0)
+     * @Column(name="d_count", type="integer", default="0")
      */
     private $dCount;
 
     /**
      * @var float $dnAmount
-     * @Column(name="dn_amount", type=Types::FLOAT)
+     * @Column(name="dn_amount", type="float")
      */
     private $dnAmount;
 
     /**
      * @var int $dnCount
-     * @Column(name="dn_count", type=Types::INT)
+     * @Column(name="dn_count", type="integer")
      */
     private $dnCount;
 
     /**
      * @var string $title
-     * @Column(name="title", type=Types::STRING, length=20, default="")
+     * @Column(name="title", type="string", length=20, default="")
      */
     private $title;
 
     /**
      * @var int $count
-     * @Column(name="count", type=Types::INT, default=0)
+     * @Column(name="count", type="integer", default="0")
      */
     private $count;
 
     /**
      * @var float $amount
-     * @Column(name="amount", type=Types::FLOAT, default=0)
+     * @Column(name="amount", type="float", default="0")
      */
     private $amount;
 
     /**
      * @var int $books
-     * @Column(name="books", type=Types::INT)
+     * @Column(name="books", type="integer")
      * @Required()
      */
     private $books;
 
     /**
      * @var string $shortName
-     * @Column(name="short_name", type=Types::STRING, length=20)
+     * @Column(name="short_name", type="string", length=20)
      * @Required()
      */
     private $shortName;
 
     /**
      * @var string $ctime
-     * @Column(name="ctime", type=Types::DATETIME, default="CURRENT_TIMESTAMP")
+     * @Column(name="ctime", type="datetime", default="CURRENT_TIMESTAMP")
      */
     private $ctime;
 
     /**
      * @var string $utime
-     * @Column(name="utime", type=Types::DATETIME)
+     * @Column(name="utime", type="datetime")
      * @Required()
      */
     private $utime;

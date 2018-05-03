@@ -459,8 +459,21 @@ class ActiveRecordTest extends AbstractMysqlCase
             'offset'  => 0,
             'fields'  => ['id', 'name'],
         ];
-        $result  = User::findAll(['name' => 'name'], $options)->getResult();
+        /* @var \Swoft\Db\Collection $result */
+        $result = User::findAll(['name' => 'name', 'id' => $ids], $options)->getResult();
         $this->assertCount(2, $result);
+        $this->assertEquals(2, $result->count());
+
+        $jsonAry = json_decode($result->toJson(), true);
+        foreach ($jsonAry as $userAry) {
+            $this->assertEquals($userAry['name'], 'name');
+            $this->assertTrue(in_array($userAry['id'], $ids));
+        }
+
+        foreach ($result->toArray() as $userAry) {
+            $this->assertEquals($userAry['name'], 'name');
+            $this->assertTrue(in_array($userAry['id'], $ids));
+        }
 
         $ids = [];
         /* @var User $user */

@@ -7,53 +7,83 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Db\Entity\Mysql;
 
-/**
- * MYSQL数据库字段映射关系
- *
- * @uses      Schema
- * @version   2017年11月14日
- * @author    caiwh <471113744@qq.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
- */
+use Swoft\Db\Types;
 
+/**
+ * Schema
+ */
 class Schema extends \Swoft\Db\Entity\Schema
 {
     /**
-     * @var array entity映射关系
+     * @var array
      */
-    public $dbSchema = [
-        'int'      => 'Types::INT',
-        'char'     => 'Types::STRING',
-        'varchar'  => 'Types::STRING',
-        'text'     => 'Types::STRING',
-        'datetime' => 'Types::DATETIME',
-        'float'    => 'Types::FLOAT',
-        'number'   => 'Types::NUMBER',
-        'decimal'  => 'Types::FLOAT',
-        'bool'     => 'Types::BOOLEAN',
-        'tinyint'  => 'Types::INT',
-        'mediumint'=> 'Types::INT',
-        'smallint' => 'Types::INT,'
-    ];
+    public $typeMap = [
+            'tinyint'    => self::TYPE_TINYINT,
+            'bit'        => self::TYPE_INTEGER,
+            'smallint'   => self::TYPE_SMALLINT,
+            'mediumint'  => self::TYPE_INTEGER,
+            'int'        => self::TYPE_INTEGER,
+            'integer'    => self::TYPE_INTEGER,
+            'bigint'     => self::TYPE_BIGINT,
+            'float'      => self::TYPE_FLOAT,
+            'double'     => self::TYPE_DOUBLE,
+            'real'       => self::TYPE_FLOAT,
+            'decimal'    => self::TYPE_DECIMAL,
+            'numeric'    => self::TYPE_DECIMAL,
+            'tinytext'   => self::TYPE_TEXT,
+            'mediumtext' => self::TYPE_TEXT,
+            'longtext'   => self::TYPE_TEXT,
+            'longblob'   => self::TYPE_BINARY,
+            'blob'       => self::TYPE_BINARY,
+            'text'       => self::TYPE_TEXT,
+            'varchar'    => self::TYPE_STRING,
+            'string'     => self::TYPE_STRING,
+            'char'       => self::TYPE_CHAR,
+            'datetime'   => self::TYPE_DATETIME,
+            'year'       => self::TYPE_DATE,
+            'date'       => self::TYPE_DATE,
+            'time'       => self::TYPE_TIME,
+            'timestamp'  => self::TYPE_TIMESTAMP,
+            'enum'       => self::TYPE_STRING,
+            'varbinary'  => self::TYPE_BINARY,
+            'json'       => self::TYPE_JSON,
+        ];
 
     /**
      * @var array php映射关系
      */
-    public $phpSchema = [
-        'int'      => self::TYPE_INT,
-        'char'     => self::TYPE_STRING,
-        'varchar'  => self::TYPE_STRING,
-        'text'     => self::TYPE_STRING,
-        'datetime' => self::TYPE_STRING,
-        'float'    => self::TYPE_FLOAT,
-        'number'   => self::TYPE_INT,
-        'decimal'  => self::TYPE_FLOAT,
-        'bool'     => self::TYPE_BOOL,
-        'tinyint'  => self::TYPE_INT,
-        'mediumint'=> self::TYPE_INT,
-        'smallint' => self::TYPE_INT
-    ];
+    public $phpMap = [
+            'tinyint'    => Types::INT,
+            'bit'        => Types::INT,
+            'smallint'   => Types::INT,
+            'mediumint'  => Types::INT,
+            'int'        => Types::INT,
+            'integer'    => Types::INT,
+            'bigint'     => Types::INT,
+            'float'      => Types::FLOAT,
+            'double'     => Types::FLOAT,
+            'real'       => Types::FLOAT,
+            'decimal'    => Types::FLOAT,
+            'numeric'    => Types::FLOAT,
+            'tinytext'   => Types::STRING,
+            'mediumtext' => Types::STRING,
+            'longtext'   => Types::STRING,
+            'longblob'   => Types::STRING,
+            'blob'       => Types::STRING,
+            'text'       => Types::STRING,
+            'varchar'    => Types::STRING,
+            'string'     => Types::STRING,
+            'char'       => Types::STRING,
+            'datetime'   => Types::STRING,
+            'year'       => Types::STRING,
+            'date'       => Types::STRING,
+            'time'       => Types::STRING,
+            'timestamp'  => Types::STRING,
+            'enum'       => Types::STRING,
+            'varbinary'  => Types::STRING,
+            'json'       => Types::STRING,
+        ];
 }

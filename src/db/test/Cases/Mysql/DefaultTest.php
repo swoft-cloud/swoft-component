@@ -2,6 +2,7 @@
 
 namespace SwoftTest\Db\Cases\Mysql;
 
+use Swoft\Db\Query;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\Detable;
 
@@ -98,6 +99,30 @@ class DefaultTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testUpdate();
+        });
+    }
+
+    public function testGet()
+    {
+        $time    = date('Y-m-d H:i:s');
+        $detable = new Detable();
+        $detable->setShortName('');
+        $detable->setUtime($time);
+        $detable->setBooks(12);
+
+        $did = $detable->save()->getResult();
+
+        $data = Detable::findById($did)->getResult();
+        $this->assertEquals($data['utime'], $time);
+
+        $data2 = Query::table(Detable::class)->where('s_id', $did)->one()->getResult();
+        $this->assertEquals($data2['utime'], $time);
+    }
+
+    public function testGetByCo()
+    {
+        go(function () {
+            $this->testGet();
         });
     }
 
