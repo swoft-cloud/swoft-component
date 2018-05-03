@@ -1465,7 +1465,8 @@ class QueryBuilder implements QueryBuilderInterface
     {
         $this->addDecorator(function ($result) {
             if (!empty($this->className) && !empty($result)) {
-                return EntityHelper::listToEntity($result, $this->className);
+                $entities = EntityHelper::listToEntity($result, $this->className);
+                return new Collection($entities);
             }
 
             if (!empty($result) && empty($this->join)) {

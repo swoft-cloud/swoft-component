@@ -7,10 +7,11 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Db;
 
 /**
- * Entity types
+ * PHP types
  */
 class Types
 {
@@ -25,4 +26,6 @@ class Types
     const DATETIME = 'datetime';
 
     const BOOLEAN = 'boolean';
+
+    const BOOL = 'bool';
 }

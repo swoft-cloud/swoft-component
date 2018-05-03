@@ -160,8 +160,8 @@ class SetGetGenerator
         $primaryKey    = $fieldInfo['key'] === 'PRI';
         $required      = $primaryKey ? false : ($fieldInfo['nullable'] === 'NO' && $fieldInfo['default'] === null);
         $default       = $fieldInfo['default'];
-        $dbType        = $this->schema->dbSchema[$fieldInfo['type']] ?? '';
-        $phpType       = $this->schema->phpSchema[$fieldInfo['type']] ?? 'mixed';
+        $dbType        = $this->schema->typeMap[$fieldInfo['type']] ?? '';
+        $phpType       = $this->schema->phpMap[$fieldInfo['type']] ?? 'mixed';
         $length        = $fieldInfo['length'];
         $columnType    = $fieldInfo['column_type'];
         $comment       = $fieldInfo['column_comment'];
@@ -174,7 +174,7 @@ class SetGetGenerator
         }
 
         //字段类型
-        $dbType = !empty($dbType) ? $dbType : ($isEnum ? '"feature-enum"' : (\is_int($default) ? '"int"' : '"string"'));
+        $dbType = !empty($dbType) ? sprintf('"%s"', $dbType) : ($isEnum ? '"feature-enum"' : (\is_int($default) ? '"int"' : '"string"'));
 
         $this->checkAliasProperty($aliasProperty);
 
@@ -251,7 +251,7 @@ class SetGetGenerator
         $function         = StringHelper::camel($aliasProperty);
         $function         = 'set' . ucfirst($function);
         $primaryKey       = $fieldInfo['key'] === 'PRI';
-        $type             = $this->schema->phpSchema[$fieldInfo['type']] ?? 'mixed';
+        $type             = $this->schema->phpMap[$fieldInfo['type']] ?? 'mixed';
         $this->setterStub .= PHP_EOL . str_replace([
                 "{{comment}}\n",
                 '{{function}}',
@@ -284,8 +284,8 @@ class SetGetGenerator
         $function   = StringHelper::camel($aliasProperty);
         $function   = 'get' . ucfirst($function);
         $default    = $fieldInfo['default'] ?? '';
-        $dbType     = $this->schema->dbSchema[$fieldInfo['type']] ?? '';
-        $returnType = $this->schema->phpSchema[$fieldInfo['type']] ?? 'mixed';
+        $dbType     = $this->schema->typeMap[$fieldInfo['type']] ?? '';
+        $returnType = $this->schema->phpMap[$fieldInfo['type']] ?? 'mixed';
 
         //字段类型
         $dbType = !empty($dbType) ? $dbType : \is_int($default) ? '"int"' : '"string"';

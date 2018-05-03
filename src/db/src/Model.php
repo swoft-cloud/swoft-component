@@ -306,18 +306,24 @@ class Model implements \ArrayAccess, \Iterator, Arrayable,\JsonSerializable
                 continue;
             }
 
-            $data[$propertyName] = $this->$methodName();
+            $value = $this->$methodName();
+            if($value === null){
+                continue;
+            }
+            $data[$propertyName] = $value;
         }
 
         return $data;
     }
 
     /**
+     * @param int $options
+     *
      * @return string
      */
-    public function toJson(): string
+    public function toJson(int $options = JSON_UNESCAPED_UNICODE): string
     {
-        return \json_encode($this->toArray(), \JSON_UNESCAPED_UNICODE);
+        return \json_encode($this->jsonSerialize(), $options);
     }
 
     /**
@@ -421,6 +427,6 @@ class Model implements \ArrayAccess, \Iterator, Arrayable,\JsonSerializable
 
     function jsonSerialize()
     {
-        return $this->attrs;
+        return $this->toArray();
     }
 }
