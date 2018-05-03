@@ -262,7 +262,7 @@ class WebSocketContext
      * @param int|null $cid
      * @return bool
      */
-    public static function delFdToCoId(int $cid = null): bool
+    public static function delFdByCoId(int $cid = null): bool
     {
         $cid = $cid > -1 ? $cid : self::getCoroutineId();
 

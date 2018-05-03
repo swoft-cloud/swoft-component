@@ -176,7 +176,7 @@ class WebSocketServer extends HttpServer
     }
 
     /**
-     * broadcast message, will exclude self.
+     * broadcast message, will exclude sender.
      * @param string $data 消息数据
      * @param int $sender 发送者
      * @param int[] $receivers 指定接收者们
@@ -194,13 +194,14 @@ class WebSocketServer extends HttpServer
             return $this->sendTo((int)\array_shift($receivers), $data, $sender);
         }
 
+        // excepted itself
+        if ($sender) {
+            $excluded[] = $sender;
+        }
+
         // to all
         if (!$excluded && !$receivers) {
             return $this->sendToAll($data, $sender);
-        }
-
-        if ($sender) {
-            $excluded[] = $sender;
         }
 
         // to some

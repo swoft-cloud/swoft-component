@@ -101,7 +101,7 @@ trait WebSocketEventTrait
         });
 
         // delete coId to fd mapping
-        WebSocketContext::delFdToCoId();
+        WebSocketContext::delFdByCoId();
 
         return true;
     }
@@ -168,7 +168,7 @@ trait WebSocketEventTrait
         \bean('wsDispatcher')->message($server, $frame);
 
         // delete coId to fd mapping
-        WebSocketContext::delFdToCoId();
+        WebSocketContext::delFdByCoId();
     }
 
     /**

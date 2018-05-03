@@ -41,7 +41,7 @@ class Dispatcher
             if ($e instanceof WsRouteException) {
                 return [
                     HandlerInterface::HANDSHAKE_FAIL,
-                    $response->withStatus(404)->withAddedHeader('Failed-Reason', 'Route not found')
+                    $response->withStatus(404)->withAddedHeader('Failure-Reason', 'Route not found')
                 ];
             }
 
@@ -105,10 +105,8 @@ class Dispatcher
             $handler = \bean($className);
             $handler->onMessage($server, $frame);
         } catch (\Throwable $e) {
-            /** @var \Swoft\Event\EventManager $em */
-            $em = App::getBean('eventManager');
-
-            if ($em->hasListenerQueue(WsEvent::ON_ERROR)) {
+            /** @see \Swoft\Event\EventManager::hasListenerQueue() */
+            if (App::hasBean('eventManager') && \bean('eventManager')->hasListenerQueue(WsEvent::ON_ERROR)) {
                 App::trigger(WsEvent::ON_ERROR, $frame, $e);
             } else {
                 App::error($e->getMessage(), ['fd' => $fd, 'data' => $frame->data]);
