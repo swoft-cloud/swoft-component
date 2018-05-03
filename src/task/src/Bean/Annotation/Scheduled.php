@@ -16,6 +16,11 @@ class Scheduled
     private $cron;
 
     /**
+     * @var string
+     */
+    private $description = '';
+
+    /**
      * Bean constructor.
      *
      * @param array $values
@@ -25,8 +30,13 @@ class Scheduled
         if (isset($values['value'])) {
             $this->cron = $values['value'];
         }
+
         if (isset($values['cron'])) {
             $this->cron = $values['cron'];
+        }
+
+        if (isset($values['description'])) {
+            $this->description = $values['description'];
         }
     }
 
@@ -36,5 +46,13 @@ class Scheduled
     public function getCron(): string
     {
         return $this->cron;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
     }
 }

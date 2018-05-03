@@ -21,7 +21,7 @@ class WebSocketContext
      *  fd => [
             // metadata
      *      'meta' => [
-     *          'id' => fd,
+     *          'fd' => fd,
      *          'path' => request path,
      *          ...
      *      ],
@@ -48,7 +48,7 @@ class WebSocketContext
      * ]
      * @param Request $request
      */
-    public static function set(int $fd, array $meta, Request $request)
+    public static function init(int $fd, array $meta, Request $request)
     {
         self::$connections[$fd][self::META_KEY] = $meta;
         self::$connections[$fd][self::REQUEST_KEY] = $request;
@@ -56,16 +56,27 @@ class WebSocketContext
 
     /**
      * @param int $fd
+     * @param string $ctxKey
+     * @param mixed $ctxValue
+     */
+    public static function set(int $fd, string $ctxKey, $ctxValue)
+    {
+        self::$connections[$fd][$ctxKey] = $ctxValue;
+    }
+
+    /**
+     * @param int $fd
+     * @param string|null $ctxKey
      * @return array|null
      */
-    public static function get(int $fd = null)
+    public static function get(int $fd = null, string $ctxKey = null)
     {
-        if ($fd === null) {
-            $fd = self::getFdByCoId();
+        if ($fd === null && !($fd = self::getFdByCoId())) {
+            return null;
+        }
 
-            if ($fd === null) {
-                return null;
-            }
+        if ($ctxKey) {
+            return self::getContext($ctxKey, $fd);
         }
 
         return self::$connections[$fd] ?? null;
@@ -86,12 +97,8 @@ class WebSocketContext
      */
     public static function del(int $fd = null)
     {
-        if ($fd === null) {
-            $fd = self::getFdByCoId();
-
-            if ($fd === null) {
-                return false;
-            }
+        if ($fd === null && !($fd = self::getFdByCoId())) {
+            return false;
         }
 
         if (isset(self::$connections[$fd])) {
@@ -100,6 +107,34 @@ class WebSocketContext
         }
 
         return false;
+    }
+
+    /**
+     * @param string $ctxKey
+     * @param int|null $fd
+     * @return mixed|null
+     */
+    public static function getContext(string $ctxKey, int $fd = null)
+    {
+        if ($fd === null && !($fd = self::getFdByCoId())) {
+            return null;
+        }
+
+        return self::$connections[$fd][$ctxKey] ?? null;
+    }
+
+    /**
+     * @param string $ctxKey
+     * @param int $fd
+     * @return bool
+     */
+    public static function hasContext(string $ctxKey, int $fd = null): bool
+    {
+        if ($fd === null && !($fd = self::getFdByCoId())) {
+            return false;
+        }
+
+        return isset(self::$connections[$fd][$ctxKey]);
     }
 
     /**
@@ -224,11 +259,12 @@ class WebSocketContext
 
     /**
      * delete coId to fd mapping
+     * @param int|null $cid
      * @return bool
      */
-    public static function delFdToCoId(): bool
+    public static function delFdByCoId(int $cid = null): bool
     {
-        $cid = self::getCoroutineId();
+        $cid = $cid > -1 ? $cid : self::getCoroutineId();
 
         if (isset(self::$map[$cid])) {
             unset(self::$map[$cid]);

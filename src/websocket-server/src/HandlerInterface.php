@@ -36,14 +36,12 @@ interface HandlerInterface
      * @param Server $server
      * @param Request $request
      * @param int $fd
-     * @return mixed
      */
     public function onOpen(Server $server, Request $request, int $fd);
 
     /**
      * @param Server $server
      * @param Frame $frame
-     * @return mixed
      */
     public function onMessage(Server $server, Frame $frame);
 

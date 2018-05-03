@@ -164,7 +164,7 @@ class HandlerMapping extends AbstractRouter implements HandlerMappingInterface
     protected function collectParamRoute(string $route, array $methods, array $conf)
     {
         $conf['original'] = $route;
-        $params = $this->getAvailableParams($opts['params'] ?? []);
+        $params = $this->getAvailableParams($conf['option']['params'] ?? []);
         list($first, $conf) = $this->parseParamRoute($route, $params, $conf);
 
         // route string have regular
@@ -366,7 +366,10 @@ class HandlerMapping extends AbstractRouter implements HandlerMappingInterface
             }
         }
 
-        return [self::NOT_FOUND, \explode(',', \trim($allowedMethods, ','))];
+        return [
+            self::NOT_FOUND,
+            $allowedMethods ? \explode(',', \rtrim($allowedMethods, ',')) : []
+        ];
     }
 
     /**
