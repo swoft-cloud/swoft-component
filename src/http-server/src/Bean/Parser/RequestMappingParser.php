@@ -9,11 +9,8 @@ use Swoft\Http\Server\Bean\Collector\ControllerCollector;
 /**
  * RequestMapping注解解析器
  *
- * @uses      RequestMappingParser
- * @version   2017年09月03日
+ * Class RequestMappingParser
  * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 class RequestMappingParser extends AbstractParser
 {

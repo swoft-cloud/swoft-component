@@ -3,27 +3,20 @@
 namespace Swoft\Http\Server\Bean\Annotation;
 
 /**
- *
- * 控制器自动解析注解路由
+ * Controller annotation label
  *
  * @Annotation
  * @Target("CLASS")
- *
- * @uses      Controller
- * @version   2017年08月22日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 class Controller
 {
     /**
-     * @var string 控制器前缀
+     * @var string Route prefix of the controller
      */
     private $prefix = '';
 
     /**
-     * AutoController constructor.
+     * Controller constructor.
      *
      * @param array $values
      */
@@ -39,8 +32,6 @@ class Controller
     }
 
     /**
-     * 获取controller前缀
-     *
      * @return string
      */
     public function getPrefix(): string

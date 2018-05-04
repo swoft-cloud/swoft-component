@@ -54,52 +54,63 @@ class AbstractRouterTest extends TestCase
             'handler' => 'some_handler'
         ];
 
-        $ret = $stub->parseParamRoute('/im/{name}/{age}', [], $conf);
+        $conf['original'] = '/im/{name}/{age}';
+        $ret = $stub->parseParamRoute($conf);
         $this->assertCount(2, $ret);
         $this->assertEquals('im', $ret[0]);// first node
         $this->assertArrayHasKey('start', $ret[1]);
         $this->assertEquals('/im/', $ret[1]['start']);
-        $this->assertArrayNotHasKey('include', $ret[1]);
 
-        $ret = $stub->parseParamRoute('/path/to/{name}', [], $conf);
+        $conf['original'] = '/path/to/{name}';
+        $ret = $stub->parseParamRoute($conf);
         $this->assertCount(2, $ret);
         $this->assertEquals('path', $ret[0]);
         $this->assertArrayHasKey('start', $ret[1]);
         $this->assertEquals('/path/to/', $ret[1]['start']);
-        $this->assertArrayNotHasKey('include', $ret[1]);
 
-        $ret = $stub->parseParamRoute('/hi/{name}', [], $conf);
+        $conf['original'] = '/path/to/some/{name}';
+        $ret = $stub->parseParamRoute($conf);
+        $this->assertCount(2, $ret);
+        $this->assertEquals('path', $ret[0]);
+        $this->assertArrayHasKey('start', $ret[1]);
+        $this->assertEquals('/path/to/some/', $ret[1]['start']);
+
+        $conf['original'] = '/hi/{name}';
+        $ret = $stub->parseParamRoute($conf);
         $this->assertCount(2, $ret);
         $this->assertEquals('hi', $ret[0]);
         $this->assertArrayHasKey('start', $ret[1]);
-        $this->assertArrayNotHasKey('include', $ret[1]);
 
-        $ret = $stub->parseParamRoute('/hi[/{name}]', [], $conf);
+        $conf['original'] = '/hi[/{name}]';
+        $ret = $stub->parseParamRoute($conf);
         $this->assertNull($ret[0]);
-        $this->assertArrayHasKey('include', $ret[1]);
-        $this->assertArrayNotHasKey('start', $ret[1]);
+        $this->assertArrayHasKey('start', $ret[1]);
+        $this->assertEquals('/hi', $ret[1]['start']);
 
-        $ret = $stub->parseParamRoute('/hi[/tom]', [], $conf);
+        $conf['original'] = '/hi[/tom]';
+        $ret = $stub->parseParamRoute($conf);
         $this->assertNull($ret[0]);
-        $this->assertArrayHasKey('include', $ret[1]);
-        $this->assertArrayNotHasKey('start', $ret[1]);
+        $this->assertArrayHasKey('start', $ret[1]);
+        $this->assertEquals('/hi', $ret[1]['start']);
 
-        $ret = $stub->parseParamRoute('/hi/[tom]', [], $conf);
+        $conf['original'] = '/hi/[tom]';
+        $ret = $stub->parseParamRoute($conf);
         $this->assertEquals('hi', $ret[0]);
         $this->assertArrayHasKey('start', $ret[1]);
-        $this->assertArrayNotHasKey('include', $ret[1]);
+        $this->assertEquals('/hi/', $ret[1]['start']);
 
-        $ret = $stub->parseParamRoute('/{category}', [], $conf);
+        $conf['original'] = '/{category}';
+        $ret = $stub->parseParamRoute($conf);
         $this->assertNull($ret[0]);
-        $this->assertNull($ret[1]['include']);
-        $this->assertArrayHasKey('include', $ret[1]);
-        $this->assertArrayNotHasKey('start', $ret[1]);
+        $this->assertNull($ret[1]['start']);
+        $this->assertArrayHasKey('start', $ret[1]);
+        $this->assertEquals(null, $ret[1]['start']);
 
-        $ret = $stub->parseParamRoute('/blog-{category}', [], $conf);
+        $conf['original'] = '/blog-{category}';
+        $ret = $stub->parseParamRoute($conf);
         $this->assertNull($ret[0]);
-        $this->assertEquals('/blog-', $ret[1]['include']);
-        $this->assertArrayHasKey('include', $ret[1]);
-        $this->assertArrayNotHasKey('start', $ret[1]);
+        $this->assertEquals('/blog-', $ret[1]['start']);
+        $this->assertArrayHasKey('start', $ret[1]);
 
         // var_dump($ret);die;
     }

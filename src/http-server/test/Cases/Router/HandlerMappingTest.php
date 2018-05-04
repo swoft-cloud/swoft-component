@@ -25,7 +25,15 @@ class HandlerMappingTest extends TestCase
 
         $r->get('/test1[/optional]', 'handler');
 
-        $r->get('/{name}', 'handler2');
+        $r->get('/my[/{name}[/{age}]]', 'handler2', [
+            'params' => [
+                'age' => '\d+'
+            ],
+            'defaults' => [
+                'name' => 'God',
+                'age' => 25,
+            ]
+        ]);
 
         $r->get('/hi/{name}', 'handler3', [
             'params' => [
@@ -47,6 +55,52 @@ class HandlerMappingTest extends TestCase
         $this->assertCount(2, $router->getStaticRoutes());
     }
 
+    public function testComplexRoute()
+    {
+        $router = $this->createRouter();
+
+        // route: '/my[/{name}[/{age}]]'
+
+        $ret = $router->match('/my', 'GET');
+
+        list($status, $path, $route) = $ret;
+
+        $this->assertSame(HandlerMapping::FOUND, $status);
+        $this->assertSame('/my', $path);
+        $this->assertSame('handler2', $route['handler']);
+        $this->assertArrayHasKey('matches', $route);
+        $this->assertArrayHasKey('name', $route['matches']);
+        $this->assertSame('God', $route['matches']['name']);
+
+        $ret = $router->match('/my/tom', 'GET');
+
+        list($status, $path, $route) = $ret;
+
+        $this->assertSame(HandlerMapping::FOUND, $status);
+        $this->assertSame('/my/tom', $path);
+        $this->assertSame('handler2', $route['handler']);
+        $this->assertArrayHasKey('matches', $route);
+        $this->assertArrayHasKey('name', $route['matches']);
+        $this->assertSame('tom', $route['matches']['name']);
+        $this->assertArrayHasKey('age', $route['matches']);
+        $this->assertSame(25, $route['matches']['age']);
+
+        $ret = $router->match('/my/tom/45', 'GET');
+
+        list($status, $path, $route) = $ret;
+
+        $this->assertSame(HandlerMapping::FOUND, $status);
+        $this->assertSame('/my/tom/45', $path);
+        $this->assertSame('handler2', $route['handler']);
+        $this->assertArrayHasKey('matches', $route);
+        $this->assertArrayHasKey('name', $route['matches']);
+        $this->assertSame('tom', $route['matches']['name']);
+        $this->assertArrayHasKey('age', $route['matches']);
+        $this->assertSame(45, (int)$route['matches']['age']);
+
+        $ret = $router->match('/my/tom/not-match', 'GET');
+        $this->assertSame(HandlerMapping::NOT_FOUND, $ret[0]);
+    }
 
     public function testStaticRoute()
     {
@@ -95,23 +149,23 @@ class HandlerMappingTest extends TestCase
     {
         $router = $this->createRouter();
 
-        // route: /{name}
-        $ret = $router->match('/tom', 'GET');
+        // route: /hi/{name}
+        $ret = $router->match('/hi/3456', 'GET');
 
         $this->assertCount(3, $ret);
 
         list($status, $path, $route) = $ret;
 
         $this->assertSame(HandlerMapping::FOUND, $status);
-        $this->assertSame('/tom', $path);
-        $this->assertSame('/{name}', $route['original']);
-        $this->assertSame('handler2', $route['handler']);
+        $this->assertSame('/hi/3456', $path);
+        $this->assertSame('/hi/{name}', $route['original']);
+        $this->assertSame('handler3', $route['handler']);
 
         // route: /hi/{name}
         $ret = $router->match('/hi/tom', 'GET');
 
         $this->assertCount(3, $ret);
-// var_dump($ret, $router->getRegularRoutes());die;
+
         list($status, $path, $route) = $ret;
 
         $this->assertSame(HandlerMapping::FOUND, $status);
@@ -150,5 +204,21 @@ class HandlerMappingTest extends TestCase
         $this->assertCount(3, $ret);
         $this->assertSame(HandlerMapping::METHOD_NOT_ALLOWED, $status);
         $this->assertCount(3, $methods);
+    }
+
+    public function testRouteCacheExists()
+    {
+        $router = $this->createRouter();
+
+        $ret = $router->match('/hi/tom');
+
+        $this->assertCount(3, $ret);
+        $this->assertCount(1, $router->getCacheRoutes());
+
+        list($status, $path, $route) = $ret;
+
+        $this->assertSame(HandlerMapping::FOUND, $status);
+        $this->assertSame('/hi/tom', $path);
+        $this->assertSame('handler3', $route['handler']);
     }
 }

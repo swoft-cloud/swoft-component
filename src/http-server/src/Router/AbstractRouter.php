@@ -20,9 +20,7 @@ namespace Swoft\Http\Server\Router;
  */
 abstract class AbstractRouter implements RouterInterface
 {
-    /**
-     * @var string
-     */
+    /** @var string The router name */
     private $name = '';
 
     /**
@@ -105,13 +103,13 @@ abstract class AbstractRouter implements RouterInterface
      * vague Routes - have dynamic arguments,but the first node is exists regex.
      * 第一节就包含了正则匹配，称之为无规律/模糊的动态路由
      * e.g '/{name}/profile' '/{some}/{some2}'
-     * @var array
+     * @var array[]
      * [
      *     // 使用 HTTP METHOD 作为 key进行分组
      *     'GET' => [
      *          [
-     *              // 必定包含的字符串
-     *              'include' => '/profile',
+     *              // 开始的字符串
+     *              'start' => '/profile',
      *              'regex' => '/(\w+)/profile',
      *              'handler' => 'handler',
      *              'option' => [...],
@@ -120,7 +118,7 @@ abstract class AbstractRouter implements RouterInterface
      *     ],
      *     'POST' => [
      *          [
-     *              'include' => null,
+     *              'start' => null,
      *              'regex' => '/(\w+)/(\w+)',
      *              'handler' => 'handler',
      *              'option' => [...],
@@ -149,7 +147,7 @@ abstract class AbstractRouter implements RouterInterface
      * Ignore last slash char('/'). If is True, will clear last '/'.
      * @var bool
      */
-    public $ignoreLastSlash = false;
+    public $ignoreLastSlash = true;
 
     /**
      * @var bool NotAllowed As NotFound. If True, only two status value will be return(FOUND, NOT_FOUND).
@@ -198,12 +196,12 @@ abstract class AbstractRouter implements RouterInterface
 
         $props = [
             'name' => 1,
-            'matchAll' => 1,
             'defaultAction' => 1,
-            'tmpCacheNumber' => 1,
             'ignoreLastSlash' => 1,
-            'notAllowedAsNotFound' => 1,
+            'tmpCacheNumber' => 1,
             'controllerSuffix' => 1,
+            'notAllowedAsNotFound' => 1,
+            'matchAll' => 1,
         ];
 
         foreach ($config as $name => $value) {
@@ -273,25 +271,168 @@ abstract class AbstractRouter implements RouterInterface
             throw new \InvalidArgumentException('The method and route handler is not allow empty.');
         }
 
-        $hasAny = false;
-        $methods = \array_map(function ($m) use (&$hasAny) {
-            $m = \strtoupper(\trim($m));
+        if (\is_string($methods)) {
+            $method = \strtoupper($methods);
 
-            if (!$m || false === \strpos(self::ALLOWED_METHODS_STR . ',', $m . ',')) {
+            if ($method === 'ANY') {
+                return self::ALLOWED_METHODS;
+            }
+
+            if (false === \strpos(self::ALLOWED_METHODS_STR . ',', $method . ',')) {
                 throw new \InvalidArgumentException(
-                    "The method [$m] is not supported, Allow: " . self::ALLOWED_METHODS_STR
+                    "The method [$method] is not supported, Allow: " . self::ALLOWED_METHODS_STR
                 );
             }
 
-            if (!$hasAny && $m === self::ANY) {
-                $hasAny = true;
+            return [$method];
+        }
+
+        $upperMethods = [];
+
+        foreach ((array)$methods as $method) {
+            $method = \strtoupper($method);
+
+            if ($method === 'ANY') {
+                return self::ALLOWED_METHODS;
             }
 
-            return $m;
-        }, (array)$methods);
+            if (false === \strpos(self::ALLOWED_METHODS_STR . ',', $method . ',')) {
+                throw new \InvalidArgumentException(
+                    "The method [$method] is not supported, Allow: " . self::ALLOWED_METHODS_STR
+                );
+            }
 
-        return $hasAny ? self::ALLOWED_METHODS : $methods;
+            $upperMethods[] = $method;
+        }
+
+        return $upperMethods;
     }
+
+    /**
+     * parse param route
+     * @param array $params
+     * @param array $conf
+     * @return array
+     * @throws \LogicException
+     */
+    public function parseParamRoute(array $conf, array $params = []): array
+    {
+        $first = null;
+        $backup = $route = $conf['original'];
+        $argPos = \strpos($route, '{');
+
+        // quote '.','/' to '\.','\/'
+        if (false !== \strpos($route, '.')) {
+            // $route = preg_quote($route, '/');
+            $route = \str_replace('.', '\.', $route);
+        }
+
+        // Parse the optional parameters
+        if (false !== ($optPos = \strpos($route, '['))) {
+            $withoutClosingOptionals = \rtrim($route, ']');
+            $optionalNum = \strlen($route) - \strlen($withoutClosingOptionals);
+
+            if ($optionalNum !== \substr_count($withoutClosingOptionals, '[')) {
+                throw new \LogicException('Optional segments can only occur at the end of a route');
+            }
+
+            // '/hello[/{name}]' -> '/hello(?:/{name})?'
+            $route = \str_replace(['[', ']'], ['(?:', ')?'], $route);
+
+            // no params
+            if ($argPos === false) {
+                $noOptional = \substr($route, 0, $optPos);
+                $conf['start'] = $noOptional;
+                $conf['regex'] = '#^' . $route . '$#';
+
+                // eg '/article/12'
+                if ($pos = \strpos($noOptional, '/', 1)) {
+                    $first = \substr($noOptional, 1, $pos - 1);
+                }
+
+                return [$first, $conf];
+            }
+
+            $floorPos = $argPos >= $optPos ? $optPos : $argPos;
+        } else {
+            $floorPos = (int)$argPos;
+        }
+
+        $start = \substr($backup, 0, $floorPos);
+
+        // Parse the parameters and replace them with the corresponding regular
+        if (\preg_match_all('#\{([a-zA-Z_][\w-]*)\}#', $route, $m)) {
+            /** @var array[] $m */
+            $pairs = [];
+
+            foreach ($m[1] as $name) {
+                $regex = $params[$name] ?? self::DEFAULT_REGEX;
+                $pairs['{' . $name . '}'] = '(' . $regex . ')';
+            }
+
+            $route = \strtr($route, $pairs);
+            $conf['matches'] = $m[1];
+        }
+
+        $conf['regex'] = '#^' . $route . '$#';
+        $conf['start'] = $start === '/' ? null : $start;
+
+        // regular: first node is a normal string e.g '/user/{id}' -> 'user', '/a/{post}' -> 'a'
+        if ($pos = \strpos($start, '/', 1)) {
+            $first = \substr($start, 1, $pos - 1);
+        }
+
+        return [$first, $conf];
+    }
+
+    /**
+     * @param array $matches
+     * @param array[] $conf
+     * @return array
+     */
+    protected function mergeMatches(array $matches, array $conf): array
+    {
+        if (!$matches || !isset($conf['matches'])) {
+            $conf['matches'] = $conf['option']['defaults'] ?? [];
+
+            return $conf;
+        }
+
+        // first is full match.
+        \array_shift($matches);
+
+        $newMatches = [];
+
+        foreach ($conf['matches'] as $k => $name) {
+            if (isset($matches[$k])) {
+                $newMatches[$name] = $matches[$k];
+            }
+        }
+
+        // apply some default param value
+        if (isset($conf['option']['defaults'])) {
+            $conf['matches'] = \array_merge($conf['option']['defaults'], $newMatches);
+        } else {
+            $conf['matches'] = $newMatches;
+        }
+
+        return $conf;
+    }
+
+    /**
+     * @param string $first
+     * @param string $path
+     * @param string $method
+     * @return array
+     */
+    abstract protected function findInRegularRoutes(string $first, string $path, string $method): array;
+
+    /**
+     * @param string $path
+     * @param string $method
+     * @return array|false
+     */
+    abstract protected function findInVagueRoutes(string $path, string $method);
 
     /**
      * is Static Route
@@ -304,155 +445,6 @@ abstract class AbstractRouter implements RouterInterface
     }
 
     /**
-     * @param string $path
-     * @param bool $ignoreLastSlash
-     * @return string
-     */
-    protected function formatUriPath(string $path, $ignoreLastSlash): string
-    {
-        // clear '//', '///' => '/'
-        if (false !== \strpos($path, '//')) {
-            $path = (string)\preg_replace('#\/\/+#', '/', $path);
-        }
-
-        // decode
-        $path = \rawurldecode($path);
-
-        // setting 'ignoreLastSlash'
-        if ($path !== '/' && $ignoreLastSlash) {
-            $path = \rtrim($path, '/');
-        }
-
-        return $path;
-    }
-
-    /**
-     * @param array $matches
-     * @param array $conf
-     * @return array
-     */
-    protected function filterMatches(array $matches, array $conf): array
-    {
-        if (!$matches) {
-            $conf['matches'] = [];
-
-            return $conf;
-        }
-
-        // clear all int key
-        $matches = \array_filter($matches, '\is_string', ARRAY_FILTER_USE_KEY);
-
-        // apply some default param value
-        if (isset($conf['option']['defaults'])) {
-            $conf['matches'] = \array_merge($conf['option']['defaults'], $matches);
-        } else {
-            $conf['matches'] = $matches;
-        }
-
-        return $conf;
-    }
-
-    /**
-     * parse param route
-     * @param string $route
-     * @param array $params
-     * @param array $conf
-     * @return array
-     * @throws \LogicException
-     */
-    public function parseParamRoute(string $route, array $params, array $conf): array
-    {
-        $bak = $route;
-        $noOptional = null;
-
-        // 解析可选参数位
-        if (false !== ($pos = \strpos($route, '['))) {
-            // $hasOptional = true;
-            $noOptional = \substr($route, 0, $pos);
-            $withoutClosingOptionals = rtrim($route, ']');
-            $optionalNum = \strlen($route) - \strlen($withoutClosingOptionals);
-
-            if ($optionalNum !== \substr_count($withoutClosingOptionals, '[')) {
-                throw new \LogicException('Optional segments can only occur at the end of a route');
-            }
-
-            // '/hello[/{name}]' -> '/hello(?:/{name})?'
-            $route = \str_replace(['[', ']'], ['(?:', ')?'], $route);
-        }
-
-        // quote '.','/' to '\.','\/'
-        if (false !== \strpos($route, '.')) {
-            // $route = preg_quote($route, '/');
-            $route = \str_replace('.', '\.', $route);
-        }
-
-        // 解析参数，替换为对应的 正则
-        if (\preg_match_all('#\{([a-zA-Z_][a-zA-Z0-9_-]*)\}#', $route, $m)) {
-            /** @var array[] $m */
-            $replacePairs = [];
-
-            foreach ($m[1] as $name) {
-                $key = '{' . $name . '}';
-                $regex = $params[$name] ?? self::DEFAULT_REGEX;
-
-                // 将匹配结果命名 (?P<arg1>[^/]+)
-                $replacePairs[$key] = '(?P<' . $name . '>' . $regex . ')';
-                // $replacePairs[$key] = '(' . $regex . ')';
-            }
-
-            $route = \strtr($route, $replacePairs);
-        }
-
-        // 分析路由字符串是否是有规律的
-        $first = null;
-        $conf['regex'] = '#^' . $route . '$#';
-
-        // first node is a normal string
-        // e.g '/user/{id}' first: 'user', '/a/{post}' first: 'a'
-        if (\preg_match('#^/([\w-]+)/[\w-]*/?#', $bak, $m)) {
-            $first = $m[1];
-            $conf['start'] = $m[0];
-
-            return [$first, $conf];
-        }
-
-        // first node contain regex param '/hello[/{name}]' '/{some}/{some2}/xyz'
-        $include = null;
-
-        if ($noOptional) {
-            if (\strpos($noOptional, '{') === false) {
-                $include = $noOptional;
-            } else {
-                $bak = $noOptional;
-            }
-        }
-
-        if (!$include && \preg_match('#/([\w-]+)/?[\w-]*#', $bak, $m)) {
-            $include = $m[0];
-        }
-
-        $conf['include'] = $include;
-
-        return [$first, $conf];
-    }
-
-    /**
-     * @param array $routesData
-     * @param string $path
-     * @param string $method
-     * @return array
-     */
-    abstract protected function findInRegularRoutes(array $routesData, string $path, string $method): array;
-
-    /**
-     * @param array $routesData
-     * @param string $path
-     * @param string $method
-     * @return array
-     */
-    abstract protected function findInVagueRoutes(array $routesData, string $path, string $method): array;
-
-    /**
      * @param array $tmpParams
      * @return array
      */
@@ -461,32 +453,10 @@ abstract class AbstractRouter implements RouterInterface
         $params = self::$globalParams;
 
         if ($tmpParams) {
-            foreach ($tmpParams as $name => $pattern) {
-                $key = \trim($name, '{}');
-                $params[$key] = $pattern;
-            }
+            $params = \array_merge($params, $tmpParams);
         }
 
         return $params;
-    }
-
-    /**
-     * convert 'first-second' to 'firstSecond'
-     * @param string $str
-     * @return string
-     */
-    public static function convertNodeStr($str): string
-    {
-        $str = \trim($str, '-');
-
-        // convert 'first-second' to 'firstSecond'
-        if (\strpos($str, '-')) {
-            $str = (string)\preg_replace_callback('/-+([a-z])/', function ($c) {
-                return \strtoupper($c[1]);
-            }, \trim($str, '- '));
-        }
-
-        return $str;
     }
 
     /**
