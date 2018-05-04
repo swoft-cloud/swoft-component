@@ -6,6 +6,8 @@
  * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 
+use Swoft\Core\RequestContext;
+use Swoft\App;
 
 if (! function_exists('value')) {
     /**
@@ -75,7 +77,7 @@ if (! function_exists('cache')) {
     function cache(string $key = null, $default = null)
     {
         /* @var Swoft\Cache\Cache $cache */
-        $cache = \Swoft\App::getBean('cache');
+        $cache = App::getBean('cache');
 
         if ($key === null) {
             return $cache->getDriver();
@@ -94,7 +96,7 @@ if (! function_exists('bean')) {
      */
     function bean(string $name)
     {
-        return \Swoft\App::getBean($name);
+        return App::getBean($name);
     }
 }
 
@@ -109,7 +111,7 @@ if (! function_exists('config')) {
     function config(string $key, $default = null)
     {
         /** @see \Swoft\Core\Config::get() */
-        return \Swoft\App::getBean('config')->get($key, $default);
+        return App::getBean('config')->get($key, $default);
     }
 }
 
@@ -123,7 +125,7 @@ if (! function_exists('alias')) {
      */
     function alias(string $alias): string
     {
-        return \Swoft\App::getAlias($alias);
+        return App::getAlias($alias);
     }
 }
 
@@ -135,7 +137,7 @@ if (! function_exists('request')) {
      */
     function request(): \Psr\Http\Message\RequestInterface
     {
-        return \Swoft\Core\RequestContext::getRequest();
+        return RequestContext::getRequest();
     }
 }
 
@@ -147,7 +149,7 @@ if (! function_exists('response')) {
      */
     function response(): \Psr\Http\Message\ResponseInterface
     {
-        return \Swoft\Core\RequestContext::getResponse();
+        return RequestContext::getResponse();
     }
 }
 
@@ -161,6 +163,30 @@ if (! function_exists('defer')) {
      */
     function defer(callable $value, array $parameters = [])
     {
-        return \Swoft\Core\RequestContext::getDefer()->push($value, $parameters);
+        return RequestContext::getDefer()->push($value, $parameters);
+    }
+}
+
+if (! function_exists('cookie')) {
+    /**
+     * @throws \RuntimeException
+     * @return \Swoft\Http\Message\Cookie\CookieManager
+     */
+    function cookie()
+    {
+        if (! class_exists(\Swoft\Http\Message\Cookie\CookieManager::class)) {
+            throw new \RuntimeException('CookieManager not exist, Did you forget to require swoft\http-message ?');
+        }
+        $manager = RequestContext::get('cookie', value(function () {
+            /** @var \Swoft\Http\Message\Cookie\CookieManager $manager */
+            $manager = \bean(\Swoft\Http\Message\Cookie\CookieManager::class);
+            $request = RequestContext::getRequest();
+            if (! $request instanceof \Psr\Http\Message\RequestInterface) {
+                throw new \RuntimeException('Note that cookie() function only run in HTTP context');
+            }
+            $manager->setRequest($request);
+            return $manager;
+        }), true);
+        return $manager;
     }
 }
