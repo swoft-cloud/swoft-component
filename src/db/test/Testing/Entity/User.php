@@ -41,7 +41,7 @@ class User extends Model
      * @Column(name="age", type=Types::INT)
      * @var int
      */
-    private $age = 0;
+    private $age;
 
     /**
      * 性别
@@ -49,13 +49,13 @@ class User extends Model
      * @Column(name="sex", type="int")
      * @var int
      */
-    private $sex = 0;
+    private $sex;
 
     /**
      * @Column(name="description", type="string")
      * @var string
      */
-    private $desc = '';
+    private $desc;
 
     /**
      * @var mixed
@@ -97,7 +97,7 @@ class User extends Model
     /**
      * @return int
      */
-    public function getAge(): int
+    public function getAge()
     {
         return $this->age;
     }
@@ -113,7 +113,7 @@ class User extends Model
     /**
      * @return int
      */
-    public function getSex(): int
+    public function getSex()
     {
         return $this->sex;
     }
@@ -129,7 +129,7 @@ class User extends Model
     /**
      * @return string
      */
-    public function getDesc(): string
+    public function getDesc()
     {
         return $this->desc;
     }

@@ -64,6 +64,7 @@ class EntityCollector implements CollectorInterface
         $tableName = $objectAnnotation->getName();
 
         self::$entities[$className]['table']['name'] = $tableName;
+        self::$entities[$tableName] = $className;
     }
 
     /**

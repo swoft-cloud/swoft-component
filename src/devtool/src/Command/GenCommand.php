@@ -50,7 +50,6 @@ class GenCommand
      */
     public function command(Input $in, Output $out): int
     {
-        // \var_dump($this);die;
         list($config, $data) = $this->collectInfo($in, $out, [
             'suffix' => 'Command',
             'namespace' => 'App\\Commands',

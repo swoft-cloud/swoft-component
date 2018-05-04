@@ -37,6 +37,11 @@ class Strings
     private $max = PHP_INT_MAX;
 
     /**
+     * @var string
+     */
+    private $template = '';
+
+    /**
      * 默认值，如果是null，强制验证参数
      *
      * @var null|string
@@ -65,6 +70,9 @@ class Strings
         if (isset($values['default'])) {
             $this->default = $values['default'];
         }
+        if (isset($values['template'])) {
+            $this->template = $values['template'];
+        }
     }
 
     /**
@@ -77,11 +85,13 @@ class Strings
 
     /**
      * @param string $from
+     *
      * @return Strings
      */
     public function setFrom(string $from): Strings
     {
         $this->from = $from;
+
         return $this;
     }
 
@@ -95,11 +105,13 @@ class Strings
 
     /**
      * @param string $name
+     *
      * @return Strings
      */
     public function setName(string $name): Strings
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -113,11 +125,13 @@ class Strings
 
     /**
      * @param int $min
+     *
      * @return Strings
      */
     public function setMin(int $min): Strings
     {
         $this->min = $min;
+
         return $this;
     }
 
@@ -131,11 +145,13 @@ class Strings
 
     /**
      * @param int $max
+     *
      * @return Strings
      */
     public function setMax(int $max): Strings
     {
         $this->max = $max;
+
         return $this;
     }
 
@@ -149,11 +165,29 @@ class Strings
 
     /**
      * @param null|string $default
+     *
      * @return Strings
      */
     public function setDefault($default): Strings
     {
         $this->default = $default;
+
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTemplate(): string
+    {
+        return $this->template;
+    }
+
+    /**
+     * @param string $template
+     */
+    public function setTemplate(string $template)
+    {
+        $this->template = $template;
     }
 }

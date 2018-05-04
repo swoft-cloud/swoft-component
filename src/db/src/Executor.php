@@ -7,12 +7,14 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Db;
 
 use Swoft\App;
 use Swoft\Bean\BeanFactory;
 use Swoft\Core\ResultInterface;
 use Swoft\Db\Bean\Collector\EntityCollector;
+use Swoft\Db\Exception\MysqlException;
 use Swoft\Db\Validator\ValidatorInterface;
 use Swoft\Exception\ValidatorException;
 
@@ -33,20 +35,21 @@ class Executor
         $instance = self::getInstance($className);
 
         $fields = $fields ?? [];
-        $query = Query::table($table)->selectInstance($instance);
+        $query  = Query::table($table)->selectInstance($instance);
 
         return $query->insert($fields);
     }
 
     /**
      * @param string $className
-     * @param array $rows
+     * @param array  $rows
      *
      * @return ResultInterface
      */
     public static function batchInsert(string $className, array $rows): ResultInterface
     {
         $instance = self::getInstance($className);
+
         return Query::table($className)->selectInstance($instance)->batchInsert($rows);
     }
 
@@ -110,6 +113,7 @@ class Executor
     public static function deleteOne(string $className, array $condition)
     {
         $instance = self::getInstance($className);
+
         return Query::table($className)->selectInstance($instance)->condition($condition)->limit(1)->delete();
     }
 
@@ -122,6 +126,7 @@ class Executor
     public static function deleteAll(string $className, array $condition)
     {
         $instance = self::getInstance($className);
+
         return Query::table($className)->selectInstance($instance)->condition($condition)->delete();
     }
 
@@ -140,8 +145,8 @@ class Executor
         }
         // 构建update查询器
         $instance = self::getInstance($className);
-        $fields = $fields ?? [];
-        $query    = Query::table($table)->where($idColumn, $idValue)->selectInstance($instance);
+        $fields   = $fields ?? [];
+        $query    = Query::table($table)->className($className)->where($idColumn, $idValue)->selectInstance($instance);
 
         return $query->update($fields);
     }
@@ -156,6 +161,7 @@ class Executor
     public static function updateOne(string $className, array $attributes, array $condition)
     {
         $instance = self::getInstance($className);
+
         return Query::table($className)->selectInstance($instance)->condition($condition)->limit(1)->update($attributes);
     }
 
@@ -169,6 +175,7 @@ class Executor
     public static function updateAll(string $className, array $attributes, array $condition)
     {
         $instance = self::getInstance($className);
+
         return Query::table($className)->selectInstance($instance)->condition($condition)->update($attributes);
     }
 
@@ -201,7 +208,7 @@ class Executor
     {
         list($tableName, , $idColumn) = self::getTable($className);
         $instance = self::getInstance($className);
-        $query = Query::table($tableName)->where($idColumn, $id)->limit(1)->selectInstance($instance)->addDecorator(function ($result) {
+        $query    = Query::table($tableName)->where($idColumn, $id)->limit(1)->selectInstance($instance)->addDecorator(function ($result) {
             return (bool)$result;
         });
 
@@ -218,7 +225,7 @@ class Executor
     public static function count(string $className, string $column, array $condition): ResultInterface
     {
         $instance = self::getInstance($className);
-        $query = Query::table($className)->selectInstance($instance)->condition($condition);
+        $query    = Query::table($className)->selectInstance($instance)->condition($condition);
 
         return $query->count($column);
     }
@@ -235,16 +242,17 @@ class Executor
         list($tableName, , $columnId) = self::getTable($className);
         $instance = self::getInstance($className);
 
-        $query = Query::table($tableName)->className($className)->where($columnId, $id)->selectInstance($instance)->addDecorator(function ($result){
-            if(isset($result[0])){
+        $query = Query::table($tableName)->className($className)->where($columnId, $id)->selectInstance($instance)->addDecorator(function ($result) {
+            if (isset($result[0])) {
                 return $result[0];
             }
+
             return null;
         });
 
         $options['limit'] = 1;
-        $query = self::applyOptions($query, $options);
-        $fields = self::getFieldsFromOptions($options);
+        $query            = self::applyOptions($query, $options);
+        $fields           = self::getFieldsFromOptions($options);
 
         return $query->get($fields);
     }
@@ -261,9 +269,10 @@ class Executor
         list($tableName, , $columnId) = self::getTable($className);
         $instance = self::getInstance($className);
 
-        $query = Query::table($tableName)->className($className)->whereIn($columnId, $ids)->selectInstance($instance);
-        $query = self::applyOptions($query, $options);
+        $query  = Query::table($tableName)->className($className)->whereIn($columnId, $ids)->selectInstance($instance);
+        $query  = self::applyOptions($query, $options);
         $fields = self::getFieldsFromOptions($options);
+
         return $query->get($fields);
     }
 
@@ -277,10 +286,11 @@ class Executor
     public static function findOne(string $className, array $condition = [], array $options = [])
     {
         $instance = self::getInstance($className);
-        $query = Query::table($className)->className($className)->selectInstance($instance)->addDecorator(function ($result){
-            if(isset($result[0])){
+        $query    = Query::table($className)->className($className)->selectInstance($instance)->addDecorator(function ($result) {
+            if (isset($result[0])) {
                 return $result[0];
             }
+
             return null;
         });
 
@@ -289,8 +299,9 @@ class Executor
         }
 
         $options['limit'] = 1;
-        $query = self::applyOptions($query, $options);
-        $fields = self::getFieldsFromOptions($options);
+        $query            = self::applyOptions($query, $options);
+        $fields           = self::getFieldsFromOptions($options);
+
         return $query->get($fields);
     }
 
@@ -304,13 +315,13 @@ class Executor
     public static function findAll(string $className, array $condition = [], array $options = [])
     {
         $instance = self::getInstance($className);
-        $query = Query::table($className)->className($className)->selectInstance($instance);
+        $query    = Query::table($className)->className($className)->selectInstance($instance);
 
         if (!empty($condition)) {
             $query = $query->condition($condition);
         }
 
-        $query = self::applyOptions($query, $options);
+        $query  = self::applyOptions($query, $options);
         $fields = self::getFieldsFromOptions($options);
 
         return $query->get($fields);
@@ -318,13 +329,33 @@ class Executor
 
     /**
      * @param string $className
+     * @param array  $counters
+     * @param array  $condition
+     *
+     * @return ResultInterface
+     */
+    public static function counter(string $className, array $counters, array $condition = [])
+    {
+        $instance = self::getInstance($className);
+        $query    = Query::table($className)->className($className)->selectInstance($instance);
+
+        if (!empty($condition)) {
+            $query = $query->condition($condition);
+        }
+
+        return $query->counter($counters);
+    }
+
+    /**
+     * @param string $className
      *
      * @return QueryBuilder
      */
-    public static function query(string $className)
+    public static function query(string $className): QueryBuilder
     {
         $instance = self::getInstance($className);
-        return  Query::table($className)->className($className)->selectInstance($instance);
+
+        return Query::table($className)->className($className)->selectInstance($instance);
     }
 
     /**
@@ -350,6 +381,12 @@ class Executor
             // 实体属性对应值
             $proValue = self::getEntityProValue($entity, $proName);
 
+            self::validate($proAry, $proValue);
+
+            if($type === 1 && $proValue === null){
+                continue;
+            }
+
             // insert逻辑
             if ($type === 1 && $id === $proName && $default === $proValue) {
                 continue;
@@ -365,9 +402,6 @@ class Executor
                 continue;
             }
 
-            // 属性值验证
-            self::validate($proAry, $proValue);
-
             // id值赋值
             if ($idColumn === $column) {
                 $idValue = $proValue;
@@ -379,10 +413,56 @@ class Executor
         // 如果是更新找到变化的字段
         if ($type === 2) {
             $oldFields    = $entity->getAttrs();
-            $changeFields = array_diff($changeFields, $oldFields);
+            $oldFields    = self::getDbOldFields(get_class($entity), $oldFields);
+            $changeFields = self::getUpdateFields($oldFields, $changeFields);
+        }
+        return [$table, $idColumn, $idValue, $changeFields];
+    }
+
+    /**
+     * @param string $className
+     * @param array  $oldFields
+     *
+     * @return array
+     */
+    public static function getDbOldFields(string $className, array $oldFields): array
+    {
+        $fields       = [];
+        $entities     = EntityCollector::getCollector();
+        $entityfields = $entities[$className]['field'];
+        foreach ($oldFields as $fieldName => $value) {
+            if (isset($entityfields[$fieldName]) && $entityfields[$fieldName] != $fieldName) {
+                $fieldName = $entityfields[$fieldName]['column'];
+            }
+            $fields[$fieldName] = $value;
         }
 
-        return [$table, $idColumn, $idValue, $changeFields];
+        return $fields;
+    }
+
+    /**
+     * @param array $oldFields
+     * @param array $changeFields
+     *
+     * @return array
+     */
+    private static function getUpdateFields(array $oldFields, array $changeFields)
+    {
+        $newFields = [];
+        foreach ($oldFields as $fieldName => $fieldValue) {
+            if (!isset($changeFields[$fieldName])) {
+                continue;
+            }
+
+            $changeValue = $changeFields[$fieldName];
+            if ($changeValue == $fieldValue) {
+                continue;
+            }
+
+            $newFields[$fieldName] = $changeValue;
+        }
+
+        return $newFields;
     }
 
     /**
@@ -391,7 +471,7 @@ class Executor
      * @param array $columnAry     属性字段验证规则
      * @param mixed $propertyValue 数组字段值
      *
-     * @throws ValidatorException
+     * @throws MysqlException
      */
     private static function validate(array $columnAry, $propertyValue)
     {
@@ -404,7 +484,11 @@ class Executor
 
         // 必须传值验证
         if ($propertyValue === null && $required) {
-            throw new ValidatorException('数据字段验证失败，column=' . $column . '字段必须设置值');
+            throw new MysqlException(sprintf('The %s must pass values', $column));
+        }
+
+        if($propertyValue === null){
+            return ;
         }
 
         // 类型验证器
@@ -445,8 +529,8 @@ class Executor
      */
     private static function getEntityProValue($entity, string $proName)
     {
-        $tmpNodes      = \explode('_', $proName);
-        $tmpNodes      = \array_map(function ($word) {
+        $tmpNodes     = \explode('_', $proName);
+        $tmpNodes     = \array_map(function ($word) {
             return \ucfirst($word);
         }, $tmpNodes);
         $proName      = \implode('', $tmpNodes);
@@ -493,7 +577,7 @@ class Executor
         $fields     = $entities[$className]['field'];
         $idProperty = $entities[$className]['table']['id'];
         $tableName  = $entities[$className]['table']['name'];
-        $idColumn   = $entities[$className]['column'][$idProperty];
+        $idColumn   = $fields[$idProperty]['column'];
 
         return [$tableName, $idProperty, $idColumn, $fields];
     }
@@ -518,7 +602,7 @@ class Executor
      *
      * @return array
      */
-    private static function getFieldsFromOptions(array $options):array
+    private static function getFieldsFromOptions(array $options): array
     {
         return $options['fields']?? ['*'];
     }
@@ -526,6 +610,7 @@ class Executor
     /**
      * @param QueryBuilder $query
      * @param array        $options
+     *
      * @return QueryBuilder
      */
     private static function applyOptions(QueryBuilder $query, array $options)
@@ -537,7 +622,7 @@ class Executor
             }
         }
 
-        $limit = $options['limit'] ?? null;
+        $limit  = $options['limit'] ?? null;
         $offset = $options['offset'] ?? 0;
 
         if ($limit !== null) {
