@@ -2,12 +2,14 @@
 
 namespace Swoft\Aop\Ast\Visitors;
 
-use function foo\func;
 use PhpParser\Comment\Doc;
 use PhpParser\Node;
+use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Name;
+use PhpParser\Node\Param;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -90,7 +92,7 @@ class ProxyVisitor extends NodeVisitorAbstract
             return new Class_($this->getProxyClassName(), [
                 'flags'   => $node->flags,
                 'stmts'   => $node->stmts,
-                'extends' => new Node\Name('\\' . $this->getClassName()),
+                'extends' => new Name('\\' . $this->getClassName()),
             ]);
         }
         // Rewrite public and protected methods, without static methods
@@ -102,26 +104,26 @@ class ProxyVisitor extends NodeVisitorAbstract
             // Rebuild closure uses, only variable
             $uses = [];
             foreach ($node->params as $key => $param) {
-                if ($param instanceof Node\Param) {
-                    $uses[$key] = new Node\Param($param->var);
+                if ($param instanceof Param) {
+                    $uses[$key] = new Param($param->var);
                 }
             }
             $params = [
                 // Add method to an closure
-                new Node\Expr\Closure([
+                new Closure([
                     'static' => $node->isStatic(),
                     'uses'   => $uses,
                     'stmts'  => $node->stmts,
                 ]),
                 new String_($methodName),
-                new FuncCall(new Node\Name('func_get_args')),
+                new FuncCall(new Name('func_get_args')),
             ];
             $stmts = [
                 new Return_(new MethodCall(new Variable('this'), '__astProxyCall', $params))
             ];
             $returnType = $node->getReturnType();
-            if ($returnType instanceof Node\Name && $returnType->toString() === 'self') {
-                $returnType = new Node\Name('\\' . $this->getClassName());
+            if ($returnType instanceof Name && $returnType->toString() === 'self') {
+                $returnType = new Name('\\' . $this->getClassName());
             }
             return new ClassMethod($methodName, [
                 'flags'      => $node->flags,
@@ -150,7 +152,7 @@ class ProxyVisitor extends NodeVisitorAbstract
             if ($node instanceof TraitUse) {
                 foreach ($node->traits as $trait) {
                     // Has AopTrait trait use ?
-                    if ($trait instanceof Node\Name && $trait->toString() === '\Swoft\Aop\AopTrait') {
+                    if ($trait instanceof Name && $trait->toString() === '\Swoft\Aop\AopTrait') {
                         $useAopTrait = false;
                         break;
                     }
@@ -226,7 +228,7 @@ class ProxyVisitor extends NodeVisitorAbstract
     public function getTraitUseNode(): TraitUse
     {
         // Use AopTrait trait use node
-        return new TraitUse([new Node\Name('\Swoft\Aop\AopTrait')]);
+        return new TraitUse([new Name('\Swoft\Aop\AopTrait')]);
     }
 
     /**
