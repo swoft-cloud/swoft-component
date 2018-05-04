@@ -22,8 +22,12 @@ use Swoft\Redis\Pool\RedisPool;
  * @method int incrBy($key, $value)
  * @method float incrByFloat($key, $increment)
  * @method int strlen($key)
- * @method array mget( array $array )
- * @method bool mset( array $array )
+ * @method array mget(array $array)
+ * @method bool mset(array $array)
+ * @method int ttl($key)
+ * @method int expire($key, $seconds)
+ * @method int pttl($key)
+ * @method int persist($key)
  * hash
  * @method int hSet($key, $hashKey, $value)
  * @method bool hSetNx($key, $hashKey, $value)
@@ -104,7 +108,7 @@ class Redis implements CacheInterface
      * Get the value related to the specified key
      *
      * @param string $key
-     * @param mixed  $default
+     * @param mixed $default
      *
      * @return string|bool
      */
@@ -122,14 +126,14 @@ class Redis implements CacheInterface
      * Set the string value in argument as value of the key.
      *
      * @param string $key
-     * @param mixed  $value
-     * @param int    $ttl
+     * @param mixed $value
+     * @param int $ttl
      *
      * @return bool
      */
     public function set($key, $value, $ttl = null): bool
     {
-        $ttl    = $this->getTtl($ttl);
+        $ttl = $this->getTtl($ttl);
         $params = ($ttl === 0) ? [$key, $value] : [$key, $value, $ttl];
 
         return $this->call('set', $params);
@@ -163,7 +167,7 @@ class Redis implements CacheInterface
      * the special value false is returned. Because of this, the operation never fails.
      *
      * @param iterable $keys
-     * @param mixed    $default
+     * @param mixed $default
      *
      * @return array|mixed
      */
@@ -185,7 +189,7 @@ class Redis implements CacheInterface
      * Sets multiple key-value pairs in one atomic command.
      *
      * @param iterable $values
-     * @param int      $ttl
+     * @param int $ttl
      *
      * @return bool TRUE in case of success, FALSE in case of failure.
      */
@@ -224,7 +228,7 @@ class Redis implements CacheInterface
      * defer call
      *
      * @param string $method
-     * @param array  $params
+     * @param array $params
      *
      * @return ResultInterface
      */
@@ -244,7 +248,7 @@ class Redis implements CacheInterface
      * magic method
      *
      * @param string $method
-     * @param array  $arguments
+     * @param array $arguments
      *
      * @return mixed
      */
@@ -257,7 +261,7 @@ class Redis implements CacheInterface
      * call method by redis client
      *
      * @param string $method
-     * @param array  $params
+     * @param array $params
      *
      * @return mixed
      */
@@ -275,7 +279,7 @@ class Redis implements CacheInterface
 
     /**
      * @param ConnectionInterface $connection
-     * @param mixed               $result
+     * @param mixed $result
      *
      * @return ResultInterface
      */

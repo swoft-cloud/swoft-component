@@ -4,6 +4,8 @@ namespace Swoft\Redis;
 
 use Swoft\Helper\PhpHelper;
 use Swoft\Pool\AbstractConnection;
+use Swoft\Redis\Exception\RedisException;
+use Swoft\Redis\Helper\RedisHelper;
 use Swoft\Redis\Pool\Config\RedisPoolConfig;
 
 /**
@@ -18,22 +20,29 @@ class SyncRedisConnection extends AbstractConnection
 
     /**
      * @return void
+     * @throws RedisException
      */
     public function createConnection()
     {
         $timeout = $this->pool->getTimeout();
         $address = $this->pool->getConnectionAddress();
-        list($host, $port) = explode(":", $address);
+        $config = RedisHelper::redisParseUri($address);
 
         /* @var RedisPoolConfig $poolConfig */
         $poolConfig = $this->pool->getPoolConfig();
+        $prefix = $poolConfig->getPrefix();
         $serialize  = $poolConfig->getSerialize();
         $serialize  = ((int)$serialize == 0) ? false : true;
-        $prefix = $poolConfig->getPrefix();
 
         // init
         $redis = new \Redis();
-        $redis->connect($host, $port, $timeout);
+        $host   = $config['host'];
+        $port   = (int)$config['port'];
+        $result = $redis->connect($host, $port, $timeout);
+        if ($result == false) {
+            $error = sprintf('Redis connection failure host=%s port=%d', $host, $port);
+            throw new RedisException($error);
+        }
         if ($serialize) {
             $redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
         }
@@ -41,12 +50,21 @@ class SyncRedisConnection extends AbstractConnection
         {
             $redis->setOption(\Redis::OPT_PREFIX, $prefix);
         }
+        if (isset($config['auth']) && false === $redis->auth($config['auth'])) {
+            $error = sprintf('Redis connection authentication failed host=%s port=%d auth=%s', $host, $port, (string)$config['auth']);
+            throw new RedisException($error);
+        }
+        if (isset($config['database']) && $config['database'] < 16 && false === $redis->select($config['database'])) {
+            $error = sprintf('Redis selection database failure host=%s port=%d database=%d', $host, $port, (int)$config['database']);
+            throw new RedisException($error);
+        }
 
         $this->connection = $redis;
     }
 
     /**
      * @return $this
+     * @throws RedisException
      */
     public function reconnect()
     {
