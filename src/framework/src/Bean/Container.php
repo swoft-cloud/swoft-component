@@ -2,6 +2,7 @@
 
 namespace Swoft\Bean;
 
+use App\Controllers\ValueController;
 use Psr\Container\ContainerInterface;
 use Swoft\Aop\Aop;
 use Swoft\Aop\Proxy\Proxy;
@@ -53,6 +54,7 @@ class Container implements ContainerInterface
      *
      * @param string $name 名称
      * @return mixed
+     * @throws \InvalidArgumentException
      * @throws \ReflectionException
      * @throws ContainerException
      */
@@ -197,6 +199,7 @@ class Container implements ContainerInterface
      * @param string           $name             名称
      * @param ObjectDefinition $objectDefinition bean定义
      * @return object
+     * @throws \Swoft\Exception\ContainerException
      * @throws \ReflectionException
      * @throws \InvalidArgumentException
      */
@@ -219,7 +222,7 @@ class Container implements ContainerInterface
         }
 
         $proxyClass = $className;
-        if ($name !== Aop::class && self::hasBean(Aop::class)) {
+        if ($name !== Aop::class && $this->hasBean(Aop::class)) {
             $proxyClass = $this->getProxyClass($name, $className);
         }
 
@@ -332,6 +335,9 @@ class Container implements ContainerInterface
             if ($injectProperty !== null) {
                 $property->setValue($object, $injectProperty);
             }
+            /*if ($propertyName === 'valueVersion') {
+                echo '<pre>';var_dump($propertyInjects, $object);echo '</pre>';exit();
+            }*/
         }
     }
 
@@ -376,7 +382,7 @@ class Container implements ContainerInterface
      *
      * @return array
      */
-    private function getScanNamespaceFromProperties(string $name)
+    private function getScanNamespaceFromProperties(string $name): array
     {
         $properties = $this->properties;
 
@@ -393,6 +399,7 @@ class Container implements ContainerInterface
      * @param string $name
      * @param string $className
      * @return string
+     * @throws \Swoft\Exception\ContainerException
      * @throws \InvalidArgumentException
      * @throws \ReflectionException
      */

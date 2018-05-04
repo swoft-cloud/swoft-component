@@ -17,12 +17,89 @@ trait AopTrait
 {
 
     /**
+     * Ast strategy aop proxy call method
+     *
+     * @param \Closure $closure
+     * @param string   $method
+     * @param array    $params
+     * @return mixed|null
+     * @throws \Throwable
+     */
+    public function __astProxyCall(\Closure $closure, string $method, array $params)
+    {
+        /** @var Aop $aop */
+        $aop   = \bean(Aop::class);
+        $map   = $aop->getMap();
+        $class = $this->getOriginalClassName();
+        // If doesn't have any advices, then execute the origin method
+        if (!isset($map[$class][$method]) || empty($map[$class][$method])) {
+            return $closure(...$params);
+        }
+        // Apply advices's functionality
+        $advices = $map[$class][$method];
+
+        return $this->__astDoAdvice($closure, $method, $params, $advices);
+    }
+
+    /**
+     * Ast strategy aop do advice method
+     *
+     * @param \Closure $closure
+     * @param string   $method
+     * @param array    $params
+     * @param array    $advices
+     * @return mixed|null
+     * @throws \Throwable
+     */
+    public function __astDoAdvice(\Closure $closure, string $method, array $params, array $advices)
+    {
+        $result = null;
+        $advice = array_shift($advices);
+        try {
+
+            // Around
+            if (isset($advice['around']) && !empty($advice['around'])) {
+                $result = $this->__doPoint($advice['around'], $method, $params, $advice, $advices);
+            } else {
+                // Before
+                if (isset($advice['before']) && !empty($advice['before'])) {
+                    // The result of before point will not effect origin object method
+                    $this->__doPoint($advice['before'], $method, $params, $advice, $advices);
+                }
+                if (0 === \count($advices)) {
+                    $result = $closure(...$params);
+                } else {
+                    $this->__astDoAdvice($closure, $method, $params, $advices);
+                }
+            }
+
+            // After
+            if (isset($advice['after']) && !empty($advice['after'])) {
+                $this->__doPoint($advice['after'], $method, $params, $advice, $advices, $result);
+            }
+        } catch (\Throwable $t) {
+            if (isset($advice['afterThrowing']) && !empty($advice['afterThrowing'])) {
+                return $this->__doPoint($advice['afterThrowing'], $method, $params, $advice, $advices, null, $t);
+            } else {
+                throw $t;
+            }
+        }
+
+        // AfterReturning
+        if (isset($advice['afterReturning']) && !empty($advice['afterReturning'])) {
+            return $this->__doPoint($advice['afterReturning'], $method, $params, $advice, $advices, $result);
+        }
+
+        return $result;
+    }
+
+    /**
      * Execute origin method by aop
      *
      * @param string $method The execution method
      * @param array  $params The parameters of execution method
-     *
      * @return mixed
+     * @throws \Throwable
      * @throws \ReflectionException
      */
     public function __proxy(string $method, array $params)
