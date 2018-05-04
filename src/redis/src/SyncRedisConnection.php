@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Redis;
 
 use Swoft\Helper\PhpHelper;
@@ -26,18 +33,18 @@ class SyncRedisConnection extends AbstractConnection
     {
         $timeout = $this->pool->getTimeout();
         $address = $this->pool->getConnectionAddress();
-        $config = RedisHelper::redisParseUri($address);
+        $config = RedisHelper::parseUri($address);
 
         /* @var RedisPoolConfig $poolConfig */
         $poolConfig = $this->pool->getPoolConfig();
         $prefix = $poolConfig->getPrefix();
-        $serialize  = $poolConfig->getSerialize();
-        $serialize  = ((int)$serialize == 0) ? false : true;
+        $serialize = $poolConfig->getSerialize();
+        $serialize = ((int)$serialize == 0) ? false : true;
 
         // init
         $redis = new \Redis();
-        $host   = $config['host'];
-        $port   = (int)$config['port'];
+        $host = $config['host'];
+        $port = (int)$config['port'];
         $result = $redis->connect($host, $port, $timeout);
         if ($result == false) {
             $error = sprintf('Redis connection failure host=%s port=%d', $host, $port);
@@ -46,8 +53,7 @@ class SyncRedisConnection extends AbstractConnection
         if ($serialize) {
             $redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
         }
-        if($prefix !== '' && is_string($prefix))
-        {
+        if ($prefix !== '' && is_string($prefix)) {
             $redis->setOption(\Redis::OPT_PREFIX, $prefix);
         }
         if (isset($config['auth']) && false === $redis->auth($config['auth'])) {
@@ -90,7 +96,7 @@ class SyncRedisConnection extends AbstractConnection
 
     /**
      * @param string $method
-     * @param array  $arguments
+     * @param array $arguments
      *
      * @return mixed
      */

@@ -26,7 +26,7 @@ class RedisHelper
      * @return array
      * @throws RedisException
      */
-    public static function redisParseUri(string $uri):array
+    public static function parseUri(string $uri): array
     {
         $parseAry = parse_url($uri);
         if (!isset($parseAry['host']) || !isset($parseAry['port'])) {
@@ -34,7 +34,7 @@ class RedisHelper
             throw new RedisException($error);
         }
         isset($parseAry['path']) && $parseAry['database'] = str_replace('/', '', $parseAry['path']);
-        $query = $parseAry['query']?? '';
+        $query = $parseAry['query'] ?? '';
         parse_str($query, $options);
         $configs = array_merge($parseAry, $options);
         unset($configs['path']);

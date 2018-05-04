@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Redis;
 
 use Swoft\App;
@@ -31,7 +38,7 @@ class RedisConnection extends AbstractConnection
     {
         $timeout = $this->pool->getTimeout();
         $address = $this->pool->getConnectionAddress();
-        $config = RedisHelper::redisParseUri($address);
+        $config = RedisHelper::parseUri($address);
 
         /* @var RedisPoolConfig $poolConfig */
         $poolConfig = $this->pool->getPoolConfig();
@@ -97,7 +104,6 @@ class RedisConnection extends AbstractConnection
         $this->recv = false;
         $this->connection->setDefer($defer);
     }
-
 
     /**
      * @param string $method
