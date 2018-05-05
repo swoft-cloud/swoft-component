@@ -85,7 +85,7 @@ class Parser
         if (! \file_exists($file) || ! is_readable($file)) {
             return '';
         }
-        // If Coroutine read file method exist and in Coroutine context,then  use co-method to get file contents
+        // If read file co-method exist and running in Coroutine context,then use co-method to get file contents
         if ($this->isUseAsyncIO() && SwCoroutine::getuid() > 0 && method_exists(SwCoroutine::class, 'readFile')) {
             $code = SwCoroutine::readFile($file);
         } else {
