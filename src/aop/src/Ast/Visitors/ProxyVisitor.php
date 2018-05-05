@@ -137,7 +137,7 @@ class ProxyVisitor extends NodeVisitorAbstract
                 new FuncCall(new Name('func_get_args')),
             ];
             $stmts = [
-                new Return_(new MethodCall(new Variable('this'), '__astProxyCall', $params))
+                new Return_(new MethodCall(new Variable('this'), '__proxyCall', $params))
             ];
             $returnType = $node->getReturnType();
             if ($returnType instanceof Name && $returnType->toString() === 'self') {
