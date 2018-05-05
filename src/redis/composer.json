@@ -11,7 +11,7 @@
     "license": "Apache-2.0",
     "require": {
         "psr/simple-cache": "^1.0.0",
-        "swoft/framework": "^1.0.16"
+        "swoft/framework": "^1.0.17"
     },
     "autoload": {
         "classmap": [
