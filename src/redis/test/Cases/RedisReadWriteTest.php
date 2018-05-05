@@ -35,11 +35,9 @@ class RedisReadWriteTest extends AbstractTestCase
             $this->redis->set('a', '1', 10);
             if ($this->redis->has('a')) {
                 $a = $this->redis->get('a');
-                var_dump($a);
-                $this->assertEquals($a, 1);
+                $this->assertSame($a, 1);
             }
         });
-        $this->assertNotNull(1);
     }
 
     /**
@@ -50,10 +48,10 @@ class RedisReadWriteTest extends AbstractTestCase
      */
     public function testNormal()
     {
-        $this->redis->set('a', '1', 10);
-        if ($this->redis->has('a')) {
-            $a = $this->redis->get('a');
-            $this->assertEquals($a, '1');
+        $this->redis->set('b', '1', 10);
+        if ($this->redis->has('b')) {
+            $a = $this->redis->get('b');
+            $this->assertSame($a, '1');
         }
     }
 }

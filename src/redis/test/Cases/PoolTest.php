@@ -23,8 +23,8 @@ class PoolTest extends AbstractTestCase
         $pConfig = App::getBean(RedisPptPoolConfig::class);
         $this->assertEquals($pConfig->getName(), 'redis');
         $this->assertEquals($pConfig->getUri(), [
-            '127.0.0.1:6379',
-            '127.0.0.1:6379',
+            'tcp://127.0.0.1:6379',
+            'tcp://127.0.0.1:6379',
         ]);
         $this->assertEquals($pConfig->getMaxActive(), 8);
         $this->assertEquals($pConfig->getMaxWait(), 8);
@@ -41,8 +41,8 @@ class PoolTest extends AbstractTestCase
         $this->assertEquals($pConfig->getProvider(), 'consul');
         $this->assertEquals($pConfig->getTimeout(), 3);
         $this->assertEquals($pConfig->getUri(), [
-            '127.0.0.1:6379',
-            '127.0.0.1:6379',
+            'tcp://127.0.0.1:6379',
+            'tcp://127.0.0.1:6379',
         ]);
         $this->assertEquals($pConfig->getBalancer(), 'random');
         $this->assertEquals($pConfig->getMaxActive(), 10);
