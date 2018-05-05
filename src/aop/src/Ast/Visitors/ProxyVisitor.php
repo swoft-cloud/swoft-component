@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Aop\Ast\Visitors;
 
 use PhpParser\Comment\Doc;
@@ -18,7 +25,6 @@ use PhpParser\Node\Stmt\TraitUse;
 use PhpParser\NodeFinder;
 use PhpParser\NodeVisitorAbstract;
 
-
 /**
  * Class ProxyVisitor
  *
@@ -27,7 +33,6 @@ use PhpParser\NodeVisitorAbstract;
  */
 class ProxyVisitor extends NodeVisitorAbstract
 {
-
     /**
      * @var string
      */
@@ -118,7 +123,7 @@ class ProxyVisitor extends NodeVisitorAbstract
             $uses = [];
             foreach ($node->params as $key => $param) {
                 if ($param instanceof Param) {
-                    $uses[$key] = new Param($param->var);
+                    $uses[$key] = new Param($param->var, null, null, true);
                 }
             }
             $params = [
@@ -182,7 +187,6 @@ class ProxyVisitor extends NodeVisitorAbstract
         return $nodes;
     }
 
-
     /**
      * @return string
      */
@@ -196,7 +200,7 @@ class ProxyVisitor extends NodeVisitorAbstract
      */
     public function getProxyClassName(): string
     {
-        return \basename(str_replace("\\", '/', $this->getClassName())) . '_' . $this->getProxyId();
+        return \basename(str_replace('\\', '/', $this->getClassName())) . '_' . $this->getProxyId();
     }
 
     /**
@@ -258,5 +262,4 @@ class ProxyVisitor extends NodeVisitorAbstract
             ],
         ]);
     }
-
 }

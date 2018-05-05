@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Rpc\Client\Service;
 
 use PhpParser\NodeTraverser;
@@ -15,7 +22,6 @@ use Swoft\Rpc\Client\Service;
  */
 class ServiceProxy extends Proxy
 {
-
     /**
      * @param string $className
      * @param string $interfaceClass
@@ -50,5 +56,4 @@ class ServiceProxy extends Proxy
         // Generate Class AST
         self::getParser()->getOrParse($className, '<?php ' . $code);
     }
-
 }
