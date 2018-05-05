@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Aop\Ast\Visitors;
 
 use PhpParser\Comment\Doc;
@@ -164,9 +165,13 @@ class ProxyVisitor extends NodeVisitorAbstract
      */
     public function afterTraverse(array $nodes)
     {
-        $useAopTrait = $addMethod = true;
+        $useAopTrait = $addGetOriginalClassNameMethod = $addInvokeTargetMethod = true;
         $nodeFinder = new NodeFinder();
-        $nodeFinder->find($nodes, function (Node $node) use (&$useAopTrait, &$addMethod) {
+        $nodeFinder->find($nodes, function (Node $node) use (
+            &$useAopTrait,
+            &$addGetOriginalClassNameMethod,
+            &$addInvokeTargetMethod
+        ) {
             if ($node instanceof TraitUse) {
                 foreach ($node->traits as $trait) {
                     // Did AopTrait trait use ?
@@ -177,13 +182,17 @@ class ProxyVisitor extends NodeVisitorAbstract
                 }
             } elseif ($node instanceof ClassMethod && $node->name->toString() === 'getOriginalClassName') {
                 // Has getOriginalClassName method ?
-                $addMethod = false;
+                $addGetOriginalClassNameMethod = false;
+            } elseif ($node instanceof ClassMethod && $node->name->toString() === '__invokeTarget') {
+                // Has __invokeTarget method ?
+                $addInvokeTargetMethod = false;
             }
         });
         // Find Class Node and then Add AopTrait use and getOriginalClassName() method
         $classNode = $nodeFinder->findFirstInstanceOf($nodes, Class_::class);
         $useAopTrait && array_unshift($classNode->stmts, $this->getTraitUseNode());
-        $addMethod && \is_array($classNode->stmts) && array_unshift($classNode->stmts, $this->getOrigianalClassNameMethodNode());
+        $addGetOriginalClassNameMethod && \is_array($classNode->stmts) && array_unshift($classNode->stmts, $this->getOrigianalClassNameMethodNode());
+        $addGetOriginalClassNameMethod && \is_array($classNode->stmts) && array_unshift($classNode->stmts, $this->getInvokeTargetMethodNode());
         return $nodes;
     }
 
@@ -259,6 +268,26 @@ class ProxyVisitor extends NodeVisitorAbstract
             'returnType' => 'string',
             'stmts'      => [
                 new Return_(new String_($this->getClassName()))
+            ],
+        ]);
+    }
+
+    /**
+     * @return \PhpParser\Node\Stmt\ClassMethod
+     */
+    public function getInvokeTargetMethodNode(): ClassMethod
+    {
+        // Add getOriginalClassName() method node
+        return new ClassMethod('__invokeTarget', [
+            'flags'      => Class_::MODIFIER_PUBLIC,
+            'params'     => [
+                new Param(new Variable('method'), null, 'string'),
+                new Param(new Variable('args'), null, 'array'),
+            ],
+            'stmts'      => [
+                new Return_(new Node\Expr\StaticCall(new Name('parent'), new Variable('method'), [
+                    new Node\Arg(new Variable('args'), false, true)
+                ]))
             ],
         ]);
     }
