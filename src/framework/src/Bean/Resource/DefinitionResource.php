@@ -68,7 +68,7 @@ class DefinitionResource extends AbstractResource
     public function resolvedefinitation(string $beanName, array $definition)
     {
         if (!isset($definition['class'])) {
-            throw new \InvalidArgumentException("definitions of bean 初始化失败，class字段没有配置,Data=" . json_encode($definition));
+            throw new \InvalidArgumentException('definitions of bean 初始化失败，class字段没有配置,Data=' . json_encode($definition));
         }
 
         $className = $definition['class'];
@@ -84,7 +84,7 @@ class DefinitionResource extends AbstractResource
 
         // 设置属性和构造函数
         $objDefinitation->setPropertyInjections($propertyInjections);
-        if ($constructorInjection != null) {
+        if ($constructorInjection !== null) {
             $objDefinitation->setConstructorInjection($constructorInjection);
         }
 
@@ -109,13 +109,13 @@ class DefinitionResource extends AbstractResource
         // 循环解析
         foreach ($definition as $name => $property) {
             // 构造函数
-            if (is_array($property) && $name === 0) {
+            if (\is_array($property) && $name === 0) {
                 $constructorInjection = $this->resolverConstructor($property);
                 continue;
             }
 
             // 数组属性解析
-            if (is_array($property)) {
+            if (\is_array($property)) {
                 $injectProperty = $this->resolverArrayArgs($property);
                 $propertyInjection = new PropertyInjection($name, $injectProperty, false);
                 $propertyInjections[$name] = $propertyInjection;
@@ -143,7 +143,7 @@ class DefinitionResource extends AbstractResource
         $args = [];
         foreach ($propertyValue as $key => $subArg) {
             // 递归解析
-            if (is_array($subArg)) {
+            if (\is_array($subArg)) {
                 $args[$key] = $this->resolverArrayArgs($subArg);
                 continue;
             }
@@ -168,7 +168,7 @@ class DefinitionResource extends AbstractResource
         $methodArgs = [];
         foreach ($args as $arg) {
             // 数组参数解析
-            if (is_array($arg)) {
+            if (\is_array($arg)) {
                 $injectProperty = $this->resolverArrayArgs($arg);
                 $methodArgs[] = new ArgsInjection($injectProperty, false);
                 continue;
@@ -179,7 +179,7 @@ class DefinitionResource extends AbstractResource
             $methodArgs[] = new ArgsInjection($injectProperty, (bool)$isRef);
         }
 
-        $methodInject = new MethodInjection("__construct", $methodArgs);
+        $methodInject = new MethodInjection('__construct', $methodArgs);
         return $methodInject;
     }
 }

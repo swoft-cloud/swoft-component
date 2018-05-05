@@ -10,7 +10,8 @@
     "description": "microservice framework base on swoole",
     "license": "Apache-2.0",
     "require": {
-        "swoft/framework": "^1.0"
+        "swoft/framework": "^1.0",
+        "swoft/aop": "^1.0"
     },
     "require-dev": {
         "eaglewu/swoole-ide-helper": "dev-master",
