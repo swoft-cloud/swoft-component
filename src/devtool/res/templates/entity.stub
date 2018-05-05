@@ -1,0 +1,22 @@
+<?php
+
+namespace {= namespace};
+
+use Swoft\Db\Model;
+use Swoft\Db\Bean\Annotation\Column;
+use Swoft\Db\Bean\Annotation\Entity;
+use Swoft\Db\Bean\Annotation\Id;
+use Swoft\Db\Bean\Annotation\Table;
+{= usespace}
+
+/**
+ * @Entity()
+ * @Table(name="{= tableName}")
+ */
+class {= entityName} extends Model
+{
+{= properties | raw }
+
+{= methods | raw }
+
+}

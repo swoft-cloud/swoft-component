@@ -1,0 +1,7 @@
+    /**
+     * @var {= type} {= propertyName}
+     {= id}
+     * @Column(name="{= column}", type="{= columnType}"{= default | raw })
+     {= required}
+     */
+    private {= propertyName};
