@@ -3,11 +3,13 @@
 namespace Swoft\Aop\Ast;
 
 use Composer\Autoload\ClassLoader as ComposerClassLoader;
-use Swoft\Bean\Annotation\Bean;
 use Swoft\Helper\StringHelper;
 
 /**
  * Class ClassLoader
+ *
+ * @author  huangzhhui <h@swoft.com>
+ * @package Swoft\Aop\Ast
  */
 class ClassLoader
 {

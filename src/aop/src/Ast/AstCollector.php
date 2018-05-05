@@ -6,6 +6,7 @@ namespace Swoft\Aop\Ast;
 /**
  * Class AstCollector
  *
+ * @author  huangzhhui <h@swoft.com>
  * @package Swoft\Aop\Ast
  */
 class AstCollector

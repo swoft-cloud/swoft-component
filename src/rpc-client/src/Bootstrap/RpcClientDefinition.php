@@ -14,16 +14,16 @@ use Swoft\Rpc\Client\Service\ServiceProxy;
 class RpcClientDefinition implements DefinitionInterface
 {
     /**
-     * array
+     * @return array
+     * @throws \RuntimeException
+     * @throws \ReflectionException
      */
     public function getDefinitions(): array
     {
         $definitions = [];
-        $collector   = ReferenceCollector::getCollector();
-        foreach ($collector as $className => $interfaceAry) {
-            list($name, $interfaceClass, $version, $pool, $breaker, $packer, $fallback) = $interfaceAry;
+        $collector = ReferenceCollector::getCollector();
+        foreach ($collector as $className => list($name, $interfaceClass, $version, $pool, $breaker, $packer, $fallback)) {
             ServiceProxy::loadProxyClass($className, $interfaceClass);
-
             $definitions[$className] = [
                 'class'       => $className,
                 'name'        => $name,

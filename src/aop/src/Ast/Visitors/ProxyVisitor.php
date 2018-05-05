@@ -22,6 +22,7 @@ use PhpParser\NodeVisitorAbstract;
 /**
  * Class ProxyVisitor
  *
+ * @author  huangzhhui <h@swoft.com>
  * @package Swoft\Aop\Ast\Visitors
  */
 class ProxyVisitor extends NodeVisitorAbstract
@@ -41,6 +42,18 @@ class ProxyVisitor extends NodeVisitorAbstract
      * @var string
      */
     protected $namespace = '';
+
+    /**
+     * ProxyVisitor constructor.
+     *
+     * @param string $className
+     * @param string $proxyId
+     */
+    public function __construct($className = '', $proxyId = '')
+    {
+        $this->setClassName($className);
+        $this->setProxyId($proxyId);
+    }
 
     /**
      * Called when entering a node.
@@ -151,7 +164,7 @@ class ProxyVisitor extends NodeVisitorAbstract
         $nodeFinder->find($nodes, function (Node $node) use (&$useAopTrait, &$addMethod) {
             if ($node instanceof TraitUse) {
                 foreach ($node->traits as $trait) {
-                    // Has AopTrait trait use ?
+                    // Did AopTrait trait use ?
                     if ($trait instanceof Name && $trait->toString() === '\Swoft\Aop\AopTrait') {
                         $useAopTrait = false;
                         break;
@@ -165,7 +178,7 @@ class ProxyVisitor extends NodeVisitorAbstract
         // Find Class Node and then Add AopTrait use and getOriginalClassName() method
         $classNode = $nodeFinder->findFirstInstanceOf($nodes, Class_::class);
         $useAopTrait && array_unshift($classNode->stmts, $this->getTraitUseNode());
-        $addMethod && array_unshift($classNode->stmts, $this->getOrigianalClassNameMethodNode());
+        $addMethod && \is_array($classNode->stmts) && array_unshift($classNode->stmts, $this->getOrigianalClassNameMethodNode());
         return $nodes;
     }
 
@@ -183,7 +196,7 @@ class ProxyVisitor extends NodeVisitorAbstract
      */
     public function getProxyClassName(): string
     {
-        return \basename(str_replace("\\", '/', $this->getClassName())) . '_' . $this->getProxyId();;
+        return \basename(str_replace("\\", '/', $this->getClassName())) . '_' . $this->getProxyId();
     }
 
     /**

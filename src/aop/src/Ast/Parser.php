@@ -2,12 +2,13 @@
 
 namespace Swoft\Aop\Ast;
 
-use PhpParser\ParserFactory;
-use Swoft\Bean\Annotation\Bean;
-
+use Swoole\Coroutine as SwCoroutine;
 
 /**
  * Class Parser
+ *
+ * @author  huangzhhui <h@swoft.com>
+ * @package Swoft\Aop\Ast
  */
 class Parser
 {
@@ -23,40 +24,69 @@ class Parser
     protected $astParser;
 
     /**
+     * @var bool
+     */
+    protected $useAsyncIO;
+
+    /**
      * Parser constructor.
      *
-     * @throws \RuntimeException
+     * @param \Swoft\Aop\Ast\ClassLoader $classLoader
+     * @param \PhpParser\Parser          $astParser
+     * @param bool                       $useAsyncIO
      */
-    public function __construct()
+    public function __construct(ClassLoader $classLoader, \PhpParser\Parser $astParser, bool $useAsyncIO = false)
     {
-        $this->setClassLoader(new ClassLoader())->setAstParser((new ParserFactory())->create(ParserFactory::ONLY_PHP7));
+        $this->setClassLoader($classLoader);
+        $this->setAstParser($astParser);
+        $this->setUseAsyncIO($useAsyncIO);
     }
 
     /**
-     * @param string $class
+     * @param string      $class
+     * @param string|null $code
      * @return null|\PhpParser\Node\Stmt[]
      */
-    public function getOrParse(string $class)
+    public function getOrParse(string $class, string $code = null)
     {
         if (! AstCollector::has($class)) {
-            $ast = $this->parse($class);
+            $ast = $this->parse($class, $code);
             $ast && AstCollector::set($class, $ast);
         }
         return AstCollector::get($class);
     }
 
     /**
-     * @param string $class
+     * @param string      $class
+     * @param string|null $code
      * @return null|\PhpParser\Node\Stmt[]
      */
-    public function parse(string $class)
+    public function parse(string $class, string $code = null)
     {
-        $file = $this->getClassLoader()->getFileByClassName($class);
-        if (! file_exists($file)) {
-            return null;
+        if (! $code) {
+            $file = $this->getClassLoader()->getFileByClassName($class);
+            $code = $this->getCodeByFile($file);
         }
-        $code = file_get_contents($file);
         return $this->getAstParser()->parse($code);
+    }
+
+    /**
+     * @param string $file
+     * @return string
+     */
+    private function getCodeByFile(string $file): string
+    {
+        if (! \file_exists($file) || ! is_readable($file)) {
+            return '';
+        }
+        // If Coroutine read file method exist and in Coroutine context,then  use co-method to get file contents
+        if ($this->isUseAsyncIO() && SwCoroutine::getuid() > 0 && method_exists(SwCoroutine::class, 'readFile')) {
+            $code = SwCoroutine::readFile($file);
+        } else {
+            $code = \file_get_contents($file);
+        }
+
+        return (string)$code;
     }
 
     /**
@@ -71,7 +101,7 @@ class Parser
      * @param \PhpParser\Parser $astParser
      * @return Parser
      */
-    public function setAstParser(\PhpParser\Parser $astParser): Parser
+    public function setAstParser(\PhpParser\Parser $astParser): self
     {
         $this->astParser = $astParser;
         return $this;
@@ -89,9 +119,27 @@ class Parser
      * @param ClassLoader $classLoader
      * @return Parser
      */
-    public function setClassLoader(ClassLoader $classLoader): Parser
+    public function setClassLoader(ClassLoader $classLoader): self
     {
         $this->classLoader = $classLoader;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUseAsyncIO(): bool
+    {
+        return $this->useAsyncIO;
+    }
+
+    /**
+     * @param bool $useAsyncIO
+     * @return Parser
+     */
+    public function setUseAsyncIO($useAsyncIO): self
+    {
+        $this->useAsyncIO = $useAsyncIO;
         return $this;
     }
 
