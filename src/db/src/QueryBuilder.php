@@ -519,17 +519,7 @@ class QueryBuilder implements QueryBuilderInterface
     {
         foreach ($condition as $key => $value) {
             if (\is_int($key)) {
-                $items = count($value);
-                if($items == 1)
-                {
-                    $col = array_keys($value)[0];
-                    $val = $value[$col];
-                    $this->andWhere($col, $val);
-                }
-                else if($items > 2)
-                {
-                    $this->andCondition($value);
-                }
+                $this->andCondition($value);
             }
             else if (\is_array($value)) {
                 $this->whereIn($key, $value);
