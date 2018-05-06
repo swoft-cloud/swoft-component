@@ -30,7 +30,6 @@ use Swoft\Redis\Pool\RedisPool;
  * @method int incrBy($key, $value)
  * @method float incrByFloat($key, $increment)
  * @method int strlen($key)
- * @method array mget(array $array)
  * @method bool mset(array $array)
  * @method int ttl($key)
  * @method int expire($key, $seconds)
@@ -250,6 +249,16 @@ class Redis implements CacheInterface
         $result = $client->$method(...$params);
 
         return $this->getResult($client, $result);
+    }
+
+    /**
+     * @param array $keys
+     *
+     * @return array|mixed
+     */
+    public function mget(array $keys)
+    {
+        return $this->getMultiple($keys, false);
     }
 
     /**
