@@ -3,6 +3,7 @@
 namespace SwoftTest\Redis;
 
 use PHPUnit\Framework\TestCase;
+use Swoft\Redis\Pool\Config\RedisPoolConfig;
 use Swoft\Redis\Redis;
 
 /**
@@ -46,10 +47,19 @@ abstract class AbstractTestCase extends TestCase
         ];
     }
 
-    protected function setCoName($name): String
+    /**
+     * @param string $key
+     */
+    protected function assertPrefix(string $key)
     {
-        $name = "{$name}-co";
+        $result = $this->redis->getKeys(sprintf('*%s', $key));
 
-        return $name;
+        /* @var \Swoft\Redis\Pool\Config\RedisPoolConfig $redisConfig */
+        $redisConfig = \bean(RedisPoolConfig::class);
+        $prefix      = $redisConfig->getPrefix();
+        foreach ($result as $key) {
+            $this->assertStringStartsWith($prefix, $key);
+        }
     }
+
 }

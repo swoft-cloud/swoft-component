@@ -25,12 +25,45 @@ class SetTest extends AbstractTestCase
         sort($values);
 
         $this->assertEquals($members, $values);
+
+        $this->assertPrefix($key);
     }
 
     public function testSaddAndSMembersByCo()
     {
         go(function () {
             $this->testSaddAndSMembers();
+        });
+    }
+
+    public function testSremoveAndScontainsAndScard()
+    {
+        $key    = uniqid();
+        $value1 = uniqid();
+        $value2 = uniqid();
+        $this->redis->sAdd($key, $value1, $value2);
+        $result = $this->redis->sMembers($key);
+        $this->assertCount(2, $result);
+
+        $result = $this->redis->sIsMember($key, $value1);
+        $this->assertTrue($result);
+
+        $result = $this->redis->sCard($key);
+        $this->assertEquals(2, $result);
+
+        $result = $this->redis->sRem($key, $value1);
+        $this->assertEquals(1, $result);
+
+        $members = $this->redis->sMembers($key);
+        $this->assertCount(1, $members);
+
+        $this->assertPrefix($key);
+    }
+
+    public function testSremoveByCo()
+    {
+        go(function () {
+            $this->testSremoveAndScontainsAndScard();
         });
     }
 
