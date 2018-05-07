@@ -98,6 +98,21 @@ if (! function_exists('bean')) {
     }
 }
 
+if (! function_exists('config')) {
+    /**
+     * Get config value from app config
+     *
+     * @param string $key
+     * @param null|mixed $default
+     * @return mixed
+     */
+    function config(string $key, $default = null)
+    {
+        /** @see \Swoft\Core\Config::get() */
+        return \Swoft\App::getBean('config')->get($key, $default);
+    }
+}
+
 if (! function_exists('alias')) {
     /**
      * Get alias

@@ -11,6 +11,12 @@ use Swoole\Server;
  */
 interface ServerInterface
 {
+    // there are main server type
+    const TYPE_HTTP = 'http';
+    const TYPE_RPC = 'rpc';
+    const TYPE_TCP = 'tcp';
+    const TYPE_WS = 'ws';
+
     /**
      * Start
      */
