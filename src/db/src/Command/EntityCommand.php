@@ -41,13 +41,13 @@ class EntityCommand
      * Auto create entity by table structure
      *
      * @Usage
-     * entity:create -d[|--database] <database> --instnace <instnace>
+     * entity:create -d[|--database] <database> --instance <instance>
      * entity:create -d[|--database] <database> [table] -instnace <instnace>
      * entity:create -d[|--database] <database> --i[|--include] <table> --instnace <instnace>
      * entity:create -d[|--database] <database> --i[|--include] <table> -instnace <instnace>
      * entity:create -d[|--database] <database> --i[|--include] <table1,table2> --instnace <instnace>
      * entity:create -d[|--database] <database> --i[|--include] <table1,table2> -e[|--exclude] <table3> --instnace <instnace>
-     * entity:create -d[|--database] <database> --i[|--include] <table1,table2> -e[|--exclude] <table3,table4> --instnace <instnace>
+     * entity:create -d[|--database] <database> --i[|--include] <table1,table2> -e[|--exclude] <table3,table4> --instance <instance>
      *
      * @Options
      * -d 数据库
