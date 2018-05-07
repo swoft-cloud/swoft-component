@@ -250,4 +250,9 @@ class RedisPrefixTest extends AbstractTestCase
             $this->assertTrue($result);
         });
     }
+
+    public function getRedis()
+    {
+        return $this->redis;
+    }
 }

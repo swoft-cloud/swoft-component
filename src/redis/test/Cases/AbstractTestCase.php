@@ -12,6 +12,7 @@ abstract class AbstractTestCase extends TestCase
         swoole_timer_after(1 * 1000, function () {
             swoole_event_exit();
         });
+       // $this->getRedis()->flushdb();
     }
 
     protected function setCoName($name): String
