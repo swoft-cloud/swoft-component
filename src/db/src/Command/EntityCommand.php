@@ -41,13 +41,13 @@ class EntityCommand
      * Auto create entity by table structure
      *
      * @Usage
-     * entity:create -d[|--database] <database> --instnace <instnace>
+     * entity:create -d[|--database] <database> --instance <instance>
      * entity:create -d[|--database] <database> [table] -instnace <instnace>
      * entity:create -d[|--database] <database> --i[|--include] <table> --instnace <instnace>
      * entity:create -d[|--database] <database> --i[|--include] <table> -instnace <instnace>
      * entity:create -d[|--database] <database> --i[|--include] <table1,table2> --instnace <instnace>
-     * entity:create -d[|--database] <database> --i[|--include] <table1,table2> -e[|--exclude] <table3> --instnace <instnace>
-     * entity:create -d[|--database] <database> --i[|--include] <table1,table2> -e[|--exclude] <table3,table4> --instnace <instnace>
+     * entity:create -d[|--database] <database> --i[|--include] <table1,table2> -e[|--exclude] <table3> --instance <instance>
+     * entity:create -d[|--database] <database> --i[|--include] <table1,table2> -e[|--exclude] <table3,table4> --instance <instance>
      *
      * @Options
      * -d 数据库
@@ -58,6 +58,7 @@ class EntityCommand
      * --exclude 排除指定的数据表，多表之间用逗号分隔
      * --remove-table-prefix 去除前缀
      * --entity-file-path 实体路径(必须在以@app开头并且在app目录下存在的目录,否则将会重定向到@app/Models/Entity)
+     * --instance 设置数据库实例，默认default
      *
      * @Example
      * php bin/swoft entity:create -d test

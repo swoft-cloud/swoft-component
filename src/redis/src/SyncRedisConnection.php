@@ -26,15 +26,16 @@ class SyncRedisConnection extends AbstractRedisConnection
     {
         /* @var RedisPoolConfig $poolConfig */
         $poolConfig = $this->pool->getPoolConfig();
-        $prefix = $poolConfig->getPrefix();
-        $serialize = $poolConfig->getSerialize();
-        $serialize = ((int)$serialize == 0) ? false : true;
+        $prefix     = $poolConfig->getPrefix();
+        $serialize  = $poolConfig->getSerialize();
+        $serialize  = ((int)$serialize == 0) ? false : true;
         // init
         $redis = $this->initRedis();
         if ($serialize) {
             $redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
         }
-        if ($prefix !== '' && is_string($prefix)) {
+
+        if (!empty($prefix) && is_string($prefix)) {
             $redis->setOption(\Redis::OPT_PREFIX, $prefix);
         }
         $this->connection = $redis;
@@ -42,29 +43,31 @@ class SyncRedisConnection extends AbstractRedisConnection
 
     /**
      * @param bool $defer
+     *
      * @throws RedisException
      */
     public function setDefer($defer = true)
     {
-        $error = sprintf('not support');
-        throw new RedisException($error);
+        throw new RedisException('not support');
     }
 
     /**
      * @param string $host
-     * @param int $port
-     * @param int $timeout
+     * @param int    $port
+     * @param int    $timeout
+     *
      * @return \Redis
      * @throws RedisException
      */
     protected function getConnectRedis(string $host, int $port, int $timeout): \Redis
     {
-        $redis = new \Redis();
+        $redis  = new \Redis();
         $result = $redis->connect($host, $port, $timeout);
         if ($result == false) {
             $error = sprintf('Redis connection failure host=%s port=%d', $host, $port);
             throw new RedisException($error);
         }
+
         return $redis;
     }
 
