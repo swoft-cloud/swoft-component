@@ -216,16 +216,21 @@ class SetGetGenerator
 
         $default = trim($default);
 
-        switch ($dbType) {
-            case "Types::INT":
-            case "Types::NUMBER":
-                $default = (int)$default;
+        switch (trim($dbType, "\"")) {
+            case Schema::TYPE_INTEGER:
+            case Schema::TYPE_BIGINT:
+            case Schema::TYPE_SMALLINT:
+            case Schema::TYPE_TINYINT:
+                $default = intval($default);
                 break;
-            case "Types::BOOLEAN":
-                $default = (bool)$default;
+            case Schema::TYPE_BOOLEAN:
+                $default = boolval($default);
                 break;
-            case "Types::FLOAT":
-                $default = (float)$default;
+            case Schema::TYPE_FLOAT:
+            case Schema::TYPE_DECIMAL:
+            case Schema::TYPE_DOUBLE:
+            case Schema::TYPE_MONEY:
+                $default = floatval($default);
                 break;
             default:
                 $default = sprintf('"%s"', $default);
@@ -290,8 +295,6 @@ class SetGetGenerator
         //字段类型
         $dbType = !empty($dbType) ? $dbType : \is_int($default) ? '"int"' : '"string"';
 
-        $default = $this->setDefault($dbType, $default, $primaryKey);
-
         $this->getterStub .= PHP_EOL . str_replace([
                 "{{comment}}\n",
                 '{{function}}',
@@ -302,7 +305,7 @@ class SetGetGenerator
                 !empty($comment) ? "     * {$comment}\n" : '',
                 $function,
                 $aliasProperty,
-                $returnType !== 'mixed' && !$primaryKey && $default !== '\'\'' ? $returnType : 'mixed',
+                $returnType !== 'mixed' && !$primaryKey && (!in_array(strtolower($default), ['\'\'', '""', 'null']) && !empty($default)) ? $returnType : 'mixed',
                 '',
             ], $getterStub);
     }
@@ -364,55 +367,5 @@ class SetGetGenerator
     private function generateProperty(): string
     {
         return file_get_contents($this->folder . $this->propertyStubFile);
-    }
-
-    /**
-     * 设置默认值
-     *
-     * @param string $dbType     数据库类型
-     * @param mixed  $default    默认值
-     * @param bool   $primaryKey 主键
-     *
-     * @return miexed
-     */
-    private function setDefault($dbType, $default, $primaryKey)
-    {
-        if ($primaryKey) {
-            return '\'\'';
-        }
-
-        if (in_array(strtolower($default), ['\'\'', '""', 'null']) || empty($default)) {
-            switch ($dbType) {
-                case "Types::INT":
-                case "Types::NUMBER":
-                case "Types::BOOLEAN":
-                    $default = '0';
-                    break;
-                case "Types::FLOAT":
-                    $default = '0.0';
-                    break;
-                case "Types::DATETIME":
-                    $default = '\'' . date('Y-m-d H:i:s') . '\'';
-                    break;
-                default:
-                    $default = '\'\'';
-                    break;
-            }
-        } else {
-            $default = trim($default);
-            switch ($dbType) {
-                case "Types::INT":
-                case "Types::NUMBER":
-                case "Types::BOOLEAN":
-                case "Types::FLOAT":
-                    $default = $default;
-                    break;
-                default:
-                    $default = json_encode($default);
-                    break;
-            }
-        }
-
-        return $default;
     }
 }
