@@ -7,5 +7,8 @@ namespace SwoftTest\Redis;
  */
 class ZsetTest extends AbstractTestCase
 {
-
+    public function testFirst()
+    {
+        $this->assertTrue(true);
+    }
 }

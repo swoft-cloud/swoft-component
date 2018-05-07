@@ -519,31 +519,21 @@ class QueryBuilder implements QueryBuilderInterface
     {
         foreach ($condition as $key => $value) {
             if (\is_int($key) && is_array($value)) {
-                $this->condition($condition);
-                break;
-            } elseif (is_int($key)) {
+                $this->condition($value);
+                continue;
+            }
+            if (is_int($key)) {
                 $this->andCondition($condition);
                 break;
             }
-            $this->operatorCondition($condition);
-            break;
+            if (\is_array($value)) {
+                $this->whereIn($key, $value);
+                continue;
+            }
+            $this->andWhere($key, $value);
         }
 
         return $this;
-    }
-
-    /**
-     * @param array $condition
-     */
-    public function operatorCondition(array $condition)
-    {
-        foreach ($condition as $column => $value) {
-            if (\is_array($value)) {
-                $this->whereIn($column, $value);
-                continue;
-            }
-            $this->andWhere($column, $value);
-        }
     }
 
     /**
@@ -649,7 +639,9 @@ class QueryBuilder implements QueryBuilderInterface
      */
     public function whereIn(string $column, array $values, string $connector = self::LOGICAL_AND): QueryBuilder
     {
-        $this->criteria($this->where, $column, $values, self::IN, $connector);
+        if (!empty($values)) {
+            $this->criteria($this->where, $column, $values, self::IN, $connector);
+        }
 
         return $this;
     }
@@ -665,7 +657,9 @@ class QueryBuilder implements QueryBuilderInterface
      */
     public function whereNotIn(string $column, array $values, string $connector = self::LOGICAL_AND): QueryBuilder
     {
-        $this->criteria($this->where, $column, $values, self::NOT_IN, $connector);
+        if (!empty($values)) {
+            $this->criteria($this->where, $column, $values, self::NOT_IN, $connector);
+        }
 
         return $this;
     }
