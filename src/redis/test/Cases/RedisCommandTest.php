@@ -32,5 +32,9 @@ class RedisCommandTest extends AbstractTestCase
             $this->assertTrue($result);
         });
     }
-    
+
+    public function getRedis()
+    {
+        return $this->redis;
+    }
 }
