@@ -41,12 +41,13 @@ class EntityCommand
      * Auto create entity by table structure
      *
      * @Usage
-     * entity:create -d[|--database] <database>
-     * entity:create -d[|--database] <database> [table]
-     * entity:create -d[|--database] <database> -i[|--include] <table>
-     * entity:create -d[|--database] <database> -i[|--include] <table1,table2>
-     * entity:create -d[|--database] <database> -i[|--include] <table1,table2> -e[|--exclude] <table3>
-     * entity:create -d[|--database] <database> -i[|--include] <table1,table2> -e[|--exclude] <table3,table4>
+     * entity:create -d[|--database] <database> --instnace <instnace>
+     * entity:create -d[|--database] <database> [table] -instnace <instnace>
+     * entity:create -d[|--database] <database> --i[|--include] <table> --instnace <instnace>
+     * entity:create -d[|--database] <database> --i[|--include] <table> -instnace <instnace>
+     * entity:create -d[|--database] <database> --i[|--include] <table1,table2> --instnace <instnace>
+     * entity:create -d[|--database] <database> --i[|--include] <table1,table2> -e[|--exclude] <table3> --instnace <instnace>
+     * entity:create -d[|--database] <database> --i[|--include] <table1,table2> -e[|--exclude] <table3,table4> --instnace <instnace>
      *
      * @Options
      * -d 数据库
@@ -70,6 +71,7 @@ class EntityCommand
 
         $this->parseEntityFilePath();
         $this->parseDatabaseCommand($database);
+        $this->parseInstanceCommand($instance);
         $this->parseEnableTablesCommand($tablesEnabled);
         $this->parseDisableTablesCommand($tablesDisabled);
         $this->parseRemoveTablePrefix($removeTablePrefix);
@@ -78,6 +80,7 @@ class EntityCommand
             output()->writeln('databases doesn\'t not empty!');
         } else {
             $this->generatorEntity->db = $database;
+            $this->generatorEntity->instance = $instance;
             $this->generatorEntity->tablesEnabled = $tablesEnabled;
             $this->generatorEntity->tablesDisabled = $tablesDisabled;
             $this->generatorEntity->removeTablePrefix = $removeTablePrefix;
@@ -121,8 +124,18 @@ class EntityCommand
     }
 
     /**
+     * 解析需要指定实例的数据库别名
+     * @param string &$instance 指定实现的数据库别名
+     */
+    private function parseInstanceCommand(&$instance)
+    {
+        if (input()->hasLOpt('instance')) {
+            $instance = (string)\input()->getSameOpt(['instance']);
+        }
+    }
+
+    /**
      * 解析需要扫描的table
-     *
      * @param array &$tablesEnabled 需要扫描的表
      */
     private function parseEnableTablesCommand(&$tablesEnabled)

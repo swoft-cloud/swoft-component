@@ -84,15 +84,16 @@ abstract class AbstractGenerator
      * @param mixed  $entityName 实体注释名称
      * @param array  $fields     字段
      * @param Schema $schema     schema对象
+     * @param string $instance   数据库实例别名
      */
-    protected function parseProperty(string $entity, $entityName, array $fields, Schema $schema)
+    protected function parseProperty(string $entity, $entityName, array $fields, Schema $schema, $instance)
     {
         $this->entity     = $entity;
         $this->entityName = $entityName;
         $this->entityDate = date('Y年m月d日');
         $this->fields     = $fields;
         $removeTablePrefix = $this->removeTablePrefix;
-        
+
         $entityClass = $this->entity;
         if (!empty($removeTablePrefix)) {
             $entityClass = StringHelper::replaceFirst($removeTablePrefix, '', $this->entity);
@@ -108,7 +109,8 @@ abstract class AbstractGenerator
             $this->entityName,
             $this->entityClass,
             $this->entityDate,
-            $this->fields
+            $this->fields,
+            $instance,
         ];
 
         $sgGenerator = new SetGetGenerator();
