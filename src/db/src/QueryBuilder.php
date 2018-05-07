@@ -519,11 +519,14 @@ class QueryBuilder implements QueryBuilderInterface
     {
         foreach ($condition as $key => $value) {
             if (\is_int($key)) {
-                $this->andCondition($condition);
-                break;
+                $this->andCondition($value);
             }
-            $this->operatorCondition($condition);
-            break;
+            else if (\is_array($value)) {
+                $this->whereIn($key, $value);
+            }
+            else{
+                $this->andWhere($key, $value);
+            }
         }
 
         return $this;
@@ -548,7 +551,9 @@ class QueryBuilder implements QueryBuilderInterface
      */
     public function andCondition(array $condition)
     {
-        list(, $operator) = $condition;
+        $column = $condition[0];
+        $operator = $condition[1];
+        $value = $condition[2];
         $operator = strtoupper($operator);
         switch ($operator) {
             case self::OPERATOR_EQ:
@@ -557,24 +562,21 @@ class QueryBuilder implements QueryBuilderInterface
             case self::OPERATOR_LT:
             case self::OPERATOR_LTE:
             case self::OPERATOR_GTE:
-                list($column, $operator, $value) = $condition;
+            case self::LIKE:
+            case self::NOT_LIKE:
                 $this->andWhere($column, $value, $operator);
                 break;
             case self::IN:
-                list($column, $operator, $value) = $condition;
                 $this->whereIn($column, $value, $operator);
                 break;
             case self::NOT_IN:
-                list($column, $operator, $value) = $condition;
                 $this->whereNotIn($column, $value, $operator);
                 break;
             case self::BETWEEN:
-                list($column, , $min, $max) = $condition;
-                $this->whereBetween($column, $min, $max);
+                $this->whereBetween($column, $value, $condition[3]);
                 break;
             case self::NOT_BETWEEN:
-                list($column, , $min, $max) = $condition;
-                $this->whereNotBetween($column, $min, $max);
+                $this->whereNotBetween($column, $value, $condition[3]);
                 break;
         }
     }
