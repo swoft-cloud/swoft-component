@@ -89,7 +89,8 @@ class SetGetGenerator
         $entityName,
         string $entityClass,
         string $entityDate,
-        array $fields
+        array $fields,
+        $instance
     ) {
         $this->schema = $schema;
         $entityStub   = $this->generateModel();
@@ -113,6 +114,7 @@ class SetGetGenerator
             '{{property}}',
             '{{setter}}',
             '{{getter}}',
+            '{{instance}}',
         ], [
             $namespace,
             $usesContent,
@@ -124,6 +126,7 @@ class SetGetGenerator
             $this->propertyStub,
             $this->setterStub,
             $this->getterStub,
+            empty($instance) ? '' : "instance=\"$instance\"",
         ], $entityStub);
 
         file_put_contents(alias('@entityPath') . "/{$entityClass}.php", $entityFile);
@@ -289,11 +292,7 @@ class SetGetGenerator
         $function   = StringHelper::camel($aliasProperty);
         $function   = 'get' . ucfirst($function);
         $default    = $fieldInfo['default'] ?? '';
-        $dbType     = $this->schema->typeMap[$fieldInfo['type']] ?? '';
         $returnType = $this->schema->phpMap[$fieldInfo['type']] ?? 'mixed';
-
-        //字段类型
-        $dbType = !empty($dbType) ? $dbType : \is_int($default) ? '"int"' : '"string"';
 
         $this->getterStub .= PHP_EOL . str_replace([
                 "{{comment}}\n",
@@ -305,7 +304,7 @@ class SetGetGenerator
                 !empty($comment) ? "     * {$comment}\n" : '',
                 $function,
                 $aliasProperty,
-                $returnType !== 'mixed' && !$primaryKey && (!in_array(strtolower($default), ['\'\'', '""', 'null']) && !empty($default)) ? $returnType : 'mixed',
+                $returnType !== 'mixed' && !$primaryKey && !in_array(strtolower($default), ['\'\'', '""', 'null']) && empty($default) ? $returnType : 'mixed',
                 '',
             ], $getterStub);
     }
