@@ -216,9 +216,9 @@ class Statement implements StatementInterface
 
         // 字段组拼
         foreach ($select as $column => $alias) {
-            $statement .= sprintf('`%s`', $column);
+            $statement .= $column;
             if ($alias !== null) {
-                $statement .= ' AS ' . sprintf('`%s`', $alias);
+                $statement .= ' AS ' . $alias;
             }
             $statement .= ', ';
         }

@@ -518,15 +518,15 @@ class QueryBuilder implements QueryBuilderInterface
     public function condition(array $condition): self
     {
         foreach ($condition as $key => $value) {
-            if (\is_int($key)) {
-                $this->andCondition($value);
+            if (\is_int($key) && is_array($value)) {
+                $this->condition($condition);
+                break;
+            } elseif (is_int($key)) {
+                $this->andCondition($condition);
+                break;
             }
-            else if (\is_array($value)) {
-                $this->whereIn($key, $value);
-            }
-            else{
-                $this->andWhere($key, $value);
-            }
+            $this->operatorCondition($condition);
+            break;
         }
 
         return $this;
@@ -551,9 +551,7 @@ class QueryBuilder implements QueryBuilderInterface
      */
     public function andCondition(array $condition)
     {
-        $column = $condition[0];
-        $operator = $condition[1];
-        $value = $condition[2];
+        list(, $operator) = $condition;
         $operator = strtoupper($operator);
         switch ($operator) {
             case self::OPERATOR_EQ:
@@ -564,19 +562,24 @@ class QueryBuilder implements QueryBuilderInterface
             case self::OPERATOR_GTE:
             case self::LIKE:
             case self::NOT_LIKE:
+                list($column, $operator, $value) = $condition;
                 $this->andWhere($column, $value, $operator);
                 break;
             case self::IN:
+                list($column, $operator, $value) = $condition;
                 $this->whereIn($column, $value, $operator);
                 break;
             case self::NOT_IN:
+                list($column, $operator, $value) = $condition;
                 $this->whereNotIn($column, $value, $operator);
                 break;
             case self::BETWEEN:
-                $this->whereBetween($column, $value, $condition[3]);
+                list($column, , $min, $max) = $condition;
+                $this->whereBetween($column, $min, $max);
                 break;
             case self::NOT_BETWEEN:
-                $this->whereNotBetween($column, $value, $condition[3]);
+                list($column, , $min, $max) = $condition;
+                $this->whereNotBetween($column, $min, $max);
                 break;
         }
     }
@@ -1468,6 +1471,7 @@ class QueryBuilder implements QueryBuilderInterface
         $this->addDecorator(function ($result) {
             if (!empty($this->className) && !empty($result)) {
                 $entities = EntityHelper::listToEntity($result, $this->className);
+
                 return new Collection($entities);
             }
 
