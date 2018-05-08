@@ -142,6 +142,8 @@ class ProcessBuilder
             $initApplicationContext->init();
         }
 
+        self::waitChildProcess($processName, $boot);
+
         App::trigger(ProcessEvent::BEFORE_PROCESS, null, $processName);
     }
 
@@ -152,5 +154,25 @@ class ProcessBuilder
     private static function afterProcess()
     {
         App::trigger(ProcessEvent::AFTER_PROCESS);
+    }
+
+    /**
+     * Wait child process
+     */
+    private static function waitChildProcess(string $name, $boot)
+    {
+        /* @var \Swoft\Process\ProcessInterface $processObject */
+        $processObject = App::getBean($name);
+        if (($hasWait = method_exists($processObject, 'wait')) || $boot) {
+            Process::signal(SIGCHLD, function($sig) use ($name, $processObject, $hasWait) {
+                while($ret =  Process::wait(false)) {
+                    if ($hasWait) {
+                        $processObject->wait($ret);
+                    }
+
+                    unset(self::$processes[$name]);
+                }
+            }); 
+        }
     }
 }
