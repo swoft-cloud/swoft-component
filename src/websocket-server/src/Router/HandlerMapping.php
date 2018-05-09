@@ -59,7 +59,7 @@ class HandlerMapping implements HandlerMappingInterface
      */
     public function match(string $path): array
     {
-        $path = \rtrim($path, '/ ');
+        $path = $path === '/' ? $path : \rtrim($path, '/ ');
 
         if (!isset($this->routes[$path])) {
             return [self::NOT_FOUND, $path];

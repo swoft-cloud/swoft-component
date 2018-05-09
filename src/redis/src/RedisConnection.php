@@ -1,10 +1,16 @@
 <?php
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Redis;
 
 use Swoft\App;
-use Swoft\Helper\PhpHelper;
-use Swoft\Pool\AbstractConnection;
 use Swoft\Redis\Exception\RedisException;
 use Swoft\Redis\Pool\Config\RedisPoolConfig;
 use Swoft\Redis\Profile\RedisCommandProvider;
@@ -15,58 +21,18 @@ use Swoole\Coroutine\Redis as CoRedis;
  *
  * @method bool select($dbindex)
  */
-class RedisConnection extends AbstractConnection
+class RedisConnection extends AbstractRedisConnection
 {
-    /**
-     * @var Redis
-     */
-    protected $connection;
 
     /**
      * Create connection
      *
-     * @throws \Swoft\Redis\Exception\RedisException
+     * @throws RedisException
      */
     public function createConnection()
     {
-        $timeout = $this->pool->getTimeout();
-        $address = $this->pool->getConnectionAddress();
-        $config  = $this->parseUri($address);
-
-        /* @var RedisPoolConfig $poolConfig */
-        $poolConfig = $this->pool->getPoolConfig();
-        $serialize  = $poolConfig->getSerialize();
-        $serialize  = (int)$serialize !== 0;
-
-        // create
-        $redis  = new CoRedis();
-        $host   = $config['host'];
-        $port   = (int)$config['port'];
-        $result = $redis->connect($host, $port, $serialize);
-        if ($result === false) {
-            $error = sprintf('Redis connection failure host=%s port=%d', $host, $port);
-            App::error($error);
-            throw new RedisException($error);
-        }
-        if (isset($config['auth']) && false === $redis->auth($config['auth'])) {
-            $error = sprintf('Redis connection authentication failed host=%s port=%d auth=%s', $host, $port, (string)$config['auth']);
-            App::error($error);
-            throw new RedisException($error);
-        }
-        if (isset($config['database']) && $config['database'] < 16 && false === $redis->select($config['database'])) {
-            $error = sprintf('Redis selection database failure host=%s port=%d database=%d', $host, $port, (int)$config['database']);
-            throw new RedisException($error);
-        }
-
+        $redis            = $this->initRedis();
         $this->connection = $redis;
-    }
-
-    /**
-     * @return bool
-     */
-    public function check(): bool
-    {
-        return $this->connection->connected;
     }
 
     /**
@@ -82,14 +48,6 @@ class RedisConnection extends AbstractConnection
     }
 
     /**
-     * @throws \Swoft\Redis\Exception\RedisException
-     */
-    public function reconnect()
-    {
-        $this->createConnection();
-    }
-
-    /**
      * 设置延迟收包
      *
      * @param bool $defer
@@ -101,6 +59,7 @@ class RedisConnection extends AbstractConnection
     }
 
     /**
+<<<<<<< HEAD
      * Parse uri
      *
      * @param string $uri `tcp://127.0.0.1:6379/1?auth=password`
@@ -126,10 +85,13 @@ class RedisConnection extends AbstractConnection
     }
 
     /**
+=======
+>>>>>>> master
      * @param string $method
      * @param array  $arguments
      *
      * @return mixed
+     * @throws RedisException
      */
     public function __call($method, $arguments)
     {
@@ -139,6 +101,31 @@ class RedisConnection extends AbstractConnection
         $arguments = $command->getArguments();
         $method = $command->getId();
 
-        return PhpHelper::call([$this->connection, $method], $arguments);
+        return parent::__call($method, $arguments);
+    }
+
+
+    /**
+     * @param string $host
+     * @param int    $port
+     * @param int    $timeout
+     *
+     * @return CoRedis
+     * @throws RedisException
+     */
+    protected function getConnectRedis(string $host, int $port, int $timeout): CoRedis
+    {
+        /* @var RedisPoolConfig $poolConfig */
+        $poolConfig = $this->pool->getPoolConfig();
+        $serialize  = $poolConfig->getSerialize();
+        $serialize  = ((int)$serialize == 0) ? false : true;
+        $redis      = new CoRedis();
+        $result     = $redis->connect($host, $port, $serialize);
+        if ($result == false) {
+            $error = sprintf('Redis connection failure host=%s port=%d', $host, $port);
+            throw new RedisException($error);
+        }
+
+        return $redis;
     }
 }

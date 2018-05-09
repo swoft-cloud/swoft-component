@@ -7,9 +7,11 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace SwoftTest\Db\Cases;
 
 use SwoftTest\Db\Testing\Entity\Count;
+use SwoftTest\Db\Testing\Entity\Detable;
 use SwoftTest\Db\Testing\Entity\User;
 
 /**
@@ -46,6 +48,20 @@ abstract class AbstractMysqlCase extends AbstractTestCase
         ];
     }
 
+    public function addDetable()
+    {
+        $detable = new Detable();
+        $detable->setShortName('');
+        $detable->setUtime(date('Y-m-d H:i:s'));
+        $detable->setBooks(12);
+
+        $did = $detable->save()->getResult();
+
+        return [
+            [$did],
+        ];
+    }
+
     public function addUserAndCount()
     {
         $user = new User();
@@ -79,5 +95,10 @@ abstract class AbstractMysqlCase extends AbstractTestCase
     public function relationProider()
     {
         return $this->addUserAndCount();
+    }
+
+    public function detableProvider()
+    {
+        return $this->addDetable();
     }
 }

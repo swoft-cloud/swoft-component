@@ -32,7 +32,7 @@ class App
     /**
      * 服务器对象
      *
-     * @var AbstractServer
+     * @var AbstractServer|\Swoft\Http\Server\Http\HttpServer|\Swoft\WebSocket\Server\WebSocketServer
      */
     public static $server;
 

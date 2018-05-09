@@ -32,6 +32,7 @@ class ValidatorCollector implements CollectorInterface
      * @param string $propertyName
      * @param string $methodName
      * @param null   $propertyValue
+     *
      * @return mixed|void
      */
     public static function collect(
@@ -42,78 +43,15 @@ class ValidatorCollector implements CollectorInterface
         $propertyValue = null
     ) {
         if ($objectAnnotation instanceof Strings) {
-            $from = $objectAnnotation->getFrom();
-            $name = $objectAnnotation->getName();
-            $min = $objectAnnotation->getMin();
-            $max = $objectAnnotation->getMax();
-            $default = $objectAnnotation->getDefault();
-
-            $params = [$min, $max, $default];
-            self::$validator[$className][$methodName]['validator'][$from][$name] = [
-                'validator' => StringsValidator::class,
-                'params'    => $params,
-            ];
-
-            return;
-        }
-
-        if ($objectAnnotation instanceof Floats) {
-            $from = $objectAnnotation->getFrom();
-            $name = $objectAnnotation->getName();
-            $min = $objectAnnotation->getMin();
-            $max = $objectAnnotation->getMax();
-            $default = $objectAnnotation->getDefault();
-
-            $params = [$min, $max, $default];
-            self::$validator[$className][$methodName]['validator'][$from][$name] = [
-                'validator' => FloatsValidator::class,
-                'params'    => $params,
-            ];
-            return;
-        }
-        if ($objectAnnotation instanceof Number) {
-            $from = $objectAnnotation->getFrom();
-            $name = $objectAnnotation->getName();
-            $min = $objectAnnotation->getMin();
-            $max = $objectAnnotation->getMax();
-            $default = $objectAnnotation->getDefault();
-
-            $params = [$min, $max, $default];
-
-            self::$validator[$className][$methodName]['validator'][$from][$name] = [
-                'validator' => NumberValidator::class,
-                'params'    => $params,
-            ];
-            return;
-        }
-
-        if ($objectAnnotation instanceof Integer) {
-            $from = $objectAnnotation->getFrom();
-            $name = $objectAnnotation->getName();
-            $min = $objectAnnotation->getMin();
-            $max = $objectAnnotation->getMax();
-            $default = $objectAnnotation->getDefault();
-
-            $params = [$min, $max, $default];
-            self::$validator[$className][$methodName]['validator'][$from][$name] = [
-                'validator' => IntegerValidator::class,
-                'params'    => $params,
-            ];
-            return;
-        }
-
-        if ($objectAnnotation instanceof Enum) {
-            $from = $objectAnnotation->getFrom();
-            $name = $objectAnnotation->getName();
-            $values = $objectAnnotation->getValues();
-            $default = $objectAnnotation->getDefault();
-
-            $params = [$values, $default];
-            self::$validator[$className][$methodName]['validator'][$from][$name] = [
-                'validator' => EnumValidator::class,
-                'params'    => $params,
-            ];
-            return;
+            self::collectString($objectAnnotation, $className, $methodName);
+        } elseif ($objectAnnotation instanceof Floats) {
+            self::collectFloats($objectAnnotation, $className, $methodName);
+        } elseif ($objectAnnotation instanceof Number) {
+            self::collectNumber($objectAnnotation, $className, $methodName);
+        } elseif ($objectAnnotation instanceof Integer) {
+            self::collectInteger($objectAnnotation, $className, $methodName);
+        } elseif ($objectAnnotation instanceof Enum) {
+            self::collectEnum($objectAnnotation, $className, $methodName);
         }
     }
 
@@ -123,5 +61,115 @@ class ValidatorCollector implements CollectorInterface
     public static function getCollector(): array
     {
         return self::$validator;
+    }
+
+    /**
+     * @param Strings $objectAnnotation
+     * @param string  $className
+     * @param string  $methodName
+     */
+    private static function collectString(Strings $objectAnnotation, string $className, string $methodName)
+    {
+        $from    = $objectAnnotation->getFrom();
+        $name    = $objectAnnotation->getName();
+        $min     = $objectAnnotation->getMin();
+        $max     = $objectAnnotation->getMax();
+        $default = $objectAnnotation->getDefault();
+        $tpl     = $objectAnnotation->getTemplate();
+
+        $params = [$min, $max, true, $tpl, $default];
+
+        self::$validator[$className][$methodName]['validator'][$from][$name] = [
+            'validator' => StringsValidator::class,
+            'params'    => $params,
+        ];
+    }
+
+    /**
+     * @param Floats $objectAnnotation
+     * @param string $className
+     * @param string $methodName
+     */
+    private static function collectFloats(Floats $objectAnnotation, string $className, string $methodName)
+    {
+        $from    = $objectAnnotation->getFrom();
+        $name    = $objectAnnotation->getName();
+        $min     = $objectAnnotation->getMin();
+        $max     = $objectAnnotation->getMax();
+        $default = $objectAnnotation->getDefault();
+        $tpl     = $objectAnnotation->getTemplate();
+
+        $params = [$min, $max, true, $tpl, $default];
+
+        self::$validator[$className][$methodName]['validator'][$from][$name] = [
+            'validator' => FloatsValidator::class,
+            'params'    => $params,
+        ];
+    }
+
+    /**
+     * @param \Swoft\Bean\Annotation\Number $objectAnnotation
+     * @param string                        $className
+     * @param string                        $methodName
+     */
+    private static function collectNumber(Number $objectAnnotation, string $className, string $methodName)
+    {
+        $from    = $objectAnnotation->getFrom();
+        $name    = $objectAnnotation->getName();
+        $min     = $objectAnnotation->getMin();
+        $max     = $objectAnnotation->getMax();
+        $default = $objectAnnotation->getDefault();
+        $tpl     = $objectAnnotation->getTemplate();
+
+        $params = [$min, $max, true, $tpl, $default];
+
+        self::$validator[$className][$methodName]['validator'][$from][$name] = [
+            'validator' => NumberValidator::class,
+            'params'    => $params,
+        ];
+    }
+
+
+    /**
+     * @param \Swoft\Bean\Annotation\Integer $objectAnnotation
+     * @param string                         $className
+     * @param string                         $methodName
+     */
+    private static function collectInteger(Integer $objectAnnotation, string $className, string $methodName)
+    {
+        $from    = $objectAnnotation->getFrom();
+        $name    = $objectAnnotation->getName();
+        $min     = $objectAnnotation->getMin();
+        $max     = $objectAnnotation->getMax();
+        $default = $objectAnnotation->getDefault();
+        $tpl     = $objectAnnotation->getTemplate();
+
+        $params = [$min, $max, true, $tpl, $default];
+
+        self::$validator[$className][$methodName]['validator'][$from][$name] = [
+            'validator' => IntegerValidator::class,
+            'params'    => $params,
+        ];
+    }
+
+    /**
+     * @param \Swoft\Bean\Annotation\Enum $objectAnnotation
+     * @param string                      $className
+     * @param string                      $methodName
+     */
+    private static function collectEnum(Enum $objectAnnotation, string $className, string $methodName)
+    {
+        $from    = $objectAnnotation->getFrom();
+        $name    = $objectAnnotation->getName();
+        $values  = $objectAnnotation->getValues();
+        $default = $objectAnnotation->getDefault();
+        $tpl     = $objectAnnotation->getTemplate();
+
+        $params = [$values, true, $tpl, $default];
+
+        self::$validator[$className][$methodName]['validator'][$from][$name] = [
+            'validator' => EnumValidator::class,
+            'params'    => $params,
+        ];
     }
 }

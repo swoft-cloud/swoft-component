@@ -230,6 +230,19 @@ class Request extends \Swoft\Http\Message\Base\Request implements ServerRequestI
     }
 
     /**
+     * Return an instance with the specified server params.
+     *
+     * @param array $serverParams
+     * @return static
+     */
+    public function withServerParams(array $serverParams)
+    {
+        $clone = clone $this;
+        $clone->serverParams = $serverParams;
+        return $clone;
+    }
+
+    /**
      * Retrieve cookies.
      * Retrieves cookies sent by the client to the server.
      * The data MUST be compatible with the structure of the $_COOKIE
@@ -440,19 +453,6 @@ class Request extends \Swoft\Http\Message\Base\Request implements ServerRequestI
     {
         $clone = clone $this;
         $clone->bodyParams = $data;
-        return $clone;
-    }
-
-    /**
-     * Return an instance with the specified server params.
-     *
-     * @param array $serverParams
-     * @return static
-     */
-    public function withServerParams(array $serverParams)
-    {
-        $clone = clone $this;
-        $clone->serverParams = $serverParams;
         return $clone;
     }
 

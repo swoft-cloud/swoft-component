@@ -190,3 +190,15 @@ if (! function_exists('cookie')) {
         return $manager;
     }
 }
+
+if (!function_exists('is_iterable')) {
+    /**
+     * is_iterable
+     * @param $obj
+     * @return bool
+     */
+    function is_iterable($obj)
+    {
+        return is_array($obj) || (is_object($obj) && ($obj instanceof \Traversable));
+    }
+}

@@ -47,7 +47,7 @@ trait WebSocketEventTrait
         $psr7Res = new \Swoft\Http\Message\Server\Response($response);
 
         // Initialize client information
-        WebSocketContext::set($fd, $meta, $psr7Req);
+        WebSocketContext::init($fd, $meta, $psr7Req);
 
         // init fd and coId mapping
         WebSocketContext::setFdToCoId($fd);
@@ -75,9 +75,7 @@ trait WebSocketEventTrait
         }
 
         // setting response
-        $psr7Res = $psr7Res
-            ->withStatus(101)
-            ->withHeaders(WebSocket::handshakeHeaders($secWSKey));
+        $psr7Res = $psr7Res->withStatus(101)->withHeaders(WebSocket::handshakeHeaders($secWSKey));
 
         if (isset($request->header['sec-websocket-protocol'])) {
             $psr7Res = $psr7Res->withHeader('Sec-WebSocket-Protocol', $request->header['sec-websocket-protocol']);
@@ -99,10 +97,11 @@ trait WebSocketEventTrait
         // Handshaking successful, Manually triggering the open event
         $this->server->defer(function () use ($psr7Req, $fd) {
             $this->onWsOpen($this->server, $psr7Req, $fd);
+
         });
 
         // delete coId to fd mapping
-        WebSocketContext::delFdToCoId();
+        WebSocketContext::delFdByCoId();
 
         return true;
     }
@@ -120,7 +119,7 @@ trait WebSocketEventTrait
         $this->log("onHandShake: Client #{$fd} send handshake request to {$path}, client info: ", $info, 'debug');
 
         return [
-            'id' => $fd,
+            'fd' => $fd,
             'ip' => $info['remote_ip'],
             'port' => $info['remote_port'],
             'path' => $path,
@@ -169,7 +168,7 @@ trait WebSocketEventTrait
         \bean('wsDispatcher')->message($server, $frame);
 
         // delete coId to fd mapping
-        WebSocketContext::delFdToCoId();
+        WebSocketContext::delFdByCoId();
     }
 
     /**
@@ -211,42 +210,5 @@ trait WebSocketEventTrait
             // clear context info of the connection
             WebSocketContext::del($fd);
         }
-    }
-
-    /**
-     * @param Request $request
-     * @param Response $response
-     * @return bool
-     */
-    protected function simpleHandshake(Request $request, Response $response): bool
-    {
-        $this->log("received handshake request from fd #{$request->fd}, co ID #" . Coroutine::tid());
-
-        // websocket握手连接算法验证
-        $secWSKey = $request->header['sec-websocket-key'];
-
-        if (WebSocket::isInvalidSecWSKey($secWSKey)) {
-            $response->end();
-
-            return false;
-        }
-
-        $headers = WebSocket::handshakeHeaders($secWSKey);
-
-        // WebSocket connection to 'ws://127.0.0.1:9502/'
-        // failed: Error during WebSocket handshake:
-        // Response must not include 'Sec-WebSocket-Protocol' header if not present in request: websocket
-        if (isset($request->header['sec-websocket-protocol'])) {
-            $headers['Sec-WebSocket-Protocol'] = $request->header['sec-websocket-protocol'];
-        }
-
-        foreach ($headers as $key => $val) {
-            $response->header($key, $val);
-        }
-
-        $response->status(101);
-        $response->end();
-
-        return true;
     }
 }

@@ -43,6 +43,11 @@ class Integer
     private $max = PHP_INT_MAX;
 
     /**
+     * @var string
+     */
+    private $template = '';
+
+    /**
      * 默认值，如果是null，强制验证参数
      *
      * @var null|integer
@@ -70,6 +75,9 @@ class Integer
         }
         if (isset($values['default'])) {
             $this->default = $values['default'];
+        }
+        if (isset($values['template'])) {
+            $this->template = $values['template'];
         }
     }
 
@@ -111,5 +119,21 @@ class Integer
     public function getFrom(): string
     {
         return $this->from;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTemplate(): string
+    {
+        return $this->template;
+    }
+
+    /**
+     * @param string $template
+     */
+    public function setTemplate(string $template)
+    {
+        $this->template = $template;
     }
 }

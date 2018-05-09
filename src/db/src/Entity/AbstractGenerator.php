@@ -9,15 +9,9 @@
  */
 namespace Swoft\Db\Entity;
 
-/**
- * 抽象生成实体操作类
- *
- * @uses      AbstractGenerator
- * @version   2017年11月06日
- * @author    caiwh <471113744@qq.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
- */
+use Swoft\App;
+use Swoft\Helper\StringHelper;
+
 abstract class AbstractGenerator
 {
     /**
@@ -90,19 +84,22 @@ abstract class AbstractGenerator
      * @param mixed  $entityName 实体注释名称
      * @param array  $fields     字段
      * @param Schema $schema     schema对象
+     * @param string $instance   数据库实例别名
      */
-    protected function parseProperty(string $entity, $entityName, array $fields, Schema $schema)
+    protected function parseProperty(string $entity, $entityName, array $fields, Schema $schema, $instance)
     {
         $this->entity     = $entity;
         $this->entityName = $entityName;
         $this->entityDate = date('Y年m月d日');
         $this->fields     = $fields;
+        $removeTablePrefix = $this->removeTablePrefix;
 
-        $this->entityClass = explode('_', $this->entity);
-        $this->entityClass = array_map(function ($word) {
-            return ucfirst($word);
-        }, $this->entityClass);
-        $this->entityClass = implode('', $this->entityClass);
+        $entityClass = $this->entity;
+        if (!empty($removeTablePrefix)) {
+            $entityClass = StringHelper::replaceFirst($removeTablePrefix, '', $this->entity);
+        }
+        $this->entityClass = StringHelper::camel($entityClass);
+        $this->entityClass = ucfirst($this->entityClass);
 
         $param = [
             $schema,
@@ -112,7 +109,8 @@ abstract class AbstractGenerator
             $this->entityName,
             $this->entityClass,
             $this->entityDate,
-            $this->fields
+            $this->fields,
+            $instance,
         ];
 
         $sgGenerator = new SetGetGenerator();

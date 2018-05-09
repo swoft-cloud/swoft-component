@@ -8,6 +8,7 @@ use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
 use Swoft\Devtool\FileGenerator;
 use Swoft\Helper\DirHelper;
+use Swoft\Devtool\Model\Logic\EntityLogic;
 
 /**
  * Generate some common application template classes[<cyan>built-in</cyan>]
@@ -50,7 +51,6 @@ class GenCommand
      */
     public function command(Input $input, Output $output): int
     {
-        // \var_dump($this);die;
         list($config, $data) = $this->collectInfo($input, $output, [
             'suffix' => 'Command',
             'namespace' => 'App\\Commands',
@@ -284,6 +284,51 @@ class GenCommand
         ]);
 
         return $this->writeFile('@app/Process', $data, $config, $output);
+    }
+
+
+    /**
+     * Generate entity class
+     * @Usage {fullCommand} -d test [--option ...]
+     *
+     * @Options
+     *   -d, --database STRING      Must to set database. `,` symbol is used  to separated by multiple databases
+     *   -i, --include STRING       Set the included tables, `,` symbol is used  to separated by multiple tables. default is: <info>all tables</info>
+     *   -e, --exclude STRING       Set the excluded tables, `,` symbol is used  to separated by multiple tables. default is: <info>empty</info>
+     *   -p, --path STRING          Specified entity generation path, default is: <info>@app/Models/Entity</info>
+     *   --driver STRING            Specify database driver(mysql/pgsql/mongodb), default is: <info>mysql</info>
+     *   --table-prefix STRING      Specify the table prefix that needs to be removed, default is: <info>empty</info>
+     *   --field-prefix STRING      Specify the field prefix that needs to be removed, default is: <info>empty</info>
+     *   --tpl-file STRING          The template file name. default is: <info>entity.stub</info>
+     *   --tpl-dir STRING           The template file dir path.(default: devtool/res/templates)
+     * @Example
+     *   <info>{fullCommand} -d test</info>     Gen DemoProcess class to `@app/Models/Entity`
+     *
+     * @param Input $in
+     * @param Output $out
+     *
+     * @return int
+     * @throws \RuntimeException
+     * @throws \InvalidArgumentException
+     * @throws \Leuffen\TextTemplate\TemplateParsingException
+     */
+    public function entity(Input $in, Output $out)
+    {
+        $params = [
+            'test',
+            '',
+            '',
+            '@app/Models/Entity',
+            'mysql',
+            '',
+            '',
+            'entity',
+            $this->defaultTplPath
+        ];
+
+        /* @var EntityLogic $logic*/
+        $logic = bean(EntityLogic::class);
+        $logic->generate($params);
     }
 
     /**

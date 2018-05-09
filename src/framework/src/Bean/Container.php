@@ -54,6 +54,7 @@ class Container implements ContainerInterface
      * 获取一个bean
      *
      * @param string $name 名称
+     *
      * @return mixed
      * @throws \InvalidArgumentException
      * @throws \ReflectionException
@@ -95,6 +96,7 @@ class Container implements ContainerInterface
      * 是否存在某个bean
      *
      * @param string $beanName 名称
+     *
      * @return bool
      */
     public function hasBean(string $beanName): bool
@@ -109,7 +111,7 @@ class Container implements ContainerInterface
      */
     public function addDefinitions(array $definitions)
     {
-        $resource = new DefinitionResource($definitions);
+        $resource          = new DefinitionResource($definitions);
         $this->definitions = array_merge($resource->getDefinitions(), $this->definitions);
     }
 
@@ -131,7 +133,7 @@ class Container implements ContainerInterface
      */
     public function autoloadWorkerAnnotation()
     {
-        $beanScan = $this->getScanNamespaceFromProperties('beanScan');
+        $beanScan = $this->getBeanScanNamespace();
         $resource = new WorkerAnnotationResource($this->properties);
         $resource->addScanNamespace($beanScan);
         $definitions = $resource->getDefinitions();
@@ -198,7 +200,6 @@ class Container implements ContainerInterface
      * @param ObjectDefinition $objectDefinition Bean definition
      * @return object The proxy class of bean
      * @throws \RuntimeException
-     * @throws \Swoft\Exception\ContainerException
      * @throws \ReflectionException
      * @throws \InvalidArgumentException
      */
@@ -271,6 +272,7 @@ class Container implements ContainerInterface
             }
             $constructorParameters[] = $parameter->getValue();
         }
+
         return $constructorParameters;
     }
 
@@ -284,6 +286,7 @@ class Container implements ContainerInterface
         if ($reflectionClass->hasMethod('__construct')) {
             return $reflectionClass->newInstanceArgs($constructorParameters);
         }
+
         return $reflectionClass->newInstance();
     }
 
@@ -334,6 +337,7 @@ class Container implements ContainerInterface
 
     /**
      * @param array $injectProperty
+     *
      * @return array
      * @throws \InvalidArgumentException
      * @throws \ReflectionException
@@ -408,5 +412,34 @@ class Container implements ContainerInterface
         // Init Parser
         ! Proxy::hasParser() && Proxy::initDefaultParser(App::isWorkerStatus());
         return Proxy::newProxyClass($className);
+    }
+
+    /**
+     * @return array
+     */
+    private function getBeanScanNamespace(): array
+    {
+        $beanScan    = $this->getScanNamespaceFromProperties('beanScan');
+        $excludeScan = $this->getScanNamespaceFromProperties('excludeScan');
+        if (!empty($beanScan)) {
+            return array_diff($beanScan, $excludeScan);
+        }
+
+        $appDir = alias("@app");
+        $dirs   = glob($appDir . "/*");
+
+        $beanNamespace = [];
+        foreach ($dirs as $dir) {
+            if (!is_dir($dir)) {
+                continue;
+            }
+            $nsName          = basename($dir);
+            $beanNamespace[] = sprintf('App\%s', $nsName);
+        }
+
+        $bootScan = $this->getScanNamespaceFromProperties('bootScan');
+        $beanScan = array_diff($beanNamespace, $bootScan, $excludeScan);
+
+        return $beanScan;
     }
 }
