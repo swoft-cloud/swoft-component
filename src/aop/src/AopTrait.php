@@ -12,6 +12,7 @@ namespace Swoft\Aop;
 
 /**
  * AopTrait
+ * @important All methods in this trait SHOULD ALWAYS NOT import any namespace, fully qualified name of class is required.
  */
 trait AopTrait
 {
@@ -28,7 +29,7 @@ trait AopTrait
     public function __proxyCall(\Closure $closure, string $method, array $params)
     {
         /** @var Aop $aop */
-        $aop   = \bean(Aop::class);
+        $aop   = \bean(\Swoft\Aop\Aop::class);
         $map   = $aop->getMap();
         $class = $this->getOriginalClassName();
         // If doesn't have any advices, then execute the origin method
@@ -133,14 +134,14 @@ trait AopTrait
 
             // JoinPoint object
             $type = $parameterType->__toString();
-            if ($type === JoinPoint::class) {
-                $aspectArgs[] = new JoinPoint($this, $method, $args, $return, $catch);
+            if ($type === \Swoft\Aop\JoinPoint::class) {
+                $aspectArgs[] = new \Swoft\Aop\JoinPoint($this, $method, $args, $return, $catch);
                 continue;
             }
 
             // ProceedingJoinPoint object
-            if ($type === ProceedingJoinPoint::class) {
-                $aspectArgs[] = new ProceedingJoinPoint($this, $method, $args, $advice, $advices);
+            if ($type === \Swoft\Aop\ProceedingJoinPoint::class) {
+                $aspectArgs[] = new \Swoft\Aop\ProceedingJoinPoint($this, $method, $args, $advice, $advices);
                 continue;
             }
 
