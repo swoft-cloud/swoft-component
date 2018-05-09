@@ -48,14 +48,14 @@ class Task
         }
 
         $server = App::$server->getServer();
-        // Delier coroutine task
-        if ($type == self::TYPE_CO) {
+        // Deliver coroutine task
+        if ($type === self::TYPE_CO) {
             $tasks[0]  = $data;
-            $prifleKey = 'task' . '.' . $taskName . '.' . $methodName;
+            $profileKey = 'task' . '.' . $taskName . '.' . $methodName;
 
-            App::profileStart($prifleKey);
+            App::profileStart($profileKey);
             $result = $server->taskCo($tasks, $timeout);
-            App::profileEnd($prifleKey);
+            App::profileEnd($profileKey);
 
             return $result;
         }
@@ -64,7 +64,7 @@ class Task
         return $server->task($data);
     }
 
-    private static function deliverByQueue(string $data)
+    private static function deliverByQueue(string $data): bool
     {
         /* @var \Swoft\Task\QueueTask $queueTask*/
         $queueTask = App::getBean(QueueTask::class);
@@ -115,19 +115,19 @@ class Task
      *
      * @return array
      */
-    public static function async(array $tasks)
+    public static function async(array $tasks): array
     {
         $server = App::$server->getServer();
 
         $result = [];
         foreach ($tasks as $task) {
-            if (!isset($task['type']) || !isset($task['name']) || !isset($task['method']) || !isset($task['params'])) {
+            if (!isset($task['type'], $task['name'], $task['method'], $task['params'])) {
                 App::warning(sprintf('The task format of delivery is error，task=%s', json_encode($task, JSON_UNESCAPED_UNICODE)));
                 continue;
             }
 
             $type = $task['type'];
-            if ($type != self::TYPE_ASYNC) {
+            if ($type !== self::TYPE_ASYNC) {
                 App::warning(sprintf('Delivery is not an asynchronous task，task=%s', json_encode($task, JSON_UNESCAPED_UNICODE)));
                 continue;
             }
@@ -154,19 +154,19 @@ class Task
      *
      * @return array
      */
-    public static function cor(array $tasks)
+    public static function cor(array $tasks): array
     {
         $server = App::$server->getServer();
 
         $taskCos = [];
         foreach ($tasks as $task) {
-            if (!isset($task['type']) || !isset($task['name']) || !isset($task['method']) || !isset($task['params'])) {
+            if (!isset($task['type'], $task['name'], $task['method'], $task['params'])) {
                 App::warning(sprintf('The task format of delivery is error，task=%s', json_encode($task, JSON_UNESCAPED_UNICODE)));
                 continue;
             }
 
             $type = $task['type'];
-            if ($type != self::TYPE_CO) {
+            if ($type !== self::TYPE_CO) {
                 App::warning(sprintf('Delivery is not a co task，task=%s', json_encode($task, JSON_UNESCAPED_UNICODE)));
                 continue;
             }
@@ -189,7 +189,7 @@ class Task
      * @param string $methodName
      * @param array  $params
      *
-     * @return bool
+     * @return bool|mixed
      */
     public static function run2(string $taskName, string $methodName, array $params)
     {

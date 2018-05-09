@@ -10,7 +10,8 @@
     "description": "Aop Component for Swoft",
     "license": "Apache-2.0",
     "require": {
-        "swoft/framework": "^1.0.16"
+        "swoft/framework": "^1.0.17",
+        "nikic/php-parser": "^4.0"
     },
     "autoload": {
         "psr-4": {

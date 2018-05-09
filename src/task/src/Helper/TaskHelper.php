@@ -30,7 +30,7 @@ class TaskHelper
         $task['logid']  = RequestContext::getLogid();
         $task['spanid'] = RequestContext::getSpanid();
 
-        return serialize($task);
+        return \serialize($task);
     }
 
     /**
@@ -40,6 +40,6 @@ class TaskHelper
      */
     public static function unpack(string $data):array
     {
-        return unserialize($data);
+        return \unserialize($data, ['allowed_classes' => false]);
     }
 }

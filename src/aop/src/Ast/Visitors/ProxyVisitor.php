@@ -170,26 +170,34 @@ class ProxyVisitor extends NodeVisitorAbstract
      */
     public function afterTraverse(array $nodes)
     {
-        $useAopTrait = $addMethod = true;
+        $addEnhancementMethods = $addGetOriginalClassNameMethod = $addInvokeTargetMethod = true;
         $nodeFinder = new NodeFinder();
-        $nodeFinder->find($nodes, function (Node $node) use (&$useAopTrait, &$addMethod) {
+        $nodeFinder->find($nodes, function (Node $node) use (
+            &$addEnhancementMethods,
+            &$addGetOriginalClassNameMethod,
+            &$addInvokeTargetMethod
+        ) {
             if ($node instanceof TraitUse) {
                 foreach ($node->traits as $trait) {
                     // Did AopTrait trait use ?
                     if ($trait instanceof Name && $trait->toString() === '\Swoft\Aop\Ast\EnhancementMethodsTrait') {
-                        $useAopTrait = false;
+                        $addEnhancementMethods = false;
                         break;
                     }
                 }
             } elseif ($node instanceof ClassMethod && $node->name->toString() === 'getOriginalClassName') {
                 // Has getOriginalClassName method ?
-                $addMethod = false;
+                $addGetOriginalClassNameMethod = false;
+            } elseif ($node instanceof ClassMethod && $node->name->toString() === '__invokeTarget') {
+                // Has __invokeTarget method ?
+                $addInvokeTargetMethod = false;
             }
         });
         // Find Class Node and then Add Aop Enhancement Methods nodes and getOriginalClassName() method
         $classNode = $nodeFinder->findFirstInstanceOf($nodes, Class_::class);
-        $useAopTrait && array_unshift($classNode->stmts, $this->getEnhancementMethodsTraitUseNode(), ...$this->getEnhancementMethodsStmts());
-        $addMethod && \is_array($classNode->stmts) && array_unshift($classNode->stmts, $this->getOrigianalClassNameMethodNode());
+        $addEnhancementMethods && array_unshift($classNode->stmts, $this->getEnhancementMethodsTraitUseNode(), ...$this->getEnhancementMethodsStmts());
+        $addGetOriginalClassNameMethod && \is_array($classNode->stmts) && array_unshift($classNode->stmts, $this->getOrigianalClassNameMethodNode());
+        $addInvokeTargetMethod && \is_array($classNode->stmts) && array_unshift($classNode->stmts, $this->getInvokeTargetMethodNode());
         return $nodes;
     }
 
@@ -248,15 +256,6 @@ class ProxyVisitor extends NodeVisitorAbstract
     /**
      * @return \PhpParser\Node\Stmt\TraitUse
      */
-    public function getTraitUseNode(): TraitUse
-    {
-        // Use AopTrait trait use node
-        return new TraitUse([new Name('\Swoft\Aop\AopTrait')]);
-    }
-
-    /**
-     * @return \PhpParser\Node\Stmt\TraitUse
-     */
     public function getEnhancementMethodsTraitUseNode(): TraitUse
     {
         // Use AopTrait trait use node
@@ -274,6 +273,26 @@ class ProxyVisitor extends NodeVisitorAbstract
             'returnType' => 'string',
             'stmts'      => [
                 new Return_(new String_($this->getClassName()))
+            ],
+        ]);
+    }
+
+    /**
+     * @return \PhpParser\Node\Stmt\ClassMethod
+     */
+    public function getInvokeTargetMethodNode(): ClassMethod
+    {
+        // Add getOriginalClassName() method node
+        return new ClassMethod('__invokeTarget', [
+            'flags'      => Class_::MODIFIER_PUBLIC,
+            'params'     => [
+                new Param(new Variable('method'), null, 'string'),
+                new Param(new Variable('args'), null, 'array'),
+            ],
+            'stmts'      => [
+                new Return_(new Node\Expr\StaticCall(new Name('parent'), new Variable('method'), [
+                    new Node\Arg(new Variable('args'), false, true)
+                ]))
             ],
         ]);
     }
