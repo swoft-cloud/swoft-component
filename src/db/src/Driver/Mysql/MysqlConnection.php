@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Db\Driver\Mysql;
 
 use Swoft\App;
@@ -14,6 +15,7 @@ use Swoft\Db\AbstractDbConnection;
 use Swoft\Db\Bean\Annotation\Connection;
 use Swoft\Db\Exception\MysqlException;
 use Swoole\Coroutine\Mysql;
+use Swoole\Coroutine\MySQL\Statement;
 
 /**
  * Mysql connection
@@ -44,7 +46,7 @@ class MysqlConnection extends AbstractDbConnection
      */
     public function prepare(string $sql)
     {
-        $this->sql  = $sql;
+        $this->sql = $sql;
     }
 
     /**
@@ -75,7 +77,7 @@ class MysqlConnection extends AbstractDbConnection
             throw new MysqlException('Database connection error，error=' . $mysql->connect_error);
         }
 
-        $this->originDb = $options['database'];
+        $this->originDb   = $options['database'];
         $this->connection = $mysql;
     }
 
@@ -91,10 +93,11 @@ class MysqlConnection extends AbstractDbConnection
         $this->formatSqlByParams($params);
         $result = $this->connection->query($this->sql);
         if ($result === false) {
-            App::error('Mysql execute error，connectError=' . $this->connection->connect_error . ' error=' . $this->connection->error);
+            throw new MysqlException('Mysql execute error，connectError=' . $this->connection->connect_error . ' error=' . $this->connection->error);
         }
 
         $this->pushSqlToStack($this->sql);
+
         return $result;
     }
 
@@ -105,11 +108,11 @@ class MysqlConnection extends AbstractDbConnection
     {
         $result = $this->connection->recv();
         if ($result === false) {
-            App::error('Mysql recv error，connectError=' . $this->connection->connect_error . ' error=' . $this->connection->error);
+            throw new MysqlException('Mysql recv error，connectError=' . $this->connection->connect_error . ' error=' . $this->connection->error);
         }
         $this->connection->setDefer(false);
 
-        $this->recv = true;
+        $this->recv   = true;
         $this->result = $result;
 
         return $result;
@@ -186,7 +189,7 @@ class MysqlConnection extends AbstractDbConnection
     public function setDefer($defer = true)
     {
         $this->recv = false;
-        $result = $this->connection->setDefer($defer);
+        $result     = $this->connection->setDefer($defer);
     }
 
     /**
@@ -234,7 +237,12 @@ class MysqlConnection extends AbstractDbConnection
 
         $newParams = [];
         foreach ($params as $key => $value) {
-            $value = "'{$value}'";
+            if ($value === null) {
+                $value = " null ";
+            } else {
+                $value = "'{$value}'";
+            }
+
             if (\is_int($key)) {
                 $key = sprintf('?%d', $key);
             }
@@ -245,6 +253,7 @@ class MysqlConnection extends AbstractDbConnection
         if (strpos($this->sql, '?') !== false) {
             $this->transferQuestionMark();
         }
+
         $this->sql = strtr($this->sql, $newParams);
     }
 
@@ -253,11 +262,11 @@ class MysqlConnection extends AbstractDbConnection
      */
     private function transferQuestionMark()
     {
-        $sqlAry = explode('?', $this->sql);
-        $sql = '';
+        $sqlAry   = explode('?', $this->sql);
+        $sql      = '';
         $maxBlock = \count($sqlAry);
         for ($i = 0; $i < $maxBlock; $i++) {
-            $n = $i;
+            $n   = $i;
             $sql .= $sqlAry[$i];
             if ($maxBlock > $i + 1) {
                 $sql .= '?' . $n . ' ';

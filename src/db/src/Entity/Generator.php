@@ -9,21 +9,17 @@
  */
 namespace Swoft\Db\Entity;
 
-/**
- * 生成实体操作类
- *
- * @uses      Generator
- * @version   2017年11月06日
- * @author    caiwh <471113744@qq.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
- */
 class Generator extends AbstractGenerator implements GeneratorInterface
 {
     /**
      * @var string $db 数据库
      */
     private $db = null;
+
+    /**
+     * @var string $instance 需要指定的数据实例别名
+     */
+    private $instance = null;
 
     /**
      * @var array $tablesEnabled 操作的表
@@ -39,6 +35,11 @@ class Generator extends AbstractGenerator implements GeneratorInterface
      * @var array $tables 实体表
      */
     private $tables = [];
+
+    /**
+     * @var string $removeTablePrefix 需要移除的表前缀
+     */
+    private $removeTablePrefix = '';
 
     /**
      * @const string SchemaTables表
@@ -60,9 +61,10 @@ class Generator extends AbstractGenerator implements GeneratorInterface
     public function execute(Schema $schema)
     {
         $tables = $this->getSchemaTables();
+        $instance = $this->getInstance();
         foreach ($tables as $table) {
             $columns = $this->getTableColumns($table['name']);
-            $this->parseProperty($table['name'], $table['comment'], $columns, $schema);
+            $this->parseProperty($table['name'], $table['comment'], $columns, $schema, $instance);
         }
     }
 
@@ -149,6 +151,27 @@ class Generator extends AbstractGenerator implements GeneratorInterface
     }
 
     /**
+     * 设置数据库实例别名
+     * @param string $value 数据库实例别名
+     * @return $this
+     */
+    public function setInstance($value): self
+    {
+        $this->instance = $value;
+
+        return $this;
+    }
+
+    /**
+     * 获取数据库实例别名
+     * @return string|null
+     */
+    public function getInstance()
+    {
+        return $this->instance;
+    }
+
+    /**
      * 设置扫描的表
      *
      * @param array $value 需要扫描的表
@@ -194,6 +217,30 @@ class Generator extends AbstractGenerator implements GeneratorInterface
     public function gettablesDisabled(): array
     {
         return $this->tablesDisabled;
+    }
+
+    /**
+     * 设置移除的表前缀
+     *
+     * @param string $value 移除的表前缀
+     *
+     * @return $this;
+     */
+    public function setremoveTablePrefix(string $value): self
+    {
+        $this->removeTablePrefix = $value;
+
+        return $this;
+    }
+
+    /**
+     * 返回移除的表前缀
+     *
+     * @retrun string
+     */
+    public function getremoveTablePrefix(): string
+    {
+        return $this->removeTablePrefix;
     }
 
     /**

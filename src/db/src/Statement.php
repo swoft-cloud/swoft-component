@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Db;
 
 /**
@@ -137,7 +138,7 @@ class Statement implements StatementInterface
         $statement .= $this->getUpdateString();
 
         // set语句
-        if ($this->builder->getUpdateValues()) {
+        if ($this->builder->getUpdateValues() || $this->builder->getCounterValues()) {
             $statement .= ' ' . $this->getUpdateValuesString();
         }
 
@@ -234,6 +235,7 @@ class Statement implements StatementInterface
     /**
      * @param array $select
      * @param array $aggregate
+     *
      * @return array
      */
     protected function getAggregateStatement(array $select, array $aggregate): array
@@ -302,13 +304,13 @@ class Statement implements StatementInterface
     {
         $statement = '';
         $join      = $this->builder->getJoin();
-        foreach ($join as $i => $join) {
+        foreach ($join as $i => $joinItem) {
 
             // join信息
-            $type     = $join['type'];
-            $table    = $join['table'];
-            $alias    = $join['alias'];
-            $criteria = $join['criteria'];
+            $type     = $joinItem['type'];
+            $table    = $joinItem['table'];
+            $alias    = $joinItem['alias'];
+            $criteria = $joinItem['criteria'];
 
             // join类型
             $statement .= ' ' . $type . ' ' . $table;
@@ -374,11 +376,12 @@ class Statement implements StatementInterface
         $joinCriteria      = '';
         $previousJoinIndex = $joinIndex - 1;
 
-        if (array_key_exists($previousJoinIndex, $this->join)) {
+        $join = $this->builder->getJoin();
+        if (array_key_exists($previousJoinIndex, $join)) {
             // 上一个join存在
-            $previousTable = $this->join[$previousJoinIndex]['table'];
-            if ($this->join[$previousJoinIndex]['alias'] !== null) {
-                $previousTable = $this->join[$previousJoinIndex]['alias'];
+            $previousTable = $join[$previousJoinIndex]['table'];
+            if ($join[$previousJoinIndex]['alias'] !== null) {
+                $previousTable = $join[$previousJoinIndex]['alias'];
             }
         } elseif ($this->isSelect()) {
             // 查询
@@ -395,12 +398,11 @@ class Statement implements StatementInterface
         }
 
         // 上一个inner关联存在
-        if ($previousTable) {
+        if ($previousTable && strpos($column, '.') === false) {
             $joinCriteria .= $previousTable . '.';
         }
 
         $joinCriteria .= $column . ' ' . QueryBuilder::OPERATOR_EQ . ' ' . $table . '.' . $column;
-
         return $joinCriteria;
     }
 
@@ -411,7 +413,7 @@ class Statement implements StatementInterface
      */
     protected function getWhereString(): string
     {
-        $where = $this->builder->getWhere();
+        $where     = $this->builder->getWhere();
         $statement = $this->getCriteriaString($where);
 
         if (!empty($statement)) {
@@ -456,7 +458,9 @@ class Statement implements StatementInterface
             // 没有括号
             $useConnector = true;
             $value        = $this->getCriteriaWithoutBracket($criterion['operator'], $criterion['value'], $criterion['column']);
-            $statement    .= $criterion['column'] . ' ' . $criterion['operator'] . ' ' . $value;
+            $column       = $criterion['column'];
+            $column       = strpos($column, '.') === false ? " `{$column}` " : $column;
+            $statement    .= $column . $criterion['operator'] . ' ' . $value;
         }
 
         return $statement;
@@ -537,7 +541,7 @@ class Statement implements StatementInterface
      */
     protected function getHavingString(): string
     {
-        $having = $this->builder->getHaving();
+        $having    = $this->builder->getHaving();
         $statement = $this->getCriteriaString($having);
         if (!empty($statement)) {
             $statement = 'HAVING ' . $statement;
@@ -602,6 +606,9 @@ class Statement implements StatementInterface
         $columns      = $values['columns'];
         $columnValues = $values['values'];
 
+        $columns   = array_map(function ($v) {
+            return "`{$v}`";
+        }, $columns);
         $statement .= sprintf('(%s)', implode(',', $columns));
         $statement .= ' values ';
         foreach ($columnValues as $row) {
@@ -612,6 +619,7 @@ class Statement implements StatementInterface
         }
 
         $statement = substr($statement, 0, -2);
+
         return $statement;
     }
 
@@ -623,11 +631,35 @@ class Statement implements StatementInterface
         $statement = '';
         $values    = $this->builder->getUpdateValues();
         foreach ($values as $column => $value) {
-            $statement .= $column . ' ' . QueryBuilder::OPERATOR_EQ . ' ' . $this->getQuoteValue($value) . ', ';
+            $statement .= '`' . $column . '` ' . QueryBuilder::OPERATOR_EQ . ' ' . $this->getQuoteValue($value) . ', ';
         }
         $statement = substr($statement, 0, -2);
         if (!empty($statement)) {
             $statement = 'SET ' . $statement;
+        }
+
+        if (empty($statement)) {
+            $statement .= ' set ';
+        }
+        $statement .= $this->getCounterValueString();
+
+        return $statement;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getCounterValueString(): string
+    {
+        $statement = '';
+        $values    = $this->builder->getCounterValues();
+        foreach ($values as $coloumn => $value) {
+            $statement .= !empty($statement) ? ',' : $statement;
+            if ($value > 0) {
+                $statement .= sprintf(' `%s` = `%s`+%d ', $coloumn, $coloumn, $value);
+            } else {
+                $statement .= sprintf(' `%s` = `%s`-%d ', $coloumn, $coloumn, abs($value));
+            }
         }
 
         return $statement;
@@ -800,7 +832,7 @@ class Statement implements StatementInterface
      */
     protected function getFrom(): string
     {
-        $from  = $this->builder->getFrom();
+        $from = $this->builder->getFrom();
 
         return $from['table'] ?? '';
     }
@@ -812,7 +844,7 @@ class Statement implements StatementInterface
      */
     protected function getFromAlias(): string
     {
-        $from  = $this->builder->getFrom();
+        $from = $this->builder->getFrom();
 
         return $from['alias']??'';
     }
@@ -821,6 +853,7 @@ class Statement implements StatementInterface
      * 字符串转换
      *
      * @param $value
+     *
      * @return string
      */
     protected function getQuoteValue($value): string

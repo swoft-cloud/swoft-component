@@ -13,13 +13,14 @@ class EnumValidator implements ValidatorInterface
 {
     /**
      * @param array ...$params
+     *
      * @return mixed
      * @throws \Swoft\Exception\ValidatorException
      */
     public function validate(...$params)
     {
-        list($name, $value, $validValues) = $params;
+        list($name, $value, $validValues, $throws, $template) = $params;
 
-        return ValidatorHelper::validateEnum($name, $value, $validValues);
+        return ValidatorHelper::validateEnum($name, $value, $validValues, $throws, $template);
     }
 }

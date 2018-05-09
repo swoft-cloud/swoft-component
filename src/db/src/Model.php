@@ -12,11 +12,12 @@ namespace Swoft\Db;
 use Swoft\Contract\Arrayable;
 use Swoft\Core\ResultInterface;
 use Swoft\Db\Bean\Collector\EntityCollector;
+use Swoft\Helper\StringHelper;
 
 /**
  * ActiveRecord
  */
-class Model implements \ArrayAccess, \Iterator, Arrayable
+class Model implements \ArrayAccess, \Iterator, Arrayable,\JsonSerializable
 {
     /**
      * Old data
@@ -175,6 +176,17 @@ class Model implements \ArrayAccess, \Iterator, Arrayable
     }
 
     /**
+     * @param array $counters
+     * @param array $condition
+     *
+     * @return ResultInterface
+     */
+    public static function counter(array $counters, array $condition = []):ResultInterface
+    {
+        return Executor::counter(static::class, $counters, $condition);
+    }
+
+    /**
      * @param array $condition
      * @param array $options
      *
@@ -284,26 +296,34 @@ class Model implements \ArrayAccess, \Iterator, Arrayable
     {
         $entities = EntityCollector::getCollector();
         $columns  = $entities[static::class]['field'];
-
         $data = [];
         foreach ($columns as $propertyName => $column) {
-            $methodName = sprintf('get%s', ucfirst($propertyName));
-            if (!isset($column['column']) || !\method_exists($this, $methodName)) {
+            if (!isset($column['column'])) {
+                continue;
+            }
+            $methodName = StringHelper::camel('get' . $propertyName);
+            if (!\method_exists($this, $methodName)) {
                 continue;
             }
 
-            $data[$propertyName] = $this->$methodName();
+            $value = $this->$methodName();
+            if($value === null){
+                continue;
+            }
+            $data[$propertyName] = $value;
         }
 
         return $data;
     }
 
     /**
+     * @param int $options
+     *
      * @return string
      */
-    public function toJson(): string
+    public function toJson(int $options = JSON_UNESCAPED_UNICODE): string
     {
-        return json_encode($this->toArray(), JSON_UNESCAPED_UNICODE);
+        return \json_encode($this->jsonSerialize(), $options);
     }
 
     /**
@@ -392,7 +412,7 @@ class Model implements \ArrayAccess, \Iterator, Arrayable
      */
     public function valid(): bool
     {
-        return ($this->current() !== false);
+        return $this->current() !== false;
     }
 
     /**
@@ -403,5 +423,10 @@ class Model implements \ArrayAccess, \Iterator, Arrayable
     public function rewind()
     {
         reset($this->attrs);
+    }
+
+    function jsonSerialize()
+    {
+        return $this->toArray();
     }
 }

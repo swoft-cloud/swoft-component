@@ -110,6 +110,22 @@ class WebSocketServer extends HttpServer
      ****************************************************************************/
 
     /**
+     * @param string $fd
+     * @param string $data
+     * @param bool $isBinary
+     * @param bool $finish
+     * @return bool
+     */
+    public function push(string $fd, string $data, $isBinary = false, bool $finish = true): bool
+    {
+        if (!$this->server->exist($fd)) {
+            return false;
+        }
+
+        return $this->server->push($fd, $data, $isBinary, $finish);
+    }
+
+    /**
      * send message to client(s)
      * @param string $data
      * @param int|array $receivers
@@ -160,7 +176,7 @@ class WebSocketServer extends HttpServer
     }
 
     /**
-     * broadcast message 广播消息
+     * broadcast message, will exclude sender.
      * @param string $data 消息数据
      * @param int $sender 发送者
      * @param int[] $receivers 指定接收者们
@@ -178,6 +194,11 @@ class WebSocketServer extends HttpServer
             return $this->sendTo((int)\array_shift($receivers), $data, $sender);
         }
 
+        // excepted itself
+        if ($sender) {
+            $excluded[] = $sender;
+        }
+
         // to all
         if (!$excluded && !$receivers) {
             return $this->sendToAll($data, $sender);
@@ -188,6 +209,7 @@ class WebSocketServer extends HttpServer
     }
 
     /**
+     * send message to all connections
      * @param string $data
      * @param int $sender
      * @param int $pageSize
