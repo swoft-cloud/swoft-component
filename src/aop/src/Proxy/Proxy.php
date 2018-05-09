@@ -2,174 +2,123 @@
 
 namespace Swoft\Aop\Proxy;
 
+use PhpParser\NodeTraverser;
+use PhpParser\ParserFactory;
+use PhpParser\PrettyPrinter\Standard as StandardPrinter;
+use PhpParser\PrettyPrinterAbstract;
+use Swoft\Aop\Ast\ClassLoader;
+use Swoft\Aop\Ast\Parser;
+use Swoft\Aop\Ast\Visitors\ProxyVisitor;
+
 /**
- * Proxy factory
+ * Class Proxy
+ *
+ * @author  huangzhhui <h@swoft.com>
+ * @package Swoft\Aop\Proxy
  */
 class Proxy
 {
+
+    /**
+     * @var Parser
+     */
+    protected static $parser;
+
+    /**
+     * @var \PhpParser\PrettyPrinterAbstract
+     */
+    protected static $printer;
+
     /**
      * Return a proxy instance
      *
      * @param string $className
-     *
      * @return string
+     * @throws \RuntimeException
      * @throws \ReflectionException
      */
-    public static function newProxyClass(string $className)
+    public static function newProxyClass(string $className): string
     {
-        $reflectionClass   = new \ReflectionClass($className);
-        $reflectionMethods = $reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC | \ReflectionMethod::IS_PROTECTED);
-
-        // Proxy property
-        $proxyId        = \uniqid('', false);
-        $proxyClassName = \basename(str_replace("\\", '/', $className));
-        $proxyClassName = $proxyClassName . '_' . $proxyId;
-
-        // Base class template
-        $template = "class $proxyClassName extends $className {
-        
-            use \\Swoft\\Aop\\AopTrait;
-
-            public function getOriginalClassName(): string {
-                return \"{$className}\";
-            }
-            
-            public function __invokeTarget(string \$method, array \$args)
-            {
-                return parent::{\$method}(...\$args);
-            }
-        ";
-
-        // Methods
-        $template .= self::getMethodsTemplate($reflectionMethods, $proxyId);
-        $template .= '}';
+        // Get or Create class AST
+        ! self::hasParser() && self::initDefaultParser();
+        $ast = self::getParser()->getOrParse($className);
+        if (! $ast) {
+            throw new \RuntimeException(sprintf('Class %s AST generate failure', $className));
+        }
+        // Generate proxy class
+        $traverser = new NodeTraverser();
+        $visitor = new ProxyVisitor($className, \uniqid('', false));
+        $traverser->addVisitor($visitor);
+        $proxyAst = $traverser->traverse($ast);
+        if (! $proxyAst) {
+            throw new \RuntimeException(sprintf('Class %s AST optimize failure', $className));
+        }
+        $proxyCode = self::getPrinter()->prettyPrint($proxyAst);
 
         // Load class
-        eval($template);
+        eval($proxyCode);
 
-        return $proxyClassName;
+        return $visitor->getFullProxyClassName();
     }
 
     /**
-     * Return the template of method
+     * Note that CANNOT use async-io in swoole task process
      *
-     * @param \ReflectionMethod[] $reflectionMethods
-     * @param string              $proxyId
-     *
-     * @return string
+     * @param bool $useAsyncIO
+     * @throws \RuntimeException
      */
-    private static function getMethodsTemplate(array $reflectionMethods, string $proxyId): string
+    public static function initDefaultParser(bool $useAsyncIO = false)
     {
-        $template = '';
-        foreach ($reflectionMethods as $reflectionMethod) {
-            $methodName = $reflectionMethod->getName();
-
-            // not to override method
-            if ($reflectionMethod->isConstructor() || $reflectionMethod->isStatic()) {
-                continue;
-            }
-
-            // the template of parameter
-            $template .= " public function $methodName (";
-            $template .= self::getParameterTemplate($reflectionMethod);
-            $template .= ' ) ';
-
-            // the template of return type
-            $reflectionMethodReturn = $reflectionMethod->getReturnType();
-            if ($reflectionMethodReturn !== null) {
-                $returnType = $reflectionMethodReturn->__toString();
-                $returnType = $returnType === 'self' ? $reflectionMethod->getDeclaringClass()->getName() : $returnType;
-                $template   .= " : $returnType";
-            }
-
-            if (\in_array($methodName, ['method1', 'method2'])) {
-                $template
-                    .= "{
-                return \$this->__proxy('{$methodName}', func_get_args());}";
-            } else {
-                // overrided method
-                $template
-                    .= "{
-                return \$this->__proxy('{$methodName}', func_get_args());}";
-            }
-        }
-
-        return $template;
+        self::setParser(new Parser(new ClassLoader(), (new ParserFactory())->create(ParserFactory::ONLY_PHP7), $useAsyncIO));
     }
 
     /**
-     * Return the template of parameter
-     *
-     * @param \ReflectionMethod $reflectionMethod
-     *
-     * @return string
+     * @return bool
      */
-    private static function getParameterTemplate(\ReflectionMethod $reflectionMethod): string
+    public static function hasParser(): bool
     {
-        $template             = '';
-        $reflectionParameters = $reflectionMethod->getParameters();
-        $paramCount           = \count($reflectionParameters);
-        foreach ($reflectionParameters as $reflectionParameter) {
-            $paramCount--;
-            // Parameter type
-            $type = $reflectionParameter->getType();
-            if ($type !== null) {
-                $type     = $type->__toString();
-                $template .= " $type ";
-            }
-
-            // Parameter name
-            $paramName = $reflectionParameter->getName();
-            if ($reflectionParameter->isPassedByReference()) {
-                $template .= " &\${$paramName} ";
-            } elseif ($reflectionParameter->isVariadic()) {
-                $template .= " ...\${$paramName} ";
-            } else {
-                $template .= " \${$paramName} ";
-            }
-
-            // Parameter default value
-            if ($reflectionParameter->isOptional() && $reflectionParameter->isVariadic() === false) {
-                $template .= self::getParameterDefaultValue($reflectionParameter);
-            }
-
-            if ($paramCount !== 0) {
-                $template .= ',';
-            }
-        }
-
-        return $template;
+        return self::$parser instanceof Parser;
     }
 
     /**
-     * Get default value of parameter
-     *
-     * @param \ReflectionParameter $reflectionParameter
-     *
-     * @return string
+     * @param \Swoft\Aop\Ast\Parser $parser
+     * @return Proxy
      */
-    private static function getParameterDefaultValue(\ReflectionParameter $reflectionParameter): string
+    public static function setParser($parser)
     {
-        $template     = '';
-        $defaultValue = $reflectionParameter->getDefaultValue();
-        if ($reflectionParameter->isDefaultValueConstant()) {
-            $defaultConst = $reflectionParameter->getDefaultValueConstantName();
-            $template     = " = {$defaultConst}";
-        } elseif (\is_bool($defaultValue)) {
-            $value    = $defaultValue ? 'true' : 'false';
-            $template = " = {$value}";
-        } elseif (\is_string($defaultValue)) {
-            $template = " = ''";
-        } elseif (\is_int($defaultValue)) {
-            $template = ' = 0';
-        } elseif (\is_array($defaultValue)) {
-            $template = ' = []';
-        } elseif (\is_float($defaultValue)) {
-            $template = ' = []';
-        } elseif (\is_object($defaultValue) || null === $defaultValue) {
-            $template = ' = null';
-        }
-
-        return $template;
+        self::$parser = $parser;
     }
+
+    /**
+     * @return Parser|null
+     * @throws \RuntimeException
+     */
+    public static function getParser()
+    {
+        if (! self::$parser instanceof Parser) {
+            self::initDefaultParser();
+        }
+        return self::$parser;
+    }
+
+    /**
+     * @param \PhpParser\PrettyPrinterAbstract $printer
+     * @return Proxy
+     */
+    public static function setPrinter($printer)
+    {
+        self::$printer = $printer;
+    }
+
+    /**
+     * @return PrettyPrinterAbstract|null
+     */
+    public static function getPrinter()
+    {
+        if (! self::$printer instanceof PrettyPrinterAbstract) {
+            self::$printer = new StandardPrinter();
+        }
+        return self::$printer;
+    }
+
 }

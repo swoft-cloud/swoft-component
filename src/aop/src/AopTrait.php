@@ -17,15 +17,15 @@ trait AopTrait
 {
 
     /**
-     * Execute origin method by aop
+     * AOP proxy call method
      *
-     * @param string $method The execution method
-     * @param array  $params The parameters of execution method
-     *
-     * @return mixed
-     * @throws \ReflectionException
+     * @param \Closure $closure
+     * @param string   $method
+     * @param array    $params
+     * @return mixed|null
+     * @throws \Throwable
      */
-    public function __proxy(string $method, array $params)
+    public function __proxyCall(\Closure $closure, string $method, array $params)
     {
         /** @var Aop $aop */
         $aop   = \bean(Aop::class);
@@ -33,28 +33,28 @@ trait AopTrait
         $class = $this->getOriginalClassName();
         // If doesn't have any advices, then execute the origin method
         if (!isset($map[$class][$method]) || empty($map[$class][$method])) {
-            return parent::$method(...$params);
+            return $closure(...$params);
         }
-
         // Apply advices's functionality
         $advices = $map[$class][$method];
 
-        return $this->__doAdvice($method, $params, $advices);
+        return $this->__doAdvice($closure, $method, $params, $advices);
     }
 
     /**
-     * @param string $method  The execution method
-     * @param array  $params  The parameters of execution method
-     * @param array  $advices The advices of this object method
+     * AOP do advice method
      *
-     * @return mixed
+     * @param \Closure $closure
+     * @param string   $method
+     * @param array    $params
+     * @param array    $advices
+     * @return mixed|null
      * @throws \Throwable
      */
-    public function __doAdvice(string $method, array $params, array $advices)
+    public function __doAdvice(\Closure $closure, string $method, array $params, array $advices)
     {
         $result = null;
         $advice = array_shift($advices);
-
         try {
 
             // Around
@@ -67,9 +67,9 @@ trait AopTrait
                     $this->__doPoint($advice['before'], $method, $params, $advice, $advices);
                 }
                 if (0 === \count($advices)) {
-                    $result = parent::$method(...$params);
+                    $result = $closure(...$params);
                 } else {
-                    $this->__doAdvice($method, $params, $advices);
+                    $this->__doAdvice($closure, $method, $params, $advices);
                 }
             }
 
@@ -144,7 +144,7 @@ trait AopTrait
                 continue;
             }
 
-            //Throwable object
+            // Throwable object
             if (isset($catch) && $catch instanceof $type) {
                 $aspectArgs[] = $catch;
                 continue;

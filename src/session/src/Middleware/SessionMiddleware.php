@@ -122,7 +122,7 @@ class SessionMiddleware implements MiddlewareInterface
      * @param  SessionInterface $session
      * @return void
      */
-    protected function collectGarbage(SessionInterface $session)
+    public function collectGarbage(SessionInterface $session)
     {
         $session->getHandler()->gc($this->getSessionLifetimeInSeconds());
     }
@@ -180,7 +180,7 @@ class SessionMiddleware implements MiddlewareInterface
      *
      * @return void
      */
-    protected function save()
+    public function save()
     {
         $this->sessionStore->save();
     }

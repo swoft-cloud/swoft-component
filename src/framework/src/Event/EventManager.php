@@ -52,6 +52,15 @@ class EventManager implements EventManagerInterface
      */
     public function __construct(EventManagerInterface $parent = null)
     {
+        $this->init($parent);
+    }
+
+    /**
+     * @param EventManagerInterface|null $parent
+     * @throws \InvalidArgumentException
+     */
+    public function init(EventManagerInterface $parent = null)
+    {
         if ($parent) {
             $this->parent = $parent;
         }
