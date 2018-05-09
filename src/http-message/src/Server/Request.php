@@ -457,19 +457,6 @@ class Request extends \Swoft\Http\Message\Base\Request implements ServerRequestI
     }
 
     /**
-     * Return an instance with the specified server params.
-     *
-     * @param array $serverParams
-     * @return static
-     */
-    public function withServerParams(array $serverParams)
-    {
-        $clone = clone $this;
-        $clone->serverParams = $serverParams;
-        return $clone;
-    }
-
-    /**
      * Retrieve attributes derived from the request.
      * The request "attributes" may be used to allow injection of any
      * parameters derived from the request: e.g., the results of path
