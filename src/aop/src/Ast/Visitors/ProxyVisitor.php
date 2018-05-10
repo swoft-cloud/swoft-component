@@ -26,7 +26,6 @@ use PhpParser\Node\Stmt\Return_;
 use PhpParser\Node\Stmt\TraitUse;
 use PhpParser\NodeFinder;
 use PhpParser\NodeVisitorAbstract;
-use Swoft\Helper\StringHelper;
 
 /**
  * Class ProxyVisitor
@@ -60,11 +59,6 @@ class ProxyVisitor extends NodeVisitorAbstract
      * @var string
      */
     protected $extends = '';
-
-    /**
-     * @var array
-     */
-    protected $enhancementMethodsStmts = [];
 
     /**
      * ProxyVisitor constructor.
@@ -204,7 +198,7 @@ class ProxyVisitor extends NodeVisitorAbstract
             if ($node instanceof TraitUse) {
                 foreach ($node->traits as $trait) {
                     // Did AopTrait trait use ?
-                    if ($trait instanceof Name && $trait->toString() === '\Swoft\Aop\Ast\EnhancementMethodsTrait') {
+                    if ($trait instanceof Name && $trait->toString() === '\Swoft\Aop\AopTrait') {
                         $addEnhancementMethods = false;
                         break;
                     }
@@ -219,7 +213,7 @@ class ProxyVisitor extends NodeVisitorAbstract
         });
         // Find Class Node and then Add Aop Enhancement Methods nodes and getOriginalClassName() method
         $classNode = $nodeFinder->findFirstInstanceOf($nodes, Class_::class);
-        $addEnhancementMethods && array_unshift($classNode->stmts, $this->getEnhancementMethodsTraitUseNode(), ...$this->getEnhancementMethodsStmts());
+        $addEnhancementMethods && array_unshift($classNode->stmts, $this->getAopTraitUseNode());
         $addGetOriginalClassNameMethod && \is_array($classNode->stmts) && array_unshift($classNode->stmts, $this->getOrigianalClassNameMethodNode());
         $addInvokeTargetMethod && \is_array($classNode->stmts) && array_unshift($classNode->stmts, $this->getInvokeTargetMethodNode());
         return $nodes;
@@ -280,10 +274,10 @@ class ProxyVisitor extends NodeVisitorAbstract
     /**
      * @return \PhpParser\Node\Stmt\TraitUse
      */
-    private function getEnhancementMethodsTraitUseNode(): TraitUse
+    private function getAopTraitUseNode(): TraitUse
     {
         // Use AopTrait trait use node
-        return new TraitUse([new Name('\Swoft\Aop\Ast\EnhancementMethodsTrait')]);
+        return new TraitUse([new Name('\Swoft\Aop\AopTrait')]);
     }
 
     /**
@@ -341,21 +335,4 @@ class ProxyVisitor extends NodeVisitorAbstract
         return $name ? '\\' . $name : '';
     }
 
-    /**
-     * @return array
-     */
-    public function getEnhancementMethodsStmts(): array
-    {
-        return $this->enhancementMethodsStmts;
-    }
-
-    /**
-     * @param array $enhancementMethodsStmts
-     * @return ProxyVisitor
-     */
-    public function setEnhancementMethodsStmts($enhancementMethodsStmts): ProxyVisitor
-    {
-        $this->enhancementMethodsStmts = $enhancementMethodsStmts;
-        return $this;
-    }
 }
