@@ -16,6 +16,7 @@ use Swoft\Redis\Exception\RedisException;
 
 /**
  * Class AbstractRedisConnection
+ *
  * @package Swoft\Redis
  */
 abstract class AbstractRedisConnection extends AbstractConnection
@@ -39,24 +40,16 @@ abstract class AbstractRedisConnection extends AbstractConnection
         $port = (int)$config['port'];
         $redis = $this->getConnectRedis($host, $port, $timeout);
         if (isset($config['auth']) && false === $redis->auth($config['auth'])) {
-            $error = sprintf('Redis connection authentication failed host=%s port=%d auth=%s', $host, $port, (string)$config['auth']);
+            $error = sprintf('Redis connection authentication failed host=%s port=%d auth=%s', $host, (int)$port, (string)$config['auth']);
             throw new RedisException($error);
         }
         if (isset($config['database']) && $config['database'] < 16 && false === $redis->select($config['database'])) {
-            $error = sprintf('Redis selection database failure host=%s port=%d database=%d', $host, $port, (int)$config['database']);
+            $error = sprintf('Redis selection database failure host=%s port=%d database=%d', $host, (int)$port, (int)$config['database']);
             throw new RedisException($error);
         }
+
         return $redis;
     }
-
-    /**
-     * @param string $host
-     * @param int $port
-     * @param int $timeout
-     * @return Redis | \Redis
-     *
-     */
-    abstract protected function getConnectRedis(string $host, int $port, int $timeout);
 
     /**
      * @return $this
@@ -84,18 +77,8 @@ abstract class AbstractRedisConnection extends AbstractConnection
     }
 
     /**
-     * @param string $method
-     * @param array $arguments
-     *
-     * @return mixed
-     */
-    public function __call($method, $arguments)
-    {
-        return PhpHelper::call([$this->connection, $method], $arguments);
-    }
-
-    /**
      * @param string $uri
+     *
      * @return array
      * @throws RedisException
      */
@@ -114,5 +97,25 @@ abstract class AbstractRedisConnection extends AbstractConnection
         unset($configs['query']);
 
         return $configs;
+    }
+
+    /**
+     * @param string $host
+     * @param int $port
+     * @param int $timeout
+     *
+     * @return Redis | \Redis
+     */
+    abstract protected function getConnectRedis(string $host, int $port, int $timeout);
+
+    /**
+     * @param string $method
+     * @param array $arguments
+     *
+     * @return mixed
+     */
+    public function __call($method, $arguments)
+    {
+        return PhpHelper::call([$this->connection, $method], $arguments);
     }
 }

@@ -172,6 +172,8 @@ class Db
      */
     private static function getOperation(string $sql): string
     {
+        // remove annotion and blank
+        $sql = preg_replace('/\/\*[^\/]+\*\//', '', $sql);
         $sql = trim($sql);
         $sql = strtoupper($sql);
 

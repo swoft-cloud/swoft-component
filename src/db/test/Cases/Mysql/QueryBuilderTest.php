@@ -11,7 +11,6 @@
 namespace SwoftTest\Db\Cases\Mysql;
 
 use Swoft\Db\Query;
-use Swoft\Db\QueryBuilder;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\OtherUser;
 use SwoftTest\Db\Testing\Entity\User;
@@ -372,8 +371,81 @@ class QueryBuilderTest extends AbstractMysqlCase
      */
     public function testLimitByCo(array $ids)
     {
-        go(function ()use ($ids){
+        go(function () use ($ids) {
             $this->testLimit($ids);
         });
     }
+
+    /**
+     * @dataProvider mysqlProviders
+     *
+     * @param array $ids
+     */
+    public function testCondtion6(array $ids)
+    {
+        $users = Query::table(User::class)->condition(['name' => 'name', 'id' => $ids, ['name' => 'name']])->get()->getResult();
+        foreach ($users as $user) {
+            $this->assertTrue(in_array($user['id'], $ids));
+        }
+
+        $users = Query::table(User::class)->condition(['id' => $ids, ['age', 'between', 0, 1000], ['name' => 'name']])->get()->getResult();
+        foreach ($users as $user) {
+            $this->assertTrue(in_array($user['id'], $ids));
+        }
+
+        $users = Query::table(User::class)->condition([['age', 'between', 0, 1000], 'id' => $ids, 'name' => 'name'])->get()->getResult();
+        foreach ($users as $user) {
+            $this->assertTrue(in_array($user['id'], $ids));
+        }
+
+        $users = Query::table(User::class)->condition([['age', 'between', 0, 1000], ['id' => $ids], ['name' => 'name']])->get()->getResult();
+        foreach ($users as $user) {
+            $this->assertTrue(in_array($user['id'], $ids));
+        }
+
+        $users = Query::table(User::class)->condition([['id' => $ids]])->get()->getResult();
+        foreach ($users as $user) {
+            $this->assertTrue(in_array($user['id'], $ids));
+        }
+
+        $users = Query::table(User::class)->condition([])->get()->getResult();
+        $this->assertGreaterThan(2, $users);
+
+        $users = Query::table(User::class)->condition(['id', 'not in', []])->get()->getResult();
+        $this->assertGreaterThan(2, $users);
+
+        $users = Query::table(User::class)->condition(['id', 'in', []])->get()->getResult();
+        $this->assertGreaterThan(2, $users);
+
+        $users = Query::table(User::class)->condition(['id' => []])->get()->getResult();
+        $this->assertGreaterThan(2, $users);
+    }
+
+    /**
+     * @dataProvider mysqlProviders
+     *
+     * @param array $ids
+     */
+    public function testCondtion6ByCo(array $ids)
+    {
+        go(function () use ($ids) {
+            $this->testCondtion6($ids);
+        });
+    }
+
+    public function testCondionLikeOrNotLike(){
+
+        $name = uniqid();
+        $values = [
+            'name'        => $name,
+            'sex'         => 1,
+            'description' => 'this my desc',
+            'age'         => 99,
+        ];
+
+        $userid = Query::table(User::class)->insert($values)->getResult();
+        $user   = Query::table(User::class)->condition(['name', 'like', '%' . $name . '%'])->one()->getResult();
+        $this->assertEquals($user['id'], $userid);
+    }
+
 }
