@@ -518,29 +518,22 @@ class QueryBuilder implements QueryBuilderInterface
     public function condition(array $condition): self
     {
         foreach ($condition as $key => $value) {
-            if (\is_int($key)) {
+            if (\is_int($key) && is_array($value)) {
+                $this->condition($value);
+                continue;
+            }
+            if (is_int($key)) {
                 $this->andCondition($condition);
                 break;
             }
-            $this->operatorCondition($condition);
-            break;
+            if (\is_array($value)) {
+                $this->whereIn($key, $value);
+                continue;
+            }
+            $this->andWhere($key, $value);
         }
 
         return $this;
-    }
-
-    /**
-     * @param array $condition
-     */
-    public function operatorCondition(array $condition)
-    {
-        foreach ($condition as $column => $value) {
-            if (\is_array($value)) {
-                $this->whereIn($column, $value);
-                continue;
-            }
-            $this->andWhere($column, $value);
-        }
     }
 
     /**
@@ -557,6 +550,8 @@ class QueryBuilder implements QueryBuilderInterface
             case self::OPERATOR_LT:
             case self::OPERATOR_LTE:
             case self::OPERATOR_GTE:
+            case self::LIKE:
+            case self::NOT_LIKE:
                 list($column, $operator, $value) = $condition;
                 $this->andWhere($column, $value, $operator);
                 break;
@@ -644,7 +639,9 @@ class QueryBuilder implements QueryBuilderInterface
      */
     public function whereIn(string $column, array $values, string $connector = self::LOGICAL_AND): QueryBuilder
     {
-        $this->criteria($this->where, $column, $values, self::IN, $connector);
+        if (!empty($values)) {
+            $this->criteria($this->where, $column, $values, self::IN, $connector);
+        }
 
         return $this;
     }
@@ -660,7 +657,9 @@ class QueryBuilder implements QueryBuilderInterface
      */
     public function whereNotIn(string $column, array $values, string $connector = self::LOGICAL_AND): QueryBuilder
     {
-        $this->criteria($this->where, $column, $values, self::NOT_IN, $connector);
+        if (!empty($values)) {
+            $this->criteria($this->where, $column, $values, self::NOT_IN, $connector);
+        }
 
         return $this;
     }
@@ -1466,6 +1465,7 @@ class QueryBuilder implements QueryBuilderInterface
         $this->addDecorator(function ($result) {
             if (!empty($this->className) && !empty($result)) {
                 $entities = EntityHelper::listToEntity($result, $this->className);
+
                 return new Collection($entities);
             }
 

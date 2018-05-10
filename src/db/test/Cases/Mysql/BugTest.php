@@ -14,6 +14,11 @@ use SwoftTest\Db\Testing\Entity\User;
  */
 class BugTest extends AbstractMysqlCase
 {
+    public function testQueryAndCondtion()
+    {
+
+    }
+
     /**
      * @dataProvider relationProider
      *

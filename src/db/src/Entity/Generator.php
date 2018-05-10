@@ -17,6 +17,11 @@ class Generator extends AbstractGenerator implements GeneratorInterface
     private $db = null;
 
     /**
+     * @var string $instance 需要指定的数据实例别名
+     */
+    private $instance = null;
+
+    /**
      * @var array $tablesEnabled 操作的表
      */
     private $tablesEnabled = [];
@@ -56,9 +61,10 @@ class Generator extends AbstractGenerator implements GeneratorInterface
     public function execute(Schema $schema)
     {
         $tables = $this->getSchemaTables();
+        $instance = $this->getInstance();
         foreach ($tables as $table) {
             $columns = $this->getTableColumns($table['name']);
-            $this->parseProperty($table['name'], $table['comment'], $columns, $schema);
+            $this->parseProperty($table['name'], $table['comment'], $columns, $schema, $instance);
         }
     }
 
@@ -145,6 +151,27 @@ class Generator extends AbstractGenerator implements GeneratorInterface
     }
 
     /**
+     * 设置数据库实例别名
+     * @param string $value 数据库实例别名
+     * @return $this
+     */
+    public function setInstance($value): self
+    {
+        $this->instance = $value;
+
+        return $this;
+    }
+
+    /**
+     * 获取数据库实例别名
+     * @return string|null
+     */
+    public function getInstance()
+    {
+        return $this->instance;
+    }
+
+    /**
      * 设置扫描的表
      *
      * @param array $value 需要扫描的表
@@ -209,7 +236,7 @@ class Generator extends AbstractGenerator implements GeneratorInterface
     /**
      * 返回移除的表前缀
      *
-     * @retrun string 
+     * @retrun string
      */
     public function getremoveTablePrefix(): string
     {
