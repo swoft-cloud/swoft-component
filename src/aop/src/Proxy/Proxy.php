@@ -2,14 +2,10 @@
 
 namespace Swoft\Aop\Proxy;
 
-use PhpParser\Node;
-use PhpParser\NodeFinder;
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard as StandardPrinter;
 use PhpParser\PrettyPrinterAbstract;
-use Swoft\Aop\Aop;
-use Swoft\Aop\AopTrait;
 use Swoft\Aop\Ast\ClassLoader;
 use Swoft\Aop\Ast\Parser;
 use Swoft\Aop\Ast\Visitors\ProxyVisitor;
@@ -34,11 +30,6 @@ class Proxy
     protected static $printer;
 
     /**
-     * @var array
-     */
-    protected static $enhancementMethodsStmts;
-
-    /**
      * Return a proxy instance
      *
      * @param string $className
@@ -57,7 +48,6 @@ class Proxy
         // Generate proxy class
         $traverser = new NodeTraverser();
         $visitor = new ProxyVisitor($className, \uniqid('', false));
-        $visitor->setEnhancementMethodsStmts(self::getEnhancementMethodsStmts());
         $traverser->addVisitor($visitor);
         $proxyAst = $traverser->traverse($ast);
         if (! $proxyAst) {
@@ -68,7 +58,9 @@ class Proxy
         // Load class
         eval($proxyCode);
 
-        return $visitor->getFullProxyClassName();
+        $proxyClassName =$visitor->getFullProxyClassName();
+        unset($ast, $traverser, $visitor, $proxyAst, $proxyCode);
+        return $proxyClassName;
     }
 
     /**
@@ -129,24 +121,6 @@ class Proxy
             self::$printer = new StandardPrinter();
         }
         return self::$printer;
-    }
-
-    /**
-     * @return array
-     * @throws \RuntimeException
-     */
-    public static function getEnhancementMethodsStmts(): array
-    {
-        if (! self::$enhancementMethodsStmts) {
-            $ast = self::getParser()->getOrParse(AopTrait::class);
-            if (! $ast) {
-                throw new \RuntimeException(sprintf('Trait %s AST generate failure', AopTrait::class));
-            }
-            $nodeFinder = new NodeFinder();
-            $stmts = $nodeFinder->findInstanceOf($ast, Node\Stmt\ClassMethod::class);
-            $stmts && self::$enhancementMethodsStmts = $stmts;
-        }
-        return self::$enhancementMethodsStmts;
     }
 
 }
