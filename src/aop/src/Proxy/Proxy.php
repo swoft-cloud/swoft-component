@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Aop\Proxy;
 
 use PhpParser\NodeTraverser;
@@ -18,7 +25,6 @@ use Swoft\Aop\Ast\Visitors\ProxyVisitor;
  */
 class Proxy
 {
-
     /**
      * @var Parser
      */
@@ -58,7 +64,7 @@ class Proxy
         // Load class
         eval($proxyCode);
 
-        $proxyClassName =$visitor->getFullProxyClassName();
+        $proxyClassName = $visitor->getFullProxyClassName();
         unset($ast, $traverser, $visitor, $proxyAst, $proxyCode);
         return $proxyClassName;
     }
@@ -122,5 +128,4 @@ class Proxy
         }
         return self::$printer;
     }
-
 }

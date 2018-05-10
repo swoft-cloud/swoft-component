@@ -16,7 +16,6 @@ namespace Swoft\Aop;
  */
 trait AopTrait
 {
-
     /**
      * AOP proxy call method
      *
@@ -155,6 +154,4 @@ trait AopTrait
         $aspect = \bean($aspectClass);
         return $aspect->$aspectMethod(...$aspectArgs);
     }
-
-
 }

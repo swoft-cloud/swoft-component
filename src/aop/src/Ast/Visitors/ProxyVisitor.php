@@ -334,5 +334,4 @@ class ProxyVisitor extends NodeVisitorAbstract
         }
         return $name ? '\\' . $name : '';
     }
-
 }
