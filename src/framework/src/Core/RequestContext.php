@@ -188,7 +188,7 @@ class RequestContext
     {
         $contextData = self::getCoroutineContext(self::DATA_KEY);
 
-        return $contextData['spanid'] ? (int)$contextData['spanid'] : 0;
+        return isset($contextData['spanid']) ? (int)$contextData['spanid'] : 0;
     }
 
     /**
