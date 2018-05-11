@@ -53,7 +53,14 @@ before_install:
                   `ctime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
                   `utime` datetime NOT NULL,
                   PRIMARY KEY (`s_id`)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8'
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+                CREATE TABLE `keyword` (
+                  `id` int(11) NOT NULL AUTO_INCREMENT,
+                  `drop` int(1) NOT NULL DEFAULT '0',
+                  `alert` int(1) NOT NULL DEFAULT '0',
+                  `desc` varchar(240) DEFAULT NULL,
+                  PRIMARY KEY (`id`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8;'
     - mysql -e 'CREATE DATABASE IF NOT EXISTS test2;
                 USE test2;
                 CREATE TABLE IF NOT EXISTS `user` (
