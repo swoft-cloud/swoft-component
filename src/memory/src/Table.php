@@ -289,6 +289,14 @@ class Table implements TableInterface
     }
 
     /**
+     * @return int
+     */
+    public function count(): int
+    {
+        return $this->getTable()->count();
+    }
+
+    /**
      * Decrease
      *
      * @param string    $key    Index key

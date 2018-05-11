@@ -6,6 +6,7 @@ use Swoft\App;
 use Swoft\Bean\Annotation\BeforeStart;
 use Swoft\Bootstrap\Listeners\Interfaces\BeforeStartInterface;
 use Swoft\Bootstrap\Server\AbstractServer;
+use Swoft\Task\Crontab\CronManager;
 use Swoft\Task\Crontab\TableCrontab;
 
 /**
@@ -19,14 +20,16 @@ class BeforeStartListener implements BeforeStartInterface
      */
     public function onBeforeStart(AbstractServer $server)
     {
-        /** @var array[] $settings */
-        $settings = App::getAppProperties()->get('server');
-        $settings = $settings['server'];
+//        /** @var array[] $settings */
+//        $settings = App::getAppProperties()->get('server');
+//        $settings = $settings['server'];
 
-        // Init crontab share memory table
-        if (isset($settings['cronable']) && (int)$settings['cronable'] === 1) {
-            $this->initCrontabMemoryTable();
-        }
+//        // Init crontab share memory table
+//        if (isset($settings['cronable']) && (int)$settings['cronable'] === 1) {
+//            $this->initCrontabMemoryTable();
+//        }
+
+        CronManager::init();
     }
 
     /**
