@@ -10,6 +10,9 @@ use Swoft\Task\Exception\CronException;
  */
 class CronManager
 {
+    /**
+     * Memory table
+     */
     const CRON_TABLE = 'table';
 
     /**
@@ -40,6 +43,7 @@ class CronManager
         }
 
         $beanName = self::$crons[$cron];
+
         return bean($beanName);
     }
 

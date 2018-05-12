@@ -13,12 +13,17 @@ class CronHelper
     /**
      * @var string
      */
-    private static $cronReg = '/^((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)$/i';
+    private static $cronSecondReg = '/^((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)$/i';
+
+    /**
+     * @var string
+     */
+    private static $cronMinuteReg = '/^((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)$/i';
 
     /**
      * Parse string
      *
-     * @param string $cronString :
+     * @param string $express   :
      *
      *      0     1    2    3    4    5
      *      *     *    *    *    *    *
@@ -30,33 +35,25 @@ class CronHelper
      *      |     |    +--------- hour (0 - 23)
      *      |     +----------- min (0 - 59)
      *      +------------- sec (0-59)
-     * @param int    $startTime  timestamp [default=current timestamp]
+     * @param int    $startTime timestamp [default=current timestamp]
      *
      * @throws \Swoft\Task\Exception\CronException
      * @return array unix timestamp - 下一分钟内执行是否需要执行任务，如果需要，则把需要在那几秒执行返回
      */
-    public static function parse(string $cronString, int $startTime = null): array
+    public static function parse(string $express, int $startTime = null): array
     {
-        $cronString = str_replace("\\", '', $cronString);
-        if (!preg_match(self::$cronReg, trim($cronString))) {
-            throw new CronException(sprintf('The %s is invalid crontab format', $cronString));
+        $express = str_replace("\\", '', $express);
+        if (!preg_match(self::$cronSecondReg, trim($express)) && !preg_match(self::$cronMinuteReg, trim($express))) {
+            throw new CronException(sprintf('The %s is invalid crontab format', $express));
         }
 
         if ($startTime && !is_numeric($startTime)) {
             throw new CronException(sprintf('Startime must be a valid unix timestamp (%d given)', $startTime));
         }
 
-        $cron  = preg_split("/[\s]+/i", trim($cronString));
+        $cron  = preg_split("/[\s]+/i", trim($express));
         $start = empty($startTime) ? time() : $startTime;
-
-        $date = [
-            'second'  => (empty($cron[0])) ? [1 => 1] : self::parseCronNumber($cron[0], 0, 59),
-            'minutes' => self::parseCronNumber($cron[1], 0, 59),
-            'hours'   => self::parseCronNumber($cron[2], 0, 23),
-            'day'     => self::parseCronNumber($cron[3], 1, 31),
-            'month'   => self::parseCronNumber($cron[4], 1, 12),
-            'week'    => self::parseCronNumber($cron[5], 0, 6),
-        ];
+        $date  = self::getCronDate($cron);
 
         $isMonth      = in_array(intval(date('n', $start)), $date['month']);
         $isMinAndHour = in_array(intval(date('i', $start)), $date['minutes']) && in_array(intval(date('G', $start)), $date['hours']);
@@ -67,6 +64,36 @@ class CronHelper
         }
 
         return [];
+    }
+
+    private static function getCronDate(array $cron): array
+    {
+        if (isset($cron[5])) {
+            $second  = empty($cron[0]) ? [1 => 1] : $cron[0];
+            $minutes = $cron[1];
+            $hours   = $cron[2];
+            $day     = $cron[3];
+            $month   = $cron[4];
+            $week    = $cron[5];
+        } else {
+            $second  = [1 => 1];
+            $minutes = $cron[0];
+            $hours   = $cron[1];
+            $day     = $cron[2];
+            $month   = $cron[3];
+            $week    = $cron[4];
+        }
+
+        $date = [
+            'second'  => self::parseCronNumber($second, 1, 59),
+            'minutes' => self::parseCronNumber($minutes, 0, 59),
+            'hours'   => self::parseCronNumber($hours, 0, 23),
+            'day'     => self::parseCronNumber($day, 1, 31),
+            'month'   => self::parseCronNumber($month, 1, 12),
+            'week'    => self::parseCronNumber($week, 0, 6),
+        ];
+
+        return $date;
     }
 
     /**

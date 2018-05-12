@@ -2,19 +2,11 @@
 
 namespace Swoft\Task\Crontab;
 
-use Swoft\App;
-
 /**
  * AbstractCron
  */
 abstract class AbstractCron implements CronInterface
 {
-    const NORMAL = 0;
-
-    const FINISH = 1;
-
-    const START = 2;
-
     /**
      * @var int
      */
@@ -31,7 +23,7 @@ abstract class AbstractCron implements CronInterface
     protected $cron = CronManager::CRON_TABLE;
 
     /**
-     * Init
+     * Initialize
      */
     public function initialize()
     {
@@ -43,11 +35,11 @@ abstract class AbstractCron implements CronInterface
      */
     protected function isCron(): bool
     {
-//        /** @var array[] $settings */
-//        $settings = App::getAppProperties()->get('server');
-//        $settings = $settings['crontab'];
-//        $cron     = $settings['cron']?? CronManager::CRON_TABLE;
-//        $isCron   = env('cron', CronManager::CRON_TABLE) == $cron;
+        //        /** @var array[] $settings */
+        //        $settings = App::getAppProperties()->get('server');
+        //        $settings = $settings['crontab'];
+        //        $cron     = $settings['cron']?? CronManager::CRON_TABLE;
+        //        $isCron   = env('cron', CronManager::CRON_TABLE) == $cron;
 
         return true;
     }

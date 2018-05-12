@@ -2,13 +2,15 @@
 
 namespace Swoft\Task\Bootstrap;
 
-use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
+use Swoft\Helper\JsonHelper;
+use Swoft\Log\Log;
 use Swoft\Memory\TableBuilder;
 use Swoft\Task\Bean\Collector\TaskCollector;
 use Swoft\Task\Crontab\AbstractCron;
 use Swoft\Task\Exception\CronException;
 use Swoft\Task\Helper\CronHelper;
+use Swoft\Task\Helper\Express;
 use Swoft\Task\Task;
 use Swoole\Table;
 
@@ -17,37 +19,58 @@ use Swoole\Table;
  */
 class CronTable extends AbstractCron
 {
+    /**
+     * Task table name
+     */
     const TABLE_TASK = 'task';
 
+    /**
+     * Queue table name
+     */
     const TABLE_QUEUE = 'queue';
 
     /**
-     * @var array
+     * @var int
      */
-    private $taskColumns
-        = [
-            'rule'       => [Table::TYPE_STRING, 100],
-            'taskClass'  => [Table::TYPE_STRING, 255],
-            'taskMethod' => [Table::TYPE_STRING, 255],
-            'add_time'   => [Table::TYPE_STRING, 11],
-        ];
+    private $lastTime;
 
     /**
-     * @var array
+     * @var int
      */
-    private $queueColumns
-        = [
-            'taskClass'  => [Table::TYPE_STRING, 255],
-            'taskMethod' => [Table::TYPE_STRING, 255],
-            'minute'     => [Table::TYPE_STRING, 20],
-            'sec'        => [Table::TYPE_STRING, 20],
-            'runStatus'  => [Table::TYPE_INT, 4],
-        ];
+    private $firstTime = 60 * 3;
+
+    /**
+     * @var int
+     */
+    private $intervalTime = 60;
 
     /**
      * @var bool
      */
     private $isInitTaskTable = false;
+
+    /**
+     * @var array
+     */
+    private $clearQueueKeys = [];
+
+    /**
+     * @var array
+     */
+    private $taskColumns = [
+            'express' => [Table::TYPE_STRING, 100],
+            'class'   => [Table::TYPE_STRING, 255],
+            'method'  => [Table::TYPE_STRING, 255],
+            'ctime'   => [Table::TYPE_STRING, 11],
+        ];
+
+    /**
+     * @var array
+     */
+    private $queueColumns = [
+            'tasks' => [Table::TYPE_STRING, 500],
+            'ctime' => [Table::TYPE_STRING, 11],
+        ];
 
     /**
      * Init
@@ -60,55 +83,74 @@ class CronTable extends AbstractCron
     }
 
     /**
-     * Produce
+     * Produce task
+     *
+     * @param bool $isFirst
      */
-    public function produce()
+    public function produce(bool $isFirst = false)
     {
         $this->initTaskTable();
 
         $taskTable = TableBuilder::get(self::TABLE_TASK);
         if ($taskTable->count() <= 0) {
+            Log::trace('No execution of the task!');
             return;
         }
 
-        $time  = time();
-        $tasks = $taskTable->getTable();
-        foreach ($tasks as $id => $task) {
-            $nextTasks = CronHelper::parse($task['rule'], $time);
-            if (empty($nextTasks)) {
-                continue;
-            }
+        $time    = ($this->lastTime === null) ? time() : $this->lastTime;
+        $endTime = $isFirst ? $time + $this->firstTime : $time + $this->intervalTime;
 
-            $this->produceTask($task, $nextTasks);
+        // Produce tasks
+        $tasks = $taskTable->getTable();
+        for (; $time < $endTime; $time++) {
+            $result = $this->produceTask($tasks, $time);
+            if (!$result) {
+                Log::error(sprintf('Produce task error! time=%d', $time));
+            }
+            $this->lastTime = $endTime;
         }
+
+        Log::trace(sprintf('Produce task completion! lastTime=%d', $this->lastTime));
     }
 
     /**
-     * Consume
+     * Consume task
      */
     public function consume()
     {
-        $queueTable = TableBuilder::get(self::TABLE_QUEUE);
-        $tasks      = $queueTable->getTable();
+        // Clear keys
+        $this->clearQueueKeys();
 
-        $runTasks = [];
-        foreach ($tasks as $key => $task) {
-            if ($task['minute'] != date('YmdHi') || time() != $task['sec'] || $task['runStatus'] != self::NORMAL) {
+        $key        = time();
+        $queueTable = TableBuilder::get(self::TABLE_QUEUE);
+        $tasks      = $queueTable->get($key, 'tasks');
+
+        if ($tasks === false || empty($tasks)) {
+            Log::trace(sprintf('No execution of the task! time=%d', $key));
+
+            return;
+        }
+
+        $tasks = JsonHelper::decode($tasks, true);
+        foreach ($tasks as $task) {
+            $result = Task::deliverByProcess($task['class'], $task['method']);
+            if ($result) {
+                Log::trace(sprintf('Deliver task success! class=%s, method=%s, time=%d', $task['class'], $task['method'], $key));
                 continue;
             }
 
-            $runTasks[$key] = [
-                'taskClass'  => $task['taskClass'],
-                'taskMethod' => $task['taskMethod'],
-            ];
+            Log::error(sprintf('Deliver task fail! class=%s, method=%s, time=%d', $task['class'], $task['method'], $key));
         }
 
-        // Run task
-        foreach ($runTasks as $key => $runTask) {
-            $queueTable->set($key, ['runStatus' => self::START]);
-            Task::deliverByProcess($runTask['taskClass'], $runTask['taskMethod']);
-            $queueTable->del($key);
+        $result = $queueTable->del($key);
+        if ($result) {
+            Log::trace(sprintf('Consume delete key success, time=%d', $key));
+
+            return;
         }
+
+        $this->clearQueueKeys[] = $key;
+        Log::trace(sprintf('Consume delete key fail, time=%d', $key));
     }
 
     /**
@@ -124,34 +166,6 @@ class CronTable extends AbstractCron
     }
 
     /**
-     * @param array $task
-     * @param array $nextTasks
-     */
-    private function produceTask(array $task, array $nextTasks)
-    {
-        $min        = date('YmdHi');
-        $sec        = strtotime(date('Y-m-d H:i'));
-        $queueTable = TableBuilder::get(self::TABLE_QUEUE);
-
-        foreach ($nextTasks as $time) {
-            if ($queueTable->count() >= $this->queueSize) {
-                continue;
-            }
-
-            $data = [
-                'taskClass'  => $task['taskClass'],
-                'taskMethod' => $task['taskMethod'],
-                'minute'     => $min,
-                'sec'        => $time + $sec,
-                'runStatus'  => self::NORMAL,
-            ];
-            $key  = $this->getTableKey($task['rule'], $task['taskClass'], $task['taskMethod'], $min, $time + $sec);
-            var_dump($time + $sec);
-            $queueTable->set($key, $data);
-        }
-    }
-
-    /**
      * Init task table
      */
     private function initTaskTable()
@@ -160,8 +174,7 @@ class CronTable extends AbstractCron
             return;
         }
 
-        var_dump('isInitTaskTable');
-
+        // Task infos
         $collector = TaskCollector::getCollector();
         $tasks     = $collector['crons']?? [];
         $taskTable = TableBuilder::get(self::TABLE_TASK);
@@ -178,15 +191,62 @@ class CronTable extends AbstractCron
             }
 
             $data = [
-                'rule'       => $task['cron'],
-                'taskClass'  => $task['task'],
-                'taskMethod' => $task['method'],
-                'add_time'   => time(),
+                'express' => $task['cron'],
+                'class'   => $task['task'],
+                'method'  => $task['method'],
+                'ctime'   => time(),
             ];
-            $taskTable->set($key, $data);
+
+            $result = $taskTable->set($key, $data);
+            if ($result) {
+                Log::trace(sprintf('Load task success, info=%s', JsonHelper::encode($data, JSON_UNESCAPED_UNICODE)));
+                continue;
+            }
+            Log::error(sprintf('Load task error, info=%s', JsonHelper::encode($data, JSON_UNESCAPED_UNICODE)));
         }
 
         $this->isInitTaskTable = true;
+    }
+
+    /**
+     * @param mixed $tasks
+     * @param int   $time
+     *
+     * @return bool
+     */
+    private function produceTask($tasks, int $time): bool
+    {
+        $runTasks = [];
+        foreach ($tasks as $task) {
+            $express = $task['express'];
+            if (!Express::validateExpress($express, $time)) {
+                continue;
+            }
+
+            $runTasks[] = [
+                'class'  => $task['class'],
+                'method' => $task['method'],
+            ];
+        }
+
+        $queueTable = TableBuilder::get(self::TABLE_QUEUE);
+
+        return $queueTable->set($time, ['tasks' => JsonHelper::encode($runTasks, JSON_UNESCAPED_UNICODE)]);
+    }
+
+    /**
+     * Clear queue keys
+     */
+    private function clearQueueKeys()
+    {
+        if (empty($this->clearQueueKeys)) {
+            return;
+        }
+
+        $queueTable = TableBuilder::get(self::TABLE_QUEUE);
+        foreach ($this->clearQueueKeys as $key) {
+            $queueTable->del($key);
+        }
     }
 
     /**

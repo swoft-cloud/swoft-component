@@ -5,12 +5,14 @@ namespace Swoft\Task\Crontab;
 use Swoft\Bean\Annotation\Bean;
 
 /**
+ * Crontab
+ *
  * @Bean()
  */
 class Crontab implements CronInterface
 {
     /**
-     * Init
+     * Initialize
      */
     public function initialize()
     {
@@ -22,21 +24,19 @@ class Crontab implements CronInterface
      */
     public function consume()
     {
-        swoole_timer_tick(0.5 * 1000, function () {
+        swoole_timer_tick(1 * 1000, function () {
             CronManager::getCron()->consume();
         });
     }
 
     /**
-     * Produce task
+     * @param bool $isFirst
      */
-    public function produce()
+    public function produce(bool $isFirst = false)
     {
-        CronManager::getCron()->produce();
+        CronManager::getCron()->produce(true);
         swoole_timer_tick(60 * 1000, function () {
-            var_dump('produce-before='.time());
             CronManager::getCron()->produce();
-            var_dump('produce-after='.time());
         });
     }
 }
