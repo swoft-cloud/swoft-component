@@ -10,7 +10,7 @@ use Swoft\Task\Bean\Collector\TaskCollector;
 use Swoft\Task\Crontab\AbstractCron;
 use Swoft\Task\Exception\CronException;
 use Swoft\Task\Helper\CronHelper;
-use Swoft\Task\Helper\Express;
+use Swoft\Task\Helper\CronExpression;
 use Swoft\Task\Task;
 use Swoole\Table;
 
@@ -58,10 +58,10 @@ class CronTable extends AbstractCron
      * @var array
      */
     private $taskColumns = [
-            'express' => [Table::TYPE_STRING, 100],
-            'class'   => [Table::TYPE_STRING, 255],
-            'method'  => [Table::TYPE_STRING, 255],
-            'ctime'   => [Table::TYPE_STRING, 11],
+            'expression' => [Table::TYPE_STRING, 100],
+            'class'      => [Table::TYPE_STRING, 255],
+            'method'     => [Table::TYPE_STRING, 255],
+            'ctime'      => [Table::TYPE_STRING, 11],
         ];
 
     /**
@@ -192,7 +192,7 @@ class CronTable extends AbstractCron
             }
 
             $data = [
-                'express' => $task['cron'],
+                'expression' => $task['cron'],
                 'class'   => $task['task'],
                 'method'  => $task['method'],
                 'ctime'   => time(),
@@ -219,8 +219,8 @@ class CronTable extends AbstractCron
     {
         $runTasks = [];
         foreach ($tasks as $task) {
-            $express = $task['express'];
-            if (!Express::validateExpress($express, $time)) {
+            $expression = $task['expression'];
+            if (!CronExpression::validateExpression($expression, $time)) {
                 continue;
             }
 

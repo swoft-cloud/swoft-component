@@ -3,7 +3,7 @@
 namespace SwoftTest\Task;
 
 use PHPUnit\Framework\TestCase;
-use Swoft\Task\Helper\Express;
+use Swoft\Task\Helper\CronExpression;
 
 class AbstractTestCase extends TestCase
 {
@@ -11,9 +11,9 @@ class AbstractTestCase extends TestCase
      * @param string $express
      * @param string $time
      */
-    protected function assertExpressTrue(string $express, string $time)
+    protected function assertExpressionTrue(string $express, string $time)
     {
-        $result = Express::validateExpress($express, strtotime($time));
+        $result = CronExpression::validateExpression($express, strtotime($time));
         $this->assertTrue($result);
     }
 
@@ -21,9 +21,9 @@ class AbstractTestCase extends TestCase
      * @param string $express
      * @param string $time
      */
-    protected function assertExpressFalse(string $express, string $time)
+    protected function assertExpressionFalse(string $express, string $time)
     {
-        $result = Express::validateExpress($express, strtotime($time));
+        $result = CronExpression::validateExpression($express, strtotime($time));
         $this->assertFalse($result);
     }
 }

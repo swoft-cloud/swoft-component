@@ -5,9 +5,9 @@ namespace Swoft\Task\Helper;
 use Swoft\Task\Exception\CronException;
 
 /**
- * Express parser
+ * Expression parser
  */
-class Express
+class CronExpression
 {
     /**
      * @var string
@@ -20,22 +20,22 @@ class Express
     private static $swoftReg = '/^((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)$/i';
 
     /**
-     * @param string   $express
+     * @param string   $expression
      * @param int|null $time
      *
      * @return array|bool
      * @throws CronException
      */
-    public static function validateExpress(string $express, int $time = null)
+    public static function validateExpression(string $expression, int $time = null)
     {
-        if (!preg_match(self::$linuxReg, trim($express)) && !preg_match(self::$swoftReg, trim($express))) {
-            throw new CronException(sprintf('The %s is invalid crontab format', $express));
+        if (!preg_match(self::$linuxReg, trim($expression)) && !preg_match(self::$swoftReg, trim($expression))) {
+            throw new CronException(sprintf('The %s is invalid crontab format', $expression));
         }
 
         $time = ($time === null) ? time() : $time;
 
         $dateTime = self::formatDateTime($time);
-        $cronTime = self::formatCronTime($express);
+        $cronTime = self::formatCronTime($expression);
         if (!is_array($cronTime)) {
             return false;
         }
@@ -59,48 +59,48 @@ class Express
     }
 
     /**
-     * @param string $express
+     * @param string $expression
      *
      * @return array
      */
-    static public function formatCronTime(string $express): array
+    static public function formatCronTime(string $expression): array
     {
-        $express = trim($express);
+        $expression = trim($expression);
 
         $cronTime = [];
-        $parts    = explode(' ', $express);
+        $parts    = explode(' ', $expression);
         if (count($parts) == 5) {
             array_unshift($parts, '0');
         }
 
         // Format: `second minute hours day month week`
-        $cronTime[0] = self::parseExpressBlock($parts[0], 0, 59);
-        $cronTime[1] = self::parseExpressBlock($parts[1], 0, 59);
-        $cronTime[2] = self::parseExpressBlock($parts[2], 0, 23);
-        $cronTime[3] = self::parseExpressBlock($parts[3], 1, 31);
-        $cronTime[4] = self::parseExpressBlock($parts[4], 1, 12);
-        $cronTime[5] = self::parseExpressBlock($parts[5], 0, 6);
+        $cronTime[0] = self::parseExpressionBlock($parts[0], 0, 59);
+        $cronTime[1] = self::parseExpressionBlock($parts[1], 0, 59);
+        $cronTime[2] = self::parseExpressionBlock($parts[2], 0, 23);
+        $cronTime[3] = self::parseExpressionBlock($parts[3], 1, 31);
+        $cronTime[4] = self::parseExpressionBlock($parts[4], 1, 12);
+        $cronTime[5] = self::parseExpressionBlock($parts[5], 0, 6);
 
         return $cronTime;
     }
 
     /**
-     * @param string $expressBlock
+     * @param string $expressionBlock
      * @param int    $rangeLeft
      * @param int    $rangeRight
      *
      * @return array
      * @throws CronException
      */
-    private static function parseExpressBlock(string $expressBlock, int $rangeLeft, int $rangeRight): array
+    private static function parseExpressionBlock(string $expressionBlock, int $rangeLeft, int $rangeRight): array
     {
         $list = array();
 
         // Delimiter `,`
-        if (false !== strpos($expressBlock, ',')) {
-            $arr = explode(',', $expressBlock);
+        if (false !== strpos($expressionBlock, ',')) {
+            $arr = explode(',', $expressionBlock);
             foreach ($arr as $v) {
-                $tmp  = self::parseExpressBlock($v, $rangeLeft, $rangeRight);
+                $tmp  = self::parseExpressionBlock($v, $rangeLeft, $rangeRight);
                 $list = array_merge($list, $tmp);
             }
 
@@ -108,21 +108,21 @@ class Express
         }
 
         // Delimiter `/`
-        $tmp          = explode('/', $expressBlock);
-        $expressBlock = $tmp[0];
-        $step         = isset($tmp[1]) ? $tmp[1] : 1;
+        $tmp             = explode('/', $expressionBlock);
+        $expressionBlock = $tmp[0];
+        $step            = isset($tmp[1]) ? $tmp[1] : 1;
 
         // Delimiter `-`
-        if (false !== strpos($expressBlock, '-')) {
-            list($min, $max) = explode('-', $expressBlock);
+        if (false !== strpos($expressionBlock, '-')) {
+            list($min, $max) = explode('-', $expressionBlock);
             if ($min > $max) {
                 throw new CronException('Min can\'t be greater than max');
             }
-        } elseif ('*' == $expressBlock) {
+        } elseif ('*' == $expressionBlock) {
             $min = $rangeLeft;
             $max = $rangeRight;
         } else {
-            $min = $max = $expressBlock;
+            $min = $max = $expressionBlock;
         }
 
         // Any number
