@@ -32,7 +32,6 @@ abstract class AbstractCron implements CronInterface
         /** @var array[] $settings */
         $settings = App::getAppProperties()->get('server');
         $settings = $settings['crontab'];
-        var_dump($settings);
         $this->taskCount = (int)$settings['task_count']?? $this->taskCount;
         $this->queueSize = (int)$settings['task_queue']?? $this->taskCount;
     }
@@ -47,7 +46,6 @@ abstract class AbstractCron implements CronInterface
         $settings = $settings['crontab'];
         $cron     = $settings['cron']?? CronManager::CRON_TABLE;
 
-        var_dump($settings);
         return $this->cron == $cron;
     }
 }
