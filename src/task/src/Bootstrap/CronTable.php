@@ -79,6 +79,7 @@ class CronTable extends AbstractCron
     {
         if (CronHelper::isCronable() && $this->isCron()) {
             $this->createTable();
+            parent::initialize();
         }
     }
 

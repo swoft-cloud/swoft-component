@@ -10,17 +10,32 @@ use Swoft\Task\Exception\CronException;
 class Express
 {
     /**
-     * @param string   $sexpress
+     * @var string
+     */
+    private static $linuxReg = '/^((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)$/i';
+
+    /**
+     * @var string
+     */
+    private static $swoftReg = '/^((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)$/i';
+
+    /**
+     * @param string   $express
      * @param int|null $time
      *
      * @return array|bool
+     * @throws CronException
      */
-    public static function validateExpress(string $sexpress, int $time = null)
+    public static function validateExpress(string $express, int $time = null)
     {
+        if (!preg_match(self::$linuxReg, trim($express)) && !preg_match(self::$swoftReg, trim($express))) {
+            throw new CronException(sprintf('The %s is invalid crontab format', $express));
+        }
+
         $time = ($time === null) ? time() : $time;
 
         $dateTime = self::formatDateTime($time);
-        $cronTime = self::formatCronTime($sexpress);
+        $cronTime = self::formatCronTime($express);
         if (!is_array($cronTime)) {
             return false;
         }
@@ -29,21 +44,18 @@ class Express
     }
 
     /**
-     * 使用格式化的数据检查某时间($format_time)是否符合某个corntab时间计划($format_cron)
-     *
-     * @param array $format_time self::format_timestamp()格式化时间戳得到
-     * @param array $format_cron self::format_crontab()格式化的时间计划
+     * @param array $dateTime
+     * @param array $cronTime
      *
      * @return bool
      */
-    static public function matchTime(array $format_time, array $format_cron)
+    public static function matchTime(array $dateTime, array $cronTime)
     {
-        return (!$format_cron[0] || in_array($format_time[0], $format_cron[0]))
-            && (!$format_cron[1] || in_array($format_time[1], $format_cron[1]))
-            && (!$format_cron[2] || in_array($format_time[2], $format_cron[2]))
-            && (!$format_cron[3] || in_array($format_time[3], $format_cron[3]))
-            && (!$format_cron[4] || in_array($format_time[4], $format_cron[4]))
-            && (!$format_cron[5] || in_array($format_time[4], $format_cron[5]));
+        $secAndMinResult   = (!$cronTime[0] || in_array($dateTime[0], $cronTime[0])) && (!$cronTime[1] || in_array($dateTime[1], $cronTime[1]));
+        $hoursAndDayResult = (!$cronTime[2] || in_array($dateTime[2], $cronTime[2])) && (!$cronTime[3] || in_array($dateTime[3], $cronTime[3]));
+        $monAndWeekResult  = (!$cronTime[4] || in_array($dateTime[4], $cronTime[4])) && (!$cronTime[5] || in_array($dateTime[4], $cronTime[5]));
+
+        return $secAndMinResult && $hoursAndDayResult && $monAndWeekResult;
     }
 
     /**
