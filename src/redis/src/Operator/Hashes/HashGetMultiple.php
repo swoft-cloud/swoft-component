@@ -15,12 +15,4 @@ class HashGetMultiple extends Command
     {
         return 'hMGet';
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function filterArguments(array $arguments)
-    {
-        return self::normalizeVariadic($arguments);
-    }
 }
