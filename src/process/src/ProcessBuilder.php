@@ -14,7 +14,7 @@ use Swoole\Process as SwooleProcess;
 
 
 /**
- * The process builder
+ * ProcessBuilder
  */
 class ProcessBuilder
 {
