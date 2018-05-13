@@ -289,7 +289,7 @@ class Redis implements CacheInterface
                 continue;
             }
 
-            $value                   = ($value === null) ? false : $value;
+            $value = ($value === null) ? false : $value;
             $result[$hashKeys[$key]] = $value;
         }
 
