@@ -206,19 +206,24 @@ class Statement implements StatementInterface
     protected function getSelectString(): string
     {
         $statement = '';
-        $select    = $this->builder->getSelect();
+        $fieldSelect    = $this->builder->getSelect();
         $aggregate = $this->builder->getAggregate();
-        if (empty($select) && empty($aggregate)) {
+        if (empty($fieldSelect) && empty($aggregate)) {
             return $statement;
         }
 
-        $select = $this->getAggregateStatement($select, $aggregate);
+        $select = $this->getAggregateStatement($fieldSelect, $aggregate);
 
         // 字段组拼
         foreach ($select as $column => $alias) {
+            // Filter db keyword
+            if (array_key_exists($column, $fieldSelect) && trim($column) != '*' && strpos($column, '.') === false) {
+                $column = sprintf('`%s`', $column);
+            }
+
             $statement .= $column;
             if ($alias !== null) {
-                $statement .= ' AS ' . $alias;
+                $statement .= sprintf(' AS `%s`', $alias);
             }
             $statement .= ', ';
         }
