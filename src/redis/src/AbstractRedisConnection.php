@@ -34,10 +34,10 @@ abstract class AbstractRedisConnection extends AbstractConnection
     {
         $timeout = $this->pool->getTimeout();
         $address = $this->pool->getConnectionAddress();
-        $config  = $this->parseUri($address);
+        $config = $this->parseUri($address);
 
-        $host  = $config['host'];
-        $port  = (int)$config['port'];
+        $host = $config['host'];
+        $port = (int)$config['port'];
         $redis = $this->getConnectRedis($host, $port, $timeout);
         if (isset($config['auth']) && false === $redis->auth($config['auth'])) {
             $error = sprintf('Redis connection authentication failed host=%s port=%d auth=%s', $host, (int)$port, (string)$config['auth']);
@@ -101,8 +101,8 @@ abstract class AbstractRedisConnection extends AbstractConnection
 
     /**
      * @param string $host
-     * @param int    $port
-     * @param int    $timeout
+     * @param int $port
+     * @param int $timeout
      *
      * @return Redis | \Redis
      */
@@ -110,7 +110,7 @@ abstract class AbstractRedisConnection extends AbstractConnection
 
     /**
      * @param string $method
-     * @param array  $arguments
+     * @param array $arguments
      *
      * @return mixed
      */

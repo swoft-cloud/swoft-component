@@ -48,7 +48,6 @@ use Swoft\Redis\Pool\RedisPool;
  * @method bool hIncrBy($key, $hashKey, $value)
  * @method bool hIncrByFloat($key, $field, $increment)
  * @method bool hMset($key, $hashKeys)
- * @method array hMGet($key, $hashKeys)
  * list
  * @method array brPop(array $keys, $timeout)
  * @method array blPop(array $keys, $timeout)
@@ -269,6 +268,32 @@ class Redis implements CacheInterface
     public function mget(array $keys)
     {
         return $this->getMultiple($keys, false);
+    }
+
+    /**
+     * @param string $key
+     * @param array  $hashKeys
+     *
+     * @return array
+     */
+    public function hMGet(string $key, array $hashKeys): array
+    {
+        $hMgetResult = $this->call('hMGet', [$key, $hashKeys]);
+        if (!App::isCoContext()) {
+            return $hMgetResult;
+        }
+
+        $result = [];
+        foreach ($hMgetResult as $key => $value) {
+            if (!isset($hashKeys[$key])) {
+                continue;
+            }
+
+            $value = ($value === null) ? false : $value;
+            $result[$hashKeys[$key]] = $value;
+        }
+
+        return $result;
     }
 
     /**
