@@ -3,6 +3,7 @@
 namespace Swoft\Task\Crontab;
 
 use Swoft\Bean\Annotation\Bean;
+use Swoft\Task\Bean\Collector\TaskCollector;
 
 /**
  * Crontab
@@ -38,5 +39,16 @@ class Crontab implements CronInterface
         swoole_timer_tick(60 * 1000, function () {
             CronManager::getCron()->produce();
         });
+    }
+
+    /**
+     * @return array
+     */
+    public function getTaskList()
+    {
+        $collector = TaskCollector::getCollector();
+        $tasks     = $collector['crons']?? [];
+
+        return $tasks;
     }
 }

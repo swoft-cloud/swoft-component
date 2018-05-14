@@ -19,6 +19,7 @@ use Swoft\Http\Server\Bean\Annotation\Controller;
 use Swoft\Http\Server\Bean\Annotation\RequestMapping;
 use Swoft\Http\Server\Bean\Annotation\RequestMethod;
 use Swoft\Http\Server\Payload;
+use Swoft\Task\Crontab\Crontab;
 
 /**
  * Class ServerController
@@ -108,14 +109,14 @@ class ServerController
      */
     public function crontab(): array
     {
-        if (!App::hasBean('crontab')) {
+        if (!App::hasBean(Crontab::class)) {
             return [];
         }
 
-        /** @var \Swoft\Task\Crontab\CrontabBak $cronTab */
-        $cronTab = \bean('crontab');
+        /** @var \Swoft\Task\Crontab\Crontab $cronTab */
+        $cronTab = \bean(Crontab::class);
 
-        return $cronTab->getTasks();
+        return $cronTab->getTaskList();
     }
 
     /**
