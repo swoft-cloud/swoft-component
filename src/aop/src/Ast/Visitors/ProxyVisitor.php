@@ -332,6 +332,6 @@ class ProxyVisitor extends NodeVisitorAbstract
                 $name = $this->namespace . '\\' . $this->extends;
             }
         }
-        return $name ? '\\' . $name : '';
+        return $name !== null ? '\\' . $name : '';
     }
 }
