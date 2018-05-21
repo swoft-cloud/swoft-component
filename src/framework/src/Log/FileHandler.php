@@ -93,12 +93,7 @@ class FileHandler extends AbstractProcessingHandler
      */
     private function aysncWrite(string $logFile, string $messageText)
     {
-        while (true) {
-            $result = \Swoole\Async::writeFile($logFile, $messageText, null, FILE_APPEND);
-            if ($result == true) {
-                break;
-            }
-        }
+        \Swoole\Async::writeFile($logFile, $messageText, null, FILE_APPEND);
     }
 
     /**
