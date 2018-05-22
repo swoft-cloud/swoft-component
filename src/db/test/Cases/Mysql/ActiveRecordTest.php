@@ -547,4 +547,39 @@ class ActiveRecordTest extends AbstractMysqlCase
         $this->assertEquals(2, $count);
     }
 
+    /**
+     * @dataProvider relationProider
+     *
+     * @param int $uid
+     */
+    public function testJoin(int $uid)
+    {
+        $data  = Query::table('user', 'u')->leftJoin('count', 'u.id=c.uid', 'c')->condition(['u.id' => $uid])->one()->getResult();
+        $data2 = Query::table('user', 'u')->leftJoin('count', ['u.id=c.uid'], 'c')->condition(['u.id' => $uid])->one()->getResult();
+        $this->assertEquals($data['id'], $uid);
+        $this->assertEquals($data2['id'], $uid);
+    }
+
+    /**
+     * @dataProvider relationProider
+     *
+     * @param int $uid
+     */
+    public function testWhereIn(int $uid)
+    {
+        $data  = Query::table('user', 'u')->leftJoin('count', 'u.id=c.uid', 'c')->whereIn('u.id', [$uid])->one()->getResult();
+        $this->assertEquals($data['id'], $uid);
+    }
+
+    /**
+     * @dataProvider relationProider
+     *
+     * @param int $uid
+     */
+    public function testWhereInByCo(int $uid)
+    {
+        go(function () use ($uid) {
+            $this->testWhereIn($uid);
+        });
+    }
 }
