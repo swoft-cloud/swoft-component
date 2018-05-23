@@ -1,26 +1,18 @@
 <?php
-/**
- * This file is part of Swoft.
- *
- * @link     https://swoft.org
- * @document https://doc.swoft.org
- * @contact  group@swoft.org
- * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
- */
 
-namespace Swoft\Db\Entity\Mysql;
+namespace Swoft\Db\Driver\Mysql;
 
 use Swoft\Db\Types;
 
 /**
  * Schema
  */
-class Schema extends \Swoft\Db\Entity\Schema
+class Schema extends \Swoft\Db\Driver\Schema
 {
     /**
      * @var array
      */
-    public $typeMap = [
+    public static $typeMap = [
             'tinyint'    => self::TYPE_TINYINT,
             'bit'        => self::TYPE_INTEGER,
             'smallint'   => self::TYPE_SMALLINT,
@@ -53,9 +45,10 @@ class Schema extends \Swoft\Db\Entity\Schema
         ];
 
     /**
-     * @var array php映射关系
+     * @var array
      */
-    public $phpMap = [
+    public static $phpMap
+        = [
             'tinyint'    => Types::INT,
             'bit'        => Types::INT,
             'smallint'   => Types::INT,

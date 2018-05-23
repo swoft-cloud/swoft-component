@@ -33,28 +33,32 @@ class EntityCommand
     private $generatorEntity;
 
     /**
-     * @var string $filePath 实体文件路径
+     * @var string $entityFilePath 实体文件路径
      */
-    private $filePath = '@app/Models/Entity';
+    private $entityFilePath = '@app/Models/Entity';
 
     /**
      * Auto create entity by table structure
      *
      * @Usage
-     * entity:create -d[|--database] <database>
-     * entity:create -d[|--database] <database> [table]
-     * entity:create -d[|--database] <database> -i[|--include] <table>
-     * entity:create -d[|--database] <database> -i[|--include] <table1,table2>
-     * entity:create -d[|--database] <database> -i[|--include] <table1,table2> -e[|--exclude] <table3>
-     * entity:create -d[|--database] <database> -i[|--include] <table1,table2> -e[|--exclude] <table3,table4>
+     * entity:create -d[|--database] <database> --instance <instance>
+     * entity:create -d[|--database] <database> [table] -instnace <instnace>
+     * entity:create -d[|--database] <database> --i[|--include] <table> --instnace <instnace>
+     * entity:create -d[|--database] <database> --i[|--include] <table> -instnace <instnace>
+     * entity:create -d[|--database] <database> --i[|--include] <table1,table2> --instnace <instnace>
+     * entity:create -d[|--database] <database> --i[|--include] <table1,table2> -e[|--exclude] <table3> --instance <instance>
+     * entity:create -d[|--database] <database> --i[|--include] <table1,table2> -e[|--exclude] <table3,table4> --instance <instance>
      *
      * @Options
-     * -d  数据库
-     * --database  数据库
-     * -i  指定特定的数据表，多表之间用逗号分隔
-     * --include  指定特定的数据表，多表之间用逗号分隔
-     * -e  排除指定的数据表，多表之间用逗号分隔
-     * --exclude  排除指定的数据表，多表之间用逗号分隔
+     * -d 数据库
+     * --database 数据库
+     * -i 指定特定的数据表，多表之间用逗号分隔
+     * --include 指定特定的数据表，多表之间用逗号分隔
+     * -e 排除指定的数据表，多表之间用逗号分隔
+     * --exclude 排除指定的数据表，多表之间用逗号分隔
+     * --remove-table-prefix 去除前缀
+     * --entity-file-path 实体路径(必须在以@app开头并且在app目录下存在的目录,否则将会重定向到@app/Models/Entity)
+     * --instance 设置数据库实例，默认default
      *
      * @Example
      * php bin/swoft entity:create -d test
@@ -63,19 +67,24 @@ class EntityCommand
     {
         $this->initDatabase();
 
-        $database = '';
+        $database = $removeTablePrefix = '';
         $tablesEnabled = $tablesDisabled = [];
 
+        $this->parseEntityFilePath();
         $this->parseDatabaseCommand($database);
+        $this->parseInstanceCommand($instance);
         $this->parseEnableTablesCommand($tablesEnabled);
         $this->parseDisableTablesCommand($tablesDisabled);
+        $this->parseRemoveTablePrefix($removeTablePrefix);
 
         if (empty($database)) {
             output()->writeln('databases doesn\'t not empty!');
         } else {
             $this->generatorEntity->db = $database;
+            $this->generatorEntity->instance = $instance;
             $this->generatorEntity->tablesEnabled = $tablesEnabled;
             $this->generatorEntity->tablesDisabled = $tablesDisabled;
+            $this->generatorEntity->removeTablePrefix = $removeTablePrefix;
             $this->generatorEntity->execute($this->schema);
         }
     }
@@ -85,7 +94,6 @@ class EntityCommand
      */
     private function initDatabase(): bool
     {
-        App::setAlias('@entityPath', $this->filePath);
         $pool = App::getBean(DbPool::class);
         $schema = new Schema();
         $schema->setDriver('MYSQL');
@@ -94,6 +102,14 @@ class EntityCommand
         $this->generatorEntity = new Generator($syncDbConnect);
 
         return true;
+    }
+
+    /**
+     * 设置实体生成路径
+     */
+    private function setEntityFilePath()
+    {
+        App::setAlias('@entityPath', $this->entityFilePath);
     }
 
     /**
@@ -109,8 +125,18 @@ class EntityCommand
     }
 
     /**
+     * 解析需要指定实例的数据库别名
+     * @param string &$instance 指定实现的数据库别名
+     */
+    private function parseInstanceCommand(&$instance)
+    {
+        if (input()->hasLOpt('instance')) {
+            $instance = (string)\input()->getSameOpt(['instance']);
+        }
+    }
+
+    /**
      * 解析需要扫描的table
-     *
      * @param array &$tablesEnabled 需要扫描的表
      */
     private function parseEnableTablesCommand(&$tablesEnabled)
@@ -137,5 +163,34 @@ class EntityCommand
             $tablesDisabled = input()->hasSOpt('e') ? input()->getShortOpt('e') : input()->getLongOpt('exclude');
             $tablesDisabled = !empty($tablesDisabled) ? explode(',', $tablesDisabled) : [];
         }
+    }
+
+    /**
+     * 移除表前缀
+     *
+     * @param string &$removeTablePrefix 需要移除的前缀
+     */
+    private function parseRemoveTablePrefix(&$removeTablePrefix)
+    {
+        if (input()->hasLOpt('remove-table-prefix')) {
+            $removeTablePrefix = (string)input()->getLongOpt('remove-table-prefix');
+        }
+    }
+
+    /**
+     * 实体生成路径
+     */
+    private function parseEntityFilePath()
+    {
+        if (input()->hasLOpt('entity-file-path')) {
+            $entityFilePath = (string)input()->getLongOpt('entity-file-path');
+            if (preg_match('/^@app(.*)/', $entityFilePath) && is_dir(alias($entityFilePath))) {
+                $this->entityFilePath = $entityFilePath;
+            }else{
+                output()->writeln('The directory does not exist, and the entity generated directory will be reset: ' . $this->entityFilePath);
+            }
+        }
+
+        $this->setEntityFilePath();
     }
 }

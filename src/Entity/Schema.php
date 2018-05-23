@@ -7,46 +7,54 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Db\Entity;
 
 /**
- * 数据库字段映射关系
- *
- * @uses      Schema
- * @version   2017年11月14日
- * @author    caiwh <471113744@qq.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
+ * Schema
  */
-
-abstract class Schema
+class Schema
 {
-    // PHP类型
-    const TYPE_INT    = 'int';
-
+    const TYPE_PK = 'pk';
+    const TYPE_UPK = 'upk';
+    const TYPE_BIGPK = 'bigpk';
+    const TYPE_UBIGPK = 'ubigpk';
+    const TYPE_CHAR = 'char';
     const TYPE_STRING = 'string';
-
-    const TYPE_FLOAT  = 'float';
-
-    const TYPE_BOOL   = 'bool';
+    const TYPE_TEXT = 'text';
+    const TYPE_TINYINT = 'tinyint';
+    const TYPE_SMALLINT = 'smallint';
+    const TYPE_INTEGER = 'integer';
+    const TYPE_BIGINT = 'bigint';
+    const TYPE_FLOAT = 'float';
+    const TYPE_DOUBLE = 'double';
+    const TYPE_DECIMAL = 'decimal';
+    const TYPE_DATETIME = 'datetime';
+    const TYPE_TIMESTAMP = 'timestamp';
+    const TYPE_TIME = 'time';
+    const TYPE_DATE = 'date';
+    const TYPE_BINARY = 'binary';
+    const TYPE_BOOLEAN = 'boolean';
+    const TYPE_MONEY = 'money';
+    const TYPE_JSON = 'json';
 
     /**
-     * @var array entity映射关系
+     * @var array
      */
-    public $dbSchema;
+    public $typeMap;
 
     /**
-     * @var array php映射关系
+     * @var array
      */
-    public $phpSchema;
+    public $phpMap;
 
     /**
-     * @var string|null $driver 数据库驱动
+     * @var string|null $driver
      */
     private $driver;
 
     /**
-     * 设置数据库驱动
+     * Set driver
      *
      * @param string $value
      *
@@ -60,7 +68,7 @@ abstract class Schema
     }
 
     /**
-     * 返回数据库驱动
+     * Get driver
      *
      * @return null|string
      */

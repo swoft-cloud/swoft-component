@@ -7,17 +7,66 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Db\Helper;
 
 use Swoft\Db\Bean\Collector\EntityCollector;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Types;
+use Swoft\Helper\StringHelper;
 
 /**
  * EntityHelper
  */
 class EntityHelper
 {
+    /**
+     * @param array  $result
+     * @param string $className
+     *
+     * @return array
+     */
+    public static function formatListByType(array $result, string $className): array
+    {
+        if (empty($result)) {
+            return [];
+        }
+
+        $rowList = [];
+        foreach ($result as $row) {
+            $rowList[] = self::formatRowByType($row, $className);
+        }
+
+        return $rowList;
+    }
+
+    /**
+     * @param array  $row
+     * @param string $className
+     *
+     * @return array
+     */
+    public static function formatRowByType(array $row, string $className): array
+    {
+        $rowAry   = [];
+        $entities = EntityCollector::getCollector();
+        if (!isset($entities[$className])) {
+            return $row;
+        }
+
+        if (strpos($className, '\\') === false) {
+            $className = $entities[$className];
+        }
+        foreach ($row as $name => $value) {
+            $field = $entities[$className]['column'][$name];
+            $type  = $entities[$className]['field'][$field]['type'];
+
+            $rowAry[$name] = self::trasferTypes($type, $value);
+        }
+
+        return $rowAry;
+    }
+
     /**
      * @param array  $result
      * @param string $className
@@ -55,17 +104,18 @@ class EntityHelper
             }
 
             $field        = $entities[$className]['column'][$col];
-            $setterMethod = 'set' . ucfirst($field);
+            $setterMethod = StringHelper::camel('set_' . $field);
 
             $type  = $entities[$className]['field'][$field]['type'];
             $value = self::trasferTypes($type, $value);
 
-            if (method_exists($object, $setterMethod)) {
+            if (\method_exists($object, $setterMethod) && $value !== null) {
                 $attrs[$field] = $value;
+
                 $object->$setterMethod($value);
             }
         }
-        if (method_exists($object, 'setAttrs')) {
+        if (\method_exists($object, 'setAttrs')) {
             $object->setAttrs($attrs);
         }
 
@@ -80,10 +130,12 @@ class EntityHelper
      */
     public static function trasferTypes($type, $value)
     {
-        if ($type === Types::INT || $type === Types::NUMBER) {
+        if ($value === null) {
+            $value = null;
+        } elseif ($type === Types::INT || $type === Types::NUMBER) {
             $value = (int)$value;
         } elseif ($type === Types::STRING) {
-            $value = (string)$value;
+            $value = null === $value ? null : (string)$value;
         } elseif ($type === Types::BOOLEAN) {
             $value = (bool)$value;
         } elseif ($type === Types::FLOAT) {
@@ -124,7 +176,7 @@ class EntityHelper
      */
     private static function formatParamsKey($key): string
     {
-        if (\is_string($key) && strpos($key, ':') === false) {
+        if (\is_string($key) && \strpos($key, ':') === false) {
             return ':' . $key;
         }
 

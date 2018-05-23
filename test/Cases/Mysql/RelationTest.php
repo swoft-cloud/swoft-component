@@ -28,10 +28,10 @@ class RelationTest extends AbstractMysqlCase
     public function testJoin(int $uid)
     {
         $data = Query::table(User::class)->leftJoin(Count::class, 'user.id=count.uid')->andWhere('id', $uid)
-            ->orderBy('user.id', QueryBuilder::ORDER_BY_DESC)->limit(1)->get(['user.id', 'user.name','count.fans', 'count.follows'])->getResult();
+            ->orderBy('user.id', QueryBuilder::ORDER_BY_DESC)->one(['user.id', 'user.name','count.fans', 'count.follows'])->getResult();
 
         $data2 = Query::table(User::class, 'u')->leftJoin(Count::class, 'u.id=c.uid', 'c')->andWhere('id', $uid)
-            ->orderBy('u.id', QueryBuilder::ORDER_BY_DESC)->limit(1)->get(['u.id'=> 'userid', 'u.name','c.fans', 'c.follows'])->getResult();
+            ->orderBy('u.id', QueryBuilder::ORDER_BY_DESC)->one(['u.id'=> 'userid', 'u.name','c.fans', 'c.follows'])->getResult();
 
         $this->assertEquals($uid, $data['id']);
         $this->assertEquals($uid, $data2['userid']);

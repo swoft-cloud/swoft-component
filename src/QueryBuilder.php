@@ -7,15 +7,16 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Db;
 
 use Swoft\App;
+use Swoft\Core\ResultInterface;
 use Swoft\Db\Bean\Collector\EntityCollector;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Exception\MysqlException;
 use Swoft\Db\Helper\DbHelper;
 use Swoft\Db\Helper\EntityHelper;
-use Swoft\Core\ResultInterface;
 
 /**
  * 查询器
@@ -160,6 +161,11 @@ class QueryBuilder implements QueryBuilderInterface
      * @var array
      */
     private $updateValues = [];
+
+    /**
+     * @var array
+     */
+    private $counterValues = [];
 
     /**
      * 是否是delete
@@ -314,12 +320,29 @@ class QueryBuilder implements QueryBuilderInterface
      * @param array $values
      *
      * @return ResultInterface
-     * @throws MysqlException
      */
     public function update(array $values): ResultInterface
     {
         $this->update       = $this->getTableName();
         $this->updateValues = $values;
+
+        return $this->execute();
+    }
+
+    /**
+     * @param mixed $column
+     * @param int   $amount
+     *
+     * @return \Swoft\Core\ResultInterface
+     */
+    public function counter($column, $amount = 1): ResultInterface
+    {
+        $this->update = $this->getTableName();
+        if (is_array($column)) {
+            $this->counterValues = $column;
+        } else {
+            $this->counterValues = [$column => $amount];
+        }
 
         return $this->execute();
     }
@@ -343,6 +366,15 @@ class QueryBuilder implements QueryBuilderInterface
      */
     public function get(array $columns = ['*']): ResultInterface
     {
+        if (empty($columns)) {
+            $columns = ['*'];
+        }
+
+        $isAllColumns = count($columns) == 1 && isset($columns[0]) && $columns[0] == '*';
+        if (!empty($this->className) && $isAllColumns) {
+            $columns = $this->getAllFields();
+        }
+
         foreach ($columns as $column => $alias) {
             if (\is_int($column)) {
                 $this->select[$alias] = null;
@@ -351,7 +383,22 @@ class QueryBuilder implements QueryBuilderInterface
             $this->select[$column] = $alias;
         }
 
+        $this->addGetDecorator();
+
         return $this->execute();
+    }
+
+    /**
+     * @param array $columns
+     *
+     * @return ResultInterface
+     */
+    public function one(array $columns = ['*'])
+    {
+        $this->limit(1);
+        $this->addOneDecorator();
+
+        return $this->get($columns);
     }
 
     /**
@@ -464,36 +511,29 @@ class QueryBuilder implements QueryBuilderInterface
      * - ['name', 'not like', '%swoft%']
      *
      *
-     * @param array  $condition
+     * @param array $condition
      *
      * @return \Swoft\Db\QueryBuilder
      */
     public function condition(array $condition): self
     {
         foreach ($condition as $key => $value) {
-            if (\is_int($key)) {
+            if (\is_int($key) && is_array($value)) {
+                $this->condition($value);
+                continue;
+            }
+            if (is_int($key)) {
                 $this->andCondition($condition);
                 break;
             }
-            $this->operatorCondition($condition);
-            break;
+            if (\is_array($value)) {
+                $this->whereIn($key, $value);
+                continue;
+            }
+            $this->andWhere($key, $value);
         }
 
         return $this;
-    }
-
-    /**
-     * @param array $condition
-     */
-    public function operatorCondition(array $condition)
-    {
-        foreach ($condition as $column => $value) {
-            if (\is_array($value)) {
-                $this->whereIn($column, $value);
-                continue;
-            }
-            $this->andWhere($column, $value);
-        }
     }
 
     /**
@@ -510,6 +550,8 @@ class QueryBuilder implements QueryBuilderInterface
             case self::OPERATOR_LT:
             case self::OPERATOR_LTE:
             case self::OPERATOR_GTE:
+            case self::LIKE:
+            case self::NOT_LIKE:
                 list($column, $operator, $value) = $condition;
                 $this->andWhere($column, $value, $operator);
                 break;
@@ -597,7 +639,9 @@ class QueryBuilder implements QueryBuilderInterface
      */
     public function whereIn(string $column, array $values, string $connector = self::LOGICAL_AND): QueryBuilder
     {
-        $this->criteria($this->where, $column, $values, self::IN, $connector);
+        if (!empty($values)) {
+            $this->criteria($this->where, $column, $values, self::IN, $connector);
+        }
 
         return $this;
     }
@@ -613,7 +657,9 @@ class QueryBuilder implements QueryBuilderInterface
      */
     public function whereNotIn(string $column, array $values, string $connector = self::LOGICAL_AND): QueryBuilder
     {
-        $this->criteria($this->where, $column, $values, self::NOT_IN, $connector);
+        if (!empty($values)) {
+            $this->criteria($this->where, $column, $values, self::NOT_IN, $connector);
+        }
 
         return $this;
     }
@@ -908,11 +954,13 @@ class QueryBuilder implements QueryBuilderInterface
 
     /**
      * @param \Closure $closure
+     *
      * @return $this
      */
     public function addDecorator(\Closure $closure): self
     {
         $this->decorators[] = $closure;
+
         return $this;
     }
 
@@ -922,16 +970,19 @@ class QueryBuilder implements QueryBuilderInterface
     public function clearDecorators(): self
     {
         $this->decorators = [];
+
         return $this;
     }
 
     /**
      * @param array $decorators
+     *
      * @return $this
      */
     public function setDecorators(array $decorators): self
     {
         $this->decorators = $decorators;
+
         return $this;
     }
 
@@ -1089,10 +1140,11 @@ class QueryBuilder implements QueryBuilderInterface
     public function count(string $column = '*', string $alias = 'count'): ResultInterface
     {
         $this->aggregate['count'] = [$column, $alias];
-        $this->limit(1);
+        $this->addAggregateDecorator($alias);
 
         return $this->execute();
     }
+
 
     /**
      * @param string $column
@@ -1103,7 +1155,7 @@ class QueryBuilder implements QueryBuilderInterface
     public function max(string $column, string $alias = 'max'): ResultInterface
     {
         $this->aggregate['max'] = [$column, $alias];
-        $this->limit(1);
+        $this->addAggregateDecorator($alias);
 
         return $this->execute();
     }
@@ -1117,7 +1169,7 @@ class QueryBuilder implements QueryBuilderInterface
     public function min(string $column, string $alias = 'min'): ResultInterface
     {
         $this->aggregate['min'] = [$column, $alias];
-        $this->limit(1);
+        $this->addAggregateDecorator($alias);
 
         return $this->execute();
     }
@@ -1131,7 +1183,7 @@ class QueryBuilder implements QueryBuilderInterface
     public function avg(string $column, string $alias = 'avg'): ResultInterface
     {
         $this->aggregate['avg'] = [$column, $alias];
-        $this->limit(1);
+        $this->addAggregateDecorator($alias);
 
         return $this->execute();
     }
@@ -1145,7 +1197,7 @@ class QueryBuilder implements QueryBuilderInterface
     public function sum(string $column, string $alias = 'sum'): ResultInterface
     {
         $this->aggregate['sum'] = [$column, $alias];
-        $this->limit(1);
+        $this->addAggregateDecorator($alias);
 
         return $this->execute();
     }
@@ -1197,7 +1249,7 @@ class QueryBuilder implements QueryBuilderInterface
 
     /**
      * @return string
-     * @throws \Swoft\Db\Exception\MysqlException
+     * @throws MysqlException
      */
     private function getTableName(): string
     {
@@ -1339,5 +1391,90 @@ class QueryBuilder implements QueryBuilderInterface
     public function getUpdateValues(): array
     {
         return $this->updateValues;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCounterValues(): array
+    {
+        return $this->counterValues;
+    }
+
+    /**
+     * @param string $alias
+     */
+    protected function addAggregateDecorator(string $alias)
+    {
+        $this->addDecorator(function ($result) use ($alias) {
+            if (isset($result[0][$alias])) {
+                return $result[0][$alias];
+            }
+
+            return 0;
+        });
+    }
+
+    /**
+     * Add one decorator
+     */
+    protected function addOneDecorator()
+    {
+        $this->addDecorator(function ($result) {
+            if (isset($result[0]) && !empty($this->className)) {
+                return EntityHelper::arrayToEntity($result[0], $this->className);
+            }
+
+            if (isset($result[0]) && empty($this->join)) {
+                $tableName = $this->getTableName();
+
+                return EntityHelper::formatRowByType($result[0], $tableName);
+            }
+
+            if (empty($result) && !empty($this->className)) {
+                return null;
+            }
+
+            if (isset($result[0])) {
+                return $result[0];
+            }
+
+            return $result;
+        });
+    }
+
+    /**
+     * @return array
+     */
+    protected function getAllFields(): array
+    {
+        $tableName    = $this->getTableName();
+        $entities     = EntityCollector::getCollector();
+        $entityClass  = $entities[$tableName];
+        $entityFields = $entities[$entityClass]['field']??[];
+        $entityFields = array_column($entityFields, 'column');
+
+        return $entityFields;
+    }
+
+    /**
+     * Add get decorator
+     */
+    protected function addGetDecorator()
+    {
+        $this->addDecorator(function ($result) {
+            if (!empty($this->className) && !empty($result)) {
+                $entities = EntityHelper::listToEntity($result, $this->className);
+
+                return new Collection($entities);
+            }
+
+            if (!empty($result) && empty($this->join)) {
+                $tableName = $this->getTableName();
+                $result    = EntityHelper::formatListByType($result, $tableName);
+            }
+
+            return $result;
+        });
     }
 }

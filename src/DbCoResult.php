@@ -9,6 +9,8 @@
  */
 namespace Swoft\Db;
 
+use Swoft\Log\Log;
+
 /**
  * Class DbCoResult
  *
@@ -29,6 +31,8 @@ class DbCoResult extends DbResult
         foreach ($this->decorators ?? [] as $decorator) {
             $result = value($decorator($result));
         }
+
+        Log::profileEnd($this->profileKey);
         return $result;
     }
 }

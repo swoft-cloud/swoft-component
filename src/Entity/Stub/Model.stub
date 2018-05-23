@@ -1,18 +1,13 @@
 <?php
-
-namespace App\Models\Entity;
+namespace {{namespace}};
 
 {{uses}}
 /**
- * {{entityName}}
- *
- * @Entity()
+{{entityName}}
+ * @Entity({{instance}})
  * @Table(name="{{entity}}")
  * @uses      {{entityClass}}
- * @version   {{entityDate}}
  */
 class {{entityClass}} extends {{extends}}
-{{{property}}
- {{setter}}
- {{getter}}
+{{{property}}{{setter}}{{getter}}
 }
