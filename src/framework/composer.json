@@ -30,7 +30,7 @@
         ]
     },
     "require-dev": {
-        "eaglewu/swoole-ide-helper": "dev-master",
+        "swoft/swoole-ide-helper": "dev-master",
         "phpunit/phpunit": "^5.7",
         "friendsofphp/php-cs-fixer": "^2.10"
     },
