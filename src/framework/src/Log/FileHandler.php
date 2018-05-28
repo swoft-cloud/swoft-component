@@ -4,6 +4,7 @@ namespace Swoft\Log;
 
 use Monolog\Handler\AbstractProcessingHandler;
 use Swoft\App;
+use Swoole\Coroutine;
 
 /**
  * 日志文件输出器
@@ -55,50 +56,27 @@ class FileHandler extends AbstractProcessingHandler
     {
         // 参数
         $this->createDir();
-        $isTask = App::isWorkerStatus();
         $logFile = App::getAlias($this->logFile);
         $messageText = implode("\n", $records) . "\n";
-
-        // 同步写
-        if ($isTask === false) {
-            return $this->syncWrite($logFile, $messageText);
-        }
-        // 异步写
-        $this->aysncWrite($logFile, $messageText);
+        
+        // 协程写
+        $this->coWrite($logFile, $messageText);
     }
 
     /**
-     * 同步写文件
+     * 协程写文件
      *
      * @param string $logFile     日志路径
      * @param string $messageText 文本信息
      */
-    private function syncWrite(string $logFile, string $messageText)
+    private function coWrite(string $logFile, string $messageText)
     {
-        $fp = fopen($logFile, 'a');
-        if ($fp === false) {
-            throw new \InvalidArgumentException("Unable to append to log file: {$this->logFile}");
-        }
-        flock($fp, LOCK_EX);
-        fwrite($fp, $messageText);
-        flock($fp, LOCK_UN);
-        fclose($fp);
-    }
-
-    /**
-     * 异步写文件
-     *
-     * @param string $logFile     日志路径
-     * @param string $messageText 文本信息
-     */
-    private function aysncWrite(string $logFile, string $messageText)
-    {
-        while (true) {
-            $result = \Swoole\Async::writeFile($logFile, $messageText, null, FILE_APPEND);
-            if ($result == true) {
-                break;
+        go(function () use ($logFile, $messageText) {
+            $res = Coroutine::writeFile($logFile, 'wrtie by co|'. $messageText, FILE_APPEND);
+            if ($res === false) {
+                throw new \InvalidArgumentException("Unable to append to log file: {$this->logFile}");
             }
-        }
+        });
     }
 
     /**
