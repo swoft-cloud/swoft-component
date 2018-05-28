@@ -72,7 +72,7 @@ class FileHandler extends AbstractProcessingHandler
     private function coWrite(string $logFile, string $messageText)
     {
         go(function () use ($logFile, $messageText) {
-            $res = Coroutine::writeFile($logFile, 'wrtie by co|'. $messageText, FILE_APPEND);
+            $res = Coroutine::writeFile($logFile, $messageText, FILE_APPEND);
             if ($res === false) {
                 throw new \InvalidArgumentException("Unable to append to log file: {$this->logFile}");
             }
