@@ -69,6 +69,9 @@ class RedisConnection extends AbstractRedisConnection
     {
         /* @var RedisCommandProvider $commandProvider */
         $commandProvider = App::getBean(RedisCommandProvider::class);
+        $poolConfig      = $this->pool->getPoolConfig();
+        $prefix          = $poolConfig->getPrefix();
+        $commandProvider->setPrefix($prefix);
         $command         = $commandProvider->createCommand($method, $arguments);
         $arguments       = $command->getArguments();
         $method          = $command->getId();
