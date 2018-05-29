@@ -205,10 +205,10 @@ class CircuitBreaker
         }
 
         if (is_array($fallback) && count($fallback) == 2) {
-            list($className, $method) = $fallback;
-            App::debug($this->serviceName . '服务，服务降级处理，执行fallback, class=' . get_class($className) . ' method=' . $method);
+            list($fallbackObj, $method) = $fallback;
+            App::debug($this->serviceName . '服务，服务降级处理，执行fallback, class=' . get_class($fallbackObj) . ' method=' . $method);
 
-            return $className->$method(...$params);
+            return $fallbackObj->$method(...$params);
         }
 
         return null;
