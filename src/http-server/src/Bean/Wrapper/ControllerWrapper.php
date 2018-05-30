@@ -2,10 +2,19 @@
 
 namespace Swoft\Http\Server\Bean\Wrapper;
 
+use Swoft\Bean\Annotation\Alphabetic;
+use Swoft\Bean\Annotation\Alphanumeric;
+use Swoft\Bean\Annotation\Callback;
+use Swoft\Bean\Annotation\CreditCard;
+use Swoft\Bean\Annotation\Date;
+use Swoft\Bean\Annotation\Email;
 use Swoft\Bean\Annotation\Enum;
 use Swoft\Bean\Annotation\Floats;
 use Swoft\Bean\Annotation\Inject;
 use Swoft\Bean\Annotation\Integer;
+use Swoft\Bean\Annotation\Ip;
+use Swoft\Bean\Annotation\Regex;
+use Swoft\Bean\Annotation\Url;
 use Swoft\Http\Message\Bean\Annotation\Middleware;
 use Swoft\Http\Message\Bean\Annotation\Middlewares;
 use Swoft\Bean\Annotation\Number;
@@ -60,7 +69,16 @@ class ControllerWrapper extends AbstractWrapper
         Floats::class,
         Number::class,
         Integer::class,
-        Enum::class
+        Enum::class,
+        Email::class,
+        Regex::class,
+        Callback::class,
+        Alphanumeric::class,
+        Alphabetic::class,
+        Ip::class,
+        Date::class,
+        Url::class,
+        CreditCard::class
     ];
 
     /**
