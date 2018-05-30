@@ -22,6 +22,8 @@ use Swoft\Redis\Pool\RedisPool;
 /**
  * Redis
  * key and string
+ * @method bool setex($key, $ttl, $value)
+ * @method bool setnx($key, $value)
  * @method int append($key, $value)
  * @method int decr($key)
  * @method int decrBy($key, $value)
