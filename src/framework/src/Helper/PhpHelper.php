@@ -1,16 +1,23 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Helper;
 
 /**
- * php帮助类
+ * Class PhpHelper
+ *
  * @package Swoft\Helper
- * @author inhere <in.798@qq.com>
  */
 class PhpHelper
 {
     /**
-     * is Cli
+     * is Cli Enviroment
      *
      * @return  boolean
      */
@@ -20,7 +27,7 @@ class PhpHelper
     }
 
     /**
-     * 是否是mac环境
+     * Is Mac Enviroment
      *
      * @return bool
      */
@@ -30,22 +37,18 @@ class PhpHelper
     }
 
     /**
-     * 调用
-     *
-     * @param mixed $cb   callback函数，多种格式
-     * @param array $args 参数
-     *
+     * @param mixed $callback callback
+     * @param array $args
      * @return mixed
      */
-    public static function call($cb, array $args = [])
+    public static function call($callback, array $args = [])
     {
-        if (\is_object($cb) || (\is_string($cb) && \function_exists($cb))) {
-            $ret = $cb(...$args);
-        } elseif (\is_array($cb)) {
-            list($obj, $mhd) = $cb;
-            $ret = \is_object($obj) ? $obj->$mhd(...$args) : $obj::$mhd(...$args);
+        if (\is_object($callback) || (\is_string($callback) && \function_exists($callback))) {
+            return $callback(...$args);
+        } elseif (\is_array($callback)) {
+            list($obj, $method) = $callback;
+            return \is_object($obj) ? $obj->$method(...$args) : $obj::$method(...$args);
         }
-
-        return $ret(...$args);
+        return $callback(...$args);
     }
 }
