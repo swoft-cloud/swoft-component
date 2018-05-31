@@ -6,6 +6,7 @@ use Swoft\App;
 use Swoft\Bean\Annotation\ServerListener;
 use Swoft\Bootstrap\Listeners\Interfaces\StartInterface;
 use Swoft\Bootstrap\SwooleEvent;
+use Swoft\Console\Helper\ConsoleUtil;
 use Swoole\Server;
 
 /**
@@ -26,5 +27,11 @@ class MasterStartListener implements StartInterface
         if (!App::$server->isDaemonize()) {
             \output()->writeln("You can use <info>CTRL + C</info> to stop run.\n");
         }
+
+        ConsoleUtil::log(
+            \sprintf('Bean scanning ... '),
+            [],
+            'info'
+        );
     }
 }
