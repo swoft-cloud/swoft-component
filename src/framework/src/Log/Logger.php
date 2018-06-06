@@ -445,7 +445,7 @@ class Logger extends \Monolog\Logger
         $this->pushlogs = [];
         $this->profileStacks = [];
 
-        $this->messages[] = [];
+        $this->messages = [];
     }
 
     /**
