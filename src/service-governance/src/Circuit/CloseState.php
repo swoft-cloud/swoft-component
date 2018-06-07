@@ -40,8 +40,10 @@ class CloseState extends CircuitBreakerState
                 throw new \Exception($this->circuitBreaker->serviceName . '服务,连接建立失败(null)');
             }
 
-            if (($class instanceof Client && $class->isConnected() == false)||
-                ($class instanceof ConnectionInterface && $class->check() == false)) {
+            if (
+                ($class instanceof Client && $class->isConnected() == false) ||
+                ($class instanceof ConnectionInterface && $class->check() == false)
+            ) {
                 throw new \Exception($this->circuitBreaker->serviceName . '服务,当前连接已断开');
             }
             $data = $class->$method(...$params);
