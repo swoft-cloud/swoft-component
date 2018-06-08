@@ -36,6 +36,11 @@ class Enum
     private $values;
 
     /**
+     * @var string
+     */
+    private $template = '';
+
+    /**
      * 默认值
      *
      * @var mixed
@@ -60,6 +65,9 @@ class Enum
         }
         if (isset($values['default'])) {
             $this->default = $values['default'];
+        }
+        if (isset($values['template'])) {
+            $this->template = $values['template'];
         }
     }
 
@@ -93,5 +101,21 @@ class Enum
     public function getFrom(): string
     {
         return $this->from;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTemplate(): string
+    {
+        return $this->template;
+    }
+
+    /**
+     * @param string $template
+     */
+    public function setTemplate(string $template)
+    {
+        $this->template = $template;
     }
 }

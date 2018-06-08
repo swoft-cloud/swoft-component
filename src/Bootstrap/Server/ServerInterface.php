@@ -75,4 +75,9 @@ interface ServerInterface
      * Set server to Daemonize
      */
     public function setDaemonize();
+
+    /**
+     * @return string Please see const TYPE_*
+     */
+    public function getServerType(): string;
 }

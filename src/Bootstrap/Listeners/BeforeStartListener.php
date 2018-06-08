@@ -22,7 +22,7 @@ class BeforeStartListener implements BeforeStartInterface
      * @param AbstractServer $server
      * @throws \Swoft\Exception\InvalidArgumentException
      */
-    public function onBeforeStart(AbstractServer &$server)
+    public function onBeforeStart(AbstractServer $server)
     {
         // init worker lock
         $server->setWorkerLock(new Lock(SWOOLE_RWLOCK));

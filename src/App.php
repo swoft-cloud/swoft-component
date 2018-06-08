@@ -32,7 +32,7 @@ class App
     /**
      * 服务器对象
      *
-     * @var AbstractServer
+     * @var AbstractServer|\Swoft\Http\Server\Http\HttpServer|\Swoft\WebSocket\Server\WebSocketServer
      */
     public static $server;
 
@@ -263,10 +263,10 @@ class App
     }
 
     /**
-     * 注册别名
+     * Set alias
      *
-     * @param string $alias 别名
-     * @param string $path  路径
+     * @param string $alias alias
+     * @param string $path  path
      *
      * @throws \InvalidArgumentException
      */
@@ -309,7 +309,7 @@ class App
     }
 
     /**
-     * 获取别名路径
+     * Get alias
      *
      * @param string $alias
      *
@@ -336,6 +336,24 @@ class App
         $aliasPath = \str_replace($root, '', $alias);
 
         return $rootPath . $aliasPath;
+    }
+
+    /**
+     * Is alias exist ?
+     *
+     * @param string $alias
+     *
+     * @return bool
+     * @throws \InvalidArgumentException
+     */
+    public static function hasAlias(string $alias): bool
+    {
+        // empty OR not an alias
+        if (!$alias || $alias[0] !== '@') {
+            return false;
+        }
+
+        return isset(self::$aliases[$alias]);
     }
 
     /**

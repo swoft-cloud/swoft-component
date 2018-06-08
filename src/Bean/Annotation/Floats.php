@@ -3,16 +3,10 @@
 namespace Swoft\Bean\Annotation;
 
 /**
- * 浮点数验证
+ * Floats
  *
  * @Annotation
  * @Target("METHOD")
- *
- * @uses      Floats
- * @version   2017年11月13日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 class Floats
 {
@@ -43,6 +37,11 @@ class Floats
     private $max;
 
     /**
+     * @var string
+     */
+    private $template = '';
+
+    /**
      * 默认值，如果是null，强制验证参数
      *
      * @var null|float
@@ -70,6 +69,9 @@ class Floats
         }
         if (isset($values['default'])) {
             $this->default = $values['default'];
+        }
+        if (isset($values['template'])) {
+            $this->template = $values['template'];
         }
     }
 
@@ -111,5 +113,21 @@ class Floats
     public function getFrom(): string
     {
         return $this->from;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTemplate(): string
+    {
+        return $this->template;
+    }
+
+    /**
+     * @param string $template
+     */
+    public function setTemplate(string $template)
+    {
+        $this->template = $template;
     }
 }
