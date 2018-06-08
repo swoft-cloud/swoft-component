@@ -163,7 +163,11 @@ if (! function_exists('defer')) {
      */
     function defer(callable $value, array $parameters = [])
     {
-        return RequestContext::getDefer()->push($value, $parameters);
+        $defer = RequestContext::get('defer');
+        if ($defer instanceof Swoft\Defer\Defer) {
+            return $defer->push($value, $parameters);
+        }
+        return RequestContext::set('defer', new Swoft\Defer\Defer());
     }
 }
 
