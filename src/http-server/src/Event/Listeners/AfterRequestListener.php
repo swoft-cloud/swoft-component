@@ -21,11 +21,8 @@ class AfterRequestListener implements EventHandlerInterface
     public function handle(EventInterface $event)
     {
         App::getLogger()->appendNoticeLog();
-        if (RequestContext::get('defer') instanceof Defer) {
-            /** @var Defer $defer */
-            $defer = RequestContext::get('defer');
-            $defer->run();
-        }
+        $defer = RequestContext::get('defer');
+        $defer instanceof Defer && $defer->run();
         RequestContext::destroy();
     }
 }
