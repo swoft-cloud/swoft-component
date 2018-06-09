@@ -61,9 +61,7 @@ class ServerDispatcher implements DispatcherInterface
             $requestHandler = new RequestHandler($middlewares, $this->handlerAdapter);
             $response = $requestHandler->handle($request);
         } catch (\Throwable $throwable) {
-            /* @var ErrorHandler $errorHandler */
-            $errorHandler = \bean(ErrorHandler::class);
-            $response = $errorHandler->handle($throwable);
+            $response = \bean(\Swoft\ErrorHandler\ErrorHandler::class)->handle($throwable);
         }
 
         // After server dispatch

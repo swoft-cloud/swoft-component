@@ -6,11 +6,9 @@ use Swoft\Helper\JsonHelper;
 use Swoft\Http\Message\Stream\SwooleStream;
 
 /**
- * @uses      InteractsWithInput
- * @version   2017-11-05
- * @author    huangzhhui <huangzhwork@gmail.com>
- * @copyright Copyright 2010-2017 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
+ * Trait InteractsWithInput
+ *
+ * @package Swoft\Http\Message\Server\Concerns
  */
 trait InteractsWithInput
 {
@@ -24,7 +22,7 @@ trait InteractsWithInput
      */
     public function server(string $key = null, $default = null)
     {
-        if (is_null($key)) {
+        if (null === $key) {
             return $this->getServerParams();
         }
         return $this->getServerParams()[$key] ?? $default;
@@ -39,7 +37,7 @@ trait InteractsWithInput
      */
     public function header(string $key = null, $default = null)
     {
-        if (is_null($key)) {
+        if (null === $key) {
             return $this->getHeaders();
         }
         return $this->getHeader($key) ?? $default;
@@ -54,7 +52,7 @@ trait InteractsWithInput
      */
     public function query(string $key = null, $default = null)
     {
-        if (is_null($key)) {
+        if (null === $key) {
             return $this->getQueryParams();
         }
         return $this->getQueryParams()[$key] ?? $default;
@@ -69,7 +67,7 @@ trait InteractsWithInput
      */
     public function post(string $key = null, $default = null)
     {
-        if (is_null($key)) {
+        if (null === $key) {
             return $this->getParsedBody();
         }
         return $this->getParsedBody()[$key] ?? $default;
@@ -85,7 +83,7 @@ trait InteractsWithInput
     public function input(string $key = null, $default = null)
     {
         $inputs = $this->getQueryParams() + $this->getParsedBody();
-        if (is_null($key)) {
+        if (null === $key) {
             return $inputs;
         }
         return $inputs[$key] ?? $default;
@@ -100,7 +98,7 @@ trait InteractsWithInput
      */
     public function cookie(string $key = null, $default = null)
     {
-        if (is_null($key)) {
+        if (null === $key) {
             return $this->getCookieParams();
         }
         return $this->getCookieParams()[$key] ?? $default;
@@ -136,7 +134,7 @@ trait InteractsWithInput
     {
         try {
             $contentType = $this->getHeader('content-type');
-            if (! $contentType || ! in_array('application/json', $contentType)) {
+            if (! $contentType || ! \in_array('application/json', $contentType, false)) {
                 throw new \InvalidArgumentException(sprintf('Invalid Content-Type of the request, expects %s, %s given', 'application/json', ($contentType ? current($contentType) : 'null')));
             }
             $body = $this->getBody();
@@ -147,7 +145,7 @@ trait InteractsWithInput
         } catch (\Exception $e) {
             return $default;
         }
-        if (is_null($key)) {
+        if (null === $key) {
             return $decodedBody ?? $default;
         } else {
             return $decodedBody[$key] ?? $default;
@@ -159,11 +157,11 @@ trait InteractsWithInput
      *
      * @param string|null $key
      * @param null        $default
-     * @return array|\Swoft\Web\UploadedFile|null
+     * @return array|\Swoft\Http\Message\Upload\UploadedFile|null
      */
     public function file(string $key = null, $default = null)
     {
-        if (is_null($key)) {
+        if (null === $key) {
             return $this->getUploadedFiles();
         }
         return $this->getUploadedFiles()[$key] ?? $default;

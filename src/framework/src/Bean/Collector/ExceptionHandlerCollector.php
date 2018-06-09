@@ -26,10 +26,16 @@ class ExceptionHandlerCollector implements CollectorInterface
      * @param object $objectAnnotation
      * @param string $propertyName
      * @param string $methodName
-     * @param null   $propertyValue
+     * @param null $propertyValue
+     * @return mixed|void
      */
-    public static function collect(string $className, $objectAnnotation = null, string $propertyName = "", string $methodName = "", $propertyValue = null)
-    {
+    public static function collect(
+        string $className,
+        $objectAnnotation = null,
+        string $propertyName = '',
+        string $methodName = '',
+        $propertyValue = null
+    ) {
         if ($objectAnnotation instanceof Handler) {
             $exceptionClass = $objectAnnotation->getException();
             self::$handlers[$exceptionClass] = [
@@ -42,7 +48,7 @@ class ExceptionHandlerCollector implements CollectorInterface
     /**
      * @return array
      */
-    public static function getCollector()
+    public static function getCollector(): array
     {
         return self::$handlers;
     }

@@ -65,7 +65,7 @@ class ServerCommand
             '********************************************************************',
             "* HTTP | host: <note>$httpHost</note>, port: <note>$httpPort</note>, type: <note>$httpType</note>, worker: <note>$workerNum</note>, mode: <note>$httpMode</note>",
         ];
-        $tcpEnable && $lines[] = "* TCP  | host: <note>$tcpHost</note>, port: <note>$tcpPort</note>, type: <note>$tcpType</note>, worker: <note>$workerNum</note> ($tcpEnable ? '<info>Enabled</info>' : '<warning>Disabled</warning>')";
+        $tcpEnable && $lines[] = "* TCP  | host: <note>$tcpHost</note>, port: <note>$tcpPort</note>, type: <note>$tcpType</note>, worker: <note>$workerNum</note>";
         $lines[] = '********************************************************************';
 
         // 启动服务器
