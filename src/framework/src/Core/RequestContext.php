@@ -56,14 +56,6 @@ class RequestContext
     }
 
     /**
-     * @return \Swoft\Defer\Defer
-     */
-    public static function getDefer(): Defer
-    {
-        return self::getCoroutineContext(self::DEFER_KEY);
-    }
-
-    /**
      * @return array|null
      */
     public static function getContextData()
@@ -92,14 +84,6 @@ class RequestContext
     }
 
     /**
-     * @param \Swoft\Defer\Defer $defer
-     */
-    public static function setDefer(Defer $defer)
-    {
-        self::$context[self::getCoroutineId()][self::DEFER_KEY] = $defer;
-    }
-
-    /**
      * Set the context data
      *
      * @param array $contextData
@@ -116,7 +100,8 @@ class RequestContext
 
     /**
      * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
+     * @return mixed
      */
     public static function set(string $key, $value)
     {
@@ -138,12 +123,14 @@ class RequestContext
      * Update context data by key
      *
      * @param string $key
-     * @param mixed  $val
+     * @param mixed $val
+     * @return mixed
      */
     public static function setContextDataByKey(string $key, $val)
     {
         $coroutineId = self::getCoroutineId();
         self::$context[$coroutineId][self::DATA_KEY][$key] = $val;
+        return $val;
     }
 
     /**

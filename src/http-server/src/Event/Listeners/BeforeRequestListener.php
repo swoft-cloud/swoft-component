@@ -39,6 +39,6 @@ class BeforeRequestListener implements EventHandlerInterface
         ];
 
         RequestContext::setContextData($contextData);
-        RequestContext::setDefer(new Defer());
+        RequestContext::set('defer', new Defer());
     }
 }
