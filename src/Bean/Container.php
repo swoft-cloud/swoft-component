@@ -58,6 +58,7 @@ class Container
      * 获取一个bean
      *
      * @param string $name 名称
+     *
      * @return mixed
      * @throws \ReflectionException
      * @throws \InvalidArgumentException
@@ -84,6 +85,7 @@ class Container
      * 是否存在某个bean
      *
      * @param string $beanName 名称
+     *
      * @return bool
      */
     public function hasBean(string $beanName): bool
@@ -98,7 +100,7 @@ class Container
      */
     public function addDefinitions(array $definitions)
     {
-        $resource = new DefinitionResource($definitions);
+        $resource          = new DefinitionResource($definitions);
         $this->definitions = array_merge($resource->getDefinitions(), $this->definitions);
     }
 
@@ -120,7 +122,7 @@ class Container
      */
     public function autoloadWorkerAnnotation()
     {
-        $beanScan = $this->getScanNamespaceFromProperties('beanScan');
+        $beanScan = $this->getBeanScanNamespace();
         $resource = new WorkerAnnotationResource($this->properties);
         $resource->addScanNamespace($beanScan);
         $definitions = $resource->getDefinitions();
@@ -129,8 +131,6 @@ class Container
     }
 
     /**
-     * 初始化已定义的bean
-     *
      * @throws \InvalidArgumentException
      * @throws \ReflectionException
      */
@@ -166,10 +166,27 @@ class Container
     }
 
     /**
+     * @return array
+     */
+    public function getBeanNames(): array
+    {
+        return \array_keys($this->definitions);
+    }
+
+    /**
+     * @return array
+     */
+    public function getProperties(): array
+    {
+        return $this->properties;
+    }
+
+    /**
      * 创建bean
      *
      * @param string           $name             名称
      * @param ObjectDefinition $objectDefinition bean定义
+     *
      * @return object
      * @throws \ReflectionException
      * @throws \InvalidArgumentException
@@ -177,9 +194,9 @@ class Container
     private function set(string $name, ObjectDefinition $objectDefinition)
     {
         // bean创建信息
-        $scope = $objectDefinition->getScope();
-        $className = $objectDefinition->getClassName();
-        $propertyInjects = $objectDefinition->getPropertyInjections();
+        $scope             = $objectDefinition->getScope();
+        $className         = $objectDefinition->getClassName();
+        $propertyInjects   = $objectDefinition->getPropertyInjections();
         $constructorInject = $objectDefinition->getConstructorInjection();
 
         if ($refBeanName = $objectDefinition->getRef()) {
@@ -193,11 +210,11 @@ class Container
         }
 
         $reflectionClass = new \ReflectionClass($className);
-        $properties = $reflectionClass->getProperties();
+        $properties      = $reflectionClass->getProperties();
 
         // new实例
         $isExeMethod = $reflectionClass->hasMethod($this->initMethod);
-        $object = $this->newBeanInstance($reflectionClass, $constructorParameters);
+        $object      = $this->newBeanInstance($reflectionClass, $constructorParameters);
 
         // 属性注入
         $this->injectProperties($object, $properties, $propertyInjects);
@@ -225,6 +242,7 @@ class Container
      * @param string $name
      * @param string $className
      * @param object $object
+     *
      * @return object
      * @throws \ReflectionException
      */
@@ -233,10 +251,10 @@ class Container
         /* @var Aop $aop */
         $aop = App::getBean(Aop::class);
 
-        $rc = new \ReflectionClass($className);
+        $rc  = new \ReflectionClass($className);
         $rms = $rc->getMethods();
         foreach ($rms as $rm) {
-            $method = $rm->getName();
+            $method      = $rm->getName();
             $annotations = Collector::$methodAnnotations[$className][$method] ?? [];
             $annotations = array_unique($annotations);
             $aop->match($name, $className, $method, $annotations);
@@ -251,6 +269,7 @@ class Container
      * 获取构造函数参数
      *
      * @param MethodInjection $constructorInject
+     *
      * @return array
      * @throws \InvalidArgumentException
      * @throws \ReflectionException
@@ -272,6 +291,7 @@ class Container
             }
             $constructorParameters[] = $parameter->getValue();
         }
+
         return $constructorParameters;
     }
 
@@ -279,7 +299,8 @@ class Container
      *  初始化Bean实例
      *
      * @param \ReflectionClass $reflectionClass
-     * @param array $constructorParameters
+     * @param array            $constructorParameters
+     *
      * @return object
      */
     private function newBeanInstance(\ReflectionClass $reflectionClass, array $constructorParameters)
@@ -287,15 +308,17 @@ class Container
         if ($reflectionClass->hasMethod('__construct')) {
             return $reflectionClass->newInstanceArgs($constructorParameters);
         }
+
         return $reflectionClass->newInstance();
     }
 
     /**
      * 注入属性
      *
-     * @param  mixed $object
+     * @param  mixed                $object
      * @param \ReflectionProperty[] $properties $properties
-     * @param  mixed $propertyInjects
+     * @param  mixed                $propertyInjects
+     *
      * @throws \InvalidArgumentException
      * @throws \ReflectionException
      */
@@ -340,6 +363,7 @@ class Container
      * 数组属性值注入
      *
      * @param array $injectProperty
+     *
      * @return array
      * @throws \InvalidArgumentException
      * @throws \ReflectionException
@@ -381,7 +405,7 @@ class Container
     {
         $properties = $this->properties;
 
-        if(!isset($properties[$name]) || !\is_array($properties[$name])){
+        if (!isset($properties[$name]) || !\is_array($properties[$name])) {
             return [];
         }
 
@@ -391,16 +415,29 @@ class Container
     /**
      * @return array
      */
-    public function getBeanNames(): array
+    private function getBeanScanNamespace(): array
     {
-        return \array_keys($this->definitions);
-    }
+        $beanScan    = $this->getScanNamespaceFromProperties('beanScan');
+        $excludeScan = $this->getScanNamespaceFromProperties('excludeScan');
+        if (!empty($beanScan)) {
+            return array_diff($beanScan, $excludeScan);
+        }
 
-    /**
-     * @return array
-     */
-    public function getProperties(): array
-    {
-        return $this->properties;
+        $appDir = alias("@app");
+        $dirs   = glob($appDir . "/*");
+
+        $beanNamespace = [];
+        foreach ($dirs as $dir) {
+            if (!is_dir($dir)) {
+                continue;
+            }
+            $nsName          = basename($dir);
+            $beanNamespace[] = sprintf('App\%s', $nsName);
+        }
+
+        $bootScan = $this->getScanNamespaceFromProperties('bootScan');
+        $beanScan = array_diff($beanNamespace, $bootScan, $excludeScan);
+
+        return $beanScan;
     }
 }

@@ -11,7 +11,6 @@ namespace Swoft\Contract;
  */
 interface Arrayable
 {
-
     /**
      * @return array
      */

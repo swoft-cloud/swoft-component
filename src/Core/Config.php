@@ -102,7 +102,7 @@ class Config implements \ArrayAccess, \Iterator
      */
     public function offsetGet($offset)
     {
-        return isset($this->properties[$offset]) ? $this->properties[$offset] : null;
+        return $this->properties[$offset] ?? null;
     }
 
     /**
@@ -115,7 +115,7 @@ class Config implements \ArrayAccess, \Iterator
      */
     public function offsetSet($offset, $value)
     {
-        if (is_string($offset) || is_int($offset)) {
+        if (\is_string($offset) || \is_int($offset)) {
             $this->properties[$offset] = $value;
         }
     }
@@ -138,13 +138,13 @@ class Config implements \ArrayAccess, \Iterator
      * 查询值
      *
      * @param string|int $name    名称
-     * @param mixed      $defalut 默认值
+     * @param mixed      $default 默认值
      *
      * @return mixed 返回值
      */
-    public function get($name, $defalut = null)
+    public function get($name, $default = null)
     {
-        return ArrayHelper::get($this->properties, $name, $defalut);
+        return ArrayHelper::get($this->properties, $name, $default);
     }
 
     /**
@@ -156,6 +156,15 @@ class Config implements \ArrayAccess, \Iterator
     public function set($name, $value)
     {
         ArrayHelper::set($this->properties, $name, $value);
+    }
+
+    /**
+     * @param $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        return $this->offsetExists($name);
     }
 
     /**
@@ -201,6 +210,7 @@ class Config implements \ArrayAccess, \Iterator
      * @param string $structure self::STRUCTURE_MERGE merge all files result to an array, e.g. [ content1, content2 ]; self::STRUCTURE_SEPARATE merge all files result to an assoc array, use the file name as key, e.g. [ fileName1 => content1, fileName2 => content2 ]
      *
      * @return \Swoft\Core\Config
+     * @throws \InvalidArgumentException
      */
     public function load(
         string $dir,
@@ -223,8 +233,8 @@ class Config implements \ArrayAccess, \Iterator
                 continue;
             }
             $loadedConfig = require $file;
-            if (!is_array($loadedConfig)) {
-                throw new \InvalidArgumentException("Syntax error find in config file: " . $file);
+            if (!\is_array($loadedConfig)) {
+                throw new \InvalidArgumentException('Syntax error find in config file: ' . $file);
             }
             $fileName = DirHelper::basename([$file]);
             $key = current(explode('.', current($fileName)));
