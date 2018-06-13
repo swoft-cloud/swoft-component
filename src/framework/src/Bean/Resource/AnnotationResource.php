@@ -104,7 +104,6 @@ abstract class AnnotationResource extends AbstractResource
      */
     public function getDefinitions()
     {
-
         // 获取扫描的PHP文件
         $classNames     = $this->registerLoaderAndScanBean();
         $fileClassNames = $this->scanFilePhpClass();
@@ -201,9 +200,9 @@ abstract class AnnotationResource extends AbstractResource
                 continue;
             }
 
-            $nsPath                           = str_replace("\\", "/", $namespace);
+            $nsPath                           = str_replace("\\", '/', $namespace);
             $nsPath                           = str_replace('App/', 'app/', $nsPath);
-            $this->scanNamespaces[$namespace] = BASE_PATH . "/" . $nsPath;
+            $this->scanNamespaces[$namespace] = BASE_PATH . '/' . $nsPath;
         }
 
         $this->registerNamespace();
@@ -214,7 +213,7 @@ abstract class AnnotationResource extends AbstractResource
      *
      * @return void
      */
-    public abstract function registerNamespace();
+    abstract public function registerNamespace();
 
     /**
      * 扫描目录下PHP文件
@@ -224,7 +223,7 @@ abstract class AnnotationResource extends AbstractResource
      *
      * @return array
      */
-    protected function scanPhpFile(string $dir, string $namespace)
+    protected function scanPhpFile(string $dir, string $namespace): array
     {
         if (!is_dir($dir)) {
             return [];
@@ -344,7 +343,7 @@ abstract class AnnotationResource extends AbstractResource
             }
 
             $objectDefinitionAry = $wrapper->doWrapper($className, $annotation);
-            if ($objectDefinitionAry != null) {
+            if ($objectDefinitionAry !== null) {
                 list($beanName, $objectDefinition) = $objectDefinitionAry;
                 $this->definitions[$beanName] = $objectDefinition;
             }

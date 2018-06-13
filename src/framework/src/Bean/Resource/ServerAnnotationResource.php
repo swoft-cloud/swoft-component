@@ -14,14 +14,20 @@ class ServerAnnotationResource extends AnnotationResource
      */
     public function registerNamespace()
     {
-        $swoftDir      = dirname(__FILE__, 5);
-        $componentDirs = scandir($swoftDir);
+        $hostDir = \dirname(__FILE__, 5);
+        if (\in_array(\basename($hostDir), ['swoft', 'src'])) {
+            //install by composer
+            $componentDirs = scandir($hostDir, null);
+        } else {
+            //independent
+            $componentDirs = ['swoft-framework'];
+        }
         foreach ($componentDirs as $component) {
             if ($component == '.' || $component == '..') {
                 continue;
             }
 
-            $componentDir = $swoftDir . DS . $component;
+            $componentDir = $hostDir . DS . $component;
             $componentCommandDir = $componentDir . DS . 'src';
             if (! is_dir($componentCommandDir)) {
                 continue;
@@ -31,7 +37,7 @@ class ServerAnnotationResource extends AnnotationResource
             $this->componentNamespaces[] = $ns;
 
             // console component
-            if ($component == $this->consoleName) {
+            if ($component === $this->consoleName) {
                 $this->scanNamespaces[$ns] = $componentCommandDir;
                 continue;
             }

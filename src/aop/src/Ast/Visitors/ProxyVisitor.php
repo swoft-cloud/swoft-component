@@ -320,6 +320,7 @@ class ProxyVisitor extends NodeVisitorAbstract
      */
     private function getParentClassFullName(): string
     {
+        $name = null;
         if ($this->extends) {
             if ($this->usedNamespaces) {
                 foreach ($this->usedNamespaces as $alias => $usedNamespace) {

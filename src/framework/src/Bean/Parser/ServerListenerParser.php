@@ -8,27 +8,29 @@ use Swoft\Bean\Collector\ServerListenerCollector;
 
 /**
  * Class ServerListenerParser
+ *
  * @package Swoft\Bean\Parser
  * @author inhere <in.798@qq.com>
  */
 class ServerListenerParser extends AbstractParser
 {
     /**
-     * @param string      $className
+     * @param string $className
      * @param ServerListener $objectAnnotation
-     * @param string      $propertyName
-     * @param string      $methodName
-     * @param mixed       $propertyValue
-     *
+     * @param string $propertyName
+     * @param string $methodName
+     * @param mixed $propertyValue
      * @return array
      */
-    public function parser(string $className, $objectAnnotation = null, string $propertyName = '', string $methodName = '', $propertyValue = null)
-    {
-        $beanName = $className;
-        $scope    = Scope::SINGLETON;
-
+    public function parser(
+        string $className,
+        $objectAnnotation = null,
+        string $propertyName = '',
+        string $methodName = '',
+        $propertyValue = null
+    ): array {
         ServerListenerCollector::collect($className, $objectAnnotation, $propertyName, $methodName, $propertyValue);
 
-        return [$beanName, $scope, ''];
+        return [$className, Scope::SINGLETON, ''];
     }
 }

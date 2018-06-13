@@ -15,7 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Swoft\\ErrorHandler\\": "src"
+            "Swoft\\ErrorHandler\\": "src/"
         }
     },
     "autoload-dev": {
