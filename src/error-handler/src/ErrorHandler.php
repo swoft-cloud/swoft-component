@@ -26,7 +26,6 @@ class ErrorHandler
             $response = \bean(ErrorHandlerChain::class)->map(function ($handler) use ($throwable) {
                 list($class, $method) = $handler;
                 $method = ($method && class_exists($class)) ? $method : 'handle';
-                // Error Handler Matched
                 return PhpHelper::call([$class, $method], $this->getBindParams($class, $method, $throwable));
             });
             $response = $response instanceof Response ? $response : RequestContext::getResponse()->auto($response);

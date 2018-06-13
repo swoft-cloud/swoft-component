@@ -1,18 +1,14 @@
 <?php
 
-namespace Swoft\Bean\Collector;
+namespace Swoft\ErrorHandler\Bean\Collector;
 
-use Swoft\Bean\Annotation\Handler;
 use Swoft\Bean\CollectorInterface;
+use Swoft\ErrorHandler\Bean\Annotation\Handler;
 
 /**
- * the collector of exception handler
+ * Class ExceptionHandlerCollector
  *
- * @uses      ExceptionHandlerCollector
- * @version   2018年01月17日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
+ * @package Swoft\ErrorHandler\Bean\Collector
  */
 class ExceptionHandlerCollector implements CollectorInterface
 {

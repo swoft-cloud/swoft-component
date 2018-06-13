@@ -1,21 +1,22 @@
 <?php
 
-namespace Swoft\Bean\Parser;
+namespace Swoft\ErrorHandler\Bean\Parser;
 
-use Swoft\Bean\Annotation\ExceptionHandler;
 use Swoft\Bean\Annotation\Scope;
-use Swoft\Bean\Collector\ExceptionHandlerCollector;
+use Swoft\Bean\Parser\AbstractParser;
+use Swoft\ErrorHandler\Bean\Annotation\Handler;
+use Swoft\ErrorHandler\Bean\Collector\ExceptionHandlerCollector;
 
 /**
- * Class ExceptionHandlerParser
+ * Class HandlerParser
  *
- * @package Swoft\Bean\Parser
+ * @package Swoft\ErrorHandler\Bean\Parser
  */
-class ExceptionHandlerParser extends AbstractParser
+class HandlerParser extends AbstractParser
 {
     /**
      * @param string $className
-     * @param ExceptionHandler $objectAnnotation
+     * @param Handler $objectAnnotation
      * @param string $propertyName
      * @param string $methodName
      * @param null $propertyValue
@@ -27,7 +28,7 @@ class ExceptionHandlerParser extends AbstractParser
         string $propertyName = '',
         string $methodName = '',
         $propertyValue = null
-    ): array {
+    ) {
         ExceptionHandlerCollector::collect($className, $objectAnnotation, $propertyName, $methodName, $propertyValue);
 
         return [$className, Scope::SINGLETON, ''];

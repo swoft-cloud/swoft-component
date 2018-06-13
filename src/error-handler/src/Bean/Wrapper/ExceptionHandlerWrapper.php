@@ -1,20 +1,17 @@
 <?php
 
-namespace Swoft\Bean\Wrapper;
+namespace Swoft\ErrorHandler\Bean\Wrapper;
 
-use Swoft\Bean\Annotation\ExceptionHandler;
-use Swoft\Bean\Annotation\Handler;
 use Swoft\Bean\Annotation\Inject;
 use Swoft\Bean\Annotation\Value;
+use Swoft\Bean\Wrapper\AbstractWrapper;
+use Swoft\ErrorHandler\Bean\Annotation\ExceptionHandler;
+use Swoft\ErrorHandler\Bean\Annotation\Handler;
 
 /**
- * the wrapper of exception handler
+ * Class ExceptionHandlerWrapper
  *
- * @uses      ExceptionHandlerWrapper
- * @version   2018年01月17日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
+ * @package Swoft\Bean\Wrapper
  */
 class ExceptionHandlerWrapper extends AbstractWrapper
 {
