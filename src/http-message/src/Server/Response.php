@@ -116,7 +116,7 @@ class Response extends \Swoft\Http\Message\Base\Response
      */
     public function auto($data, int $status = 200): Response
     {
-        // todo Content-typt negotiate
+        // todo Content-type negotiate
         if ($this->isArrayable($data)) {
             return $this->json($data, $status);
         } elseif (\is_string($data)) {
