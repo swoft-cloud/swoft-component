@@ -28,4 +28,5 @@ return [
   'service-governance',
   'task',
   'websocket-server',
+  'error-handler',
 ];
