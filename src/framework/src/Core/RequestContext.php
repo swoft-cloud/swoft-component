@@ -40,7 +40,7 @@ class RequestContext
     private static $context;
 
     /**
-     * @return \Psr\Http\Message\ServerRequestInterface|null
+     * @return \Psr\Http\Message\ServerRequestInterface|\Swoft\Http\Message\Server\Request|null
      */
     public static function getRequest()
     {
@@ -48,7 +48,7 @@ class RequestContext
     }
 
     /**
-     * @return \Psr\Http\Message\ResponseInterface|null
+     * @return \Psr\Http\Message\ResponseInterface|\Swoft\Http\Message\Server\Response|null
      */
     public static function getResponse()
     {
