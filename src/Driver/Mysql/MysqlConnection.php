@@ -239,7 +239,7 @@ class MysqlConnection extends AbstractDbConnection
             if ($value === null) {
                 $value = " null ";
             } else {
-                $value = "'{$value}'";
+                $value = "'" . addslashes($value) . "'";
             }
 
             if (\is_int($key)) {
