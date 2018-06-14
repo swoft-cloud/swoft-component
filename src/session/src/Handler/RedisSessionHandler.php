@@ -7,15 +7,15 @@ use Swoft\Bean\Annotation\Inject;
 
 
 /**
+ * Class RedisSessionHandler
+ *
  * @Bean()
- * @uses      RedisSessionHandler
- * @version   2017年12月05日
- * @author    huangzhhui <huangzhwork@gmail.com>
- * @copyright Copyright 2010-2017 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
+ * @package Swoft\Session\Handler
  */
-class RedisSessionHandler implements \SessionHandlerInterface
+class RedisSessionHandler implements \SessionHandlerInterface, LifetimeInterface
 {
+
+    use LifetimeTrait;
 
     /**
      * @var string
@@ -28,11 +28,6 @@ class RedisSessionHandler implements \SessionHandlerInterface
     private $glue = ':';
 
     /**
-     * @var int
-     */
-    private $minutes;
-
-    /**
      * @Inject()
      * @var \Swoft\Redis\Redis
      */
@@ -41,11 +36,11 @@ class RedisSessionHandler implements \SessionHandlerInterface
     /**
      * RedisSessionHandler constructor.
      *
-     * @param int $minutes
+     * @param int $lifetime
      */
-    public function __construct($minutes = 15)
+    public function __construct($lifetime = 15 * 60)
     {
-        $this->minutes = $minutes;
+        $this->setLifetime($lifetime);
     }
 
     /**
@@ -94,7 +89,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
      */
     public function write($sessionId, $data)
     {
-        return (bool)$this->redis->set($this->key($sessionId), $this->serialize($data));
+        return (bool)$this->redis->set($this->key($sessionId), $this->serialize($data), $this->getLifetime());
     }
 
     /**
