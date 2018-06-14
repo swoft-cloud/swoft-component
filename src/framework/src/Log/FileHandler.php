@@ -58,9 +58,13 @@ class FileHandler extends AbstractProcessingHandler
         $this->createDir();
         $logFile = App::getAlias($this->logFile);
         $messageText = implode("\n", $records) . "\n";
-        
-        // 协程写
-        $this->coWrite($logFile, $messageText);
+
+        if (App::isCoContext()) {
+            // 协程写
+            $this->coWrite($logFile, $messageText);
+        } else {
+            $this->syncWrite($logFile, $messageText);
+        }
     }
 
     /**
@@ -77,6 +81,24 @@ class FileHandler extends AbstractProcessingHandler
                 throw new \InvalidArgumentException("Unable to append to log file: {$this->logFile}");
             }
         });
+    }
+
+    /**
+     * 同步写文件
+     *
+     * @param string $logFile     日志路径
+     * @param string $messageText 文本信息
+     */
+    private function syncWrite(string $logFile, string $messageText)
+    {
+        $fp = fopen($logFile, 'a');
+        if ($fp === false) {
+            throw new \InvalidArgumentException("Unable to append to log file: {$this->logFile}");
+        }
+        flock($fp, LOCK_EX);
+        fwrite($fp, $messageText);
+        flock($fp, LOCK_UN);
+        fclose($fp);
     }
 
     /**
