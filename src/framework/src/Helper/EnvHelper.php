@@ -29,6 +29,11 @@ class EnvHelper
         if (!class_exists('Swoole\Coroutine')) {
             throw new \RuntimeException("The swoole is must enable coroutine by build param '--enable-coroutine'!");
         }
+        
+        // xdebug is available on swoole 4+
+        if (\version_compare(\SWOOLE_VERSION, '4.0', '>=')) {
+            return;
+        }
 
         if (\extension_loaded('blackfire')) {
             throw new \RuntimeException('The extension of blackfire must be closed, otherwise swoft will be affected!');
