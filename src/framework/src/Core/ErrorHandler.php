@@ -2,8 +2,6 @@
 
 namespace Swoft\Core;
 
-use Psr\Http\Message\ResponseInterface;
-use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Collector\ExceptionHandlerCollector;
 use Swoft\Helper\PhpHelper;
@@ -11,14 +9,8 @@ use Swoft\Http\Message\Server\Request;
 use Swoft\Http\Message\Server\Response;
 
 /**
- * the handler of error and exception
- *
+ * Error and Exception Handler
  * @Bean()
- * @uses      ErrorHandler
- * @version   2018年01月17日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 class ErrorHandler
 {
@@ -27,87 +19,74 @@ class ErrorHandler
      * handle exception
      *
      * @param \Throwable $throwable
-     *
-     * @return \Swoft\Http\Message\Server\Response
+     * @return \Swoft\Http\Message\Server\Response|array|string
      */
     public function handle(\Throwable $throwable)
     {
         try {
-            $response = $this->doHandler($throwable);
+            $exceptionClass = \get_class($throwable);
+            $collector = ExceptionHandlerCollector::getCollector();
+            $isNotExistHandler = ! isset($collector[$exceptionClass]) && ! isset($collector[\Exception::class]);
+            if (empty($collector) || $isNotExistHandler) {
+                throw $throwable;
+            }
+
+            if (isset($collector[$exceptionClass])) {
+                list($classBeanName, $methodName) = $collector[$exceptionClass];
+            } else {
+                list($classBeanName, $methodName) = $collector[\Exception::class];
+            }
+
+            $handler = \bean($classBeanName);
+            $bindParams = $this->getBindParams($classBeanName, $methodName, $throwable);
+            $response = PhpHelper::call([$handler, $methodName], $bindParams);
         } catch (\Throwable $e) {
-            $response = $this->handleThrowtable($e);
+            $response = [
+                'message' => $e->getMessage(),
+                'code' => $e->getCode(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTrace(),
+                'previous' => $e->getPrevious(),
+            ];
         }
 
         return $response;
-    }
-
-    /**
-     * do handler
-     *
-     * @param \Throwable $throwable
-     *
-     * @return mixed|\Swoft\Http\Message\Server\Response
-     * @throws \Exception
-     */
-    public function doHandler(\Throwable $throwable)
-    {
-        $exceptionClass = get_class($throwable);
-        $collector      = ExceptionHandlerCollector::getCollector();
-        $isNotExistHandler = !isset($collector[$exceptionClass]) && !isset($collector[\Exception::class]);
-        if (empty($collector) || $isNotExistHandler) {
-            return $this->handleThrowtable($throwable);
-        }
-
-        if(isset($collector[$exceptionClass])){
-            list($classBeanName, $methodName) = $collector[$exceptionClass];
-        }else{
-            list($classBeanName, $methodName) = $collector[\Exception::class];
-        }
-
-        $handler    = App::getBean($classBeanName);
-        $bindParams = $this->getBindParams($classBeanName, $methodName, $throwable);
-        $response   = PhpHelper::call([$handler, $methodName], $bindParams);
-        if ($response instanceof ResponseInterface) {
-            return $response;
-        }
-
-        throw new \Exception("the handler of exception must be return the object of response!");
     }
 
     /**
      * handler throwable
      *
      * @param \Throwable $throwable
-     *
-     * @return \Swoft\Http\Message\Server\Response
+     * @return array
      */
-    private function handleThrowtable(\Throwable $throwable)
+    private function handleThrowtable(\Throwable $throwable): array
     {
-        $message = sprintf("%s %s %d", $throwable->getFile(), $throwable->getMessage(), $throwable->getLine());
-
-        /* @var \Swoft\Http\Message\Server\Response $response */
-        $response = RequestContext::getResponse();
-        $response = $response->json([$message]);
-
-        return $response;
+        return [
+            'message' => $throwable->getMessage(),
+            'code' => $throwable->getCode(),
+            'file' => $throwable->getFile(),
+            'line' => $throwable->getLine(),
+            'trace' => $throwable->getTrace(),
+            'previous' => $throwable->getPrevious(),
+        ];
     }
 
     /**
      * get binded params
      *
-     * @param string     $className
-     * @param string     $methodName
+     * @param string $className
+     * @param string $methodName
      * @param \Throwable $throwable
-     *
      * @return array
      */
     private function getBindParams(string $className, string $methodName, \Throwable $throwable)
     {
-        $reflectClass  = new \ReflectionClass($className);
+        $reflectClass = new \ReflectionClass($className);
         $reflectMethod = $reflectClass->getMethod($methodName);
         $reflectParams = $reflectMethod->getParameters();
-        $response      = RequestContext::getResponse();
-        $request       = RequestContext::getRequest();
+        $response = RequestContext::getResponse();
+        $request = RequestContext::getRequest();
 
         // binding params
         $bindParams = [];
@@ -127,9 +106,9 @@ class ErrorHandler
             $type = $reflectType->__toString();
             if ($type === Request::class) {
                 $bindParams[$key] = $request;
-            } elseif ($type == Response::class) {
+            } elseif ($type === Response::class) {
                 $bindParams[$key] = $response;
-            } elseif ($type == \Throwable::class) {
+            } elseif ($type === \Throwable::class) {
                 $bindParams[$key] = $throwable;
             } else {
                 $bindParams[$key] = null;

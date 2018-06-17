@@ -202,8 +202,6 @@ class SwooleStream implements StreamInterface
      * Returns the remaining contents in a string
      *
      * @return string
-     * @throws \RuntimeException if unable to read or an error occurs while
-     *     reading.
      */
     public function getContents()
     {

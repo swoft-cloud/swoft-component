@@ -425,8 +425,8 @@ class Container implements ContainerInterface
             return array_diff($beanScan, $excludeScan);
         }
 
-        $appDir = alias("@app");
-        $dirs   = glob($appDir . "/*");
+        $appDir = alias('@app');
+        $dirs   = glob($appDir . '/*');
 
         $beanNamespace = [];
         foreach ($dirs as $dir) {

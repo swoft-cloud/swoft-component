@@ -6,9 +6,9 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Swoft\App;
 use Swoft\Contract\DispatcherInterface;
-use Swoft\Core\ErrorHandler;
 use Swoft\Core\RequestContext;
 use Swoft\Core\RequestHandler;
+use Swoft\ErrorHandler\ErrorHandler;
 use Swoft\Event\AppEvent;
 use Swoft\Http\Message\Server\Response;
 use Swoft\Http\Server\Event\HttpServerEvent;
@@ -61,9 +61,7 @@ class ServerDispatcher implements DispatcherInterface
             $requestHandler = new RequestHandler($middlewares, $this->handlerAdapter);
             $response = $requestHandler->handle($request);
         } catch (\Throwable $throwable) {
-            /* @var ErrorHandler $errorHandler */
-            $errorHandler = \bean(ErrorHandler::class);
-            $response = $errorHandler->handle($throwable);
+            $response = \bean(ErrorHandler::class)->handle($throwable);
         }
 
         // After server dispatch

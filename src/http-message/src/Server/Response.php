@@ -105,8 +105,24 @@ class Response extends \Swoft\Http\Message\Base\Response
         // Status code
         $status && $response = $response->withStatus($status);
 
-
         return $response;
+    }
+
+    /**
+     * @param string|string $data
+     * @param int $status
+     * @return \Swoft\Http\Message\Server\Response
+     * @throws \InvalidArgumentException
+     */
+    public function auto($data, int $status = 200): Response
+    {
+        // todo Content-type negotiate
+        if ($this->isArrayable($data)) {
+            return $this->json($data, $status);
+        } elseif (\is_string($data)) {
+            return $this->json(['data' => $data], $status);
+        }
+        return $this;
     }
 
     /**

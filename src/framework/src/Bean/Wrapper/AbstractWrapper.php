@@ -62,9 +62,9 @@ abstract class AbstractWrapper implements WrapperInterface
      * 封装注解
      *
      * @param string $className
-     * @param array  $annotations
-     *
+     * @param array $annotations
      * @return array|null
+     * @throws \ReflectionException
      */
     public function doWrapper(string $className, array $annotations)
     {
@@ -207,8 +207,8 @@ abstract class AbstractWrapper implements WrapperInterface
         // 循环方法注解解析
         foreach ($methodAnnotations[$methodName] as $methodAnnotationAry) {
             foreach ($methodAnnotationAry as $methodAnnotation) {
-                $annotationClass = get_class($methodAnnotation);
-                if (!in_array($annotationClass, $this->getMethodAnnotations())) {
+                $annotationClass = \get_class($methodAnnotation);
+                if (! \in_array($annotationClass, $this->getMethodAnnotations())) {
                     continue;
                 }
 
@@ -259,8 +259,8 @@ abstract class AbstractWrapper implements WrapperInterface
 
         // 属性注解解析
         foreach ($propertyAnnotations[$propertyName] as $propertyAnnotation) {
-            $annotationClass = get_class($propertyAnnotation);
-            if (!in_array($annotationClass, $this->getPropertyAnnotations())) {
+            $annotationClass = \get_class($propertyAnnotation);
+            if (! \in_array($annotationClass, $this->getPropertyAnnotations())) {
                 continue;
             }
 
@@ -283,7 +283,7 @@ abstract class AbstractWrapper implements WrapperInterface
      * @param string $className
      * @param array  $annotations
      *
-     * @return array
+     * @return array|null
      */
     public function parseClassAnnotations(string $className, array $annotations)
     {
@@ -293,18 +293,18 @@ abstract class AbstractWrapper implements WrapperInterface
 
         $beanData = null;
         foreach ($annotations as $annotation) {
-            $annotationClass = get_class($annotation);
-            if (!in_array($annotationClass, $this->getClassAnnotations())) {
+            $annotationClass = \get_class($annotation);
+            if (! \in_array($annotationClass, $this->getClassAnnotations(), false)) {
                 continue;
             }
 
             // annotation parser
             $annotationParser = $this->getAnnotationParser($annotation);
-            if ($annotationParser == null) {
+            if ($annotationParser === null) {
                 continue;
             }
             $annotationData = $annotationParser->parser($className, $annotation);
-            if ($annotationData != null) {
+            if ($annotationData !== null) {
                 $beanData = $annotationData;
             }
         }
@@ -317,7 +317,7 @@ abstract class AbstractWrapper implements WrapperInterface
      */
     public function addExtends(WrapperExtendInterface $extend)
     {
-        $extendClass = get_class($extend);
+        $extendClass = \get_class($extend);
         $this->extends[$extendClass] = $extend;
     }
 
@@ -354,9 +354,9 @@ abstract class AbstractWrapper implements WrapperInterface
     {
         $annotations = [];
         foreach ($this->extends as $extend) {
-            if ($type == 1) {
+            if ($type === 1) {
                 $extendAnnoation = $extend->getClassAnnotations();
-            } elseif ($type == 2) {
+            } elseif ($type === 2) {
                 $extendAnnoation = $extend->getPropertyAnnotations();
             } else {
                 $extendAnnoation = $extend->getMethodAnnotations();
@@ -406,9 +406,9 @@ abstract class AbstractWrapper implements WrapperInterface
     private function isParseExtendAnnotations(array $annotations, int $type = 1): bool
     {
         foreach ($this->extends as $extend) {
-            if ($type == 1) {
+            if ($type === 1) {
                 $isParse = $extend->isParseClassAnnotations($annotations);
-            } elseif ($type == 2) {
+            } elseif ($type === 2) {
                 $isParse = $extend->isParsePropertyAnnotations($annotations);
             } else {
                 $isParse = $extend->isParseMethodAnnotations($annotations);
@@ -430,10 +430,10 @@ abstract class AbstractWrapper implements WrapperInterface
      */
     private function getAnnotationParser($objectAnnotation)
     {
-        $annotationClassName = get_class($objectAnnotation);
+        $annotationClassName = \get_class($objectAnnotation);
         $classNameTmp = str_replace('\\', '/', $annotationClassName);
         $className = basename($classNameTmp);
-        $namespaceDir = dirname($classNameTmp, 2);
+        $namespaceDir = \dirname($classNameTmp, 2);
         $namespace = str_replace('/', '\\', $namespaceDir);
 
         // 解析器类名

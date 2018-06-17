@@ -29,3 +29,4 @@ git subtree push --prefix=src/auth git@github.com:swoft-cloud/swoft-auth.git mas
 git subtree push --prefix=src/swagger git@github.com:swoft-cloud/swoft-swagger.git master --squash
 git subtree push --prefix=src/framework git@github.com:swoft-cloud/swoft-framework.git master --squash
 git subtree push --prefix=src/process git@github.com:swoft-cloud/swoft-process.git master --squash
+git subtree push --prefix=src/error-handler git@github.com:swoft-cloud/swoft-error-handler.git master --squash

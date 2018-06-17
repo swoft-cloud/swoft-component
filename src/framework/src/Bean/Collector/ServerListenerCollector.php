@@ -19,17 +19,22 @@ class ServerListenerCollector implements CollectorInterface
 
     /**
      * @param string $className
-     * @param object   $objectAnnotation
+     * @param object $objectAnnotation
      * @param string $propertyName
      * @param string $methodName
-     * @param null   $propertyValue
+     * @param null $propertyValue
      * @return void
      */
-    public static function collect(string $className, $objectAnnotation = null, string $propertyName = "", string $methodName = "", $propertyValue = null)
-    {
-        if($objectAnnotation instanceof BeforeStart){
+    public static function collect(
+        string $className,
+        $objectAnnotation = null,
+        string $propertyName = '',
+        string $methodName = '',
+        $propertyValue = null
+    ) {
+        if ($objectAnnotation instanceof BeforeStart) {
             self::$listeners[SwooleEvent::ON_BEFORE_START][] = $className;
-        } elseif($objectAnnotation instanceof ServerListener){
+        } elseif ($objectAnnotation instanceof ServerListener) {
             $events = $objectAnnotation->getEvent();
 
             foreach ($events as $event) {
@@ -41,7 +46,7 @@ class ServerListenerCollector implements CollectorInterface
     /**
      * @return array
      */
-    public static function getCollector()
+    public static function getCollector(): array
     {
         return self::$listeners;
     }

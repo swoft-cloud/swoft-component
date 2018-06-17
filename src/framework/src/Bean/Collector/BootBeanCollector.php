@@ -30,15 +30,21 @@ class BootBeanCollector implements CollectorInterface
      * @param object $objectAnnotation
      * @param string $propertyName
      * @param string $methodName
-     * @param null   $propertyValue
+     * @param null $propertyValue
+     * @return mixed|void
      */
-    public static function collect(string $className, $objectAnnotation = null, string $propertyName = "", string $methodName = "", $propertyValue = null)
-    {
+    public static function collect(
+        string $className,
+        $objectAnnotation = null,
+        string $propertyName = '',
+        string $methodName = '',
+        $propertyValue = null
+    ) {
         if ($objectAnnotation instanceof BootBean) {
             $server = $objectAnnotation->isServer();
-            if($server){
+            if ($server) {
                 self::$beans[self::TYPE_SERVER][] = $className;
-            }else{
+            } else {
                 self::$beans[self::TYPE_WORKER][] = $className;
             }
         }
@@ -47,7 +53,7 @@ class BootBeanCollector implements CollectorInterface
     /**
      * @return array
      */
-    public static function getCollector()
+    public static function getCollector(): array
     {
         return self::$beans;
     }
