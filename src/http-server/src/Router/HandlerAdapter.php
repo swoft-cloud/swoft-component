@@ -214,11 +214,65 @@ class HandlerAdapter implements HandlerAdapterInterface
             } elseif (isset($matches[$name])) {
                 $bindParams[$key] = $this->parserParamType($type, $matches[$name]);
             } else {
-                $bindParams[$key] = $this->getDefaultValue($type);
+                // get methodParam
+                $result = $this->makeMethodParam($request, $type);
+                // setDefault
+                $bindParams[$key] = $result ?? $this->getDefaultValue($type);
             }
         }
 
         return $bindParams;
+    }
+    
+    /**
+     * make Method Param
+     *
+     * @param ServerRequestInterface $request
+     * @param string $className
+     *
+     * @return Object
+     */
+    private function makeMethodParam(ServerRequestInterface $request, string $className)
+    {
+        try {
+            // get request queryParam
+            $queryParam = $request->getQueryParams();
+            // get request type
+            $type = $request->getHeaderLine('Content-Type');
+            // get requestBody
+            if ($type == 'application/json') {
+                $requestBody = json_decode($request->getBody()->getContents(), true);
+            } else {
+                $requestBody = $request->getParsedBody();
+            }
+            // array_merge
+            $requestParam = array_merge($queryParam, $requestBody);
+            // ReflectionClass
+            $reflectClass = new \ReflectionClass($className);
+            // getProperties
+            $properties = $reflectClass->getProperties();
+            // newInstance
+            $object = $reflectClass->newInstance();
+            // foreach properties
+            foreach ($properties as $property) {
+                // get Name
+                $name = $property->getName();
+                // isset
+                if (!isset($requestParam[$name])) {
+                    continue;
+                }
+                // is not public
+                if (!$property->isPublic()) {
+                    $property->setAccessible(true);
+                }
+                // set value
+                $property->setValue($object, $requestParam[$name]);
+            }
+            // return
+            return $object;
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     /**
