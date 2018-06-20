@@ -213,10 +213,11 @@ class HandlerAdapter implements HandlerAdapterInterface
                 $bindParams[$key] = $response;
             } elseif (isset($matches[$name])) {
                 $bindParams[$key] = $this->parserParamType($type, $matches[$name]);
+            } elseif (App::hasBean($type)) {
+                $bindParams[$key] = App::getBean($type);
+            } elseif (class_exists($type)) {
+                $bindParams[$key] = $this->makeMethodParam($request, $type);
             } else {
-                // get methodParam
-                $result = $this->makeMethodParam($request, $type);
-                // setDefault
                 $bindParams[$key] = $result ?? $this->getDefaultValue($type);
             }
         }
