@@ -218,7 +218,7 @@ class HandlerAdapter implements HandlerAdapterInterface
             } elseif (class_exists($type)) {
                 $bindParams[$key] = $this->makeMethodParam($request, $type);
             } else {
-                $bindParams[$key] = $result ?? $this->getDefaultValue($type);
+                $bindParams[$key] = $this->getDefaultValue($type);
             }
         }
 
