@@ -234,6 +234,8 @@ class HandlerAdapter implements HandlerAdapterInterface
      */
     private function bindRequestParamsToClass(ServerRequestInterface $request, \ReflectionClass $reflectClass)
     {
+        // init $object 
+        $object = null;
         try {
             $object = $reflectClass->newInstance();
             $queryParams = $request->getQueryParams();
