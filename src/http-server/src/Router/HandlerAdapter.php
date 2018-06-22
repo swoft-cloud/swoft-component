@@ -235,6 +235,7 @@ class HandlerAdapter implements HandlerAdapterInterface
     private function bindRequestParamsToClass(ServerRequestInterface $request, \ReflectionClass $reflectClass)
     {
         try {
+            $object = $reflectClass->newInstance();
             $queryParams = $request->getQueryParams();
             // Get request body, auto decode when content type is json format
             if (StringHelper::startsWith($request->getHeaderLine('Content-Type'), 'application/json')) {
@@ -246,7 +247,6 @@ class HandlerAdapter implements HandlerAdapterInterface
             $requestParams = array_merge($queryParams, $requestBody);
             // Binding request params to target object
             $properties = $reflectClass->getProperties();
-            $object = $reflectClass->newInstance();
             foreach ($properties as $property) {
                 $name = $property->getName();
                 if (!isset($requestParams[$name])) {
@@ -259,7 +259,7 @@ class HandlerAdapter implements HandlerAdapterInterface
             }
             return $object;
         } catch (\Exception $e) {
-            return null;
+            return $object ?? null;
         }
     }
 
