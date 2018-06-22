@@ -7,7 +7,9 @@ use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Core\RequestContext;
 use Swoft\Exception\InvalidArgumentException;
+use Swoft\Helper\JsonHelper;
 use Swoft\Helper\PhpHelper;
+use Swoft\Helper\StringHelper;
 use Swoft\Http\Message\Router\HandlerAdapterInterface;
 use Swoft\Http\Message\Server\Request;
 use Swoft\Http\Message\Server\Response;
@@ -17,15 +19,13 @@ use Swoft\Http\Server\Exception\RouteNotFoundException;
 use Swoft\Http\Server\Payload;
 
 /**
- * http handler adapter
- *
  * @Bean("httpHandlerAdapter")
- * @author    stelin <phpcrazy@126.com>
  */
 class HandlerAdapter implements HandlerAdapterInterface
 {
     /**
-     * execute handler with controller and action
+     * Execute handler with controller and action
+     *
      * @param ServerRequestInterface $request request object
      * @param array $routeInfo handler info
      * @return Response
@@ -89,11 +89,10 @@ class HandlerAdapter implements HandlerAdapterInterface
     }
 
     /**
-     * create handler
+     * Create handler
      *
      * @param string $path url path
      * @param array  $info path info
-     *
      * @return array
      * @throws \InvalidArgumentException
      */
@@ -142,10 +141,7 @@ class HandlerAdapter implements HandlerAdapterInterface
     }
 
     /**
-     * default handler
-     *
      * @param array $handler handler info
-     *
      * @return array
      * @throws \Swoft\Exception\InvalidArgumentException
      */
@@ -163,12 +159,11 @@ class HandlerAdapter implements HandlerAdapterInterface
     }
 
     /**
-     * binding params of action method
+     * Binding params of action method
      *
      * @param ServerRequestInterface $request request object
      * @param mixed $handler handler
      * @param array $matches route params info
-     *
      * @return array
      * @throws \ReflectionException
      */
@@ -187,7 +182,7 @@ class HandlerAdapter implements HandlerAdapterInterface
         // $matches    = $info['matches'] ?? [];
         $response   = RequestContext::getResponse();
 
-        // binding params
+        // Binding params
         foreach ($reflectParams as $key => $reflectParam) {
             $reflectType = $reflectParam->getType();
             $name        = $reflectParam->getName();
@@ -203,20 +198,25 @@ class HandlerAdapter implements HandlerAdapterInterface
             }
 
             /**
-             * defined type of the param
+             * Defined type of the param
              * @notice \ReflectType::getName() is not supported in PHP 7.0, that is why use __toString()
              */
             $type = $reflectType->__toString();
             if ($type === Request::class) {
+                // Current Request Object
                 $bindParams[$key] = $request;
             } elseif ($type === Response::class) {
+                // Current Response Object
                 $bindParams[$key] = $response;
             } elseif (isset($matches[$name])) {
+                // Request parameters
                 $bindParams[$key] = $this->parserParamType($type, $matches[$name]);
             } elseif (App::hasBean($type)) {
+                // Bean
                 $bindParams[$key] = App::getBean($type);
-            } elseif (class_exists($type)) {
-                $bindParams[$key] = $this->makeMethodParam($request, $type);
+            } elseif (\class_exists($type)) {
+                // Class
+                $bindParams[$key] = $this->bindRequestParamsToClass($request, new \ReflectionClass($type));
             } else {
                 $bindParams[$key] = $this->getDefaultValue($type);
             }
@@ -224,52 +224,39 @@ class HandlerAdapter implements HandlerAdapterInterface
 
         return $bindParams;
     }
-    
+
     /**
-     * make Method Param
+     * Bind request parameters to instance of ReflectClass
      *
      * @param ServerRequestInterface $request
-     * @param string $className
-     *
+     * @param \ReflectionClass $reflectClass
      * @return Object
      */
-    private function makeMethodParam(ServerRequestInterface $request, string $className)
+    private function bindRequestParamsToClass(ServerRequestInterface $request, \ReflectionClass $reflectClass)
     {
         try {
-            // get request queryParam
-            $queryParam = $request->getQueryParams();
-            // get request type
-            $type = $request->getHeaderLine('Content-Type');
-            // get requestBody
-            if ($type == 'application/json') {
-                $requestBody = json_decode($request->getBody()->getContents(), true);
+            $queryParams = $request->getQueryParams();
+            // Get request body, auto decode when content type is json format
+            if (StringHelper::startsWith($request->getHeaderLine('Content-Type'), 'application/json')) {
+                $requestBody = JsonHelper::decode($request->getBody()->getContents(), true);
             } else {
                 $requestBody = $request->getParsedBody();
             }
-            // array_merge
-            $requestParam = array_merge($queryParam, $requestBody);
-            // ReflectionClass
-            $reflectClass = new \ReflectionClass($className);
-            // getProperties
+            // Merge query params and request body
+            $requestParams = array_merge($queryParams, $requestBody);
+            // Binding request params to target object
             $properties = $reflectClass->getProperties();
-            // newInstance
             $object = $reflectClass->newInstance();
-            // foreach properties
             foreach ($properties as $property) {
-                // get Name
                 $name = $property->getName();
-                // isset
-                if (!isset($requestParam[$name])) {
+                if (!isset($requestParams[$name])) {
                     continue;
                 }
-                // is not public
                 if (!$property->isPublic()) {
                     $property->setAccessible(true);
                 }
-                // set value
-                $property->setValue($object, $requestParam[$name]);
+                $property->setValue($object, $requestParams[$name]);
             }
-            // return
             return $object;
         } catch (\Exception $e) {
             return null;
