@@ -1,0 +1,41 @@
+{
+    "name": "swoft/log",
+    "type": "library",
+    "keywords": [
+        "php",
+        "swoole",
+        "swoft",
+        "i18n",
+        "translation",
+        "psr-3"
+    ],
+    "description": "I18n Translations Component for Swoft",
+    "license": "Apache-2.0",
+    "require": {
+        "swoft/framework": "^1.0",
+        "psr/log": "^1.0.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Swoft\\Log\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SwoftTest\\Log\\": "test/Cases"
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packagist.phpcomposer.com"
+        }
+    ],
+    "require-dev": {
+        "swoft/swoole-ide-helper": "dev-master",
+        "phpunit/phpunit": "^5.7"
+    },
+    "scripts": {
+        "test": "./vendor/bin/phpunit -c phpunit.xml"
+    }
+}
