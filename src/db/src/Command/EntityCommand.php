@@ -59,6 +59,7 @@ class EntityCommand
      * --remove-table-prefix 去除前缀
      * --entity-file-path 实体路径(必须在以@app开头并且在app目录下存在的目录,否则将会重定向到@app/Models/Entity)
      * --instance 设置数据库实例，默认default
+     * --extends 设置模型的实体基类
      *
      * @Example
      * php bin/swoft entity:create -d test
@@ -76,6 +77,7 @@ class EntityCommand
         $this->parseEnableTablesCommand($tablesEnabled);
         $this->parseDisableTablesCommand($tablesDisabled);
         $this->parseRemoveTablePrefix($removeTablePrefix);
+        $this->parseExtends($extends);
 
         if (empty($database)) {
             output()->writeln('databases doesn\'t not empty!');
@@ -85,6 +87,7 @@ class EntityCommand
             $this->generatorEntity->tablesEnabled = $tablesEnabled;
             $this->generatorEntity->tablesDisabled = $tablesDisabled;
             $this->generatorEntity->removeTablePrefix = $removeTablePrefix;
+            if (isset($extends)) $this->generatorEntity->setExtends($extends);
             $this->generatorEntity->execute($this->schema);
         }
     }
@@ -192,5 +195,17 @@ class EntityCommand
         }
 
         $this->setEntityFilePath();
+    }
+
+    /**
+     * 实体基类
+     *
+     * @param string &$extends 实体基类
+     */
+    private function parseExtends(&$extends)
+    {
+        if (input()->hasLOpt('extends')) {
+            $extends = (string)input()->getLongOpt('extends');
+        }
     }
 }
