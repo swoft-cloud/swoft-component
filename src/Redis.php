@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Redis;
 
@@ -22,8 +30,11 @@ use Swoft\Redis\Pool\RedisPool;
  * @method int incrBy($key, $value)
  * @method float incrByFloat($key, $increment)
  * @method int strlen($key)
- * @method array mget( array $array )
- * @method bool mset( array $array )
+ * @method bool mset(array $array)
+ * @method int ttl($key)
+ * @method int expire($key, $seconds)
+ * @method int pttl($key)
+ * @method int persist($key)
  * hash
  * @method int hSet($key, $hashKey, $value)
  * @method bool hSetNx($key, $hashKey, $value)
@@ -37,7 +48,6 @@ use Swoft\Redis\Pool\RedisPool;
  * @method bool hIncrBy($key, $hashKey, $value)
  * @method bool hIncrByFloat($key, $field, $increment)
  * @method bool hMset($key, $hashKeys)
- * @method array hMGet($key, $hashKeys)
  * list
  * @method array brPop(array $keys, $timeout)
  * @method array blPop(array $keys, $timeout)
@@ -64,7 +74,6 @@ use Swoft\Redis\Pool\RedisPool;
  * @method int sRem($key, $member1, $member2 = null, $memberN = null)
  * @method array sUnion($key1, $key2, $keyN = null)
  * @method int sUnionStore($dstKey, $key1, $key2, $keyN = null)
- * @method int sismember($key, $value)
  * sort
  * @method int zAdd($key, $score1, $value1, $score2 = null, $value2 = null, $scoreN = null, $valueN = null)
  * @method array zRange($key, $start, $end, $withscores = null)
@@ -241,6 +250,53 @@ class Redis implements CacheInterface
     }
 
     /**
+     * @param string $key
+     * @param mixed  $value
+     *
+     * @return bool
+     */
+    public function sIsMember($key, $value): bool
+    {
+        return (bool)$this->call('sIsMember', [$key, $value]);
+    }
+
+    /**
+     * @param array $keys
+     *
+     * @return array|mixed
+     */
+    public function mget(array $keys)
+    {
+        return $this->getMultiple($keys, false);
+    }
+
+    /**
+     * @param string $key
+     * @param array  $hashKeys
+     *
+     * @return array
+     */
+    public function hMGet(string $key, array $hashKeys): array
+    {
+        $hMgetResult = $this->call('hMGet', [$key, $hashKeys]);
+        if (!App::isCoContext()) {
+            return $hMgetResult;
+        }
+
+        $result = [];
+        foreach ($hMgetResult as $key => $value) {
+            if (!isset($hashKeys[$key])) {
+                continue;
+            }
+
+            $value = ($value === null) ? false : $value;
+            $result[$hashKeys[$key]] = $value;
+        }
+
+        return $result;
+    }
+
+    /**
      * magic method
      *
      * @param string $method
@@ -267,7 +323,7 @@ class Redis implements CacheInterface
         $connectPool = App::getPool($this->poolName);
         /* @var ConnectionInterface $client */
         $connection = $connectPool->getConnection();
-        $result = $connection->$method(...$params);
+        $result     = $connection->$method(...$params);
         $connection->release(true);
 
         return $result;
