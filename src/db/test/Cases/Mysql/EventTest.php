@@ -12,19 +12,47 @@ use SwoftTest\Db\Testing\Entity\User;
  */
 class EventTest extends AbstractMysqlCase
 {
-    public function testBeforeSave()
+    public function testBeforeSaveAndAfterSave()
     {
         $user = new User([
             'name' => 'name',
             'sex' => 1,
-            'description' => 'this my desc',
             'age' => 99,
         ]);
 
-        $id = $user->save()->getResult();
+        $user->save()->getResult();
 
         $this->assertEquals('Set by beforeSaveListener', $user->getDesc());
         $this->assertEquals(100, $user->getAge());
+    }
 
+    public function testBeforeUpdate()
+    {
+        $user = new User([
+            'name' => 'name',
+            'sex' => 1,
+            'age' => 99,
+        ]);
+
+        $user->save()->getResult();
+
+        $user->update();
+
+        $this->assertEquals('Update by beforeUpdateLinstener', $user->getDesc());
+    }
+
+    public function testAfterDelete()
+    {
+        $user = new User([
+            'name' => 'name',
+            'sex' => 1,
+            'age' => 99,
+        ]);
+
+        $user->save()->getResult();
+
+        $user->delete();
+
+        $this->assertEquals('Delete by afterDeleteListener', $user->getDesc());
     }
 }

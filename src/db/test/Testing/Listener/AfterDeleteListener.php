@@ -10,9 +10,9 @@ use Swoft\Db\Event\ModelEvent;
 /**
  * Model before save handler
  *
- * @Listener(ModelEvent::BEFORE_SAVE)
+ * @Listener(ModelEvent::AFTER_DELETE)
  */
-class BeforeSaveListener implements EventHandlerInterface
+class AfterDeleteListener implements EventHandlerInterface
 {
     /**
      * @param \Swoft\Event\EventInterface $event
@@ -20,8 +20,10 @@ class BeforeSaveListener implements EventHandlerInterface
     public function handle(EventInterface $event)
     {
         $model = $event->getModel();
-        if (method_exists($model, 'getDesc') && method_exists($model, 'setDesc') && is_null($model->getDesc())) {
-            $model->setDesc('Set by beforeSaveListener');
+        if (method_exists($model, 'getDesc') && method_exists($model, 'setDesc')) {
+            if ('Set by beforeSaveListener' == $model->getDesc()) {
+                $model->setDesc('Delete by afterDeleteListener');
+            }
         }
     }
 }

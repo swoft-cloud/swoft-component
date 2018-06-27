@@ -13,7 +13,7 @@ use Swoft\App;
 use Swoft\Contract\Arrayable;
 use Swoft\Core\ResultInterface;
 use Swoft\Db\Bean\Collector\EntityCollector;
-use Swoft\Db\Event\Events\SaveModelEvent;
+use Swoft\Db\Event\Events\ModelEventer;
 use Swoft\Db\Event\ModelEvent;
 use Swoft\Helper\StringHelper;
 
@@ -46,12 +46,12 @@ class Model implements \ArrayAccess, \Iterator, Arrayable,\JsonSerializable
      */
     public function save(): ResultInterface
     {
-        $beforeEvent = new SaveModelEvent(ModelEvent::BEFORE_SAVE, $this);
+        $beforeEvent = new ModelEventer(ModelEvent::BEFORE_SAVE, $this);
         App::trigger($beforeEvent);
 
         $result = Executor::save($this);
 
-        $afterEvent = new SaveModelEvent(ModelEvent::AFTER_SAVE, $this);
+        $afterEvent = new ModelEventer(ModelEvent::AFTER_SAVE, $this);
         App::trigger($afterEvent);
         return $result;
     }
@@ -63,7 +63,14 @@ class Model implements \ArrayAccess, \Iterator, Arrayable,\JsonSerializable
      */
     public function delete(): ResultInterface
     {
-        return Executor::delete($this);
+        $beforeEvent = new ModelEventer(ModelEvent::BEFORE_DELETE, $this);
+        App::trigger($beforeEvent);
+
+        $result = Executor::delete($this);
+
+        $afterEvent = new ModelEventer(ModelEvent::AFTER_DELETE, $this);
+        App::trigger($afterEvent);
+        return $result;
     }
 
     /**
@@ -149,7 +156,14 @@ class Model implements \ArrayAccess, \Iterator, Arrayable,\JsonSerializable
      */
     public function update(): ResultInterface
     {
-        return Executor::update($this);
+        $beforeEvent = new ModelEventer(ModelEvent::BEFORE_UPDATE, $this);
+        App::trigger($beforeEvent);
+
+        $result = Executor::update($this);
+
+        $afterEvent = new ModelEventer(ModelEvent::AFTER_UPDATE, $this);
+        App::trigger($afterEvent);
+        return $result;
     }
 
     /**
