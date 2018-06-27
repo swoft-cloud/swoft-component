@@ -9,9 +9,12 @@
  */
 namespace Swoft\Db;
 
+use Swoft\App;
 use Swoft\Contract\Arrayable;
 use Swoft\Core\ResultInterface;
 use Swoft\Db\Bean\Collector\EntityCollector;
+use Swoft\Db\Event\Events\SaveModelEvent;
+use Swoft\Db\Event\ModelEvent;
 use Swoft\Helper\StringHelper;
 
 /**
@@ -43,7 +46,14 @@ class Model implements \ArrayAccess, \Iterator, Arrayable,\JsonSerializable
      */
     public function save(): ResultInterface
     {
-        return Executor::save($this);
+        $beforeEvent = new SaveModelEvent(ModelEvent::BEFORE_SAVE, $this);
+        App::trigger($beforeEvent);
+
+        $result = Executor::save($this);
+
+        $afterEvent = new SaveModelEvent(ModelEvent::AFTER_SAVE, $this);
+        App::trigger($afterEvent);
+        return $result;
     }
 
     /**
