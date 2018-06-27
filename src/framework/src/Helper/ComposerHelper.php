@@ -35,6 +35,7 @@ class ComposerHelper
         foreach (get_declared_classes() as $declaredClass) {
             if (StringHelper::startsWith($declaredClass, 'ComposerAutoloaderInit') && method_exists($declaredClass, 'getLoader')) {
                 $composerClass = $declaredClass;
+                break;
             }
         }
         if (! $composerClass) {
