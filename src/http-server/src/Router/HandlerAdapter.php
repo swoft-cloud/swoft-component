@@ -179,8 +179,6 @@ class HandlerAdapter implements HandlerAdapterInterface
         }
 
         $bindParams = [];
-        // $matches    = $info['matches'] ?? [];
-        $response   = RequestContext::getResponse();
 
         // Binding params
         foreach ($reflectParams as $key => $reflectParam) {
@@ -207,7 +205,7 @@ class HandlerAdapter implements HandlerAdapterInterface
                 $bindParams[$key] = $request;
             } elseif ($type === Response::class) {
                 // Current Response Object
-                $bindParams[$key] = $response;
+                $bindParams[$key] = RequestContext::getResponse();
             } elseif (isset($matches[$name])) {
                 // Request parameters
                 $bindParams[$key] = $this->parserParamType($type, $matches[$name]);
