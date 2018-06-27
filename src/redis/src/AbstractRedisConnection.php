@@ -112,7 +112,9 @@ abstract class AbstractRedisConnection extends AbstractConnection
     public function check(): bool
     {
         try {
-            $this->connection->ping();
+            if (false === $this->connection->ping()) {
+                throw new \RuntimeException('Connection lost');
+            }
             $connected = true;
         } catch (\Throwable $throwable) {
             $connected = false;
