@@ -162,3 +162,13 @@ if (!function_exists('is_iterable')) {
         return is_array($obj) || (is_object($obj) && ($obj instanceof \Traversable));
     }
 }
+
+if (!function_exists('stop')) {
+    /**
+     * Stop by psysh
+     */
+    function stop()
+    {
+        \eval('extract(\Psy\debug(get_defined_vars(), isset($this) ? $this : @get_called_class()));');
+    }
+}
