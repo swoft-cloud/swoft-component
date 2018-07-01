@@ -12,7 +12,6 @@ namespace Swoft\ErrorHandler\Bootstrap\Boots;
 
 use Swoft\Bean\Annotation\Bootstrap;
 use Swoft\Bootstrap\Boots\Bootable;
-use Swoft\Bootstrap\Boots\TestBootable;
 use Swoft\ErrorHandler\Bean\Annotation;
 use Swoft\ErrorHandler\Bean\Collector;
 use Swoft\ErrorHandler\Bean\Parser;
@@ -23,7 +22,7 @@ use Swoft\ErrorHandler\Proxy;
  * Namespace compatibility with previous versions, which non-componentization version
  * @Bootstrap(order=1)
  */
-class CompPreviousVersionNamespace implements Bootable, TestBootable
+class CompPreviousVersionNamespace implements Bootable
 {
     /**
      * @return void
