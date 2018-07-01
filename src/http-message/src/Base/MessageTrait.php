@@ -165,7 +165,7 @@ trait MessageTrait
      */
     public function withHeader($name, $value)
     {
-        if (!is_array($value)) {
+        if (! \is_array($value)) {
             $value = [$value];
         }
 
@@ -207,13 +207,10 @@ trait MessageTrait
      * @param string $name Case-insensitive header field name to add.
      * @param string|string[] $value Header value(s).
      * @return static
-     * @throws \InvalidArgumentException for invalid header names or values.
      */
     public function withAddedHeader($name, $value)
     {
-        if (!is_array($value)) {
-            $value = [$value];
-        }
+        $value = (array)$value;
 
         $value = $this->trimHeaderValues($value);
         $normalized = strtolower($name);
@@ -264,7 +261,7 @@ trait MessageTrait
     {
         $this->headerNames = $this->headers = [];
         foreach ($headers as $header => $value) {
-            if (!is_array($value)) {
+            if (! \is_array($value)) {
                 $value = [$value];
             }
 

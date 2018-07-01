@@ -11,7 +11,8 @@
     "require": {
         "swoft/console": "^1.0",
         "swoft/http-message": "^1.0",
-        "swoft/framework": "^1.0"
+        "swoft/framework": "^1.0",
+        "swoft/error-handler": "^1.0"
     },
     "autoload": {
         "psr-4": {

@@ -79,13 +79,12 @@ class Response extends \Swoft\Http\Message\Base\Response
     /**
      * Return a Json format Response
      *
-     * @param  array|Arrayable $data            The data
-     * @param  int             $status          The HTTP status code.
-     * @param  int             $encodingOptions Json encoding options
+     * @param  array|Arrayable|string $data The data
+     * @param  int $status The HTTP status code.
+     * @param  int $encodingOptions Json encoding options
      * @return static when $data not jsonable
-     * @throws \InvalidArgumentException
      */
-    public function json(array $data = [], int $status = 200, int $encodingOptions = JSON_UNESCAPED_UNICODE): Response
+    public function json($data, int $status = 200, int $encodingOptions = JSON_UNESCAPED_UNICODE): Response
     {
         $response = $this;
 
@@ -112,7 +111,6 @@ class Response extends \Swoft\Http\Message\Base\Response
      * @param string|string $data
      * @param int $status
      * @return \Swoft\Http\Message\Server\Response
-     * @throws \InvalidArgumentException
      */
     public function auto($data, int $status = 200): Response
     {
