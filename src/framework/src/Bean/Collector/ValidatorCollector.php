@@ -2,6 +2,7 @@
 
 namespace Swoft\Bean\Collector;
 
+use Swoft\Bean\Annotation\CustomValidator;
 use Swoft\Bean\Annotation\Enum;
 use Swoft\Bean\Annotation\Floats;
 use Swoft\Bean\Annotation\Integer;
@@ -52,6 +53,8 @@ class ValidatorCollector implements CollectorInterface
             self::collectInteger($objectAnnotation, $className, $methodName);
         } elseif ($objectAnnotation instanceof Enum) {
             self::collectEnum($objectAnnotation, $className, $methodName);
+        } elseif ($objectAnnotation instanceof CustomValidator) {
+            self::collectCustomValidator($objectAnnotation, $className, $methodName);
         }
     }
 
@@ -169,6 +172,26 @@ class ValidatorCollector implements CollectorInterface
 
         self::$validator[$className][$methodName]['validator'][$from][$name] = [
             'validator' => EnumValidator::class,
+            'params'    => $params,
+        ];
+    }
+
+    /**
+     * @param CustomValidator $objectAnnotation
+     * @param string                      $className
+     * @param string                      $methodName
+     */
+    private static function collectCustomValidator(CustomValidator $objectAnnotation, string $className, string $methodName)
+    {
+        $from      = $objectAnnotation->getFrom();
+        $name      = $objectAnnotation->getName();
+        $default   = $objectAnnotation->getDefault();
+        $validator = $objectAnnotation->getValidator();
+
+        $params = [true, $default];
+
+        self::$validator[$className][$methodName]['validator'][$from][$name] = [
+            'validator' => $validator,
             'params'    => $params,
         ];
     }
