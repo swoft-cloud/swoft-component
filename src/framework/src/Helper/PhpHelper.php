@@ -39,6 +39,7 @@ class PhpHelper
      */
     public static function call($cb, array $args = [])
     {
+        $ret = null;
         if (\is_object($cb) || (\is_string($cb) && \function_exists($cb))) {
             $ret = $cb(...$args);
         } elseif (\is_array($cb)) {
