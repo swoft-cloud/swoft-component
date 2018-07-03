@@ -36,13 +36,16 @@ class ErrorHandlerChain
      * @param \Closure $closure
      * @return mixed
      */
-    public function map(\Closure $closure)
+    public function walk(\Closure $closure)
     {
-        $chains = clone $this->getChains();
-        foreach ($chains as $handler) {
-            $result = $closure($handler);
-            if ($result) {
-                break;
+        $result = null;
+        if ($this->getChains()->count() > 0) {
+            $chains = clone $this->getChains();
+            foreach ($chains as $handler) {
+                $result = $closure($handler);
+                if ($result) {
+                    break;
+                }
             }
         }
         return $result;

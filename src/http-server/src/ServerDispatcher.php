@@ -65,9 +65,7 @@ class ServerDispatcher implements DispatcherInterface
         }
 
         // After server dispatch
-        $this->afterDispatch($response);
-
-        return $response;
+        return $this->afterDispatch($response);
     }
 
     /**
@@ -76,7 +74,7 @@ class ServerDispatcher implements DispatcherInterface
      */
     public function addMiddleware(string $middleware, string $name = null)
     {
-        // Set middleware name to override if existed
+        // Override the middleware if existed
         if ($name) {
             $this->middlewares[$name] = $middleware;
         } else {
@@ -142,9 +140,12 @@ class ServerDispatcher implements DispatcherInterface
      * and return a suitable response
      *
      * @param mixed $response
-     * @throws \InvalidArgumentException
+     * @return \Swoft\Http\Message\Server\Response
+     * @throws \InvalidArgumentException If $response isn't an Response Object
+     *                                   and not structural data that auto() method
+     *                                   cannot recognized.
      */
-    protected function afterDispatch($response)
+    protected function afterDispatch($response): Response
     {
         if (!$response instanceof Response) {
             $response = RequestContext::getResponse()->auto($response);
@@ -158,6 +159,8 @@ class ServerDispatcher implements DispatcherInterface
 
         // Trigger 'After Request' event
         App::trigger(HttpServerEvent::AFTER_REQUEST);
+
+        return $response;
     }
 
     /**

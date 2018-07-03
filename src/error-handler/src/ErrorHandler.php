@@ -23,21 +23,20 @@ class ErrorHandler
     public function handle(\Throwable $throwable)
     {
         try {
-            $response = \bean(ErrorHandlerChain::class)->map(function ($handler) use ($throwable) {
+            $response = \bean(ErrorHandlerChain::class)->walk(function ($handler) use ($throwable) {
                 list($class, $method) = $handler;
                 $method = ($method && class_exists($class)) ? $method : 'handle';
                 return PhpHelper::call([$class, $method], $this->getBindParams($class, $method, $throwable));
             });
-            $response = $response instanceof Response ? $response : RequestContext::getResponse()->auto($response);
         } catch (\Throwable $t) {
-            $response = RequestContext::getResponse()->auto([
-                'message' => $t->getMessage(),
-                'code' => $t->getCode(),
-                'file' => $t->getFile(),
-                'line' => $t->getLine(),
-                'trace' => $t->getTrace(),
-                'previous' => $t->getPrevious(),
-            ]);
+            /**
+             * Do nothing, delegate to finally block,
+             * and should not handle the excpetion throwed by ErrorHandler.
+             */
+        } finally {
+            if (! $response) {
+                $response = RequestContext::getResponse()->auto(ThrowableHelper::toArray($throwable));
+            }
         }
         return $response;
     }

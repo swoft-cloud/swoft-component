@@ -1,6 +1,6 @@
 <?php
 
-namespace SwoftTest\Aop;
+namespace SwoftTest\ErrorHandler;
 
 use PHPUnit\Framework\TestCase;
 
