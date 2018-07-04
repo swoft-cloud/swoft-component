@@ -2,10 +2,10 @@
 /**
  * This file is part of Swoft.
  *
- * @link https://swoft.org
+ * @link     https://swoft.org
  * @document https://doc.swoft.org
- * @contact group@swoft.org
- * @license https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
 namespace Swoft\Bean\Annotation;
@@ -45,7 +45,7 @@ class CustomValidator
     private $validator = null;
 
     /**
-     * Strings constructor.
+     * CustomValidator constructor.
      *
      * @param array $values
      */
@@ -76,9 +76,9 @@ class CustomValidator
     /**
      * @param string $from
      *
-     * @return Strings
+     * @return CustomValidator
      */
-    public function setFrom(string $from): Strings
+    public function setFrom(string $from): CustomValidator
     {
         $this->from = $from;
 
@@ -96,9 +96,9 @@ class CustomValidator
     /**
      * @param string $name
      *
-     * @return Strings
+     * @return CustomValidator
      */
-    public function setName(string $name): Strings
+    public function setName(string $name): CustomValidator
     {
         $this->name = $name;
 
@@ -116,9 +116,9 @@ class CustomValidator
     /**
      * @param null|string $default
      *
-     * @return Strings
+     * @return CustomValidator
      */
-    public function setDefault($default): Strings
+    public function setDefault($default): CustomValidator
     {
         $this->default = $default;
 
@@ -136,9 +136,9 @@ class CustomValidator
     /**
      * @param null|string $validator
      *
-     * @return Strings
+     * @return CustomValidator
      */
-    public function setValidator($validator): Strings
+    public function setValidator($validator): CustomValidator
     {
         $this->validator = $validator;
 
