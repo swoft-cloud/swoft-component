@@ -1209,11 +1209,10 @@ class QueryBuilder implements QueryBuilderInterface
     {
         $statementClassName = DbHelper::getStatementClassNameByInstance($this->instance);
         /* @var StatementInterface $statement */
-        $statement    = new $statementClassName($this);
-        $sql          = $statement->getStatement();
-        $instanceName = $this->getInstanceName();
-
-        return Db::query($sql, $this->parameters, $instanceName, $this->className, $this->getDecorators());
+        $statement = new $statementClassName($this);
+        $result = Db::query($statement->getStatement(), $this->parameters, $this->getInstanceName(), $this->className, $this->getDecorators());
+        $this->clearDecorators();
+        return $result;
     }
 
     /**
