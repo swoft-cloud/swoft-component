@@ -27,7 +27,7 @@ class CustomValidatorParser extends AbstractParser
      * @param string|null     $propertyValue
      * @return null
      */
-    public function parser (
+    public function parser(
         string $className,
         $objectAnnotation = null,
         string $propertyName = '',
