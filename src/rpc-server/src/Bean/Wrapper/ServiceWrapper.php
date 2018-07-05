@@ -2,6 +2,7 @@
 
 namespace Swoft\Rpc\Server\Bean\Wrapper;
 
+use Swoft\Bean\Annotation\CustomValidator;
 use Swoft\Bean\Annotation\Enum;
 use Swoft\Bean\Annotation\Floats;
 use Swoft\Bean\Annotation\Inject;
@@ -92,5 +93,16 @@ class ServiceWrapper extends AbstractWrapper
     public function isParseMethodAnnotations(array $annotations): bool
     {
         return true;
+    }
+
+    protected function inMethodAnnotations($methodAnnotation): bool
+    {
+        $res = parent::inMethodAnnotations($methodAnnotation);
+        if ($res === false) {
+            if ($methodAnnotation instanceof CustomValidator) {
+                return true;
+            }
+        }
+        return $res;
     }
 }
