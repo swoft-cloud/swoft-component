@@ -21,33 +21,40 @@ class CustomValidator
     /**
      * @var string
      */
-    private $from = ValidatorFrom::POST;
+    protected $from = ValidatorFrom::POST;
 
     /**
      * Parameter name
      *
      * @var string
      */
-    private $name;
+    protected $name;
 
     /**
      * 默认值，如果是null，强制验证参数
      *
      * @var null|string
      */
-    private $default = null;
+    protected $default = null;
 
     /**
      * 验证器
      *
      * @var null|string
      */
-    private $validator = null;
+    protected $validator = null;
 
     /**
      * @var string
      */
-    private $template = '';
+    protected $template = '';
+
+    /**
+     * 是否抛出异常
+     *
+     * @var bool
+     */
+    protected $throw = true;
 
     /**
      * CustomValidator constructor.
@@ -70,6 +77,9 @@ class CustomValidator
         }
         if (isset($values['template'])) {
             $this->template = $values['template'];
+        }
+        if (isset($values['throw'])) {
+            $this->throw = $values['throw'];
         }
     }
 
@@ -169,6 +179,26 @@ class CustomValidator
     public function setTemplate(string $template): CustomValidator
     {
         $this->template = $template;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getThrow(): bool
+    {
+        return $this->throw;
+    }
+
+    /**
+     * @param bool $throw
+     *
+     * @return CustomValidator
+     */
+    public function setThrow(bool $throw): CustomValidator
+    {
+        $this->throw = $throw;
 
         return $this;
     }

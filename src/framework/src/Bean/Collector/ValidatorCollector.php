@@ -185,11 +185,9 @@ class ValidatorCollector implements CollectorInterface
     {
         $from      = $objectAnnotation->getFrom();
         $name      = $objectAnnotation->getName();
-        $default   = $objectAnnotation->getDefault();
         $validator = $objectAnnotation->getValidator();
-        $tpl       = $objectAnnotation->getTemplate();
 
-        $params = [true, $tpl, $default];
+        $params = [$objectAnnotation];
 
         self::$validator[$className][$methodName]['validator'][$from][$name] = [
             'validator' => $validator,

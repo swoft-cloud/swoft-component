@@ -9,8 +9,10 @@
  */
 namespace SwoftTest\Validator;
 
+use Swoft\Bean\Annotation\CustomValidator as CustomValidatorAnnotation;
 use Swoft\Exception\ValidatorException;
 use Swoft\Helper\ValidatorHelper;
+use Swoft\Validator\CustomValidator;
 use Swoft\Validator\ValidatorInterface;
 use Swoft\Bean\Annotation\Bean;
 
@@ -19,14 +21,14 @@ use Swoft\Bean\Annotation\Bean;
  * @Bean
  * @package SwoftTest\Validator
  */
-class TestValidator implements ValidatorInterface
+class TestValidator extends CustomValidator implements ValidatorInterface
 {
-    public function validate(...$params)
+    public function handle($name, $value, CustomValidatorAnnotation $annotation)
     {
-        list($name, $value, $throw, $template) = $params;
         if ($value !== 'limx') {
+            $template = $annotation->getTemplate();
             $template = empty($template) ? sprintf('Parameter %s must be passed', $name) : $template;
-            if ($throw) {
+            if ($annotation->getThrow()) {
                 throw new ValidatorException($template);
             }
             return false;

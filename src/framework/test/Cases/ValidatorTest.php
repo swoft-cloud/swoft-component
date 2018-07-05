@@ -49,17 +49,17 @@ class ValidatorTest extends AbstractTestCase
         // 测试自定义 Validator
         $res = $collector[ValidatorBean::class]['method']['validator']['post']['name'];
         $validator = $res['validator'];
-        list($throw, $tpl, $dafault) = $res['params'];
+        list($annotation) = $res['params'];
         /** @var ValidatorInterface $validator */
         $validator = bean($validator);
 
         // 验证参数合法
-        $params = ['name', 'limx', $throw, $tpl];
+        $params = ['name', 'limx', $annotation];
         $res = $validator->validate(...$params);
         $this->assertEquals('limx', $res);
 
         // 验证参数不合法时，抛出异常
-        $params = ['name', 'Agnes', $throw, $tpl];
+        $params = ['name', 'Agnes', $annotation];
         try {
             $validator->validate(...$params);
         } catch (ValidatorException $ex) {
@@ -67,17 +67,18 @@ class ValidatorTest extends AbstractTestCase
         }
 
         // 验证参数不合法时，返回false
-        $params = ['name', 'Agnes', false, $tpl];
+        $annotation->setThrow(false);
+        $params = ['name', 'Agnes', $annotation];
         $res = $validator->validate(...$params);
         $this->assertFalse($res);
 
         // 验证自定义异常文案
         $res = $collector[ValidatorBean::class]['method']['validator']['post']['tpl'];
         $validator = $res['validator'];
-        list($throw, $tpl, $dafault) = $res['params'];
+        list($annotation) = $res['params'];
         /** @var ValidatorInterface $validator */
         $validator = bean($validator);
-        $params = ['tpl', 'Agnes', $throw, $tpl];
+        $params = ['tpl', 'Agnes', $annotation];
         try {
             $validator->validate(...$params);
         } catch (ValidatorException $ex) {
