@@ -14,6 +14,7 @@ return [
         'SwoftTest\\Aop' => BASE_PATH . '/Cases/Aop',
         'SwoftTest\\Bean' => BASE_PATH . '/Cases/Bean',
         'SwoftTest\\Pool' => BASE_PATH . '/Cases/Pool',
+        'SwoftTest\\Validator' => BASE_PATH . '/Cases/Validator',
     ],
     'bootScan' => [],
     'env' => 'Base',

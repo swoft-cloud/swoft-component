@@ -45,6 +45,11 @@ class CustomValidator
     private $validator = null;
 
     /**
+     * @var string
+     */
+    private $template = '';
+
+    /**
      * CustomValidator constructor.
      *
      * @param array $values
@@ -62,6 +67,9 @@ class CustomValidator
         }
         if (isset($values['validator'])) {
             $this->validator = $values['validator'];
+        }
+        if (isset($values['template'])) {
+            $this->template = $values['template'];
         }
     }
 
@@ -141,6 +149,26 @@ class CustomValidator
     public function setValidator($validator): CustomValidator
     {
         $this->validator = $validator;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTemplate(): string
+    {
+        return $this->template;
+    }
+
+    /**
+     * @param string $template
+     *
+     * @return CustomValidator
+     */
+    public function setTemplate(string $template): CustomValidator
+    {
+        $this->template = $template;
 
         return $this;
     }
