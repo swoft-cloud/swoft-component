@@ -36,7 +36,7 @@ class Integer
     private $min = PHP_INT_MIN;
 
     /**
-     * 最小值
+     * 最大值
      *
      * @var int
      */
