@@ -11,7 +11,6 @@ namespace SwoftTest\Validator;
 
 use Swoft\Bean\Annotation\CustomValidator as CustomValidatorAnnotation;
 use Swoft\Exception\ValidatorException;
-use Swoft\Helper\ValidatorHelper;
 use Swoft\Validator\CustomValidator;
 use Swoft\Validator\ValidatorInterface;
 use Swoft\Bean\Annotation\Bean;
