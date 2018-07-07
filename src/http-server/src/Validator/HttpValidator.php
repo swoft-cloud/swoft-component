@@ -55,11 +55,17 @@ class HttpValidator extends AbstractValidator
     {
         $get = $request->getQueryParams();
         $post = $request->getParsedBody();
-        $json = $request->json();
+        $contentType = $request->getHeader('content-type');
+        $isPostJson = false;
+        if ($contentType && in_array('application/json', $contentType)) {
+            $isPostJson = true;
+            $post = $request->json();
+        }
+
         foreach ($validatorAry as $name => $info) {
             $default = array_pop($info['params']);
             if ($type === ValidatorFrom::GET) {
-                if (! isset($get[$name])) {
+                if (!isset($get[$name])) {
                     $request = $request->addQueryParam($name, $default);
                     $this->doValidation($name, $default, $info);
                     continue;
@@ -68,9 +74,15 @@ class HttpValidator extends AbstractValidator
 
                 continue;
             }
-            if ($type === ValidatorFrom::POST && \is_array($post)) {
-                if (! isset($post[$name])) {
-                    $request = $request->addParserBody($name, $default);
+            if ($type === ValidatorFrom::POST && is_array($post)) {
+                if (!isset($post[$name])) {
+                    $post[$name] = $default;
+                    if ($isPostJson) {
+                        $request = $request->withBody(new SwooleStream(JsonHelper::encode($post)));
+                    } else {
+                        $request = $request->addParserBody($name, $default);
+                    }
+
                     $this->doValidation($name, $default, $info);
                     continue;
                 }
@@ -78,20 +90,10 @@ class HttpValidator extends AbstractValidator
                 continue;
             }
             if ($type === ValidatorFrom::PATH) {
-                if (! isset($matches[$name])) {
+                if (!isset($matches[$name])) {
                     continue;
                 }
                 $this->doValidation($name, $matches[$name], $info);
-                continue;
-            }
-            if ($type === ValidatorFrom::JSON && is_array($json)) {
-                if (!isset($json[$name])) {
-                    $json[$name] = $default;
-                    $request = $request->withBody(new SwooleStream(JsonHelper::encode($json)));
-                    $this->doValidation($name, $default, $info);
-                    continue;
-                }
-                $this->doValidation($name, $json[$name], $info);
                 continue;
             }
         }
