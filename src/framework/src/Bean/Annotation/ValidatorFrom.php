@@ -29,6 +29,11 @@ class ValidatorFrom
     const PATH = 'path';
 
     /**
+     * json
+     */
+    const JSON = 'json';
+
+    /**
      * get/post/path params
      */
     const QUERY = 'query';
