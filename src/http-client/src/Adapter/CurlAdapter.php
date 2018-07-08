@@ -48,8 +48,8 @@ class CurlAdapter implements AdapterInterface
         curl_setopt($resource, CURLINFO_HEADER_OUT, true);
         curl_setopt($resource, CURLOPT_RETURNTRANSFER, true);
         // HTTPS do not verify Certificate and HOST
-        curl_setopt($resource, CURLOPT_SSL_VERIFYPEER, true);
-        curl_setopt($resource, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($resource, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($resource, CURLOPT_SSL_VERIFYHOST, 0);
 
         $result = curl_exec($resource);
 

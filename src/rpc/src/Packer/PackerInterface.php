@@ -8,7 +8,7 @@ namespace Swoft\Rpc\Packer;
 interface PackerInterface
 {
     /**
-     * pack data
+     * Pack data
      *
      * @param mixed $data
      * @return mixed
@@ -16,7 +16,7 @@ interface PackerInterface
     public function pack($data);
 
     /**
-     * unpack data
+     * Unpack data
      *
      * @param mixed $data
      * @return mixed

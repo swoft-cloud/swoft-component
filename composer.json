@@ -20,12 +20,14 @@
         "zendframework/zend-mime": "^2.7",
         "psr/simple-cache": "^1.0.0",
         "seld/phar-utils": "^1.0",
-        "text/template": "~2.3"
+        "text/template": "~2.3",
+        "nesbot/carbon": "^1.22"
     },
     "require-dev": {
-        "eaglewu/swoole-ide-helper": "dev-master",
+        "swoft/swoole-ide-helper": "dev-master",
         "phpunit/phpunit": "^5.7",
-        "friendsofphp/php-cs-fixer": "^2.10"
+        "friendsofphp/php-cs-fixer": "^2.10",
+        "psy/psysh": "@stable"
     },
     "replace": {
         "swoft/framework": "self.version",
