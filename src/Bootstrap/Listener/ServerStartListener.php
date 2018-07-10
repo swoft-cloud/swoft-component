@@ -4,8 +4,7 @@ namespace Swoft\Devtool\Bootstrap\Listener;
 
 use Swoft\App;
 use Swoft\Bean\Annotation\ServerListener;
-use Swoft\Bean\BeanFactory;
-use Swoft\Bootstrap\Listeners\Interfaces\BeforeStartInterface;
+use Swoft\Bean\Annotation\Value;
 use Swoft\Bootstrap\Listeners\Interfaces\WorkerStartInterface;
 use Swoft\Bootstrap\SwooleEvent;
 use Swoft\Bootstrap\Server\AbstractServer;
@@ -18,20 +17,16 @@ use Swoole\Server;
  * Class ServerStartListener
  * @package Swoft\Devtool\Bootstrap\Listener
  * @ServerListener(event={
- *     SwooleEvent::ON_BEFORE_START,
  *     SwooleEvent::ON_WORKER_START
  * })
  */
-class ServerStartListener implements BeforeStartInterface, WorkerStartInterface
+class ServerStartListener implements WorkerStartInterface
 {
     /**
-     * @param AbstractServer $server
-     * @throws \InvalidArgumentException
+     * @Value("${config.devtool.appLogToConsole}")
+     * @var bool
      */
-    public function onBeforeStart(AbstractServer &$server)
-    {
-        // DevTool::$table = new Table('runtime-devtool', 8 * 1024);
-    }
+    public $appLogToConsole = false;
 
     /**
      * @param Server $server
@@ -40,6 +35,10 @@ class ServerStartListener implements BeforeStartInterface, WorkerStartInterface
      */
     public function onWorkerStart(Server $server, int $workerId, bool $isWorker)
     {
+        if (!$enable = \config('devtool.enable', false)) {
+            return;
+        }
+
         \output()->writeln(\sprintf(
             'Children process start successful. ' .
             'PID <magenta>%s</magenta>, Worker Id <magenta>%s</magenta>, Role <info>%s</info>',
@@ -51,7 +50,7 @@ class ServerStartListener implements BeforeStartInterface, WorkerStartInterface
         // if websocket is enabled. register a ws route
         if ($isWorker && App::hasBean('wsRouter')) {
             /* @see \Swoft\WebSocket\Server\Router\HandlerMapping::add() */
-            App::getBean('wsRouter')->add(DevTool::ROUTE_PREFIX, DevToolController::class);
+            \bean('wsRouter')->add(DevTool::ROUTE_PREFIX, DevToolController::class);
         }
     }
 }

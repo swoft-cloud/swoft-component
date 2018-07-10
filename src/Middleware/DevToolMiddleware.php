@@ -30,15 +30,10 @@ use Swoft\Http\Message\Server\Request;
 class DevToolMiddleware implements MiddlewareInterface
 {
     /**
-     * @Value("{$config.devtool.logHttpRequestToConsole}")
+     * @Value("${config.devtool.logHttpRequestToConsole}")
      * @var bool
      */
-    public $logHttpRequestToConsole = true;
-
-    // public function __construct()
-    // {
-    //     $this->logHttpRequestToConsole = \bean('config')->get('devtool.logHttpRequestToConsole', true);
-    // }
+    public $logHttpRequestToConsole = false;
 
     /**
      * @param \Psr\Http\Message\ServerRequestInterface|Request $request
@@ -48,7 +43,7 @@ class DevToolMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        // before request handle
+        // Before request
         $path = $request->getUri()->getPath();
 
         if ($this->logHttpRequestToConsole) {
@@ -59,18 +54,18 @@ class DevToolMiddleware implements MiddlewareInterface
             ]);
         }
 
-        // if not is ajax, always render vue index file.
+        // If it is not an ajax request, then render vue index file.
         if (0 === \strpos($path, DevTool::ROUTE_PREFIX) && !$request->isAjax()) {
             $json = $request->query('json');
 
             if (null === $json) {
-                return \view(App::getAlias('@devtool/web/dist/index.html'), []);
+                return \view(\alias('@devtool/web/dist/index.html'), []);
             }
         }
 
         $response = $handler->handle($request);
 
-        // after request handle
+        // After request
         return $response->withAddedHeader('Swoft-DevTool-Version', '1.0.0');
     }
 }

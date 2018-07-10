@@ -1,12 +1,12 @@
 <template>
   <div>
-    <v-subheader><h1>{{ this.$route.name }}</h1></v-subheader>
+    <v-subheader><h1>{{ $t(this.$route.name) }}</h1></v-subheader>
     <v-card>
       <v-card-title class="pt-1">
         <v-spacer></v-spacer>
         <v-text-field
           append-icon="search"
-          label="Search"
+          :label="$t('App.search')"
           single-line
           hide-details
           v-model="search"
@@ -18,12 +18,13 @@
         :items="routes"
         :search="search"
         :rows-per-page-items="pageOpts"
+        :rows-per-page-text="$t('App.rowsPerPage')"
         disable-initial-sort
         class="elevation-1"
       >
         <template slot="items" slot-scope="props">
           <td>{{ props.item.path }}</td>
-          <td><code>{{ props.item.handler }}</code></td>
+          <td><span class="el-tag">{{ props.item.handler }}</span></td>
         </template>
         <template slot="no-data">
           <v-alert :value="true" color="info" icon="info">
@@ -47,6 +48,7 @@
     name: 'WsRoutes',
     components: {VAlert, ...VCard, VDataTable},
     data() {
+      let That = this
       return {
         search: '',
         rawData: [],
@@ -56,11 +58,11 @@
 
         // table headers
         headers: [{
-          text: 'Uri Path',
+          text: That.$t('App.uriPath'),
           align: 'left',
           value: 'path'
         }, {
-          text: 'Route Handler',
+          text: That.$t('App.routeHandler'),
           align: 'left',
           value: 'handler'
         }],

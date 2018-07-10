@@ -1,71 +1,70 @@
 <template>
   <div>
-    <v-subheader><h1>{{ this.$route.name }}</h1></v-subheader>
+    <v-subheader><h1>{{ $t(this.$route.name) }}</h1></v-subheader>
     <v-layout row wrap>
       <v-flex d-flex xs12 md4>
         <v-card>
           <v-card-title primary-title class="blue lighten-5">
             <div>
-              <div class="headline">Class Setting</div>
-              <span class="grey--text">There are some setting for class generate!</span>
+              <div class="headline">Class {{ $t('App.setting') }}</div>
+              <span class="grey--text">{{ $t('App.generateSetting') }}</span>
             </div>
           </v-card-title>
           <v-container>
             <v-form v-model="valid" ref="form" lazy-validation>
               <v-select
-                label="Class Type"
+                :label="'Class ' + $t('App.type')"
                 v-model="select"
                 :items="items"
-                :rules="[v => !!v || 'Class type is required']"
                 required
               ></v-select>
               <v-text-field
-                label="Class Name"
+                :label="'Class ' + $t('App.name')"
                 v-model="name"
                 :rules="nameRules"
                 :counter="10"
-                hint="The class name, don't need suffix and ext(eg. demo)"
+                :hint="$t('App.ext')+'('+ $t('App.eg') +'. demo)'"
                 persistent-hint
                 required
               ></v-text-field>
               <v-text-field
-                label="Save Directory"
+                :label="$t('App.directory')"
                 v-model="dir"
                 :rules="dirRules"
-                hint="The class file save directory(default: @app/Controllers)"
+                :hint="$t('App.directory')+'('+ $t('App.default') +': @app/Controllers)'"
                 persistent-hint
                 required
               ></v-text-field>
               <v-text-field
-                label="Class Suffix"
+                :label="'Class ' + $t('App.suffix')"
                 v-model="suffix"
-                :rules="[v => /^[a-zA-Z]+$/.test(v) || 'Suffix only allow alpha']"
-                hint="The class name suffix. default is: Controller"
+                :rules="[v => /^[a-zA-Z]+$/.test(v) || $t('App.onlySuffix')]"
+                :hint="$t('App.suffixClass') + 'Controller'"
                 persistent-hint
               ></v-text-field>
               <v-text-field
-                label="Template Directory"
+                :label="$t('App.templateDirectory')"
                 v-model="tplDir"
-                :rules="[v => /^[a-zA-Z]+$/.test(v) || 'Suffix only allow alpha']"
-                hint="The template file dir path.(default: @devtool/res/templates)"
+                :rules="[v => /^@+[a-zA-Z]+\w|\/+$/.test(v) || $t('App.onlySuffix')]"
+                :hint="$t('App.templateDir') +'('+ $t('App.default') +': @devtool/res/templates)'"
                 persistent-hint
               ></v-text-field>
               <v-text-field
-                label="Template Filename"
+                :label="$t('App.templateFilename')"
                 v-model="tplFile"
-                :rules="[v => /^[a-zA-Z]+$/.test(v) || 'Suffix only allow alpha']"
-                hint="The template file name.(default: controller.stub)"
+                :rules="[v => /^[a-zA-Z]+[a-zA-Z]|.+$/.test(v) || $t('App.onlySuffix')]"
+                :hint="$t('App.templateName')+'(' + $t('App.default')+': controller.stub)'"
                 persistent-hint
               ></v-text-field>
               <v-checkbox
-                label="Force override exists file?"
+                :label="$t('App.existsFile')"
                 v-model="override"
               ></v-checkbox>
 
               <v-btn @click="submit" :disabled="!valid" color="success">
-                submit
+                {{ $t('App.submit') }}
               </v-btn>
-              <v-btn @click="clear">clear</v-btn>
+              <v-btn @click="clear">{{ $t('App.clear') }}</v-btn>
             </v-form>
           </v-container>
         </v-card>
@@ -75,21 +74,21 @@
         <v-card>
           <v-card-title primary-title class="blue-grey lighten-5">
             <div>
-              <div class="headline">Class Preview</div>
+              <div class="headline">Class {{ $t('App.preview') }}</div>
               <span class="grey--text">1,000 miles of wonder</span>
             </div>
           </v-card-title>
           <v-card-actions>
-            <v-btn flat>Share</v-btn>
-            <v-btn flat color="purple">Explore</v-btn>
+            <v-btn flat>{{ $t('App.share') }}</v-btn>
+            <v-btn flat color="purple">{{ $t('App.explore') }}</v-btn>
             <v-spacer></v-spacer>
             <v-btn flat @click.native="show = !show">
-              View <v-icon>{{ show ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</v-icon>
+               {{ $t('Index.view') }}<v-icon>{{ show ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</v-icon>
             </v-btn>
           </v-card-actions>
           <v-slide-y-transition>
             <v-card-text v-show="show">
-              escape.
+              {{ $t('App.escape') }}.
             </v-card-text>
           </v-slide-y-transition>
         </v-card>
@@ -116,8 +115,8 @@
       ],
       dir: '@app/Controllers',
       dirRules: [
-        v => !!v || 'E-mail is required',
-        v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
+        v => !!v || 'directory is required',
+        v => /^@+\w+\w|\//.test(v) || 'directory must be valid'
       ],
       suffix: 'Controller',
       tplDir: '@devtool/res/templates',

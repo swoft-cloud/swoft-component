@@ -17,15 +17,10 @@ use Swoft\Event\EventInterface;
 class EventFireListener implements EventHandlerInterface
 {
     /**
-     * @Value("{$config.devtool.logEventToConsole}")
+     * @Value("${config.devtool.logEventToConsole}")
      * @var bool
      */
-    public $logEventToConsole = true;
-
-    // public function init()
-    // {
-    //     $this->logEventToConsole = \bean('config')->get('devtool.logEventToConsole', true);
-    // }
+    public $logEventToConsole = false;
 
     /**
      * @param EventInterface $event
