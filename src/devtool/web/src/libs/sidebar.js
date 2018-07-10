@@ -2,94 +2,94 @@
 
 export default [{
   icon: 'dashboard',
-  title: 'Dashboard',
+  title: 'Index.dashboard',
   href: '/'
 }, {
   icon: 'layers',
-  title: 'Application',
+  title: 'Index.application',
   subs: [{
-    title: 'Information',
+    title: 'Index.information',
     href: '/app/info'
   }, {
-    title: 'Configuration',
+    title: 'Index.configuration',
     href: '/app/config'
   }, {
-    title: 'Components',
+    title: 'Index.components',
     href: '/app/components'
   }, {
-    title: 'Registered Events',
+    title: 'Index.registeredEvents',
     href: '/app/events'
   }, {
-    title: 'Registered Beans',
+    title: 'Index.registeredBeans',
     href: '/app/beans'
   }, {
-    title: 'Connection Pools',
+    title: 'Index.connectionPools',
     href: '/connection/pools'
   }, {
-    title: 'AOP Handlers',
+    title: 'Index.aopHandlers',
     href: '/aop/handlers'
   }, {
-    title: 'RPC Middleware',
+    title: 'Index.rpcMiddleware',
     href: '/rpc/middles'
   }, {
-    title: 'HTTP Middleware',
+    title: 'Index.httpMiddleware',
     href: '/http/middles'
   }]
 }, {
   icon: 'language',
-  title: 'Server',
+  title: 'Index.server',
   subs: [{
-    title: 'Information',
+    title: 'Index.information',
     href: '/server/info'
   }, {
-    title: 'Server Config',
+    title: 'Index.serverConfig',
     href: '/server/config'
   }, {
-    title: 'Server Events',
+    title: 'Index.serverEvents',
     href: '/server/events'
   }, {
-    title: 'Server Stats',
+    title: 'Index.serverStats',
     href: '/server/stats'
   }]
 }, {
   icon: 'reorder',
-  title: 'Routes',
+  title: 'Index.routes',
   subs: [{
-    title: 'HTTP Routes',
+    title: 'Index.httpRoutes',
     href: '/http/routes'
   }, {
-    title: 'RPC Routes',
+    title: 'Index.rpcRoutes',
     href: '/rpc/routes'
   }, {
-    title: 'WebSocket Routes',
+    title: 'Index.webSocketRoutes',
     href: '/ws/routes'
   }]
 }, {
   icon: 'insert_drive_file',
-  title: 'Logs',
+  title: 'Index.logs',
   subs: [{
-    title: 'Application Log',
+    title: 'Index.applicationLog',
     href: '/app/logs'
   }, {
-    title: 'Swoole Log',
+    title: 'Index.swooleLog',
     href: '/swoole/logs'
   }]
 }, {
   icon: 'build',
-  title: 'Tools',
+  title: 'Index.tools',
   subs: [{
     // icon: 'code',
-    title: 'Class Generator',
+    title: 'Index.classGenerator',
     href: '/code/gen'
   }, {
-    title: 'WebSocket Test',
+    title: 'Index.webSocketTest',
     href: '/ws/test'
   }, {
-    title: 'Run Trace',
+    title: 'Index.runTrace',
     href: '/run/trace'
   }]
 }, {
   icon: 'info',
-  title: 'About',
+  title: 'Index.about',
   href: '/about'
 }]

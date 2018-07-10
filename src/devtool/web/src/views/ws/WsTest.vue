@@ -1,6 +1,6 @@
 <template>
   <div>
-  <v-subheader><h1>{{ this.$route.name }}</h1></v-subheader>
+    <v-subheader><h1>{{ $t(this.$route.name) }}</h1></v-subheader>
 
   <v-layout row wrap>
     <v-flex xs12>
@@ -21,7 +21,7 @@
                 single-line
                 required
                 v-model="wsUrl"
-                hint="websocket server url. eg wss://echo.websocket.org/"
+                :hint="$t('App.wsEg')"
                 persistent-hint
               ></v-text-field>
             </v-flex>
@@ -31,21 +31,21 @@
               <v-spacer></v-spacer>
               <v-btn
                 outline
-                :disabled="wsUrlIsEmpty"
                 @click="connect"
                 color="info"
+                :disabled="isConnected"
               >
-                Connect
+                {{ $t('App.connect') }}
               </v-btn>
               <v-btn :disabled="!isConnected" @click="disconnect" color="warning" outline>
-                Disconnect
+                 {{ $t('App.disConnect') }}
               </v-btn>
             </v-flex>
           </v-layout>
 
           <v-text-field
             name="message"
-            label="Your Message"
+            :label="$t('App.message')"
             textarea
             v-model="message"
           ></v-text-field>
@@ -53,7 +53,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="green" @click="send" large dark>
-            <v-icon>send</v-icon> &nbsp; Send
+            <v-icon>send</v-icon> &nbsp; {{ $t('App.send') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -61,7 +61,13 @@
 
     <v-flex d-flex xs12 md8>
       <v-card color="grey lighten-5">
-        <v-card-title class="title grey lighten-3"><v-icon>sms</v-icon> &nbsp;Messages</v-card-title>
+        <v-card-title class="title grey lighten-3">
+          <v-icon>sms</v-icon> &nbsp;{{ $t('App.messages') }}
+          <v-list-tile-content class="align-end">
+            <v-btn @click="clearMessages" type="error" icon><v-icon>delete</v-icon></v-btn>
+          </v-list-tile-content>
+        </v-card-title>
+
         <v-divider></v-divider>
         <v-card-text class="msg-box">
             <v-layout row wrap v-for="(item, idx) in messages" :key="idx">
@@ -81,7 +87,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn @click="clearMessages" type="error" icon><v-icon>delete</v-icon></v-btn>
+          
         </v-card-actions>
       </v-card>
     </v-flex>
@@ -148,7 +154,7 @@
     methods: {
       connect() {
         if (this.ws) {
-          this.alert('websocket server has been connected!')
+          this.alert(this.$t('App.wsConnected'))
           return
         }
 
@@ -160,12 +166,12 @@
         this.ws = new WebSocket(this.wsUrl)
         this.ws.onerror = function error(e) {
           console.log('connect failed!')
-          app.alert('connect to server failed! Server url is ' + app.wsUrl)
+          app.alert(app.$t('App.wsFailed') + app.wsUrl)
         }
 
         this.ws.onopen = function open(ev) {
           console.log('connected', ev)
-          app.alert('successfully connected to the server')
+          app.alert(app.$t('App.wsSuccessfully'))
 
           // send Heartbeat
           timer = setTimeout(function () {
@@ -183,7 +189,7 @@
 
           clearTimeout(timer)
           app.ws = null
-          app.alert('The connection to the server has been disconnected')
+          app.alert(app.$t('App.wsdisConnect'))
         }
       },
       disconnect() {
@@ -197,14 +203,14 @@
       },
       sendMessage(msg, log = true) {
         this.alert()
-
+        let That = this
         if (!msg) {
-          this.alert('Message to send cannot be empty!', 'error')
+          this.alert(That.$t('App.wsFailedMsg'), 'error')
           return
         }
 
         if (!this.ws) {
-          this.alert('please connect to websocket server before send message!', 'error')
+          this.alert(That.$t('App.wsconnectBefore'), 'error')
           return
         }
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-subheader><h1>{{ this.$route.name }}</h1></v-subheader>
+    <v-subheader><h1>{{ $t(this.$route.name) }}</h1></v-subheader>
     <div style="font-size: 40px;">Un-completed</div>
   </div>
 </template>
