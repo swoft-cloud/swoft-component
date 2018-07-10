@@ -193,7 +193,7 @@ class CoroutineAdapter implements AdapterInterface
                 $headers[$ucKey] = \is_array($value) ? current($value) : $value;
             }
             unset($str);
-            $headers = array_replace($headers, (array)($options['_headers'] ?? []));
+            $headers = array_replace((array)($options['_headers'] ?? []), $headers);
             return $headers;
         });
         $client->setHeaders($headers ?? []);
