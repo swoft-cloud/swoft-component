@@ -6,6 +6,7 @@ use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\Scope;
 use Swoft\Session\Handler\FileSessionHandler;
+use Swoft\Session\Handler\LifetimeInterface;
 use Swoft\Session\Handler\RedisSessionHandler;
 
 /**
@@ -42,10 +43,11 @@ class SessionManager
      */
     public function createHandlerByConfig(): \SessionHandlerInterface
     {
-        if (!isset($this->config['driver'])) {
+        if (!isset($this->getConfig()['driver'])) {
             throw new \InvalidArgumentException('Session driver required');
         }
-        $handler = $this->getHandler($this->config['driver']);
+        $handler = $this->getHandler($this->getConfig()['driver']);
+        $handler instanceof LifetimeInterface && $handler->setLifetime($this->getConfig()['lifetime']);
         return $handler;
     }
 
@@ -60,8 +62,7 @@ class SessionManager
     {
         $name = strtolower($name);
         $this->isValidate($name);
-        $class = $this->handlers[$name];
-        return App::getBean($class);
+        return App::getBean($this->handlers[$name]);
     }
 
     /**

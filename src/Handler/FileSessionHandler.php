@@ -9,15 +9,15 @@ use Swoft\Session\Exception\RuntimeException;
 
 
 /**
+ * Class FileSessionHandler
+ *
  * @Bean()
- * @uses      FileSessionHandler
- * @version   2017年12月05日
- * @author    huangzhhui <huangzhwork@gmail.com>
- * @copyright Copyright 2010-2017 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
+ * @package Swoft\Session\Handler
  */
-class FileSessionHandler implements \SessionHandlerInterface
+class FileSessionHandler implements \SessionHandlerInterface, LifetimeInterface
 {
+
+    use LifetimeTrait;
 
     /**
      * @var string
@@ -25,24 +25,19 @@ class FileSessionHandler implements \SessionHandlerInterface
     private $path;
 
     /**
-     * @var int
-     */
-    private $minutes;
-
-    /**
      * FileSessionHandler constructor.
      *
      * @param string $path
-     * @param int    $minutes
+     * @param int    $lifetime
      */
-    public function __construct($path = null, $minutes = 15)
+    public function __construct($path = null, $lifetime = 15 * 60)
     {
         if (null !== $path) {
             $this->path = $path;
         } else {
             $this->path = App::getAlias('@runtime/sessions');
         }
-        $this->minutes = $minutes;
+        $this->setLifetime($lifetime);
     }
 
     /**
@@ -85,7 +80,7 @@ class FileSessionHandler implements \SessionHandlerInterface
     {
         $path = $this->path . '/' . $sessionId;
         if (file_exists($path)) {
-            if (filemtime($path) >= Carbon::now()->subMinutes($this->minutes)->getTimestamp()) {
+            if (filemtime($path) >= Carbon::now()->subSeconds($this->getLifetime())->getTimestamp()) {
                 return file_get_contents($path);
             }
         }
