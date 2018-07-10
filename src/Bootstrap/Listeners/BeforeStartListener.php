@@ -17,7 +17,7 @@ class BeforeStartListener implements BeforeStartInterface
     /**
      * @param AbstractServer $server
      */
-    public function onBeforeStart(AbstractServer &$server)
+    public function onBeforeStart(AbstractServer $server)
     {
         /** @var array[] $settings */
         $settings = App::getAppProperties()->get('server');
