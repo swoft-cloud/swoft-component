@@ -1,9 +1,17 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Sg\Circuit;
 
 use Swoft\App;
 use Swoole\Coroutine\Client;
+use Swoft\Pool\ConnectionInterface;
 
 /**
  * 半开状态及切换(half-open)
@@ -36,20 +44,23 @@ class HalfOpenState extends CircuitBreakerState
 
         try {
             if ($class === null) {
-                throw new \Exception($this->getServiceName() . "服务, 建立连接失败(null)");
+                throw new \Exception($this->getServiceName() . '服务, 建立连接失败(null)');
             }
 
-            if ($class instanceof Client && $class->isConnected() == false) {
-                throw new \Exception($this->circuitBreaker->serviceName . "服务,当前连接已断开");
+            if (
+                ($class instanceof Client && $class->isConnected() == false) ||
+                ($class instanceof ConnectionInterface && $class->check() == false)
+            ) {
+                throw new \Exception($this->circuitBreaker->serviceName . '服务,当前连接已断开');
             }
 
             $data = $class->$method(...$params);
             $this->circuitBreaker->incSuccessCount();
-            App::trace($this->getServiceName() . "服务，当前[半开状态]，尝试执行成");
+            App::trace($this->getServiceName() . '服务，当前[半开状态]，尝试执行成');
         } catch (\Exception $e) {
             $this->circuitBreaker->incFailCount();
             $data = $this->circuitBreaker->fallback($fallback);
-            App::error($this->getServiceName() . "服务，当前[半开状态]，尝试执行失败, error=" . $e->getMessage());
+            App::error($this->getServiceName() . '服务，当前[半开状态]，尝试执行失败, error=' . $e->getMessage());
         }
 
         $failCount = $this->circuitBreaker->getFailCounter();
@@ -59,18 +70,18 @@ class HalfOpenState extends CircuitBreakerState
 
         if ($failCount >= $switchToFailCount && $this->circuitBreaker->isHalfOpen()) {
             $this->circuitBreaker->switchToOpenState();
-            App::trace($this->getServiceName() . "服务，当前[半开状态]，失败次数达到上限，开始切换到开启状态");
+            App::trace($this->getServiceName() . '服务，当前[半开状态]，失败次数达到上限，开始切换到开启状态');
         }
 
         if ($successCount >= $switchToSuccessCount) {
             $this->circuitBreaker->switchToCloseState();
-            App::trace($this->getServiceName() . "服务，当前[半开状态]，成功次数达到上限，服务以及恢复，开始切换到关闭状态");
+            App::trace($this->getServiceName() . '服务，当前[半开状态]，成功次数达到上限，服务以及恢复，开始切换到关闭状态');
         }
 
         // 释放锁
         $lock->unlock();
 
-        App::trace($this->getServiceName() . "服务，当前[半开状态], failCount=" . $failCount . " successCount=" . $successCount);
+        App::trace($this->getServiceName() . '服务，当前[半开状态], failCount=' . $failCount . ' successCount=' . $successCount);
 
         return $data;
     }
