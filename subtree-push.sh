@@ -1,5 +1,5 @@
 #!/bin/sh
-
+git pull --no-edit
 git subtree pull -m "auto" --prefix=src/pipeline git@github.com:swoft-cloud/swoft-pipeline.git master --squash && git subtree push --prefix=src/pipeline git@github.com:swoft-cloud/swoft-pipeline.git master --squash
 git subtree pull -m "auto" --prefix=src/view git@github.com:swoft-cloud/swoft-view.git master --squash && git subtree push --prefix=src/view git@github.com:swoft-cloud/swoft-view.git master --squash
 git subtree pull -m "auto" --prefix=src/http-server git@github.com:swoft-cloud/swoft-http-server.git master --squash && git subtree push --prefix=src/http-server git@github.com:swoft-cloud/swoft-http-server.git master --squash
