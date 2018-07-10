@@ -140,7 +140,7 @@ class CoroutineAdapter implements AdapterInterface
 
         // Timeout
         if (isset($options['timeout']) && is_numeric($options['timeout'])) {
-            $options['_options']['timeout'] = $options['timeout'] * 1000;
+            $options['_options']['timeout'] = $options['timeout'];
         }
 
         return $options;
