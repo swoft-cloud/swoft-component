@@ -184,7 +184,7 @@ class CurlAdapter implements AdapterInterface
                 $ucKey = implode('-', $exploded);
                 $headers[$ucKey] = \is_array($value) ? current($value) : $value;
             }
-            $headers = array_replace($headers, (array)($options['_headers'] ?? []));
+            $headers = array_replace((array)($options['_headers'] ?? []), $headers);
             return $headers;
         });
         foreach ((array)$headers as $name => $value) {
