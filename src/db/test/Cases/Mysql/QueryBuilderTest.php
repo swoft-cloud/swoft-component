@@ -448,4 +448,17 @@ class QueryBuilderTest extends AbstractMysqlCase
         $this->assertEquals($user['id'], $userid);
     }
 
+    /**
+     * @dataProvider mysqlProvider
+     *
+     * @param int $id
+     */
+    public function testModelQuerySelectOne(int $id)
+    {
+        $result = Query::table(User::class)->where('id', $id)->one()->getResult();
+        $this->assertEquals($id, $result['id']);
+
+        $result = User::query()->where('id', $id)->one()->getResult();
+        $this->assertEquals($id, $result->getId());
+    }
 }
