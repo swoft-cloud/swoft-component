@@ -556,12 +556,12 @@ class QueryBuilder implements QueryBuilderInterface
                 $this->andWhere($column, $value, $operator);
                 break;
             case self::IN:
-                list($column, $operator, $value) = $condition;
-                $this->whereIn($column, $value, $operator);
+                list($column, , $value) = $condition;
+                $this->whereIn($column, $value);
                 break;
             case self::NOT_IN:
-                list($column, $operator, $value) = $condition;
-                $this->whereNotIn($column, $value, $operator);
+                list($column, , $value) = $condition;
+                $this->whereNotIn($column, $value);
                 break;
             case self::BETWEEN:
                 list($column, , $min, $max) = $condition;
