@@ -14,6 +14,7 @@ use Swoft\Db\Query;
 use Swoft\Db\QueryBuilder;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\User;
+use SwoftTest\Db\Testing\Entity\User2;
 
 /**
  * MysqlTest
@@ -30,6 +31,23 @@ class ActiveRecordTest extends AbstractMysqlCase
 
         $id     = $user->save()->getResult();
         $reuslt = $id > 0;
+        $this->assertTrue($reuslt);
+    }
+
+    public function testUpdateWhenNameIsNull()
+    {
+        $user = new User2();
+        $user->setSex(1);
+        $user->setDesc('this my desc');
+        $user->setAge(mt_rand(1, 100));
+
+        $id     = $user->save()->getResult();
+        $reuslt = $id > 0;
+        $this->assertTrue($reuslt);
+
+        $user->setName('xxx');
+        $rows = $user->update()->getResult();
+        $reuslt = $rows > 0;
         $this->assertTrue($reuslt);
     }
 
