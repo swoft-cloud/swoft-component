@@ -455,7 +455,6 @@ class Executor
      */
     private static function getUpdateFields(array $oldFields, array $changeFields)
     {
-        $newFields = [];
         foreach ($oldFields as $fieldName => $fieldValue) {
             if (!isset($changeFields[$fieldName])) {
                 continue;
@@ -463,13 +462,12 @@ class Executor
 
             $changeValue = $changeFields[$fieldName];
             if ($changeValue == $fieldValue) {
+                unset($changeFields[$fieldName]);
                 continue;
             }
-
-            $newFields[$fieldName] = $changeValue;
         }
 
-        return $newFields;
+        return $changeFields;
     }
 
     /**
