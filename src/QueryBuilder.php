@@ -556,12 +556,12 @@ class QueryBuilder implements QueryBuilderInterface
                 $this->andWhere($column, $value, $operator);
                 break;
             case self::IN:
-                list($column, $operator, $value) = $condition;
-                $this->whereIn($column, $value, $operator);
+                list($column, , $value) = $condition;
+                $this->whereIn($column, $value);
                 break;
             case self::NOT_IN:
-                list($column, $operator, $value) = $condition;
-                $this->whereNotIn($column, $value, $operator);
+                list($column, , $value) = $condition;
+                $this->whereNotIn($column, $value);
                 break;
             case self::BETWEEN:
                 list($column, , $min, $max) = $condition;
@@ -1421,7 +1421,13 @@ class QueryBuilder implements QueryBuilderInterface
     {
         $this->addDecorator(function ($result) {
             if (isset($result[0]) && !empty($this->className)) {
-                return EntityHelper::arrayToEntity($result[0], $this->className);
+                if ($result[0] instanceof $this->className) {
+                    return $result[0];
+                }
+                if (is_array($result[0])) {
+                    return EntityHelper::arrayToEntity($result[0], $this->className);
+                }
+                throw new DbException('The result is not instanceof ' . $this->className);
             }
 
             if (isset($result[0]) && empty($this->join)) {
