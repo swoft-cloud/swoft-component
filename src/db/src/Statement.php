@@ -95,7 +95,7 @@ class Statement implements StatementInterface
         if ($this->builder->getLimit()) {
             $statement .= ' ' . $this->getLimitString();
         }
-
+        
         return $statement;
     }
 
@@ -838,8 +838,7 @@ class Statement implements StatementInterface
     protected function getFrom(): string
     {
         $from = $this->builder->getFrom();
-
-        return $from['table'] ?? '';
+        return $from['table'] ? '`' . $from['table'] . '`' : '';
     }
 
     /**
@@ -851,7 +850,7 @@ class Statement implements StatementInterface
     {
         $from = $this->builder->getFrom();
 
-        return $from['alias']??'';
+        return $from['alias'] ? '`' . $from['alias'] . '`' : '';
     }
 
     /**
