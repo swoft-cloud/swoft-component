@@ -422,7 +422,7 @@ class Statement implements StatementInterface
         $statement = $this->getCriteriaString($where);
 
         if (!empty($statement)) {
-            $statement = 'WHERE ' . $statement;
+            $statement = 'WHERE' . ($statement[0] === ' ' ? $statement : ' ' . $statement);
         }
 
         return $statement;
@@ -464,7 +464,7 @@ class Statement implements StatementInterface
             $useConnector = true;
             $value        = $this->getCriteriaWithoutBracket($criterion['operator'], $criterion['value'], $criterion['column']);
             $column       = $criterion['column'];
-            $column       = strpos($column, '.') === false ? " `{$column}` " : $column;
+            $column       = strpos($column, '.') === false ? " `{$column}` " : " $column ";
             $statement    .= $column . $criterion['operator'] . ' ' . $value;
         }
 
