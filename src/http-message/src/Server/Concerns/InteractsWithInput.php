@@ -2,6 +2,7 @@
 
 namespace Swoft\Http\Message\Server\Concerns;
 
+use Swoft\Helper\ArrayHelper;
 use Swoft\Helper\JsonHelper;
 use Swoft\Http\Message\Stream\SwooleStream;
 
@@ -150,7 +151,7 @@ trait InteractsWithInput
         if (is_null($key)) {
             return $decodedBody ?? $default;
         } else {
-            return $decodedBody[$key] ?? $default;
+            return ArrayHelper::get($decodedBody, $key, $default);
         }
     }
 
