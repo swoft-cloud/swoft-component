@@ -1,12 +1,12 @@
 <template>
   <div>
-    <v-subheader><h1>{{ this.$route.name }}</h1></v-subheader>
+    <v-subheader><h1>{{ $t(this.$route.name) }}</h1></v-subheader>
     <v-card>
       <v-card-title class="pt-1">
         <v-spacer></v-spacer>
         <v-text-field
           append-icon="search"
-          label="Search"
+          :label="$t('App.search')"
           single-line
           hide-details
           v-model="search"
@@ -18,13 +18,14 @@
         :items="routes"
         :search="search"
         :rows-per-page-items="pageOpts"
+        :rows-per-page-text="$t('App.rowsPerPage')"
         disable-initial-sort
         class="elevation-1"
       >
         <template slot="items" slot-scope="props">
           <td>{{ props.item.class }}</td>
           <td>{{ props.item.method }}</td>
-          <td><code>{{ props.item.serviceKey }}</code></td>
+          <td><span class="el-tag">{{ props.item.serviceKey }}</span></td>
         </template>
         <template slot="no-data">
           <v-alert :value="true" color="info" icon="info">
@@ -48,6 +49,7 @@
     name: 'RpcRoutes',
     components: {VAlert, ...VCard, VDataTable},
     data() {
+      let That = this
       return {
         search: '',
 
@@ -56,16 +58,16 @@
 
         // table headers
         headers: [{
-          text: 'Class',
+          text: That.$t('App.class'),
           align: 'left',
           sortable: false,
           value: 'class'
         }, {
-          text: 'Method',
+          text: That.$t('App.method'),
           align: 'left',
           value: 'method'
         }, {
-          text: 'Service Key',
+          text: That.$t('App.serviceKey'),
           align: 'left',
           value: 'serviceKey'
         }],

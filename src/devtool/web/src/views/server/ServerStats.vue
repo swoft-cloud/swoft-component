@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-subheader><h1>{{ this.$route.name }}</h1></v-subheader>
+    <v-subheader><h2>{{ $t(this.$route.name) }}</h2></v-subheader>
     <v-layout row>
       <v-flex
         xs12

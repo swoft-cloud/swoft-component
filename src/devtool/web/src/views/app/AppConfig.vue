@@ -1,13 +1,13 @@
 <template>
     <v-layout row wrap>
       <v-flex xs12>
-        <v-subheader><h1>{{ this.$route.name }}</h1></v-subheader>
+        <v-subheader><h1>{{ $t(this.$route.name) }}</h1></v-subheader>
       </v-flex>
       <v-flex d-flex xs12 md4>
         <v-card>
-          <v-card-title class="title grey lighten-3">Some Tips</v-card-title>
+          <v-card-title class="title grey lighten-3">{{ $t('App.someTips') }}</v-card-title>
           <v-card-text>
-            <p>get config: <code>\bean('config')->get(key, default = null)</code></p>
+            <p>{{ $t('App.getConfig') }}: <span class="el-tag el-tag--success">\bean('config')->get(key, default = null)</span></p>
           </v-card-text>
         </v-card>
       </v-flex>

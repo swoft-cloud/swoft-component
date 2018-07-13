@@ -1,104 +1,120 @@
 <template>
-  <div>
-    <v-jumbotron :color="randomColor()" dark>
+  <div class="dashboard">
+    <v-jumbotron dark class="main-container">
       <v-container fill-height>
         <v-layout align-center>
           <v-flex>
-            <h3 class="display-3">Welcome to the DevTool</h3>
+            <h3 class="display-3">{{ $t('Index.title') }}</h3>
             <span class="subheading">
-              This is a simple tool to help you quickly see some information about the application
+              {{ $t('Index.subheading') }}
             </span>
             <v-divider class="my-3"></v-divider>
-            <div class="title mb-3">Check out our newest features!</div>
+            <div class="title mb-3">{{ $t('Index.features') }}</div>
             <v-btn large color="primary" class="mx-0" :href="github" target="_blank">Github</v-btn>
-            <v-btn large color="success" class="mx-0" :href="document" target="_blank">Document</v-btn>
+            <v-btn large color="success" class="mx-0" :href="document" target="_blank">{{ $t('Index.document') }}</v-btn>
           </v-flex>
         </v-layout>
       </v-container>
     </v-jumbotron>
 
-    <v-layout row wrap>
-      <v-flex d-flex xs12 tag="h2" class="headline">
-        Application
-      </v-flex>
-      <v-flex d-flex xs12 sm6 md3>
-        <v-card :color="randomColor()" dark>
-          <v-card-title primary class="title">Environment</v-card-title>
-          <table class="table transparent">
-            <tbody>
-            <tr v-for="(val, name) in env" :key="name">
-              <td>{{ name }}</td>
-              <td><code>{{ val }}</code></td>
-            </tr>
-            </tbody>
-          </table>
-        </v-card>
-      </v-flex>
-      <v-flex d-flex xs12 sm6 md3>
-        <v-layout row wrap>
-          <v-flex d-flex v-for="item in app1" :key="item.href">
-            <v-card :color="randomColor()" dark>
-              <v-card-title primary class="title">{{ item.title }}</v-card-title>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn flat :to="item.href">View</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-flex>
-        </v-layout>
-      </v-flex>
-      <v-flex d-flex xs12 sm6 md3 child-flex>
-        <v-layout row wrap>
-          <v-flex d-flex v-for="item in app2" :key="item.href">
-            <v-card :color="randomColor()" dark>
-              <v-card-title primary class="title">{{ item.title }}</v-card-title>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn flat :to="item.href">View</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-flex>
-        </v-layout>
-      </v-flex>
-      <v-flex d-flex xs12 sm6 md3>
-        <v-layout row wrap>
-          <v-flex d-flex v-for="item in app3" :key="item.href">
-            <v-card :color="randomColor()" dark>
-              <v-card-title primary class="title">{{ item.title }}</v-card-title>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn flat :to="item.href">View</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-flex>
-        </v-layout>
-      </v-flex>
-    </v-layout>
+      <v-flex xs12 md12 md12 style="padding-top:15px;">
+        <v-card>
+          <v-card-title class="title grey lighten-3"> {{ $t('Index.application') }} </v-card-title>
+          <v-divider></v-divider>
+            <v-list dense>
+            
+            <div class="dashboard-list">
+              <v-list-tile v-for="item in app1" :key="item.href">
+                <v-list-tile-content>{{ $t(item.title) }}</v-list-tile-content>
+                <v-list-tile-content class="align-end">
+                  <v-btn small outline color="blue" :to="item.href" style="padding: 5px;">
+                    {{ $t('Index.view') }}&nbsp;<v-icon>remove_red_eye</v-icon>
+                  </v-btn>
+                </v-list-tile-content>
+              </v-list-tile>
+            </div>
 
-    <v-layout row wrap>
-      <v-flex d-flex xs12 tag="h2" class="headline">Server</v-flex>
-      <v-flex d-flex xs6 sm4 md3 xl2 v-for="item in server" :key="item.href">
-        <v-card :color="randomColor()" dark>
-          <v-card-title primary-title class="title">{{ item.title }}</v-card-title>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn flat :to="item.href">View</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-flex>
-    </v-layout>
+            <div class="dashboard-list">
+              <v-list-tile v-for="item in app2" :key="item.href">
+                <v-list-tile-content>{{ $t(item.title) }}</v-list-tile-content>
+                <v-list-tile-content class="align-end">
+                  <v-btn small outline color="blue" :to="item.href">
+                    {{ $t('Index.view') }}&nbsp;<v-icon>remove_red_eye</v-icon>
+                  </v-btn>
+                </v-list-tile-content>
+              </v-list-tile>
+            </div>
 
-    <v-layout row wrap>
-      <v-flex d-flex xs12 tag="h2" class="headline">Tools</v-flex>
-      <v-flex d-flex xs6 sm4 md3 xl2 v-for="item in tools" :key="item.href">
-        <v-card :color="randomColor()" dark>
-          <v-card-title primary-title class="title">{{ item.title }}</v-card-title>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn flat :to="item.href">View</v-btn>
-          </v-card-actions>
+            <div class="dashboard-list">
+              <v-list-tile v-for="item in app3" :key="item.href">
+                <v-list-tile-content>{{ $t(item.title) }}</v-list-tile-content>
+                <v-list-tile-content class="align-end">
+                  <v-btn small outline color="blue" :to="item.href">
+                    {{ $t('Index.view') }}&nbsp;<v-icon>remove_red_eye</v-icon>
+                  </v-btn>
+                </v-list-tile-content>
+              </v-list-tile>
+            </div>
+            <p style="clear:both"></p>
+          </v-list>
         </v-card>
       </v-flex>
+
+
+    <v-layout row wrap style="padding-top:15px;">
+      <v-flex
+        d-flex
+        xs12
+        sm6
+        md6
+      >
+        <v-card>
+          <v-card-title class="title grey lighten-3"> {{ $t('Index.environment') }} </v-card-title>
+          <v-divider></v-divider>
+          <v-list dense class="pa-2">
+            <v-list-tile v-for="(val, key) in env" :key="key">
+              <v-list-tile-content>{{ key }}</v-list-tile-content>
+              <!-- <v-list-tile-content class="align-end"></v-list-tile-content> -->
+              {{ val }}
+            </v-list-tile>
+          </v-list>
+        </v-card>
+      </v-flex>
+
+      <v-flex d-flex xs12 sm6 md3>
+        <v-card>
+          <v-card-title class="title grey lighten-3"> {{ $t('Index.server') }} </v-card-title>
+          <v-divider></v-divider>
+          <v-list dense class="pa-2">
+            <v-list-tile v-for="item in server" :key="item.href">
+              <v-list-tile-content>{{ $t(item.title) }}</v-list-tile-content>
+              <v-list-tile-content class="align-end">
+                <v-btn small outline color="blue" :to="item.href">
+                  {{ $t('Index.view') }}&nbsp;<v-icon>remove_red_eye</v-icon>
+                </v-btn>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list>
+        </v-card>
+      </v-flex>
+
+      <v-flex d-flex xs12 sm6 md3>
+        <v-card>
+          <v-card-title class="title grey lighten-3"> {{ $t('Index.tools') }} </v-card-title>
+          <v-divider></v-divider>
+          <v-list dense class="pa-2">
+            <v-list-tile v-for="item in tools" :key="item.href">
+              <v-list-tile-content>{{ $t(item.title) }}</v-list-tile-content>
+              <v-list-tile-content class="align-end">
+                <v-btn  flat  outline color="blue" :to="item.href">
+                  {{ $t('Index.view') }}&nbsp;<v-icon>remove_red_eye</v-icon>
+                </v-btn>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list>
+        </v-card>
+      </v-flex>
+
     </v-layout>
 
   </div>
@@ -120,60 +136,77 @@
       github: 'https://github.com/swoft-cloud/swoft',
       document: 'https://doc.swoft.org',
       app1: [{
-        title: 'Information',
-        href: URI_PREFIX + '/app/info'
+        title: 'Index.information',
+        href: URI_PREFIX + '/app/info',
+        icon: 'info'
       }, {
-        title: 'Configuration',
-        href: URI_PREFIX + '/app/config'
+        title: 'Index.applicationConfig',
+        href: URI_PREFIX + '/app/config',
+        icon: 'settings'
       }, {
-        title: 'Registered Events',
-        href: URI_PREFIX + '/app/events'
+        title: 'Index.registeredEvents',
+        href: URI_PREFIX + '/app/events',
+        icon: 'event'
       }],
       app2: [{
-        title: 'HTTP Routes',
-        href: URI_PREFIX + '/http/routes'
+        title: 'Index.httpRoutes',
+        href: URI_PREFIX + '/http/routes',
+        icon: ''
       }, {
-        title: 'RPC Routes',
-        href: URI_PREFIX + '/rpc/routes'
+        title: 'Index.rpcRoutes',
+        href: URI_PREFIX + '/rpc/routes',
+        icon: ''
       }, {
-        title: 'WebSocket Routes',
-        href: URI_PREFIX + '/ws/routes'
+        title: 'Index.webSocketRoutes',
+        href: URI_PREFIX + '/ws/routes',
+        icon: 'web'
       }],
       app3: [{
-        title: 'Registered Beans',
-        href: URI_PREFIX + '/app/beans'
+        title: 'Index.registeredBeans',
+        href: URI_PREFIX + '/app/beans',
+        icon: ''
       }, {
-        title: 'AOP Handlers',
-        href: URI_PREFIX + '/aop/handlers'
+        title: 'Index.aopHandlers',
+        href: URI_PREFIX + '/aop/handlers',
+        icon: 'drag_handle'
       }, {
-        title: 'HTTP Middleware',
-        href: URI_PREFIX + '/http/middles'
+        title: 'Index.httpMiddleware',
+        href: URI_PREFIX + '/http/middles',
+        icon: 'http'
       }],
       server: [{
-        title: 'Information',
-        href: URI_PREFIX + '/server/info'
+        title: 'Index.information',
+        href: URI_PREFIX + '/server/info',
+        icon: 'info'
       }, {
-        title: 'Configuration',
-        href: URI_PREFIX + '/server/config'
+        title: 'Index.configuration',
+        href: URI_PREFIX + '/server/config',
+        icon: 'setting'
       }, {
-        title: 'Registered Events',
-        href: URI_PREFIX + '/server/events'
+        title: 'Index.registeredEvents',
+        href: URI_PREFIX + '/server/events',
+        icon: 'event'
       }, {
-        title: 'Swoole Log',
-        href: URI_PREFIX + '/swoole/logs'
+        title: 'Index.swooleLog',
+        href: URI_PREFIX + '/swoole/logs',
+        icon: 'history'
       }],
       tools: [{
-        title: 'Code Generator',
-        href: URI_PREFIX + '/code/gen'
+        title: 'Index.codeGenerator',
+        href: URI_PREFIX + '/code/gen',
+        icon: 'event'
       }, {
-        title: 'WebSocket Test',
-        href: URI_PREFIX + '/ws/test'
+        title: 'Index.webSocketTest',
+        href: URI_PREFIX + '/ws/test',
+        icon: ''
       }, {
-        title: 'Run Tracing',
-        href: URI_PREFIX + '/run/trace'
+        title: 'Index.runTracing',
+        href: URI_PREFIX + '/run/trace',
+        icon: 'track_changes'
       }, {
-        title: 'Application Log',
-        href: URI_PREFIX + '/app/logs'
+        title: 'Index.applicationLog',
+        href: URI_PREFIX + '/app/logs',
+        icon: 'history'
       }],
       colors: [
         'amber darken-2',
@@ -242,6 +275,13 @@
   }
 </script>
 
-<style scoped>
-
+<style lang="stylus">
+.main-container
+  background  url('/devtool/static/img/top-bg.png') no-repeat center center;
+.dashboard-list
+  width 33.333%;
+  float left;
+  border-left 1px solid #ddd
+.dashboard-list:first-child
+  border-left 1px solid transparent
 </style>

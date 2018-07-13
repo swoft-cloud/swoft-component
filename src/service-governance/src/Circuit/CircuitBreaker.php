@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Sg\Circuit;
 
 use Swoft\App;
@@ -13,22 +20,22 @@ class CircuitBreaker
     /**
      * 关闭状态
      */
-    const CLOSE = "close";
+    const CLOSE = 'close';
 
     /**
      * 开启状态
      */
-    const OPEN = "open";
+    const OPEN = 'open';
 
     /**
      * 半开起状态
      */
-    const HALF_OPEN_STATE = "halfOpenState";
+    const HALF_OPEN_STATE = 'halfOpenState';
 
     /**
      * 未初始化
      */
-    const PENDING = "pending";
+    const PENDING = 'pending';
 
     /**
      * @var int 错误请求计数
@@ -40,7 +47,6 @@ class CircuitBreaker
      */
     public $successCounter = 0;
 
-
     /**
      * @var int 开启状态切换到半开状态时间
      */
@@ -49,7 +55,7 @@ class CircuitBreaker
     /**
      * @var string 服务名称
      */
-    public $serviceName = "breakerService";
+    public $serviceName = 'breakerService';
 
     /**
      * @var CircuitBreakerState 熔断器状态，开启、半开、关闭
@@ -160,7 +166,7 @@ class CircuitBreaker
      */
     public function switchToCloseState()
     {
-        App::debug($this->serviceName . "服务，当前[" . $this->getCurrentState() . "]，熔断器状态切换，切换到[关闭]状态");
+        App::debug($this->serviceName . '服务，当前[' . $this->getCurrentState() . ']，熔断器状态切换，切换到[关闭]状态');
         $this->circuitState = new CloseState($this);
     }
 
@@ -169,7 +175,7 @@ class CircuitBreaker
      */
     public function switchToOpenState()
     {
-        App::debug($this->serviceName . "服务，当前[" . $this->getCurrentState() . "]，熔断器状态切换，切换到[开启]状态");
+        App::debug($this->serviceName . '服务，当前[' . $this->getCurrentState() . ']，熔断器状态切换，切换到[开启]状态');
         $this->circuitState = new OpenState($this);
     }
 
@@ -178,7 +184,7 @@ class CircuitBreaker
      */
     public function switchToHalfState()
     {
-        App::debug($this->serviceName . "服务，当前[" . $this->getCurrentState() . "]，熔断器状态切换，切换到[半开]状态");
+        App::debug($this->serviceName . '服务，当前[' . $this->getCurrentState() . ']，熔断器状态切换，切换到[半开]状态');
 
         $this->circuitState = new HalfOpenState($this);
     }
@@ -194,15 +200,15 @@ class CircuitBreaker
     public function fallback($fallback = null, array $params = [])
     {
         if ($fallback == null) {
-            App::debug($this->serviceName . "服务，当前[" . $this->getCurrentState() . "]，服务降级处理，fallback未定义");
+            App::debug($this->serviceName . '服务，当前[' . $this->getCurrentState() . ']，服务降级处理，fallback未定义');
             return null;
         }
 
         if (is_array($fallback) && count($fallback) == 2) {
-            list($className, $method) = $fallback;
-            App::debug($this->serviceName . "服务，服务降级处理，执行fallback, class=" . $className . " method=" . $method);
+            list($fallbackObj, $method) = $fallback;
+            App::debug($this->serviceName . '服务，服务降级处理，执行fallback, class=' . get_class($fallbackObj) . ' method=' . $method);
 
-            return $className->$method(...$params);
+            return $fallbackObj->$method(...$params);
         }
 
         return null;

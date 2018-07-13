@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-subheader><h1>{{ this.$route.name }}</h1></v-subheader>
+    <v-subheader><h1>{{ $t(this.$route.name) }}</h1></v-subheader>
     <v-layout row wrap>
       <v-flex
         d-flex
@@ -23,14 +23,14 @@
       </v-flex>
     </v-layout>
 
-    <v-subheader><h3>Swoole Setting</h3></v-subheader>
+    <v-subheader><h3>Swoole {{ $t('App.setting') }}</h3></v-subheader>
 
     <v-card>
       <table class="table">
         <thead>
         <tr>
-          <th>Setting Name</th>
-          <th>Setting Value</th>
+          <th>{{ $t('App.settingName') }}</th>
+          <th>{{ $t('App.settingValue') }}</th>
         </tr>
         </thead>
         <tbody>

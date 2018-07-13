@@ -2,95 +2,95 @@ import { URI_PREFIX } from '../libs/constants'
 
 export default [{
   path: URI_PREFIX,
-  name: 'Dashboard',
+  name: 'Index.dashboard',
   component: () => import('@/views/Dashboard.vue')
 }, {
   path: URI_PREFIX + '/http/routes',
-  name: 'HTTP Routes',
+  name: 'Index.httpRoutes',
   component: () => import('../views/http/HttpRoutes.vue')
 }, {
   path: URI_PREFIX + '/http/middles',
-  name: 'HTTP Middleware',
+  name: 'Index.httpMiddleware',
   component: () => import('../views/http/HttpMiddleware.vue')
 }, {
   path: URI_PREFIX + '/app/info',
-  name: 'Application Info',
+  name: 'Index.applicationInfo',
   component: () => import('../views/app/AppInfo.vue')
 }, {
   path: URI_PREFIX + '/app/config',
-  name: 'Application Config',
+  name: 'Index.applicationConfig',
   component: () => import('../views/app/AppConfig.vue')
 }, {
   path: URI_PREFIX + '/app/events',
-  name: 'Application Events',
+  name: 'Index.applicationEvents',
   component: () => import('../views/app/AppEvents.vue')
 }, {
   path: URI_PREFIX + '/app/beans',
-  name: 'Application Beans',
+  name: 'Index.applicationBeans',
   component: () => import('../views/app/AppBeans.vue')
 }, {
   path: URI_PREFIX + '/app/components',
-  name: 'App Components',
+  name: 'Index.appComponents',
   component: () => import('../views/app/AppComponents.vue')
 }, {
   path: URI_PREFIX + '/aop/handlers',
-  name: 'AOP Handlers',
+  name: 'Index.aopHandlers',
   component: () => import('../views/app/AopHandlers.vue')
 }, {
   path: URI_PREFIX + '/connection/pools',
-  name: 'Connection Pools',
+  name: 'Index.connectionPools',
   component: () => import('../views/app/ConnectionPools.vue')
 }, {
   path: URI_PREFIX + '/server/info',
-  name: 'Server Info',
+  name: 'Index.serverInfo',
   component: () => import('../views/server/ServerInfo.vue')
 }, {
   path: URI_PREFIX + '/server/stats',
-  name: 'Server Stats',
+  name: 'Index.serverStats',
   component: () => import('../views/server/ServerStats.vue')
 }, {
   path: URI_PREFIX + '/server/config',
-  name: 'Server Config',
+  name: 'Index.serverConfig',
   component: () => import('../views/server/ServerConfig.vue')
 }, {
   path: URI_PREFIX + '/server/events',
-  name: 'Server Events',
+  name: 'Index.serverEvents',
   component: () => import('../views/server/ServerEvents.vue')
 }, {
   path: URI_PREFIX + '/swoole/logs',
-  name: 'Swoole Logs',
+  name: 'Index.swooleLogs',
   component: () => import('../views/server/SwooleLog.vue')
 }, {
   path: URI_PREFIX + '/ws/routes',
-  name: 'WebSocket Routes',
+  name: 'Index.webSocketRoutes',
   component: () => import('../views/ws/WsRoutes.vue')
 }, {
   path: URI_PREFIX + '/ws/test',
-  name: 'WebSocket Test',
+  name: 'Index.webSocketTest',
   component: () => import('../views/ws/WsTest.vue')
 }, {
   path: URI_PREFIX + '/rpc/routes',
-  name: 'RPC Routes',
+  name: 'Index.rpcRoutes',
   component: () => import('../views/rpc/RpcRoutes.vue')
 }, {
   path: URI_PREFIX + '/rpc/middles',
-  name: 'RPC Middleware',
+  name: 'Index.rpcMiddleware',
   component: () => import('../views/rpc/RpcMiddleware.vue')
 }, {
   path: URI_PREFIX + '/code/gen',
-  name: 'Class Generator',
+  name: 'Index.classGenerator',
   component: () => import('../views/gen/ClassGen.vue')
 }, {
   path: URI_PREFIX + '/run/trace',
-  name: 'Run Tracing',
+  name: 'Index.runTracing',
   component: () => import('../views/app/RunTrace.vue')
 }, {
   path: URI_PREFIX + '/app/logs',
-  name: 'Application Logs',
+  name: 'Index.applicationLogs',
   component: () => import('../views/app/AppLog.vue')
 }, {
   path: URI_PREFIX + '/about',
-  name: 'About',
+  name: 'Index.about',
   component: () => import('../views/pages/About.vue')
 }, {
   path: '*',
