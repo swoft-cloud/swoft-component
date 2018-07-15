@@ -142,12 +142,10 @@ abstract class AbstractServer implements ServerInterface
                 }
                 usleep(10000);
                 continue;
-            }else {
-                return true;
             }
+            
+            return true;
         }
-        //其实走不到这一步
-        return $result;
     }
 
     /**
@@ -161,7 +159,7 @@ abstract class AbstractServer implements ServerInterface
         $pFile = $this->serverSetting['pfile'];
 
         // Is pid file exist ?
-        if (file_exists($pFile)) {
+        if (\file_exists($pFile)) {
             // Get pid file content and parse the content
             $pidFile = file_get_contents($pFile);
             $pids = explode(',', $pidFile);
