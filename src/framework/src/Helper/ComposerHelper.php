@@ -59,6 +59,7 @@ class ComposerHelper
                 $strLen = strlen($prefix);
                 if ($strLen > $maxLength) {
                     $dir = current($path) . DIRECTORY_SEPARATOR . substr($namespace, $strLen);
+                    $maxLength = $strLen;
                 }
             }
         }
