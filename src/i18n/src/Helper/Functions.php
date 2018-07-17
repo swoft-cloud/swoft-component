@@ -1,5 +1,16 @@
 <?php
-if (! function_exists('translate')) {
+
+if (!function_exists('trans')) {
+    /**
+     * alias of the translate
+     */
+    function trans(string $key, array $params = [], string $language = null)
+    {
+        return translate($key, $params, $language);
+    }
+}
+
+if (!function_exists('translate')) {
     /**
      * I18n translate
      *
