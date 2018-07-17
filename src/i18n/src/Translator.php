@@ -94,14 +94,11 @@ class Translator
      */
     public function translate(string $key, array $params, string $locale = null): string
     {
-        $realKey = $this->getRealKey($key, $locale);
-        if (!ArrayHelper::has($this->messages, $realKey)) {
-            $exceptionMessage = sprintf('Translate error, key %s does not exist', $realKey);
-            throw new \InvalidArgumentException($exceptionMessage);
-        }
         $message = ArrayHelper::get($this->messages, $realKey);
+        
+        // not exist, return key
         if (!\is_string($message)) {
-            throw new \InvalidArgumentException(sprintf('Message type error, possibly incorrectly key'));
+            return $key;
         }
 
         return $this->formatMessage($message, $params);
@@ -115,10 +112,11 @@ class Translator
      */
     private function getRealKey(string $key, string $locale = null): string
     {
-        if ($locale === null) {
+        if (!$locale) {
             $locale = $this->defaultLanguage;
         }
-        if (strpos($key, '.') === false) {
+        
+        if (\strpos($key, '.') === false) {
             $key = implode([$this->defualtCategory, $key], '.');
         }
 
