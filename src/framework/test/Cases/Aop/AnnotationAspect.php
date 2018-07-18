@@ -15,13 +15,15 @@ use Swoft\Bean\Annotation\Aspect;
 use Swoft\Bean\Annotation\PointAnnotation;
 use Swoft\Bean\Annotation\Cacheable;
 use Swoft\Bean\Annotation\CachePut;
+use SwoftTest\Aop\Annotation\DemoAnnotation;
 
 /**
  * @Aspect
  * @PointAnnotation(
  *     include={
  *         Cacheable::class,
- *         CachePut::class
+ *         CachePut::class,
+ *         DemoAnnotation::class
  *     }
  * )
  * @uses      AnnotationAspect

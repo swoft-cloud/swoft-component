@@ -12,6 +12,7 @@ namespace SwoftTest\Aop;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\Cacheable;
 use Swoft\Bean\Annotation\CachePut;
+use SwoftTest\Aop\Annotation\DemoAnnotation;
 
 /**
  *
@@ -40,5 +41,14 @@ class AnnotationAop
     public function cacheable()
     {
         return 'cacheable';
+    }
+
+    /**
+     * @DemoAnnotation
+     * @return string
+     */
+    public function demoAnnotation()
+    {
+        return 'demo';
     }
 }
