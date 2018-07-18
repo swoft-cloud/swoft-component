@@ -41,6 +41,7 @@ class RedisCommandProvider extends RedisProfile
             'RENAMEKEY'           => '\Swoft\Redis\Operator\Keys\KeyRenameKey',
             'RENAMENX'            => '\Swoft\Redis\Operator\Keys\KeyRenamePreserve',
             'EXPIREAT'            => '\Swoft\Redis\Operator\Keys\KeyExpireAt',
+            'EXPIRE'              => '\Swoft\Redis\Operator\Keys\KeyExpire',
             'TTL'                 => '\Swoft\Redis\Operator\Keys\KeyTimeToLive',
             'MOVE'                => '\Swoft\Redis\Operator\Keys\KeyMove',
             'DUMP'                => '\Swoft\Redis\Operator\Keys\KeyDump',
