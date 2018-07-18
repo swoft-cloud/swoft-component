@@ -137,7 +137,7 @@ trait InteractsWithInput
     {
         try {
             $contentType = $this->getHeader('content-type');
-            if (!$contentType || false === \stripos($contentType, 'application/json')) {
+            if (!$contentType || false === \stripos($contentType[0], 'application/json')) {
                 throw new \InvalidArgumentException(sprintf('Invalid Content-Type of the request, expects %s, %s given', 'application/json', ($contentType ? current($contentType) : 'null')));
             }
             $body = $this->getBody();
