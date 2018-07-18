@@ -16,6 +16,7 @@ use Swoft\Bean\Annotation\PointAnnotation;
 use Swoft\Bean\Annotation\Cacheable;
 use Swoft\Bean\Annotation\CachePut;
 use SwoftTest\Aop\Annotation\DemoAnnotation;
+use Swoft\Bean\Annotation\CustomMethod;
 
 /**
  * @Aspect
@@ -23,7 +24,8 @@ use SwoftTest\Aop\Annotation\DemoAnnotation;
  *     include={
  *         Cacheable::class,
  *         CachePut::class,
- *         DemoAnnotation::class
+ *         DemoAnnotation::class,
+ *         CustomMethod::class
  *     }
  * )
  * @uses      AnnotationAspect
