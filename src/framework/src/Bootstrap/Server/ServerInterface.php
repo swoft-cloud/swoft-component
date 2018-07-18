@@ -48,7 +48,7 @@ interface ServerInterface
      *
      * @return Server
      */
-    public function getServer(): Server;
+    public function getServer();
 
     /**
      * Get TCP setting

@@ -33,12 +33,12 @@ class RedisPool extends ConnectionPool
      */
     public function createConnection(): ConnectionInterface
     {
-        if (App::isCoContext()) {
+//        if (App::isCoContext()) {
+        if (true) {
             $redis = new RedisConnection($this);
         } else {
             $redis = new SyncRedisConnection($this);
         }
-
         $dbIndex = $this->poolConfig->getDb();
         $redis->select($dbIndex);
 

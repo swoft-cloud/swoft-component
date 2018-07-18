@@ -177,7 +177,7 @@ abstract class AbstractServer implements ServerInterface
      *
      * @return Server
      */
-    public function getServer(): Server
+    public function getServer()
     {
         return $this->server;
     }

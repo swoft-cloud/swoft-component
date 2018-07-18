@@ -118,7 +118,7 @@ trait ServerTrait
      * @throws \InvalidArgumentException
      * @throws \ReflectionException
      */
-    private function beforeWorkerStart(Server $server, int $workerId, bool $isWorker)
+    public function beforeWorkerStart(Server $server, int $workerId, bool $isWorker)
     {
         // Load bean
         $this->reloadBean($isWorker);

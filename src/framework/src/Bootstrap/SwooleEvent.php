@@ -34,6 +34,11 @@ class SwooleEvent
     const ON_WORKER_START = 'workerStart';
 
     /**
+     * Worker stop event
+     */
+    const ON_WORKER_STOP = 'workerStop';
+
+    /**
      * the event name of managerStart
      */
     const ON_MANAGER_START = 'managerStart';

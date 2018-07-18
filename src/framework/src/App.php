@@ -14,6 +14,7 @@ use Swoft\Log\Logger;
 use Swoft\Pool\PoolInterface;
 use Swoft\Redis\Pool\RedisPool;
 use Swoole\Coroutine as SwCoroutine;
+use Swoole\Process\Pool;
 
 /**
  * 应用简写类
@@ -449,6 +450,10 @@ class App
     {
         if (self::$server === null) {
             return false;
+        }
+
+        if(self::$server instanceof Pool){
+            return true;
         }
 
         $server = self::$server->getServer();
