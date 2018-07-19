@@ -1,5 +1,6 @@
 <?php
-if (! function_exists('translate')) {
+
+if (!function_exists('translate')) {
     /**
      * I18n translate
      *
