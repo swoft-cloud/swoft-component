@@ -219,6 +219,27 @@ class Redis implements CacheInterface
     }
 
     /**
+     * @param string $key
+     * @return array
+     */
+    public function hGetAll(string $key): array
+    {
+        $hGetAllResult = $this->call('hGetAll', [$key]);
+        if (!App::isCoContext()) {
+            return $hGetAllResult;
+        }
+
+        $result = [];
+        $array = array_chunk($hGetAllResult, 2);
+        foreach ($array as $item) {
+            list($key, $value) = $item;
+            $result[$key] = $value;
+        }
+
+        return $result;
+    }
+
+    /**
      * magic method
      *
      * @param string $method

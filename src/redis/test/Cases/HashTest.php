@@ -34,4 +34,21 @@ class HashTest extends AbstractTestCase
             $this->testHmsetAndHmget();
         });
     }
+
+    public function testHGetAll()
+    {
+        $key = uniqid();
+        $result = $this->redis->hMset($key, ['key' => 'value', 'key2' => 'value2', 'key3' => 'value3']);
+        $this->assertEquals(true, $result);
+
+        $result = $this->redis->hGetAll($key);
+        $this->assertEquals(['key' => 'value', 'key2' => 'value2', 'key3' => 'value3'], $result);
+    }
+
+    public function testHGetAllByCo()
+    {
+        go(function () {
+            $this->testHGetAll();
+        });
+    }
 }
