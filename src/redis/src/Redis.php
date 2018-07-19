@@ -247,10 +247,8 @@ class Redis implements CacheInterface
      */
     public function hSetNx($key, $hashKey, $value): bool
     {
-        $res = $this->call('hSetNx', [$key, $hashKey, $value]);
         // 同步Redis会返回 bool，异步Redis会返回1 或者 0
-        if ($res) return true;
-        return false;
+        return (bool)$this->call('hSetNx', [$key, $hashKey, $value]);
     }
 
     /**

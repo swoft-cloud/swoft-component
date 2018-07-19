@@ -90,4 +90,29 @@ class HashTest extends AbstractTestCase
             $this->testHSetNx();
         });
     }
+
+    public function testHDel()
+    {
+        $key = uniqid();
+        /** @var \Redis $redis */
+        $redis = $this->redis;
+        $result = $redis->hSetNx($key, 'one', 1);
+        $this->assertTrue($result);
+        $result = $redis->hSetNx($key, 'two', 2);
+        $this->assertTrue($result);
+        $result = $redis->hSetNx($key, 'three', 3);
+        $this->assertTrue($result);
+
+        $result = $redis->hDel($key, 'one', 'two');
+        $this->assertEquals(2, $result);
+        $result = $redis->hGetAll($key);
+        $this->assertEquals(['three' => 3], $result);
+    }
+
+    public function testHDelByCo()
+    {
+        go(function () {
+            $this->testHDel();
+        });
+    }
 }
