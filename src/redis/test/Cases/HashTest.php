@@ -51,4 +51,43 @@ class HashTest extends AbstractTestCase
             $this->testHGetAll();
         });
     }
+
+    public function testHIncrBy()
+    {
+        $key = uniqid();
+        /** @var \Redis $redis */
+        $redis = $this->redis;
+        $result = $redis->hIncrBy($key, 'incr', 2);
+        $this->assertEquals(2, $result);
+        $result = $redis->hIncrBy($key, 'incr', 2);
+        $this->assertEquals(4, $result);
+        $result = $redis->hGet($key, 'incr');
+        $this->assertEquals(4, $result);
+    }
+
+    public function testHIncrByCo()
+    {
+        go(function () {
+            $this->testHIncrBy();
+        });
+    }
+
+    public function testHSetNx()
+    {
+        $key = uniqid();
+        /** @var \Redis $redis */
+        $redis = $this->redis;
+        $result = $redis->hSetNx($key, 'one', 1);
+        $this->assertTrue($result);
+
+        $result = $redis->hSetNx($key, 'one', 1);
+        $this->assertFalse($result);
+    }
+
+    public function testHSetNxByCo()
+    {
+        go(function () {
+            $this->testHSetNx();
+        });
+    }
 }
