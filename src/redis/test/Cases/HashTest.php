@@ -115,4 +115,48 @@ class HashTest extends AbstractTestCase
             $this->testHDel();
         });
     }
+
+    public function testHLen()
+    {
+        $key = uniqid();
+        /** @var \Redis $redis */
+        $redis = $this->redis;
+        $result = $redis->hSetNx($key, 'one', 1);
+        $this->assertTrue($result);
+        $result = $redis->hSetNx($key, 'two', 2);
+        $this->assertTrue($result);
+        $result = $redis->hSetNx($key, 'three', 3);
+        $this->assertTrue($result);
+
+        $result = $redis->hLen($key);
+        $this->assertEquals(3, $result);
+    }
+
+    public function testHLenByCo()
+    {
+        go(function () {
+            $this->testHLen();
+        });
+    }
+
+    public function testHExists()
+    {
+        $key = uniqid();
+        /** @var \Redis $redis */
+        $redis = $this->redis;
+        $result = $redis->hSetNx($key, 'one', 1);
+        $this->assertTrue($result);
+
+        $result = $redis->hExists($key, 'one');
+        $this->assertTrue($result);
+        $result = $redis->hExists($key, 'two');
+        $this->assertFalse($result);
+    }
+
+    public function testHExistsByCo()
+    {
+        go(function () {
+            $this->testHExists();
+        });
+    }
 }

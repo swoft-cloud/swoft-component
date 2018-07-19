@@ -252,6 +252,16 @@ class Redis implements CacheInterface
     }
 
     /**
+     * @param $key
+     * @param $hashKey
+     * @return bool
+     */
+    public function hExists($key, $hashKey): bool
+    {
+        return (bool)$this->call('hExists', [$key, $hashKey]);
+    }
+
+    /**
      * magic method
      *
      * @param string $method
