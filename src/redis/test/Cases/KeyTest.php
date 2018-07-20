@@ -77,4 +77,18 @@ class KeyTest extends AbstractTestCase
             $this->assertFalse($result);
         }
     }
+
+    public function testRandomKey()
+    {
+        $result = $this->redis->randomKey();
+        $key = str_replace('swoft-test-redis_', '', $result);
+        $this->assertEquals(1, $this->redis->exists($key));
+    }
+
+    public function testRandomKeyByCo()
+    {
+        go(function () {
+            $this->testRandomKey();
+        });
+    }
 }
