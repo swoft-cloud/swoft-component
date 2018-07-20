@@ -15,4 +15,14 @@ class SetIsMember extends Command
     {
         return 'sContains';
     }
+
+    /**
+     * @param string $data
+     * @return bool
+     */
+    public function parseResponse($data)
+    {
+        return (bool)$data;
+    }
+
 }

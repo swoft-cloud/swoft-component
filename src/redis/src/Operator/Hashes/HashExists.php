@@ -15,4 +15,9 @@ class HashExists extends Command
     {
         return 'hExists';
     }
+
+    public function parseResponse($data)
+    {
+        return (bool)$data;
+    }
 }
