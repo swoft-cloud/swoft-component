@@ -101,7 +101,6 @@ class RpcCommand
         $serverStatus = $rpcServer->getServerSetting();
         $pidFile = $serverStatus['pfile'];
 
-        @unlink($pidFile);
         \output()->writeln(sprintf('<info>Swoft %s is stopping ...</info>', input()->getFullScript()));
 
         $result = $rpcServer->stop();
@@ -110,6 +109,8 @@ class RpcCommand
         if (! $result) {
             \output()->writeln(sprintf('<error>Swoft %s stop fail</error>', input()->getFullScript()));
         }
+        //删除pid文件
+        @unlink($pidFile);
 
         \output()->writeln(sprintf('<success>Swoft %s stop success</success>', input()->getFullScript()));
     }
