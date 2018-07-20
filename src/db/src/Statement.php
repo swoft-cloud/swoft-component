@@ -465,7 +465,7 @@ class Statement implements StatementInterface
             $value        = $this->getCriteriaWithoutBracket($criterion['operator'], $criterion['value'], $criterion['column']);
             $column       = $criterion['column'];
             $column       = strpos($column, '.') === false ? " `{$column}` " : $column;
-            $statement    .= $column .' '. $criterion['operator'] . ' ' . $value;
+            $statement    .= $column . $criterion['operator'] . ' ' . $value;
         }
 
         return $statement;
