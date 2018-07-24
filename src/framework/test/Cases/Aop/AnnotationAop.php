@@ -13,7 +13,6 @@ use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\Cacheable;
 use Swoft\Bean\Annotation\CachePut;
 use SwoftTest\Aop\Annotation\DemoAnnotation;
-use Swoft\Bean\Annotation\CustomMethod;
 
 /**
  *
@@ -51,14 +50,5 @@ class AnnotationAop
     public function demoAnnotation()
     {
         return 'demo';
-    }
-
-    /**
-     * @CustomMethod
-     * @author limx
-     */
-    public function customMethod()
-    {
-        return 'customMethod';
     }
 }

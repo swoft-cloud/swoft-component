@@ -84,31 +84,11 @@ class BeanWrapper extends AbstractWrapper
      */
     public function isParseMethodAnnotations(array $annotations): bool
     {
-        foreach ($annotations as $key => $annotation) {
-            // 当注解时默认的 Cacheable 或者 CachePut 时，则为true
-            if (in_array($key, $this->methodAnnotations)) {
-                return true;
-            }
-            foreach ($annotation as $object) {
-                // 当注解继承了 CustomMethod 时，则为true
-                if ($object instanceof CustomMethod) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return true;
     }
 
     protected function inMethodAnnotations($methodAnnotation): bool
     {
-        if (parent::inMethodAnnotations($methodAnnotation)) {
-            return true;
-        }
-
-        if ($methodAnnotation instanceof CustomMethod) {
-            return true;
-        }
-
-        return false;
+        return true;
     }
 }
