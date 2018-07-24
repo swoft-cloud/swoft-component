@@ -22,7 +22,7 @@ class ZSetRange extends Command
         if (count($arguments) === 4) {
             $lastType = gettype($arguments[3]);
 
-            if ($lastType === 'string' && strtoupper($arguments[3]) === 'WITHSCORES') {
+            if ($lastType !== 'array' && $arguments[3] != false) {
                 // Used for compatibility with older versions
                 $arguments[3] = array('WITHSCORES' => true);
                 $lastType = 'array';
