@@ -5,7 +5,6 @@ namespace Swoft\Bean\Wrapper;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\Cacheable;
 use Swoft\Bean\Annotation\CachePut;
-use Swoft\Bean\Annotation\CustomMethod;
 use Swoft\Bean\Annotation\Inject;
 use Swoft\Bean\Annotation\Value;
 
