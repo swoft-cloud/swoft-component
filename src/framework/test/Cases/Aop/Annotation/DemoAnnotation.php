@@ -10,5 +10,23 @@ namespace SwoftTest\Aop\Annotation;
  */
 class DemoAnnotation
 {
+    /**
+     * @var string
+     */
+    private $name;
 
+    public function __construct(array $values)
+    {
+        if (isset($values['name'])) {
+            $this->name = $values['name'];
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
 }

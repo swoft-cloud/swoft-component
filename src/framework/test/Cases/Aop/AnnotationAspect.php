@@ -16,6 +16,7 @@ use Swoft\Bean\Annotation\PointAnnotation;
 use Swoft\Bean\Annotation\Cacheable;
 use Swoft\Bean\Annotation\CachePut;
 use SwoftTest\Aop\Annotation\DemoAnnotation;
+use SwoftTest\Aop\Collector\DemoCollector;
 
 /**
  * @Aspect
@@ -39,9 +40,17 @@ class AnnotationAspect
      */
     public function around(ProceedingJoinPoint $proceedingJoinPoint)
     {
-        $tag = ' around before ';
+        $class = $proceedingJoinPoint->getTarget();
+        $method = $proceedingJoinPoint->getMethod();
+
+        $tag = '';
+        if ($annotation = DemoCollector::$methodAnnotations[get_class($class)][$method] ?? null) {
+            $tag .= $annotation->getName();
+        }
+
+        $tag .= ' around before ';
         $result = $proceedingJoinPoint->proceed();
         $tag .= ' around after ';
-        return $result.$tag;
+        return $result . $tag;
     }
 }

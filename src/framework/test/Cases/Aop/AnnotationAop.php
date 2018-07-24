@@ -44,7 +44,7 @@ class AnnotationAop
     }
 
     /**
-     * @DemoAnnotation
+     * @DemoAnnotation(name=" hello")
      * @return string
      */
     public function demoAnnotation()

@@ -69,7 +69,7 @@ class AopTest extends AbstractTestCase
         /* @var AnnotationAop $annotationBean*/
         $annotationBean = App::getBean(AnnotationAop::class);
         $result = $annotationBean->demoAnnotation();
-        $this->assertEquals('demo around before  around after ', $result);
+        $this->assertEquals('demo hello around before  around after ', $result);
     }
 
     public function testRegAop()
