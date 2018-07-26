@@ -182,6 +182,9 @@ class RedisCommandProvider extends RedisProfile
             'EVAL'                => '\Swoft\Redis\Operator\Servers\ServerEval',
             'EVALSHA'             => '\Swoft\Redis\Operator\Servers\ServerEvalSHA',
 
+            /* ---------------- Redis 2.6 ---------------- */
+            'SCRIPT' => '\Swoft\Redis\Operator\Servers\ServerScript',
+
             /* remote transaction commands */
             /* ---------------- Redis 1.2 ---------------- */
             'EXEC'                => '\Swoft\Redis\Operator\Transactions\TransExec',

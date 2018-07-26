@@ -364,10 +364,6 @@ class PrefixProcessor implements ProcessorInterface
     public static function evalKeys(CommandInterface $command, $prefix)
     {
         if ($arguments = $command->getArguments()) {
-            for ($i = 2; $i < $arguments[1] + 2; ++$i) {
-                $arguments[$i] = "$prefix{$arguments[$i]}";
-            }
-
             $command->setRawArguments($arguments);
         }
     }
