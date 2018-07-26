@@ -19,9 +19,15 @@ use Swoft\Auth\Mapping\AuthorizationParserInterface;
 use Swoft\Auth\Mapping\AuthHandlerInterface;
 use Swoft\Auth\Parser\Handler\BasicAuthHandler;
 use Swoft\Auth\Parser\Handler\BearerTokenHandler;
+use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\Value;
 use Swoft\Helper\ArrayHelper;
 
+/**
+ * @Bean()
+ * Class AuthorizationHeaderParser
+ * @package Swoft\Auth\Parser
+ */
 class AuthorizationHeaderParser implements AuthorizationParserInterface
 {
     /**
