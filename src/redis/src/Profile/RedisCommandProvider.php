@@ -94,6 +94,7 @@ class RedisCommandProvider extends RedisProfile
             'LGET'                => '\Swoft\Redis\Operator\Lists\ListIndex',
             'LSET'                => '\Swoft\Redis\Operator\Lists\ListSet',
             'LREM'                => '\Swoft\Redis\Operator\Lists\ListRemove',
+            'lRemove'             => '\Swoft\Redis\Operator\Lists\ListRemove',
             'LPOP'                => '\Swoft\Redis\Operator\Lists\ListPopFirst',
             'RPOP'                => '\Swoft\Redis\Operator\Lists\ListPopLast',
             'RPOPLPUSH'           => '\Swoft\Redis\Operator\Lists\ListPopLastPushHead',
@@ -183,7 +184,7 @@ class RedisCommandProvider extends RedisProfile
             'EVALSHA'             => '\Swoft\Redis\Operator\Servers\ServerEvalSHA',
 
             /* ---------------- Redis 2.6 ---------------- */
-            'SCRIPT' => '\Swoft\Redis\Operator\Servers\ServerScript',
+            'SCRIPT'              => '\Swoft\Redis\Operator\Servers\ServerScript',
 
             /* remote transaction commands */
             /* ---------------- Redis 1.2 ---------------- */
