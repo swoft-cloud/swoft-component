@@ -179,8 +179,8 @@ class PrefixProcessor implements ProcessorInterface
     {
         if ($command instanceof PrefixableCommandInterface) {
             $command->prefixKeys($this->prefix);
-        } elseif (isset($this->commands[ $commandID = strtoupper($command->getId()) ])) {
-            call_user_func($this->commands[ $commandID ], $command, $this->prefix);
+        } elseif (isset($this->commands[$commandID = strtoupper($command->getId())])) {
+            call_user_func($this->commands[$commandID], $command, $this->prefix);
         }
     }
 
@@ -205,7 +205,7 @@ class PrefixProcessor implements ProcessorInterface
         $commandID = strtoupper($commandID);
 
         if (!isset($callback)) {
-            unset($this->commands[ $commandID ]);
+            unset($this->commands[$commandID]);
 
             return;
         }
@@ -214,7 +214,7 @@ class PrefixProcessor implements ProcessorInterface
             throw new \InvalidArgumentException('Callback must be a valid callable object or NULL');
         }
 
-        $this->commands[ $commandID ] = $callback;
+        $this->commands[$commandID] = $callback;
     }
 
     /**
@@ -269,7 +269,7 @@ class PrefixProcessor implements ProcessorInterface
             $newArguments = [];
             foreach ($arguments as $key => $value) {
                 $newKey = "{$prefix}{$key}";
-                $newArguments[ $newKey ] = $value;
+                $newArguments[$newKey] = $value;
             }
             $arguments = [$newArguments];
 
@@ -289,7 +289,7 @@ class PrefixProcessor implements ProcessorInterface
             $length = count($arguments);
 
             for ($i = 1; $i < $length; ++$i) {
-                $arguments[ $i ] = "$prefix{$arguments[$i]}";
+                $arguments[$i] = "$prefix{$arguments[$i]}";
             }
 
             $command->setRawArguments($arguments);
@@ -308,7 +308,7 @@ class PrefixProcessor implements ProcessorInterface
             $length = count($arguments);
 
             for ($i = 0; $i < $length - 1; ++$i) {
-                $arguments[ $i ] = "$prefix{$arguments[$i]}";
+                $arguments[$i] = "$prefix{$arguments[$i]}";
             }
 
             $command->setRawArguments($arguments);
@@ -328,16 +328,16 @@ class PrefixProcessor implements ProcessorInterface
 
             if (($count = count($arguments)) > 1) {
                 for ($i = 1; $i < $count; ++$i) {
-                    switch (strtoupper($arguments[ $i ])) {
+                    switch (strtoupper($arguments[$i])) {
                         case 'BY':
                         case 'STORE':
-                            $arguments[ $i ] = "$prefix{$arguments[++$i]}";
+                            $arguments[$i] = "$prefix{$arguments[++$i]}";
                             break;
 
                         case 'GET':
-                            $value = $arguments[ ++$i ];
+                            $value = $arguments[++$i];
                             if ($value !== '#') {
-                                $arguments[ $i ] = "$prefix$value";
+                                $arguments[$i] = "$prefix$value";
                             }
                             break;
 
@@ -378,7 +378,7 @@ class PrefixProcessor implements ProcessorInterface
             $length = ((int)$arguments[1]) + 2;
 
             for ($i = 2; $i < $length; ++$i) {
-                $arguments[ $i ] = "$prefix{$arguments[$i]}";
+                $arguments[$i] = "$prefix{$arguments[$i]}";
             }
 
             $command->setRawArguments($arguments);
