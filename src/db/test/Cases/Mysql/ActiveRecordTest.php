@@ -12,6 +12,7 @@ namespace SwoftTest\Db\Cases\Mysql;
 
 use Swoft\Db\Query;
 use Swoft\Db\QueryBuilder;
+use Swoft\Exception\ValidatorException;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Testing\Entity\User2;
@@ -34,6 +35,13 @@ class ActiveRecordTest extends AbstractMysqlCase
         $this->assertTrue($reuslt);
     }
 
+    public function testSaveByCo()
+    {
+        go(function () {
+            $this->testSave();
+        });
+    }
+
     public function testUpdateWhenNameIsNull()
     {
         $user = new User2();
@@ -51,11 +59,58 @@ class ActiveRecordTest extends AbstractMysqlCase
         $this->assertTrue($reuslt);
     }
 
-    public function testSaveByCo()
+    public function testUpdateWhenNameIsNullByCo()
     {
         go(function () {
-            $this->testSave();
+            $this->testUpdateWhenNameIsNull();
         });
+    }
+
+    public function testValidator()
+    {
+        $user = new User2();
+        $user->setName('limx');
+        $user->setSex(1);
+        $user->setDesc('hello world');
+        $user->setAge(27);
+
+        $id     = $user->save()->getResult();
+        $reuslt = $id > 0;
+        $this->assertTrue($reuslt);
+
+        try {
+            $user->setId('xxxxx');
+            $user->update();
+        } catch (\Exception $ex) {
+            $this->assertInstanceOf(ValidatorException::class, $ex);
+        }
+        
+        // tinyint Validator
+        try {
+            $user = new User2();
+            $user->setName('limx');
+            $user->setSex(256);
+            $user->setDesc('hello world');
+            $user->setAge(27);
+
+            $user->save()->getResult();
+        } catch (\Exception $ex) {
+            $this->assertInstanceOf(ValidatorException::class, $ex);
+        }
+
+        // smallint Validator
+        try {
+            $user = new User2();
+            $user->setName('limx');
+            $user->setSex(1);
+            $user->setDesc('hello world');
+            $user->setAge(65536);
+
+            $user->save()->getResult();
+        } catch (\Exception $ex) {
+            $this->assertInstanceOf(ValidatorException::class, $ex);
+        }
+
     }
 
     public function testBatchInsert()
