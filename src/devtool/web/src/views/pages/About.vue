@@ -2,12 +2,12 @@
   <v-layout column align-center>
     <img src="@/assets/swoft-logo-text.png" alt="swoft" class="mb-3">
     <blockquote>
-      Modern High performance AOP and Coroutine PHP Framework, base on Swoole 2
+      {{ $t('App.performance') }}
     </blockquote>
     <v-divider class="my-4"></v-divider>
 
-    <v-card>
-      <v-subheader><h2>Back-end technology</h2></v-subheader>
+    <v-card class="about-card">
+      <v-subheader><h2>{{ $t('App.Backend') }}</h2></v-subheader>
       <v-data-table
         :items="bItems"
         hide-actions
@@ -19,12 +19,12 @@
           <td>{{ props.item.digest }}</td>
           <td class="text-xs-center">
             <a target="_blank" :href="props.item.github">Github</a>
-            <a target="_blank" :href="props.item.document">Document</a>
+            <a target="_blank" :href="props.item.document">{{ $t('Index.document') }}</a>
           </td>
         </template>
       </v-data-table>
 
-      <v-subheader><h2>Front-end technology</h2></v-subheader>
+      <v-subheader><h2>{{ $t('App.Frontend') }}</h2></v-subheader>
       <v-data-table
         :items="fItems"
         hide-actions
@@ -36,7 +36,7 @@
           <td>{{ props.item.digest }}</td>
           <td class="text-xs-center">
             <a target="_blank" :href="props.item.github">Github</a>
-            <a target="_blank" :href="props.item.document">Document</a>
+            <a target="_blank" :href="props.item.document">{{ $t('Index.document') }}</a>
           </td>
         </template>
       </v-data-table>
@@ -90,6 +90,8 @@
   }
 </script>
 
-<style scoped>
-
+<style>
+/*.about-card {
+  background-color: transparent !important;
+}*/
 </style>

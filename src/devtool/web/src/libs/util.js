@@ -161,6 +161,16 @@ util.getStyle = function (element, styleName) {
   }
 }
 
+util.getLangageCookie = function (name, defaultValue) {
+  let reg = new RegExp('(^| )' + name + '=([^;]*)(;|$)')
+  var arr = document.cookie.match(reg)
+  if (arr) {
+    return unescape(arr[2])
+  } else {
+    return defaultValue
+  }
+}
+
 const localStorage = window.localStorage
 
 export const cache = {

@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Sg\Circuit;
 
 use Swoft\App;
@@ -39,7 +46,6 @@ class CircuitBreaker
      * @var int Successful request counter
      */
     public $successCounter = 0;
-
 
     /**
      * @var int Switching Open state to Half Open state
@@ -202,7 +208,7 @@ class CircuitBreaker
             list($className, $method) = $fallback;
             App::debug($this->serviceName . ' service, service fallback processing, exec fallback, class=' . $className . ' method=' . $method);
 
-            return $className->$method(...$params);
+            return $fallbackObj->$method(...$params);
         }
 
         return null;

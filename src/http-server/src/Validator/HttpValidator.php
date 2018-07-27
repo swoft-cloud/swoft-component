@@ -4,7 +4,10 @@ namespace Swoft\Http\Server\Validator;
 
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\ValidatorFrom;
+use Swoft\Helper\ArrayHelper;
+use Swoft\Helper\JsonHelper;
 use Swoft\Http\Message\Server\Request;
+use Swoft\Http\Message\Stream\SwooleStream;
 use Swoft\Validator\AbstractValidator;
 
 /**
@@ -53,6 +56,12 @@ class HttpValidator extends AbstractValidator
     {
         $get = $request->getQueryParams();
         $post = $request->getParsedBody();
+        $contentType = $request->getHeader('content-type');
+        $isPostJson = false;
+        if ($contentType && \in_array('application/json', $contentType)) {
+            $isPostJson = true;
+            $post = $request->json();
+        }
 
         foreach ($validatorAry as $name => $info) {
             $default = \array_pop($info['params']);
@@ -69,12 +78,18 @@ class HttpValidator extends AbstractValidator
             }
 
             if ($type === ValidatorFrom::POST && \is_array($post)) {
-                if (!isset($post[$name])) {
-                    $request = $request->addParserBody($name, $default);
+                if (! ArrayHelper::has($post, $name)) {
+                    ArrayHelper::set($post, $name, $default);
+                    if ($isPostJson) {
+                        $request = $request->withBody(new SwooleStream(JsonHelper::encode($post)));
+                    } else {
+                        $request = $request->addParserBody($name, $default);
+                    }
+
                     $this->doValidation($name, $default, $info);
                     continue;
                 }
-                $this->doValidation($name, $post[$name], $info);
+                $this->doValidation($name, ArrayHelper::get($post, $name), $info);
                 continue;
             }
 

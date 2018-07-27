@@ -54,15 +54,16 @@ class StringHelper
      * Convert a value to camel case.
      *
      * @param  string $value
+     * @param bool $lcfirst
      * @return string
      */
-    public static function camel($value)
+    public static function camel($value, $lcfirst = true)
     {
         if (isset(static::$camelCache[$value])) {
             return static::$camelCache[$value];
         }
 
-        return static::$camelCache[$value] = lcfirst(static::studly($value));
+        return static::$camelCache[$value] = ($lcfirst ? lcfirst(static::studly($value)) : static::studly($value));
     }
 
     /**

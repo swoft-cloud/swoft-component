@@ -1,28 +1,30 @@
 <template>
   <v-layout row wrap>
-    <v-flex xs12><v-subheader><h1>{{ this.$route.name }}</h1></v-subheader></v-flex>
+    <v-flex xs12>
+      <v-subheader><h1>{{ $t(this.$route.name) }}</h1></v-subheader>
+    </v-flex>
     <v-flex d-flex xs12 md4>
       <v-card>
-        <v-card-title class="title grey lighten-3">Some Tips</v-card-title>
+        <v-card-title class="title grey lighten-3">{{ $t('App.someTips') }}</v-card-title>
         <v-card-text>
-          <p>get real path: <code>\Swoft::getAlias('@root/public')</code></p>
+          <p>{{ $t('App.getRealPath') }}: <span class="el-tag el-tag--success">\Swoft::getAlias('@root/public')</span></p>
         </v-card-text>
       </v-card>
     </v-flex>
     <v-flex d-flex xs12 md8>
       <v-card>
-        <v-card-title class="title blue lighten-5">Path Aliases</v-card-title>
+        <v-card-title class="title blue lighten-5">{{ $t('App.pathAliases') }}</v-card-title>
         <table class="table">
           <thead>
             <tr>
-              <th>Alias</th>
-              <th>Value</th>
+              <th>{{ $t('App.alias') }}</th>
+              <th>{{ $t('App.value') }}</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(val, name) in aliases" :key="name">
               <td>{{ name }}</td>
-              <td><code>{{ val }}</code></td>
+              <td><span class="el-tag">{{ val }}</span></td>
             </tr>
           </tbody>
         </table>

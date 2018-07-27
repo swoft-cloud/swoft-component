@@ -15,4 +15,9 @@ class HashSetPreserve extends Command
     {
         return 'hSetNx';
     }
+
+    public function parseResponse($data)
+    {
+        return (bool)$data;
+    }
 }

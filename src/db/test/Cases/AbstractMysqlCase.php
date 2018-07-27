@@ -21,12 +21,18 @@ abstract class AbstractMysqlCase extends AbstractTestCase
 {
     public function addUsers()
     {
+        $attrs = [
+            'name' => 'name',
+            'sex' => 1,
+            'desc' => 'this my desc',
+            'age' => mt_rand(1, 100),
+        ];
         $user = new User();
-        $user->setName('name');
-        $user->setSex(1);
-        $user->setDesc('this my desc');
-        $user->setAge(mt_rand(1, 100));
-        $id  = $user->save()->getResult();
+        $user->fill($attrs);
+        $id = $user->save()->getResult();
+
+        $user = new User();
+        $user->fill($attrs);
         $id2 = $user->save()->getResult();
 
         return [

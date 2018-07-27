@@ -15,7 +15,6 @@ use Swoft\Db\AbstractDbConnection;
 use Swoft\Db\Bean\Annotation\Connection;
 use Swoft\Db\Exception\MysqlException;
 use Swoole\Coroutine\Mysql;
-use Swoole\Coroutine\MySQL\Statement;
 
 /**
  * Mysql connection
@@ -239,8 +238,10 @@ class MysqlConnection extends AbstractDbConnection
         foreach ($params as $key => $value) {
             if ($value === null) {
                 $value = " null ";
+            } elseif (\is_array($value)) {
+                $value = "'" . \implode("','", \array_map('addslashes', $value)) . "'";
             } else {
-                $value = "'{$value}'";
+                $value = "'" . \addslashes($value) . "'";
             }
 
             if (\is_int($key)) {

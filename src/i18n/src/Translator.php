@@ -20,6 +20,13 @@ class Translator
     public $languageDir = '@resources/languages/';
 
     /**
+     * All loaded languages
+     *
+     * @var []string
+     */
+    private $languages = [];
+
+    /**
      * Translation messages
      *
      * @var array
@@ -69,6 +76,7 @@ class Translator
     protected function loadLanguages(string $sourcePath)
     {
         if ($this->loaded === false) {
+            $languages = [];
             $iterator = new \RecursiveDirectoryIterator($sourcePath);
             $files = new \RecursiveIteratorIterator($iterator);
 
@@ -78,11 +86,16 @@ class Translator
                 if (pathinfo($file, PATHINFO_EXTENSION) !== 'php') {
                     continue;
                 }
+
                 $messages = str_replace([$sourcePath, '.php'], '', $file);
                 list($language, $category) = explode('/', $messages);
+
+                $languages[$language] = 1;
                 $this->messages[$language][$category] = require $file;
             }
+
             $this->loaded = true;
+            $this->languages = \array_keys($languages);
         }
     }
 
@@ -105,11 +118,47 @@ class Translator
         }
 
         $message = ArrayHelper::get($this->messages, $realKey);
+        
+        // not exist, return key
         if (!\is_string($message)) {
-            throw new \InvalidArgumentException(sprintf('Message type error, possibly incorrectly key'));
+            return $key;
+        }
+
+        // no params
+        if (!$params) {
+            return $message;
         }
 
         return $this->formatMessage($message, $params);
+    }
+
+    /**
+     * get message data by key
+     * @return mixed
+     */
+    public function get(string $key, string $locale = null)
+    {
+        $realKey = $this->getRealKey($key, $locale);
+
+        return ArrayHelper::get($this->messages, $realKey);
+    }
+
+    /**
+     * get messages
+     * @return array
+     */
+    public function getMessages(): array
+    {
+        return $this->messages;
+    }
+   
+    /**
+     * get languages
+     * @return array
+     */
+    public function getLanguages(): array
+    {
+        return $this->languages;
     }
 
     /**
@@ -120,10 +169,11 @@ class Translator
      */
     private function getRealKey(string $key, string $locale = null): string
     {
-        if ($locale === null) {
+        if (!$locale) {
             $locale = $this->defaultLanguage;
         }
-        if (strpos($key, '.') === false) {
+        
+        if (\strpos($key, '.') === false) {
             $key = implode([$this->defaultCategory, $key], '.');
         }
 
@@ -139,8 +189,9 @@ class Translator
      */
     private function formatMessage(string $message, array $params): string
     {
-        $params = array_values($params);
-
-        return sprintf($message, ...$params);
+        $params = \array_values($params);
+        \array_unshift($params, $message);
+        
+        return \sprintf(...$params);
     }
 }

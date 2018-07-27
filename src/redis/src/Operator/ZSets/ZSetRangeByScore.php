@@ -2,8 +2,6 @@
 
 namespace Swoft\Redis\Operator\ZSets;
 
-use Swoft\Redis\Operator\Command;
-
 class ZSetRangeByScore extends ZSetRange
 {
     /**
@@ -13,7 +11,7 @@ class ZSetRangeByScore extends ZSetRange
      */
     public function getId()
     {
-        return 'zRevRangeByScore';
+        return 'zRangeByScore';
     }
 
     /**

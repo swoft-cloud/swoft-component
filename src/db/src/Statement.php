@@ -95,7 +95,7 @@ class Statement implements StatementInterface
         if ($this->builder->getLimit()) {
             $statement .= ' ' . $this->getLimitString();
         }
-
+        
         return $statement;
     }
 
@@ -206,19 +206,24 @@ class Statement implements StatementInterface
     protected function getSelectString(): string
     {
         $statement = '';
-        $select    = $this->builder->getSelect();
+        $fieldSelect    = $this->builder->getSelect();
         $aggregate = $this->builder->getAggregate();
-        if (empty($select) && empty($aggregate)) {
+        if (empty($fieldSelect) && empty($aggregate)) {
             return $statement;
         }
 
-        $select = $this->getAggregateStatement($select, $aggregate);
+        $select = $this->getAggregateStatement($fieldSelect, $aggregate);
 
         // 字段组拼
         foreach ($select as $column => $alias) {
+            // Filter db keyword
+            if (array_key_exists($column, $fieldSelect) && trim($column) != '*' && strpos($column, '.') === false) {
+                $column = sprintf('`%s`', $column);
+            }
+
             $statement .= $column;
             if ($alias !== null) {
-                $statement .= ' AS ' . $alias;
+                $statement .= sprintf(' AS `%s`', $alias);
             }
             $statement .= ', ';
         }
@@ -417,7 +422,7 @@ class Statement implements StatementInterface
         $statement = $this->getCriteriaString($where);
 
         if (!empty($statement)) {
-            $statement = 'WHERE ' . $statement;
+            $statement = 'WHERE' . ($statement[0] === ' ' ? $statement : ' ' . $statement);
         }
 
         return $statement;
@@ -459,7 +464,7 @@ class Statement implements StatementInterface
             $useConnector = true;
             $value        = $this->getCriteriaWithoutBracket($criterion['operator'], $criterion['value'], $criterion['column']);
             $column       = $criterion['column'];
-            $column       = strpos($column, '.') === false ? " `{$column}` " : $column;
+            $column       = strpos($column, '.') === false ? " `{$column}` " : " $column ";
             $statement    .= $column . $criterion['operator'] . ' ' . $value;
         }
 
@@ -833,8 +838,7 @@ class Statement implements StatementInterface
     protected function getFrom(): string
     {
         $from = $this->builder->getFrom();
-
-        return $from['table'] ?? '';
+        return $from['table'] ? '`' . $from['table'] . '`' : '';
     }
 
     /**
@@ -846,7 +850,7 @@ class Statement implements StatementInterface
     {
         $from = $this->builder->getFrom();
 
-        return $from['alias']??'';
+        return $from['alias'] ? '`' . $from['alias'] . '`' : '';
     }
 
     /**

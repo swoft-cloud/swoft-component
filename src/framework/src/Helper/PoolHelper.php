@@ -12,6 +12,6 @@ class PoolHelper
      */
     public static function getContextCntKey(): string
     {
-        return sprintf('connectioins');
+        return sprintf('connections');
     }
 }

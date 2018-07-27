@@ -17,6 +17,7 @@ use Swoft\Db\Bean\Collector\EntityCollector;
 use Swoft\Db\Exception\MysqlException;
 use Swoft\Db\Validator\ValidatorInterface;
 use Swoft\Exception\ValidatorException;
+use Swoft\Helper\StringHelper;
 
 /**
  * Executor
@@ -36,7 +37,13 @@ class Executor
 
         $fields = $fields ?? [];
         $query  = Query::table($table)->selectInstance($instance);
-
+        // Set Primary Id to Entity
+        $query->addDecorator(function ($primaryId) use ($entity, $className) {
+            list(, , $idColumn) = self::getTable($className);
+            $setter = 'set' . StringHelper::camel($idColumn, false);
+            method_exists($entity, $setter) && $entity->$setter($primaryId);
+            return $primaryId;
+        });
         return $query->insert($fields);
     }
 
@@ -448,7 +455,6 @@ class Executor
      */
     private static function getUpdateFields(array $oldFields, array $changeFields)
     {
-        $newFields = [];
         foreach ($oldFields as $fieldName => $fieldValue) {
             if (!isset($changeFields[$fieldName])) {
                 continue;
@@ -456,13 +462,12 @@ class Executor
 
             $changeValue = $changeFields[$fieldName];
             if ($changeValue == $fieldValue) {
+                unset($changeFields[$fieldName]);
                 continue;
             }
-
-            $newFields[$fieldName] = $changeValue;
         }
 
-        return $newFields;
+        return $changeFields;
     }
 
     /**

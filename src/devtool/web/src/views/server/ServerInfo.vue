@@ -1,9 +1,9 @@
 <template>
   <div>
-    <v-subheader><h1>{{ this.$route.name }}</h1></v-subheader>
+    <v-subheader><h1>{{ $t(this.$route.name) }}</h1></v-subheader>
     <v-card>
       <v-card-title class="title grey lighten-3">
-        Php Extensions <small> (total: <code>{{ extList.length }}</code>)</small>
+        Php {{ $t('Index.extensions') }} <small> ({{ $t('App.total')}}: <code>{{ extList.length }}</code>)</small>
       </v-card-title>
       <v-divider></v-divider>
       <v-card-text class="pa-2">
@@ -11,7 +11,7 @@
       </v-card-text>
     </v-card>
 
-    <v-subheader><h2>Swoole Information</h2></v-subheader>
+    <v-subheader><h2>Swoole {{ $t('Index.information') }}</h2></v-subheader>
     <v-layout>
       <v-flex
         xs12

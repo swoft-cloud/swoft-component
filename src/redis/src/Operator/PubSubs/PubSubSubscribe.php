@@ -15,4 +15,12 @@ class PubSubSubscribe extends Command
     {
         return 'subscribe';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function filterArguments(array $arguments)
+    {
+        return self::normalizeArguments($arguments);
+    }
 }

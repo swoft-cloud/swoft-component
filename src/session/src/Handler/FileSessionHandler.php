@@ -8,37 +8,35 @@ use Swoft\Bean\Annotation\Bean;
 use Swoft\Session\Exception\RuntimeException;
 
 /**
+ * Class FileSessionHandler
+ *
  * @Bean()
  * Class  FileSessionHandler
  * @author    huangzhhui <huangzhwork@gmail.com>
  */
-class FileSessionHandler implements \SessionHandlerInterface
+class FileSessionHandler implements \SessionHandlerInterface, LifetimeInterface
 {
+    use LifetimeTrait;
+
     /**
      * @var string
      */
     private $path;
 
     /**
-     * @var int
-     */
-    private $minutes;
-
-    /**
      * FileSessionHandler constructor.
      *
      * @param string $path
-     * @param int $minutes
-     * @throws \InvalidArgumentException
+     * @param int    $lifetime
      */
-    public function __construct($path = null, $minutes = 15)
+    public function __construct($path = null, $lifetime = 15 * 60)
     {
         if (null !== $path) {
             $this->path = $path;
         } else {
             $this->path = App::getAlias('@runtime/sessions');
         }
-        $this->minutes = $minutes;
+        $this->setLifetime($lifetime);
     }
 
     /**
@@ -81,7 +79,7 @@ class FileSessionHandler implements \SessionHandlerInterface
     {
         $path = $this->path . '/' . $sessionId;
         if (file_exists($path)) {
-            if (filemtime($path) >= Carbon::now()->subMinutes($this->minutes)->getTimestamp()) {
+            if (filemtime($path) >= Carbon::now()->subSeconds($this->getLifetime())->getTimestamp()) {
                 return file_get_contents($path);
             }
         }

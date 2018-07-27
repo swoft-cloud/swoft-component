@@ -13,6 +13,8 @@ use Swoft\App;
 use Swoft\Console\Bean\Annotation\Command;
 use Swoft\Db\Entity\Generator;
 use Swoft\Db\Entity\Mysql\Schema;
+use Swoft\Db\Helper\DbHelper;
+use Swoft\Db\Pool;
 use Swoft\Db\Pool\DbPool;
 
 /**
@@ -59,14 +61,13 @@ class EntityCommand
      * --remove-table-prefix 去除前缀
      * --entity-file-path 实体路径(必须在以@app开头并且在app目录下存在的目录,否则将会重定向到@app/Models/Entity)
      * --instance 设置数据库实例，默认default
+     * --extends 设置模型的实体基类
      *
      * @Example
      * php bin/swoft entity:create -d test
      */
     public function create()
     {
-        $this->initDatabase();
-
         $database = $removeTablePrefix = '';
         $tablesEnabled = $tablesDisabled = [];
 
@@ -76,6 +77,9 @@ class EntityCommand
         $this->parseEnableTablesCommand($tablesEnabled);
         $this->parseDisableTablesCommand($tablesDisabled);
         $this->parseRemoveTablePrefix($removeTablePrefix);
+        $this->parseExtends($extends);
+
+        $this->initDatabase($instance);
 
         if (empty($database)) {
             output()->writeln('databases doesn\'t not empty!');
@@ -85,6 +89,7 @@ class EntityCommand
             $this->generatorEntity->tablesEnabled = $tablesEnabled;
             $this->generatorEntity->tablesDisabled = $tablesDisabled;
             $this->generatorEntity->removeTablePrefix = $removeTablePrefix;
+            if (isset($extends)) $this->generatorEntity->setExtends($extends);
             $this->generatorEntity->execute($this->schema);
         }
     }
@@ -92,9 +97,11 @@ class EntityCommand
     /**
      * 初始化方法
      */
-    private function initDatabase(): bool
+    private function initDatabase($instance = Pool::INSTANCE): bool
     {
-        $pool = App::getBean(DbPool::class);
+        $instance = $instance ?? Pool::INSTANCE;
+        $pool = DbHelper::getPool($instance, Pool::MASTER);
+
         $schema = new Schema();
         $schema->setDriver('MYSQL');
         $this->schema = $schema;
@@ -120,7 +127,7 @@ class EntityCommand
     private function parseDatabaseCommand(string &$database)
     {
         if (input()->hasSOpt('d') || input()->hasLOpt('database')) {
-            $database = (string)\input()->getSameOpt(['d','database']);
+            $database = (string)\input()->getSameOpt(['d', 'database']);
         }
     }
 
@@ -186,11 +193,23 @@ class EntityCommand
             $entityFilePath = (string)input()->getLongOpt('entity-file-path');
             if (preg_match('/^@app(.*)/', $entityFilePath) && is_dir(alias($entityFilePath))) {
                 $this->entityFilePath = $entityFilePath;
-            }else{
+            } else {
                 output()->writeln('The directory does not exist, and the entity generated directory will be reset: ' . $this->entityFilePath);
             }
         }
 
         $this->setEntityFilePath();
+    }
+
+    /**
+     * 实体基类
+     *
+     * @param string &$extends 实体基类
+     */
+    private function parseExtends(&$extends)
+    {
+        if (input()->hasLOpt('extends')) {
+            $extends = (string)input()->getLongOpt('extends');
+        }
     }
 }

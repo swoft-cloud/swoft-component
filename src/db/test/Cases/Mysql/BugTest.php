@@ -7,6 +7,7 @@ use Swoft\Db\Qb;
 use Swoft\Db\Query;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\Count;
+use SwoftTest\Db\Testing\Entity\Keyword;
 use SwoftTest\Db\Testing\Entity\User;
 
 /**
@@ -14,9 +15,23 @@ use SwoftTest\Db\Testing\Entity\User;
  */
 class BugTest extends AbstractMysqlCase
 {
-    public function testQueryAndCondtion()
+    public function testColumnByKeyword()
     {
+        $kw = new Keyword();
+        $kw->setAlert(mt_rand(1, 100));
+        $kw->setDesc('test');
 
+        $id   = $kw->save()->getResult();
+        $user = Keyword::findOne(['id' => $id])->getResult();
+
+        $this->assertEquals($id, $user['id']);
+    }
+
+    public function testColumnByKeywordByCo()
+    {
+        go(function () {
+            $this->testColumnByKeyword();
+        });
     }
 
     /**
@@ -331,4 +346,6 @@ class BugTest extends AbstractMysqlCase
             $this->testListType($uid);
         });
     }
+
+
 }

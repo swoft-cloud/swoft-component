@@ -15,6 +15,7 @@ use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Core\RequestContext;
 use Swoft\Exception\InvalidArgumentException;
+use Swoft\Helper\JsonHelper;
 use Swoft\Helper\PhpHelper;
 use Swoft\Helper\StringHelper;
 use Swoft\Http\Message\Router\HandlerAdapterInterface;
@@ -34,8 +35,8 @@ class HandlerAdapter implements HandlerAdapterInterface
     /**
      * Execute handler with controller and action
      *
-     * @param ServerRequestInterface $request   request object
-     * @param array                  $routeInfo handler info
+     * @param ServerRequestInterface $request request object
+     * @param array $routeInfo handler info
      * @return Response
      * @throws \Swoft\Exception\InvalidArgumentException
      * @throws \InvalidArgumentException
@@ -87,7 +88,7 @@ class HandlerAdapter implements HandlerAdapterInterface
     }
 
     /**
-     * create handler
+     * Create handler
      *
      * @param string $path url path
      * @param array  $info path info
@@ -151,11 +152,29 @@ class HandlerAdapter implements HandlerAdapterInterface
     }
 
     /**
-     * binding params of action method
+     * @param array $handler handler info
+     * @return array
+     * @throws \Swoft\Exception\InvalidArgumentException
+     */
+    private function defaultHandler(array $handler): array
+    {
+        list($controller, $actionId) = $handler;
+        $httpRouter = App::getBean('httpRouter');
+
+        $actionId = empty($actionId) ? $httpRouter->defaultAction : $actionId;
+        if (!method_exists($controller, $actionId)) {
+            throw new InvalidArgumentException("the {$actionId} of action is not exist!");
+        }
+
+        return [$controller, $actionId];
+    }
+
+    /**
+     * Binding params of action method
      *
      * @param ServerRequestInterface $request request object
-     * @param mixed                  $handler handler
-     * @param array                  $matches route params info
+     * @param mixed $handler handler
+     * @param array $matches route params info
      * @return array
      * @throws \ReflectionException
      */
@@ -171,10 +190,8 @@ class HandlerAdapter implements HandlerAdapterInterface
         }
 
         $bindParams = [];
-        $request    = $request->withAttribute(AttributeEnum::ROUTER_PARAMS, $matches);
-        $response   = RequestContext::getResponse();
 
-        // binding params
+        // Binding params
         foreach ($reflectParams as $key => $reflectParam) {
             $reflectType = $reflectParam->getType();
             $name = $reflectParam->getName();
@@ -190,22 +207,69 @@ class HandlerAdapter implements HandlerAdapterInterface
             }
 
             /**
-             * defined type of the param
+             * Defined type of the param
              * @notice \ReflectType::getName() is not supported in PHP 7.0, that is why use __toString()
              */
             $type = $reflectType->__toString();
             if ($type === Request::class) {
+                // Current Request Object
                 $bindParams[$key] = $request;
             } elseif ($type === Response::class) {
-                $bindParams[$key] = $response;
+                // Current Response Object
+                $bindParams[$key] = RequestContext::getResponse();
             } elseif (isset($matches[$name])) {
+                // Request parameters
                 $bindParams[$key] = $this->parserParamType($type, $matches[$name]);
+            } elseif (App::hasBean($type)) {
+                // Bean
+                $bindParams[$key] = App::getBean($type);
+            } elseif (\class_exists($type)) {
+                // Class
+                $bindParams[$key] = $this->bindRequestParamsToClass($request, new \ReflectionClass($type));
             } else {
                 $bindParams[$key] = $this->getDefaultValue($type);
             }
         }
 
         return $bindParams;
+    }
+
+    /**
+     * Bind request parameters to instance of ReflectClass
+     *
+     * @param ServerRequestInterface $request
+     * @param \ReflectionClass $reflectClass
+     * @return Object
+     */
+    private function bindRequestParamsToClass(ServerRequestInterface $request, \ReflectionClass $reflectClass)
+    {
+        try {
+            $object = $reflectClass->newInstance();
+            $queryParams = $request->getQueryParams();
+            // Get request body, auto decode when content type is json format
+            if (StringHelper::startsWith($request->getHeaderLine('Content-Type'), 'application/json')) {
+                $requestBody = JsonHelper::decode($request->getBody()->getContents(), true);
+            } else {
+                $requestBody = $request->getParsedBody();
+            }
+            // Merge query params and request body
+            $requestParams = array_merge($queryParams, $requestBody);
+            // Binding request params to target object
+            $properties = $reflectClass->getProperties();
+            foreach ($properties as $property) {
+                $name = $property->getName();
+                if (!isset($requestParams[$name])) {
+                    continue;
+                }
+                if (!$property->isPublic()) {
+                    $property->setAccessible(true);
+                }
+                $property->setValue($object, $requestParams[$name]);
+            }
+        } catch (\Exception $e) {
+            $object = null;
+        }
+        return $object;
     }
 
     /**

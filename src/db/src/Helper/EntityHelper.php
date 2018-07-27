@@ -109,10 +109,12 @@ class EntityHelper
             $type  = $entities[$className]['field'][$field]['type'];
             $value = self::trasferTypes($type, $value);
 
-            if (\method_exists($object, $setterMethod) && $value !== null) {
+            if (\method_exists($object, $setterMethod)) {
                 $attrs[$field] = $value;
-
-                $object->$setterMethod($value);
+                // 当从数据库取出来的数据不为null时，再进行模型赋值
+                if ($value !== null) {
+                    $object->$setterMethod($value);
+                }
             }
         }
         if (\method_exists($object, 'setAttrs')) {
