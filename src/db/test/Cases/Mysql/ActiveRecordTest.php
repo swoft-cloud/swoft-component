@@ -136,7 +136,14 @@ class ActiveRecordTest extends AbstractMysqlCase
 
         /** @var User2 $user */
         $user = User2::findById($id)->getResult();
-        $this->assertEquals('18446744073709551615',$user->getOid());
+        $this->assertEquals('18446744073709551615', $user->getOid());
+    }
+
+    public function testValidatorByCo()
+    {
+        go(function () {
+            $this->testValidator();
+        });
     }
 
     public function testBatchInsert()
