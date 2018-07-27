@@ -31,6 +31,12 @@ class User2 extends Model
     private $id;
 
     /**
+     * @Column(name="oid", type="bigint")
+     * @var int
+     */
+    private $oid;
+
+    /**
      * @Column(name="name", type=Types::STRING, length=20)
      * @var null|string
      */
@@ -75,6 +81,22 @@ class User2 extends Model
     public function setId($id)
     {
         $this->id = $id;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getOid()
+    {
+        return $this->oid;
+    }
+
+    /**
+     * @param int|null $oid
+     */
+    public function setOid($oid)
+    {
+        $this->oid = $oid;
     }
 
     /**
