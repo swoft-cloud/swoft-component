@@ -26,6 +26,9 @@ class BigintValidator implements ValidatorInterface
      */
     public function validate(string $column, $value, ...$params): bool
     {
+        if (! \is_int($value)) {
+            throw new ValidatorException('数据库字段值验证失败，不是int类型，column=' . $column);
+        }
         return true;
     }
 }
