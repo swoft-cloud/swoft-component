@@ -4,6 +4,7 @@ namespace Swoft\Rpc\Packer\Json;
 
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Helper\JsonHelper;
+use Swoft\Rpc\Packer\EofTrait;
 use Swoft\Rpc\Packer\PackerInterface;
 
 /**
@@ -12,8 +13,10 @@ use Swoft\Rpc\Packer\PackerInterface;
  */
 class JsonPacker implements PackerInterface
 {
+    use EofTrait;
+
     /**
-     * pack data
+     * Pack data
      *
      * @param mixed $data
      * @return string
@@ -21,11 +24,11 @@ class JsonPacker implements PackerInterface
      */
     public function pack($data): string
     {
-        return JsonHelper::encode($data, JSON_UNESCAPED_UNICODE);
+        return JsonHelper::encode($data, JSON_UNESCAPED_UNICODE) . $this->getEof();
     }
 
     /**
-     * unpack data
+     * Unpack data
      *
      * @param mixed $data
      * @return mixed

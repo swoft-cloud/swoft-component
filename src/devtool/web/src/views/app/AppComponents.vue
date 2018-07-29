@@ -1,12 +1,12 @@
 <template>
   <div>
-    <v-subheader><h1>{{ this.$route.name }}</h1></v-subheader>
+    <v-subheader><h1>{{ $t(this.$route.name) }}</h1></v-subheader>
     <v-card>
       <v-card-title class="pt-1">
         <v-spacer></v-spacer>
         <v-text-field
           append-icon="search"
-          label="Search"
+          :label="$t('App.search')"
           single-line
           hide-details
           v-model="search"
@@ -18,6 +18,7 @@
         :items="dataList"
         :search="search"
         :rows-per-page-items="pageOpts"
+        :rows-per-page-text="$t('App.rowsPerPage')"
         item-key="name"
         class="elevation-1"
       >
@@ -27,9 +28,9 @@
               <a :href="props.item.source.url" title="To github repo" target="_blank">{{ props.item.name }}</a>
             </td>
             <td><v-chip outline small color="green">{{ props.item.version }}</v-chip></td>
-            <td><code>{{ props.item.source.reference.slice(0, 7) }}</code></td>
+            <td><span class="el-tag el-tag--warning">{{ props.item.source.reference.slice(0, 7) }}</span></td>
             <td>{{ props.item.keywords.join(', ') }}</td>
-            <td>{{ props.item.time.slice(0, 19) }}</td>
+            <td>{{ props.item.time.slice(0, 19).replace('T', '&nbsp;&nbsp;') }}</td>
           </tr>
         </template>
         <template slot="expand" slot-scope="props">
@@ -59,6 +60,7 @@
     name: 'app-components',
     components: {VChip, VAlert, ...VCard, VDataTable},
     data() {
+      let That = this
       return {
         search: '',
 
@@ -67,21 +69,21 @@
 
         // table headers
         headers: [{
-          text: 'Name',
+          text: That.$t('App.name'),
           value: 'name'
         }, {
-          text: 'Version',
+          text: That.$t('App.version'),
           value: 'version'
         }, {
-          text: 'Commit ID',
+          text: That.$t('App.commitID'),
           sortable: false,
           value: 'commit'
         }, {
-          text: 'Keywords',
+          text: That.$t('App.keywords'),
           sortable: false,
           value: 'keywords'
         }, {
-          text: 'Publish Time',
+          text: That.$t('App.publishTime'),
           value: 'time'
         }],
 

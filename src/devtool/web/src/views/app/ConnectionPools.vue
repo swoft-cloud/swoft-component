@@ -1,7 +1,7 @@
 <template>
   <v-layout row wrap>
     <v-flex xs12>
-      <v-subheader><h1>{{ this.$route.name }}</h1></v-subheader>
+      <v-subheader><h1>{{ $t(this.$route.name) }}</h1></v-subheader>
     </v-flex>
     <v-flex xs12>
       <v-card>
@@ -13,10 +13,10 @@
           </template>
           <tr v-for="(val, name) in pools" :key="name">
             <td>{{ name }}</td>
-            <td><code>{{ val }}</code></td>
+            <td><span class="el-tag">{{ val }}</span></td>
             <td class="text-xs-center">
               <v-btn small outline color="blue" @click="fetchPoolConfig(name)">
-                view &nbsp;<v-icon>remove_red_eye</v-icon>
+                {{ $t('Index.view') }} &nbsp;<v-icon>remove_red_eye</v-icon>
               </v-btn>
             </td>
           </tr>
@@ -27,7 +27,7 @@
       <v-card color="yellow lighten-5">
         <v-card-title class="title blue lighten-4">
           Pool Config
-          <small class="pl-1" v-show="select"> (For the pool: <code>{{ select }}</code>)</small>
+          <small class="pl-1" v-show="select"> (For the pool: <span class="el-tag el-tag--danger">{{ select }}</span>)</small>
         </v-card-title>
         <div class="pa-3">
           <tree-view :data="dataMap" :options="{maxDepth: 3, rootObjectKey: 'Config'}"></tree-view>

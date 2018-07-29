@@ -1,14 +1,14 @@
 <template>
   <div>
-    <v-subheader><h1>{{ this.$route.name }}</h1></v-subheader>
+    <v-subheader><h1>{{ $t(this.$route.name) }}</h1></v-subheader>
     <simple-table class="table-bordered">
       <template slot="header">
-        <th> Number </th>
-        <th> Middleware Class</th>
+        <th> {{ $t('App.number') }} </th>
+        <th> {{ $t('App.middlewareClass') }}</th>
       </template>
       <tr v-for="(val, index) in middles" :key="index">
         <td>{{ index }}</td>
-        <td><code>{{ val }}</code></td>
+        <td><span class="el-tag">{{ val }}</span></td>
       </tr>
     </simple-table>
   </div>

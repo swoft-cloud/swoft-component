@@ -1,9 +1,17 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Sg\Circuit;
 
 use Swoft\App;
 use Swoole\Coroutine\Client;
+use Swoft\Pool\ConnectionInterface;
 
 /**
  * 关闭状态及切换(close)
@@ -29,11 +37,14 @@ class CloseState extends CircuitBreakerState
 
         try {
             if ($class == null) {
-                throw new \Exception($this->circuitBreaker->serviceName . "服务,连接建立失败(null)");
+                throw new \Exception($this->circuitBreaker->serviceName . '服务,连接建立失败(null)');
             }
 
-            if ($class instanceof Client && $class->isConnected() == false) {
-                throw new \Exception($this->circuitBreaker->serviceName . "服务,当前连接已断开");
+            if (
+                ($class instanceof Client && $class->isConnected() == false) ||
+                ($class instanceof ConnectionInterface && $class->check() == false)
+            ) {
+                throw new \Exception($this->circuitBreaker->serviceName . '服务,当前连接已断开');
             }
             $data = $class->$method(...$params);
         } catch (\Exception $e) {
@@ -41,18 +52,18 @@ class CloseState extends CircuitBreakerState
                 $this->circuitBreaker->incFailCount();
             }
 
-            App::error($this->circuitBreaker->serviceName . "服务，当前[关闭状态]，服务端调用失败，开始服务降级容错处理，error=" . $e->getMessage());
+            App::error($this->circuitBreaker->serviceName . '服务，当前[关闭状态]，服务端调用失败，开始服务降级容错处理，error=' . $e->getMessage());
             $data = $this->circuitBreaker->fallback($fallback);
         }
 
         $failCount = $this->circuitBreaker->getFailCounter();
         $switchToFailCount = $this->circuitBreaker->getSwitchToFailCount();
         if ($failCount >= $switchToFailCount && $this->circuitBreaker->isClose()) {
-            App::trace($this->circuitBreaker->serviceName . "服务，当前[关闭状态]，服务失败次数达到上限，开始切换为开启状态，failCount=" . $failCount);
+            App::trace($this->circuitBreaker->serviceName . '服务，当前[关闭状态]，服务失败次数达到上限，开始切换为开启状态，failCount=' . $failCount);
             $this->circuitBreaker->switchToOpenState();
         }
 
-        App::trace($this->circuitBreaker->serviceName . "服务，当前[关闭状态]，failCount=" . $this->circuitBreaker->getFailCounter());
+        App::trace($this->circuitBreaker->serviceName . '服务，当前[关闭状态]，failCount=' . $this->circuitBreaker->getFailCounter());
         return $data;
     }
 }

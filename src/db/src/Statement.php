@@ -95,7 +95,7 @@ class Statement implements StatementInterface
         if ($this->builder->getLimit()) {
             $statement .= ' ' . $this->getLimitString();
         }
-
+        
         return $statement;
     }
 
@@ -422,7 +422,7 @@ class Statement implements StatementInterface
         $statement = $this->getCriteriaString($where);
 
         if (!empty($statement)) {
-            $statement = 'WHERE ' . $statement;
+            $statement = 'WHERE' . ($statement[0] === ' ' ? $statement : ' ' . $statement);
         }
 
         return $statement;
@@ -464,7 +464,7 @@ class Statement implements StatementInterface
             $useConnector = true;
             $value        = $this->getCriteriaWithoutBracket($criterion['operator'], $criterion['value'], $criterion['column']);
             $column       = $criterion['column'];
-            $column       = strpos($column, '.') === false ? " `{$column}` " : $column;
+            $column       = strpos($column, '.') === false ? " `{$column}` " : " $column ";
             $statement    .= $column . $criterion['operator'] . ' ' . $value;
         }
 
@@ -838,8 +838,7 @@ class Statement implements StatementInterface
     protected function getFrom(): string
     {
         $from = $this->builder->getFrom();
-
-        return $from['table'] ?? '';
+        return $from['table'] ? '`' . $from['table'] . '`' : '';
     }
 
     /**
@@ -851,7 +850,7 @@ class Statement implements StatementInterface
     {
         $from = $this->builder->getFrom();
 
-        return $from['alias']??'';
+        return $from['alias'] ? '`' . $from['alias'] . '`' : '';
     }
 
     /**

@@ -64,7 +64,13 @@ class Proxy
             if ($reflectionMethod->isConstructor() || $reflectionMethod->isStatic()) {
                 continue;
             }
-
+            
+            // define override methodBody
+            $methodBody = "{
+                return \$this->{$handlerPropertyName}->invoke('{$methodName}', func_get_args());
+            }
+            ";
+            
             // the template of parameter
             $template .= " public function $methodName (";
             $template .= self::getParameterTemplate($reflectionMethod);
@@ -76,13 +82,14 @@ class Proxy
                 $returnType = $reflectionMethodReturn->__toString();
                 $returnType = $returnType === 'self' ? $reflectionMethod->getDeclaringClass()->getName() : $returnType;
                 $template .= " : $returnType";
+                // if returnType is void
+                if ($returnType === 'void') {
+                    $methodBody = str_replace('return ', '', $methodBody);
+                }
             }
 
-            // override method
-            $template .= "{
-                return \$this->{$handlerPropertyName}->invoke('{$methodName}', func_get_args());
-            }
-            ";
+            // append methodBody
+            $template .= $methodBody;
         }
 
         return $template;

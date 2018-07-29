@@ -15,14 +15,4 @@ class ServerEval extends Command
     {
         return 'eval';
     }
-
-    /**
-     * Calculates the SHA1 hash of the body of the script.
-     *
-     * @return string SHA1 hash.
-     */
-    public function getScriptHash()
-    {
-        return sha1($this->getArgument(0));
-    }
 }

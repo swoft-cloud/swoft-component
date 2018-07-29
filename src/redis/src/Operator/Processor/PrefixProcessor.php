@@ -36,9 +36,10 @@ class PrefixProcessor implements ProcessorInterface
     {
         $this->prefix = $this->redisPoolConfig->getPrefix();
 
-        $this->commands = array(
-            /* ---------------- Redis 1.2 ---------------- */
+        $this->commands = [
             'EXISTS'           => 'static::first',
+            'LGETRANGE'        => 'static::first',
+            'LGET'             => 'static::first',
             'DEL'              => 'static::all',
             'TYPE'             => 'static::first',
             'KEYS'             => 'static::first',
@@ -100,7 +101,6 @@ class PrefixProcessor implements ProcessorInterface
             'ZCARD'            => 'static::first',
             'ZSCORE'           => 'static::first',
             'ZREMRANGEBYSCORE' => 'static::first',
-            /* ---------------- Redis 2.0 ---------------- */
             'SETEX'            => 'static::first',
             'APPEND'           => 'static::first',
             'SUBSTR'           => 'static::first',
@@ -125,7 +125,6 @@ class PrefixProcessor implements ProcessorInterface
             'SUBSCRIBE'        => 'static::all',
             'PSUBSCRIBE'       => 'static::all',
             'PUBLISH'          => 'static::first',
-            /* ---------------- Redis 2.2 ---------------- */
             'PERSIST'          => 'static::first',
             'STRLEN'           => 'static::first',
             'SETRANGE'         => 'static::first',
@@ -138,7 +137,6 @@ class PrefixProcessor implements ProcessorInterface
             'BRPOPLPUSH'       => 'static::skipLast',
             'ZREVRANGEBYSCORE' => 'static::first',
             'WATCH'            => 'static::all',
-            /* ---------------- Redis 2.6 ---------------- */
             'PTTL'             => 'static::first',
             'PEXPIRE'          => 'static::first',
             'PEXPIREAT'        => 'static::first',
@@ -149,10 +147,9 @@ class PrefixProcessor implements ProcessorInterface
             'HINCRBYFLOAT'     => 'static::first',
             'EVAL'             => 'static::evalKeys',
             'EVALSHA'          => 'static::evalKeys',
-            /* ---------------- Redis 2.8 ---------------- */
             'ZRANGEBYLEX'      => 'static::first',
             'ZREVRANGEBYLEX'   => 'static::first',
-        );
+        ];
     }
 
     /**
@@ -271,7 +268,7 @@ class PrefixProcessor implements ProcessorInterface
         if ($arguments = $command->getArguments()) {
             $newArguments = [];
             foreach ($arguments as $key => $value) {
-                $newKey                = "{$prefix}{$key}";
+                $newKey = "{$prefix}{$key}";
                 $newArguments[$newKey] = $value;
             }
             $arguments = [$newArguments];
@@ -364,7 +361,7 @@ class PrefixProcessor implements ProcessorInterface
     public static function evalKeys(CommandInterface $command, $prefix)
     {
         if ($arguments = $command->getArguments()) {
-            for($i = 0; $i<$arguments[2]; $i++){
+            for($i = 0; $i < $arguments[2]; $i++){
                 $arguments[1][$i] = "$prefix{$arguments[1][$i]}";
             }
             $command->setRawArguments($arguments);
@@ -381,7 +378,7 @@ class PrefixProcessor implements ProcessorInterface
     {
         if ($arguments = $command->getArguments()) {
             $arguments[0] = "$prefix{$arguments[0]}";
-            $length       = ((int)$arguments[1]) + 2;
+            $length = ((int)$arguments[1]) + 2;
 
             for ($i = 2; $i < $length; ++$i) {
                 $arguments[$i] = "$prefix{$arguments[$i]}";

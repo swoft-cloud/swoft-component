@@ -48,8 +48,8 @@ class CurlAdapter implements AdapterInterface
         curl_setopt($resource, CURLINFO_HEADER_OUT, true);
         curl_setopt($resource, CURLOPT_RETURNTRANSFER, true);
         // HTTPS do not verify Certificate and HOST
-        curl_setopt($resource, CURLOPT_SSL_VERIFYPEER, true);
-        curl_setopt($resource, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($resource, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($resource, CURLOPT_SSL_VERIFYHOST, 0);
 
         $result = curl_exec($resource);
 
@@ -184,7 +184,7 @@ class CurlAdapter implements AdapterInterface
                 $ucKey = implode('-', $exploded);
                 $headers[$ucKey] = \is_array($value) ? current($value) : $value;
             }
-            $headers = array_replace($headers, (array)($options['_headers'] ?? []));
+            $headers = array_replace((array)($options['_headers'] ?? []), $headers);
             return $headers;
         });
         foreach ((array)$headers as $name => $value) {
