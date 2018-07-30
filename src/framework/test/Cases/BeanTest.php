@@ -45,7 +45,7 @@ class BeanTest extends AbstractTestCase
     public function testCustomComponentNamespaces()
     {
         $config = App::getProperties()->toArray();
-        $this->assertArrayHasKey('componentNamespaces', $config);
+        $this->assertArrayHasKey('components', $config);
         $resource = new ServerAnnotationResource($config);
         $resource->registerNamespace();
 

@@ -88,8 +88,8 @@ abstract class AnnotationResource extends AbstractResource
     public function __construct(array $properties)
     {
         $this->properties = $properties;
-        if (isset($properties['componentNamespaces']) && is_array($properties['componentNamespaces'])) {
-            $this->componentNamespaces = $properties['componentNamespaces'];
+        if (isset($properties['components']) && is_array($properties['components'])) {
+            $this->componentNamespaces = $properties['components'];
         }
     }
 
