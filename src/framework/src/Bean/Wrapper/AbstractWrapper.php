@@ -207,8 +207,7 @@ abstract class AbstractWrapper implements WrapperInterface
         // 循环方法注解解析
         foreach ($methodAnnotations[$methodName] as $methodAnnotationAry) {
             foreach ($methodAnnotationAry as $methodAnnotation) {
-                $annotationClass = \get_class($methodAnnotation);
-                if (! \in_array($annotationClass, $this->getMethodAnnotations())) {
+                if (!$this->inMethodAnnotations($methodAnnotation)) {
                     continue;
                 }
 
@@ -221,6 +220,15 @@ abstract class AbstractWrapper implements WrapperInterface
                 $annotationParser->parser($className, $methodAnnotation, "", $methodName);
             }
         }
+    }
+
+    /**
+     * @return bool
+     */
+    protected function inMethodAnnotations($methodAnnotation): bool
+    {
+        $annotationClass = get_class($methodAnnotation);
+        return in_array($annotationClass, $this->getMethodAnnotations());
     }
 
     /**

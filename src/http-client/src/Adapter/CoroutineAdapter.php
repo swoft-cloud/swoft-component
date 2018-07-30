@@ -140,7 +140,7 @@ class CoroutineAdapter implements AdapterInterface
 
         // Timeout
         if (isset($options['timeout']) && is_numeric($options['timeout'])) {
-            $options['_options']['timeout'] = $options['timeout'] * 1000;
+            $options['_options']['timeout'] = $options['timeout'];
         }
 
         return $options;
@@ -193,7 +193,7 @@ class CoroutineAdapter implements AdapterInterface
                 $headers[$ucKey] = \is_array($value) ? current($value) : $value;
             }
             unset($str);
-            $headers = array_replace($headers, (array)($options['_headers'] ?? []));
+            $headers = array_replace((array)($options['_headers'] ?? []), $headers);
             return $headers;
         });
         $client->setHeaders($headers ?? []);

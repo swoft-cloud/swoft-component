@@ -41,6 +41,7 @@ class RedisCommandProvider extends RedisProfile
             'RENAMEKEY'           => '\Swoft\Redis\Operator\Keys\KeyRenameKey',
             'RENAMENX'            => '\Swoft\Redis\Operator\Keys\KeyRenamePreserve',
             'EXPIREAT'            => '\Swoft\Redis\Operator\Keys\KeyExpireAt',
+            'EXPIRE'              => '\Swoft\Redis\Operator\Keys\KeyExpire',
             'TTL'                 => '\Swoft\Redis\Operator\Keys\KeyTimeToLive',
             'MOVE'                => '\Swoft\Redis\Operator\Keys\KeyMove',
             'DUMP'                => '\Swoft\Redis\Operator\Keys\KeyDump',
@@ -93,6 +94,7 @@ class RedisCommandProvider extends RedisProfile
             'LGET'                => '\Swoft\Redis\Operator\Lists\ListIndex',
             'LSET'                => '\Swoft\Redis\Operator\Lists\ListSet',
             'LREM'                => '\Swoft\Redis\Operator\Lists\ListRemove',
+            'lRemove'             => '\Swoft\Redis\Operator\Lists\ListRemove',
             'LPOP'                => '\Swoft\Redis\Operator\Lists\ListPopFirst',
             'RPOP'                => '\Swoft\Redis\Operator\Lists\ListPopLast',
             'RPOPLPUSH'           => '\Swoft\Redis\Operator\Lists\ListPopLastPushHead',
@@ -180,6 +182,9 @@ class RedisCommandProvider extends RedisProfile
             'TIME'                => '\Swoft\Redis\Operator\Servers\ServerTime',
             'EVAL'                => '\Swoft\Redis\Operator\Servers\ServerEval',
             'EVALSHA'             => '\Swoft\Redis\Operator\Servers\ServerEvalSHA',
+
+            /* ---------------- Redis 2.6 ---------------- */
+            'SCRIPT'              => '\Swoft\Redis\Operator\Servers\ServerScript',
 
             /* remote transaction commands */
             /* ---------------- Redis 1.2 ---------------- */

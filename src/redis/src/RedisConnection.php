@@ -101,7 +101,8 @@ class RedisConnection extends AbstractRedisConnection
         $arguments = $command->getArguments();
         $method = $command->getId();
 
-        return parent::__call($method, $arguments);
+        $data = parent::__call($method, $arguments);
+        return $command->parseResponse($data);
     }
 
 

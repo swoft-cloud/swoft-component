@@ -34,7 +34,7 @@
         >
           <v-list-tile slot="activator" :to="item.href ? uriPrefix + item.href : ''" exact>
             <v-list-tile-content>
-              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+              <v-list-tile-title>{{ $t(item.title) }}</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
           <v-list-tile
@@ -48,7 +48,7 @@
               <v-icon>{{ subItem.icon }}</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
+              <v-list-tile-title>{{ $t(subItem.title) }}</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
         </v-list-group>
@@ -58,7 +58,7 @@
     <!-- top menu -->
     <v-toolbar
       app
-      color="blue-grey lighten-5"
+      color="primary theme--dark"
       :clipped-left="clipped"
     >
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
@@ -70,21 +70,31 @@
       <!--</v-btn>-->
       <v-toolbar-title v-text="title"></v-toolbar-title>
       <v-spacer></v-spacer>
+
+      <v-menu offset-y>
+        <v-btn slot="activator" flat color="theme--dark" >
+          {{ selectLangage }}
+        </v-btn>
+        <v-list>
+          <v-list-tile v-for="(item, index) in langages" :key="item.title" @click="changeLange(index)">
+            <v-list-tile-title>{{ item }}</v-list-tile-title>
+          </v-list-tile>
+        </v-list>
+      </v-menu>
+
+      <v-spacer
       <v-select
         flat
         solo-inverted
         autocomplete
         prepend-icon="search"
-        label="Page Search"
+        :label="$t('Index.pageSearch')"
         class="hidden-sm-and-down"
         item-text="name"
         :items="pages"
         v-model="userInput"
         @change="gotoPage"
       ></v-select>
-      <v-btn icon @click.stop="clipped = !clipped">
-        <v-icon>web</v-icon>
-      </v-btn>
       <v-btn icon @click.stop="rightDrawer = !rightDrawer">
         <v-icon>menu</v-icon>
       </v-btn>
@@ -93,10 +103,10 @@
     <!-- content -->
     <v-content>
       <v-container :fluid="false" class="content-body" grid-list-md>
-        <v-breadcrumbs>
+        <v-breadcrumbs class="dashboard">
           <v-icon slot="divider">chevron_right</v-icon>
-          <v-breadcrumbs-item :to="uriPrefix" exact>Dashboard</v-breadcrumbs-item>
-          <v-breadcrumbs-item>{{ this.$route.name }}</v-breadcrumbs-item>
+          <v-breadcrumbs-item :to="uriPrefix" exact>{{$t('Index.dashboard')}}</v-breadcrumbs-item>
+          <v-breadcrumbs-item>{{ $t(this.$route.name) }}</v-breadcrumbs-item>
         </v-breadcrumbs>
 
         <v-slide-y-transition mode="out-in">
@@ -144,6 +154,7 @@
     components: {AppFooter, NProgress, VSelect, ...VBreadcrumbs},
     data() {
       let pages = []
+      let That = this
 
       for (let key in routes) {
         let route = routes[key]
@@ -153,7 +164,7 @@
 
         pages.push({
           path: route.path,
-          name: route.name
+          name: That.$t(route.name)
         })
       }
 
@@ -168,12 +179,18 @@
         right: true,
         rightDrawer: false,
         title: 'DevTool',
-        userInput: null
+        userInput: null,
+        selectLangage: '中文',
+        langages: ['中文', 'English']
       }
     },
     methods: {
       gotoPage (item) {
         this.$router.push(item.path)
+      },
+      changeLange (i) {
+        i === 1 ? this.$i18n.locale = 'en' : this.$i18n.locale = 'zh'
+        this.selectLangage = this.langages[i]
       }
     }
   }
@@ -183,5 +200,36 @@
   @import "assets/style/common.styl";
 
   .content-body
-    min-height 660px
+    min-height 660px;
+    background-color #f6f6f6;
+  .el-tag
+    background-color rgba(64,158,255,.1);
+    display inline-block;
+    padding 0 10px;
+    height 32px;
+    line-height 30px;
+    font-size 12px;
+    color #409eff;
+    border-radius 4px;
+    box-sizing border-box;
+    border 1px solid rgba(64,158,255,.2);
+    white-space nowrap;
+  .el-tag--success
+    background-color rgba(103,194,58,.1);
+    border-color rgba(103,194,58,.2);
+    color #67c23a;
+  .el-tag--warning
+    background-color rgba(230,162,60,.1);
+    border-color rgba(230,162,60,.2);
+    color #e6a23c;
+  .el-tag--danger
+      background-color hsla(0,87%,69%,.1);
+      border-color hsla(0,87%,69%,.2);
+      color #f56c6c;
+  $mobiWidth = 768px
+  @media screen and (max-width $mobiWidth - 1px)
+    .breadcrumbs 
+      display none !important
+    .dashboard-list
+      width 100% !important;
 </style>

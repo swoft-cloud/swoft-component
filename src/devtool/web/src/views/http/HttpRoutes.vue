@@ -1,13 +1,13 @@
 <template>
   <div class="mb-2">
-    <v-subheader><h1>{{ this.$route.name }}</h1></v-subheader>
+    <v-subheader><h1>{{ $t(this.$route.name) }}</h1></v-subheader>
     <v-tabs color="blue lighten-5">
       <v-tabs-slider color="blue"></v-tabs-slider>
       <v-tab href="#tab-1">
-        <strong>Static Routes</strong>
+        <strong>{{ $t('App.staticRoutes') }}</strong>
       </v-tab>
       <v-tab href="#tab-2">
-        <strong>Dynamic Routes(Regular)</strong>
+        <strong>{{ $t('App.dynamicRoutes') }}({{ $t('App.regular') }})</strong>
       </v-tab>
 
       <v-tab-item id="tab-1">
@@ -16,7 +16,7 @@
             <v-spacer></v-spacer>
             <v-text-field
               append-icon="search"
-              label="Search"
+              :label="$t('App.search')"
               single-line
               hide-details
               v-model="stSearch"
@@ -28,13 +28,14 @@
             :items="staticList"
             :search="stSearch"
             :rows-per-page-items="pageOpts"
+            :rows-per-page-text="$t('App.rowsPerPage')"
             disable-initial-sort
             class="elevation-1"
           >
             <template slot="items" slot-scope="props">
               <td>{{ props.item.path }}</td>
               <td>{{ props.item.method }}</td>
-              <td><code>{{ props.item.handler }}</code></td>
+              <td><span class="el-tag">{{ props.item.handler }}</span></td>
             </template>
             <template slot="no-data">
               <v-alert :value="true" color="info" icon="info">
@@ -143,6 +144,7 @@
     name: 'httpRoutes',
     components: {VAlert, ...VCard, ...VTabs, VDataTable},
     data() {
+      let That = this
       return {
         stSearch: '',
         rgSearch: '',
@@ -153,16 +155,16 @@
 
         // table headers
         stHeaders: [{
-          text: 'Uri Path',
+          text: That.$t('App.uriPath'),
           align: 'left',
           sortable: false,
           value: 'path'
         }, {
-          text: 'Method',
+          text: That.$t('App.method'),
           align: 'left',
           value: 'method'
         }, {
-          text: 'Route Handler',
+          text: That.$t('App.routeHandler'),
           align: 'left',
           value: 'handler'
         }],
@@ -174,7 +176,7 @@
           text: 'Allowed Methods',
           value: 'methods'
         }, {
-          text: 'Route Handler',
+          text: That.$t('App.routeHandler'),
           value: 'handler'
         }],
 

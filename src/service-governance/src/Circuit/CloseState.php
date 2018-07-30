@@ -1,9 +1,17 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Sg\Circuit;
 
 use Swoft\App;
 use Swoole\Coroutine\Client;
+use Swoft\Pool\ConnectionInterface;
 
 /**
  * Closed state and switch(close)
@@ -32,7 +40,10 @@ class CloseState extends CircuitBreakerState
                 throw new \RuntimeException($this->circuitBreaker->serviceName . 'service, connection establishment failed(null)');
             }
 
-            if ($class instanceof Client && $class->isConnected() === false) {
+            if (
+                ($class instanceof Client && $class->isConnected() == false) ||
+                ($class instanceof ConnectionInterface && $class->check() == false)
+            ) {
                 throw new \RuntimeException($this->circuitBreaker->serviceName . 'service, The current connection has been disconnected');
             }
             $data = $class->$method(...$params);

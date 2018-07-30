@@ -1,12 +1,12 @@
 <template>
   <div>
-    <v-subheader><h1>{{ this.$route.name }}</h1></v-subheader>
+    <v-subheader><h1>{{ $t(this.$route.name) }}</h1></v-subheader>
     <v-card>
       <v-card-title class="pt-1">
         <v-spacer></v-spacer>
         <v-text-field
           append-icon="search"
-          label="Search"
+          :label="$t('App.search')"
           single-line
           hide-details
           v-model="search"
@@ -18,11 +18,12 @@
         :items="dataList"
         :search="search"
         :rows-per-page-items="pageOpts"
+        :rows-per-page-text="$t('App.rowsPerPage')"
         class="elevation-1"
       >
         <template slot="items" slot-scope="props">
           <td>{{ props.item.index }}</td>
-          <td><code>{{ props.item.class }}</code></td>
+          <td><span class="el-tag">{{ props.item.class }}</span></td>
         </template>
         <template slot="no-data">
           <v-alert :value="true" color="info" icon="info">
@@ -46,6 +47,7 @@
     name: 'app-beans',
     components: {VAlert, ...VCard, VDataTable},
     data() {
+      let That = this
       return {
         search: '',
 
@@ -54,11 +56,11 @@
 
         // table headers
         headers: [{
-          text: 'Number',
+          text: That.$t('App.number'),
           sortable: false,
           value: 'number'
         }, {
-          text: 'Class',
+          text: That.$t('App.class'),
           sortable: false,
           value: 'class'
         }],

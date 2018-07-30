@@ -17,7 +17,52 @@ use Swoft\Redis\Exception\RedisException;
 /**
  * Class AbstractRedisConnection
  *
- * @package Swoft\Redis
+ * @link https://wiki.swoole.com/wiki/page/590.html
+ * @link https://github.com/phpredis/phpredis
+ * @package Swoft\Redis 
+ *
+ * set
+ * @method int sAdd($key, $value1, $value2 = null, $valueN = null)
+ * @method array|bool scan(&$iterator, $pattern = null, $count = 0)
+ * @method int sCard($key)
+ * @method array sDiff($key1, $key2, $keyN = null)
+ * @method array sInter($key1, $key2, $keyN = null)
+ * @method int sInterStore($dstKey, $key1, $key2, $keyN = null)
+ * @method int sDiffStore($dstKey, $key1, $key2, $keyN = null)
+ * @method array sMembers($key)
+ * @method bool sMove($srcKey, $dstKey, $member)
+ * @method bool sPop($key)
+ * @method string|array sRandMember($key, $count = null)
+ * @method int sRem($key, $member1, $member2 = null, $memberN = null)
+ * @method array sUnion($key1, $key2, $keyN = null)
+ * @method int sUnionStore($dstKey, $key1, $key2, $keyN = null)
+ * sort
+ * @method int zAdd($key, $score1, $value1, $score2 = null, $value2 = null, $scoreN = null, $valueN = null)
+ * @method array zRange($key, $start, $end, $withscores = null)
+ * @method int zRem($key, $member1, $member2 = null, $memberN = null)
+ * @method array zRevRange($key, $start, $end, $withscore = null)
+ * @method array zRangeByScore($key, $start, $end, array $options = array())
+ * @method array zRangeByLex($key, $min, $max, $offset = null, $limit = null)
+ * @method int zCount($key, $start, $end)
+ * @method int zRemRangeByScore($key, $start, $end)
+ * @method int zRemRangeByRank($key, $start, $end)
+ * @method int zCard($key)
+ * @method float zScore($key, $member)
+ * @method int zRank($key, $member)
+ * @method float zIncrBy($key, $value, $member)
+ * @method int zUnion($Output, $ZSetKeys, array $Weights = null, $aggregateFunction = 'SUM')
+ * @method int zInter($Output, $ZSetKeys, array $Weights = null, $aggregateFunction = 'SUM')
+ * pub/sub
+ * @method int publish($channel, $message)
+ * @method string|array psubscribe($patterns, $callback)
+ * @method string|array subscribe($channels, $callback)
+ * @method array|int pubsub($keyword, $argument)
+ * script
+ * @method mixed eval($script, $args = array(), $numKeys = 0)
+ * @method mixed evalSha($scriptSha, $args = array(), $numKeys = 0)
+ * @method mixed script($command, $script)
+ * @method string getLastError()
+ * @method bool clearLastError()
  */
 abstract class AbstractRedisConnection extends AbstractConnection
 {
@@ -34,10 +79,10 @@ abstract class AbstractRedisConnection extends AbstractConnection
     {
         $timeout = $this->pool->getTimeout();
         $address = $this->pool->getConnectionAddress();
-        $config  = $this->parseUri($address);
+        $config = $this->parseUri($address);
 
-        $host  = $config['host'];
-        $port  = (int)$config['port'];
+        $host = $config['host'];
+        $port = (int)$config['port'];
         $redis = $this->getConnectRedis($host, $port, $timeout);
         if (isset($config['auth']) && false === $redis->auth($config['auth'])) {
             $error = sprintf('Redis connection authentication failed host=%s port=%d auth=%s', $host, (int)$port, (string)$config['auth']);
@@ -67,7 +112,9 @@ abstract class AbstractRedisConnection extends AbstractConnection
     public function check(): bool
     {
         try {
-            $this->connection->ping();
+            if (false === $this->connection->ping()) {
+                throw new \RuntimeException('Connection lost');
+            }
             $connected = true;
         } catch (\Throwable $throwable) {
             $connected = false;
@@ -101,8 +148,8 @@ abstract class AbstractRedisConnection extends AbstractConnection
 
     /**
      * @param string $host
-     * @param int    $port
-     * @param int    $timeout
+     * @param int $port
+     * @param int $timeout
      *
      * @return Redis | \Redis
      */
@@ -110,7 +157,7 @@ abstract class AbstractRedisConnection extends AbstractConnection
 
     /**
      * @param string $method
-     * @param array  $arguments
+     * @param array $arguments
      *
      * @return mixed
      */

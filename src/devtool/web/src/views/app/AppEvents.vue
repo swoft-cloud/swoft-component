@@ -1,11 +1,11 @@
 <template>
   <div>
-    <v-subheader><h1>{{ this.$route.name }}</h1></v-subheader>
+    <v-subheader><h1>{{ $t(this.$route.name) }}</h1></v-subheader>
     <v-layout>
       <v-flex d-flex xs12 sm5>
         <v-card>
           <v-card-title class="title grey lighten-3">
-            Listened Events (total: <code>{{ events.length }}</code>)
+            {{ $t('App.listenedEvents') }} ({{ $t('App.total') }}: <span class="el-tag el-tag--danger">{{ events.length }}</span>)
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text class="pa-2">
@@ -19,12 +19,12 @@
       <v-flex d-flex xs12 sm7>
         <v-card>
           <v-card-title class="title green lighten-5">
-            Listeners of the event: <code>{{ selected }}</code> (total: <code>{{ eventListeners.length }}</code>)
+            {{ $t('App.ListenersEvent') }}: <span class="el-tag el-tag--danger">{{ selected }}</span> ({{ $t('App.total') }}: <span class="el-tag el-tag--danger">{{ eventListeners.length }}</span>)
           </v-card-title>
           <v-divider></v-divider>
           <v-list dense class="pa-2">
             <v-list-tile v-for="name in eventListeners" :key="name">
-              <v-list-tile-content><code>{{ name }}</code></v-list-tile-content>
+              <v-list-tile-content><span class="el-tag">{{ name }}</span></v-list-tile-content>
             </v-list-tile>
           </v-list>
         </v-card>

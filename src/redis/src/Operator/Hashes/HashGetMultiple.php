@@ -19,8 +19,20 @@ class HashGetMultiple extends Command
     /**
      * {@inheritdoc}
      */
-    protected function filterArguments(array $arguments)
+    public function parseResponse($data)
     {
-        return self::normalizeVariadic($arguments);
+        $result = [];
+        $hashKeys = $this->getArgument(1);
+        foreach ($data as $key => $value) {
+            if (! isset($hashKeys[$key])) {
+                continue;
+            }
+
+            $value = ($value === null) ? false : $value;
+            $result[$hashKeys[$key]] = $value;
+        }
+
+        return $result;
     }
+
 }
