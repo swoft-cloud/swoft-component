@@ -15,11 +15,16 @@ return [
         'package_max_length' => env('TCP_PACKAGE_MAX_LENGTH', 2048),
         'open_eof_check'     => env('TCP_OPEN_EOF_CHECK', false),
         'package_eof'        => "\r\n",
+        'client'             => [
+            'open_eof_check'     => true,
+            'package_eof'        => "\r\n",
+            'package_max_length' => 1024 * 1024 * 2,
+        ],
     ],
     'http'    => [
         'host'  => env('HTTP_HOST', '0.0.0.0'),
         'port'  => env('HTTP_PORT', 80),
-        'mode' => env('HTTP_MODE', SWOOLE_PROCESS),
+        'mode'  => env('HTTP_MODE', SWOOLE_PROCESS),
         'type'  => env('HTTP_TYPE', SWOOLE_SOCK_TCP),
     ],
     'crontab' => [
