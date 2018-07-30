@@ -20,13 +20,14 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "SwoftTest\\HttpServer\\": "test/Cases"
+            "SwoftTest\\HttpServer\\": "test/Cases",
+            "SwoftTest\\Testing\\": "test/Testing"
         }
     },
     "repositories": [
         {
             "type": "composer",
-            "url": "https://packagist.phpcomposer.com"
+            "url": "https://packagist.laravel-china.org"
         }
     ],
     "require-dev": {
