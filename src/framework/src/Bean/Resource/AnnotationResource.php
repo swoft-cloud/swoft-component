@@ -88,6 +88,9 @@ abstract class AnnotationResource extends AbstractResource
     public function __construct(array $properties)
     {
         $this->properties = $properties;
+        if (isset($properties['componentNamespaces']) && is_array($properties['componentNamespaces'])) {
+            $this->componentNamespaces = $properties['componentNamespaces'];
+        }
     }
 
     /**
@@ -348,5 +351,10 @@ abstract class AnnotationResource extends AbstractResource
                 $this->definitions[$beanName] = $objectDefinition;
             }
         }
+    }
+
+    public function getComponentNamespaces(): array
+    {
+        return $this->componentNamespaces;
     }
 }

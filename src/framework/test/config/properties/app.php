@@ -17,6 +17,9 @@ return [
     ],
     'bootScan' => [],
     'env' => 'Base',
+    'componentNamespaces' => [
+        'SwoftTest'
+    ],
     'provider' => require __DIR__ . DS . 'provider.php',
     'test' => require __DIR__ . DS . 'test.php',
 ];
