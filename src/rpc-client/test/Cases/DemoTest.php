@@ -20,4 +20,16 @@ class DemoTest extends AbstractTestCase
         $client = bean(DemoServiceClient::class);
         $this->assertEquals('1.0.0', $client->version());
     }
+
+    public function testLongMessage()
+    {
+        $client = bean(DemoServiceClient::class);
+        $string = 'Hi, Agnes! ';
+        $str = $client->longMessage($string);
+        $expect = '';
+        for ($i = 0; $i < 50000; $i++) {
+            $expect .= $string;
+        }
+        $this->assertEquals($expect, $str);
+    }
 }

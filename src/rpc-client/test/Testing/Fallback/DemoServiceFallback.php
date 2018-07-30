@@ -11,7 +11,7 @@ use SwoftTest\Rpc\Testing\Lib\DemoServiceInterface;
  * Class DemoServiceFallback
  * @Fallback("demoFallback")
  * @method ResultInterface deferVersion
- * @method ResultInterface deferBigMessage($str)
+ * @method ResultInterface deferLongMessage($string)
  */
 class DemoServiceFallback implements DemoServiceInterface
 {
@@ -20,7 +20,7 @@ class DemoServiceFallback implements DemoServiceInterface
         return 'versionFallback';
     }
 
-    public function bigMessage($str)
+    public function longMessage($string)
     {
         return 'bigMessageFallBack';
     }

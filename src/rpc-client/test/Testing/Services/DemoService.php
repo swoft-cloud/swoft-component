@@ -9,6 +9,7 @@ use Swoft\Core\ResultInterface;
  * Class DemoService
  * @Service()
  * @method ResultInterface deferVersion()
+ * @method ResultInterface deferLongMessage($string)
  * @package App\Services
  */
 class DemoService implements DemoServiceInterface
@@ -16,5 +17,14 @@ class DemoService implements DemoServiceInterface
     public function version()
     {
         return '1.0.0';
+    }
+
+    public function longMessage($string)
+    {
+        $res = '';
+        for ($i = 0; $i < 50000; $i++) {
+            $res .= $string;
+        }
+        return $res;
     }
 }
