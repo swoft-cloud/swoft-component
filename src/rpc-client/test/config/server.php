@@ -16,6 +16,7 @@ return [
         'open_eof_check'     => env('TCP_OPEN_EOF_CHECK', false),
         'package_eof'        => "\r\n",
         'client'             => [
+            'open_eof_split'     => true,
             'open_eof_check'     => true,
             'package_eof'        => "\r\n",
             'package_max_length' => 1024 * 1024 * 2,
