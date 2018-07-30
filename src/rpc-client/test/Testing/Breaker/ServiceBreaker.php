@@ -9,7 +9,7 @@ use Swoft\Sg\Circuit\CircuitBreaker;
 /**
  * the breaker of default
  *
- * @Breaker("service")
+ * @Breaker("breaker")
  */
 class ServiceBreaker extends CircuitBreaker
 {

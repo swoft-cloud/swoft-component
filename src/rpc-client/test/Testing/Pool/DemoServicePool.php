@@ -8,14 +8,13 @@ use SwoftTest\Rpc\Testing\Pool\Config\DemoServicePoolConfig;
 
 /**
  * Class DemoServicePool
- * @Pool("service.demo")
- * @package SwoftTest\Rpc\Client\Testing\Pool
+ * @Pool(name="service.demo")
+ * @package SwoftTest\Rpc\Testing\Pool
  */
 class DemoServicePool extends SwoftServicePool
 {
     /**
-     * Pool config
-     *
+     * @Inject
      * @var DemoServicePoolConfig
      */
     protected $poolConfig;

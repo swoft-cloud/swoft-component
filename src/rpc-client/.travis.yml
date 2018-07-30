@@ -16,5 +16,10 @@ install:
 
 before_script:
   - composer update
+  - cd vendor/swoft
+  - ln -s ../../../rpc-client rpc-client
+  - cd ../../
+  - php test/server.php &
+  - sleep 10
 
 script: composer test

@@ -8,13 +8,12 @@ use SwoftTest\Rpc\Testing\Lib\DemoServiceInterface;
 /**
  * Class DemoServiceClient
  * @Bean
- * @package SwoftTest\Rpc\Client\Testing\Clients
  * @method version
  */
 class DemoServiceClient
 {
     /**
-     * @Reference
+     * @Reference(name="service.demo", fallback="demoFallback", breaker="breaker")
      * @var DemoServiceInterface
      */
     protected $demoService;

@@ -28,8 +28,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "SwoftTest\\Rpc\\Client\\": "test/Cases",
-            "SwoftTest\\Rpc\\Testing\\": "test/Testing"
+            "SwoftTest\\Rpc\\Client\\": "test/Cases/",
+            "SwoftTest\\Rpc\\Testing\\": "test/Testing/"
         }
     },
     "repositories": [
