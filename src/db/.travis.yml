@@ -20,10 +20,11 @@ before_install:
                   PRIMARY KEY (`id`)
                 ) ENGINE = INNODB DEFAULT CHARSET = utf8 ;
                 CREATE TABLE `user2` (
-                  `id` INT (11) NOT NULL AUTO_INCREMENT,
+                  `id` BIGINT (20) NOT NULL AUTO_INCREMENT,
+                  `oid` BIGINT (20) NOT NULL DEFAULT '0',
                   `name` VARCHAR (20) DEFAULT NULL,
-                  `sex` INT (1) NOT NULL DEFAULT '0',
-                  `age` INT (1) NOT NULL DEFAULT '0',
+                  `sex` TINYINT (1) NOT NULL DEFAULT '0',
+                  `age` SMALLINT (1) NOT NULL DEFAULT '0',
                   `description` VARCHAR (240) DEFAULT NULL,
                   PRIMARY KEY (`id`)
                 ) ENGINE = INNODB DEFAULT CHARSET = utf8 ;
