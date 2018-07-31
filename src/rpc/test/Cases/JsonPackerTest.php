@@ -37,4 +37,9 @@ class JsonPackerTest extends AbstractTestCase
         $this->assertJson(\json_encode($data), $packedData);
     }
 
+    public function testEof()
+    {
+        $packer = new JsonPacker();
+        $this->assertEquals("\r\n", $packer->getEof());
+    }
 }

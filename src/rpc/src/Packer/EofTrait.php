@@ -14,14 +14,9 @@ trait EofTrait
     /**
      * @return string
      */
-    public function getEof():string
+    public function getEof(): string
     {
-        $eof = '';
-        $tcpSettings = App::$server->getTcpSetting();
-        if (isset($tcpSettings['package_eof'])) {
-            $eof = $tcpSettings['package_eof'];
-        }
-        return $eof;
+        $properties = App::getAppProperties();
+        return $properties->get('server.tcp.package_eof', '');
     }
-
 }
