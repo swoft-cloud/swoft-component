@@ -11,7 +11,7 @@ install:
   - rm swoole.tar.gz
   - cd swoole
   - phpize
-  - ./configure --enable-coroutine
+  - ./configure
   - make -j$(nproc)
   - make install
   - cd -
