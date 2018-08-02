@@ -34,9 +34,24 @@ class SwooleEvent
     const ON_WORKER_START = 'workerStart';
 
     /**
+     * the event name of workerStop
+     */
+    const ON_WORKER_STOP = 'workerStop';
+
+    /**
      * the event name of managerStart
      */
     const ON_MANAGER_START = 'managerStart';
+
+    /**
+     * the event name of managerStop
+     */
+    const ON_MANAGER_STOP = 'managerStop';
+
+    /**
+     * the event name of shutDown
+     */
+    const ON_SHUTDOWN = 'shutdown';
 
     /**
      * the event name of request
@@ -88,7 +103,10 @@ class SwooleEvent
     private static $handlerFunctions = [
         self::ON_START         => 'onStart',
         self::ON_WORKER_START  => 'onWorkerStart',
+        self::ON_WORKER_STOP   => 'onWorkerStop',
         self::ON_MANAGER_START => 'onManagerStart',
+        self::ON_MANAGER_STOP  => 'onManagerStop',
+        self::ON_SHUTDOWN      => 'onShutdown',
         self::ON_REQUEST       => 'onRequest',
         self::ON_TASK          => 'onTask',
         self::ON_PIPE_MESSAGE  => 'onPipeMessage',
