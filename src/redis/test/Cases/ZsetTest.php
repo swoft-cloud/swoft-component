@@ -68,6 +68,27 @@ class ZsetTest extends AbstractTestCase
             'limit' => [1, 1]
         ]);
         $this->assertEquals(['key4' => 1.2], $rangeKeys);
+
+        $rangeKeys = $redis->zRangeByScore($key, 1.2, 3.2, [
+            'withscores' => true
+        ]);
+        $this->assertEquals($data2, $rangeKeys);
+
+        $rangeKeys = $redis->zRevRangeByScore($key, 2, 1, [
+            'limit' => [0, 1]
+        ]);
+        $this->assertEquals(['key2'], $rangeKeys);
+
+        $rangeKeys = $redis->zRevRangeByScore($key, 2, 1, [
+            'limit' => [0, 1],
+            'withscores' => true
+        ]);
+        $this->assertEquals(['key2' => 1.3], $rangeKeys);
+
+        $rangeKeys = $redis->zRevRangeByScore($key, 3.2, 1.2, [
+            'withscores' => true
+        ]);
+        $this->assertEquals(['key3' => 3.2, 'key2' => 1.3, 'key4' => 1.2], $rangeKeys);
     }
 
     public function testZaddByCo()
