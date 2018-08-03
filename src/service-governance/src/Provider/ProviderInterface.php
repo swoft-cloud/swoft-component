@@ -21,4 +21,12 @@ interface ProviderInterface
      * @return mixed
      */
     public function registerService(...$params);
+
+
+    /**
+     * @param mixed ...$params
+     *
+     * @return mixed
+     */
+    public function deregisterService(...$params);
 }

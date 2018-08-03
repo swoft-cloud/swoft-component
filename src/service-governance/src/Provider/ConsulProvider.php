@@ -25,6 +25,11 @@ class ConsulProvider implements ProviderInterface
     const DISCOVERY_PATH = '/v1/health/service/';
 
     /**
+     *  Deregister path
+     */
+    const DEREGISTER_PATH = '/v1/agent/service/deregister/';
+
+    /**
      * Specifies the address of the consul
      *
      * @Value(name="${config.provider.consul.address}", env="${CONSUL_ADDRESS}")
@@ -237,6 +242,28 @@ class ConsulProvider implements ProviderInterface
         return true;
     }
 
+
+    /**
+     * deregister service
+     *
+     * @param mixed ...$params
+     *
+     * @return bool
+     */
+    public function deregisterService(...$params)
+    {
+        $hostName = gethostname();
+        if (empty($this->registerId)) {
+            $this->registerId = sprintf('service-%s-%s', $this->registerName, $hostName);
+        }
+
+        $url = sprintf('%s:%d%s', $this->address, $this->port, self::DEREGISTER_PATH);
+        $this->outService([], $url.$this->registerId);
+
+        return true;
+    }
+
+
     /**
      * @param string $serviceName
      *
@@ -271,10 +298,32 @@ class ConsulProvider implements ProviderInterface
         $options = [
             'json' => $service,
         ];
+
         $httpClient = new Client();
+        $httpClient->setAdapter('curl'); //设置为curl调用
         $result = $httpClient->put($url, $options)->getResult();
         if(empty($result)){
             output()->writeln(sprintf('<success>RPC service register success by consul ! tcp=%s:%d</success>', $this->registerAddress, $this->registerPort));
+        }
+    }
+
+    /**
+     * CURL退出服务
+     *
+     * @param  array $service
+     * @param string $url     consulURI
+     */
+    private function outService(array $service, string $url)
+    {
+        $options = [
+            'json' => $service,
+        ];
+
+        $httpClient = new Client();
+        $httpClient->setAdapter('curl'); //设置为curl调用
+        $result = $httpClient->put($url, $options)->getResult();
+        if(empty($result)){
+            output()->writeln(sprintf('<success>RPC deregister service success by consul ! tcp=%s:%d</success>', $this->registerAddress, $this->registerPort));
         }
     }
 }
