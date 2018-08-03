@@ -28,7 +28,7 @@ class ZsetTest extends AbstractTestCase
         $keys = $this->redis->zRange($key, 0, -1);
         $this->assertCount(5, $keys);
 
-        $data      = [
+        $data = [
             'key4',
             'key2',
             'key3',
@@ -55,6 +55,19 @@ class ZsetTest extends AbstractTestCase
 
         $rangeKeys = $this->redis->zRange($key, 1.2, 3.2, 'xxx');
         $this->assertEquals($data2, $rangeKeys);
+
+        /** @var \Redis $redis */
+        $redis = $this->redis;
+        $rangeKeys = $redis->zRangeByScore($key, 1, 2, [
+            'limit' => [1, 1]
+        ]);
+        $this->assertEquals(['key4'], $rangeKeys);
+
+        $rangeKeys = $redis->zRangeByScore($key, 1, 2, [
+            'withscores' => true,
+            'limit' => [1, 1]
+        ]);
+        $this->assertEquals(['key4' => 1.2], $rangeKeys);
     }
 
     public function testZaddByCo()
