@@ -81,6 +81,12 @@ abstract class AnnotationResource extends AbstractResource
         ];
 
     /**
+     * the custom components
+     * @var array
+     */
+    protected $customComponents = [];
+
+    /**
      * AnnotationResource constructor.
      *
      * @param array $properties
@@ -89,7 +95,7 @@ abstract class AnnotationResource extends AbstractResource
     {
         $this->properties = $properties;
         if (isset($properties['components']['custom']) && is_array($properties['components']['custom'])) {
-            $this->componentNamespaces = $properties['components']['custom'];
+            $this->customComponents = $properties['components']['custom'];
         }
     }
 
