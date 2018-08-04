@@ -308,7 +308,7 @@ class ConsulProvider implements ProviderInterface
     }
 
     /**
-     * CURL退出服务
+     * OUT SERVICE
      *
      * @param  array $service
      * @param string $url     consulURI
