@@ -11,12 +11,16 @@ trait CustomComponentsRegister
      */
     public function registerCustomComponentsNamespace()
     {
-        foreach ($this->customComponents as $ns) {
+        foreach ($this->customComponents as $ns => $componentDir) {
+            if (is_int($ns)) {
+                $ns = $componentDir;
+                $componentDir = ComposerHelper::getDirByNamespace($ns);
+            }
+
             $this->componentNamespaces[] = $ns;
 
-            $componentCommandDir = ComposerHelper::getDirByNamespace($ns);
             foreach ($this->serverScan as $dir) {
-                $scanDir = $componentCommandDir . DS . $dir;
+                $scanDir = $componentDir . DS . $dir;
                 if (!is_dir($scanDir)) {
                     continue;
                 }
