@@ -6,7 +6,7 @@ use Swoft\Helper\ComposerHelper;
 trait CustomComponentsRegister
 {
     /**
-     * 注册用户自定义的组件
+     * Register the custom components namespace
      * @author limx
      */
     public function registerCustomComponentsNamespace()
