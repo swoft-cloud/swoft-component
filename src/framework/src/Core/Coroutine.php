@@ -102,7 +102,7 @@ class Coroutine
      */
     public static function isSupportCoroutine(): bool
     {
-        if (swoole_version() >= '2.0.11') {
+        if (version_compare(swoole_version(), '2.0.11', '>=')) {
             return true;
         } else {
             return App::isWorkerStatus();
@@ -119,6 +119,6 @@ class Coroutine
      */
     public static function shouldWrapCoroutine()
     {
-        return App::isWorkerStatus() && swoole_version() >= '2.0.11';
+        return App::isWorkerStatus() && version_compare(swoole_version(), '2.0.11', '>=');
     }
 }
