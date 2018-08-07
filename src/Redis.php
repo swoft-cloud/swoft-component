@@ -29,7 +29,7 @@ class Redis implements CacheInterface
     /**
      * @var string
      */
-    private $poolName = RedisPool::class;
+    protected $poolName = RedisPool::class;
 
     /**
      * Get the value related to the specified key
@@ -172,17 +172,6 @@ class Redis implements CacheInterface
     }
 
     /**
-     * @param string $key
-     * @param mixed  $value
-     *
-     * @return bool
-     */
-    public function sIsMember($key, $value): bool
-    {
-        return (bool)$this->call('sIsMember', [$key, $value]);
-    }
-
-    /**
      * @param array $keys
      *
      * @return array|mixed
@@ -190,32 +179,6 @@ class Redis implements CacheInterface
     public function mget(array $keys)
     {
         return $this->getMultiple($keys, false);
-    }
-
-    /**
-     * @param string $key
-     * @param array  $hashKeys
-     *
-     * @return array
-     */
-    public function hMGet(string $key, array $hashKeys): array
-    {
-        $hMgetResult = $this->call('hMGet', [$key, $hashKeys]);
-        if (!App::isCoContext()) {
-            return $hMgetResult;
-        }
-
-        $result = [];
-        foreach ($hMgetResult as $key => $value) {
-            if (!isset($hashKeys[$key])) {
-                continue;
-            }
-
-            $value = ($value === null) ? false : $value;
-            $result[$hashKeys[$key]] = $value;
-        }
-
-        return $result;
     }
 
     /**

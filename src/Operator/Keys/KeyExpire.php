@@ -1,18 +1,18 @@
 <?php
 
-namespace Swoft\Redis\Operator\Servers;
+namespace Swoft\Redis\Operator\Keys;
 
 use Swoft\Redis\Operator\Command;
 
-class ServerEvalSHA extends ServerEval
+class KeyExpire extends Command
 {
     /**
-     * [Server] evalSha
+     * [Keys] expire
      *
      * @return string
      */
     public function getId()
     {
-        return 'evalSha';
+        return 'expire';
     }
 }
