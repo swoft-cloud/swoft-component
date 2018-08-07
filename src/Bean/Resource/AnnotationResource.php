@@ -5,8 +5,7 @@ namespace Swoft\Bean\Resource;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Swoft\Bean\Wrapper\WrapperInterface;
-use Swoft\Helper\ComponentHelper;
-use Swoft\Helper\JsonHelper;
+use Swoft\Helper\ComposerHelper;
 
 /**
  * Annotation resource
@@ -189,8 +188,6 @@ abstract class AnnotationResource extends AbstractResource
     }
 
     /**
-     * 添加扫描namespace
-     *
      * @param array $namespaces
      */
     public function addScanNamespace(array $namespaces)
@@ -200,10 +197,12 @@ abstract class AnnotationResource extends AbstractResource
                 $this->scanNamespaces[$key] = $namespace;
                 continue;
             }
-
-            $nsPath                           = str_replace("\\", "/", $namespace);
-            $nsPath                           = str_replace('App/', 'app/', $nsPath);
-            $this->scanNamespaces[$namespace] = BASE_PATH . "/" . $nsPath;
+            $nsPath = ComposerHelper::getDirByNamespace($namespace);
+            if (!$nsPath) {
+                $nsPath = str_replace("\\", "/", $namespace);
+                $nsPath = BASE_PATH . "/" . $nsPath;
+            }
+            $this->scanNamespaces[$namespace] = $nsPath;
         }
 
         $this->registerNamespace();
