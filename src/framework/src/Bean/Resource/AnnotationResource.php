@@ -81,6 +81,12 @@ abstract class AnnotationResource extends AbstractResource
         ];
 
     /**
+     * the custom components
+     * @var array
+     */
+    protected $customComponents = [];
+
+    /**
      * AnnotationResource constructor.
      *
      * @param array $properties
@@ -88,6 +94,9 @@ abstract class AnnotationResource extends AbstractResource
     public function __construct(array $properties)
     {
         $this->properties = $properties;
+        if (isset($properties['components']['custom']) && is_array($properties['components']['custom'])) {
+            $this->customComponents = $properties['components']['custom'];
+        }
     }
 
     /**
@@ -348,5 +357,10 @@ abstract class AnnotationResource extends AbstractResource
                 $this->definitions[$beanName] = $objectDefinition;
             }
         }
+    }
+
+    public function getComponentNamespaces(): array
+    {
+        return $this->componentNamespaces;
     }
 }

@@ -9,6 +9,8 @@
  */
 namespace SwoftTest;
 
+use Swoft\App;
+use Swoft\Bean\Resource\ServerAnnotationResource;
 use Swoft\Proxy\Proxy;
 use SwoftTest\Bean\ProxyTest;
 use SwoftTest\Bean\TestHandler;
@@ -38,5 +40,16 @@ class BeanTest extends AbstractTestCase
         $this->assertEquals('p1p2beforeafter', $proxy->publicFun1Trait('p1', 'p2'));
         $this->assertEquals('p1p2beforeafter', $proxy->publicFun2Trait('p1', 'p2'));
         $this->assertEquals('p1p2beforeafter', $proxy->publicFun3Trait('p1', 'p2'));
+    }
+
+    public function testCustomComponentNamespaces()
+    {
+        $config = App::getProperties()->toArray();
+        $this->assertArrayHasKey('components', $config);
+        $resource = new ServerAnnotationResource($config);
+        $resource->registerNamespace();
+
+        $namespace = $resource->getComponentNamespaces();
+        $this->assertNotFalse(array_search('SwoftTest', $namespace));
     }
 }

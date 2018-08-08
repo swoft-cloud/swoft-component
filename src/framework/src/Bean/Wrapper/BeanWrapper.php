@@ -83,6 +83,11 @@ class BeanWrapper extends AbstractWrapper
      */
     public function isParseMethodAnnotations(array $annotations): bool
     {
-        return isset($annotations[Cacheable::class]) || isset($annotations[CachePut::class]);
+        return true;
+    }
+
+    protected function inMethodAnnotations($methodAnnotation): bool
+    {
+        return true;
     }
 }
