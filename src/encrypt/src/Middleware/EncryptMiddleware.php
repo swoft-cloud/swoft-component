@@ -27,6 +27,12 @@ use Swoft\Http\Server\AttributeEnum;
  */
 class EncryptMiddleware implements MiddlewareInterface
 {
+    /**
+     * @param ServerRequestInterface $request
+     * @param RequestHandlerInterface $handler
+     * @return ResponseInterface
+     * @throws \Swoft\Exception\Exception
+     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         /* @var EncryptHandler $encryptHandler*/

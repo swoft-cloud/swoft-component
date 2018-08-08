@@ -8,7 +8,7 @@
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
-namespace SwoftTest\Auth;
+namespace SwoftTest\Encrypt;
 
 use PHPUnit\Framework\TestCase;
 use Swoft\App;
