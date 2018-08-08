@@ -4,7 +4,6 @@ return [
     'autoInitBean'      => true,
     'beanScan'          => [
         'SwoftTest\\Rpc\\Testing' => BASE_PATH . "/Testing",
-        'Swoft\\Rpc\\Client'      => BASE_PATH . '/../src',
     ],
     'I18n'              => [
         'sourceLanguage' => '@root/resources/messages/',
@@ -17,7 +16,9 @@ return [
         ]
     ],
     'components' => [
-        'Swoft\\Rpc\\Client'
+        'custom' => [
+            'Swoft\\Rpc\\Client' => BASE_PATH . '/../src',
+        ],
     ],
     'cache' => require dirname(__FILE__) . DS . "cache.php",
 ];
