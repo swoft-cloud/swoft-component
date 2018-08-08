@@ -26,9 +26,7 @@ class ServiceConnection extends AbstractServiceConnection
         $address = $this->pool->getConnectionAddress();
         $timeout = $this->pool->getTimeout();
         $setting = $this->getTcpClientSetting();
-        if ($setting) {
-            $client->set($setting);
-        }
+        $setting && $client->set($setting);
 
         list($host, $port) = explode(':', $address);
         if (!$client->connect($host, $port, $timeout)) {
@@ -84,12 +82,11 @@ class ServiceConnection extends AbstractServiceConnection
 
     /**
      * 返回TCP客户端的配置
-     * @author limx
+     *
      * @return array
      */
     public function getTcpClientSetting(): array
     {
-        $properties = App::getAppProperties();
-        return $properties->get('server.tcp.client', []);
+        return App::getAppProperties()->get('server.tcp.client', []);
     }
 }
