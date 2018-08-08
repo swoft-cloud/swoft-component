@@ -4,7 +4,11 @@ namespace Swoft\Http\Server\Validator;
 
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\ValidatorFrom;
+use Swoft\Helper\ArrayHelper;
+use Swoft\Helper\JsonHelper;
+use Swoft\Helper\StringHelper;
 use Swoft\Http\Message\Server\Request;
+use Swoft\Http\Message\Stream\SwooleStream;
 use Swoft\Validator\AbstractValidator;
 
 /**
@@ -53,10 +57,18 @@ class HttpValidator extends AbstractValidator
     {
         $get = $request->getQueryParams();
         $post = $request->getParsedBody();
+        $contentType = $request->getHeader('content-type');
+        $isPostJson = false;
+
+        if (isset($contentType[0]) && StringHelper::startsWith($contentType[0], 'application/json')) {
+            $isPostJson = true;
+            $post = $request->json();
+        }
+
         foreach ($validatorAry as $name => $info) {
             $default = array_pop($info['params']);
             if ($type === ValidatorFrom::GET) {
-                if (! isset($get[$name])) {
+                if (!isset($get[$name])) {
                     $request = $request->addQueryParam($name, $default);
                     $this->doValidation($name, $default, $info);
                     continue;
@@ -66,16 +78,22 @@ class HttpValidator extends AbstractValidator
                 continue;
             }
             if ($type === ValidatorFrom::POST && \is_array($post)) {
-                if (! isset($post[$name])) {
-                    $request = $request->addParserBody($name, $default);
+                if (! ArrayHelper::has($post, $name)) {
+                    ArrayHelper::set($post, $name, $default);
+                    if ($isPostJson) {
+                        $request = $request->withBody(new SwooleStream(JsonHelper::encode($post)));
+                    } else {
+                        $request = $request->addParserBody($name, $default);
+                    }
+
                     $this->doValidation($name, $default, $info);
                     continue;
                 }
-                $this->doValidation($name, $post[$name], $info);
+                $this->doValidation($name, ArrayHelper::get($post, $name), $info);
                 continue;
             }
             if ($type === ValidatorFrom::PATH) {
-                if (! isset($matches[$name])) {
+                if (!isset($matches[$name])) {
                     continue;
                 }
                 $this->doValidation($name, $matches[$name], $info);
