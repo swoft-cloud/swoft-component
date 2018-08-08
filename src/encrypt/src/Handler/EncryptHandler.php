@@ -55,13 +55,14 @@ class EncryptHandler implements EncryptHandlerInterface
 
     /**
      * @param string $encryptData
-     * @return bool|mixed
+     * @return mixed
+     * @throws Exception
      */
     public function decrypt(string $encryptData)
     {
         openssl_private_decrypt(base64_decode($encryptData), $decryptData, $this->secretKey->getPrivateKey(), $this->padding);
         if (! $decryptData){
-            return false;
+            throw new Exception("Decryption failure");
         }
         $parsedBody = json_decode($decryptData, true);
         Log::debug($parsedBody);
