@@ -1,0 +1,39 @@
+{
+    "name": "swoft/encrypt",
+    "type": "library",
+    "keywords": [
+        "php",
+        "swoft",
+        "encrypt"
+    ],
+    "description": "encrypt component for swoft",
+    "license": "Apache-2.0",
+    "require": {
+        "swoft/http-server": "^1.0",
+        "swoft/framework": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Swoft\\Encrypt\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SwoftTest\\Encrypt\\": "test/Cases"
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packagist.phpcomposer.com"
+        }
+    ],
+    "require-dev": {
+        "eaglewu/swoole-ide-helper": "dev-master",
+        "phpunit/phpunit": "^5.7",
+        "friendsofphp/php-cs-fixer": "^2.11"
+    },
+    "scripts": {
+        "test": "./vendor/bin/phpunit -c phpunit.xml"
+    }
+}
