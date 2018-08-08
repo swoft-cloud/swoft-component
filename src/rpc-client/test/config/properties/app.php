@@ -3,7 +3,8 @@ return [
     "version"           => '1.0',
     'autoInitBean'      => true,
     'beanScan'          => [
-        'Swoft\\Rpc\\Client\\Testing' => BASE_PATH."/Testing"
+        'SwoftTest\\Rpc\\Testing' => BASE_PATH . "/Testing",
+        'Swoft\\Rpc\\Client'      => BASE_PATH . '/../src',
     ],
     'I18n'              => [
         'sourceLanguage' => '@root/resources/messages/',
@@ -14,6 +15,11 @@ return [
         'user' => [
             'timeout' => 3000
         ]
+    ],
+    'components' => [
+        'custom' => [
+            'Swoft\\Rpc\\Client' => BASE_PATH . '/../src',
+        ],
     ],
     'cache' => require dirname(__FILE__) . DS . "cache.php",
 ];

@@ -25,6 +25,9 @@ class ServiceConnection extends AbstractServiceConnection
 
         $address = $this->pool->getConnectionAddress();
         $timeout = $this->pool->getTimeout();
+        $setting = $this->getTcpClientSetting();
+        $setting && $client->set($setting);
+
         list($host, $port) = explode(':', $address);
         if (!$client->connect($host, $port, $timeout)) {
             $error = sprintf('Service connect fail errorCode=%s host=%s port=%s', $client->errCode, $host, $port);
@@ -75,5 +78,15 @@ class ServiceConnection extends AbstractServiceConnection
     public function recv(): string
     {
         return $this->connection->recv();
+    }
+
+    /**
+     * 返回TCP客户端的配置
+     *
+     * @return array
+     */
+    public function getTcpClientSetting(): array
+    {
+        return App::getAppProperties()->get('server.tcp.client', []);
     }
 }
