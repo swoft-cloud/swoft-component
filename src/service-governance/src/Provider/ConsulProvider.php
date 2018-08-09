@@ -251,9 +251,9 @@ class ConsulProvider implements ProviderInterface
      * @return bool
      */
     public function deregisterService(...$params)
-    {
-        $hostName = gethostname();
+    {        
         if (empty($this->registerId)) {
+            $hostName = gethostname();
             $this->registerId = sprintf('service-%s-%s', $this->registerName, $hostName);
         }
 
@@ -300,7 +300,6 @@ class ConsulProvider implements ProviderInterface
         ];
 
         $httpClient = new Client();
-        $httpClient->setAdapter('curl'); //设置为curl调用
         $result = $httpClient->put($url, $options)->getResult();
         if(empty($result)){
             output()->writeln(sprintf('<success>RPC service register success by consul ! tcp=%s:%d</success>', $this->registerAddress, $this->registerPort));
@@ -320,7 +319,6 @@ class ConsulProvider implements ProviderInterface
         ];
 
         $httpClient = new Client();
-        $httpClient->setAdapter('curl'); //设置为curl调用
         $result = $httpClient->put($url, $options)->getResult();
         if(empty($result)){
             output()->writeln(sprintf('<success>RPC deregister service success by consul ! tcp=%s:%d</success>', $this->registerAddress, $this->registerPort));
