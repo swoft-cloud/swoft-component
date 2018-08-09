@@ -258,7 +258,7 @@ class ConsulProvider implements ProviderInterface
         }
 
         $url = sprintf('%s:%d%s', $this->address, $this->port, self::DEREGISTER_PATH);
-        $this->outService([], $url.$this->registerId);
+        $this->removeService([], $url.$this->registerId);
 
         return true;
     }
@@ -307,12 +307,12 @@ class ConsulProvider implements ProviderInterface
     }
 
     /**
-     * OUT SERVICE
+     * Remove Service
      *
      * @param  array $service
      * @param string $url     consulURI
      */
-    private function outService(array $service, string $url)
+    private function removeService(array $service, string $url)
     {
         $options = [
             'json' => $service,
