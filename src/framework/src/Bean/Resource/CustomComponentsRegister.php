@@ -19,10 +19,6 @@ trait CustomComponentsRegister
                 $componentDir = rtrim($componentDir, "/");
             }
 
-            if (!is_dir($componentDir)) {
-                continue;
-            }
-
             $this->componentNamespaces[] = $ns;
 
             foreach ($this->serverScan as $dir) {
@@ -51,11 +47,11 @@ trait CustomComponentsRegister
                 $componentDir = rtrim($componentDir, "/");
             }
 
+            $this->componentNamespaces[] = $ns;
+
             if (!is_dir($componentDir)) {
                 continue;
             }
-
-            $this->componentNamespaces[] = $ns;
 
             $scanDirs = scandir($componentDir, null);
 
