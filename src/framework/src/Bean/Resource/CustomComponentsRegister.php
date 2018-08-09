@@ -15,6 +15,8 @@ trait CustomComponentsRegister
             if (is_int($ns)) {
                 $ns = $componentDir;
                 $componentDir = ComposerHelper::getDirByNamespace($ns);
+                $ns = rtrim($ns, "\\");
+                $componentDir = rtrim($componentDir, "/");
             }
 
             $this->componentNamespaces[] = $ns;
