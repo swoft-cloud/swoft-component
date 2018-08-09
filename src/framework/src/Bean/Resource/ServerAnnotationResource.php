@@ -49,6 +49,6 @@ class ServerAnnotationResource extends AnnotationResource
             }
         }
 
-        $this->registerCustomComponentsNamespace();
+        $this->registerServerNamespace();
     }
 }

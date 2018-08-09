@@ -70,6 +70,6 @@ class WorkerAnnotationResource extends AnnotationResource
             }
         }
 
-        $this->registerCustomComponentsNamespace();
+        $this->registerWorkerNamespace();
     }
 }
