@@ -32,7 +32,7 @@ class LoggerTest extends AbstractTestCase
     {
         parent::setUp();
         $runtimeDir = alias('@runtime');
-        ! file_exists($runtimeDir) && mkdir($runtimeDir, 755, true);
+        !file_exists($runtimeDir) && mkdir($runtimeDir, 755, true);
         $this->logger = bean('logger');
         $this->assertInstanceOf(Logger::class, $this->logger);
     }
@@ -73,6 +73,18 @@ class LoggerTest extends AbstractTestCase
     }
 
     /**
+     * @test
+     */
+    public function format()
+    {
+        $message = 'Hello World！！！';
+        $logger = bean('formatLogger');
+        $result = $logger->info($message);
+        $this->assertTrue($result);
+        $this->assertContains($message, $this->getFormatLog());
+    }
+
+    /**
      * @return bool|string
      */
     protected function getNoticeLog()
@@ -86,5 +98,13 @@ class LoggerTest extends AbstractTestCase
     protected function getErrorLog()
     {
         return file_get_contents(alias('@runtime/logs/error.log'));
+    }
+
+    /**
+     * @return bool|string
+     */
+    protected function getFormatLog()
+    {
+        return file_get_contents(alias('@runtime/logs/format.log') . date('.Y-m-d'));
     }
 }

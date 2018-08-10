@@ -39,4 +39,20 @@ return [
             '${applicationHandler}'
         ]
     ],
+    'formatLogger' => [
+        'class' => \Swoft\Log\Logger::class,
+        'name' => APP_NAME,
+        'enable' => true,
+        'flushInterval' => 1,
+        'flushRequest' => true,
+        'handlers' => [
+            '${formatLoggerHandler}',
+        ]
+    ],
+    'formatLoggerHandler' => [
+        'class' => \Swoft\Log\FileHandler::class,
+        'logFilePostfix' => '.Y-m-d',
+        'logFile' => '@runtime/logs/format.log',
+        'formatter' => '${lineFormatter}',
+    ],
 ];

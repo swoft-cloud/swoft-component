@@ -27,6 +27,11 @@ class FileHandler extends AbstractProcessingHandler
      */
     protected $logFile = "";
 
+    /**
+     * @var string 日志文件后缀
+     */
+    protected $logFilePostfix = '';
+
 
     /**
      * 批量输出日志
@@ -58,6 +63,10 @@ class FileHandler extends AbstractProcessingHandler
         $this->createDir();
         $logFile = App::getAlias($this->logFile);
         $messageText = implode("\n", $records) . "\n";
+
+        if ($postfix = $this->getLogFilePostfix()) {
+            $logFile .= date($postfix);
+        }
 
         if (App::isCoContext()) {
             // 协程写
@@ -156,5 +165,14 @@ class FileHandler extends AbstractProcessingHandler
         }
 
         return in_array($record['level'], $this->levels);
+    }
+
+    /**
+     * 日志文件后缀
+     * @return string
+     */
+    public function getLogFilePostfix(): string
+    {
+        return $this->logFilePostfix;
     }
 }
