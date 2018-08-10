@@ -42,6 +42,7 @@ class RpcTest extends AbstractTestCase
             $id = rand(1000, 9999);
             $res = $client->get($id);
             $this->assertEquals('', $res);
+
             \co::sleep(1);
 
             go(function () {
