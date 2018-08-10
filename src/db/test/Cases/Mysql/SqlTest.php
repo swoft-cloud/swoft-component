@@ -142,4 +142,35 @@ class SqlTest extends AbstractMysqlCase
             $this->testUpdate($id);
         });
     }
+
+    public function testErrorSql()
+    {
+        Db::beginTransaction();
+
+        try {
+            $user = new User();
+            $user->setName('limx');
+            $user->setSex(1);
+            $user->setAge(27);
+            $user->setDesc('Swoft');
+            $id = $user->save()->getResult();
+
+            $sql = 'SELECT des FROM `user` WHERE id = ?';
+            $res = Db::query($sql, [$id])->getResult();
+            $this->assertTrue(false);
+            Db::commit();
+        } catch (\Exception $ex) {
+            Db::rollback();
+
+            $user = User::findById($id)->getResult();
+            $this->assertNull($user);
+        }
+    }
+
+    public function testErrorSqlByCo()
+    {
+        go(function () {
+            $this->testErrorSql();
+        });
+    }
 }
