@@ -8,7 +8,7 @@ use SwoftTest\Rpc\Testing\Clients\DemoServiceClient;
 use SwoftTest\Rpc\Testing\Lib\DemoServiceInterface;
 use SwoftTest\Rpc\Testing\Pool\Config\DemoServicePoolConfig;
 
-class DemoTest extends AbstractTestCase
+class RpcTest extends AbstractTestCase
 {
     public function testDemo()
     {
@@ -32,6 +32,34 @@ class DemoTest extends AbstractTestCase
                 $expect .= $string;
             }
             $this->assertEquals($expect, $str);
+        });
+    }
+
+    public function testRpcServiceTimeout()
+    {
+        go(function () {
+            $client = bean(DemoServiceClient::class);
+            $id = rand(1000, 9999);
+            $res = $client->get($id);
+            $this->assertEquals('', $res);
+
+            \co::sleep(1);
+
+            go(function () {
+                $client = bean(DemoServiceClient::class);
+                $id = rand(1000, 9999);
+                $res = $client->get($id);
+                $this->assertEquals('', $res);
+            });
+
+            \co::sleep(1);
+
+            go(function () {
+                $client = bean(DemoServiceClient::class);
+                $id = rand(1000, 9999);
+                $res = $client->get($id);
+                $this->assertEquals('', $res);
+            });
         });
     }
 }

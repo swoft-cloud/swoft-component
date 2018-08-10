@@ -77,7 +77,11 @@ class ServiceConnection extends AbstractServiceConnection
      */
     public function recv(): string
     {
-        return $this->connection->recv();
+        $data = $this->connection->recv();
+        if (empty($data)) {
+            throw new RpcClientException('ServiceConnection::recv error, errCode=' . $this->connection->errCode);
+        }
+        return $data;
     }
 
     /**
@@ -88,5 +92,14 @@ class ServiceConnection extends AbstractServiceConnection
     public function getTcpClientSetting(): array
     {
         return App::getAppProperties()->get('server.tcp.client', []);
+    }
+
+    /**
+     * Close connection
+     * @return bool
+     */
+    public function close()
+    {
+        return $this->connection->close();
     }
 }
