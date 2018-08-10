@@ -93,4 +93,13 @@ class ServiceConnection extends AbstractServiceConnection
     {
         return App::getAppProperties()->get('server.tcp.client', []);
     }
+
+    /**
+     * Close connection
+     * @return bool
+     */
+    public function close()
+    {
+        return $this->connection->close();
+    }
 }
