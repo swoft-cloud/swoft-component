@@ -17,4 +17,11 @@ class DemoServicePoolConfig extends PoolProperties
     protected $uri = [
         '127.0.0.1:8099'
     ];
+
+    /**
+     * Connection timeout
+     *
+     * @var int
+     */
+    protected $timeout = 1;
 }

@@ -12,6 +12,7 @@ use SwoftTest\Rpc\Testing\Lib\DemoServiceInterface;
  * @Fallback("demoFallback")
  * @method ResultInterface deferVersion
  * @method ResultInterface deferLongMessage($string)
+ * @method ResultInterface deferGet($id)
  */
 class DemoServiceFallback implements DemoServiceInterface
 {
@@ -23,5 +24,10 @@ class DemoServiceFallback implements DemoServiceInterface
     public function longMessage($string)
     {
         return 'bigMessageFallBack';
+    }
+
+    public function get($id)
+    {
+        return '';
     }
 }

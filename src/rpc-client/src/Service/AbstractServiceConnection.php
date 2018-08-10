@@ -9,4 +9,12 @@ use Swoft\Pool\AbstractConnection;
  */
 abstract class AbstractServiceConnection extends AbstractConnection implements ServiceConnectInterface
 {
+    /**
+     * Close connection
+     * @return bool
+     */
+    public function close()
+    {
+        return true;
+    }
 }
