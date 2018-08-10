@@ -10,6 +10,7 @@ use SwoftTest\Rpc\Testing\Lib\DemoServiceInterface;
  * @Bean
  * @method version
  * @method longMessage($string)
+ * @method get($id)
  */
 class DemoServiceClient
 {
