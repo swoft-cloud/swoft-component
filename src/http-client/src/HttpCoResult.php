@@ -47,6 +47,9 @@ class HttpCoResult extends AbstractResult implements HttpResultInterface
         $client->close();
         $headers = value(function () {
             $headers = [];
+            if (empty($this->connection->headers)) {
+                return $headers;
+            }
             foreach ($this->connection->headers as $key => $value) {
                 $exploded = explode('-', $key);
                 foreach ($exploded as &$str) {
@@ -59,9 +62,9 @@ class HttpCoResult extends AbstractResult implements HttpResultInterface
             return $headers;
         });
         $response = $this->createResponse()
-                         ->withBody(new SwooleStream($result ?? ''))
-                         ->withHeaders($headers ?? [])
-                         ->withStatus($this->deduceStatusCode($client));
+            ->withBody(new SwooleStream($result ?? ''))
+            ->withHeaders($headers ?? [])
+            ->withStatus($this->deduceStatusCode($client));
         return $response;
     }
 
