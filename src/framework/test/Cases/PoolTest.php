@@ -13,6 +13,7 @@ use Swoft\App;
 use SwoftTest\Pool\ConsulEnvConfig;
 use SwoftTest\Pool\ConsulPptConfig;
 use SwoftTest\Pool\DemoPool;
+use SwoftTest\Pool\DemoPoolConfig;
 use SwoftTest\Pool\EnvAndPptFromPptPoolConfig;
 use SwoftTest\Pool\EnvAndPptPoolConfig;
 use SwoftTest\Pool\EnvPoolConfig;
@@ -169,5 +170,14 @@ class PoolTest extends AbstractTestCase
         go(function () {
             $this->testGetConnection();
         });
+    }
+
+    public function testPoolConfigTimeout()
+    {
+        $pConfig = App::getBean(EnvPoolConfig::class);
+        $this->assertEquals($pConfig->getTimeout(), 2);
+
+        $dConfig = App::getBean(DemoPoolConfig::class);
+        $this->assertEquals($dConfig->getTimeout(), 0.5);
     }
 }
