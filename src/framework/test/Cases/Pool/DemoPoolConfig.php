@@ -12,5 +12,5 @@ use Swoft\Pool\PoolProperties;
  */
 class DemoPoolConfig extends PoolProperties
 {
-
+    protected $timeout = 0.5;
 }
