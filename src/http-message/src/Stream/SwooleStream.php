@@ -134,7 +134,6 @@ class SwooleStream implements StreamInterface
      */
     public function seek($offset, $whence = SEEK_SET)
     {
-
     }
 
     /**
@@ -148,7 +147,6 @@ class SwooleStream implements StreamInterface
      */
     public function rewind()
     {
-        $this->seek(0);
     }
 
     /**
