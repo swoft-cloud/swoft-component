@@ -117,7 +117,7 @@ class SwooleStream implements StreamInterface
      */
     public function isSeekable()
     {
-        throw new \BadMethodCallException('Not implemented');
+        return false;
     }
 
     /**
@@ -134,7 +134,6 @@ class SwooleStream implements StreamInterface
      */
     public function seek($offset, $whence = SEEK_SET)
     {
-        throw new \BadMethodCallException('Not implemented');
     }
 
     /**
@@ -148,7 +147,6 @@ class SwooleStream implements StreamInterface
      */
     public function rewind()
     {
-        throw new \BadMethodCallException('Not implemented');
     }
 
     /**
