@@ -24,15 +24,18 @@ class CoroutineClientTest extends AbstractTestCase
             $client = new Client();
             $client->setAdapter('coroutine');
             $method = 'GET';
+            $options = ['timeout' => 5];
 
             // Http
             /** @var Response $response */
             $response = $client->request($method, '', [
                 'base_uri' => 'http://www.swoft.org',
+                '_options' => $options,
                 'headers' => [
                     'Accept' => 'text/html'
                 ],
             ])->getResponse();
+
             $response->assertSuccessful()->assertSee('Swoft 官网');
 
             // Https
@@ -45,6 +48,7 @@ class CoroutineClientTest extends AbstractTestCase
             /** @var Response $response */
             $response = $client->request($method, '/?a=1', [
                 'base_uri' => 'http://echo.swoft.org',
+                '_options' => $options
             ])->getResponse();
             $response->assertSuccessful();
             $this->assertJson($response->getBody()->getContents());
@@ -62,6 +66,7 @@ class CoroutineClientTest extends AbstractTestCase
         go(function () {
             $client = new Client();
             $client->setAdapter('coroutine');
+            $options = ['timeout' => 5];
 
             /**
              * Post raw body
@@ -72,6 +77,7 @@ class CoroutineClientTest extends AbstractTestCase
             $response = $client->request($method, '', [
                 'base_uri' => 'http://echo.swoft.org',
                 'body' => $body,
+                '_options' => $options
             ])->getResponse();
             $response->assertSuccessful()
                 ->assertHeader('Content-Type', 'application/json')
@@ -104,6 +110,8 @@ class CoroutineClientTest extends AbstractTestCase
         go(function () {
             $client = new Client();
             $client->setAdapter('coroutine');
+            $options = ['timeout' => 5];
+
             $body = [
                 'string' => 'value',
                 'int' => 1,
@@ -118,6 +126,7 @@ class CoroutineClientTest extends AbstractTestCase
             /** @var Response $response */
             $response = $client->request($method, '', [
                 'base_uri' => 'http://echo.swoft.org',
+                '_options' => $options,
                 'form_params' => $body,
             ])->getResponse();
             $response->assertSuccessful()
@@ -151,6 +160,8 @@ class CoroutineClientTest extends AbstractTestCase
         go(function () {
             $client = new Client();
             $client->setAdapter('coroutine');
+            $options = ['timeout' => 5];
+
             $body = [
                 'string' => 'value',
                 'int' => 1,
@@ -165,6 +176,7 @@ class CoroutineClientTest extends AbstractTestCase
             /** @var Response $response */
             $response = $client->request($method, '', [
                 'base_uri' => 'http://echo.swoft.org',
+                '_options' => $options,
                 'json' => $body,
             ])->getResponse();
             $response->assertSuccessful()
@@ -198,6 +210,8 @@ class CoroutineClientTest extends AbstractTestCase
         go(function () {
             $client = new Client();
             $client->setAdapter('coroutine');
+            $options = ['timeout' => 5];
+
             $body = [
                 'string' => 'value',
                 'int' => 1,
@@ -212,6 +226,7 @@ class CoroutineClientTest extends AbstractTestCase
             /** @var Response $response */
             $response = $client->request($method, '', [
                 'base_uri' => 'http://echo.swoft.org',
+                '_options' => $options,
                 'json' => $body,
             ])->getResponse();
             $response->assertSuccessful()
@@ -245,6 +260,8 @@ class CoroutineClientTest extends AbstractTestCase
         go(function () {
             $client = new Client();
             $client->setAdapter('coroutine');
+            $options = ['timeout' => 5];
+
             $body = [
                 'string' => 'value',
                 'int' => 1,
@@ -259,6 +276,7 @@ class CoroutineClientTest extends AbstractTestCase
             /** @var Response $response */
             $response = $client->request($method, '', [
                 'base_uri' => 'http://echo.swoft.org',
+                '_options' => $options,
                 'json' => $body,
             ])->getResponse();
             $response->assertSuccessful()
@@ -294,9 +312,11 @@ class CoroutineClientTest extends AbstractTestCase
                 'base_uri' => 'http://www.swoft.org',
             ]);
             $client->setAdapter('coroutine');
-            $request1 = $client->request('GET', '');
-            $request2 = $client->request('GET', '');
-            $request3 = $client->request('GET', '');
+            $options = ['timeout' => 5];
+
+            $request1 = $client->request('GET', '', ['_options' => $options]);
+            $request2 = $client->request('GET', '', ['_options' => $options]);
+            $request3 = $client->request('GET', '', ['_options' => $options]);
 
             /** @var Response $response1 */
             $response1 = $request1->getResponse();
