@@ -340,7 +340,7 @@ class CoroutineClientTest extends AbstractTestCase
             ]);
 
             $str = $client->get('/', ['_options' => [
-                'timeout' => 2
+                'timeout' => 5
             ]])->getResponse()->getBody()->getContents();
             $this->assertNotEmpty($str);
         });

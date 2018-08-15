@@ -47,8 +47,12 @@ class CoroutineAdapter implements AdapterInterface
         $client = new CoHttpClient($host, $port, $ssl);
         $this->applyOptions($client, $request, $options);
         $this->applyMethod($client, $request, $options);
+
+        $path = (string)$request->getUri()->getPath();
+        if ($path == '') $path = '/';
+
         $client->setDefer();
-        $client->execute((string)$request->getUri()->withFragment(''));
+        $client->execute($path);
 
         App::profileEnd($profileKey);
 
@@ -96,20 +100,8 @@ class CoroutineAdapter implements AdapterInterface
         } else {
             $port = 80;
         }
-        $ipLong = ip2long($host);
 
-        if ($ipLong !== false) {
-            return [$host, $port];
-        }
-
-        // DHS Lookup
-        $ip = Coroutine::gethostbyname($host);
-        if (! $ip) {
-            $message = sprintf('DNS lookup failure, domain = %s', $host);
-            App::error($message);
-            throw new \InvalidArgumentException($message);
-        }
-        return [$ip, $port];
+        return [$host, $port];
     }
 
     /**
