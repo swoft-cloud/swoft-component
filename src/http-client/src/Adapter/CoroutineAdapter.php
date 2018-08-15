@@ -44,11 +44,18 @@ class CoroutineAdapter implements AdapterInterface
         list($host, $port) = $this->ipResolve($request, $options);
 
         $ssl = $request->getUri()->getScheme() === 'https';
+
         $client = new CoHttpClient($host, $port, $ssl);
         $this->applyOptions($client, $request, $options);
         $this->applyMethod($client, $request, $options);
+
+        $path = $request->getUri()->getPath();
+        $query = $request->getUri()->getQuery();
+        if ($path === '') $path = '/';
+        if ($query !== '') $path .= '?' . $query;
+
         $client->setDefer();
-        $client->execute((string)$request->getUri()->withFragment(''));
+        $client->execute($path);
 
         App::profileEnd($profileKey);
 
@@ -96,20 +103,8 @@ class CoroutineAdapter implements AdapterInterface
         } else {
             $port = 80;
         }
-        $ipLong = ip2long($host);
 
-        if ($ipLong !== false) {
-            return [$host, $port];
-        }
-
-        // DHS Lookup
-        $ip = Coroutine::gethostbyname($host);
-        if (! $ip) {
-            $message = sprintf('DNS lookup failure, domain = %s', $host);
-            App::error($message);
-            throw new \InvalidArgumentException($message);
-        }
-        return [$ip, $port];
+        return [$host, $port];
     }
 
     /**
@@ -119,7 +114,7 @@ class CoroutineAdapter implements AdapterInterface
     private function handleOptions(array $options): array
     {
         // Auth
-        if (! empty($options['auth']) && \is_array($options['auth'])) {
+        if (!empty($options['auth']) && \is_array($options['auth'])) {
             $value = $options['auth'];
             $type = isset($value[2]) ? strtolower($value[2]) : 'basic';
             switch ($type) {
@@ -154,7 +149,7 @@ class CoroutineAdapter implements AdapterInterface
      */
     protected function applyOptions(CoHttpClient $client, RequestInterface $request, array &$options)
     {
-        if (! empty($options['body'])) {
+        if (!empty($options['body'])) {
             $options['_headers']['Content-Type'] = 'text/plain';
         }
 
