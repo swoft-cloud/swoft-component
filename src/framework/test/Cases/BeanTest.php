@@ -14,6 +14,7 @@ use Swoft\Bean\Resource\ServerAnnotationResource;
 use Swoft\Proxy\Proxy;
 use SwoftTest\Bean\ProxyTest;
 use SwoftTest\Bean\TestHandler;
+use SwoftTest\Testing\Bean\Config;
 
 /**
  * Class BeanTest
@@ -51,5 +52,14 @@ class BeanTest extends AbstractTestCase
 
         $namespace = $resource->getComponentNamespaces();
         $this->assertNotFalse(array_search('SwoftTest', $namespace));
+    }
+
+    public function testCustomComponentSupportAlias()
+    {
+        $config = bean(Config::class);
+        $this->assertEquals('test', $config->getName());
+
+        $config = bean(\SwoftTest\Testing\Bean2\Config::class);
+        $this->assertEquals('test', $config->getName());
     }
 }

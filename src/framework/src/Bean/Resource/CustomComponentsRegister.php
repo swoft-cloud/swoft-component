@@ -20,6 +20,7 @@ trait CustomComponentsRegister
             }
 
             $this->componentNamespaces[] = $ns;
+            $componentDir = alias($componentDir);
 
             foreach ($this->serverScan as $dir) {
                 $scanDir = $componentDir . DS . $dir;
@@ -48,6 +49,7 @@ trait CustomComponentsRegister
             }
 
             $this->componentNamespaces[] = $ns;
+            $componentDir = alias($componentDir);
 
             if (!is_dir($componentDir)) {
                 continue;
