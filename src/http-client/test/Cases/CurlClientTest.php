@@ -308,4 +308,19 @@ class CurlClientTest extends AbstractTestCase
         }
     }
 
+    /**
+     * @test
+     */
+    public function githubApi()
+    {
+        $client = new Client([
+            'base_uri' => 'https://api.github.com',
+            'headers' => [
+                'User-Agent' => 'Swoft Cloud'
+            ],
+        ]);
+
+        $str = $client->get('/')->getResponse()->getBody()->getContents();
+        $this->assertNotEmpty($str);
+    }
 }

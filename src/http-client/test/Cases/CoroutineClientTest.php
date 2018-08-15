@@ -15,9 +15,6 @@ use Swoft\HttpClient\Client;
  */
 class CoroutineClientTest extends AbstractTestCase
 {
-
-
-
     /**
      * @test
      */
@@ -326,6 +323,24 @@ class CoroutineClientTest extends AbstractTestCase
             $expected = sprintf('Swoft/%s PHP/%s', App::version(), PHP_VERSION);
             $this->assertEquals($expected, $client->getDefaultUserAgent());
 
+        });
+    }
+
+    /**
+     * @test
+     */
+    public function githubApi()
+    {
+        go(function () {
+            $client = new Client([
+                'base_uri' => 'https://api.github.com',
+                'headers' => [
+                    'User-Agent' => 'Swoft Cloud'
+                ],
+            ]);
+
+            $str = $client->get('/')->getResponse()->getBody()->getContents();
+            $this->assertNotEmpty($str);
         });
     }
 }
