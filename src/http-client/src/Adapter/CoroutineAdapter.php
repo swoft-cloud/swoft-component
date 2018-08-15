@@ -51,9 +51,9 @@ class CoroutineAdapter implements AdapterInterface
 
         $path = $request->getUri()->getPath();
         $query = $request->getUri()->getQuery();
-        if ($path == '') $path = '/';
+        if ($path === '') $path = '/';
         if ($query !== '') $path .= '?' . $query;
-        
+
         $client->setDefer();
         $client->execute($path);
 

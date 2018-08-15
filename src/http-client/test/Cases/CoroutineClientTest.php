@@ -368,7 +368,10 @@ class CoroutineClientTest extends AbstractTestCase
         });
     }
 
-    public function testBaseUri()
+    /**
+     * @test
+     */
+    public function baseUri()
     {
         go(function () {
             // 测试base_uri传入的域名带path时，会主动过滤path
@@ -388,6 +391,37 @@ class CoroutineClientTest extends AbstractTestCase
             $res = $client->get('/?id2=yyy&id3=zzz')->getResult();
             $res = JsonHelper::decode($res, true);
             $this->assertEquals('id2=yyy&id3=zzz', $res['uri']['query']);
+        });
+    }
+
+    /**
+     * @test
+     */
+    public function queryNotInvalid()
+    {
+        go(function () {
+            $client = new Client([
+                'base_uri' => 'http://echo.swoft.org',
+                '_options' => $this->options
+            ]);
+
+            $res = $client->get('0')->getResult();
+            $this->assertEquals(['message' => 'Route not found for /0'], JsonHelper::decode($res, true));
+
+            $client = new Client([
+                'base_uri' => 'http://echo.swoft.org',
+                '_options' => $this->options
+            ]);
+
+            $res = $client->get(0)->getResult();
+            $res = JsonHelper::decode($res, true);
+            $this->assertEquals('/', $res['uri']['path']);
+
+            $res = $client->get(' ')->getResult();
+            $this->assertEquals(['message' => 'Route not found for / '], JsonHelper::decode($res, true));
+
+            $res = $client->get(123)->getResult();
+            $this->assertEquals(['message' => 'Route not found for /123'], JsonHelper::decode($res, true));
         });
     }
 }
