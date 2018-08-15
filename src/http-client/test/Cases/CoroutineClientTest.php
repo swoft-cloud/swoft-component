@@ -3,6 +3,7 @@
 namespace SwoftTest\HttpClient;
 
 use Swoft\App;
+use Swoft\Helper\JsonHelper;
 use Swoft\Http\Message\Testing\Base\Response;
 use Swoft\HttpClient\Client;
 
@@ -42,6 +43,7 @@ class CoroutineClientTest extends AbstractTestCase
             /** @var Response $response */
             $response = $client->request($method, '', [
                 'base_uri' => 'https://www.swoft.org',
+                '_options' => $this->options,
             ])->getResponse();
             $response->assertSuccessful()->assertSee('Swoft 官网');
 
@@ -359,10 +361,33 @@ class CoroutineClientTest extends AbstractTestCase
                 ],
             ]);
 
-            $str = $client->get('/', ['_options' => [
-                'timeout' => 5
-            ]])->getResponse()->getBody()->getContents();
+            $str = $client->get('/', [
+                '_options' => $this->options
+            ])->getResponse()->getBody()->getContents();
             $this->assertNotEmpty($str);
+        });
+    }
+
+    public function testBaseUri()
+    {
+        go(function () {
+            // 测试base_uri传入的域名带path时，会主动过滤path
+            $client = new Client([
+                'base_uri' => 'http://echo.swoft.org/test',
+                '_options' => $this->options
+            ]);
+
+            $res = $client->get('/info')->getResult();
+            $this->assertEquals(['message' => 'Route not found for /info'], JsonHelper::decode($res, true));
+
+            $client = new Client([
+                'base_uri' => 'http://echo.swoft.org?id=xxx',
+                '_options' => $this->options
+            ]);
+
+            $res = $client->get('/?id2=yyy&id3=zzz')->getResult();
+            $res = JsonHelper::decode($res, true);
+            $this->assertEquals('id2=yyy&id3=zzz', $res['uri']['query']);
         });
     }
 }
