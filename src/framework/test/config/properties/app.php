@@ -19,7 +19,9 @@ return [
     'env' => 'Base',
     'components' => [
         'custom' => [
-            'SwoftTest'
+            'SwoftTest',
+            'SwoftTest\\Testing\\Bean' => BASE_PATH . '/Testing/Bean',
+            'SwoftTest\\Testing\\Bean2' => '@root/Testing/Bean2',
         ]
     ],
     'provider' => require __DIR__ . DS . 'provider.php',
