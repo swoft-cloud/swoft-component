@@ -3,6 +3,7 @@
 namespace SwoftTest\HttpClient;
 
 use Swoft\App;
+use Swoft\Helper\JsonHelper;
 use Swoft\HttpClient\Client;
 use Swoft\Http\Message\Testing\Base\Response;
 use Swoft\HttpClient\Exception\RuntimeException;
@@ -308,4 +309,38 @@ class CurlClientTest extends AbstractTestCase
         }
     }
 
+    /**
+     * @test
+     */
+    public function githubApi()
+    {
+        $client = new Client([
+            'base_uri' => 'https://api.github.com',
+            'headers' => [
+                'User-Agent' => 'Swoft Cloud'
+            ],
+        ]);
+
+        $str = $client->get('/')->getResponse()->getBody()->getContents();
+        $this->assertNotEmpty($str);
+    }
+
+    public function testBaseUri()
+    {
+        // 测试base_uri传入的域名带path时，会主动过滤path
+        $client = new Client([
+            'base_uri' => 'http://echo.swoft.org/test',
+        ]);
+
+        $res = $client->get('/info')->getResult();
+        $this->assertEquals(['message' => 'Route not found for /info'], JsonHelper::decode($res, true));
+
+        $client = new Client([
+            'base_uri' => 'http://echo.swoft.org?id=xxx',
+        ]);
+
+        $res = $client->get('/?id2=yyy&id3=zzz')->getResult();
+        $res = JsonHelper::decode($res, true);
+        $this->assertEquals('id2=yyy&id3=zzz', $res['uri']['query']);
+    }
 }
