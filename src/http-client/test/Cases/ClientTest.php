@@ -29,8 +29,16 @@ class ClientTest extends AbstractTestCase
             ]);
         };
 
-        $response = $request();
-        $this->assertEquals($response->getResponse()->getBody()->getContents(), $response->getResult());
+        $json = JsonHelper::decode($request()->getResponse()->getBody()->getContents(), true);
+        $json2 = JsonHelper::decode($request()->getResult(), true);
+
+        // FIXME : Travis Ci中，调用多次时，出口IP不同
+        unset($json['headers']['X-Real-Ip']);
+        unset($json2['headers']['X-Real-Ip']);
+        unset($json['headers']['X-Forwarded-For']);
+        unset($json2['headers']['X-Forwarded-For']);
+
+        $this->assertEquals($json, $json2);
     }
 
     /**
