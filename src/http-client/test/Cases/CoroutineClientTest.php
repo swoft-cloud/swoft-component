@@ -25,13 +25,12 @@ class CoroutineClientTest extends AbstractTestCase
             $client = new Client();
             $client->setAdapter('coroutine');
             $method = 'GET';
-            $options = ['timeout' => 5];
 
             // Http
             /** @var Response $response */
             $response = $client->request($method, '', [
                 'base_uri' => 'http://www.swoft.org',
-                '_options' => $options,
+                '_options' => $this->options,
                 'headers' => [
                     'Accept' => 'text/html'
                 ],
@@ -50,7 +49,7 @@ class CoroutineClientTest extends AbstractTestCase
             /** @var Response $response */
             $response = $client->request($method, '/?a=1', [
                 'base_uri' => 'http://echo.swoft.org',
-                '_options' => $options
+                '_options' => $this->options
             ])->getResponse();
             $response->assertSuccessful();
             $this->assertJson($response->getBody()->getContents());
@@ -68,7 +67,6 @@ class CoroutineClientTest extends AbstractTestCase
         go(function () {
             $client = new Client();
             $client->setAdapter('coroutine');
-            $options = ['timeout' => 5];
 
             /**
              * Post raw body
@@ -79,7 +77,7 @@ class CoroutineClientTest extends AbstractTestCase
             $response = $client->request($method, '', [
                 'base_uri' => 'http://echo.swoft.org',
                 'body' => $body,
-                '_options' => $options
+                '_options' => $this->options
             ])->getResponse();
             $response->assertSuccessful()
                 ->assertHeader('Content-Type', 'application/json')
@@ -112,7 +110,6 @@ class CoroutineClientTest extends AbstractTestCase
         go(function () {
             $client = new Client();
             $client->setAdapter('coroutine');
-            $options = ['timeout' => 5];
 
             $body = [
                 'string' => 'value',
@@ -128,7 +125,7 @@ class CoroutineClientTest extends AbstractTestCase
             /** @var Response $response */
             $response = $client->request($method, '', [
                 'base_uri' => 'http://echo.swoft.org',
-                '_options' => $options,
+                '_options' => $this->options,
                 'form_params' => $body,
             ])->getResponse();
             $response->assertSuccessful()
@@ -162,7 +159,6 @@ class CoroutineClientTest extends AbstractTestCase
         go(function () {
             $client = new Client();
             $client->setAdapter('coroutine');
-            $options = ['timeout' => 5];
 
             $body = [
                 'string' => 'value',
@@ -178,7 +174,7 @@ class CoroutineClientTest extends AbstractTestCase
             /** @var Response $response */
             $response = $client->request($method, '', [
                 'base_uri' => 'http://echo.swoft.org',
-                '_options' => $options,
+                '_options' => $this->options,
                 'json' => $body,
             ])->getResponse();
             $response->assertSuccessful()
@@ -212,7 +208,6 @@ class CoroutineClientTest extends AbstractTestCase
         go(function () {
             $client = new Client();
             $client->setAdapter('coroutine');
-            $options = ['timeout' => 5];
 
             $body = [
                 'string' => 'value',
@@ -228,7 +223,7 @@ class CoroutineClientTest extends AbstractTestCase
             /** @var Response $response */
             $response = $client->request($method, '', [
                 'base_uri' => 'http://echo.swoft.org',
-                '_options' => $options,
+                '_options' => $this->options,
                 'json' => $body,
             ])->getResponse();
             $response->assertSuccessful()
@@ -262,7 +257,6 @@ class CoroutineClientTest extends AbstractTestCase
         go(function () {
             $client = new Client();
             $client->setAdapter('coroutine');
-            $options = ['timeout' => 5];
 
             $body = [
                 'string' => 'value',
@@ -278,7 +272,7 @@ class CoroutineClientTest extends AbstractTestCase
             /** @var Response $response */
             $response = $client->request($method, '', [
                 'base_uri' => 'http://echo.swoft.org',
-                '_options' => $options,
+                '_options' => $this->options,
                 'json' => $body,
             ])->getResponse();
             $response->assertSuccessful()
@@ -314,11 +308,10 @@ class CoroutineClientTest extends AbstractTestCase
                 'base_uri' => 'http://www.swoft.org',
             ]);
             $client->setAdapter('coroutine');
-            $options = ['timeout' => 5];
 
-            $request1 = $client->request('GET', '', ['_options' => $options]);
-            $request2 = $client->request('GET', '', ['_options' => $options]);
-            $request3 = $client->request('GET', '', ['_options' => $options]);
+            $request1 = $client->request('GET', '', ['_options' => $this->options]);
+            $request2 = $client->request('GET', '', ['_options' => $this->options]);
+            $request3 = $client->request('GET', '', ['_options' => $this->options]);
 
             /** @var Response $response1 */
             $response1 = $request1->getResponse();
@@ -345,26 +338,6 @@ class CoroutineClientTest extends AbstractTestCase
             $expected = sprintf('Swoft/%s PHP/%s', App::version(), PHP_VERSION);
             $this->assertEquals($expected, $client->getDefaultUserAgent());
 
-        });
-    }
-
-    /**
-     * @test
-     */
-    public function githubApi()
-    {
-        go(function () {
-            $client = new Client([
-                'base_uri' => 'https://api.github.com',
-                'headers' => [
-                    'User-Agent' => 'Swoft Cloud'
-                ],
-            ]);
-
-            $str = $client->get('/', [
-                '_options' => $this->options
-            ])->getResponse()->getBody()->getContents();
-            $this->assertNotEmpty($str);
         });
     }
 
