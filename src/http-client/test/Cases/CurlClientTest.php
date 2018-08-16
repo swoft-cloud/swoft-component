@@ -312,20 +312,7 @@ class CurlClientTest extends AbstractTestCase
     /**
      * @test
      */
-    public function githubApi()
-    {
-        $client = new Client([
-            'base_uri' => 'https://api.github.com',
-            'headers' => [
-                'User-Agent' => 'Swoft Cloud'
-            ],
-        ]);
-
-        $str = $client->get('/')->getResponse()->getBody()->getContents();
-        $this->assertNotEmpty($str);
-    }
-
-    public function testBaseUri()
+    public function baseUri()
     {
         // 测试base_uri传入的域名带path时，会主动过滤path
         $client = new Client([
@@ -342,5 +329,32 @@ class CurlClientTest extends AbstractTestCase
         $res = $client->get('/?id2=yyy&id3=zzz')->getResult();
         $res = JsonHelper::decode($res, true);
         $this->assertEquals('id2=yyy&id3=zzz', $res['uri']['query']);
+    }
+
+    /**
+     * @test
+     */
+    public function queryNotInvalid()
+    {
+        $client = new Client([
+            'base_uri' => 'http://echo.swoft.org',
+        ]);
+
+        $res = $client->get('0')->getResult();
+        $this->assertEquals(['message' => 'Route not found for /0'], JsonHelper::decode($res, true));
+
+        $client = new Client([
+            'base_uri' => 'http://echo.swoft.org',
+        ]);
+
+        $res = $client->get(0)->getResult();
+        $res = JsonHelper::decode($res, true);
+        $this->assertEquals('/', $res['uri']['path']);
+
+        $res = $client->get(' ')->getResult();
+        $this->assertEquals(['message' => 'Route not found for / '], JsonHelper::decode($res, true));
+
+        $res = $client->get(123)->getResult();
+        $this->assertEquals(['message' => 'Route not found for /123'], JsonHelper::decode($res, true));
     }
 }

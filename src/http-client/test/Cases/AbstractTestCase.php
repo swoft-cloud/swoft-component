@@ -13,5 +13,5 @@ use PHPUnit\Framework\TestCase;
  */
 class AbstractTestCase extends TestCase
 {
-    protected $options = ['timeout' => 10];
+    protected $options = ['timeout' => 20];
 }
