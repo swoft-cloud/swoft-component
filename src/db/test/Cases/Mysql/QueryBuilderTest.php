@@ -171,6 +171,10 @@ class QueryBuilderTest extends AbstractMysqlCase
         $otherUser  = Query::table(OtherUser::class)->where('id', $userId)->one()->getResult();
         $this->assertEquals($otherUser['age'], $data['age']);
         $this->assertEquals($otherUser['id'], $userId);
+        
+        $otherUser2  = Query::table(OtherUser::class)->selectInstance('other')->where('id', $userId)->one()->getResult();
+        $this->assertEquals($otherUser['age'], $otherUser2['age']);
+        $this->assertEquals($otherUser['id'], $otherUser2['id']);
 
         $user  = OtherUser::findById($userId)->getResult();
         $this->assertEquals($user->getAge(), $data['age']);
