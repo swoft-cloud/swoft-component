@@ -9,6 +9,8 @@ use Swoft\Helper\ComponentHelper;
  */
 class ServerAnnotationResource extends AnnotationResource
 {
+    use CustomComponentsRegister;
+
     /**
      * Register the scaned namespace
      */
@@ -46,5 +48,7 @@ class ServerAnnotationResource extends AnnotationResource
                 $this->scanNamespaces[$scanNs] = $scanDir;
             }
         }
+
+        $this->registerServerNamespace();
     }
 }

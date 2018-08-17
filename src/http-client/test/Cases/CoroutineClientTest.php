@@ -3,6 +3,7 @@
 namespace SwoftTest\HttpClient;
 
 use Swoft\App;
+use Swoft\Helper\JsonHelper;
 use Swoft\Http\Message\Testing\Base\Response;
 use Swoft\HttpClient\Client;
 
@@ -15,9 +16,6 @@ use Swoft\HttpClient\Client;
  */
 class CoroutineClientTest extends AbstractTestCase
 {
-
-
-
     /**
      * @test
      */
@@ -32,22 +30,26 @@ class CoroutineClientTest extends AbstractTestCase
             /** @var Response $response */
             $response = $client->request($method, '', [
                 'base_uri' => 'http://www.swoft.org',
+                '_options' => $this->options,
                 'headers' => [
                     'Accept' => 'text/html'
                 ],
             ])->getResponse();
+
             $response->assertSuccessful()->assertSee('Swoft 官网');
 
             // Https
             /** @var Response $response */
             $response = $client->request($method, '', [
                 'base_uri' => 'https://www.swoft.org',
+                '_options' => $this->options,
             ])->getResponse();
             $response->assertSuccessful()->assertSee('Swoft 官网');
 
             /** @var Response $response */
             $response = $client->request($method, '/?a=1', [
                 'base_uri' => 'http://echo.swoft.org',
+                '_options' => $this->options
             ])->getResponse();
             $response->assertSuccessful();
             $this->assertJson($response->getBody()->getContents());
@@ -75,6 +77,7 @@ class CoroutineClientTest extends AbstractTestCase
             $response = $client->request($method, '', [
                 'base_uri' => 'http://echo.swoft.org',
                 'body' => $body,
+                '_options' => $this->options
             ])->getResponse();
             $response->assertSuccessful()
                 ->assertHeader('Content-Type', 'application/json')
@@ -107,6 +110,7 @@ class CoroutineClientTest extends AbstractTestCase
         go(function () {
             $client = new Client();
             $client->setAdapter('coroutine');
+
             $body = [
                 'string' => 'value',
                 'int' => 1,
@@ -121,6 +125,7 @@ class CoroutineClientTest extends AbstractTestCase
             /** @var Response $response */
             $response = $client->request($method, '', [
                 'base_uri' => 'http://echo.swoft.org',
+                '_options' => $this->options,
                 'form_params' => $body,
             ])->getResponse();
             $response->assertSuccessful()
@@ -154,6 +159,7 @@ class CoroutineClientTest extends AbstractTestCase
         go(function () {
             $client = new Client();
             $client->setAdapter('coroutine');
+
             $body = [
                 'string' => 'value',
                 'int' => 1,
@@ -168,6 +174,7 @@ class CoroutineClientTest extends AbstractTestCase
             /** @var Response $response */
             $response = $client->request($method, '', [
                 'base_uri' => 'http://echo.swoft.org',
+                '_options' => $this->options,
                 'json' => $body,
             ])->getResponse();
             $response->assertSuccessful()
@@ -201,6 +208,7 @@ class CoroutineClientTest extends AbstractTestCase
         go(function () {
             $client = new Client();
             $client->setAdapter('coroutine');
+
             $body = [
                 'string' => 'value',
                 'int' => 1,
@@ -215,6 +223,7 @@ class CoroutineClientTest extends AbstractTestCase
             /** @var Response $response */
             $response = $client->request($method, '', [
                 'base_uri' => 'http://echo.swoft.org',
+                '_options' => $this->options,
                 'json' => $body,
             ])->getResponse();
             $response->assertSuccessful()
@@ -248,6 +257,7 @@ class CoroutineClientTest extends AbstractTestCase
         go(function () {
             $client = new Client();
             $client->setAdapter('coroutine');
+
             $body = [
                 'string' => 'value',
                 'int' => 1,
@@ -262,6 +272,7 @@ class CoroutineClientTest extends AbstractTestCase
             /** @var Response $response */
             $response = $client->request($method, '', [
                 'base_uri' => 'http://echo.swoft.org',
+                '_options' => $this->options,
                 'json' => $body,
             ])->getResponse();
             $response->assertSuccessful()
@@ -297,9 +308,10 @@ class CoroutineClientTest extends AbstractTestCase
                 'base_uri' => 'http://www.swoft.org',
             ]);
             $client->setAdapter('coroutine');
-            $request1 = $client->request('GET', '');
-            $request2 = $client->request('GET', '');
-            $request3 = $client->request('GET', '');
+
+            $request1 = $client->request('GET', '', ['_options' => $this->options]);
+            $request2 = $client->request('GET', '', ['_options' => $this->options]);
+            $request3 = $client->request('GET', '', ['_options' => $this->options]);
 
             /** @var Response $response1 */
             $response1 = $request1->getResponse();
@@ -326,6 +338,63 @@ class CoroutineClientTest extends AbstractTestCase
             $expected = sprintf('Swoft/%s PHP/%s', App::version(), PHP_VERSION);
             $this->assertEquals($expected, $client->getDefaultUserAgent());
 
+        });
+    }
+
+    /**
+     * @test
+     */
+    public function baseUri()
+    {
+        go(function () {
+            // 测试base_uri传入的域名带path时，会主动过滤path
+            $client = new Client([
+                'base_uri' => 'http://echo.swoft.org/test',
+                '_options' => $this->options
+            ]);
+
+            $res = $client->get('/info')->getResult();
+            $this->assertEquals(['message' => 'Route not found for /info'], JsonHelper::decode($res, true));
+
+            $client = new Client([
+                'base_uri' => 'http://echo.swoft.org?id=xxx',
+                '_options' => $this->options
+            ]);
+
+            $res = $client->get('/?id2=yyy&id3=zzz')->getResult();
+            $res = JsonHelper::decode($res, true);
+            $this->assertEquals('id2=yyy&id3=zzz', $res['uri']['query']);
+        });
+    }
+
+    /**
+     * @test
+     */
+    public function queryNotInvalid()
+    {
+        go(function () {
+            $client = new Client([
+                'base_uri' => 'http://echo.swoft.org',
+                '_options' => $this->options
+            ]);
+
+            $res = $client->get('0')->getResult();
+            $this->assertEquals(['message' => 'Route not found for /0'], JsonHelper::decode($res, true));
+
+            $client = new Client([
+                'base_uri' => 'http://echo.swoft.org',
+                '_options' => $this->options
+            ]);
+
+            $res = $client->get(0)->getResult();
+            $res = JsonHelper::decode($res, true);
+            $this->assertEquals('/', $res['uri']['path']);
+
+            $res = $client->get(' ')->getResult();
+            $this->assertEquals(['message' => 'Route not found for / '], JsonHelper::decode($res, true));
+
+            $res = $client->get(123)->getResult();
+            $this->assertEquals(['message' => 'Route not found for /123'], JsonHelper::decode($res, true));
         });
     }
 }

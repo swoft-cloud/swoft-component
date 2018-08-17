@@ -127,23 +127,23 @@ abstract class AbstractServer implements ServerInterface
      */
     public function stop(): bool
     {
-        //获取master进程ID
+        // 获取master进程ID
         $masterPid = $this->serverSetting['masterPid'];
-        //使用swoole_process::kill代替posix_kill
+        // 使用swoole_process::kill代替posix_kill
         $result = \swoole_process::kill($masterPid);
         $timeout = 60;
         $startTime = time();
         while (true) {
-            //检测进程是否退出
-            if(!\swoole_process::kill($masterPid, 0)) {
-                //判断是否超时
-                if(time() - $startTime >= $timeout) {
+            // Check the process status
+            if (\swoole_process::kill($masterPid, 0)) {
+                // 判断是否超时
+                if (time() - $startTime >= $timeout) {
                     return false;
                 }
                 usleep(10000);
                 continue;
             }
-            
+
             return true;
         }
     }

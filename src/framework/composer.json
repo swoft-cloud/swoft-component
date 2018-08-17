@@ -37,13 +37,14 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "SwoftTest\\": "test/Cases"
+            "SwoftTest\\": "test/Cases",
+            "SwoftTest\\Testing\\": "test/Testing/"
         }
     },
     "repositories": {
         "packagist": {
             "type": "composer",
-            "url": "https://packagist.phpcomposer.com"
+            "url": "https://packagist.laravel-china.org"
         }
     },
     "scripts": {

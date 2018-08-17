@@ -3,6 +3,7 @@
 namespace SwoftTest\HttpClient;
 
 use Swoft\App;
+use Swoft\Helper\JsonHelper;
 use Swoft\HttpClient\Client;
 use Swoft\Http\Message\Testing\Base\Response;
 use Swoft\HttpClient\Exception\RuntimeException;
@@ -308,4 +309,52 @@ class CurlClientTest extends AbstractTestCase
         }
     }
 
+    /**
+     * @test
+     */
+    public function baseUri()
+    {
+        // 测试base_uri传入的域名带path时，会主动过滤path
+        $client = new Client([
+            'base_uri' => 'http://echo.swoft.org/test',
+        ]);
+
+        $res = $client->get('/info')->getResult();
+        $this->assertEquals(['message' => 'Route not found for /info'], JsonHelper::decode($res, true));
+
+        $client = new Client([
+            'base_uri' => 'http://echo.swoft.org?id=xxx',
+        ]);
+
+        $res = $client->get('/?id2=yyy&id3=zzz')->getResult();
+        $res = JsonHelper::decode($res, true);
+        $this->assertEquals('id2=yyy&id3=zzz', $res['uri']['query']);
+    }
+
+    /**
+     * @test
+     */
+    public function queryNotInvalid()
+    {
+        $client = new Client([
+            'base_uri' => 'http://echo.swoft.org',
+        ]);
+
+        $res = $client->get('0')->getResult();
+        $this->assertEquals(['message' => 'Route not found for /0'], JsonHelper::decode($res, true));
+
+        $client = new Client([
+            'base_uri' => 'http://echo.swoft.org',
+        ]);
+
+        $res = $client->get(0)->getResult();
+        $res = JsonHelper::decode($res, true);
+        $this->assertEquals('/', $res['uri']['path']);
+
+        $res = $client->get(' ')->getResult();
+        $this->assertEquals(['message' => 'Route not found for / '], JsonHelper::decode($res, true));
+
+        $res = $client->get(123)->getResult();
+        $this->assertEquals(['message' => 'Route not found for /123'], JsonHelper::decode($res, true));
+    }
 }

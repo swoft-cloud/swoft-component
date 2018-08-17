@@ -12,6 +12,7 @@ namespace SwoftTest\Db\Cases\Mysql;
 
 use Swoft\Db\Query;
 use Swoft\Db\QueryBuilder;
+use Swoft\Exception\ValidatorException;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Testing\Entity\User2;
@@ -34,6 +35,13 @@ class ActiveRecordTest extends AbstractMysqlCase
         $this->assertTrue($reuslt);
     }
 
+    public function testSaveByCo()
+    {
+        go(function () {
+            $this->testSave();
+        });
+    }
+
     public function testUpdateWhenNameIsNull()
     {
         $user = new User2();
@@ -51,10 +59,90 @@ class ActiveRecordTest extends AbstractMysqlCase
         $this->assertTrue($reuslt);
     }
 
-    public function testSaveByCo()
+    public function testUpdateWhenNameIsNullByCo()
     {
         go(function () {
-            $this->testSave();
+            $this->testUpdateWhenNameIsNull();
+        });
+    }
+
+    public function testValidator()
+    {
+        $user = new User2();
+        $user->setName('limx');
+        $user->setSex(1);
+        $user->setOid(144);
+        $user->setDesc('hello world');
+        $user->setAge(27);
+
+        $id     = $user->save()->getResult();
+        $reuslt = $id > 0;
+        $this->assertTrue($reuslt);
+
+        $user->setOid('18446744073709551615');
+        $row = $user->update()->getResult();
+        $this->assertEquals(1, $row);
+
+        try {
+            $user->setOid('18446744073709551616');
+            $user->update();
+            throw new \Exception('validate error');
+        } catch (\Exception $ex) {
+            $this->assertInstanceOf(ValidatorException::class, $ex);
+        }
+
+        try {
+            $user->setOid('xxx');
+            $user->update();
+            throw new \Exception('validate error');
+        } catch (\Exception $ex) {
+            $this->assertInstanceOf(ValidatorException::class, $ex);
+        }
+
+        try {
+            $user->setOid('-9223372036854775809');
+            $user->update();
+            throw new \Exception('validate error');
+        } catch (\Exception $ex) {
+            $this->assertInstanceOf(ValidatorException::class, $ex);
+        }
+
+        // tinyint Validator
+        try {
+            $user = new User2();
+            $user->setName('limx');
+            $user->setSex(256);
+            $user->setDesc('hello world');
+            $user->setAge(27);
+            $user->save()->getResult();
+            throw new \Exception('validate error');
+        } catch (\Exception $ex) {
+            $this->assertInstanceOf(ValidatorException::class, $ex);
+        }
+
+        // smallint Validator
+        try {
+            $user = new User2();
+            $user->setName('limx');
+            $user->setSex(1);
+            $user->setDesc('hello world');
+            $user->setAge(65536);
+
+            $user->save()->getResult();
+            throw new \Exception('validate error');
+        } catch (\Exception $ex) {
+            $this->assertInstanceOf(ValidatorException::class, $ex);
+        }
+
+        /** @var User2 $user */
+        $user = User2::findById($id)->getResult();
+        $this->assertEquals('18446744073709551615', $user->getOid());
+    }
+
+    public function testValidatorByCo()
+    {
+        go(function () {
+            $this->testValidator();
         });
     }
 
