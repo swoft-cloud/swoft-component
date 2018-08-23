@@ -259,8 +259,6 @@ class ConsulProvider implements ProviderInterface
 
         $url = sprintf('%s:%d%s', $this->address, $this->port, self::DEREGISTER_PATH);
         $this->removeService([], $url.$this->registerId);
-
-        return true;
     }
 
 
