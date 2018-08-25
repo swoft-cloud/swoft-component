@@ -6,13 +6,7 @@ use Swoft\Bean\Annotation\Scope;
 use Swoft\Bean\ObjectDefinition\MethodInjection;
 
 /**
- * bean对象定义类
- *
- * @uses      ObjectDefinition
- * @version   2017年08月18日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
+ * Bean object definition
  */
 class ObjectDefinition
 {
@@ -63,7 +57,7 @@ class ObjectDefinition
     private $methodInjections = [];
 
     /**
-     * 设置bean名称
+     * Get bean name
      *
      * @return string
      */
@@ -73,7 +67,7 @@ class ObjectDefinition
     }
 
     /**
-     * 初始化bean名称
+     * Set bean name
      *
      * @param string $name
      */
@@ -83,7 +77,7 @@ class ObjectDefinition
     }
 
     /**
-     * 获取bean类名
+     * Get classname of Bean
      *
      * @return string
      */
@@ -93,7 +87,7 @@ class ObjectDefinition
     }
 
     /**
-     * 初始化bean类名
+     * Set classname of Bean
      *
      * @param string $className
      */
@@ -103,7 +97,7 @@ class ObjectDefinition
     }
 
     /**
-     * 设置bean类型
+     * Get scopt of Bean
      *
      * @return int
      */
@@ -134,7 +128,7 @@ class ObjectDefinition
     }
 
     /**
-     * 获取bean类型
+     * Set scope of Bean
      *
      * @param int $scope
      */
@@ -144,7 +138,7 @@ class ObjectDefinition
     }
 
     /**
-     * 获取构造函数注入对象
+     * Get constructor injection object
      *
      * @return MethodInjection|null
      */
@@ -154,7 +148,7 @@ class ObjectDefinition
     }
 
     /**
-     * 设置构造函数注入对象
+     * Set constructor injection object
      *
      * @param MethodInjection $constructorInjection
      */
@@ -164,7 +158,7 @@ class ObjectDefinition
     }
 
     /**
-     * 获取属性注入对象
+     * Get property injection object
      *
      * @return mixed
      */
@@ -174,7 +168,7 @@ class ObjectDefinition
     }
 
     /**
-     * 设置属性注入对象
+     * Set property injection object
      *
      * @param mixed $propertyInjections
      */
@@ -184,7 +178,7 @@ class ObjectDefinition
     }
 
     /**
-     * 获取方法注入对象
+     * Get method injection object
      *
      * @return ObjectDefinition\MethodInjection[][]
      */
@@ -194,7 +188,7 @@ class ObjectDefinition
     }
 
     /**
-     * 设置方法注入对象
+     * Set method injection object
      *
      * @param ObjectDefinition\MethodInjection[][] $methodInjections
      */
