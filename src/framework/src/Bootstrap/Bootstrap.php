@@ -2,35 +2,39 @@
 
 namespace Swoft\Bootstrap;
 
+use InvalidArgumentException;
 use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Collector\BootstrapCollector;
 use Swoft\Bootstrap\Boots\Bootable;
+use function array_column;
+use function array_multisort;
+use function define;
 
 /**
- * Bootstrap
- *
  * @Bean()
  */
 class Bootstrap implements Bootable
 {
     /**
-     * Bootstrap
-     *
      * @throws \InvalidArgumentException
      */
     public function bootstrap()
     {
+        // Define Swoft version
+        define('SWOFT_VERSION', '1.1.0');
+
+        // Load bootstrap
         $bootstraps = BootstrapCollector::getCollector();
-        $temp = \array_column($bootstraps, 'order');
+        $temp = array_column($bootstraps, 'order');
 
-        \array_multisort($temp, SORT_ASC, $bootstraps);
+        array_multisort($temp, SORT_ASC, $bootstraps);
 
-        foreach ($bootstraps as $bootstrapBeanName => $name){
-            /* @var Bootable $bootstrap*/
-            $bootstrap = App::getBean($bootstrapBeanName);
+        foreach ($bootstraps as $beanName => $name) {
+            /* @var Bootable $bootstrap */
+            $bootstrap = App::getBean($beanName);
             if (! $bootstrap instanceof Bootable) {
-                throw new \InvalidArgumentException(sprintf('Bootstrap %s have to implement %s', $bootstrapBeanName, Bootable::class));
+                throw new InvalidArgumentException(sprintf('Bootstrap %s have to implement %s', $beanName, Bootable::class));
             }
             $bootstrap->bootstrap();
         }
