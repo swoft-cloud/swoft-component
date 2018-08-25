@@ -232,9 +232,7 @@ class ConsulProvider implements ProviderInterface
         ];
 
         $url = sprintf('%s:%d%s', $this->address, $this->port, self::REGISTER_PATH);
-        $this->putService($data, $url);
-
-        return true;
+        return $this->putService($data, $url);
     }
 
     /**
@@ -272,9 +270,12 @@ class ConsulProvider implements ProviderInterface
             'json' => $service,
         ];
         $httpClient = new Client();
-        $result = $httpClient->put($url, $options)->getResult();
-        if(empty($result)){
+        $response = $httpClient->put($url, $options)->getResponse();
+
+        if ($response->getStatusCode() == 200) {
             output()->writeln(sprintf('<success>RPC service register success by consul ! tcp=%s:%d</success>', $this->registerAddress, $this->registerPort));
+            return true;
         }
+        return false;
     }
 }
