@@ -2,22 +2,16 @@
 
 namespace Swoft\Bean;
 
-/**
- * Bean factory interface
- */
 interface BeanFactoryInterface
 {
+
     /**
-     * Get bean
-     *
-     * @param string $name
-     * @return mixed
+     * Get bean from bean factory.
      */
     public static function getBean(string $name);
 
     /**
-     * @param string $name
-     * @return bool
+     * Is bean exist ?
      */
     public static function hasBean(string $name): bool;
 }
