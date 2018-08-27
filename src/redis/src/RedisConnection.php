@@ -86,13 +86,13 @@ class RedisConnection extends AbstractRedisConnection
      * @return CoRedis
      * @throws RedisException
      */
-    protected function getConnectRedis(string $host, int $port, int $timeout): CoRedis
+    protected function getConnectRedis(string $host, int $port, float $timeout): CoRedis
     {
         /* @var RedisPoolConfig $poolConfig */
         $poolConfig = $this->pool->getPoolConfig();
         $serialize  = $poolConfig->getSerialize();
         $serialize  = ((int)$serialize == 0) ? false : true;
-        $redis      = new CoRedis();
+        $redis      = new CoRedis(['timeout' => $timeout]);
         $result     = $redis->connect($host, $port, $serialize);
         if ($result == false) {
             $error = sprintf('Redis connection failure host=%s port=%d', $host, $port);

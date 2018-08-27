@@ -59,7 +59,7 @@ class SyncRedisConnection extends AbstractRedisConnection
      * @return \Redis
      * @throws RedisException
      */
-    protected function getConnectRedis(string $host, int $port, int $timeout): \Redis
+    protected function getConnectRedis(string $host, int $port, float $timeout): \Redis
     {
         $redis  = new \Redis();
         $result = $redis->connect($host, $port, $timeout);

@@ -153,7 +153,7 @@ abstract class AbstractRedisConnection extends AbstractConnection
      *
      * @return Redis | \Redis
      */
-    abstract protected function getConnectRedis(string $host, int $port, int $timeout);
+    abstract protected function getConnectRedis(string $host, int $port, float $timeout);
 
     /**
      * @param string $method
