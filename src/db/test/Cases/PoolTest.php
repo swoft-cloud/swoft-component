@@ -14,6 +14,7 @@ use SwoftTest\Db\Testing\Pool\DbEnvPoolConfig;
 use SwoftTest\Db\Testing\Pool\DbPptPoolConfig;
 use SwoftTest\Db\Testing\Pool\DbSlaveEnvPoolConfig;
 use SwoftTest\Db\Testing\Pool\DbSlavePptConfig;
+use SwoftTest\Db\Testing\Pool\OtherDbPool;
 
 /**
  * PoolTest
@@ -88,5 +89,38 @@ class PoolTest extends AbstractTestCase
         $this->assertEquals($pConfig->getMaxActive(), 60);
         $this->assertEquals($pConfig->isUseProvider(), false);
         $this->assertEquals($pConfig->getMaxWait(), 10);
+    }
+
+    public function testMaxIdleTime()
+    {
+        $pool = App::getPool('idle.master');
+        $connection = $pool->getConnection();
+        $this->assertTrue($connection->check());
+        $connection->release(true);
+        $connection2 = $pool->getConnection();
+        $this->assertTrue($connection2->check());
+        $connection2->release(true);
+    }
+
+    public function testMaxIdleTimeByCo()
+    {
+        go(function () {
+            $this->testMaxIdleTime();
+
+            $pool = App::getPool('idle.master');
+            $connection = $pool->getConnection();
+            $this->assertTrue($connection->check());
+            $connection->release(true);
+
+            \co::sleep(2);
+
+            $connection2 = $pool->getConnection();
+            $this->assertFalse($connection2->check());
+            $connection2->release(true);
+
+            $connection3 = $pool->getConnection();
+            $this->assertTrue($connection3->check());
+            $connection2->release(true);
+        });
     }
 }
