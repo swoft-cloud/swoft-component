@@ -39,6 +39,11 @@ class SyncMysqlConnection extends AbstractDbConnection
     private $sql = '';
 
     /**
+     * @var int
+     */
+    private $lastCheckTime;
+
+    /**
      * Create connection
      */
     public function createConnection()
@@ -124,6 +129,15 @@ class SyncMysqlConnection extends AbstractDbConnection
      */
     public function check(): bool
     {
+        // Verify whether the idle time exceeds the maximum value.
+        if (isset($this->lastCheckTime)) {
+            $idleTime = time() - $this->lastCheckTime;
+            $maxIdleTime = $this->getPool()->getPoolConfig()->getMaxIdleTime();
+            if ($idleTime > $maxIdleTime) return false;
+        }
+
+        $this->lastCheckTime = time();
+
         try {
             $this->connection->getAttribute(\PDO::ATTR_SERVER_INFO);
         } catch (\Throwable $e) {
