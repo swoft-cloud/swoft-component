@@ -79,10 +79,6 @@ class RedisConnection extends AbstractRedisConnection
 
 
     /**
-     * @param string $host
-     * @param int    $port
-     * @param int    $timeout
-     *
      * @return CoRedis
      * @throws RedisException
      */
