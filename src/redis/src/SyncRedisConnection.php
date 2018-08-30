@@ -52,10 +52,6 @@ class SyncRedisConnection extends AbstractRedisConnection
     }
 
     /**
-     * @param string $host
-     * @param int    $port
-     * @param int    $timeout
-     *
      * @return \Redis
      * @throws RedisException
      */
@@ -63,7 +59,7 @@ class SyncRedisConnection extends AbstractRedisConnection
     {
         $redis  = new \Redis();
         $result = $redis->connect($host, $port, $timeout);
-        if ($result == false) {
+        if ($result === false) {
             $error = sprintf('Redis connection failure host=%s port=%d', $host, $port);
             throw new RedisException($error);
         }
