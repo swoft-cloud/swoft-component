@@ -1242,6 +1242,8 @@ class QueryBuilder implements QueryBuilderInterface
         if (!isset($entities[$tableName]['table']['name'])) {
             throw new DbException('Class is not an entity，className=' . $tableName);
         }
+        // 选择数据库
+        $this->selectInstance($entities[$tableName]['instance']);
 
         return $entities[$tableName]['table']['name'];
     }

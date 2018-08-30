@@ -124,6 +124,10 @@ class SyncMysqlConnection extends AbstractDbConnection
      */
     public function check(): bool
     {
+        if ($this->isIdleTimeOut()) {
+            return false;
+        }
+        
         try {
             $this->connection->getAttribute(\PDO::ATTR_SERVER_INFO);
         } catch (\Throwable $e) {

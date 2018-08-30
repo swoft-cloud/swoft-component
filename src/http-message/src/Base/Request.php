@@ -237,7 +237,7 @@ class Request implements RequestInterface
         }
 
         if ($this->hasHeader('host')) {
-            $header = $this->getHeader('host');
+            $header = $this->getHeaderLine('host');
         } else {
             $header = 'Host';
             $this->headerNames['host'] = 'Host';
