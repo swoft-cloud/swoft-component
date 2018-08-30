@@ -90,7 +90,7 @@ class RedisConnection extends AbstractRedisConnection
         $serialize  = ((int)$serialize == 0) ? false : true;
         $redis      = new CoRedis(['timeout' => $timeout]);
         $result     = $redis->connect($host, $port, $serialize);
-        if ($result == false) {
+        if ($result === false) {
             $error = sprintf('Redis connection failure host=%s port=%d', $host, $port);
             throw new RedisException($error);
         }
