@@ -100,9 +100,8 @@ abstract class AbstractDbConnection extends AbstractConnection implements DbConn
 
     /**
      * Verify whether the idle time exceeds the maximum value.
-     * @return bool
      */
-    protected function isIdleTimeOut()
+    protected function isIdleTimeOut(): bool
     {
         $idleTime = time() - $this->getLastTime();
         $maxIdleTime = $this->getPool()->getPoolConfig()->getMaxIdleTime();
