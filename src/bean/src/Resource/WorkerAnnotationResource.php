@@ -12,21 +12,22 @@ namespace Swoft\Bean\Resource;
 use Swoft\Helper\ComponentHelper;
 
 /**
- *  The annotation resource of worker
+ * {@inheritDoc}
  */
 class WorkerAnnotationResource extends AnnotationResource
 {
+
     /**
-     * Register the scaned namespace
+     * {@inheritDoc}
      */
     public function registerNamespace()
     {
-        $hostDir = \dirname(__FILE__, 5);
+        $hostDir = \dirname(__FILE__, 4);
         if (\in_array(\basename($hostDir), ['swoft', 'src'])) {
-            //install by composer
+            // Install via Composer
             $componentDirs = scandir($hostDir, null);
         } else {
-            //independent
+            // Independent
             $componentDirs = ['swoft-framework'];
         }
         foreach ($componentDirs as $component) {
@@ -40,10 +41,10 @@ class WorkerAnnotationResource extends AnnotationResource
                 continue;
             }
 
-            $ns = ComponentHelper::getComponentNamespace($component, $componentDir);
-            $this->componentNamespaces[] = $ns;
+            $namespace = ComponentHelper::getComponentNamespace($component, $componentDir);
+            $this->componentNamespaces[] = $namespace;
 
-            // ignore the comoponent of console
+            // Ignore the comoponent of console
             if ($component === $this->consoleName) {
                 continue;
             }
@@ -59,12 +60,11 @@ class WorkerAnnotationResource extends AnnotationResource
                 $scanDir = $componentCommandDir . DS . $dir;
 
                 if (! is_dir($scanDir)) {
-                    $this->scanFiles[$ns][] = $scanDir;
+                    $this->scanFiles[$namespace][] = $scanDir;
                     continue;
                 }
-                $scanNs = $ns . '\\' . $dir;
-
-                $this->scanNamespaces[$scanNs] = $scanDir;
+                $scanNamespace = $namespace . '\\' . $dir;
+                $this->scanNamespaces[$scanNamespace] = $scanDir;
             }
         }
     }

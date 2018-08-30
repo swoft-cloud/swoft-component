@@ -5,21 +5,22 @@ namespace Swoft\Bean\Resource;
 use Swoft\Helper\ComponentHelper;
 
 /**
- * The annotation resource of server
+ * {@inheritDoc}
  */
 class ServerAnnotationResource extends AnnotationResource
 {
+
     /**
-     * Register the scaned namespace
+     * {@inheritDoc}
      */
     public function registerNamespace()
     {
-        $hostDir = \dirname(__FILE__, 5);
+        $hostDir = \dirname(__FILE__, 4);
         if (\in_array(\basename($hostDir), ['swoft', 'src'])) {
-            //install by composer
+            // Install via Composer
             $componentDirs = scandir($hostDir, null);
         } else {
-            //independent
+            // Independent
             $componentDirs = ['swoft-framework'];
         }
         foreach ($componentDirs as $component) {
@@ -33,23 +34,23 @@ class ServerAnnotationResource extends AnnotationResource
                 continue;
             }
 
-            $ns = ComponentHelper::getComponentNamespace($component, $componentDir);
-            $this->componentNamespaces[] = $ns;
+            $namespace = ComponentHelper::getComponentNamespace($component, $componentDir);
+            $this->componentNamespaces[] = $namespace;
 
-            // console component
+            // Console component
             if ($component === $this->consoleName) {
-                $this->scanNamespaces[$ns] = $componentCommandDir;
+                $this->scanNamespaces[$namespace] = $componentCommandDir;
                 continue;
             }
 
             foreach ($this->serverScan as $dir) {
                 $scanDir = $componentCommandDir . DS . $dir;
-                if (!is_dir($scanDir)) {
+                if (! is_dir($scanDir)) {
                     continue;
                 }
 
-                $scanNs                        = $ns . "\\" . $dir;
-                $this->scanNamespaces[$scanNs] = $scanDir;
+                $scanNamespace = $namespace . "\\" . $dir;
+                $this->scanNamespaces[$scanNamespace] = $scanDir;
             }
         }
     }

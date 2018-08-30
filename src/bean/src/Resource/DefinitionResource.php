@@ -2,19 +2,15 @@
 
 namespace Swoft\Bean\Resource;
 
+use InvalidArgumentException;
 use Swoft\Bean\ObjectDefinition;
-use Swoft\Bean\ObjectDefinition\PropertyInjection;
-use Swoft\Bean\ObjectDefinition\MethodInjection;
 use Swoft\Bean\ObjectDefinition\ArgsInjection;
+use Swoft\Bean\ObjectDefinition\MethodInjection;
+use Swoft\Bean\ObjectDefinition\PropertyInjection;
+use function is_array;
 
 /**
  * 定义配置解析资源
- *
- * @uses      DefinitionResource
- * @version   2017年08月18日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 class DefinitionResource extends AbstractResource
 {
@@ -23,35 +19,28 @@ class DefinitionResource extends AbstractResource
      *
      * @var array
      */
-    private $definitions = [];
+    private $definitions;
 
-    /**
-     * DefinitionResource constructor.
-     *
-     * @param $definitions
-     */
-    public function __construct($definitions)
+    public function __construct(array $definitions)
     {
         $this->definitions = $definitions;
-        $this->properties = $definitions['config']['properties']??[];
+        $this->properties = $definitions['config']['properties'] ?? [];
     }
 
     /**
      * 获取已解析的配置beans
      *
      * @return array
-     * <pre>
      * [
      *     'beanName' => ObjectDefinition,
      *      ...
      * ]
-     * </pre>
      */
-    public function getDefinitions()
+    public function getDefinitions(): array
     {
         $definitions = [];
         foreach ($this->definitions as $beanName => $definition) {
-            $definitions[$beanName] = $this->resolvedefinitation($beanName, $definition);
+            $definitions[$beanName] = $this->resolveDefinitation($beanName, $definition);
         }
 
         return $definitions;
@@ -59,16 +48,11 @@ class DefinitionResource extends AbstractResource
 
     /**
      * 解析bean配置
-     *
-     * @param string $beanName   名称
-     * @param array  $definition 数组定义格式
-     *
-     * @return ObjectDefinition
      */
-    public function resolvedefinitation(string $beanName, array $definition)
+    public function resolveDefinitation(string $beanName, array $definition): ObjectDefinition
     {
-        if (!isset($definition['class'])) {
-            throw new \InvalidArgumentException('definitions of bean 初始化失败，class字段没有配置,Data=' . json_encode($definition));
+        if (! isset($definition['class'])) {
+            throw new InvalidArgumentException('definitions of bean 初始化失败，class字段没有配置,Data=' . json_encode($definition));
         }
 
         $className = $definition['class'];
@@ -94,14 +78,9 @@ class DefinitionResource extends AbstractResource
     /**
      * 解析配置属性和构造函数
      *
-     * @param array $definition
-     *
-     * @return array
-     * <pre>
-     * [$propertyInjections, $constructorInjection]
-     * <pre>
+     * @return array [$propertyInjections, $constructorInjection]
      */
-    private function resolverPropertiesAndConstructor(array $definition)
+    private function resolverPropertiesAndConstructor(array $definition): array
     {
         $propertyInjections = [];
         $constructorInjection = null;
@@ -109,13 +88,13 @@ class DefinitionResource extends AbstractResource
         // 循环解析
         foreach ($definition as $name => $property) {
             // 构造函数
-            if (\is_array($property) && $name === 0) {
+            if (is_array($property) && $name === 0) {
                 $constructorInjection = $this->resolverConstructor($property);
                 continue;
             }
 
             // 数组属性解析
-            if (\is_array($property)) {
+            if (is_array($property)) {
                 $injectProperty = $this->resolverArrayArgs($property);
                 $propertyInjection = new PropertyInjection($name, $injectProperty, false);
                 $propertyInjections[$name] = $propertyInjection;
@@ -133,17 +112,13 @@ class DefinitionResource extends AbstractResource
 
     /**
      * 解析数组值属性
-     *
-     * @param array $propertyValue
-     *
-     * @return array
      */
-    private function resolverArrayArgs(array $propertyValue)
+    private function resolverArrayArgs(array $propertyValue): array
     {
         $args = [];
         foreach ($propertyValue as $key => $subArg) {
             // 递归解析
-            if (\is_array($subArg)) {
+            if (is_array($subArg)) {
                 $args[$key] = $this->resolverArrayArgs($subArg);
                 continue;
             }
@@ -158,17 +133,13 @@ class DefinitionResource extends AbstractResource
 
     /**
      * 解析构造函数
-     *
-     * @param array $args
-     *
-     * @return MethodInjection
      */
-    private function resolverConstructor(array $args)
+    private function resolverConstructor(array $args): MethodInjection
     {
         $methodArgs = [];
         foreach ($args as $arg) {
             // 数组参数解析
-            if (\is_array($arg)) {
+            if (is_array($arg)) {
                 $injectProperty = $this->resolverArrayArgs($arg);
                 $methodArgs[] = new ArgsInjection($injectProperty, false);
                 continue;

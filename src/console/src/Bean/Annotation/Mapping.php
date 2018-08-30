@@ -3,23 +3,13 @@
 namespace Swoft\Console\Bean\Annotation;
 
 /**
- * The annotation of mapping
- *
  * @Annotation
  * @Target({"METHOD"})
  */
 class Mapping
 {
-    /**
-     * @var string
-     */
     private $name = '';
 
-    /**
-     * Mapping constructor.
-     *
-     * @param array $values
-     */
     public function __construct(array $values)
     {
         if (isset($values['value'])) {
@@ -30,9 +20,6 @@ class Mapping
         }
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;

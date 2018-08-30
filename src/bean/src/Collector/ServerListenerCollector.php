@@ -7,24 +7,10 @@ use Swoft\Bean\Annotation\ServerListener;
 use Swoft\Bean\CollectorInterface;
 use Swoft\Bootstrap\SwooleEvent;
 
-/**
- * Server listener
- */
 class ServerListenerCollector implements CollectorInterface
 {
-    /**
-     * @var array
-     */
     private static $listeners = [];
 
-    /**
-     * @param string $className
-     * @param object $objectAnnotation
-     * @param string $propertyName
-     * @param string $methodName
-     * @param null $propertyValue
-     * @return void
-     */
     public static function collect(
         string $className,
         $objectAnnotation = null,
@@ -43,9 +29,6 @@ class ServerListenerCollector implements CollectorInterface
         }
     }
 
-    /**
-     * @return array
-     */
     public static function getCollector(): array
     {
         return self::$listeners;

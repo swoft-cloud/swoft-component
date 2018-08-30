@@ -2,6 +2,7 @@
 
 namespace Swoft\Bean;
 
+use Psr\Container\ContainerInterface;
 use Swoft\Aop\Aop;
 use Swoft\Bean\Collector\BootBeanCollector;
 use Swoft\Bean\Collector\DefinitionCollector;
@@ -12,20 +13,17 @@ use Swoft\Helper\DirHelper;
 class BeanFactory implements BeanFactoryInterface
 {
     /**
-     * @var Container Bean container
+     * @var ContainerInterface Bean container
      */
     private static $container;
 
     /**
-     * Init beans
-     *
      * @throws \InvalidArgumentException
      * @throws \ReflectionException
      */
     public static function init()
     {
         $properties = self::getProperties();
-
         static::$container = new Container();
         static::$container->setProperties($properties);
         static::$container->autoloadServerAnnotation();
@@ -63,9 +61,6 @@ class BeanFactory implements BeanFactoryInterface
 
     /**
      * Get bean from container
-     *
-     * @param string $name Bean name
-     * @return mixed
      */
     public static function getBean(string $name)
     {
@@ -74,18 +69,12 @@ class BeanFactory implements BeanFactoryInterface
 
     /**
      * Determine if bean exist in container
-     *
-     * @param string $name Bean name
-     * @return bool
      */
     public static function hasBean(string $name): bool
     {
         return static::$container->hasBean($name);
     }
 
-    /**
-     * @return array
-     */
     private static function getWorkerDefinition(): array
     {
         $configDefinitions = [];
@@ -97,13 +86,12 @@ class BeanFactory implements BeanFactoryInterface
             $configDefinitions = $config->toArray();
         }
 
-        $coreBeans = static::getCoreBean(BootBeanCollector::TYPE_WORKER);
+        $coreBeans = static::getCoreBeans(BootBeanCollector::TYPE_WORKER);
 
         return ArrayHelper::merge($coreBeans, $configDefinitions);
     }
 
     /**
-     * @return array
      * @throws \InvalidArgumentException
      */
     private static function getServerDefinition(): array
@@ -115,15 +103,12 @@ class BeanFactory implements BeanFactoryInterface
             $configDefinition = require_once $file;
         }
 
-        $coreBeans = static::getCoreBean(BootBeanCollector::TYPE_SERVER);
+        $coreBeans = static::getCoreBeans(BootBeanCollector::TYPE_SERVER);
 
         return ArrayHelper::merge($coreBeans, $configDefinition);
     }
 
-    /**
-     * @return array
-     */
-    private static function getProperties()
+    private static function getProperties(): array
     {
         $properties = [];
         $config = new Config();
@@ -137,11 +122,7 @@ class BeanFactory implements BeanFactoryInterface
         return $properties;
     }
 
-    /**
-     * @param string $type
-     * @return array
-     */
-    private static function getCoreBean(string $type): array
+    private static function getCoreBeans(string $type): array
     {
         $collector = BootBeanCollector::getCollector();
         if (! isset($collector[$type])) {
@@ -161,10 +142,7 @@ class BeanFactory implements BeanFactoryInterface
         return $coreBeans;
     }
 
-    /**
-     * @return array
-     */
-    private static function getComponentDefinitions()
+    private static function getComponentDefinitions(): array
     {
         $definitions = [];
         $collector = DefinitionCollector::getCollector();
@@ -179,10 +157,7 @@ class BeanFactory implements BeanFactoryInterface
         return $definitions;
     }
 
-    /**
-     * @return Container
-     */
-    public static function getContainer(): Container
+    public static function getContainer(): ContainerInterface
     {
         return static::$container;
     }

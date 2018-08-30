@@ -8,32 +8,13 @@ namespace Swoft\Bean\Annotation;
  */
 class Bean
 {
-    /**
-     * bean名称
-     *
-     * @var string
-     */
+
     private $name = '';
 
-    /**
-     * bean类型
-     *
-     * @var int
-     */
     private $scope = Scope::SINGLETON;
 
-    /**
-     * referenced bean, default is null
-     *
-     * @var string
-     */
     private $ref = '';
 
-    /**
-     * Bean constructor.
-     *
-     * @param array $values
-     */
     public function __construct(array $values)
     {
         if (isset($values['value'])) {
@@ -50,31 +31,16 @@ class Bean
         }
     }
 
-    /**
-     * 获取bean名称
-     *
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * 获取bean类型
-     *
-     * @return int
-     */
-    public function getScope()
+    public function getScope(): int
     {
         return $this->scope;
     }
 
-    /**
-     * return name of referenced bean
-     *
-     * @return string
-     */
     public function getRef(): string
     {
         return $this->ref;

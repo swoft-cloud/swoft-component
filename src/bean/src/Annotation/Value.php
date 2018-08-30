@@ -3,8 +3,6 @@
 namespace Swoft\Bean\Annotation;
 
 /**
- * Value annotation
- *
  * 1. 注入值
  * 2. 注入property配置文件值
  * 3. 注入env环境变量
@@ -16,23 +14,14 @@ class Value
 {
     /**
      * Property name
-     *
-     * @var string
      */
     private $name = '';
 
     /**
      * Env name
-     *
-     * @var string
      */
     private $env = '';
 
-    /**
-     * Value constructor.
-     *
-     * @param array $values
-     */
     public function __construct(array $values)
     {
         if (isset($values['value'])) {
@@ -46,17 +35,11 @@ class Value
         }
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return string
-     */
     public function getEnv(): string
     {
         return $this->env;

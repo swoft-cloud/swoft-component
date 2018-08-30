@@ -8,30 +8,27 @@ use Swoft\Bean\Parser\AbstractParser;
 use Swoft\Bean\Parser\MethodWithoutAnnotationParser;
 use Swoft\Bean\Resource\AnnotationResource;
 use Swoft\Bean\Wrapper\Extend\WrapperExtendInterface;
+use function array_merge;
+use function basename;
+use function dirname;
+use function get_class;
+use function in_array;
+use function str_replace;
 
-/**
- * 抽象封装器
- */
 abstract class AbstractWrapper implements WrapperInterface
 {
     /**
      * 类注解
-     *
-     * @var array
      */
     protected $classAnnotations = [];
 
     /**
      * 属性注解
-     *
-     * @var array
      */
     protected $propertyAnnotations = [];
 
     /**
      * 方法注解
-     *
-     * @var array
      */
     protected $methodAnnotations = [];
 
@@ -48,11 +45,6 @@ abstract class AbstractWrapper implements WrapperInterface
      */
     protected $annotationResource;
 
-    /**
-     * AbstractWrapper constructor.
-     *
-     * @param AnnotationResource $annotationResource
-     */
     public function __construct(AnnotationResource $annotationResource)
     {
         $this->annotationResource = $annotationResource;
@@ -61,75 +53,58 @@ abstract class AbstractWrapper implements WrapperInterface
     /**
      * 封装注解
      *
-     * @param string $className
-     * @param array $annotations
-     * @return array|null
-     * @throws \ReflectionException
+     * @throws \ReflectionException if the class does not exist.
      */
-    public function doWrapper(string $className, array $annotations)
+    public function doWrapper(string $className, array $annotations): array
     {
         $reflectionClass = new \ReflectionClass($className);
 
-        // 解析类级别的注解
+        // Resolve class level annotation
         $beanDefinition = $this->parseClassAnnotations($className, $annotations['class']);
 
-        // 没配置注入bean注解
-        if (empty($beanDefinition) && !$reflectionClass->isInterface()) {
-            // 解析属性
+        // No cofiguration for inject
+        if (empty($beanDefinition) && ! $reflectionClass->isInterface()) {
+            // Resolve property
             $properties = $reflectionClass->getProperties();
-
-            // 解析属性
-            $propertyAnnotations = $annotations['property']??[];
+            $propertyAnnotations = $annotations['property'] ?? [];
             $this->parseProperties($propertyAnnotations, $properties, $className);
 
-            // 解析方法
+            // Resolve method
             $publicMethods = $reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC);
-            $methodAnnotations = $annotations['method'] ??[];
+            $methodAnnotations = $annotations['method'] ?? [];
 
             $this->parseMethods($methodAnnotations, $className, $publicMethods);
 
-            return null;
+            return [];
         }
 
 
-        // parser bean annotation
+        // Parser bean annotation
         list($beanName, $scope, $ref) = $beanDefinition;
 
-        // 初始化对象
+        // Init object
         $objectDefinition = new ObjectDefinition();
         $objectDefinition->setName($beanName);
         $objectDefinition->setClassName($className);
         $objectDefinition->setScope($scope);
         $objectDefinition->setRef($ref);
 
-        if (!$reflectionClass->isInterface()) {
-            // 解析属性
-            $properties = $reflectionClass->getProperties();
-
-            // 解析属性
-            $propertyAnnotations = $annotations['property']??[];
-            $propertyInjections = $this->parseProperties($propertyAnnotations, $properties, $className);
+        if (! $reflectionClass->isInterface()) {
+            // Resolve property
+            $propertyAnnotations = $annotations['property'] ?? [];
+            $propertyInjections = $this->parseProperties($propertyAnnotations, $reflectionClass->getProperties(), $className);
             $objectDefinition->setPropertyInjections($propertyInjections);
         }
 
-        // 解析方法
+        // Resolve method
         $publicMethods = $reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC);
-        $methodAnnotations = $annotations['method'] ??[];
+        $methodAnnotations = $annotations['method'] ?? [];
         $this->parseMethods($methodAnnotations, $className, $publicMethods);
 
         return [$beanName, $objectDefinition];
     }
 
-    /**
-     * 解析属性
-     *
-     * @param array  $propertyAnnotations
-     * @param array  $properties
-     * @param string $className
-     *
-     * @return array
-     */
-    private function parseProperties(array $propertyAnnotations, array $properties, string $className)
+    private function parseProperties(array $propertyAnnotations, array $properties, string $className): array
     {
         $propertyInjections = [];
 
@@ -139,7 +114,7 @@ abstract class AbstractWrapper implements WrapperInterface
                 continue;
             }
             $propertyName = $property->getName();
-            if (!isset($propertyAnnotations[$propertyName]) || !$this->isParseProperty($propertyAnnotations[$propertyName])) {
+            if (! isset($propertyAnnotations[$propertyName]) || ! $this->isParseProperty($propertyAnnotations[$propertyName])) {
                 continue;
             }
 
@@ -148,7 +123,7 @@ abstract class AbstractWrapper implements WrapperInterface
             $propertyValue = $property->getValue($object);
 
             list($injectProperty, $isRef) = $this->parsePropertyAnnotations($propertyAnnotations, $className, $propertyName, $propertyValue);
-            if ($injectProperty == null) {
+            if ($injectProperty === null) {
                 continue;
             }
 
@@ -159,150 +134,119 @@ abstract class AbstractWrapper implements WrapperInterface
         return $propertyInjections;
     }
 
-    /**
-     * 解析方法
-     *
-     * @param array  $methodAnnotations
-     * @param string $className
-     * @param array  $publicMethods
-     */
     private function parseMethods(array $methodAnnotations, string $className, array $publicMethods)
     {
         // 循环解析
         foreach ($publicMethods as $method) {
-            /* @var \ReflectionMethod $method*/
+            /* @var \ReflectionMethod $method */
             if ($method->isStatic()) {
                 continue;
             }
 
-            /* @var \ReflectionClass $declaredClass*/
+            /* @var \ReflectionClass $declaredClass */
             $declaredClass = $method->getDeclaringClass();
             $declaredName = $declaredClass->getName();
 
             // 不是当前类方法
-            if ($declaredName != $className) {
+            if ($declaredName !== $className) {
                 continue;
             }
             $this->parseMethodAnnotations($className, $method, $methodAnnotations);
         }
     }
 
-    /**
-     * 解析方法注解
-     *
-     * @param string            $className
-     * @param \ReflectionMethod $method
-     * @param array             $methodAnnotations
-     */
     private function parseMethodAnnotations(string $className, \ReflectionMethod $method, array $methodAnnotations)
     {
         // 方法没有注解解析
         $methodName = $method->getName();
-        $isWithoutMethodAnnotation = empty($methodAnnotations) || !isset($methodAnnotations[$methodName]);
-        if ($isWithoutMethodAnnotation || !$this->isParseMethod($methodAnnotations[$methodName])) {
+        $isWithoutMethodAnnotation = empty($methodAnnotations) || ! isset($methodAnnotations[$methodName]);
+        if ($isWithoutMethodAnnotation || ! $this->isParseMethod($methodAnnotations[$methodName])) {
             $this->parseMethodWithoutAnnotation($className, $methodName);
             return;
         }
 
         // 循环方法注解解析
-        foreach ($methodAnnotations[$methodName] as $methodAnnotationAry) {
-            foreach ($methodAnnotationAry as $methodAnnotation) {
-                if (!$this->inMethodAnnotations($methodAnnotation)) {
+        foreach ($methodAnnotations[$methodName] ?? [] as $methodAnnotationAry) {
+            foreach ($methodAnnotationAry ?? [] as $methodAnnotation) {
+                if (! $this->inMethodAnnotations($methodAnnotation)) {
                     continue;
                 }
 
                 // 解析器解析
                 $annotationParser = $this->getAnnotationParser($methodAnnotation);
-                if ($annotationParser == null) {
+                if ($annotationParser === null) {
                     $this->parseMethodWithoutAnnotation($className, $methodName);
                     continue;
                 }
-                $annotationParser->parser($className, $methodAnnotation, "", $methodName);
+                $annotationParser->parser($className, $methodAnnotation, '', $methodName);
             }
         }
     }
 
-    /**
-     * @return bool
-     */
     protected function inMethodAnnotations($methodAnnotation): bool
     {
         $annotationClass = get_class($methodAnnotation);
-        return in_array($annotationClass, $this->getMethodAnnotations());
+        return in_array($annotationClass, $this->getMethodAnnotations(), false);
     }
 
     /**
      * 方法没有配置路由注解解析
-     *
-     * @param string $className
-     * @param string $methodName
      */
     private function parseMethodWithoutAnnotation(string $className, string $methodName)
     {
         $parser = new MethodWithoutAnnotationParser($this->annotationResource);
-        $parser->parser($className, null, "", $methodName);
+        $parser->parser($className, null, '', $methodName);
     }
 
     /**
      * 属性解析
-     *
-     * @param  array $propertyAnnotations
-     * @param string $className
-     * @param string $propertyName
-     * @param mixed  $propertyValue
-     *
-     * @return array
      */
-    private function parsePropertyAnnotations(array $propertyAnnotations, string $className, string $propertyName, $propertyValue)
-    {
+    private function parsePropertyAnnotations(
+        array $propertyAnnotations,
+        string $className,
+        string $propertyName,
+        $propertyValue
+    ): array {
         $isRef = false;
-        $injectProperty = "";
+        $injectProperty = '';
 
-        // 没有任何注解
-        if (empty($propertyAnnotations) || !isset($propertyAnnotations[$propertyName])
-            || !$this->isParseProperty($propertyAnnotations[$propertyName])
-        ) {
+        // No annotations
+        if (empty($propertyAnnotations) || ! isset($propertyAnnotations[$propertyName]) || ! $this->isParseProperty($propertyAnnotations[$propertyName])) {
             return [null, false];
         }
 
-        // 属性注解解析
-        foreach ($propertyAnnotations[$propertyName] as $propertyAnnotation) {
-            $annotationClass = \get_class($propertyAnnotation);
-            if (! \in_array($annotationClass, $this->getPropertyAnnotations())) {
+        // Resolve property annotation
+        foreach ($propertyAnnotations[$propertyName] ?? [] as $propertyAnnotation) {
+            $annotationClass = get_class($propertyAnnotation);
+            if (! in_array($annotationClass, $this->getPropertyAnnotations(), false)) {
                 continue;
             }
 
-            // 解析器
             $annotationParser = $this->getAnnotationParser($propertyAnnotation);
             if ($annotationParser === null) {
                 $injectProperty = null;
                 $isRef = false;
                 continue;
             }
-            list($injectProperty, $isRef) = $annotationParser->parser($className, $propertyAnnotation, $propertyName, "", $propertyValue);
+            list($injectProperty, $isRef) = $annotationParser->parser($className, $propertyAnnotation, $propertyName, '', $propertyValue);
         }
 
         return [$injectProperty, $isRef];
     }
 
     /**
-     * 类注解解析
-     *
-     * @param string $className
-     * @param array  $annotations
-     *
      * @return array|null
      */
     public function parseClassAnnotations(string $className, array $annotations)
     {
-        if (!$this->isParseClass($annotations)) {
+        if (! $this->isParseClass($annotations)) {
             return null;
         }
 
         $beanData = null;
         foreach ($annotations as $annotation) {
-            $annotationClass = \get_class($annotation);
-            if (! \in_array($annotationClass, $this->getClassAnnotations(), false)) {
+            $annotationClass = get_class($annotation);
+            if (! in_array($annotationClass, $this->getClassAnnotations(), false)) {
                 continue;
             }
 
@@ -320,44 +264,27 @@ abstract class AbstractWrapper implements WrapperInterface
         return $beanData;
     }
 
-    /**
-     * @param WrapperExtendInterface $extend
-     */
     public function addExtends(WrapperExtendInterface $extend)
     {
-        $extendClass = \get_class($extend);
+        $extendClass = get_class($extend);
         $this->extends[$extendClass] = $extend;
     }
 
-    /**
-     * @return array
-     */
     private function getClassAnnotations(): array
     {
         return array_merge($this->classAnnotations, $this->getExtendAnnotations(1));
     }
 
-    /**
-     * @return array
-     */
     private function getPropertyAnnotations(): array
     {
         return array_merge($this->propertyAnnotations, $this->getExtendAnnotations(2));
     }
 
-    /**
-     * @return array
-     */
     private function getMethodAnnotations(): array
     {
         return array_merge($this->methodAnnotations, $this->getExtendAnnotations(3));
     }
 
-    /**
-     * @param int $type
-     *
-     * @return array
-     */
     private function getExtendAnnotations(int $type = 1): array
     {
         $annotations = [];
@@ -375,42 +302,21 @@ abstract class AbstractWrapper implements WrapperInterface
         return $annotations;
     }
 
-    /**
-     * @param array $annotations
-     *
-     * @return bool
-     */
     private function isParseClass(array $annotations): bool
     {
         return $this->isParseClassAnnotations($annotations) || $this->isParseExtendAnnotations($annotations, 1);
     }
 
-    /**
-     * @param array $annotations
-     *
-     * @return bool
-     */
     private function isParseProperty(array $annotations): bool
     {
         return $this->isParsePropertyAnnotations($annotations) || $this->isParseExtendAnnotations($annotations, 2);
     }
 
-    /**
-     * @param array $annotations
-     *
-     * @return bool
-     */
     private function isParseMethod(array $annotations): bool
     {
         return $this->isParseMethodAnnotations($annotations) || $this->isParseExtendAnnotations($annotations, 3);
     }
 
-    /**
-     * @param array $annotations
-     * @param int   $type
-     *
-     * @return bool
-     */
     private function isParseExtendAnnotations(array $annotations, int $type = 1): bool
     {
         foreach ($this->extends as $extend) {
@@ -430,23 +336,20 @@ abstract class AbstractWrapper implements WrapperInterface
     }
 
     /**
-     *  获取注解对应解析器
-     *
-     * @param $objectAnnotation
-     *
-     * @return AbstractParser
+     * 获取注解对应解析器
+     * @return AbstractParser|null
      */
     private function getAnnotationParser($objectAnnotation)
     {
-        $annotationClassName = \get_class($objectAnnotation);
+        $annotationClassName = get_class($objectAnnotation);
         $classNameTmp = str_replace('\\', '/', $annotationClassName);
         $className = basename($classNameTmp);
-        $namespaceDir = \dirname($classNameTmp, 2);
+        $namespaceDir = dirname($classNameTmp, 2);
         $namespace = str_replace('/', '\\', $namespaceDir);
 
         // 解析器类名
         $annotationParserClassName = "{$namespace}\\Parser\\{$className}Parser";
-        if (!class_exists($annotationParserClassName)) {
+        if (! class_exists($annotationParserClassName)) {
             return null;
         }
 

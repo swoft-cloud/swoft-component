@@ -20,26 +20,11 @@ use Swoft\Aop\Bean\Annotation\PointBean;
 use Swoft\Aop\Bean\Annotation\PointExecution;
 use Swoft\Bean\CollectorInterface;
 
-/**
- * Class AspectCollector
- *
- * @package Swoft\Aop\Bean\Collector
- */
 class AspectCollector implements CollectorInterface
 {
-    /**
-     * @var array
-     */
+
     private static $aspects = [];
 
-    /**
-     * @param string $className
-     * @param object $objectAnnotation
-     * @param string $propertyName
-     * @param string $methodName
-     * @param null $propertyValue
-     * @return mixed|void
-     */
     public static function collect(string $className, $objectAnnotation = null, string $propertyName = '', string $methodName = '', $propertyValue = null)
     {
         if ($objectAnnotation instanceof AfterReturning) {
@@ -64,9 +49,6 @@ class AspectCollector implements CollectorInterface
     }
 
     /**
-     * @param PointExecution $objectAnnotation
-     * @param string         $className
-     *
      * @return void
      */
     private static function collectPointExecution(PointExecution $objectAnnotation, string $className)
@@ -85,9 +67,6 @@ class AspectCollector implements CollectorInterface
     }
 
     /**
-     * @param PointBean $objectAnnotation
-     * @param string    $className
-     *
      * @return void
      */
     private static function collectPointBean(PointBean $objectAnnotation, string $className)
@@ -106,9 +85,6 @@ class AspectCollector implements CollectorInterface
     }
 
     /**
-     * @param PointAnnotation $objectAnnotation
-     * @param string          $className
-     *
      * @return void
      */
     private static function collectPointAnnotation(PointAnnotation $objectAnnotation, string $className)
@@ -126,10 +102,6 @@ class AspectCollector implements CollectorInterface
         ];
     }
 
-    /**
-     * @param Aspect $objectAnnotation
-     * @param string $className
-     */
     private static function collectAspect(Aspect $objectAnnotation, string $className)
     {
         $order = $objectAnnotation->getOrder();
@@ -138,9 +110,6 @@ class AspectCollector implements CollectorInterface
     }
 
     /**
-     * @param string $className
-     * @param string $methodName
-     *
      * @return void
      */
     private static function collectAfter(string $className, string $methodName)
@@ -153,9 +122,6 @@ class AspectCollector implements CollectorInterface
     }
 
     /**
-     * @param string $className
-     * @param string $methodName
-     *
      * @return void
      */
     private static function collectBefore(string $className, string $methodName)
@@ -168,9 +134,6 @@ class AspectCollector implements CollectorInterface
     }
 
     /**
-     * @param string $className
-     * @param string $methodName
-     *
      * @return void
      */
     private static function collectAround(string $className, string $methodName)
@@ -183,9 +146,6 @@ class AspectCollector implements CollectorInterface
     }
 
     /**
-     * @param string $className
-     * @param string $methodName
-     *
      * @return void
      */
     private static function collectAfterThrowing(string $className, string $methodName)
@@ -198,9 +158,6 @@ class AspectCollector implements CollectorInterface
     }
 
     /**
-     * @param string $className
-     * @param string $methodName
-     *
      * @return void
      */
     private static function collectAfterReturning(string $className, string $methodName)
@@ -211,9 +168,6 @@ class AspectCollector implements CollectorInterface
         self::$aspects[$className]['advice']['afterReturning'] = [$className, $methodName];
     }
 
-    /**
-     * @return array
-     */
     public static function getCollector(): array
     {
         return self::$aspects;

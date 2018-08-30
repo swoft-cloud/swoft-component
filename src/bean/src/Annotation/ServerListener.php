@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2018/3/19
- * Time: 上午11:43
- */
 
 namespace Swoft\Bean\Annotation;
 
@@ -16,25 +10,14 @@ namespace Swoft\Bean\Annotation;
  * - ServerListener 允许对swoole事件添加多个监听器，会逐个通知
  * - ServerListener 不影响 `/framework/src/Bootstrap/Server` 里基础swoole事件的绑定
  *
- * @package Swoft\Bean\Annotation
- *
  * @Annotation
  * @Target("CLASS")
  */
 class ServerListener
 {
-    /**
-     * the events of listener
-     *
-     * @var array
-     */
-    private $event;
 
-    /**
-     * AutoController constructor.
-     *
-     * @param array $values
-     */
+    private $event = [];
+
     public function __construct(array $values)
     {
         if (isset($values['value'])) {
@@ -46,9 +29,6 @@ class ServerListener
         }
     }
 
-    /**
-     * @return array
-     */
     public function getEvent(): array
     {
         return $this->event ?: [];

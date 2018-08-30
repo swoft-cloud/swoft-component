@@ -19,14 +19,13 @@ class Command
 
     /**
      * 为命令注解提供可解析解析变量. 可以在命令的注释中使用
+     *
      * @return array
      */
     public function annotationVars(): array
     {
         // e.g: `more info see {name}:index`
         return [
-            // 'name' => self::getName(),
-            // 'group' => self::getName(),
             'workDir' => input()->getPwd(),
             'script' => input()->getScript(), // bin/app
             'command' => input()->getCommand(), // demo OR home:test
@@ -41,7 +40,7 @@ class Command
      */
     public function run()
     {
-        if (!$cmd = \input()->getCommand()) {
+        if (! $cmd = \input()->getCommand()) {
             $this->baseCommand();
 
             return;
@@ -50,7 +49,7 @@ class Command
         /* @var HandlerMapping $router */
         $router = App::getBean('commandRoute');
 
-        if (!$handler = $router->getHandler()) {
+        if (! $handler = $router->getHandler()) {
             \output()->colored("The entered command does not exist! command = $cmd", 'error');
             $this->showCommandList(false);
 
@@ -71,14 +70,10 @@ class Command
             return;
         }
 
-
-        /* @var HandlerAdapter $adapter */
-        $adapter = App::getBean(HandlerAdapter::class);
-        $adapter->doHandler($handler);
+        App::getBean(HandlerAdapter::class)->doHandler($handler);
     }
 
     /**
-     * @param string $className
      * @throws \ReflectionException
      * @return void
      */
@@ -118,9 +113,9 @@ class Command
         // 命令显示结构
         $commandList = [
             'Description:' => [$classDesc],
-            'Usage:'       => [\input()->getCommand() . ':{command} [arguments] [options]'],
-            'Commands:'    => $methodCommands,
-            'Options:'     => [
+            'Usage:' => [\input()->getCommand() . ':{command} [arguments] [options]'],
+            'Commands:' => $methodCommands,
+            'Options:' => [
                 '-h, --help' => 'Show help of the command group or specified command action',
             ],
         ];
@@ -129,10 +124,6 @@ class Command
     }
 
     /**
-     * the help of group
-     *
-     * @param string $controllerClass
-     * @param string $commandMethod
      * @throws \ReflectionException
      */
     private function showCommandHelp(string $controllerClass, string $commandMethod)
@@ -177,9 +168,6 @@ class Command
     }
 
     /**
-     * show all commands for the console app
-     *
-     * @param bool $showLogo
      * @throws \ReflectionException
      */
     public function showCommandList(bool $showLogo = true)
@@ -191,41 +179,32 @@ class Command
         $commandList['Usage:'] = ["php $script {command} [arguments] [options]"];
         $commandList['Commands:'] = $commands;
         $commandList['Options:'] = [
-            '-h, --help'    => 'Display help information',
+            '-h, --help' => 'Display help information',
             '-v, --version' => 'Display version information',
         ];
 
-        // show logo
         if ($showLogo) {
             \output()->writeLogo();
         }
 
-        // output list
         \output()->writeList($commandList, 'comment', 'info');
     }
 
-    /**
-     * version
-     */
     private function showVersion()
     {
         // 当前版本信息
-        $swoftVersion = App::version();
+        $swoftVersion = SWOFT_VERSION;
         $phpVersion = PHP_VERSION;
         $swooleVersion = SWOOLE_VERSION;
 
         // 显示面板
         \output()->writeLogo();
-        \output()->writeln(
-            "swoft: <info>$swoftVersion</info>, php: <info>$phpVersion</info>, swoole: <info>$swooleVersion</info>\n",
-            true
-        );
+        \output()->writeln("swoft: <info>$swoftVersion</info>, php: <info>$phpVersion</info>, swoole: <info>$swooleVersion</info>\n", true);
     }
 
     /**
      * the command list
      *
-     * @return array
      * @throws \ReflectionException
      */
     private function parserCmdAndDesc(): array
@@ -237,7 +216,7 @@ class Command
         $route = App::getBean('commandRoute');
 
         foreach ($collector as $className => $command) {
-            if (!$command['enabled']) {
+            if (! $command['enabled']) {
                 continue;
             }
 
@@ -275,9 +254,6 @@ class Command
 
     /**
      * 替换注解中的变量为对应的值
-     * @param string $str
-     * @param array $vars
-     * @return string
      */
     protected function parseAnnotationVars(string $str, array $vars): string
     {
