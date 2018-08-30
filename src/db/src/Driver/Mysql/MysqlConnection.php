@@ -205,6 +205,9 @@ class MysqlConnection extends AbstractDbConnection
      */
     public function check(): bool
     {
+        if ($this->isIdleTimeOut()) {
+            return false;
+        }
         return $this->connection->connected;
     }
 
