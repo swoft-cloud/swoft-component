@@ -97,4 +97,16 @@ abstract class AbstractDbConnection extends AbstractConnection implements DbConn
 
         RequestContext::setContextDataByKey($contextSqlKey, $stack);
     }
+
+    /**
+     * Verify whether the idle time exceeds the maximum value.
+     * @return bool
+     */
+    protected function isIdleTimeOut()
+    {
+        $idleTime = time() - $this->getLastTime();
+        $maxIdleTime = $this->getPool()->getPoolConfig()->getMaxIdleTime();
+        if ($idleTime > $maxIdleTime) return true;
+        return false;
+    }
 }

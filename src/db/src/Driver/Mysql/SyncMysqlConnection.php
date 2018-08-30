@@ -124,12 +124,10 @@ class SyncMysqlConnection extends AbstractDbConnection
      */
     public function check(): bool
     {
-        // Verify whether the idle time exceeds the maximum value.
-        $currentTime = time();
-        $idleTime = $currentTime - $this->getLastTime();
-        $maxIdleTime = $this->getPool()->getPoolConfig()->getMaxIdleTime();
-        if ($idleTime > $maxIdleTime) return false;
-
+        if ($this->isIdleTimeOut()) {
+            return false;
+        }
+        
         try {
             $this->connection->getAttribute(\PDO::ATTR_SERVER_INFO);
         } catch (\Throwable $e) {

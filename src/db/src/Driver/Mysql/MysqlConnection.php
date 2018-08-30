@@ -205,12 +205,9 @@ class MysqlConnection extends AbstractDbConnection
      */
     public function check(): bool
     {
-        // Verify whether the idle time exceeds the maximum value.
-        $currentTime = time();
-        $idleTime = $currentTime - $this->getLastTime();
-        $maxIdleTime = $this->getPool()->getPoolConfig()->getMaxIdleTime();
-        if ($idleTime > $maxIdleTime) return false;
-
+        if ($this->isIdleTimeOut()) {
+            return false;
+        }
         return $this->connection->connected;
     }
 
