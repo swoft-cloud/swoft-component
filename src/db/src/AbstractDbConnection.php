@@ -106,7 +106,9 @@ abstract class AbstractDbConnection extends AbstractConnection implements DbConn
     {
         $idleTime = time() - $this->getLastTime();
         $maxIdleTime = $this->getPool()->getPoolConfig()->getMaxIdleTime();
-        if ($idleTime > $maxIdleTime) return true;
+        if ($idleTime > $maxIdleTime) {
+            return true;
+        }
         return false;
     }
 }
