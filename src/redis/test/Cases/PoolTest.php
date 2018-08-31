@@ -56,7 +56,7 @@ class PoolTest extends AbstractTestCase
             $redis->exists('not_connected');
         } catch (\Exception $ex) {
             $this->assertInstanceOf(\RedisException::class, $ex);
-            $this->assertEquals('Operation timed out', $ex->getMessage());
+            $this->assertTrue(strpos($ex->getMessage(), 'timed out') > 0);
         }
 
 
