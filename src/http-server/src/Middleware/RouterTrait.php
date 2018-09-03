@@ -11,7 +11,9 @@ namespace Swoft\Http\Server\Middleware;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Swoft\App;
+use Swoft\Helper\StringHelper;
 use Swoft\Http\Server\AttributeEnum;
+use Swoft\Http\Server\Router\RouterInterface;
 
 /**
  * Trait RouterTrait
@@ -31,6 +33,13 @@ trait RouterTrait
         /* @var \Swoft\Http\Server\Router\HandlerMapping $httpRouter */
         $httpRouter = App::getBean('httpRouter');
         $httpHandler = $httpRouter->getHandler($path, $method);
+
+        // When the route is not found, remove the end "/" check again.
+        if ($httpHandler[0] === RouterInterface::NOT_FOUND && StringHelper::endsWith($path, '/')) {
+            $path = rtrim($path, '/');
+            $httpHandler = $httpRouter->getHandler($path, $method);
+        }
+
         $request = $request->withAttribute(AttributeEnum::ROUTER_ATTRIBUTE, $httpHandler);
 
         return $request;
