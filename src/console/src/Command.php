@@ -8,6 +8,7 @@ use Swoft\Console\Bean\Collector\CommandCollector;
 use Swoft\Console\Helper\DocBlockHelper;
 use Swoft\Console\Router\HandlerAdapter;
 use Swoft\Console\Router\HandlerMapping;
+use Swoft\Helper\StringHelper;
 
 /**
  * @Bean("command")
@@ -247,7 +248,7 @@ class Command
 
             $prefix = $command['name'];
             $prefix = $route->getPrefix($prefix, $className);
-            $commands[$prefix] = \ucfirst($docAry['Description']);
+            $commands[$prefix] = StringHelper::ucfirst($docAry['Description']);
         }
 
         // sort commands
