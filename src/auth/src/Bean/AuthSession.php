@@ -23,32 +23,32 @@ class AuthSession
     /**
      * @var string User personal information credentials
      */
-    protected $identity='';
+    protected $identity = '';
 
     /**
      * @var string Login method name
      */
-    protected $accountTypeName='';
+    protected $accountTypeName = '';
 
     /**
      * @var string Authentication credentials
      */
-    protected $token='';
+    protected $token = '';
 
     /**
      * @var int Creation time
      */
-    protected $createTime=0;
+    protected $createTime = 0;
 
     /**
      * @var int
      */
-    protected $expirationTime=0;
+    protected $expirationTime = 0;
 
     /**
      * @var array Expand data, define it yourself
      */
-    protected $extendedData=[];
+    protected $extendedData = [];
 
     /**
      * @return string
@@ -143,16 +143,16 @@ class AuthSession
     /**
      * @return array
      */
-    public function getExtendedData()
+    public function getExtendedData(): array
     {
-        return $this->extendedData;
+        return (array)$this->extendedData;
     }
 
     /**
      * @param  $extendedData
      * @return AuthSession
      */
-    public function setExtendedData($extendedData)
+    public function setExtendedData(array $extendedData)
     {
         $this->extendedData = $extendedData;
         return $this;
