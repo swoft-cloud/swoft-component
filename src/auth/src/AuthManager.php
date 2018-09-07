@@ -107,7 +107,7 @@ class AuthManager implements AuthManagerInterface
      * @param array $data
      * @return AuthSession
      */
-    public function login(string $accountTypeName, array $data):AuthSession
+    public function login(string $accountTypeName, array $data): AuthSession
     {
         if (!$account = $this->getAccountType($accountTypeName)) {
             throw new AuthException(ErrorCode::AUTH_INVALID_ACCOUNT_TYPE);
@@ -121,7 +121,7 @@ class AuthManager implements AuthManagerInterface
         if ($this->cacheEnable === true) {
             try {
                 $this->getCacheClient()->set(
-                    $this->getCacheKey($result->getIdentity()),
+                    $this->getCacheKey($result->getIdentity(), $result->getExtendedData()),
                     $session->getToken(),
                     $session->getExpirationTime()
                 );
@@ -133,9 +133,12 @@ class AuthManager implements AuthManagerInterface
         return $session;
     }
 
-    protected function getCacheKey($identity)
+    protected function getCacheKey(string $identity, array $extendedData)
     {
-        return $this->prefix . $identity;
+        if (empty($extendedData)) {
+            return $this->prefix . $identity;
+        }
+        return $this->prefix . $identity . (string)$extendedData[0];
     }
 
     /**
@@ -218,7 +221,7 @@ class AuthManager implements AuthManagerInterface
      * @return bool
      * @throws AuthException
      */
-    public function authenticateToken(string $token):bool
+    public function authenticateToken(string $token): bool
     {
         try {
             /** @var AuthSession $session */
@@ -245,7 +248,7 @@ class AuthManager implements AuthManagerInterface
 
         if ($this->cacheEnable === true) {
             try {
-                $cache = $this->getCacheClient()->get($this->getCacheKey($session->getIdentity()));
+                $cache = $this->getCacheClient()->get($this->getCacheKey($session->getIdentity(), $session->getExtendedData()));
                 if (!$cache || $cache !== $token) {
                     throw new AuthException(ErrorCode::AUTH_TOKEN_INVALID);
                 }
