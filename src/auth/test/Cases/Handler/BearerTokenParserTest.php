@@ -12,10 +12,12 @@ namespace SwoftTest\Auth\Parser;
 
 use Swoft\App;
 use Swoft\Auth\AuthUserService;
+use Swoft\Auth\Mapping\AuthManagerInterface;
 use Swoft\Auth\Mapping\AuthServiceInterface;
 use Swoft\Http\Message\Server\Request;
 use Swoft\Http\Server\Router\HandlerMapping;
 use SwoftTest\Auth\AbstractTestCase;
+use SwoftTest\Auth\Manager\TestManager;
 
 class BearerTokenParserTest extends AbstractTestCase
 {
@@ -23,11 +25,11 @@ class BearerTokenParserTest extends AbstractTestCase
     {
         /** @var HandlerMapping $router */
         $router = App::getBean('httpRouter');
-        $router->get('/test', function (Request $request) {
+        $router->get('/bearer', function (Request $request) {
             /** @var AuthUserService $service */
-            $service  = App::getBean(AuthServiceInterface::class);
+            $service = App::getBean(AuthServiceInterface::class);
             $session = $service->getSession();
-            return ['id'=>$session->getIdentity()];
+            return ['id' => $session->getIdentity()];
         });
     }
 
@@ -39,10 +41,12 @@ class BearerTokenParserTest extends AbstractTestCase
      */
     public function testHandle()
     {
-        $jwt = new JWTTokenParserTest();
-        $token = $jwt->testGetToken();
-        $response = $this->request('GET', '/test', [], self::ACCEPT_JSON, ['Authorization' => 'Bearer ' . $token], 'test');
-        $res  = $response->getBody()->getContents();
+        /** @var TestManager $manager */
+        $manager = App::getBean(AuthManagerInterface::class);
+        $session = $manager->testLogin("user", "123456");
+        $token = $session->getToken();
+        $response = $this->request('GET', '/bearer', [], self::ACCEPT_JSON, ['Authorization' => 'Bearer ' . $token], "");
+        $res = $response->getBody()->getContents();
         $this->assertEquals(json_decode($res, true), ['id' => 1]);
     }
 }

@@ -28,9 +28,15 @@ class TestAccount implements AccountTypeInterface
      */
     public function login(array $data): AuthResult
     {
+        $name = $data[0] ?? "";
+        $pw = $data[1] ?? "";
         $result = new AuthResult();
-        $result->setIdentity(1);
-        $result->setExtendedData([]);
+        if ($name != "" && $pw != "") {
+            $result->setIdentity(1);
+            $result->setExtendedData(["role"=>"test"]);
+        } else {
+            $result->setIdentity(1);
+        }
         return $result;
     }
 

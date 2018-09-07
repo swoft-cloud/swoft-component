@@ -121,7 +121,7 @@ class AuthManager implements AuthManagerInterface
         if ($this->cacheEnable === true) {
             try {
                 $this->getCacheClient()->set(
-                    $this->getCacheKey($result->getIdentity(), $result->getExtendedData()),
+                    $this->getCacheKey($session->getIdentity(), $session->getExtendedData()),
                     $session->getToken(),
                     $session->getExpirationTime()
                 );
@@ -138,7 +138,9 @@ class AuthManager implements AuthManagerInterface
         if (empty($extendedData)) {
             return $this->prefix . $identity;
         }
-        return $this->prefix . $identity . (string)$extendedData[0];
+        $str = json_encode($extendedData);
+
+        return $this->prefix . $identity . "." . md5($str);
     }
 
     /**
@@ -253,7 +255,7 @@ class AuthManager implements AuthManagerInterface
                     throw new AuthException(ErrorCode::AUTH_TOKEN_INVALID);
                 }
             } catch (InvalidArgumentException $e) {
-                $err = sprintf('%s 参数无效,message : %s', $session->getIdentity(), $e->getMessage());
+                $err = sprintf('Identity : %s ,err : %s', $session->getIdentity(), $e->getMessage());
                 throw new AuthException(ErrorCode::POST_DATA_NOT_PROVIDED, $err);
             }
         }
