@@ -38,7 +38,6 @@ class AuthManagerTest extends AbstractTestCase
     }
 
     /**
-     * @test
      * @covers AuthManager::login()
      */
     public function testLogin()

@@ -19,7 +19,6 @@ use SwoftTest\Auth\Account\TestAccount;
 class JWTTokenParserTest extends AbstractTestCase
 {
     /**
-     * @test
      * @covers JWTTokenParser::getToken()
      * @return string
      */
@@ -36,7 +35,6 @@ class JWTTokenParserTest extends AbstractTestCase
     }
 
     /**
-     * @test
      * @covers JWTTokenParser::getSession()
      */
     public function testGetSession()

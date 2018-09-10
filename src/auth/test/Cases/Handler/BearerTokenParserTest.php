@@ -34,7 +34,6 @@ class BearerTokenParserTest extends AbstractTestCase
     }
 
     /**
-     * @test
      * @covers AuthManager::authenticateToken()
      * @covers BearerTokenHandler::handle()
      * @covers AuthUserService::getSession()
