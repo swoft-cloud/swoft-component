@@ -140,7 +140,7 @@ class AuthManager implements AuthManagerInterface
         }
         $str = json_encode($extendedData);
 
-        return $this->prefix . $identity . "." . md5($str);
+        return $this->prefix . $identity . '.' . md5($str);
     }
 
     /**

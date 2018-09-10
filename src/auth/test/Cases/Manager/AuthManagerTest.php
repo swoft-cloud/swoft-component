@@ -20,7 +20,6 @@ use Swoft\Http\Server\Router\HandlerMapping;
 
 class AuthManagerTest extends AbstractTestCase
 {
-
     protected function registerRoute()
     {
         /** @var HandlerMapping $router */
@@ -34,7 +33,7 @@ class AuthManagerTest extends AbstractTestCase
             return ['token' => $session->getToken()];
         });
         $router->get('/test', function (Request $request) {
-            return "pass";
+            return 'pass';
         });
     }
 
@@ -49,11 +48,10 @@ class AuthManagerTest extends AbstractTestCase
         $parser = base64_encode($username . ':' . $password);
         $response = $this->request('POST', '/login', [], self::ACCEPT_JSON, ['Authorization' => 'Basic ' . $parser], 'test');
         $res = $response->getBody()->getContents();
-        $token = json_decode($res, true)["token"];
+        $token = json_decode($res, true)['token'];
         $response = $this->request('GET', '/test', [], self::ACCEPT_JSON, ['Authorization' => 'Bearer ' . $token], 'test');
         $res = $response->getBody()->getContents();
-        $result = json_decode($res, true)["data"] ?? "";
-        $this->assertNotEquals("", $result);
+        $result = json_decode($res, true)['data'] ?? '';
+        $this->assertNotEquals('', $result);
     }
-
 }

@@ -43,9 +43,9 @@ class BearerTokenParserTest extends AbstractTestCase
     {
         /** @var TestManager $manager */
         $manager = App::getBean(AuthManagerInterface::class);
-        $session = $manager->testLogin("user", "123456");
+        $session = $manager->testLogin('user', '123456');
         $token = $session->getToken();
-        $response = $this->request('GET', '/bearer', [], self::ACCEPT_JSON, ['Authorization' => 'Bearer ' . $token], "");
+        $response = $this->request('GET', '/bearer', [], self::ACCEPT_JSON, ['Authorization' => 'Bearer ' . $token], '');
         $res = $response->getBody()->getContents();
         $this->assertEquals(json_decode($res, true), ['id' => 1]);
     }
