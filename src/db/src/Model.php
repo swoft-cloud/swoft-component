@@ -264,7 +264,15 @@ class Model implements \ArrayAccess, \Iterator, Arrayable,\JsonSerializable
      * @param array $attributes
      *
      * $attributes = [
-     *     'name' => $value
+     *     'userName' => $value
+     * ]
+     * or
+     * $attributes = [
+     *     'UserName' => $value
+     * ]
+     * or
+     * $attributes = [
+     *     'user_name' => $value
      * ]
      *
      * @return \Swoft\Db\Model
@@ -272,6 +280,9 @@ class Model implements \ArrayAccess, \Iterator, Arrayable,\JsonSerializable
     public function fill(array $attributes): self
     {
         foreach ($attributes as $name => $value) {
+            if (1 === preg_match('/_/', $name)) {
+                $name = StringHelper::camel($name);
+            }
             $methodName = sprintf('set%s', ucfirst($name));
             if (method_exists($this, $methodName)) {
                 $this->$methodName($value);
