@@ -43,8 +43,12 @@ class Executor
             // When Primary Id is auto increment
             $getter = 'get' . StringHelper::camel($idColumn, false);
             $setter = 'set' . StringHelper::camel($idColumn, false);
-            if (method_exists($entity, $getter) && method_exists($entity, $setter) && $entity->$getter() === null) {
-                $entity->$setter($primaryId);
+            if (method_exists($entity, $getter) && method_exists($entity, $setter)) {
+                if ($entity->$getter() === null) {
+                    $entity->$setter($primaryId);
+                } else {
+                    $primaryId = $entity->$getter();
+                }
             }
             return $primaryId;
         });
