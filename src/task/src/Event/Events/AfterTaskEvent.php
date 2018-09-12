@@ -5,9 +5,9 @@ namespace Swoft\Task\Event\Events;
 use Swoft\Event\Event;
 
 /**
- * 任务前置事件源
+ * 任务后置事件源
  */
-class BeforeTaskEvent extends Event
+class AfterTaskEvent extends Event
 {
     /**
      * 日志ID
