@@ -64,7 +64,7 @@ before_install:
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
                 CREATE TABLE `no_inc` (
                   `id` bigint(20) unsigned NOT NULL,
-                  `name` varchar(32) NOT NULL DEFAULT '',
+                  `name` varchar(32) NOT NULL DEFAULT "",
                   PRIMARY KEY (`id`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;'
     - mysql -e 'CREATE DATABASE IF NOT EXISTS test2;
