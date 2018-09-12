@@ -40,8 +40,12 @@ class Executor
         // Set Primary Id to Entity
         $query->addDecorator(function ($primaryId) use ($entity, $className) {
             list(, , $idColumn) = self::getTable($className);
+            // When Primary Id is auto increment
+            $getter = 'get' . StringHelper::camel($idColumn, false);
             $setter = 'set' . StringHelper::camel($idColumn, false);
-            method_exists($entity, $setter) && $entity->$setter($primaryId);
+            if (method_exists($entity, $getter) && method_exists($entity, $setter) && $entity->$getter() === null) {
+                $entity->$setter($primaryId);
+            }
             return $primaryId;
         });
         return $query->insert($fields);
