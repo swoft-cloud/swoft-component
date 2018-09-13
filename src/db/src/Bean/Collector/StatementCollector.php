@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Db\Bean\Collector;
 
 use Swoft\Bean\CollectorInterface;
@@ -23,12 +24,11 @@ class StatementCollector implements CollectorInterface
     private static $statements = [];
 
     /**
-     * @param string    $className
+     * @param string $className
      * @param Statement $objectAnnotation
-     * @param string    $propertyName
-     * @param string    $methodName
-     * @param null      $propertyValue
-     *
+     * @param string $propertyName
+     * @param string $methodName
+     * @param null $propertyValue
      * @return void
      */
     public static function collect(
@@ -39,15 +39,12 @@ class StatementCollector implements CollectorInterface
         $propertyValue = null
     ) {
         if ($objectAnnotation instanceof Statement) {
-            $driver                    = $objectAnnotation->getDriver();
+            $driver = $objectAnnotation->getDriver();
             self::$statements[$driver] = $className;
         }
     }
 
-    /**
-     * @return array
-     */
-    public static function getCollector()
+    public static function getCollector(): array
     {
         return self::$statements;
     }

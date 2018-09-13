@@ -5,7 +5,6 @@ namespace Swoft\Console\Bean\Collector;
 use Swoft\Bean\CollectorInterface;
 use Swoft\Console\Bean\Annotation\Command;
 use Swoft\Console\Bean\Annotation\Mapping;
-use Swoft\Http\Server\Command\ServerCommand;
 
 class CommandCollector implements CollectorInterface
 {

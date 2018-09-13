@@ -2,18 +2,10 @@
 
 namespace SwoftTest\HttpClient;
 
-use Swoft\App;
-use Swoft\HttpClient\Client;
 use Swoft\Http\Message\Testing\Base\Response;
+use Swoft\HttpClient\Client;
 use Swoft\HttpClient\Exception\RuntimeException;
 
-/**
- * @uses      CoroutineClientTest
- * @version   2017-11-22
- * @author    huangzhhui <huangzhwork@gmail.com>
- * @copyright Copyright 2010-2017 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
- */
 class CurlClientTest extends AbstractTestCase
 {
 
@@ -282,7 +274,7 @@ class CurlClientTest extends AbstractTestCase
     {
         $client = new Client();
         $client->setAdapter('curl');
-        $expected = sprintf('Swoft/%s curl/%s PHP/%s', App::version(), \curl_version()['version'], PHP_VERSION);
+        $expected = sprintf('Swoft/%s curl/%s PHP/%s', SWOFT_VERSION, \curl_version()['version'], PHP_VERSION);
         $this->assertEquals($expected, $client->getDefaultUserAgent());
     }
 

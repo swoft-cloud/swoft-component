@@ -238,7 +238,7 @@ class CoroutineAdapter implements AdapterInterface
      */
     public function getDefaultUserAgent(): string
     {
-        $defaultAgent = 'Swoft/' . App::version();
+        $defaultAgent = 'Swoft/' . SWOFT_VERSION;
         $defaultAgent .= ' PHP/' . PHP_VERSION;
         return $defaultAgent;
     }
