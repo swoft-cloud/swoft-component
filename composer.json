@@ -36,7 +36,6 @@
         "swoft/bean": "self.version",
         "swoft/cache": "self.version",
         "swoft/console": "self.version",
-        "swoft/bean": "self.version",
         "swoft/data-parser": "self.version",
         "swoft/db": "self.version",
         "swoft/defer": "self.version",
