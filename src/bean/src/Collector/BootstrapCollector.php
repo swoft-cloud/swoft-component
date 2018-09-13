@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Bean\Collector;
 
 use Swoft\Bean\Annotation\Bootstrap;
@@ -7,7 +14,6 @@ use Swoft\Bean\CollectorInterface;
 
 class BootstrapCollector implements CollectorInterface
 {
-
     private static $bootstraps = [];
 
     public static function collect(
@@ -18,7 +24,6 @@ class BootstrapCollector implements CollectorInterface
         $propertyValue = null
     ) {
         if ($objectAnnotation instanceof Bootstrap) {
-
             $name = $objectAnnotation->getName();
             $order = $objectAnnotation->getOrder();
 
@@ -31,5 +36,4 @@ class BootstrapCollector implements CollectorInterface
     {
         return self::$bootstraps;
     }
-
 }

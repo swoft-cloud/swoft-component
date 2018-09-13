@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Bean;
 
 use Psr\Container\ContainerInterface;
@@ -30,7 +37,6 @@ use function sprintf;
  */
 class Container implements ContainerInterface
 {
-
     /**
      * Map of entries with Singleton scope that are already resolved.
      *

@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Bean\Parser;
 
 use Swoft\Bean\Annotation\Bean;
@@ -25,7 +32,7 @@ class BeanParser extends AbstractParser
      * @param null $propertyValue
      * @return array
      */
-    public function parser(string $className, $objectAnnotation = null, string $propertyName = "", string $methodName = "", $propertyValue = null)
+    public function parser(string $className, $objectAnnotation = null, string $propertyName = '', string $methodName = '', $propertyValue = null)
     {
         $name     = $objectAnnotation->getName();
         $scope    = $objectAnnotation->getScope();

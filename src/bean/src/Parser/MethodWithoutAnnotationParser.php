@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Bean\Parser;
 
 use Swoft\Helper\ComponentHelper;
@@ -26,7 +33,7 @@ class MethodWithoutAnnotationParser extends AbstractParser
      *
      * @return mixed
      */
-    public function parser(string $className, $objectAnnotation = null, string $propertyName = "", string $methodName = "", $propertyValue = null)
+    public function parser(string $className, $objectAnnotation = null, string $propertyName = '', string $methodName = '', $propertyValue = null)
     {
         $swoftDir      = dirname(__FILE__, 5);
         $componentDirs = scandir($swoftDir);
@@ -43,14 +50,14 @@ class MethodWithoutAnnotationParser extends AbstractParser
             $componentNs = ComponentHelper::getComponentNs($component);
             $collectNs = "Swoft{$componentNs}\\Bean\\Collector";
             $collectorFiles = scandir($componentCommandDir);
-            foreach ($collectorFiles as $collectorFile){
+            foreach ($collectorFiles as $collectorFile) {
                 $pathInfo = pathinfo($collectorFile);
-                if(!isset($pathInfo['filename'])){
+                if (!isset($pathInfo['filename'])) {
                     continue;
                 }
                 $fileName = $pathInfo['filename'];
                 $collectClassName = $collectNs.'\\'.$fileName;
-                if(!class_exists($collectClassName)){
+                if (!class_exists($collectClassName)) {
                     continue;
                 }
 

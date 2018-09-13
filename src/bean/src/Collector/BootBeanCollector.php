@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Bean\Collector;
 
 use Swoft\Bean\Annotation\BootBean;
@@ -7,8 +14,8 @@ use Swoft\Bean\CollectorInterface;
 
 class BootBeanCollector implements CollectorInterface
 {
-
     const TYPE_SERVER = 'server';
+
     const TYPE_WORKER = 'worker';
 
     private static $collector = [];

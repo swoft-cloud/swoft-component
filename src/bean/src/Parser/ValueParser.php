@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Bean\Parser;
 
 use Swoft\Bean\Annotation\Value;
@@ -26,7 +33,7 @@ class ValueParser extends AbstractParser
      * @param null $propertyValue
      * @return array
      */
-    public function parser(string $className, $objectAnnotation = null, string $propertyName = "", string $methodName = "", $propertyValue = null)
+    public function parser(string $className, $objectAnnotation = null, string $propertyName = '', string $methodName = '', $propertyValue = null)
     {
         $injectValue = $objectAnnotation->getName();
         $envValue    = $objectAnnotation->getEnv();
@@ -72,7 +79,7 @@ class ValueParser extends AbstractParser
         if (empty($value)) {
             $value = [];
         } else {
-            $value = explode(",", $value);
+            $value = explode(',', $value);
         }
 
         return $value;

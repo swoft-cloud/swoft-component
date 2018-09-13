@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Bean\Parser;
 
 use Swoft\Bean\Annotation\Enum;
@@ -16,7 +23,6 @@ use Swoft\Bean\Collector\ValidatorCollector;
  */
 class EnumParser extends AbstractParser
 {
-
     /**
      * Enum注解解析
      *
@@ -28,7 +34,7 @@ class EnumParser extends AbstractParser
      *
      * @return mixed
      */
-    public function parser(string $className, $objectAnnotation = null, string $propertyName = "", string $methodName = "", $propertyValue = null)
+    public function parser(string $className, $objectAnnotation = null, string $propertyName = '', string $methodName = '', $propertyValue = null)
     {
         ValidatorCollector::collect($className, $objectAnnotation, $propertyName, $methodName, $propertyValue);
         return null;
