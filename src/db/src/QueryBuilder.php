@@ -571,6 +571,10 @@ class QueryBuilder implements QueryBuilderInterface
                 list($column, , $min, $max) = $condition;
                 $this->whereNotBetween($column, $min, $max);
                 break;
+            default:
+                list($column, $operator, $value) = $condition;
+                $this->andWhere($column, $value, $operator);
+                break;
         }
     }
 
