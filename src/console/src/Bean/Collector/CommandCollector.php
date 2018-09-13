@@ -19,7 +19,6 @@ class CommandCollector implements CollectorInterface
         $propertyValue = null
     ) {
         if ($objectAnnotation instanceof Command) {
-            var_dump(get_class($objectAnnotation));
             self::collectCommand($className, $objectAnnotation);
         } elseif ($objectAnnotation instanceof Mapping) {
             self::collectMapping($className, $objectAnnotation, $methodName);
@@ -30,7 +29,6 @@ class CommandCollector implements CollectorInterface
 
     private static function collectCommand(string $className, Command $objectAnnotation)
     {
-        var_dump(0 . $className);
         $commandName = $objectAnnotation->getName();
         $coroutine = $objectAnnotation->isCoroutine();
         $server = $objectAnnotation->isServer();
@@ -44,7 +42,6 @@ class CommandCollector implements CollectorInterface
     private static function collectMapping(string $className, Mapping $objectAnnotation, string $methodName)
     {
         $mapped = $objectAnnotation->getName();
-        var_dump(1 . $className . $methodName);
 
         self::$commandMapping[$className]['routes'][] = [
             'mappedName' => $mapped,
@@ -54,7 +51,6 @@ class CommandCollector implements CollectorInterface
 
     private static function collectWithoutAnnotation(string $className, string $methodName)
     {
-        var_dump(2 . $className . $methodName);
         self::$commandMapping[$className]['routes'][] = [
             'mappedName' => '',
             'methodName' => $methodName,
