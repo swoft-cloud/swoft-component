@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -10,8 +11,8 @@
 namespace Swoft\Bean\Parser;
 
 use Swoft\Bean\Annotation\Scope;
-use Swoft\Bean\Collector\SwooleListenerCollector;
 use Swoft\Bean\Annotation\SwooleListener;
+use Swoft\Bean\Collector\SwooleListenerCollector;
 
 /**
  * the parser of swoole listener

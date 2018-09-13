@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -40,16 +41,16 @@ abstract class AbstractWrapper implements WrapperInterface
     protected $methodAnnotations = [];
 
     /**
-     * @var WrapperExtendInterface[]
-     */
-    private $extends = [];
-
-    /**
      * 注解资源
      *
      * @var AnnotationResource
      */
     protected $annotationResource;
+
+    /**
+     * @var WrapperExtendInterface[]
+     */
+    protected $extends = [];
 
     public function __construct(AnnotationResource $annotationResource)
     {
@@ -108,6 +109,48 @@ abstract class AbstractWrapper implements WrapperInterface
         $this->parseMethods($methodAnnotations, $className, $publicMethods);
 
         return [$beanName, $objectDefinition];
+    }
+
+    /**
+     * @return array|null
+     */
+    public function parseClassAnnotations(string $className, array $annotations)
+    {
+        if (! $this->isParseClass($annotations)) {
+            return null;
+        }
+
+        $beanData = null;
+        foreach ($annotations as $annotation) {
+            $annotationClass = get_class($annotation);
+            if (! in_array($annotationClass, $this->getClassAnnotations(), false)) {
+                continue;
+            }
+
+            // annotation parser
+            $annotationParser = $this->getAnnotationParser($annotation);
+            if ($annotationParser === null) {
+                continue;
+            }
+            $annotationData = $annotationParser->parser($className, $annotation);
+            if ($annotationData !== null) {
+                $beanData = $annotationData;
+            }
+        }
+
+        return $beanData;
+    }
+
+    public function addExtends(WrapperExtendInterface $extend)
+    {
+        $extendClass = get_class($extend);
+        $this->extends[$extendClass] = $extend;
+    }
+
+    protected function inMethodAnnotations($methodAnnotation): bool
+    {
+        $annotationClass = get_class($methodAnnotation);
+        return in_array($annotationClass, $this->getMethodAnnotations(), false);
     }
 
     private function parseProperties(array $propertyAnnotations, array $properties, string $className): array
@@ -189,12 +232,6 @@ abstract class AbstractWrapper implements WrapperInterface
         }
     }
 
-    protected function inMethodAnnotations($methodAnnotation): bool
-    {
-        $annotationClass = get_class($methodAnnotation);
-        return in_array($annotationClass, $this->getMethodAnnotations(), false);
-    }
-
     /**
      * 方法没有配置路由注解解析
      */
@@ -238,42 +275,6 @@ abstract class AbstractWrapper implements WrapperInterface
         }
 
         return [$injectProperty, $isRef];
-    }
-
-    /**
-     * @return array|null
-     */
-    public function parseClassAnnotations(string $className, array $annotations)
-    {
-        if (! $this->isParseClass($annotations)) {
-            return null;
-        }
-
-        $beanData = null;
-        foreach ($annotations as $annotation) {
-            $annotationClass = get_class($annotation);
-            if (! in_array($annotationClass, $this->getClassAnnotations(), false)) {
-                continue;
-            }
-
-            // annotation parser
-            $annotationParser = $this->getAnnotationParser($annotation);
-            if ($annotationParser === null) {
-                continue;
-            }
-            $annotationData = $annotationParser->parser($className, $annotation);
-            if ($annotationData !== null) {
-                $beanData = $annotationData;
-            }
-        }
-
-        return $beanData;
-    }
-
-    public function addExtends(WrapperExtendInterface $extend)
-    {
-        $extendClass = get_class($extend);
-        $this->extends[$extendClass] = $extend;
     }
 
     private function getClassAnnotations(): array

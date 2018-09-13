@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -82,6 +83,11 @@ class BeanFactory implements BeanFactoryInterface
         return static::$container->hasBean($name);
     }
 
+    public static function getContainer(): ContainerInterface
+    {
+        return static::$container;
+    }
+
     private static function getWorkerDefinition(): array
     {
         $configDefinitions = [];
@@ -162,10 +168,5 @@ class BeanFactory implements BeanFactoryInterface
         }
 
         return $definitions;
-    }
-
-    public static function getContainer(): ContainerInterface
-    {
-        return static::$container;
     }
 }

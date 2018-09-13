@@ -13,17 +13,26 @@ return PhpCsFixer\Config::create()
     ->setRiskyAllowed(true)
     ->setRules([
         '@PSR2' => true,
+        '@DoctrineAnnotation' => true,
         'header_comment' => [
             'commentType' => 'PHPDoc',
             'header' => $header,
-            'separate' => 'none'
+            'separate' => 'none',
+            'location' => 'after_declare_strict',
         ],
         'array_syntax' => [
             'syntax' => 'short'
         ],
-        'single_quote' => true,
         'class_attributes_separation' => true,
+        'combine_consecutive_unsets' => true,
+        'declare_strict_types' => true,
+        'linebreak_after_opening_tag' => true,
+        'no_useless_else' => true,
         'no_unused_imports' => true,
+        'ordered_class_elements' => true,
+        'ordered_imports' => true,
+        'php_unit_strict' => true,
+        'single_quote' => true,
         'standardize_not_equals' => true,
     ])
     ->setFinder(
