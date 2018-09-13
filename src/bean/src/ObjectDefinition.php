@@ -58,8 +58,6 @@ class ObjectDefinition
 
     /**
      * Get bean name
-     *
-     * @return string
      */
     public function getName(): string
     {
@@ -68,8 +66,6 @@ class ObjectDefinition
 
     /**
      * Set bean name
-     *
-     * @param string $name
      */
     public function setName(string $name)
     {
@@ -78,8 +74,6 @@ class ObjectDefinition
 
     /**
      * Get classname of Bean
-     *
-     * @return string
      */
     public function getClassName(): string
     {
@@ -88,8 +82,6 @@ class ObjectDefinition
 
     /**
      * Set classname of Bean
-     *
-     * @param string $className
      */
     public function setClassName(string $className)
     {
@@ -98,8 +90,6 @@ class ObjectDefinition
 
     /**
      * Get scopt of Bean
-     *
-     * @return int
      */
     public function getScope(): int
     {
@@ -119,8 +109,6 @@ class ObjectDefinition
 
     /**
      * set referenced bean
-     *
-     * @param string $ref
      */
     public function setRef(string $ref)
     {
@@ -129,8 +117,6 @@ class ObjectDefinition
 
     /**
      * Set scope of Bean
-     *
-     * @param int $scope
      */
     public function setScope(int $scope)
     {
@@ -149,8 +135,6 @@ class ObjectDefinition
 
     /**
      * Set constructor injection object
-     *
-     * @param MethodInjection $constructorInjection
      */
     public function setConstructorInjection(MethodInjection $constructorInjection)
     {

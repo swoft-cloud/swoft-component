@@ -7,8 +7,7 @@ namespace Swoft\Bean;
  */
 interface DefinitionInterface
 {
-    /**
-     * @return array
-     */
-    public function getDefinitions();
+
+    public function getDefinitions() : array;
+
 }
