@@ -9,17 +9,14 @@
  */
 return [
     'redis' => [
-        'name' => 'redis1',
-        'uri'         => [
-            '127.0.0.1:1111',
-            '127.0.0.1:1111',
-        ],
-        'maxIdel'     => 1,
-        'maxActive'   => 1,
-        'maxWait'     => 1,
-        'timeout'     => 1,
-        'balancer'    => 'random1',
-        'useProvider' => true,
-        'provider'    => 'consul1',
+        'name'        => env('REDIS_NAME', 'redis'),
+        'uri'         => explode(',', env('REDIS_URI', '127.0.0.1:6379, 127.0.0.1:6379')),
+        'maxIdel'     => env('REDIS_MAX_IDEL', 2),
+        'maxActive'   => env('REDIS_MAX_ACTIVE', 2),
+        'maxWait'     => env('REDIS_MAX_WAIT', 2),
+        'timeout'     => env('REDIS_TIMEOUT', 2),
+        'balancer'    => env('REDIS_BALANCER', 'random'),
+        'useProvider' => env('REDIS_USE_PROVIDER', false),
+        'provider'    => env('REDIS_PROVIDER', 'consul'),
     ],
 ];
