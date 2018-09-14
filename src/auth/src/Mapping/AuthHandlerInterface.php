@@ -14,9 +14,5 @@ use Psr\Http\Message\ServerRequestInterface;
 
 interface AuthHandlerInterface
 {
-    /**
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @return \Psr\Http\Message\ServerRequestInterface
-     */
     public function handle(ServerRequestInterface $request): ServerRequestInterface;
 }

@@ -17,8 +17,6 @@ use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\Value;
 
 /**
- * Class JWTTokenParser
- * @package App\Component\Acl\TokenParsers
  * @Bean()
  */
 class JWTTokenParser implements TokenParserInterface
@@ -35,39 +33,24 @@ class JWTTokenParser implements TokenParserInterface
      * @Value("${config.auth.jwt.algorithm}")
      * @var string
      */
-    protected $algorithm=self::ALGORITHM_HS256;
+    protected $algorithm = self::ALGORITHM_HS256;
 
     /**
      * @Value("${config.auth.jwt.secret}")
      * @var string
      */
-    protected $secret='swoft';
+    protected $secret = 'swoft';
 
-    /**
-     * @param AuthSession $session
-     * @return string
-     */
     public function getToken(AuthSession $session): string
     {
-        $tokenData = $this->create(
-            $session->getAccountTypeName(),
-            $session->getIdentity(),
-            $session->getCreateTime(),
-            $session->getExpirationTime(),
-            $session->getExtendedData()
-        );
+        $tokenData = $this->create($session->getAccountTypeName(), $session->getIdentity(), $session->getCreateTime(), $session->getExpirationTime(), $session->getExtendedData());
         return $this->encode($tokenData);
     }
 
-    /**
-     * @param string $token
-     * @return AuthSession
-     */
-    public function getSession(string $token):AuthSession
+    public function getSession(string $token): AuthSession
     {
         $tokenData = $this->decode($token);
-        return (new AuthSession())
-            ->setAccountTypeName($tokenData->iss)
+        return (new AuthSession())->setAccountTypeName($tokenData->iss)
             ->setIdentity($tokenData->sub)
             ->setCreateTime($tokenData->iat)
             ->setExpirationTime($tokenData->exp)
@@ -75,7 +58,7 @@ class JWTTokenParser implements TokenParserInterface
             ->setExtendedData((array)$tokenData->data);
     }
 
-    protected function create(string $issuer, string $user, int $iat, int $exp, array $data):array
+    protected function create(string $issuer, string $user, int $iat, int $exp, array $data): array
     {
         return [
             /*

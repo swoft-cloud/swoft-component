@@ -15,8 +15,8 @@ use Swoft\App;
 use Swoft\Auth\Constants\AuthConstants;
 use Swoft\Auth\Exception\AuthException;
 use Swoft\Auth\Helper\ErrorCode;
-use Swoft\Auth\Mapping\AuthorizationParserInterface;
 use Swoft\Auth\Mapping\AuthHandlerInterface;
+use Swoft\Auth\Mapping\AuthorizationParserInterface;
 use Swoft\Auth\Parser\Handler\BasicAuthHandler;
 use Swoft\Auth\Parser\Handler\BearerTokenHandler;
 use Swoft\Bean\Annotation\Value;
@@ -40,8 +40,7 @@ class AuthorizationHeaderParser implements AuthorizationParserInterface
     private $headerKey = AuthConstants::HEADER_KEY;
 
     /**
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @return \Psr\Http\Message\ServerRequestInterface
+     * @throws AuthException When AuthHandler missing or error.
      */
     public function parse(ServerRequestInterface $request): ServerRequestInterface
     {
@@ -49,7 +48,7 @@ class AuthorizationHeaderParser implements AuthorizationParserInterface
         $type = $this->getHeadString($authValue);
         if (isset($this->mergeTypes()[$type])) {
             $handler = App::getBean($this->mergeTypes()[$type]);
-            if (!$handler instanceof AuthHandlerInterface) {
+            if (! $handler instanceof AuthHandlerInterface) {
                 throw new AuthException(ErrorCode::POST_DATA_NOT_PROVIDED, sprintf('%s  should implement Swoft\Auth\Mapping\AuthHandlerInterface', $this->mergeTypes()[$type]));
             }
             $request = $handler->handle($request);
@@ -57,7 +56,7 @@ class AuthorizationHeaderParser implements AuthorizationParserInterface
         return $request;
     }
 
-    private function getHeadString(string $val):string
+    private function getHeadString(string $val): string
     {
         return explode(' ', $val)[0] ?? '';
     }

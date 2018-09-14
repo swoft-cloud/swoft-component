@@ -20,14 +20,10 @@ interface AuthServiceInterface
      * $method = $this->getHandlerArray($requestHandler)[1];
      * $id = $this->getUserIdentity();
      * if ($id) {
-     * return true;
+     *     return true;
      * }
      * return false;
      * </code>
-     *
-     * @param string $requestHandler
-     * @param ServerRequestInterface $request
-     * @return bool
      */
     public function auth(string $requestHandler, ServerRequestInterface $request): bool;
 }
