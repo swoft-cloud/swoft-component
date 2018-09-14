@@ -23,12 +23,12 @@ class AuthResult
     /**
      * @var string
      */
-    protected $identity='';
+    protected $identity = '';
 
     /**
      * @var array
      */
-    protected $extendedData=[];
+    protected $extendedData = [];
 
     /**
      * @return string

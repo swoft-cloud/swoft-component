@@ -72,7 +72,7 @@ class JWTTokenParser implements TokenParserInterface
             ->setCreateTime($tokenData->iat)
             ->setExpirationTime($tokenData->exp)
             ->setToken($token)
-            ->setExtendedData($tokenData->data);
+            ->setExtendedData((array)$tokenData->data);
     }
 
     protected function create(string $issuer, string $user, int $iat, int $exp, array $data):array

@@ -13,4 +13,7 @@ return [
             Swoft\Auth\Middleware\AuthMiddleware::class,
         ]
     ],
+    \Swoft\Auth\Mapping\AuthManagerInterface::class=>[
+        'class'=>\SwoftTest\Auth\Manager\TestManager::class
+    ],
 ];

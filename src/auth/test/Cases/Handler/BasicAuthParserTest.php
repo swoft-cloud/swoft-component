@@ -34,7 +34,6 @@ class BasicAuthParserTest extends AbstractTestCase
     }
 
     /**
-     * @test
      * @covers BasicAuthHandler::handle()
      */
     public function testHandle()
