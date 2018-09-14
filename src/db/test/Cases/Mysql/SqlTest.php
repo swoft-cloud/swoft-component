@@ -10,6 +10,7 @@
 namespace SwoftTest\Db\Cases\Mysql;
 
 use Swoft\Db\Db;
+use SwoftTest\Db\Testing\Entity\Group;
 use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 
@@ -20,14 +21,14 @@ class SqlTest extends AbstractMysqlCase
 {
     public function testInsert()
     {
-        $name   = 'swoft insert';
+        $name = 'swoft insert';
         $result = Db::query('insert into user(name, sex,description, age) values("' . $name . '", 1, "xxxx", 99)')->getResult();
-        $user   = User::findById($result)->getResult();
+        $user = User::findById($result)->getResult();
 
         $this->assertEquals($user['name'], $name);
 
         $result = Db::query('INSERT into user(name, sex,description, age) values("' . $name . '", 1, "xxxx", 99)')->getResult();
-        $user   = User::findById($result)->getResult();
+        $user = User::findById($result)->getResult();
         $this->assertEquals($user['name'], $name);
     }
 
@@ -71,7 +72,7 @@ class SqlTest extends AbstractMysqlCase
      */
     public function testSelect2($id)
     {
-        $result = Db::query('select * from user where id=:id and name=:name', ['id' => $id, ':name'=>'name'])->getResult();
+        $result = Db::query('select * from user where id=:id and name=:name', ['id' => $id, ':name' => 'name'])->getResult();
         $result2 = Db::query('select * from user where id=? and name=?', [$id, 'name'])->getResult();
         $this->assertEquals($id, $result[0]['id']);
         $this->assertEquals($id, $result2[0]['id']);
@@ -119,11 +120,11 @@ class SqlTest extends AbstractMysqlCase
      */
     public function testUpdate($id)
     {
-        $name   = 'update name1';
+        $name = 'update name1';
         $result = Db::query('update user set name="' . $name . '" where id=' . $id)->getResult();
         $this->assertEquals(1, $result);
 
-        $name   = 'update name 协程框架';
+        $name = 'update name 协程框架';
         $result = Db::query('UPDATE user set name="' . $name . '" where id=' . $id)->getResult();
         $this->assertEquals(1, $result);
 
@@ -171,6 +172,26 @@ class SqlTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testErrorSql();
+        });
+    }
+
+    public function testTableNameIsDbKeyword()
+    {
+        $model = new Group();
+        $model->setName(uniqid());
+        $id = $model->save()->getResult();
+        $this->assertTrue($id > 0);
+
+        $model = Group::findById($id)->getResult();
+        $model->setName(uniqid());
+        $rows = $model->update()->getResult();
+        $this->assertEquals(1, $rows);
+    }
+
+    public function testTableNameIsDbKeywordByCo()
+    {
+        go(function () {
+            $this->testTableNameIsDbKeyword();
         });
     }
 }
