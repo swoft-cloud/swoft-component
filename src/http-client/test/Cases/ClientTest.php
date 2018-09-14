@@ -5,14 +5,6 @@ namespace SwoftTest\HttpClient;
 use Swoft\HttpClient\Client;
 use Swoft\HttpClient\Adapter;
 
-
-/**
- * @uses      ClientTest
- * @version   2018年02月26日
- * @author    huangzhhui <huangzhwork@gmail.com>
- * @copyright Copyright 2010-2018 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
- */
 class ClientTest extends AbstractTestCase
 {
 

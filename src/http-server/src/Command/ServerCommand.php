@@ -8,15 +8,14 @@ use Swoft\Http\Server\Http\HttpServer;
 
 /**
  * The group command list of HTTP-Server
- *
- * @Command(coroutine=false,server=true)
+ * @Command(coroutine=false, server=true)
  */
 class ServerCommand
 {
     /**
      * Start http server
-     *
      * @Usage {fullCommand} [-d|--daemon]
+     *
      * @Options
      *   -d, --daemon    Run server on the background
      * @Example
@@ -39,21 +38,21 @@ class ServerCommand
             $serverStatus = $httpServer->getServerSetting();
         }
 
-        // 启动参数
         $this->setStartArgs($httpServer);
+
+        // Server Settings
         $httpStatus = $httpServer->getHttpSetting();
         $tcpStatus = $httpServer->getTcpSetting();
 
-        // Setting
         $workerNum = $httpServer->setting['worker_num'];
 
-        // HTTP 启动参数
+        // HTTP Settings
         $httpHost = $httpStatus['host'];
         $httpPort = $httpStatus['port'];
         $httpMode = $httpStatus['mode'];
         $httpType = $httpStatus['type'];
 
-        // TCP 启动参数
+        // TCP Settings
         $tcpEnable = $serverStatus['tcpable'];
         $tcpHost = $tcpStatus['host'];
         $tcpPort = $tcpStatus['port'];
@@ -75,8 +74,8 @@ class ServerCommand
 
     /**
      * Reload worker processes
-     *
      * @Usage {fullCommand} [-t]
+     *
      * @Options
      *  -t      Only to reload task processes, default to reload worker and task
      * @Example {fullCommand}
@@ -87,14 +86,12 @@ class ServerCommand
     {
         $httpServer = $this->getHttpServer();
 
-        // 是否已启动
-        if (!$httpServer->isRunning()) {
+        if (! $httpServer->isRunning()) {
             output()->writeln('<error>The server is not running! cannot reload</error>', true, true);
         }
 
         output()->writeln(sprintf('<info>Server %s is reloading</info>', input()->getScript()));
 
-        // 重载
         $reloadTask = input()->hasOpt('t');
         $httpServer->reload($reloadTask);
         output()->writeln(sprintf('<success>Server %s reload success</success>', input()->getScript()));
@@ -102,9 +99,9 @@ class ServerCommand
 
     /**
      * Stop the http server
-     *
      * @Usage {fullCommand}
      * @Example {fullCommand}
+     *
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
@@ -112,12 +109,10 @@ class ServerCommand
     {
         $httpServer = $this->getHttpServer();
 
-        // 是否已启动
-        if (!$httpServer->isRunning()) {
+        if (! $httpServer->isRunning()) {
             \output()->writeln('<error>The server is not running! cannot stop</error>', true, true);
         }
 
-        // pid文件
         $serverStatus = $httpServer->getServerSetting();
         $pidFile = $serverStatus['pfile'];
 
@@ -125,11 +120,9 @@ class ServerCommand
 
         $result = $httpServer->stop();
 
-        // 停止失败
-        if (!$result) {
+        if (! $result) {
             \output()->writeln(sprintf('<error>Swoft %s stop fail</error>', input()->getScript()), true, true);
         }
-        //删除pid文件
         @unlink($pidFile);
 
         output()->writeln(sprintf('<success>Swoft %s stop success!</success>', input()->getScript()));
@@ -137,8 +130,8 @@ class ServerCommand
 
     /**
      * Restart the http server
-     *
      * @Usage {fullCommand} [-d|--daemon]
+     *
      * @Options
      *   -d, --daemon    Run server on the background
      * @Example
@@ -152,46 +145,32 @@ class ServerCommand
     {
         $httpServer = $this->getHttpServer();
 
-        // 是否已启动
         if ($httpServer->isRunning()) {
             $this->stop();
         }
 
-        // 重启默认是守护进程
+        // Daemon mode is defaults for `restart` action
         $httpServer->setDaemonize();
         $this->start();
     }
 
     /**
-     * @return HttpServer
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
     private function getHttpServer(): HttpServer
     {
-        // check env
         EnvHelper::check();
 
-        // http server初始化
-        $script = input()->getScript();
-
-        $httpServer = new HttpServer();
-        $httpServer->setScriptFile($script);
-
-        return $httpServer;
+        return (new HttpServer())->setScriptFile(input()->getScript());
     }
 
     /**
      * 设置启动选项，覆盖 config/server.php 配置选项
-     *
-     * @param HttpServer $httpServer
      */
     private function setStartArgs(HttpServer $httpServer)
     {
         $daemonize = \input()->getSameOpt(['d', 'daemon'], false);
-
-        if ($daemonize) {
-            $httpServer->setDaemonize();
-        }
+        $daemonize && $httpServer->setDaemonize();
     }
 }

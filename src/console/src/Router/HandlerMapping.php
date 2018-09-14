@@ -4,14 +4,9 @@ namespace Swoft\Console\Router;
 
 use Swoft\Http\Message\Router\HandlerMappingInterface;
 
-/**
- * Handler mapping
- */
 class HandlerMapping implements HandlerMappingInterface
 {
-    /**
-     * default commands
-     */
+
     const DEFAULT_METHODS = [
         'start',
         'reload',
@@ -19,36 +14,17 @@ class HandlerMapping implements HandlerMappingInterface
         'restart',
     ];
 
-    /**
-     * @var string
-     */
     protected $suffix = 'Command';
 
-    /**
-     * the default group of command
-     */
     protected $defaultGroup = 'server';
 
-    /**
-     * the default command
-     */
     protected $defaultCommand = 'index';
 
-    /**
-     * the delimiter
-     *
-     * @var string
-     */
     protected $delimiter = ':';
 
-    /**
-     * @var array
-     */
     protected $routes = [];
 
     /**
-     * @param array ...$params
-     * @return mixed
      * @throws \InvalidArgumentException
      */
     public function getHandler(...$params): array
@@ -61,8 +37,6 @@ class HandlerMapping implements HandlerMappingInterface
 
     /**
      * Auto register routes
-     *
-     * @param array $commandMapping
      */
     public function register(array $commandMapping)
     {
@@ -76,18 +50,11 @@ class HandlerMapping implements HandlerMappingInterface
         }
     }
 
-    /**
-     * @param string $command
-     * @return bool
-     */
     public function isDefaultCommand(string $command): bool
     {
         return $command === $this->defaultCommand;
     }
 
-    /**
-     * @return array
-     */
     private function getGroupAndCommand(): array
     {
         $cmd = \input()->getCommand();
@@ -115,10 +82,6 @@ class HandlerMapping implements HandlerMappingInterface
     }
 
     /**
-     * Match route
-     *
-     * @param $route
-     * @return mixed
      * @throws \InvalidArgumentException
      */
     public function match(string $route): array
@@ -132,12 +95,6 @@ class HandlerMapping implements HandlerMappingInterface
 
     /**
      * Register one route
-     *
-     * @param string $className
-     * @param array  $routes
-     * @param string $prefix
-     * @param bool   $coroutine
-     * @param bool   $server
      */
     private function registerRoute(string $className, array $routes, string $prefix, bool $coroutine, $server)
     {
@@ -158,14 +115,10 @@ class HandlerMapping implements HandlerMappingInterface
 
     /**
      * Get command from class name
-     *
-     * @param string $prefix
-     * @param string $className
-     * @return string
      */
     public function getPrefix(string $prefix, string $className): string
     {
-        // the  prefix of annotation is exist
+        // the prefix of annotation is exist
         if (! empty($prefix)) {
             return $prefix;
         }
@@ -181,11 +134,6 @@ class HandlerMapping implements HandlerMappingInterface
         return $prefix;
     }
 
-    /**
-     * @param string $group
-     * @param string $command
-     * @return string
-     */
     private function getCommandString(string $group, string $command): string
     {
         return \sprintf('%s%s%s', $group, $this->delimiter, $command);

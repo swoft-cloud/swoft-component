@@ -2,17 +2,10 @@
 
 namespace Swoft\Http\Message\Router;
 
-/**
- * Handler mapping interface
- */
 interface HandlerMappingInterface
 {
     /**
-     * the handler of controller
-     *
-     * @param array ...$params
-     *
-     * @return array
+     * Get the handler of controller
      */
-    public function getHandler(...$params);
+    public function getHandler(...$params): array;
 }

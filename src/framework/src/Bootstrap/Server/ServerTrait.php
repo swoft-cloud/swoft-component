@@ -89,8 +89,8 @@ trait ServerTrait
      * onPipeMessage event callback
      *
      * @param \Swoole\Server $server
-     * @param int            $srcWorkerId
-     * @param string         $message
+     * @param int $srcWorkerId
+     * @param string $message
      * @return void
      * @throws \InvalidArgumentException
      */
@@ -103,12 +103,10 @@ trait ServerTrait
         App::trigger(AppEvent::PIPE_MESSAGE, null, $type, $data, $srcWorkerId);
     }
 
-    /**
-     * @param string $scriptFile
-     */
-    public function setScriptFile(string $scriptFile)
+    public function setScriptFile(string $scriptFile): self
     {
         $this->scriptFile = $scriptFile;
+        return $this;
     }
 
     /**
@@ -135,7 +133,7 @@ trait ServerTrait
         $initApplicationContext = new InitApplicationContext();
         $initApplicationContext->init();
 
-        if($isWorker && $this->workerLock->trylock() && env('AUTO_REGISTER', false)){
+        if ($isWorker && $this->workerLock->trylock() && env('AUTO_REGISTER', false)) {
             App::trigger(AppEvent::WORKER_START);
         }
     }
@@ -144,14 +142,14 @@ trait ServerTrait
      * fire server event listeners
      *
      * @param string $event
-     * @param array  $params
+     * @param array $params
      */
     protected function fireServerEvent(string $event, array $params)
     {
         /** @var array[] $collector */
         $collector = ServerListenerCollector::getCollector();
 
-        if (!isset($collector[$event]) || empty($collector[$event])) {
+        if (! isset($collector[$event]) || empty($collector[$event])) {
             return;
         }
 

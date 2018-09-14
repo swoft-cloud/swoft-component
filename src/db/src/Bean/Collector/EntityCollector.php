@@ -7,14 +7,15 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Db\Bean\Collector;
 
+use Swoft\Bean\CollectorInterface;
 use Swoft\Db\Bean\Annotation\Column;
 use Swoft\Db\Bean\Annotation\Entity;
 use Swoft\Db\Bean\Annotation\Id;
 use Swoft\Db\Bean\Annotation\Required;
 use Swoft\Db\Bean\Annotation\Table;
-use Swoft\Bean\CollectorInterface;
 
 /**
  * The collector of entity
@@ -28,11 +29,10 @@ class EntityCollector implements CollectorInterface
 
     /**
      * @param string $className
-     * @param null   $objectAnnotation
+     * @param null $objectAnnotation
      * @param string $propertyName
      * @param string $methodName
-     * @param null   $propertyValue
-     *
+     * @param null $propertyValue
      * @return void
      */
     public static function collect(
@@ -56,7 +56,7 @@ class EntityCollector implements CollectorInterface
     }
 
     /**
-     * @param Table  $objectAnnotation
+     * @param Table $objectAnnotation
      * @param string $className
      */
     private static function collectTable(Table $objectAnnotation, string $className)
@@ -99,7 +99,7 @@ class EntityCollector implements CollectorInterface
      * @param Column $objectAnnotation
      * @param string $className
      * @param string $propertyName
-     * @param mixed  $propertyValue
+     * @param mixed $propertyValue
      */
     private static function collectColumn(
         Column $objectAnnotation,
@@ -109,19 +109,16 @@ class EntityCollector implements CollectorInterface
     ) {
         $columnName = $objectAnnotation->getName();
 
-        $entity                                             = [
-            'type'    => $objectAnnotation->getType(),
-            'length'  => $objectAnnotation->getLength(),
-            'column'  => $columnName,
+        $entity = [
+            'type' => $objectAnnotation->getType(),
+            'length' => $objectAnnotation->getLength(),
+            'column' => $columnName,
             'default' => $propertyValue,
         ];
         self::$entities[$className]['field'][$propertyName] = $entity;
-        self::$entities[$className]['column'][$columnName]  = $propertyName;
+        self::$entities[$className]['column'][$columnName] = $propertyName;
     }
 
-    /**
-     * @return array
-     */
     public static function getCollector(): array
     {
         return self::$entities;

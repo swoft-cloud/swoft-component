@@ -5,21 +5,15 @@ namespace Swoft\Console;
 use Swoft\App;
 use Swoft\Console\Bean\Collector\CommandCollector;
 
-/**
- * Console
- */
 class Console implements ConsoleInterface
 {
-    /**
-     * Console constructor.
-     */
+
     public function __construct()
     {
         $this->registerMapping();
     }
 
     /**
-     * @return void
      * @throws \ReflectionException
      * @throws \InvalidArgumentException
      */
@@ -35,17 +29,10 @@ class Console implements ConsoleInterface
         }
     }
 
-    /**
-     * Register mapping
-     *
-     * @return void
-     */
     private function registerMapping()
     {
         /* @var \Swoft\Console\Router\HandlerMapping $route */
         $route = App::getBean('commandRoute');
-
-        $commandMapping = CommandCollector::getCollector();
-        $route->register($commandMapping);
+        $route->register(CommandCollector::getCollector());
     }
 }

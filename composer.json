@@ -32,8 +32,8 @@
         "psy/psysh": "@stable"
     },
     "replace": {
-        "swoft/framework": "self.version",
         "swoft/aop": "self.version",
+        "swoft/bean": "self.version",
         "swoft/cache": "self.version",
         "swoft/console": "self.version",
         "swoft/data-parser": "self.version",
@@ -41,6 +41,7 @@
         "swoft/defer": "self.version",
         "swoft/devtool": "self.version",
         "swoft/error-handler": "self.version",
+        "swoft/framework": "self.version",
         "swoft/http-client": "self.version",
         "swoft/http-message": "self.version",
         "swoft/http-server": "self.version",
@@ -61,6 +62,7 @@
         "psr-4": {
             "Swoft\\": "src/framework/src/",
             "Swoft\\Aop\\": "src/aop/src/",
+            "Swoft\\Bean\\": "src/bean/src/",
             "Swoft\\Cache\\": "src/cache/src/",
             "Swoft\\Console\\": "src/console/src/",
             "Swoft\\DataParser\\": "src/data-parser/src/",
@@ -104,6 +106,8 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "SwoftTest\\Aop\\": "src/aop/test/Cases",
+            "SwoftTest\\Bean\\": "src/bean/test/Cases",
             "SwoftTest\\Cache\\": "src/cache/test/Cases",
             "SwoftTest\\Console\\": "src/console/test/Cases",
             "SwoftTest\\DataParser\\": "src/data-parser/test",
@@ -131,7 +135,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0-dev"
+            "dev-master": "1.1-dev"
         }
     },
     "repositories": {

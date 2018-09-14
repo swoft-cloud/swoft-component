@@ -82,16 +82,6 @@ class App
     }
 
     /**
-     * swoft版本
-     *
-     * @return string
-     */
-    public static function version(): string
-    {
-        return '1.0.0';
-    }
-
-    /**
      * redis连接池
      *
      * @return RedisPool

@@ -2,21 +2,11 @@
 
 namespace SwoftTest\HttpClient;
 
-use Swoft\App;
 use Swoft\Http\Message\Testing\Base\Response;
 use Swoft\HttpClient\Client;
 
-/**
- * @uses      CoroutineClientTest
- * @version   2017-11-22
- * @author    huangzhhui <huangzhwork@gmail.com>
- * @copyright Copyright 2010-2017 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
- */
 class CoroutineClientTest extends AbstractTestCase
 {
-
-
 
     /**
      * @test
@@ -323,7 +313,7 @@ class CoroutineClientTest extends AbstractTestCase
         go(function () {
             $client = new Client();
             $client->setAdapter('coroutine');
-            $expected = sprintf('Swoft/%s PHP/%s', App::version(), PHP_VERSION);
+            $expected = sprintf('Swoft/%s PHP/%s', SWOFT_VERSION, PHP_VERSION);
             $this->assertEquals($expected, $client->getDefaultUserAgent());
 
         });
