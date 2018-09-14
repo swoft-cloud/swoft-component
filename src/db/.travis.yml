@@ -66,6 +66,11 @@ before_install:
                   `id` bigint(20) unsigned NOT NULL,
                   `name` varchar(32) NOT NULL DEFAULT "",
                   PRIMARY KEY (`id`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+                CREATE TABLE `group` (
+                  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                  `name` varchar(32) NOT NULL DEFAULT "",
+                  PRIMARY KEY (`id`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;'
     - mysql -e 'CREATE DATABASE IF NOT EXISTS test2;
                 USE test2;

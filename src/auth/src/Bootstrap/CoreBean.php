@@ -21,27 +21,22 @@ use Swoft\Bean\Annotation\BootBean;
 use Swoft\Core\BootBeanInterface;
 
 /**
- * Class CoreBean
- * @package Swoft\Auth\Bootstrap
  * @BootBean()
  */
 class CoreBean implements BootBeanInterface
 {
-    /**
-     * @return array
-     */
-    public function beans()
+    public function beans(): array
     {
         return [
-            AuthorizationParserInterface::class=> [
+            AuthorizationParserInterface::class => [
                 'class' => AuthorizationHeaderParser::class
             ],
-            AuthManagerInterface::class=>[
+            AuthManagerInterface::class => [
                 'class' => AuthManager::class,
-                'tokenParserClass'=>JWTTokenParser::class,
+                'tokenParserClass' => JWTTokenParser::class,
             ],
-            AuthServiceInterface::class=>[
-                'class'=>AuthUserService::class
+            AuthServiceInterface::class => [
+                'class' => AuthUserService::class
             ]
         ];
     }
