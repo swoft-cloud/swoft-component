@@ -552,9 +552,6 @@ class QueryBuilder implements QueryBuilderInterface
             case self::OPERATOR_GTE:
             case self::LIKE:
             case self::NOT_LIKE:
-                list($column, $operator, $value) = $condition;
-                $this->andWhere($column, $value, $operator);
-                break;
             case self::IN:
                 list($column, , $value) = $condition;
                 $this->whereIn($column, $value);
