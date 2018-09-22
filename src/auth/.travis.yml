@@ -7,6 +7,7 @@ php:
 
 services:
     - mysql
+    - redis
 
 before_install:
     - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
@@ -18,6 +19,7 @@ install:
   - echo "extension = swoole.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
 before_script:
+  - phpenv config-rm xdebug.ini
   - composer update
 
 script: composer test

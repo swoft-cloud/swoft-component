@@ -13,10 +13,6 @@ namespace Swoft\Auth\Exception;
 use Swoft\Exception\RuntimeException;
 use Throwable;
 
-/**
- * Class AuthException
- * @package Swoft\Auth\Exception
- */
 class AuthException extends RuntimeException
 {
     public function __construct(int $code = 0, string $message = '', Throwable $previous = null)

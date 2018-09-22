@@ -21,8 +21,6 @@ use Swoft\Bean\Annotation\Bean;
 use Swoft\Http\Message\Middleware\MiddlewareInterface;
 
 /**
- * Class AclMiddleware
- * @package Swoft\Auth\Middleware
  * @Bean()
  */
 class AclMiddleware implements MiddlewareInterface
@@ -31,9 +29,7 @@ class AclMiddleware implements MiddlewareInterface
      * Process an incoming server request and return a response, optionally delegating
      * response creation to a handler.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @param \Psr\Http\Server\RequestHandlerInterface $handler
-     * @return \Psr\Http\Message\ResponseInterface
+     * @throws AuthException When AuthService missing or error, auth failure will throw this exception too.
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

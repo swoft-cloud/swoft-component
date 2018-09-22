@@ -3,15 +3,14 @@
 namespace Swoft\Task;
 
 use Swoft\App;
-use Swoft\Bean\BeanFactory;
 use Swoft\Pipe\PipeMessage;
 use Swoft\Pipe\PipeMessageInterface;
 use Swoft\Task\Exception\TaskException;
 use Swoft\Task\Helper\TaskHelper;
+use function bean;
+use function in_array;
+use function sprintf;
 
-/**
- * The task
- */
 class Task
 {
     /**
@@ -25,114 +24,107 @@ class Task
     const TYPE_ASYNC = 'async';
 
     /**
-     * Deliver coroutine or async task
+     * Deliver a coroutine or async task
      *
-     * @param string $taskName
-     * @param string $methodName
-     * @param array  $params
-     * @param string $type
-     * @param int    $timeout
-     *
-     * @return bool|array
+     * @return bool|array|int
      * @throws TaskException
      */
-    public static function deliver(string $taskName, string $methodName, array $params = [], string $type = self::TYPE_CO, $timeout = 3)
-    {
-        $data   = TaskHelper::pack($taskName, $methodName, $params, $type);
-        if(!App::isWorkerStatus() && !App::isCoContext()){
-            return self::deliverByQueue($data);
+    public static function deliver(
+        string $taskName,
+        string $methodName,
+        array $params = [],
+        string $type = self::TYPE_CO,
+        int $timeout = 3
+    ) {
+        if (! in_array($type, [static::TYPE_CO, static::TYPE_ASYNC], false)) {
+            throw new TaskException('Invalid task type.');
+        }
+        $data = TaskHelper::pack($taskName, $methodName, $params, $type);
+        if (! App::isWorkerStatus() && ! App::isCoContext()) {
+            return static::deliverByQueue($data);
         }
 
-        if(!App::isWorkerStatus() && App::isCoContext()){
-            throw new TaskException('Please deliver task by http!');
+        if (! App::isWorkerStatus() && App::isCoContext()) {
+            throw new TaskException('Deliver in non-worker environment, please deliver the task via HTTP request.');
         }
 
         $server = App::$server->getServer();
-        // Delier coroutine task
-        if ($type == self::TYPE_CO) {
-            $tasks[0]  = $data;
-            $prifleKey = 'task' . '.' . $taskName . '.' . $methodName;
-
-            App::profileStart($prifleKey);
-            $result = $server->taskCo($tasks, $timeout);
-            App::profileEnd($prifleKey);
-
-            return $result;
+        switch ($type) {
+            case static::TYPE_CO:
+                $tasks[0] = $data;
+                $prifleKey = 'task' . '.' . $taskName . '.' . $methodName;
+                App::profileStart($prifleKey);
+                $result = $server->taskCo($tasks, $timeout);
+                App::profileEnd($prifleKey);
+                return $result;
+                break;
+            case static::TYPE_ASYNC:
+            default:
+                // Deliver async task
+                return $server->task($data);
+                break;
         }
-
-        // Deliver async task
-        return $server->task($data);
     }
 
-    private static function deliverByQueue(string $data)
+    private static function deliverByQueue(string $data): bool
     {
-        /* @var \Swoft\Task\QueueTask $queueTask*/
-        $queueTask = App::getBean(QueueTask::class);
+        $queueTask = bean(QueueTask::class);
         return $queueTask->deliver($data);
     }
 
-        /**
+    /**
      * Deliver task by process
-     *
-     * @param string $taskName
-     * @param string $methodName
-     * @param array  $params
-     * @param string $type
-     * @param int    $timeout
-     * @param int    $workId
-     *
-     * @return bool
      */
-    public static function deliverByProcess(string $taskName, string $methodName, array $params = [], int $timeout = 3, int $workId = 0, string $type = self::TYPE_ASYNC): bool
-    {
+    public static function deliverByProcess(
+        string $taskName,
+        string $methodName,
+        array $params = [],
+        int $timeout = 3,
+        int $workerId = 0,
+        string $type = self::TYPE_ASYNC
+    ): bool {
         /* @var PipeMessageInterface $pipeMessage */
-        $server      = App::$server->getServer();
-        $pipeMessage = App::getBean(PipeMessage::class);
-        $data = [
-            'name'    => $taskName,
-            'method'  => $methodName,
-            'params'  => $params,
+        $pipeMessage = bean(PipeMessage::class);
+        $message = $pipeMessage->pack(PipeMessage::MESSAGE_TYPE_TASK, [
+            'name' => $taskName,
+            'method' => $methodName,
+            'params' => $params,
             'timeout' => $timeout,
-            'type'    => $type,
-        ];
-
-        $message = $pipeMessage->pack(PipeMessage::MESSAGE_TYPE_TASK, $data);
-        return $server->sendMessage($message, $workId);
+            'type' => $type,
+        ]);
+        return App::$server->getServer()->sendMessage($message, $workerId);
     }
 
     /**
-     * Delivery multiple asynchronous tasks
+     * Deliver multiple asynchronous tasks
      *
      * @param array $tasks
      *  <pre>
      *  $task = [
-     *  'name'   => $taskName,
-     *  'method' => $methodName,
-     *  'params' => $params,
-     *  'type'   => $type
+     *      'name'   => $taskName,
+     *      'method' => $methodName,
+     *      'params' => $params,
+     *      'type'   => $type
      *  ];
      *  </pre>
-     *
-     * @return array
      */
-    public static function async(array $tasks)
+    public static function async(array $tasks): array
     {
         $server = App::$server->getServer();
 
         $result = [];
         foreach ($tasks as $task) {
-            if (!isset($task['type']) || !isset($task['name']) || !isset($task['method']) || !isset($task['params'])) {
-                App::warning(sprintf('The task format of delivery is error，task=%s', json_encode($task, JSON_UNESCAPED_UNICODE)));
+            if (! isset($task['type']) || ! isset($task['name']) || ! isset($task['method']) || ! isset($task['params'])) {
+                App::error(sprintf('Task %s format error.', $task['name'] ?? '[UNKNOWN]'));
                 continue;
             }
 
-            $type = $task['type'];
-            if ($type != self::TYPE_ASYNC) {
-                App::warning(sprintf('Delivery is not an asynchronous task，task=%s', json_encode($task, JSON_UNESCAPED_UNICODE)));
+            if ($task['type'] !== static::TYPE_ASYNC) {
+                App::error(sprintf('Task %s is not a asynchronous task.', $task['name']));
                 continue;
             }
 
-            $data     = TaskHelper::pack($task['name'], $task['method'], $task['params'], $task['type']);
+            $data = TaskHelper::pack($task['name'], $task['method'], $task['params'], $task['type']);
             $result[] = $server->task($data);
         }
 
@@ -140,34 +132,38 @@ class Task
     }
 
     /**
-     * Delivery multiple co tasks
+     * @deprecated Use co() method instead, will be remove in swoft/task v1.1.
+     */
+    public static function cor(array $tasks): array
+    {
+        return static::co($tasks);
+    }
+
+    /**
+     * Deliver multiple coroutine tasks
      *
      * @param array $tasks
      *  <pre>
      *  $tasks = [
-     *  'name'   => $taskName,
-     *  'method' => $methodName,
-     *  'params' => $params,
-     *  'type'   => $type
+     *      'name'   => $taskName,
+     *      'method' => $methodName,
+     *      'params' => $params,
+     *      'type'   => $type
      *  ];
      *  </pre>
-     *
-     * @return array
      */
-    public static function cor(array $tasks)
+    public static function co(array $tasks): array
     {
-        $server = App::$server->getServer();
-
         $taskCos = [];
         foreach ($tasks as $task) {
-            if (!isset($task['type']) || !isset($task['name']) || !isset($task['method']) || !isset($task['params'])) {
-                App::warning(sprintf('The task format of delivery is error，task=%s', json_encode($task, JSON_UNESCAPED_UNICODE)));
+            if (! isset($task['type']) || ! isset($task['name']) || ! isset($task['method']) || ! isset($task['params'])) {
+                App::error(sprintf('Task %s format error.', $task['name'] ?? '[UNKNOWN]'));
                 continue;
             }
 
             $type = $task['type'];
-            if ($type != self::TYPE_CO) {
-                App::warning(sprintf('Delivery is not a co task，task=%s', json_encode($task, JSON_UNESCAPED_UNICODE)));
+            if ($type !== static::TYPE_CO) {
+                App::error(sprintf('Task %s is not a coroutine task.', $task['name']));
                 continue;
             }
 
@@ -175,43 +171,11 @@ class Task
         }
 
         $result = [];
-        if (!empty($taskCos)) {
-            $result = $server->taskCo($tasks);
+        if (! empty($taskCos)) {
+            $result = App::$server->getServer()->taskCo($tasks);
         }
 
         return $result;
     }
 
-    /**
-     * Run job by task
-     *
-     * @param string $taskName
-     * @param string $methodName
-     * @param array  $params
-     *
-     * @return bool
-     */
-    public static function run2(string $taskName, string $methodName, array $params)
-    {
-        if (!BeanFactory::hasBean($taskName)) {
-            App::error(sprintf('The %s task is not exist! ', $taskName));
-
-            return false;
-        }
-
-        $task = App::getBean($taskName);
-        if (!method_exists($task, $methodName)) {
-            App::error(sprintf('The %s job of %s task is not exist! ', $methodName, $taskName));
-
-            return false;
-        }
-
-        $profileKey = $taskName . "-" . $methodName;
-        App::profileStart($profileKey);
-        $result = $task->$methodName(...$params);
-
-        App::profileEnd($profileKey);
-
-        return $result;
-    }
 }

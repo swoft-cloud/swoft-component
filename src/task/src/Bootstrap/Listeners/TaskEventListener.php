@@ -7,6 +7,7 @@ use Swoft\Bean\Annotation\SwooleListener;
 use Swoft\Bootstrap\Listeners\Interfaces\FinishInterface;
 use Swoft\Bootstrap\Listeners\Interfaces\TaskInterface;
 use Swoft\Bootstrap\SwooleEvent;
+use Swoft\Core\Coroutine;
 use Swoft\Event\AppEvent;
 use Swoft\Task\Event\TaskEvent;
 use Swoft\Task\TaskExecutor;

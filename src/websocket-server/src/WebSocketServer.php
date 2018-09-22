@@ -112,17 +112,21 @@ class WebSocketServer extends HttpServer
     /**
      * @param string $fd
      * @param string $data
-     * @param bool $isBinary
+     * @param int $opcode The data type.
+     * allow:
+     *  WEBSOCKET_OPCODE_TEXT = 1
+     *  WEBSOCKET_OPCODE_BINARY = 2
+     *  WEBSOCKET_OPCODE_PING = 9
      * @param bool $finish
      * @return bool
      */
-    public function push(string $fd, string $data, $isBinary = false, bool $finish = true): bool
+    public function push(string $fd, string $data, int $opcode = 1, bool $finish = true): bool
     {
         if (!$this->server->exist($fd)) {
             return false;
         }
 
-        return $this->server->push($fd, $data, $isBinary, $finish);
+        return $this->server->push($fd, $data, $opcode, $finish);
     }
 
     /**
@@ -164,11 +168,11 @@ class WebSocketServer extends HttpServer
      * @param int $sender 发送者 fd
      * @return int
      */
-    public function sendTo(int $receiver, string $data, int $sender = 0): int
+    public function sendTo(int $receiver, string $data, int $sender = -1): int
     {
         $finish = true;
         $opcode = 1;
-        $fromUser = $sender < 1 ? 'SYSTEM' : $sender;
+        $fromUser = $sender < 0 ? 'SYSTEM' : $sender;
 
         $this->log("(private)The #{$fromUser} send message to the user #{$receiver}. Data: {$data}");
 
