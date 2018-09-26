@@ -77,6 +77,14 @@ abstract class RedisProfile implements ProfileInterface
     }
 
     /**
+     * Setter preftx
+     */
+    public function setPrefix(string $prefix)
+    {
+        $this->processor->setPrefix($prefix);
+    }
+
+    /**
      * Returns a map of all the commands supported by the profile and their
      * actual PHP classes.
      *
