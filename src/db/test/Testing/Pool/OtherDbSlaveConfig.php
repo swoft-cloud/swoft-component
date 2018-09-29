@@ -85,4 +85,10 @@ class OtherDbSlaveConfig extends DbPoolProperties
      * @var string
      */
     protected $driver = Driver::MYSQL;
+
+    /**
+     * @Value(name="${config.db.other.slave.strictType}", env="${DB_OTHER_SLAVE_STRICT_TYPE}")
+     * @var bool
+     */
+    protected $strictType = false;
 }

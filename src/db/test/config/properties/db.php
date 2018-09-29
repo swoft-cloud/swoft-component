@@ -49,6 +49,7 @@ return [
             'maxActive'   => 1,
             'maxWait'     => 1,
             'timeout'     => 1,
+            'strictType'  => true,
         ],
 
         'slave' => [
@@ -61,6 +62,7 @@ return [
             'maxActive'   => 1,
             'maxWait'     => 1,
             'timeout'     => 1,
+            'strictType'  => true,
         ],
     ],
 ];

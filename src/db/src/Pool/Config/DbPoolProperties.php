@@ -31,10 +31,38 @@ class DbPoolProperties extends PoolProperties
     protected $driver = Driver::MYSQL;
 
     /**
+     * 开启严格模式，返回的字段将自动转为数字类型
+     * @var bool
+     */
+    protected $strictType = false;
+
+    /**
+     * 开启fetch模式, 可与pdo一样使用fetch/fetchAll逐行或获取全部结果集(4.0版本以上)
+     * @var bool
+     */
+    protected $fetchMode = true;
+
+    /**
      * @return string
      */
     public function getDriver(): string
     {
         return $this->driver;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isStrictType(): bool
+    {
+        return $this->strictType;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFetchMode(): bool
+    {
+        return $this->fetchMode;
     }
 }

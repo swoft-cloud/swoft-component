@@ -15,6 +15,7 @@ use Swoft\Db\AbstractDbConnection;
 use Swoft\Db\Bean\Annotation\Connection;
 use Swoft\Db\Driver\DriverType;
 use Swoft\Db\Exception\MysqlException;
+use Swoft\Db\Pool\Config\DbPoolProperties;
 
 /**
  * Mysql sync connection
@@ -47,6 +48,9 @@ class SyncMysqlConnection extends AbstractDbConnection
         $options            = $this->parseUri($uri);
         $options['timeout'] = $this->pool->getTimeout();
 
+        /** @var DbPoolProperties $config */
+        $config = $this->pool->getPoolConfig();
+
         $user    = $options['user'];
         $passwd  = $options['password'];
         $host    = $options['host'];
@@ -60,6 +64,12 @@ class SyncMysqlConnection extends AbstractDbConnection
             \PDO::ATTR_TIMEOUT    => $timeout,
             \PDO::ATTR_PERSISTENT => true,
         ];
+
+        if ($config->isStrictType()) {
+            $pdoOptions[\PDO::ATTR_STRINGIFY_FETCHES] = false;
+            $pdoOptions[\PDO::ATTR_EMULATE_PREPARES]  = false;
+        }
+
         $dsn              = "mysql:host=$host;port=$port;dbname=$dbName;charset=$charset";
         $this->connection = new \PDO($dsn, $user, $passwd, $pdoOptions);
         $this->connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
