@@ -25,9 +25,9 @@ class ReloadProcess implements ProcessInterface
         $processName = sprintf('%s reload process', $pname);
         $process->name($processName);
 
-        /* @var \Swoft\Process\Bootstrap\Reload $relaod */
-        $relaod = App::getBean(Reload::class);
-        $relaod->run();
+        /* @var \Swoft\Process\Bootstrap\Reload $reload */
+        $reload = App::getBean(Reload::class);
+        $reload->run();
     }
 
     /**
