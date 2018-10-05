@@ -2,6 +2,7 @@
 
 namespace SwoftTest\HttpClient;
 
+use Swoft\Helper\JsonHelper;
 use Swoft\HttpClient\Client;
 use Swoft\HttpClient\Adapter;
 
@@ -27,7 +28,17 @@ class ClientTest extends AbstractTestCase
                 'base_uri' => 'http://echo.swoft.org',
             ]);
         };
-        $this->assertEquals($request()->getResponse()->getBody()->getContents(), $request()->getResult());
+
+        $json = JsonHelper::decode($request()->getResponse()->getBody()->getContents(), true);
+        $json2 = JsonHelper::decode($request()->getResult(), true);
+
+        // FIXME : Travis Ci中，调用多次时，出口IP不同
+        unset($json['headers']['X-Real-Ip']);
+        unset($json2['headers']['X-Real-Ip']);
+        unset($json['headers']['X-Forwarded-For']);
+        unset($json2['headers']['X-Forwarded-For']);
+
+        $this->assertEquals($json, $json2);
     }
 
     /**
