@@ -4,7 +4,7 @@ This reposiory is used to manage all swoft components.
 
 # IMPORTANT
 
-All components will **NOT** be modified in the original repository of component, **SHOULD ALWAYS** be modified in this repository, also commit and push to this repository, and use `git subtree push` to sync changes to the original repository of component.
+All components will **NOT** be modified in the original repository of component, **SHOULD ALWAYS** be modified in this repository, also commit and push to this repository, and then @swoft-bot would sync changes to the original repository of component by `git subtree push`, notice that this action needs triggered by the repositories owner.
 
 ## Usage
 
