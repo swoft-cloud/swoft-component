@@ -47,7 +47,7 @@ class RpcEventListener implements ReceiveInterface,ConnectInterface,CloseInterfa
      */
     public function onConnect(Server $server, int $fd, int $from_id)
     {
-        var_dump('connnect------');
+        var_dump('connect------');
     }
 
     /**
