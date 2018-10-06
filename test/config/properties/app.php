@@ -1,6 +1,12 @@
 <?php
 return [
     'autoInitBean' => true,
-    'beanScan'     => [
+    'beanScan' => [
+    ],
+    'provider' => require __DIR__ . DS . 'provider.php',
+    'components' => [
+        'custom' => [
+            'Swoft\\Sg' => BASE_PATH . '/../src',
+        ],
     ],
 ];
