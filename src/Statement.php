@@ -684,7 +684,7 @@ class Statement implements StatementInterface
 
         $statement .= $this->getInsert();
         if (!empty($statement)) {
-            $statement = 'INSERT INTO ' . $statement;
+            $statement = sprintf('INSERT INTO `%s`', $statement);
         }
 
         return $statement;
@@ -708,7 +708,7 @@ class Statement implements StatementInterface
         $statement .= ' ' . $this->getJoinString();
         $statement = rtrim($statement);
         if (!empty($statement)) {
-            $statement = 'UPDATE ' . $statement;
+            $statement = sprintf('UPDATE `%s`', $statement);
         }
 
         return $statement;

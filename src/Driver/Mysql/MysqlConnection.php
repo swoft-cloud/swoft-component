@@ -106,12 +106,13 @@ class MysqlConnection extends AbstractDbConnection
     public function receive()
     {
         $result = $this->connection->recv();
+        $this->recv = true;
+
         if ($result === false) {
             throw new MysqlException('Mysql recv error，connectError=' . $this->connection->connect_error . ' error=' . $this->connection->error);
         }
         $this->connection->setDefer(false);
 
-        $this->recv   = true;
         $this->result = $result;
 
         return $result;
@@ -204,6 +205,9 @@ class MysqlConnection extends AbstractDbConnection
      */
     public function check(): bool
     {
+        if ($this->isIdleTimeOut()) {
+            return false;
+        }
         return $this->connection->connected;
     }
 

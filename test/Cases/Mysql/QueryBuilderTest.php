@@ -162,12 +162,24 @@ class QueryBuilderTest extends AbstractMysqlCase
             'description' => 'this my desc instance',
             'age'         => mt_rand(1, 100),
         ];
-        $userid = Query::table(User::class)->selectInstance('other')->insert($data)->getResult();
+        $userId = Query::table(User::class)->selectInstance('other')->insert($data)->getResult();
+        $data['description']='this my desc default instance';
+        $userId2 = Query::table(User::class)->insert($data)->getResult();
 
-        $user  = OtherUser::findById($userid)->getResult();
-        $user2 = Query::table(User::class)->selectInstance('other')->where('id', $userid)->one()->getResult();
+        $user2 = Query::table(User::class)->selectInstance('other')->where('id', $userId)->one()->getResult();
         $this->assertEquals($user2['description'], 'this my desc instance');
-        $this->assertEquals($user2['id'], $userid);
+        $this->assertEquals($user2['id'], $userId);
+
+        $otherUser  = Query::table(OtherUser::class)->where('id', $userId)->one()->getResult();
+        $this->assertEquals($otherUser['age'], $data['age']);
+        $this->assertEquals($otherUser['id'], $userId);
+        
+        $otherUser2  = Query::table(OtherUser::class)->selectInstance('default')->where('id', $userId2)->one()->getResult();
+        $this->assertEquals('this my desc default instance', $otherUser2['description']);
+        
+        $user  = OtherUser::findById($userId)->getResult();
+        $this->assertEquals($user->getAge(), $data['age']);
+        $this->assertEquals($user->getId(), $userId);
     }
 
     public function testSelectinstanceByCo()
