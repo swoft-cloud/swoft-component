@@ -14,7 +14,7 @@ abstract class AbstractTestCase extends TestCase
     /**
      * @var \Swoft\Redis\Redis
      */
-    protected $redis;
+    public $redis;
 
     public function __construct($name = null, array $data = [], $dataName = '')
     {
