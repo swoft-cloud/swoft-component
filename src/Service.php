@@ -109,6 +109,9 @@ class Service
             $result = $packer->unpack($result);
             $data   = $packer->checkData($result);
         } catch (\Throwable $throwable) {
+            if (isset($client) && $client instanceof AbstractServiceConnection) {
+                $client->close();
+            }
             if (empty($fallback)) {
                 throw $throwable;
             }

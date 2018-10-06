@@ -22,7 +22,9 @@ class ServiceProxy
         $template .= self::getMethodsTemplate($reflectionMethods);
         $template .= "}";
 
-        eval($template);
+        if (!class_exists($className)) {
+            eval($template);
+        }
     }
 
     /**

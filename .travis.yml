@@ -14,5 +14,7 @@ install:
 before_script:
   - phpenv config-rm xdebug.ini
   - composer update
+  - php test/server.php &
+  - sleep 10
 
 script: composer test
