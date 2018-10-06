@@ -32,35 +32,29 @@ class DbPoolProperties extends PoolProperties
 
     /**
      * 开启严格模式，返回的字段将自动转为数字类型
+     *
      * @var bool
      */
     protected $strictType = false;
 
     /**
-     * 开启fetch模式, 可与pdo一样使用fetch/fetchAll逐行或获取全部结果集(4.0版本以上)
+     * 开启 Fetch 模式, 可类似于 PDO 一样使用 fetch/fetchAll 逐行获取或获取全部结果集
+     *
+     * @since Swoole 4.0
      * @var bool
      */
     protected $fetchMode = true;
 
-    /**
-     * @return string
-     */
     public function getDriver(): string
     {
         return $this->driver;
     }
 
-    /**
-     * @return bool
-     */
     public function isStrictType(): bool
     {
         return $this->strictType;
     }
 
-    /**
-     * @return bool
-     */
     public function isFetchMode(): bool
     {
         return $this->fetchMode;
