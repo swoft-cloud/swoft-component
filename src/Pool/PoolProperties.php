@@ -53,7 +53,7 @@ class PoolProperties implements PoolConfigInterface
     /**
      * Connection timeout
      *
-     * @var int
+     * @var float
      */
     protected $timeout = 3;
 
@@ -126,9 +126,9 @@ class PoolProperties implements PoolConfigInterface
     }
 
     /**
-     * @return int
+     * @return float
      */
-    public function getTimeout(): int
+    public function getTimeout(): float
     {
         return $this->timeout;
     }

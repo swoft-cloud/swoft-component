@@ -245,9 +245,18 @@ abstract class ConnectionPool implements PoolInterface
             return $this->channel->pop();
         }
 
+        // When swoole version is larger than 4.0.3, Channel->select is removed.
+        if (version_compare(swoole_version(), '4.0.3', '>=')) {
+            $result = $this->channel->pop($maxWaitTime);
+            if ($result === false) {
+                throw new ConnectionException('Connection pool waiting queue timeout, timeout=' . $maxWaitTime);
+            }
+            return $result;
+        }
+
         $writes = [];
-        $reads       = [$this->channel];
-        $result      = $this->channel->select($reads, $writes, $maxWaitTime);
+        $reads  = [$this->channel];
+        $result = $this->channel->select($reads, $writes, $maxWaitTime);
 
         if ($result === false || empty($reads)) {
             throw new ConnectionException('Connection pool waiting queue timeout, timeout='.$maxWaitTime);

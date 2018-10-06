@@ -12,6 +12,8 @@ namespace SwoftTest;
 use Swoft\App;
 use SwoftTest\Pool\ConsulEnvConfig;
 use SwoftTest\Pool\ConsulPptConfig;
+use SwoftTest\Pool\DemoPool;
+use SwoftTest\Pool\DemoPoolConfig;
 use SwoftTest\Pool\EnvAndPptFromPptPoolConfig;
 use SwoftTest\Pool\EnvAndPptPoolConfig;
 use SwoftTest\Pool\EnvPoolConfig;
@@ -140,5 +142,42 @@ class PoolTest extends AbstractTestCase
         $this->assertEquals(2, $pConfig->getTimeout());
         $this->assertEquals(2, $pConfig->getInterval());
         $this->assertEquals([1, 2], $pConfig->getTags());
+    }
+
+    public function testGetConnection()
+    {
+        $pool = bean(DemoPool::class);
+        $connection = $pool->getConnection();
+        $connection2 = $pool->getConnection();
+
+        $id = $connection->getConnection()->id;
+        $id2 = $connection2->getConnection()->id;
+
+        $this->assertNotEquals($id, $id2);
+
+        $connection->release(true);
+        $connection->receive();
+        $connection3 = $pool->getConnection();
+        $id3 = $connection3->getConnection()->id;
+        $this->assertEquals($id, $id3);
+
+        $connection2->release(true);
+        $connection3->release(true);
+    }
+
+    public function testGetConnectionByCo()
+    {
+        go(function () {
+            $this->testGetConnection();
+        });
+    }
+
+    public function testPoolConfigTimeout()
+    {
+        $pConfig = App::getBean(EnvPoolConfig::class);
+        $this->assertEquals($pConfig->getTimeout(), 2);
+
+        $dConfig = App::getBean(DemoPoolConfig::class);
+        $this->assertEquals($dConfig->getTimeout(), 0.5);
     }
 }
