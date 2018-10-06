@@ -18,15 +18,11 @@ use Swoft\Auth\Helper\ErrorCode;
 use Swoft\Auth\Mapping\AuthServiceInterface;
 use Swoft\Core\RequestContext;
 
-/**
- * Class AuthUserService
- * @package Swoft\Auth
- */
 class AuthUserService implements AuthServiceInterface
 {
     public function getUserIdentity(): string
     {
-        if (!$this->getSession()) {
+        if (! $this->getSession()) {
             return '';
         }
         return $this->getSession()->getIdentity() ?? '';
@@ -34,14 +30,14 @@ class AuthUserService implements AuthServiceInterface
 
     public function getUserExtendData(): array
     {
-        if (!$this->getSession()) {
+        if (! $this->getSession()) {
             return [];
         }
-        return (array)$this->getSession()->getExtendedData() ?? [];
+        return $this->getSession()->getExtendedData() ?? [];
     }
 
     /**
-     * @return AuthSession |null
+     * @return AuthSession|null
      */
     public function getSession()
     {
@@ -54,14 +50,10 @@ class AuthUserService implements AuthServiceInterface
      * $method = $this->getHandlerArray($requestHandler)[1];
      * $id = $this->getUserIdentity();
      * if ($id) {
-     * return true;
+     *     return true;
      * }
      * return false;
      * </code>
-     *
-     * @param string $requestHandler
-     * @param ServerRequestInterface $request
-     * @return bool
      */
     public function auth(string $requestHandler, ServerRequestInterface $request): bool
     {
@@ -69,13 +61,12 @@ class AuthUserService implements AuthServiceInterface
     }
 
     /**
-     * @param string $handler
      * @return array|null
      */
     protected function getHandlerArray(string $handler)
     {
         $segments = explode('@', trim($handler));
-        if (!isset($segments[1])) {
+        if (! isset($segments[1])) {
             return null;
         }
         return $segments;
