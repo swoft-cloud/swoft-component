@@ -120,7 +120,6 @@ class WsCommand
         $serverOpts = $server->getServerSetting();
         $pidFile = $serverOpts['pfile'];
 
-        @unlink($pidFile);
         \output()->writeln(sprintf('<info>Swoft %s is stopping ...</info>', input()->getScript()));
 
         $result = $server->stop();
@@ -129,6 +128,8 @@ class WsCommand
         if (!$result) {
             \output()->writeln(sprintf('<error>Swoft %s stop fail</error>', input()->getScript()), true, true);
         }
+        //删除pid文件
+        @unlink($pidFile);
 
         \output()->writeln(sprintf('<success>Swoft %s stop success!</success>', input()->getScript()));
     }
