@@ -14,6 +14,7 @@ use Swoft\App;
 use Swoft\Db\AbstractDbConnection;
 use Swoft\Db\Bean\Annotation\Connection;
 use Swoft\Db\Exception\MysqlException;
+use Swoft\Db\Pool\Config\DbPoolProperties;
 use Swoole\Coroutine\Mysql;
 
 /**
@@ -59,17 +60,29 @@ class MysqlConnection extends AbstractDbConnection
         $options            = $this->parseUri($uri);
         $options['timeout'] = $this->pool->getTimeout();
 
+        /** @var DbPoolProperties $config */
+        $config     = $this->pool->getPoolConfig();
+        $strictType = $config->isStrictType();
+        $fetchMode  = $config->isFetchMode();
+
+        $serverConfig = [
+            'host'        => $options['host'],
+            'port'        => $options['port'],
+            'user'        => $options['user'],
+            'password'    => $options['password'],
+            'database'    => $options['database'],
+            'timeout'     => $options['timeout'],
+            'charset'     => $options['charset'],
+            'strict_type' => $strictType,
+        ];
+
+        if (version_compare(swoole_version(), '4.0', '>=')) {
+            $serverConfig['fetch_mode'] = $fetchMode;
+        }
+
         // init
         $mysql = new MySQL();
-        $mysql->connect([
-            'host'     => $options['host'],
-            'port'     => $options['port'],
-            'user'     => $options['user'],
-            'password' => $options['password'],
-            'database' => $options['database'],
-            'timeout'  => $options['timeout'],
-            'charset'  => $options['charset'],
-        ]);
+        $mysql->connect($serverConfig);
 
         // error
         if ($mysql->connected === false) {
