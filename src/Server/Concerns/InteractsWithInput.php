@@ -2,6 +2,7 @@
 
 namespace Swoft\Http\Message\Server\Concerns;
 
+use Swoft\Helper\ArrayHelper;
 use Swoft\Helper\JsonHelper;
 use Swoft\Http\Message\Stream\SwooleStream;
 
@@ -136,7 +137,7 @@ trait InteractsWithInput
     {
         try {
             $contentType = $this->getHeader('content-type');
-            if (! $contentType || ! in_array('application/json', $contentType)) {
+            if (!$contentType || false === \stripos($contentType[0], 'application/json')) {
                 throw new \InvalidArgumentException(sprintf('Invalid Content-Type of the request, expects %s, %s given', 'application/json', ($contentType ? current($contentType) : 'null')));
             }
             $body = $this->getBody();
@@ -150,7 +151,7 @@ trait InteractsWithInput
         if (is_null($key)) {
             return $decodedBody ?? $default;
         } else {
-            return $decodedBody[$key] ?? $default;
+            return ArrayHelper::get($decodedBody, $key, $default);
         }
     }
 

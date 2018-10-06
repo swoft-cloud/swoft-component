@@ -29,11 +29,11 @@
   "repositories": {
     "packagist": {
       "type": "composer",
-      "url": "https://packagist.phpcomposer.com"
+      "url": "https://packagist.laravel-china.org"
     }
   },
   "require-dev": {
-    "eaglewu/swoole-ide-helper": "dev-master",
+    "swoft/swoole-ide-helper": "dev-master",
     "phpunit/phpunit": "^5.7"
   },
   "scripts": {
