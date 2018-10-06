@@ -197,7 +197,7 @@ class SqlTest extends AbstractMysqlCase
 
     public function testSqlQueryStrictType()
     {
-        $result = Db::query("SELECT * FROM user LIMIT 1;",[],'other')->getResult();
+        $result = Db::query('SELECT * FROM user LIMIT 1;', [], 'other')->getResult();
         $id = $result[0]['id'];
         $name = $result[0]['name'];
 
