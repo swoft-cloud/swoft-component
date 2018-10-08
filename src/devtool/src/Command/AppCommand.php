@@ -85,7 +85,7 @@ class AppCommand
     {
         // env check
         list($code, $return,) = ProcessHelper::run('php --ri swoole');
-        $asyncRdsEnabled = $code === 0 ? \strpos($return, 'async redis client => enabled') : false;
+        $asyncRdsEnabled = $code === 0 ? \strpos($return, 'redis client => enabled') : false;
 
         $list = [
             "<bold>Runtime environment check</bold>\n",
