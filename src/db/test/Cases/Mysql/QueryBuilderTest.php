@@ -473,4 +473,74 @@ class QueryBuilderTest extends AbstractMysqlCase
         $result = User::query()->where('id', $id)->one()->getResult();
         $this->assertEquals($id, $result->getId());
     }
+    
+    /**
+     * 列别名查询
+     * @throws \Swoft\Db\Exception\MysqlException
+     */
+    public function testColumnAlias()
+    {
+        // 进行数据插入
+        $userData = [
+            'name'        => 'name:'.uniqid(),
+            'sex'         => 2,
+            'description' => 'this my desc',
+            'age'         => 99,
+        ];
+        $userId = Query::table(User::class)->insert($userData)->getResult();
+        // 查询条件
+        $where = ['id' => $userId];
+
+        // 进行查询，查询单个
+        $user = Query::table(User::class)->condition($where)
+            ->one([
+                'sex' => 'sex',
+                'name' => 'nickName'
+            ])->getResult();
+        // 比较结果, 判断是否为数组
+        $this->assertEquals(is_array($user), true);
+        // 判断是否有非属性值的key
+        $this->assertEquals($user['nickName'], $userData['name']);
+
+        // 通过Entity进行查询
+        $user = User::findOne($where)->getResult();
+        // 比较结果, 判断是否为User对象
+        $this->assertEquals($user instanceof User, true);
+        $this->assertEquals($user->getName(), $userData['name']);
+
+        // 进行查询，查询多个
+        $userList = Query::table(User::class)->condition($where)
+            ->get([
+                'sex' => 'sex',
+                'name' => 'nickName'
+            ])->getResult();
+        // array_pop
+        $user = array_pop($userList);
+        // 比较结果, 判断是否为数组
+        $this->assertEquals(is_array($user), true);
+        // 判断是否有非属性值的key
+        $this->assertEquals($user['nickName'], $userData['name']);
+
+        // 通过Entity获取列表
+        /**
+         * @var \Swoft\Db\Collection $userList
+         */
+        $userList = User::findAll($where)->getResult()->all();
+        // array_pop
+        $user = array_pop($userList);
+        // 比较结果, 判断是否为User对象
+        $this->assertEquals($user instanceof User, true);
+        $this->assertEquals($user->getName(), $userData['name']);
+    }
+
+    /**
+     * 列别名查询
+     * @throws \Swoft\Db\Exception\MysqlException
+     */
+    public function testColumnAliasByCo()
+    {
+        go(function () {
+            $this->testColumnAlias();
+        });
+    }
 }
