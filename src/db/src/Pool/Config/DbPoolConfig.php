@@ -108,4 +108,16 @@ class DbPoolConfig extends DbPoolProperties
      * @var string
      */
     protected $driver = Driver::MYSQL;
+
+    /**
+     * @Value(name="${config.db.master.strictType}", env="${DB_STRICT_TYPE}")
+     * @var bool
+     */
+    protected $strictType = false;
+
+    /**
+     * @Value(name="${config.db.master.fetchMode}", env="${DB_FETCH_MODE}")
+     * @var bool
+     */
+    protected $fetchMode = true;
 }
