@@ -497,7 +497,7 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testQueryWithFunc();
-        }
+        });
     }
            
     /**
