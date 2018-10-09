@@ -475,9 +475,35 @@ class QueryBuilderTest extends AbstractMysqlCase
     }
     
     /**
-     * 列别名查询
-     * @throws \Swoft\Db\Exception\MysqlException
+     * 使用函数是否可用
      */
+    public function testQueryWithFunc()
+    {
+        // 仅统计sex = 1 的数据
+        $result = Query::table(User::class)
+            ->where('sex', 1)
+            ->groupBy('sex')
+            ->one([
+                'sex' => 'sex',
+                'count(1)' => 'sum'
+            ])->getResult();
+        // 仅统计sex = 1 的数据
+        $count = Query::table(User::class)->where('sex', 1)->count()->getResult();
+        // 比较结果
+        $this->assertEquals($result['sum'], $count);
+    }
+
+    public function testQueryWithFuncByCo()
+    {
+        go(function () {
+            $this->testQueryWithFunc();
+        }
+    }
+           
+    /**
+    * 列别名查询
+    * @throws \Swoft\Db\Exception\MysqlException
+    */
     public function testColumnAlias()
     {
         // 进行数据插入
