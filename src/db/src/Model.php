@@ -316,12 +316,7 @@ class Model implements \ArrayAccess, \Iterator, Arrayable,\JsonSerializable
             if (!\method_exists($this, $methodName)) {
                 continue;
             }
-
-            $value = $this->$methodName();
-            if($value === null){
-                continue;
-            }
-            $data[$propertyName] = $value;
+            $data[$propertyName] = $this->$methodName();
         }
 
         return $data;
