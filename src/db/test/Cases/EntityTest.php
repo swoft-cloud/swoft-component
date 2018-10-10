@@ -11,8 +11,6 @@ namespace SwoftTest\Db\Cases;
 
 use SwoftTest\Db\Testing\Entity\User;
 
-/**
- */
 class EntityTest extends AbstractMysqlCase
 {
     public function testToArray()
@@ -36,9 +34,9 @@ class EntityTest extends AbstractMysqlCase
         ];
         $this->assertEquals($data, $array);
 
-        # test if null value columns lost when db entity to array
-        $user2    = new User();
-        $result  = $user2->toArray();
+        // test if null value columns lost when db entity to array
+        $user2 = new User();
+        $result = $user2->toArray();
         $columns = array_keys($result);
         $data = ['id', 'name', 'age', 'sex', 'desc'];
         $this->assertEquals($data, $columns);
