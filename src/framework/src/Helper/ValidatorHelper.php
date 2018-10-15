@@ -120,15 +120,15 @@ class ValidatorHelper
 
         $value = (int)$value;
         if ($min !== null && $value < $min) {
-            $template = empty($template) ?: $template;
+            $template = empty($template) ? sprintf('Parameter %s is too small (minimum is %d)', $name, $min): $template;
 
-            return self::validateError(sprintf('Parameter %s is too small (minimum is %d)', $name, $min), $throws);
+            return self::validateError($template, $throws);
         }
 
         if ($max !== null && $value > $max) {
-            $template = empty($template) ?: $template;
+            $template = empty($template) ? sprintf('Parameter %s is too big (maximum is %d)', $name, $max) : $template;
 
-            return self::validateError(sprintf('Parameter %s is too big (maximum is %d)', $name, $max), $throws);
+            return self::validateError($template, $throws);
         }
 
         return (int)$value;
