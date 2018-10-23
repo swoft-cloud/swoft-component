@@ -128,7 +128,7 @@ class AuthManager implements AuthManagerInterface
     public function generateSession(string $accountTypeName, string $identity, array $data = []): AuthSession
     {
         $startTime = time();
-        $exp = $startTime + (int)$this->sessionDuration;
+        $exp = (int)$this->sessionDuration;
         $session = new AuthSession();
         $session->setExtendedData($data)
             ->setExpirationTime($exp)
