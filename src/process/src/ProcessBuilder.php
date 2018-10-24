@@ -30,13 +30,10 @@ class ProcessBuilder
      */
     public static function create(string $name): Process
     {
-        if (isset(self::$processes[$name])) {
-            return self::$processes[$name];
-        }
-
-        list($name, $boot, $pipe, $inout, $co) = self::getProcessMaping($name);
+        list($name, $boot, $pipe, $inout, $co, $num) = self::getProcessMaping($name);
         $swooleProcess = new SwooleProcess(function (SwooleProcess $swooleProcess) use ($name, $co, $boot) {
-            $process = new Process($swooleProcess);
+            $process                = new Process($swooleProcess);
+            self::$processes[$name] = $process;
             if ($co) {
                 self::runProcessByCo($name, $process, $boot);
 
@@ -44,8 +41,12 @@ class ProcessBuilder
             }
             self::runProcessByDefault($name, $process, $boot);
         }, $inout, $pipe);
-        $process = new Process($swooleProcess);
-        self::$processes[$name] = $process;
+        $process       = new Process($swooleProcess);
+        if ($num > 1) {
+            self::$processes[$name][] = $process;
+        } else {
+            self::$processes[$name] = $process;
+        }
 
         return $process;
     }
@@ -53,10 +54,10 @@ class ProcessBuilder
     /**
      * @param string $name
      *
-     * @return Process
+     * @return Process|array
      * @throws ProcessException
      */
-    public static function get(string $name): Process
+    public static function get(string $name)
     {
         if (!isset(self::$processes[$name])) {
             throw new ProcessException(sprintf('The %s process is not create, you must to create by first !', $name));
@@ -89,6 +90,7 @@ class ProcessBuilder
             $process['pipe'],
             $process['inout'],
             $process['co'],
+            $process['num'],
         ];
 
         return $data;
@@ -172,7 +174,7 @@ class ProcessBuilder
 
                     unset(self::$processes[$name]);
                 }
-            }); 
+            });
         }
     }
 }
