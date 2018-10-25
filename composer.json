@@ -32,6 +32,7 @@
     "replace": {
         "swoft/framework": "self.version",
         "swoft/cache": "self.version",
+        "swoft/auth": "self.version",
         "swoft/console": "self.version",
         "swoft/data-parser": "self.version",
         "swoft/db": "self.version",
@@ -56,6 +57,7 @@
         "psr-4": {
             "Swoft\\": "src/framework/src/",
             "Swoft\\Cache\\": "src/cache/src/",
+            "Swoft\\Auth\\": "src/auth/src/",
             "Swoft\\Console\\": "src/console/src/",
             "Swoft\\DataParser\\": "src/data-parser/src/",
             "Swoft\\Db\\": "src/db/src/",
