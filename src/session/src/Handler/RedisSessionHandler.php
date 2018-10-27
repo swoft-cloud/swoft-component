@@ -9,11 +9,12 @@ use Swoft\Bean\Annotation\Inject;
  * Class RedisSessionHandler
  *
  * @Bean()
- * Class RedisSessionHandler
- * @author huangzhhui <huangzhwork@gmail.com>
+ * @package Swoft\Session\Handler
  */
 class RedisSessionHandler implements \SessionHandlerInterface, LifetimeInterface
 {
+    use LifetimeTrait;
+
     use LifetimeTrait;
 
     /**

@@ -19,16 +19,22 @@ use Swoft\Db\Types;
 
 /**
  * @Entity()
- * @Table(name="user")
+ * @Table(name="user2")
  */
 class User2 extends Model
 {
     /**
      * @Id()
-     * @Column(name="id", type=Types::INT)
+     * @Column(name="id", type="bigint")
      * @var null|int
      */
     private $id;
+
+    /**
+     * @Column(name="oid", type="bigint")
+     * @var int
+     */
+    private $oid;
 
     /**
      * @Column(name="name", type=Types::STRING, length=20)
@@ -37,7 +43,7 @@ class User2 extends Model
     private $name;
 
     /**
-     * @Column(name="age", type=Types::INT)
+     * @Column(name="age", type="smallint")
      * @var int
      */
     private $age;
@@ -45,7 +51,7 @@ class User2 extends Model
     /**
      * 性别
      *
-     * @Column(name="sex", type="int")
+     * @Column(name="sex", type="tinyint")
      * @var int
      */
     private $sex;
@@ -75,6 +81,22 @@ class User2 extends Model
     public function setId($id)
     {
         $this->id = $id;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getOid()
+    {
+        return $this->oid;
+    }
+
+    /**
+     * @param int|null $oid
+     */
+    public function setOid($oid)
+    {
+        $this->oid = $oid;
     }
 
     /**

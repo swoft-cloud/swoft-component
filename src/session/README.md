@@ -4,8 +4,10 @@ Session Component for Swoft
 
 ## Install
 `composer require swoft/session`
+`composer require swoft/session`
 
 - composer command
+See https://doc.swoft.org/master/zh-CN/session/overview.html
 See https://doc.swoft.org/master/zh-CN/session/overview.html
 
 ```bash

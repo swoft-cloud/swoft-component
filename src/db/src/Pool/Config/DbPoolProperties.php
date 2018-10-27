@@ -14,12 +14,6 @@ use Swoft\Pool\PoolProperties;
 
 /**
  * The pool properties of database
- *
- * @uses      DbPoolProperties
- * @version   2018年01月27日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 class DbPoolProperties extends PoolProperties
 {
@@ -31,10 +25,32 @@ class DbPoolProperties extends PoolProperties
     protected $driver = Driver::MYSQL;
 
     /**
-     * @return string
+     * 开启严格模式，返回的字段将自动转为数字类型
+     *
+     * @var bool
      */
+    protected $strictType = false;
+
+    /**
+     * 开启 Fetch 模式, 可类似于 PDO 一样使用 fetch/fetchAll 逐行获取或获取全部结果集
+     *
+     * @since Swoole 4.0
+     * @var bool
+     */
+    protected $fetchMode = true;
+
     public function getDriver(): string
     {
         return $this->driver;
+    }
+
+    public function isStrictType(): bool
+    {
+        return $this->strictType;
+    }
+
+    public function isFetchMode(): bool
+    {
+        return $this->fetchMode;
     }
 }

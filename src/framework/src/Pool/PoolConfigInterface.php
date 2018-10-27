@@ -27,9 +27,9 @@ interface PoolConfigInterface extends Arrayable
     public function getMaxWait(): int;
 
     /**
-     * @return int
+     * @return float
      */
-    public function getTimeout(): int;
+    public function getTimeout(): float;
 
     /**
      * @return array

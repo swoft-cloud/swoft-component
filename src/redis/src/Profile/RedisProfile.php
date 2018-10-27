@@ -21,6 +21,15 @@ abstract class RedisProfile implements ProfileInterface
     protected $processor;
 
     /**
+     * Setter prefix
+     * @param string $prefix
+     */
+    public function setPrefix(string $prefix)
+    {
+        $this->processor->setPrefix($prefix);
+    }
+
+    /**
      * Init
      */
     public function init()

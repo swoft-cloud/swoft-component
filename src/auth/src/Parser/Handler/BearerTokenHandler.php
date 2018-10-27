@@ -18,18 +18,12 @@ use Swoft\Auth\Mapping\AuthHandlerInterface;
 use Swoft\Bean\Annotation\Bean;
 
 /**
- * Class BearerTokenParser
- * @package Swoft\Auth\Parser
  * @Bean()
  */
 class BearerTokenHandler implements AuthHandlerInterface
 {
     const NAME = 'Bearer';
 
-    /**
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @return \Psr\Http\Message\ServerRequestInterface
-     */
     public function handle(ServerRequestInterface $request): ServerRequestInterface
     {
         $token = $this->getToken($request);
@@ -46,7 +40,7 @@ class BearerTokenHandler implements AuthHandlerInterface
     {
         $authHeader = $request->getHeaderLine(AuthConstants::HEADER_KEY) ?? '';
         $authQuery = $request->getQueryParams()['token'] ?? '';
-        return $authQuery ? $authQuery : $this->parseValue($authHeader);
+        return $authQuery ?: $this->parseValue($authHeader);
     }
 
     protected function parseValue($string)

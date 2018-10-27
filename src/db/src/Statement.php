@@ -218,7 +218,12 @@ class Statement implements StatementInterface
         foreach ($select as $column => $alias) {
             // Filter db keyword
             if (array_key_exists($column, $fieldSelect) && trim($column) != '*' && strpos($column, '.') === false) {
-                $column = sprintf('`%s`', $column);
+                // 判断是否为函数调用
+                if (strpos($column, '(') || strpos($column, ')')) {
+                    $column = sprintf('%s', $column);
+                } else {
+                    $column = sprintf('`%s`', $column);
+                }
             }
 
             $statement .= $column;
@@ -684,7 +689,7 @@ class Statement implements StatementInterface
 
         $statement .= $this->getInsert();
         if (!empty($statement)) {
-            $statement = 'INSERT INTO ' . $statement;
+            $statement = sprintf('INSERT INTO `%s`', $statement);
         }
 
         return $statement;
@@ -708,7 +713,7 @@ class Statement implements StatementInterface
         $statement .= ' ' . $this->getJoinString();
         $statement = rtrim($statement);
         if (!empty($statement)) {
-            $statement = 'UPDATE ' . $statement;
+            $statement = sprintf('UPDATE `%s`', $statement);
         }
 
         return $statement;

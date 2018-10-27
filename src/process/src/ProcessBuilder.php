@@ -13,8 +13,7 @@ use Swoft\Process\Exception\ProcessException;
 use Swoole\Process as SwooleProcess;
 
 /**
- * Class ProcessBuilder - The process builder
- * @package Swoft\Process
+ * ProcessBuilder
  */
 class ProcessBuilder
 {

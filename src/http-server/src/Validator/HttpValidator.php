@@ -6,6 +6,7 @@ use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\ValidatorFrom;
 use Swoft\Helper\ArrayHelper;
 use Swoft\Helper\JsonHelper;
+use Swoft\Helper\StringHelper;
 use Swoft\Http\Message\Server\Request;
 use Swoft\Http\Message\Stream\SwooleStream;
 use Swoft\Validator\AbstractValidator;
@@ -58,7 +59,8 @@ class HttpValidator extends AbstractValidator
         $post = $request->getParsedBody();
         $contentType = $request->getHeader('content-type');
         $isPostJson = false;
-        if ($contentType && \in_array('application/json', $contentType)) {
+
+        if (isset($contentType[0]) && StringHelper::startsWith($contentType[0], 'application/json')) {
             $isPostJson = true;
             $post = $request->json();
         }

@@ -11,11 +11,12 @@ use Swoft\Session\Exception\RuntimeException;
  * Class FileSessionHandler
  *
  * @Bean()
- * Class  FileSessionHandler
- * @author    huangzhhui <huangzhwork@gmail.com>
+ * @package Swoft\Session\Handler
  */
 class FileSessionHandler implements \SessionHandlerInterface, LifetimeInterface
 {
+    use LifetimeTrait;
+
     use LifetimeTrait;
 
     /**

@@ -13,7 +13,6 @@ namespace Swoft\Auth\Helper;
 use Swoft\Bean\Annotation\Bean;
 
 /**
- * Class ErrorCodeHelper
  * @package Swoft\Auth\Helper
  * @Bean()
  */
@@ -92,7 +91,6 @@ class ErrorCodeHelper
 
     /**
      * @param $code
-     *
      * @return array|null
      */
     public function get($code)
@@ -102,10 +100,8 @@ class ErrorCodeHelper
 
     /**
      * @param $code
-     *
-     * @return bool
      */
-    public function has($code)
+    public function has($code): bool
     {
         return array_key_exists($code, $this->getErrors());
     }
@@ -114,9 +110,8 @@ class ErrorCodeHelper
      * @param $code
      * @param $message
      * @param $statusCode
-     * @return ErrorCodeHelper
      */
-    public function error($code, $message, $statusCode)
+    public function error($code, $message, $statusCode): self
     {
         $this->errors[$code] = [
             'statusCode' => $statusCode,
@@ -126,10 +121,7 @@ class ErrorCodeHelper
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getErrors()
+    public function getErrors(): array
     {
         return $this->errors;
     }

@@ -27,7 +27,7 @@ class LazyListener implements EventHandlerInterface
      */
     public function handle(EventInterface $event)
     {
-        return PhpHelper::call($this->callback, $event);
+        return PhpHelper::call($this->callback, [$event]);
     }
 
     /**

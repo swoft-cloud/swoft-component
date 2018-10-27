@@ -25,13 +25,14 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "SwoftTest\\Redis\\": "test/Cases"
+            "SwoftTest\\Redis\\": "test/Cases",
+            "SwoftTest\\Redis\\Testing\\": "test/Testing"
         }
     },
     "repositories": [
         {
             "type": "composer",
-            "url": "https://packagist.phpcomposer.com"
+            "url": "https://packagist.laravel-china.org"
         }
     ],
     "require-dev": {

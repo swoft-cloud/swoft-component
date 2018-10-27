@@ -12,9 +12,9 @@ namespace Swoft\Redis;
 
 use Swoft\App;
 use Swoft\Redis\Exception\RedisException;
-use Swoft\Redis\Pool\Config\RedisPoolConfig;
 use Swoft\Redis\Profile\RedisCommandProvider;
 use Swoole\Coroutine\Redis as CoRedis;
+use Swoft\Redis\Pool\Config\RedisPoolConfig;
 
 /**
  * Redis connection
@@ -59,34 +59,6 @@ class RedisConnection extends AbstractRedisConnection
     }
 
     /**
-<<<<<<< HEAD
-     * Parse uri
-     *
-     * @param string $uri `tcp://127.0.0.1:6379/1?auth=password`
-     *
-     * @return array
-     * @throws RedisException
-     */
-    protected function parseUri(string $uri): array
-    {
-        $parseAry = parse_url($uri);
-        if (!isset($parseAry['host']) || !isset($parseAry['port'])) {
-            $error = sprintf('Redis Connection format is incorrect uri=%s, eg:tcp://127.0.0.1:6379/1?auth=password', $uri);
-            App::error($error);
-            throw new RedisException($error);
-        }
-        isset($parseAry['path']) && $parseAry['database'] = str_replace('/', '', $parseAry['path']);
-        $query = $parseAry['query']?? '';
-        parse_str($query, $options);
-        $configs = array_merge($parseAry, $options);
-        unset($configs['path'], $configs['query']);
-
-        return $configs;
-    }
-
-    /**
-=======
->>>>>>> master
      * @param string $method
      * @param array  $arguments
      *
@@ -95,11 +67,12 @@ class RedisConnection extends AbstractRedisConnection
      */
     public function __call($method, $arguments)
     {
-        /* @var RedisCommandProvider $provider */
-        $provider = \bean(RedisCommandProvider::class);
-        $command = $provider->createCommand($method, $arguments);
-        $arguments = $command->getArguments();
-        $method = $command->getId();
+        /* @var RedisCommandProvider $commandProvider */
+        $commandProvider = App::getBean(RedisCommandProvider::class);
+        $commandProvider->setPrefix($this->pool->getPoolConfig()->getPrefix());
+        $command         = $commandProvider->createCommand($method, $arguments);
+        $arguments       = $command->getArguments();
+        $method          = $command->getId();
 
         $data = parent::__call($method, $arguments);
         return $command->parseResponse($data);
@@ -107,22 +80,18 @@ class RedisConnection extends AbstractRedisConnection
 
 
     /**
-     * @param string $host
-     * @param int    $port
-     * @param int    $timeout
-     *
      * @return CoRedis
      * @throws RedisException
      */
-    protected function getConnectRedis(string $host, int $port, int $timeout): CoRedis
+    protected function getConnectRedis(string $host, int $port, float $timeout): CoRedis
     {
         /* @var RedisPoolConfig $poolConfig */
         $poolConfig = $this->pool->getPoolConfig();
         $serialize  = $poolConfig->getSerialize();
         $serialize  = ((int)$serialize == 0) ? false : true;
-        $redis      = new CoRedis();
+        $redis      = new CoRedis(['timeout' => $timeout]);
         $result     = $redis->connect($host, $port, $serialize);
-        if ($result == false) {
+        if ($result === false) {
             $error = sprintf('Redis connection failure host=%s port=%d', $host, $port);
             throw new RedisException($error);
         }

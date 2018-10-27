@@ -47,7 +47,7 @@ class HttpCoResult extends AbstractResult implements HttpResultInterface
         $client->close();
         $headers = value(function () {
             $headers = [];
-            foreach ($this->connection->headers as $key => $value) {
+            foreach ($this->connection->headers ?? [] as $key => $value) {
                 $exploded = explode('-', $key);
                 foreach ($exploded as &$str) {
                     $str = ucfirst($str);

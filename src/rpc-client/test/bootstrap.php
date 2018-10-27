@@ -18,3 +18,5 @@ $bootstrap->bootstrap();
 ]);
 $initApplicationContext = new \Swoft\Core\InitApplicationContext();
 $initApplicationContext->init();
+
+$server = new \Swoft\Rpc\Server\Rpc\RpcServer();

@@ -26,15 +26,30 @@ class JsonPackerTest extends AbstractTestCase
             1,
             1.1234,
             false,
+            true,
             [
                 'a',
                 1,
+                false,
+                true,
                 1.1234
             ],
+            new \ArrayObject([
+                'a',
+                1,
+                false,
+                true,
+                1.1234
+            ]),
         ];
         $packedData = $packer->pack($data);
         $this->assertInternalType('string', $packedData);
         $this->assertJson(\json_encode($data), $packedData);
     }
 
+    public function testEof()
+    {
+        $packer = new JsonPacker();
+        $this->assertEquals("\r\n", $packer->getEof());
+    }
 }

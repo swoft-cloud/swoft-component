@@ -21,8 +21,6 @@ use Swoft\Bean\Annotation\Bean;
 use Swoft\Http\Message\Middleware\MiddlewareInterface;
 
 /**
- * Class AuthMiddleware
- * @package Swoft\Auth\Middleware
  * @Bean()
  */
 class AuthMiddleware implements MiddlewareInterface
@@ -31,9 +29,7 @@ class AuthMiddleware implements MiddlewareInterface
      * Process an incoming server request and return a response, optionally delegating
      * response creation to a handler.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @param \Psr\Http\Server\RequestHandlerInterface $handler
-     * @return \Psr\Http\Message\ResponseInterface
+     * @throws \Swoft\Auth\Exception\AuthException When AuthorizationParser missing or error.
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

@@ -17,6 +17,8 @@ use Swoft\Helper\ComponentHelper;
  */
 class WorkerAnnotationResource extends AnnotationResource
 {
+    use CustomComponentsRegister;
+
     /**
      * {@inheritDoc}
      */
@@ -67,5 +69,7 @@ class WorkerAnnotationResource extends AnnotationResource
                 $this->scanNamespaces[$scanNamespace] = $scanDir;
             }
         }
+
+        $this->registerWorkerNamespace();
     }
 }

@@ -5,10 +5,17 @@ namespace Swoft\Task;
 use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Task\Exception\TaskException;
+use function file_put_contents;
+use function function_exists;
+use function is_string;
+use function msg_get_queue;
+use function msg_send;
+use function mt_rand;
+use function serialize;
+use function strlen;
+use function tempnam;
 
 /**
- * QueueTask
- *
  * @Bean()
  */
 class QueueTask
@@ -41,7 +48,7 @@ class QueueTask
     /**
      * @var mixed
      */
-    private $queueId;
+    private $queueId = null;
 
     /**
      * @var int
@@ -68,41 +75,30 @@ class QueueTask
      */
     const SW_EVENT_TASK = 7;
 
-    /**
-     * Init
-     */
     public function init()
     {
         $setting = App::$appProperties['server']['setting'];
 
-        $this->tmp        = $setting['task_tmpdir'];
-        $this->workerNum  = $setting['worker_num'];
-        $this->taskNum    = $setting['task_worker_num'];
-        $this->messageKey = (int)$setting['message_queue_key'];
+        $this->tmp = $setting['task_tmpdir'];
+        $this->workerNum = $setting['worker_num'];
+        $this->taskNum = $setting['task_worker_num'];
+        $this->messageKey = $setting['message_queue_key'];
     }
 
-    /**
-     * @param string $data
-     * @param int $taskWorkerId
-     * @param int $srcWorkerId
-     *
-     * @return bool
-     * @throws \Exception
-     */
-    public function deliver(string $data, int $taskWorkerId = null, $srcWorkerId = null): bool
+    public function deliver(string $data, int $taskWorkerId = null, int $srcWorkerId = null): bool
     {
         if ($taskWorkerId === null) {
-            $taskWorkerId = \random_int($this->workerNum + 1, $this->workerNum + $this->taskNum);
+            $taskWorkerId = mt_rand($this->workerNum + 1, $this->workerNum + $this->taskNum);
         }
 
         if ($srcWorkerId === null) {
-            $srcWorkerId = \random_int(0, $this->workerNum - 1);
+            $srcWorkerId = mt_rand(0, $this->workerNum - 1);
         }
 
         $this->check();
-        $data   = $this->pack($data, $srcWorkerId);
-        $result = \msg_send($this->queueId, $taskWorkerId, $data, false);
-        if (!$result) {
+        $data = $this->pack($data, $srcWorkerId);
+        $result = msg_send($this->queueId, $taskWorkerId, $data, false);
+        if (! $result) {
             return false;
         }
 
@@ -110,15 +106,15 @@ class QueueTask
     }
 
     /**
-     * @throws TaskException
+     * @throws TaskException When msg_get_queue() method not exist or excute failure.
      */
     private function check()
     {
-        if (!\function_exists('msg_get_queue')) {
-            throw new TaskException('You must to compiled php with --enable-sysvmsg');
+        if (! function_exists('msg_get_queue')) {
+            throw new TaskException('You have to compile PHP with --enable-sysvmsg');
         }
         if ($this->queueId === null) {
-            $this->queueId = \msg_get_queue($this->messageKey);
+            $this->queueId = msg_get_queue((int)$this->messageKey);
         }
 
         if (empty($this->queueId)) {
@@ -126,28 +122,22 @@ class QueueTask
         }
     }
 
-    /**
-     * @param string $data
-     * @param string $srcWorkerId
-     *
-     * @return string
-     */
     private function pack(string $data, string $srcWorkerId): string
     {
-        $flags = self::SW_TASK_NONBLOCK;
-        $type  = self::SW_EVENT_TASK;
-        if (!\is_string($data)) {
-            $data  = serialize($data);
-            $flags |= self::SW_TASK_SERIALIZE;
+        $flags = static::SW_TASK_NONBLOCK;
+        $type = static::SW_EVENT_TASK;
+        if (! is_string($data)) {
+            $data = serialize($data);
+            $flags |= static::SW_TASK_SERIALIZE;
         }
-        if (\strlen($data) >= 8180) {
+        if (strlen($data) >= 8180) {
             $tmpFile = tempnam($this->tmp, $this->tmpFile);
             file_put_contents($tmpFile, $data);
-            $data  = pack('l', \strlen($data)) . $tmpFile . "\0";
-            $flags |= self::SW_TASK_TMPFILE;
-            $len   = 128 + 24;
+            $data = pack('l', strlen($data)) . $tmpFile . "\0";
+            $flags |= static::SW_TASK_TMPFILE;
+            $len = 128 + 24;
         } else {
-            $len = \strlen($data);
+            $len = strlen($data);
         }
 
         return pack('lSsCCS', $this->taskId++, $len, $srcWorkerId, $type, 0, $flags) . $data;

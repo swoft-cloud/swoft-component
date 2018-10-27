@@ -18,17 +18,7 @@ interface AccountTypeInterface
 
     const LOGIN_CREDENTIAL = 'credential';
 
-    /**
-     * @param array $data Login data
-     *
-     * @return AuthResult|null
-     */
-    public function login(array $data):AuthResult;
+    public function login(array $data): AuthResult;
 
-    /**
-     * @param string $identity Identity
-     *
-     * @return bool Authentication successful
-     */
-    public function authenticate(string $identity) :bool ;
+    public function authenticate(string $identity): bool;
 }

@@ -5,8 +5,9 @@ namespace Swoft\Session\Handler;
 use Swoft\Http\Message\Server\Request;
 
 /**
- * Class NeedRequestInterface
- * @author    huangzhhui <huangzhwork@gmail.com>
+ * Interface NeedRequestInterface
+ *
+ * @package Swoft\Session\Handler
  */
 interface NeedRequestInterface
 {

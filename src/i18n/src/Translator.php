@@ -112,11 +112,6 @@ class Translator
     {
         $realKey = $this->getRealKey($key, $locale);
 
-        if (!ArrayHelper::has($this->messages, $realKey)) {
-            $exceptionMessage = sprintf('Translate error, key %s does not exist', $realKey);
-            throw new \InvalidArgumentException($exceptionMessage);
-        }
-
         $message = ArrayHelper::get($this->messages, $realKey);
         
         // not exist, return key
