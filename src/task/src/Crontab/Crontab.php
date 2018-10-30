@@ -301,10 +301,6 @@ class Crontab
             }
         }
 
-        foreach ($data as $item) {
-            $this->startTask($item['key']);
-        }
-
         return $data;
     }
 
