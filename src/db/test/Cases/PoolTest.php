@@ -14,6 +14,7 @@ use SwoftTest\Db\Testing\Pool\DbEnvPoolConfig;
 use SwoftTest\Db\Testing\Pool\DbPptPoolConfig;
 use SwoftTest\Db\Testing\Pool\DbSlaveEnvPoolConfig;
 use SwoftTest\Db\Testing\Pool\DbSlavePptConfig;
+use SwoftTest\Db\Testing\Pool\OtherDbConfig;
 use SwoftTest\Db\Testing\Pool\OtherDbPool;
 
 /**
@@ -89,6 +90,13 @@ class PoolTest extends AbstractTestCase
         $this->assertEquals($pConfig->getMaxActive(), 60);
         $this->assertEquals($pConfig->isUseProvider(), false);
         $this->assertEquals($pConfig->getMaxWait(), 10);
+    }
+
+    public function testOtherConfig()
+    {
+        $config = bean(OtherDbConfig::class);
+        $this->assertTrue($config->isStrictType());
+        $this->assertTrue($config->isFetchMode());
     }
 
     public function testMaxIdleTime()

@@ -218,7 +218,12 @@ class Statement implements StatementInterface
         foreach ($select as $column => $alias) {
             // Filter db keyword
             if (array_key_exists($column, $fieldSelect) && trim($column) != '*' && strpos($column, '.') === false) {
-                $column = sprintf('`%s`', $column);
+                // 判断是否为函数调用
+                if (strpos($column, '(') || strpos($column, ')')) {
+                    $column = sprintf('%s', $column);
+                } else {
+                    $column = sprintf('`%s`', $column);
+                }
             }
 
             $statement .= $column;

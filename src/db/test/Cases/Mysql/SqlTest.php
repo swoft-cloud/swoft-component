@@ -194,4 +194,21 @@ class SqlTest extends AbstractMysqlCase
             $this->testTableNameIsDbKeyword();
         });
     }
+
+    public function testSqlQueryStrictType()
+    {
+        $result = Db::query('SELECT * FROM user LIMIT 1;', [], 'other')->getResult();
+        $id = $result[0]['id'];
+        $name = $result[0]['name'];
+
+        $this->assertTrue(is_int($id));
+        $this->assertTrue(is_string($name));
+    }
+
+    public function testSqlQueryStrictTypeByCo()
+    {
+        go(function () {
+            $this->testSqlQueryStrictType();
+        });
+    }
 }

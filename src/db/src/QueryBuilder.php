@@ -1432,7 +1432,7 @@ class QueryBuilder implements QueryBuilderInterface
                 throw new DbException('The result is not instanceof ' . $this->className);
             }
 
-            if (isset($result[0]) && empty($this->join)) {
+            if (isset($result[0]) && empty($this->join) && !empty($this->className)) {
                 $tableName = $this->getTableName();
 
                 return EntityHelper::formatRowByType($result[0], $tableName);
@@ -1476,7 +1476,7 @@ class QueryBuilder implements QueryBuilderInterface
                 return new Collection($entities);
             }
 
-            if (!empty($result) && empty($this->join)) {
+            if (!empty($result) && empty($this->join) && !empty($this->className)) {
                 $tableName = $this->getTableName();
                 $result    = EntityHelper::formatListByType($result, $tableName);
             }

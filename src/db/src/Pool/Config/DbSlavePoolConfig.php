@@ -108,4 +108,16 @@ class DbSlavePoolConfig extends DbPoolProperties
      * @var string
      */
     protected $driver = Driver::MYSQL;
+
+    /**
+     * @Value(name="${config.db.slave.strictType}", env="${DB_SLAVE_STRICT_TYPE}")
+     * @var bool
+     */
+    protected $strictType = false;
+
+    /**
+     * @Value(name="${config.db.slave.fetchMode}", env="${DB_SLAVE_FETCH_MODE}")
+     * @var bool
+     */
+    protected $fetchMode = true;
 }
