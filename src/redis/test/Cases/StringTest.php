@@ -82,6 +82,8 @@ class StringTest extends AbstractTestCase
     {
         $this->redis->delete('pf:test');
         $this->redis->delete('pf:test2');
+        $this->redis->delete('pf:test3');
+
         $result = $this->redis->pfAdd('pf:test', [1, 2, 3]);
 
         $this->assertEquals(1, $result);

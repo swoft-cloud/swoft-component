@@ -149,6 +149,9 @@ class PrefixProcessor implements ProcessorInterface
             'EVALSHA'          => 'static::evalKeys',
             'ZRANGEBYLEX'      => 'static::first',
             'ZREVRANGEBYLEX'   => 'static::first',
+            'PFADD'            => 'static::first',
+            'PFCOUNT'          => 'static::allarray',
+            'PFMERGE'          => 'static::allarray',
         ];
     }
 
@@ -254,6 +257,31 @@ class PrefixProcessor implements ProcessorInterface
             $arguments = [$arguments];
 
             $command->setRawArguments($arguments);
+        }
+    }
+
+    /**
+     * Applies the specified prefix to all the arguments.
+     *
+     * @param CommandInterface $command Command instance.
+     * @param string           $prefix  Prefix string.
+     */
+    public static function allarray(CommandInterface $command, $prefix)
+    {
+        if ($arguments = $command->getArguments()) {
+            $result = [];
+            foreach ($arguments as $key) {
+                if (is_array($key)) {
+                    foreach ($key as &$i) {
+                        $i = "$prefix$i";
+                    }
+                    $result[] = $key;
+                } else {
+                    $result[] = "$prefix$key";
+                }
+            }
+
+            $command->setRawArguments($result);
         }
     }
 
