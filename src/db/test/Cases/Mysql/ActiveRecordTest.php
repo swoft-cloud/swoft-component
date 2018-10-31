@@ -653,4 +653,36 @@ class ActiveRecordTest extends AbstractMysqlCase
         $this->assertEquals(2, $count);
     }
 
+    /**
+     * @dataProvider mysqlProvider
+     * @param int $id
+     */
+    public function testForUpdate(int $id)
+    {
+        User::findById(
+            $id,
+            [
+                'for_update' => 'true',
+            ]
+        )->getResult();
+        $sql = get_last_sql();
+        $this->assertTrue(stripos($sql, 'for update') > 0);
+    }
+
+    /**
+     * @dataProvider mysqlProvider
+     * @param int $id
+     */
+    public function testSharedLock(int $id)
+    {
+        User::findById(
+            $id,
+            [
+                'shared_lock' => 'true',
+            ]
+        )->getResult();
+        $sql = get_last_sql();
+        $this->assertTrue(stripos($sql, 'lock in share mode') > 0);
+    }
+
 }
