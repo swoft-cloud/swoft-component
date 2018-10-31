@@ -80,6 +80,10 @@ class RedisCommandProvider extends RedisProfile
             'INCRBYFLOAT'         => '\Swoft\Redis\Operator\Strings\StringIncrementByFloat',
             'BITOP'               => '\Swoft\Redis\Operator\Strings\StringBitOp',
             'BITCOUNT'            => '\Swoft\Redis\Operator\Strings\StringBitCount',
+            /* ---------------- Redis 2.8 ---------------- */
+            'PFADD'               => '\Swoft\Redis\Operator\Strings\StringPfAdd',
+            'PFCOUNT'             => '\Swoft\Redis\Operator\Strings\StringPfCount',
+            'PFMERGE'             => '\Swoft\Redis\Operator\Strings\StringPfMerge',
 
             /* commands operating on lists */
             /* ---------------- Redis 1.2 ---------------- */
