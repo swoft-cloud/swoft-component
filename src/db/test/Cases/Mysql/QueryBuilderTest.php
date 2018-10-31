@@ -576,12 +576,10 @@ class QueryBuilderTest extends AbstractMysqlCase
      */
     public function testForUpdate(int $id)
     {
-        Query::table(User::class)->where('id', $id)
-            ->forUpdate()
-            ->one()
-            ->getResult();
-        $sql = get_last_sql();
-        $this->assertTrue(stripos($sql, 'for update') > 0);
+        Query::table(User::class)->where('id', $id)->forUpdate()->one()->getResult();
+        $lastSql = get_last_sql();
+        $lastSql = substr($lastSql, 0, strpos($lastSql, ' Params: '));
+        $this->assertTrue(StringHelper::endsWith($lastSql, 'FOR UPDATE'));
     }
 
     /**
@@ -590,11 +588,9 @@ class QueryBuilderTest extends AbstractMysqlCase
      */
     public function testSharedLock(int $id)
     {
-        Query::table(User::class)->where('id', $id)
-            ->sharedLock()
-            ->one()
-            ->getResult();
-        $sql = get_last_sql();
-        $this->assertTrue(stripos($sql, 'lock in share mode') > 0);
+        Query::table(User::class)->where('id', $id)->sharedLock()->one()->getResult();
+        $lastSql = get_last_sql();
+        $lastSql = substr($lastSql, 0, strpos($lastSql, ' Params: '));
+        $this->assertTrue(StringHelper::endsWith($lastSql, 'LOCK IN SHARE MODE'));
     }
 }
