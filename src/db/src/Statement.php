@@ -95,7 +95,13 @@ class Statement implements StatementInterface
         if ($this->builder->getLimit()) {
             $statement .= ' ' . $this->getLimitString();
         }
-        
+
+        // lock 语句
+        if ($this->builder->getLocks()) {
+            $statement .= ' ' . $this->getLockString();
+            $statement = rtrim($statement);
+        }
+
         return $statement;
     }
 
@@ -602,6 +608,31 @@ class Statement implements StatementInterface
         $size      = $limit['limit'];
         $offset    = $limit['offset'];
         $statement = sprintf('LIMIT %d,%d', $offset, $size);
+
+        return $statement;
+    }
+
+    /**
+     * 加锁语句
+     * @return string
+     */
+    protected function getLockString(): string
+    {
+        $statement = '';
+        $locks = $this->builder->getLocks();
+        if (!$locks) {
+            return $statement;
+        }
+
+        if (!$this->isSelect()) {
+            return $statement;
+        } elseif (true === isset($locks['for_update']) && true === $locks['for_update']) {
+            $statement = 'FOR UPDATE';
+        } elseif (true === isset($locks['shared_lock']) && true === $locks['shared_lock']) {
+            $statement = 'LOCK IN SHARE MODE';
+        } else {
+            return $statement;
+        }
 
         return $statement;
     }

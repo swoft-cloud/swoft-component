@@ -238,6 +238,11 @@ class QueryBuilder implements QueryBuilderInterface
     protected $limit = [];
 
     /**
+     * @var array 共享锁排他锁
+     */
+    private $locks = [];
+
+    /**
      * 参数集合
      *
      * @var array
@@ -888,6 +893,28 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
+     * 排他锁语句
+     * @return QueryBuilder
+     */
+    public function forUpdate(): QueryBuilder
+    {
+        $this->locks['for_update'] = true;
+
+        return $this;
+    }
+
+    /**
+     * 共享锁语句
+     * @return QueryBuilder
+     */
+    public function sharedLock(): QueryBuilder
+    {
+        $this->locks['shared_lock'] = true;
+
+        return $this;
+    }
+
+    /**
      * 设置参数
      *
      * @param mixed  $key   参数名称整数和字符串，(?n|:name)
@@ -1360,6 +1387,11 @@ class QueryBuilder implements QueryBuilderInterface
     public function getLimit(): array
     {
         return $this->limit;
+    }
+
+    public function getLocks(): array
+    {
+        return $this->locks;
     }
 
     /**
