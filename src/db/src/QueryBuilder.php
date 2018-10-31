@@ -238,7 +238,9 @@ class QueryBuilder implements QueryBuilderInterface
     protected $limit = [];
 
     /**
-     * @var array 共享锁排他锁
+     * 共享锁，排他锁
+     *
+     * @var array
      */
     private $locks = [];
 
@@ -431,7 +433,7 @@ class QueryBuilder implements QueryBuilderInterface
      * @return QueryBuilder
      * @throws \Swoft\Db\Exception\DbException
      */
-    public function innerJoin(string $table, $criteria = null, string $alias = null): QueryBuilder
+    public function innerJoin(string $table, $criteria = null, string $alias = null): self
     {
         $table = $this->getTableNameByClassName($table);
         $this->join($table, $criteria, self::INNER_JOIN, $alias);
@@ -449,7 +451,7 @@ class QueryBuilder implements QueryBuilderInterface
      * @return QueryBuilder
      * @throws \Swoft\Db\Exception\DbException
      */
-    public function leftJoin(string $table, $criteria = null, string $alias = null): QueryBuilder
+    public function leftJoin(string $table, $criteria = null, string $alias = null): self
     {
         $table = $this->getTableNameByClassName($table);
         $this->join($table, $criteria, self::LEFT_JOIN, $alias);
@@ -467,7 +469,7 @@ class QueryBuilder implements QueryBuilderInterface
      * @return QueryBuilder
      * @throws \Swoft\Db\Exception\DbException
      */
-    public function rightJoin(string $table, $criteria = null, string $alias = null): QueryBuilder
+    public function rightJoin(string $table, $criteria = null, string $alias = null): self
     {
         $table = $this->getTableNameByClassName($table);
         $this->join($table, $criteria, self::RIGHT_JOIN, $alias);
@@ -485,7 +487,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    public function where(string $column, $value, $operator = self::OPERATOR_EQ, $connector = self::LOGICAL_AND): QueryBuilder
+    public function where(string $column, $value, $operator = self::OPERATOR_EQ, $connector = self::LOGICAL_AND): self
     {
         $this->criteria($this->where, $column, $value, $operator, $connector);
 
@@ -588,7 +590,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    public function andWhere(string $column, $value, $operator = self::OPERATOR_EQ): QueryBuilder
+    public function andWhere(string $column, $value, $operator = self::OPERATOR_EQ): self
     {
         $this->criteria($this->where, $column, $value, $operator, self::LOGICAL_AND);
 
@@ -602,7 +604,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    public function openWhere($connector = self::LOGICAL_AND): QueryBuilder
+    public function openWhere($connector = self::LOGICAL_AND): self
     {
         return $this->bracketCriteria($this->where, self::BRACKET_OPEN, $connector);
     }
@@ -612,7 +614,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    public function closeWhere(): QueryBuilder
+    public function closeWhere(): self
     {
         return $this->bracketCriteria($this->where, self::BRACKET_CLOSE);
     }
@@ -626,7 +628,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    public function orWhere($column, $value, $operator = self::OPERATOR_EQ): QueryBuilder
+    public function orWhere($column, $value, $operator = self::OPERATOR_EQ): self
     {
         $this->criteria($this->where, $column, $value, $operator, self::LOGICAL_OR);
 
@@ -642,7 +644,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    public function whereIn(string $column, array $values, string $connector = self::LOGICAL_AND): QueryBuilder
+    public function whereIn(string $column, array $values, string $connector = self::LOGICAL_AND): self
     {
         if (!empty($values)) {
             $this->criteria($this->where, $column, $values, self::IN, $connector);
@@ -660,7 +662,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    public function whereNotIn(string $column, array $values, string $connector = self::LOGICAL_AND): QueryBuilder
+    public function whereNotIn(string $column, array $values, string $connector = self::LOGICAL_AND): self
     {
         if (!empty($values)) {
             $this->criteria($this->where, $column, $values, self::NOT_IN, $connector);
@@ -679,7 +681,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    public function whereBetween(string $column, $min, $max, string $connector = self::LOGICAL_AND): QueryBuilder
+    public function whereBetween(string $column, $min, $max, string $connector = self::LOGICAL_AND): self
     {
         $this->criteria($this->where, $column, [$min, $max], self::BETWEEN, $connector);
 
@@ -696,7 +698,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    public function whereNotBetween(string $column, $min, $max, string $connector = self::LOGICAL_AND): QueryBuilder
+    public function whereNotBetween(string $column, $min, $max, string $connector = self::LOGICAL_AND): self
     {
         $this->criteria($this->where, $column, [$min, $max], self::NOT_BETWEEN, $connector);
 
@@ -713,7 +715,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    public function having(string $column, $value, string $operator = self::OPERATOR_EQ, string $connector = self::LOGICAL_AND): QueryBuilder
+    public function having(string $column, $value, string $operator = self::OPERATOR_EQ, string $connector = self::LOGICAL_AND): self
     {
         $this->criteria($this->having, $column, $value, $operator, $connector);
 
@@ -729,7 +731,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    public function andHaving(string $column, $value, string $operator = self::OPERATOR_EQ): QueryBuilder
+    public function andHaving(string $column, $value, string $operator = self::OPERATOR_EQ): self
     {
         $this->criteria($this->having, $column, $value, $operator, self::LOGICAL_AND);
 
@@ -745,7 +747,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    public function orHaving(string $column, $value, string $operator = self::OPERATOR_EQ): QueryBuilder
+    public function orHaving(string $column, $value, string $operator = self::OPERATOR_EQ): self
     {
         $this->criteria($this->having, $column, $value, $operator, self::LOGICAL_OR);
 
@@ -761,7 +763,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    public function havingIn(string $column, array $values, string $connector = self::LOGICAL_AND): QueryBuilder
+    public function havingIn(string $column, array $values, string $connector = self::LOGICAL_AND): self
     {
         $this->criteria($this->having, $column, $values, self::IN, $connector);
 
@@ -777,7 +779,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    public function havingNotIn(string $column, array $values, string $connector = self::LOGICAL_AND): QueryBuilder
+    public function havingNotIn(string $column, array $values, string $connector = self::LOGICAL_AND): self
     {
         $this->criteria($this->having, $column, $values, self::NOT_IN, $connector);
 
@@ -794,7 +796,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    public function havingBetween(string $column, $min, $max, string $connector = self::LOGICAL_AND): QueryBuilder
+    public function havingBetween(string $column, $min, $max, string $connector = self::LOGICAL_AND): self
     {
         $this->criteria($this->having, $column, [$min, $max], self::BETWEEN, $connector);
 
@@ -811,7 +813,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    public function havingNotBetween(string $column, $min, $max, string $connector = self::LOGICAL_AND): QueryBuilder
+    public function havingNotBetween(string $column, $min, $max, string $connector = self::LOGICAL_AND): self
     {
         $this->criteria($this->having, $column, [$min, $max], self::NOT_BETWEEN, $connector);
 
@@ -825,7 +827,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    public function openHaving($connector = self::LOGICAL_AND): QueryBuilder
+    public function openHaving($connector = self::LOGICAL_AND): self
     {
         return $this->bracketCriteria($this->having, self::BRACKET_OPEN, $connector);
     }
@@ -835,7 +837,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    public function closeHaving(): QueryBuilder
+    public function closeHaving(): self
     {
         return $this->bracketCriteria($this->having, self::BRACKET_CLOSE);
     }
@@ -848,7 +850,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    public function groupBy(string $column, string $order = null): QueryBuilder
+    public function groupBy(string $column, string $order = null): self
     {
         $this->groupBy[] = [
             'column' => $column,
@@ -866,7 +868,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    public function orderBy(string $column, string $order = self::ORDER_BY_ASC): QueryBuilder
+    public function orderBy(string $column, string $order = self::ORDER_BY_ASC): self
     {
         $this->orderBy[] = [
             'column' => $column,
@@ -884,7 +886,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    public function limit(int $limit, $offset = 0): QueryBuilder
+    public function limit(int $limit, $offset = 0): self
     {
         $this->limit['limit']  = $limit;
         $this->limit['offset'] = $offset;
@@ -894,9 +896,8 @@ class QueryBuilder implements QueryBuilderInterface
 
     /**
      * 排他锁语句
-     * @return QueryBuilder
      */
-    public function forUpdate(): QueryBuilder
+    public function forUpdate(): self
     {
         $this->locks['for_update'] = true;
 
@@ -905,9 +906,8 @@ class QueryBuilder implements QueryBuilderInterface
 
     /**
      * 共享锁语句
-     * @return QueryBuilder
      */
-    public function sharedLock(): QueryBuilder
+    public function sharedLock(): self
     {
         $this->locks['shared_lock'] = true;
 
@@ -924,7 +924,7 @@ class QueryBuilder implements QueryBuilderInterface
      * @return QueryBuilder
      * @throws \Swoft\Db\Exception\DbException
      */
-    public function setParameter($key, $value, $type = null): QueryBuilder
+    public function setParameter($key, $value, $type = null): self
     {
         list($key, $value) = EntityHelper::transferParameter($key, $value, $type);
         $this->parameters[$key] = $value;
@@ -1030,7 +1030,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    private function bracketCriteria(array &$criteria, string $bracket = self::BRACKET_OPEN, string $connector = self::LOGICAL_AND): QueryBuilder
+    private function bracketCriteria(array &$criteria, string $bracket = self::BRACKET_OPEN, string $connector = self::LOGICAL_AND): self
     {
         $criteria[] = [
             'bracket'   => $bracket,
@@ -1050,7 +1050,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return QueryBuilder
      */
-    private function join(string $table, $criteria = null, string $type = self::INNER_JOIN, string $alias = null): QueryBuilder
+    private function join(string $table, $criteria = null, string $type = self::INNER_JOIN, string $alias = null): self
     {
         // 是否存在判断...
 
@@ -1085,7 +1085,7 @@ class QueryBuilder implements QueryBuilderInterface
         $value,
         string $operator = self::OPERATOR_EQ,
         string $connector = self::LOGICAL_AND
-    ): QueryBuilder {
+    ): self {
         $criteria[] = [
             'column'    => $column,
             'value'     => $value,

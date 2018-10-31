@@ -635,9 +635,9 @@ class Executor
             }
         }
 
-        if (true === isset($options['for_update']) && true === $options['for_update']) {
+        if (isset($options['for_update']) && $options['for_update'] === true) {
             $query->forUpdate();
-        } elseif (true === isset($options['shared_lock']) && true === $options['shared_lock']) {
+        } elseif (isset($options['shared_lock']) && $options['shared_lock'] === true) {
             $query->sharedLock();
         }
 

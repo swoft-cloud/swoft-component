@@ -51,11 +51,6 @@ class Statement implements StatementInterface
         return $statement;
     }
 
-    /**
-     * select语句
-     *
-     * @return string
-     */
     protected function getSelectStatement(): string
     {
         $statement = '';
@@ -63,35 +58,35 @@ class Statement implements StatementInterface
             return $statement;
         }
 
-        // select语句
+        // select 语句
         $statement .= $this->getSelectString();
 
-        // from语句
+        // from 语句
         if ($this->builder->getFrom()) {
             $statement .= ' ' . $this->getFromString();
         }
 
-        // where语句
+        // where 语句
         if ($this->builder->getWhere()) {
             $statement .= ' ' . $this->getWhereString();
         }
 
-        // groupBy语句
+        // groupBy 语句
         if ($this->builder->getGroupBy()) {
             $statement .= ' ' . $this->getGroupByString();
         }
 
-        // having语句
+        // having 语句
         if ($this->builder->getHaving()) {
             $statement .= ' ' . $this->getHavingString();
         }
 
-        // orderBy语句
+        // orderBy 语句
         if ($this->builder->getOrderBy()) {
             $statement .= ' ' . $this->getOrderByString();
         }
 
-        // limit语句
+        // limit 语句
         if ($this->builder->getLimit()) {
             $statement .= ' ' . $this->getLimitString();
         }
@@ -99,7 +94,6 @@ class Statement implements StatementInterface
         // lock 语句
         if ($this->builder->getLocks()) {
             $statement .= ' ' . $this->getLockString();
-            $statement = rtrim($statement);
         }
 
         return $statement;
@@ -614,24 +608,20 @@ class Statement implements StatementInterface
 
     /**
      * 加锁语句
+     *
      * @return string
      */
     protected function getLockString(): string
     {
         $statement = '';
         $locks = $this->builder->getLocks();
-        if (!$locks) {
+        if (! $locks || ! $this->isSelect()) {
             return $statement;
         }
-
-        if (!$this->isSelect()) {
-            return $statement;
-        } elseif (true === isset($locks['for_update']) && true === $locks['for_update']) {
+        if (isset($locks['for_update']) && $locks['for_update'] === true) {
             $statement = 'FOR UPDATE';
-        } elseif (true === isset($locks['shared_lock']) && true === $locks['shared_lock']) {
+        } elseif (isset($locks['shared_lock']) && $locks['shared_lock'] === true) {
             $statement = 'LOCK IN SHARE MODE';
-        } else {
-            return $statement;
         }
 
         return $statement;
