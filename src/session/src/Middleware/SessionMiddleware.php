@@ -17,10 +17,10 @@ use Swoft\Http\Message\Server\Response;
 use Swoft\Session\SessionInterface;
 use Swoft\Session\SessionManager;
 use Swoft\Session\SessionStore;
-
+use Swoft\Bean\Annotation\Scope;
 
 /**
- * @Bean()
+ * @Bean(Scope::PROTOTYPE)
  */
 class SessionMiddleware implements MiddlewareInterface
 {
