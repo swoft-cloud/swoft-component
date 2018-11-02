@@ -326,13 +326,13 @@ class BugTest extends AbstractMysqlCase
          * @see https://github.com/swoft-cloud/swoft-component/pull/209
          */
         $row = Query::table(User::class)->where('id', $uid)->one()->getResult();
-        $this->assertTrue(is_int($row['age']));
-        $this->assertTrue(is_int($row['sex']));
+        $this->assertTrue(is_string($row['age']));
+        $this->assertTrue(is_string($row['sex']));
         $this->assertTrue(is_string($row['description']));
         $rows = Query::table(User::class)->where('id', $uid)->get()->getResult();
         foreach ($rows as $userRow){
-            $this->assertTrue(is_int($userRow['age']));
-            $this->assertTrue(is_int($userRow['sex']));
+            $this->assertTrue(is_string($userRow['age']));
+            $this->assertTrue(is_string($userRow['sex']));
             $this->assertTrue(is_string($userRow['description']));
         }
     }
