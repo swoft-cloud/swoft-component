@@ -53,15 +53,23 @@ class ErrorHandler
     {
         $exceptionClass = get_class($throwable);
         $collector      = ExceptionHandlerCollector::getCollector();
-        $isNotExistHandler = !isset($collector[$exceptionClass]) && !isset($collector[\Exception::class]);
-        if (empty($collector) || $isNotExistHandler) {
+
+        if (empty($collector)) {
             return $this->handleThrowtable($throwable);
         }
 
-        if(isset($collector[$exceptionClass])){
-            list($classBeanName, $methodName) = $collector[$exceptionClass];
-        }else{
-            list($classBeanName, $methodName) = $collector[\Exception::class];
+        $exceptionClassInstance = new $exceptionClass;
+
+        foreach ($collector as $value) {
+            if ($exceptionClassInstance instanceof $value[0]) {
+                $classBeanName = $value[1];
+                $methodName = $value[2];
+                break;
+            }
+        }
+
+        if (!isset($classBeanName) || !isset($methodName)) {
+            return $this->handleThrowtable($throwable);
         }
 
         $handler    = App::getBean($classBeanName);
@@ -100,6 +108,7 @@ class ErrorHandler
      * @param \Throwable $throwable
      *
      * @return array
+     * @throws \ReflectionException
      */
     private function getBindParams(string $className, string $methodName, \Throwable $throwable)
     {
@@ -122,9 +131,9 @@ class ErrorHandler
 
             /**
              * defined type of the param
-             * @notice \ReflectType::getName() is not supported in PHP 7.0, that is why use __toString()
+             * @notice \ReflectionNamedType::getName() is not supported in PHP 7.0, __toString has been DEPRECATED as of PHP 7.1.0
              */
-            $type = $reflectType->__toString();
+            $type = PHP_VERSION_ID < 70100 ? $reflectType->__toString() : $reflectType->getName();
             if ($type === Request::class) {
                 $bindParams[$key] = $request;
             } elseif ($type == Response::class) {
