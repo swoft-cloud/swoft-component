@@ -202,6 +202,7 @@ abstract class AnnotationResource extends AbstractResource
         }
 
         $this->registerNamespace();
+        $this->registerCustomNamespace();
     }
 
     /**
@@ -210,6 +211,13 @@ abstract class AnnotationResource extends AbstractResource
      * @return void
      */
     abstract public function registerNamespace();
+
+    /**
+     * Register custom namespace
+     *
+     * @return void
+     */
+    abstract public function registerCustomNamespace();
 
     /**
      * 扫描目录下PHP文件

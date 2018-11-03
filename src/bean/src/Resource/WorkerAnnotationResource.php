@@ -17,8 +17,6 @@ use Swoft\Helper\ComponentHelper;
  */
 class WorkerAnnotationResource extends AnnotationResource
 {
-    use CustomComponentsRegister;
-
     /**
      * {@inheritDoc}
      */
@@ -39,7 +37,7 @@ class WorkerAnnotationResource extends AnnotationResource
 
             $componentDir = $hostDir . DS . $component;
             $componentCommandDir = $componentDir . DS . 'src';
-            if (! is_dir($componentCommandDir)) {
+            if (!is_dir($componentCommandDir)) {
                 continue;
             }
 
@@ -61,7 +59,7 @@ class WorkerAnnotationResource extends AnnotationResource
                 }
                 $scanDir = $componentCommandDir . DS . $dir;
 
-                if (! is_dir($scanDir)) {
+                if (!is_dir($scanDir)) {
                     $this->scanFiles[$namespace][] = $scanDir;
                     continue;
                 }
@@ -69,7 +67,45 @@ class WorkerAnnotationResource extends AnnotationResource
                 $this->scanNamespaces[$scanNamespace] = $scanDir;
             }
         }
+    }
 
-        $this->registerWorkerNamespace();
+    public function registerCustomNamespace()
+    {
+        foreach ($this->customComponents as $ns => $componentDir) {
+            if (is_int($ns)) {
+                $ns = $componentDir;
+                $componentDir = ComposerHelper::getDirByNamespace($ns);
+                $ns = rtrim($ns, "\\");
+                $componentDir = rtrim($componentDir, "/");
+            }
+
+            $this->componentNamespaces[] = $ns;
+            $componentDir = alias($componentDir);
+
+            if (!is_dir($componentDir)) {
+                continue;
+            }
+
+            $scanDirs = scandir($componentDir, null);
+
+            foreach ($scanDirs as $dir) {
+                if ($dir == '.' || $dir == '..') {
+                    continue;
+                }
+                if (\in_array($dir, $this->serverScan, true)) {
+                    continue;
+                }
+
+                $scanDir = $componentDir . DS . $dir;
+
+                if (!is_dir($scanDir)) {
+                    $this->scanFiles[$ns][] = $scanDir;
+                    continue;
+                }
+                $scanNs = $ns . '\\' . $dir;
+
+                $this->scanNamespaces[$scanNs] = $scanDir;
+            }
+        }
     }
 }
