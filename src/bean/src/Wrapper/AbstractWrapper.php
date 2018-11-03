@@ -233,15 +233,6 @@ abstract class AbstractWrapper implements WrapperInterface
     }
 
     /**
-     * @return bool
-     */
-    protected function inMethodAnnotations($methodAnnotation): bool
-    {
-        $annotationClass = get_class($methodAnnotation);
-        return in_array($annotationClass, $this->getMethodAnnotations());
-    }
-
-    /**
      * 方法没有配置路由注解解析
      */
     private function parseMethodWithoutAnnotation(string $className, string $methodName)

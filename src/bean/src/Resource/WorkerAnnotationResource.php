@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Swoft\Bean\Resource;
 
 use Swoft\Helper\ComponentHelper;
+use Swoft\Helper\ComposerHelper;
 
 /**
  * {@inheritDoc}
@@ -49,7 +50,7 @@ class WorkerAnnotationResource extends AnnotationResource
                 continue;
             }
 
-            $scanDirs = scandir($componentCommandDir, null);
+            $scanDirs = scandir($componentCommandDir);
             foreach ($scanDirs as $dir) {
                 if ($dir == '.' || $dir == '..') {
                     continue;
@@ -86,7 +87,7 @@ class WorkerAnnotationResource extends AnnotationResource
                 continue;
             }
 
-            $scanDirs = scandir($componentDir, null);
+            $scanDirs = scandir($componentDir);
 
             foreach ($scanDirs as $dir) {
                 if ($dir == '.' || $dir == '..') {

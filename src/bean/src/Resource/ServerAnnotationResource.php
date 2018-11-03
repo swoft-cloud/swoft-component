@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Swoft\Bean\Resource;
 
 use Swoft\Helper\ComponentHelper;
+use Swoft\Helper\ComposerHelper;
 
 /**
  * {@inheritDoc}
