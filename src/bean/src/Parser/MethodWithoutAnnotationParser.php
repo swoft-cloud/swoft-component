@@ -36,7 +36,7 @@ class MethodWithoutAnnotationParser extends AbstractParser
      */
     public function parser(string $className, $objectAnnotation = null, string $propertyName = '', string $methodName = '', $propertyValue = null)
     {
-        $swoftDir      = dirname(__FILE__, 5);
+        $swoftDir      = dirname(__FILE__, 4);
         $componentDirs = scandir($swoftDir);
         foreach ($componentDirs as $component) {
             if ($component == '.' || $component == '..') {

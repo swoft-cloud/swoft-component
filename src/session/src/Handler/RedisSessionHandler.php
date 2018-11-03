@@ -15,8 +15,6 @@ class RedisSessionHandler implements \SessionHandlerInterface, LifetimeInterface
 {
     use LifetimeTrait;
 
-    use LifetimeTrait;
-
     /**
      * @var string
      */

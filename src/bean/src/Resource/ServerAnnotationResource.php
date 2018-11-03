@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Swoft\Bean\Resource;
 
 use Swoft\Helper\ComponentHelper;
+use Swoft\Helper\ComposerHelper;
 
 /**
  * {@inheritDoc}
@@ -25,7 +26,7 @@ class ServerAnnotationResource extends AnnotationResource
         $hostDir = \dirname(__FILE__, 4);
         if (\in_array(\basename($hostDir), ['swoft', 'src'])) {
             // Install via Composer
-            $componentDirs = scandir($hostDir, null);
+            $componentDirs = scandir($hostDir);
         } else {
             // Independent
             $componentDirs = ['swoft-framework'];
@@ -37,7 +38,7 @@ class ServerAnnotationResource extends AnnotationResource
 
             $componentDir = $hostDir . DS . $component;
             $componentCommandDir = $componentDir . DS . 'src';
-            if (! is_dir($componentCommandDir)) {
+            if (!is_dir($componentCommandDir)) {
                 continue;
             }
 
@@ -52,12 +53,37 @@ class ServerAnnotationResource extends AnnotationResource
 
             foreach ($this->serverScan as $dir) {
                 $scanDir = $componentCommandDir . DS . $dir;
-                if (! is_dir($scanDir)) {
+                if (!is_dir($scanDir)) {
                     continue;
                 }
 
                 $scanNamespace = $namespace . '\\' . $dir;
                 $this->scanNamespaces[$scanNamespace] = $scanDir;
+            }
+        }
+    }
+
+    public function registerCustomNamespace()
+    {
+        foreach ($this->customComponents as $ns => $componentDir) {
+            if (is_int($ns)) {
+                $ns = $componentDir;
+                $componentDir = ComposerHelper::getDirByNamespace($ns);
+                $ns = rtrim($ns, "\\");
+                $componentDir = rtrim($componentDir, "/");
+            }
+
+            $this->componentNamespaces[] = $ns;
+            $componentDir = alias($componentDir);
+
+            foreach ($this->serverScan as $dir) {
+                $scanDir = $componentDir . DS . $dir;
+                if (!is_dir($scanDir)) {
+                    continue;
+                }
+
+                $scanNs = $ns . "\\" . $dir;
+                $this->scanNamespaces[$scanNs] = $scanDir;
             }
         }
     }
