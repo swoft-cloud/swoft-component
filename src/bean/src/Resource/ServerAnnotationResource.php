@@ -25,7 +25,7 @@ class ServerAnnotationResource extends AnnotationResource
         $hostDir = \dirname(__FILE__, 4);
         if (\in_array(\basename($hostDir), ['swoft', 'src'])) {
             // Install via Composer
-            $componentDirs = scandir($hostDir, null);
+            $componentDirs = scandir($hostDir);
         } else {
             // Independent
             $componentDirs = ['swoft-framework'];

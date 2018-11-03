@@ -224,8 +224,10 @@ abstract class AnnotationResource extends AbstractResource
         $files = new \RecursiveIteratorIterator($iterator);
 
         $phpFiles = [];
+        /** @var \SplFileInfo $file */
         foreach ($files as $file) {
-            $fileType = pathinfo($file, PATHINFO_EXTENSION);
+            $pathName = $file->getPathname();
+            $fileType = pathinfo($pathName, PATHINFO_EXTENSION);
             if ($fileType != 'php') {
                 continue;
             }
@@ -233,8 +235,8 @@ abstract class AnnotationResource extends AbstractResource
             $replaces = ['', '\\', '', ''];
             $searches = [$dir, '/', '.php', '.PHP'];
 
-            $file = str_replace($searches, $replaces, $file);
-            $phpFiles[] = $namespace . $file;
+            $pathName = str_replace($searches, $replaces, $pathName);
+            $phpFiles[] = $namespace . $pathName;
         }
 
         return $phpFiles;
