@@ -635,6 +635,12 @@ class Executor
             }
         }
 
+        if (isset($options['for_update']) && $options['for_update'] === true) {
+            $query->forUpdate();
+        } elseif (isset($options['shared_lock']) && $options['shared_lock'] === true) {
+            $query->sharedLock();
+        }
+
         $limit  = $options['limit'] ?? null;
         $offset = $options['offset'] ?? 0;
 
