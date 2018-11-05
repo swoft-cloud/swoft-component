@@ -41,8 +41,9 @@ class ExceptionHandlerCollector implements CollectorInterface
 
             if (self::$handlers) {
                 $arr = self::$handlers;
+                $exceptionClassInstance = new $exceptionClass;
                 foreach ($arr as $index => $row) {
-                    if (new $exceptionClass instanceof $row[0]) {
+                    if ($exceptionClassInstance instanceof $row[0]) {
                         array_splice(self::$handlers, $index, 0, [$handler]);
                         return;
                     }
