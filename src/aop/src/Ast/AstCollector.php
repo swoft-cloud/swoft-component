@@ -45,7 +45,7 @@ class AstCollector
      */
     public static function get(string $class)
     {
-        return self::$container[$class];
+        return unserialize(serialize(self::$container[$class]));
     }
 
     /**
