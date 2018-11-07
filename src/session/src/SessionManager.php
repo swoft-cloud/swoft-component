@@ -33,12 +33,6 @@ class SessionManager
     protected $config = [];
 
     /**
-     * @deprecated
-     * @var SessionInterface
-     */
-    protected $session;
-
-    /**
      * Create a handler by config
      *
      * @return \SessionHandlerInterface
