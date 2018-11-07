@@ -25,12 +25,14 @@ class ErrorHandler
     {
         try {
             $response = \bean(ErrorHandlerChain::class)->walk(function ($handler) use ($throwable) {
-                list($class, $method) = $handler;
-                $method = ($method && class_exists($class)) ? $method : 'handle';
-                if (is_string($class) && App::hasBean($class)) {
-                    $class = App::getBean($class);
+                list($className, $method) = $handler;
+                $method = ($className && class_exists($className)) ? $method : 'handle';
+                if (is_string($className) && App::hasBean($className)) {
+                    $class = App::getBean($className);
+                } else {
+                    $class = $className;
                 }
-                return PhpHelper::call([$class, $method], $this->getBindParams($class, $method, $throwable));
+                return PhpHelper::call([$class, $method], $this->getBindParams($className, $method, $throwable));
             });
         } catch (\Throwable $t) {
             /**
