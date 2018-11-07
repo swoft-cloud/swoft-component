@@ -9,7 +9,7 @@ use Swoft\Session\SessionStore;
 
 class SessionTest extends AbstractTestCase
 {
-    protected function getSession()
+    public function getSession()
     {
         /** @var SessionManager $manager */
         $manager = bean('sessionManager');
