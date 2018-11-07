@@ -15,7 +15,7 @@ use Swoft\Session\Handler\RedisSessionHandler;
  */
 class SessionManager
 {
-    const SESSION_KEY = 'swoftSession';
+    const SESSION_KEY = 'session';
 
     /**
      * The session handlers
