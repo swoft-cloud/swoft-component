@@ -5,6 +5,7 @@ namespace Swoft\Session;
 use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\Scope;
+use Swoft\Core\RequestContext;
 use Swoft\Session\Handler\FileSessionHandler;
 use Swoft\Session\Handler\LifetimeInterface;
 use Swoft\Session\Handler\RedisSessionHandler;
@@ -14,6 +15,7 @@ use Swoft\Session\Handler\RedisSessionHandler;
  */
 class SessionManager
 {
+    const SESSION_KEY = 'swoftSession';
 
     /**
      * The session handlers
@@ -31,6 +33,7 @@ class SessionManager
     protected $config = [];
 
     /**
+     * @deprecated
      * @var SessionInterface
      */
     protected $session;
@@ -99,7 +102,7 @@ class SessionManager
      */
     public function getSession(): SessionInterface
     {
-        return $this->session;
+        return RequestContext::getContextDataByKey(self::SESSION_KEY);
     }
 
     /**
@@ -108,8 +111,7 @@ class SessionManager
      */
     public function setSession($session): self
     {
-        $this->session = $session;
+        RequestContext::setContextDataByKey(self::SESSION_KEY, $session);
         return $this;
     }
-
 }
