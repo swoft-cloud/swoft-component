@@ -2,6 +2,7 @@
 
 namespace Swoft\ErrorHandler;
 
+use Swoft\App;
 use Swoft\Core\RequestContext;
 use Swoft\Helper\PhpHelper;
 use Swoft\Http\Message\Server\Request;
@@ -26,6 +27,9 @@ class ErrorHandler
             $response = \bean(ErrorHandlerChain::class)->walk(function ($handler) use ($throwable) {
                 list($class, $method) = $handler;
                 $method = ($method && class_exists($class)) ? $method : 'handle';
+                if (is_string($class) && App::hasBean($class)) {
+                    $class = App::getBean($class);
+                }
                 return PhpHelper::call([$class, $method], $this->getBindParams($class, $method, $throwable));
             });
         } catch (\Throwable $t) {
