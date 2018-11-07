@@ -20,7 +20,7 @@ use Swoft\Session\SessionStore;
 use Swoft\Bean\Annotation\Scope;
 
 /**
- * @Bean(Scope::PROTOTYPE)
+ * @Bean(scope=Scope::PROTOTYPE)
  */
 class SessionMiddleware implements MiddlewareInterface
 {
