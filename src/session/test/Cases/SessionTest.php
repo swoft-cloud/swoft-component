@@ -9,7 +9,7 @@ use Swoft\Session\SessionStore;
 
 class SessionTest extends AbstractTestCase
 {
-    public function testSetGetSession()
+    protected function getSession()
     {
         /** @var SessionManager $manager */
         $manager = bean('sessionManager');
@@ -17,25 +17,27 @@ class SessionTest extends AbstractTestCase
         $name = SessionMiddleware::DEFAULT_SESSION_NAME;
         $id = uniqid();
         $handler = $manager->createHandlerByConfig();
-        $session = new SessionStore($name, $handler, $id);
+        return new SessionStore($name, $handler, $id);
+    }
+
+    public function testSetGetSession()
+    {
+        /** @var SessionManager $manager */
+        $manager = bean('sessionManager');
+
+        $session = $this->getSession();
         $manager->setSession($session);
         $this->assertEquals($session, $manager->getSession());
 
         go(function () use ($manager) {
-            $name = SessionMiddleware::DEFAULT_SESSION_NAME;
-            $id = uniqid();
-            $handler = $manager->createHandlerByConfig();
-            $session = new SessionStore($name, $handler, $id);
+            $session = $this->getSession();
             $manager->setSession($session);
             \co::sleep(0.5);
             $this->assertEquals($session, $manager->getSession());
         });
 
         go(function () use ($manager) {
-            $name = SessionMiddleware::DEFAULT_SESSION_NAME;
-            $id = uniqid();
-            $handler = $manager->createHandlerByConfig();
-            $session = new SessionStore($name, $handler, $id);
+            $session = $this->getSession();
             $manager->setSession($session);
             \co::sleep(0.5);
             $this->assertEquals($session, $manager->getSession());
