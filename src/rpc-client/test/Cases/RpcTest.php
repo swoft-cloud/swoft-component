@@ -62,4 +62,21 @@ class RpcTest extends AbstractTestCase
             });
         });
     }
+
+    public function testRpcServerRestart()
+    {
+        go(function () {
+            for ($i = 0; $i < 10; $i++) {
+                if ($i == 1) {
+                    $cmd = 'php ' . alias('@root') . '/server.php -d';
+                    exec($cmd);
+                }
+
+                $client = bean(DemoServiceClient::class);
+                $res = $client->version();
+                $this->assertEquals('1.0.0', $res);
+                \co::sleep(1);
+            }
+        });
+    }
 }

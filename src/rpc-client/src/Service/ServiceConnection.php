@@ -79,7 +79,8 @@ class ServiceConnection extends AbstractServiceConnection
     {
         $data = $this->connection->recv();
         if (empty($data)) {
-            throw new RpcClientException('ServiceConnection::recv error, errCode=' . $this->connection->errCode);
+            $errCode = intval($this->connection->errCode);
+            throw new RpcClientException('ServiceConnection::recv error, errCode=' . $errCode, $errCode);
         }
         return $data;
     }

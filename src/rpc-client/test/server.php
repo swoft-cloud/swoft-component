@@ -6,4 +6,4 @@ use Swoft\Rpc\Server\Command\RpcCommand;
 
 $command = bean(RpcCommand::class);
 
-$command->start();
+$command->restart();
