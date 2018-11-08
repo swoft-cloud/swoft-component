@@ -68,7 +68,7 @@ class MiddlewareCollector implements CollectorInterface
 
         if (! empty($methodName)) {
             $scanMiddlewares = self::$middlewares[$className]['middlewares']['actions'][$methodName] ?? [];
-            self::$middlewares[$className]['middlewares']['actions'][$methodName] = array_unique(array_merge($scanMiddlewares,$classMiddlewares));
+            self::$middlewares[$className]['middlewares']['actions'][$methodName] = array_unique(array_merge($scanMiddlewares, $classMiddlewares));
         } else {
             $scanMiddlewares = self::$middlewares[$className]['middlewares']['group'] ?? [];
             self::$middlewares[$className]['middlewares']['group'] = array_unique(array_merge($scanMiddlewares, $classMiddlewares));
