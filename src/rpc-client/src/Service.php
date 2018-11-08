@@ -101,7 +101,21 @@ class Service
             }
 
             App::profileStart($profileKey);
-            $result = $client->receive();
+            try {
+                $result = $client->receive();
+            } catch (\Throwable $ex) {
+                if ($ex instanceof RpcClientException && $ex->getCode() === 5001) {
+                    $client->reconnect();
+                    $result = $circuitBreaker->call([$client, 'send'], [$packData], $fallback);
+                    if ($result === null || $result === false) {
+                        return null;
+                    }
+                    $result = $client->receive();
+                } else {
+                    throw $ex;
+                }
+            }
+
             App::profileEnd($profileKey);
             $client->release(true);
 
