@@ -2,7 +2,6 @@
 
 namespace Swoft\Http\Message\Bean\Collector;
 
-use App\Controllers\MiddlewareController;
 use Swoft\Http\Message\Bean\Annotation\Middleware;
 use Swoft\Http\Message\Bean\Annotation\Middlewares;
 use Swoft\Bean\CollectorInterface;
@@ -69,10 +68,10 @@ class MiddlewareCollector implements CollectorInterface
 
         if (! empty($methodName)) {
             $scanMiddlewares = self::$middlewares[$className]['middlewares']['actions'][$methodName] ?? [];
-            self::$middlewares[$className]['middlewares']['actions'][$methodName] = array_unique(array_merge($classMiddlewares,$scanMiddlewares));
+            self::$middlewares[$className]['middlewares']['actions'][$methodName] = array_unique(array_merge($scanMiddlewares,$classMiddlewares));
         } else {
             $scanMiddlewares = self::$middlewares[$className]['middlewares']['group'] ?? [];
-            self::$middlewares[$className]['middlewares']['group'] = array_unique(array_merge($classMiddlewares, $scanMiddlewares));
+            self::$middlewares[$className]['middlewares']['group'] = array_unique(array_merge($scanMiddlewares, $classMiddlewares));
         }
     }
 
@@ -91,10 +90,10 @@ class MiddlewareCollector implements CollectorInterface
 
         if (! empty($methodName)) {
             $scanMiddlewares = self::$middlewares[$className]['middlewares']['actions'][$methodName] ?? [];
-            self::$middlewares[$className]['middlewares']['actions'][$methodName] = array_unique(array_merge($middlewares, $scanMiddlewares));
+            self::$middlewares[$className]['middlewares']['actions'][$methodName] = array_unique(array_merge($scanMiddlewares, $middlewares));
         } else {
             $scanMiddlewares = self::$middlewares[$className]['middlewares']['group'] ?? [];
-            self::$middlewares[$className]['middlewares']['group'] = array_unique(array_merge($middlewares, $scanMiddlewares));
+            self::$middlewares[$className]['middlewares']['group'] = array_unique(array_merge($scanMiddlewares, $middlewares));
         }
     }
 }
