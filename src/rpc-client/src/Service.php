@@ -81,7 +81,8 @@ class Service
     public function call(string $func, array $params)
     {
         $profileKey = $this->interface . '->' . $func;
-        $fallback   = $this->getFallbackHandler($func);
+        $fallback = $this->getFallbackHandler($func);
+        $closeStatus = true;
 
         try {
             $connectPool    = $this->getPool();
@@ -125,10 +126,13 @@ class Service
             $client->release(true);
 
             App::debug(sprintf('%s call %s success, data=%s', $this->interface, $func, json_encode($data, JSON_UNESCAPED_UNICODE)));
+
             $result = $packer->unpack($result);
-            $data   = $packer->checkData($result);
+            $closeStatus = false;
+            $data = $packer->checkData($result);
         } catch (\Throwable $throwable) {
-            if (isset($client) && $client instanceof AbstractServiceConnection) {
+            // If the client is normal, no need to close it.
+            if ($closeStatus && isset($client) && $client instanceof AbstractServiceConnection) {
                 $client->close();
             }
             if (empty($fallback)) {
