@@ -107,7 +107,7 @@ class Service
             } catch (\Throwable $ex) {
                 // Client is not connected to server
                 if ($ex instanceof RpcClientException && ($ex->getCode() === 0 || $ex->getCode() === 5001)) {
-                    App::debug(sprintf('RECONNECT: %s call %s failed, data=%s, message=%s, code=%s',
+                    App::warning(sprintf('RECONNECT: %s call %s failed, data=%s, message=%s, code=%s',
                         $this->interface,
                         $func,
                         json_encode($data, JSON_UNESCAPED_UNICODE),
