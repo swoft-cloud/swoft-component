@@ -15,8 +15,4 @@ use Swoft\Exception\Exception;
  */
 class RpcClientException extends Exception
 {
-    public function isNotConnected()
-    {
-        return $this->getCode() === 0 || $this->getCode() === 5001;
-    }
 }
