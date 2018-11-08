@@ -106,6 +106,13 @@ class Service
             } catch (\Throwable $ex) {
                 // Client is not connected to server
                 if ($ex instanceof RpcClientException && ($ex->getCode() === 0 || $ex->getCode() === 5001)) {
+                    App::debug(sprintf('%s call %s failed, data=%s, message=%s, code=%s',
+                        $this->interface,
+                        $func,
+                        json_encode($data, JSON_UNESCAPED_UNICODE),
+                        $ex->getMessage(),
+                        $ex->getCode()
+                    ));
                     $client->reconnect();
                     $circuitBreaker->call([$client, 'send'], [$packData], $fallback);
                     $result = $client->receive();
@@ -117,7 +124,7 @@ class Service
             App::profileEnd($profileKey);
             $client->release(true);
 
-            App::debug(sprintf('%s call %s success, data=%', $this->interface, $func, json_encode($data, JSON_UNESCAPED_UNICODE)));
+            App::debug(sprintf('%s call %s success, data=%s', $this->interface, $func, json_encode($data, JSON_UNESCAPED_UNICODE)));
             $result = $packer->unpack($result);
             $data   = $packer->checkData($result);
         } catch (\Throwable $throwable) {
