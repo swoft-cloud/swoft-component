@@ -104,12 +104,10 @@ class Service
             try {
                 $result = $client->receive();
             } catch (\Throwable $ex) {
-                if ($ex instanceof RpcClientException && $ex->getCode() === 5001) {
+                // Client is not connected server
+                if ($ex instanceof RpcClientException && $ex->isNotConnection()) {
                     $client->reconnect();
-                    $result = $circuitBreaker->call([$client, 'send'], [$packData], $fallback);
-                    if ($result === null || $result === false) {
-                        return null;
-                    }
+                    $circuitBreaker->call([$client, 'send'], [$packData], $fallback);
                     $result = $client->receive();
                 } else {
                     throw $ex;
