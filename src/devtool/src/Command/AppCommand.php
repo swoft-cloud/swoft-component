@@ -59,7 +59,7 @@ class AppCommand
             'OS' => \PHP_OS,
             'Php version' => \PHP_VERSION,
             'Swoole version' => \SWOOLE_VERSION,
-            'Swoft version' => App::version(),
+            'Swoft version' => SWOFT_VERSION,
             'AppName' => \APP_NAME,
             'BasePath' => \BASE_PATH,
         ];

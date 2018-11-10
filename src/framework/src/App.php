@@ -497,12 +497,4 @@ class App
     {
         return self::$aliases;
     }
-
-    /**
-     * @return string
-     */
-    public static function version(): string
-    {
-        return '1.1.0';
-    }
 }

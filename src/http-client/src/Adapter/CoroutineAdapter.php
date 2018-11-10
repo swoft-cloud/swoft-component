@@ -75,7 +75,7 @@ class CoroutineAdapter implements AdapterInterface
      */
     public function getUserAgent(): string
     {
-        $userAgent = 'Swoft/' . App::version();
+        $userAgent = 'Swoft/' . SWOFT_VERSION;
         $userAgent .= ' Swoft/' . SWOOLE_VERSION;
         $userAgent .= ' PHP/' . PHP_VERSION;
         return $userAgent;
