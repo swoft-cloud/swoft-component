@@ -17,6 +17,11 @@ class ErrorHandlerChain
     protected $chains;
 
     /**
+     * @var array
+     */
+    protected $handlers = [];
+
+    /**
      * ErrorHandlerChain constructor.
      */
     public function __construct()
@@ -51,15 +56,46 @@ class ErrorHandlerChain
         return $result;
     }
 
+    public function handle($exception, \Closure $closure)
+    {
+        $handler = $this->getHandler(get_class($exception));
+        return $closure($handler);
+    }
+
     /**
      * Add a handler to chains
      *
      * @param object $handler
      * @param int $priority
      */
-    public function addHandler($handler, $priority = 1)
+    public function addHandler($handler, $exception, $priority = 1)
     {
+        $this->handlers[$exception] = $handler;
         $this->chains->insert($handler, $priority);
+    }
+
+    /**
+     * Get a handler by exception
+     * @author limx
+     * @param string $exception
+     * @return array
+     */
+    public function getHandler($exception)
+    {
+        $handler = $this->handlers[$exception] ?? null;
+        while (!is_array($handler)) {
+            $ref = new \ReflectionClass($exception);
+            $parentClass = $ref->getParentClass();
+            if ($parentClass) {
+                $exception = get_class($parentClass);
+                $handler = $this->handlers[$exception] ?? null;
+            } else {
+                $handler = $this->handlers[\Exception::class] ?? null;
+                break;
+            }
+        }
+
+        return $handler;
     }
 
     /**

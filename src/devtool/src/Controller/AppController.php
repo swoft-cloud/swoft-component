@@ -41,7 +41,7 @@ class AppController
             'os' => \PHP_OS,
             'phpVersion' => \PHP_VERSION,
             'swooleVersion' => \SWOOLE_VERSION,
-            'swoftVersion' => App::version(),
+            'swoftVersion' => SWOFT_VERSION,
             'appName' => \APP_NAME,
             'basePath' => \BASE_PATH,
         ];

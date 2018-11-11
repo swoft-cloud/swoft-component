@@ -23,7 +23,7 @@ class WorkerStartListener implements WorkerStartInterface
             $chain = \bean(ErrorHandlerChain::class);
             foreach ($collector as $exception => list($class, $method)) {
                 $priority = $handler[2] ?? 0;
-                $chain->addHandler([$class, $method], $priority);
+                $chain->addHandler([$class, $method], $exception, $priority);
             }
         }
     }

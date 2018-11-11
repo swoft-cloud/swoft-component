@@ -74,7 +74,7 @@ class CurlAdapter implements AdapterInterface
      */
     public function getUserAgent(): string
     {
-        $userAgent = 'Swoft/' . App::version();
+        $userAgent = 'Swoft/' . SWOFT_VERSION;
         $userAgent .= ' Swoft/' . SWOOLE_VERSION;
         $userAgent .= ' PHP/' . PHP_VERSION;
         if (\extension_loaded('curl') && \function_exists('curl_version')) {
@@ -245,7 +245,7 @@ class CurlAdapter implements AdapterInterface
      */
     public function getDefaultUserAgent(): string
     {
-        $defaultAgent = 'Swoft/' . App::version();
+        $defaultAgent = 'Swoft/' . SWOFT_VERSION;
         if (\extension_loaded('curl') && \function_exists('curl_version')) {
             $defaultAgent .= ' curl/' . \curl_version()['version'];
         }

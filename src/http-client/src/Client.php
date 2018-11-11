@@ -344,7 +344,7 @@ class Client
             if ($isAdapterUserAgent) {
                 $this->defaultUserAgent = $this->getAdapter()->$currentMethodName();
             } else {
-                $defaultAgent = 'Swoft/' . App::version();
+                $defaultAgent = 'Swoft/' . SWOFT_VERSION;
                 if (! Coroutine::isSupportCoroutine() && \extension_loaded('curl') && \function_exists('curl_version')) {
                     $defaultAgent .= ' curl/' . \curl_version()['version'];
                 }

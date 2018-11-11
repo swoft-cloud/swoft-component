@@ -17,6 +17,7 @@ class ThrowableHelper
      */
     public static function toArray(\Throwable $throwable): array
     {
+        $previous = null;
         if ($throwable->getPrevious() instanceof \Throwable) {
             $previous = self::toArray($throwable->getPrevious());
         }
