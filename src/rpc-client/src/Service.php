@@ -106,7 +106,10 @@ class Service
                 $result = $client->receive();
             } catch (\Throwable $ex) {
                 // Client is not connected to server
-                if ($ex instanceof RpcClientException && ($ex->getCode() === 0 || $ex->getCode() === 5001)) {
+                if ($ex instanceof RpcClientException && in_array($ex->getCode(), [0, 5001, 104])) {
+                    // 0    Send failed, recv data is empty
+                    // 104  Connection reset by peer
+                    // 5001 SW_ERROR_CLIENT_NO_CONNECTION
                     App::warning(sprintf('RECONNECT: %s call %s failed, data=%s, message=%s, code=%s',
                         $this->interface,
                         $func,

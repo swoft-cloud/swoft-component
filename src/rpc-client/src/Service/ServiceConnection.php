@@ -101,6 +101,6 @@ class ServiceConnection extends AbstractServiceConnection
      */
     public function close()
     {
-        return $this->connection->close();
+        return $this->connection->close(true);
     }
 }
