@@ -110,7 +110,7 @@ class Service
                     // 0    Send failed, recv data is empty
                     // 104  Connection reset by peer
                     // 5001 SW_ERROR_CLIENT_NO_CONNECTION
-                    App::warning(sprintf('RECONNECT: %s call %s failed, data=%s, message=%s, code=%s',
+                    App::warning(sprintf('%s call %s retried, data=%s, message=%s, code=%s',
                         $this->interface,
                         $func,
                         json_encode($data, JSON_UNESCAPED_UNICODE),
@@ -137,6 +137,13 @@ class Service
             // If the client is normal, no need to close it.
             if ($closeStatus && isset($client) && $client instanceof AbstractServiceConnection) {
                 $client->close();
+                App::error(sprintf('%s call %s failed, data=%s, message=%s, code=%s',
+                    $this->interface,
+                    $func,
+                    json_encode($data, JSON_UNESCAPED_UNICODE),
+                    $ex->getMessage(),
+                    $ex->getCode()
+                ));
             }
             if (empty($fallback)) {
                 throw $throwable;
