@@ -26,6 +26,18 @@ class HashTest extends AbstractTestCase
         ];
         $values = $this->redis->hMGet($key, ['NotExistKey', 'NotExistKey2']);
         $this->assertEquals($data, $values);
+
+        $this->redis->set($key, 'xxxxx');
+        $result = $this->redis->hMGet($key,['key']);
+        $this->assertFalse($result);
+
+        $this->redis->delete($key);
+        $result = $this->redis->hMGet($key, ['key']);
+        $this->assertEquals(['key' => false], $result);
+
+        $this->redis->sAdd($key, 'xxxxx');
+        $result = $this->redis->hMGet($key, ['key']);
+        $this->assertFalse($result);
     }
 
     public function testHmsetAndHmgetByCo()
@@ -43,6 +55,18 @@ class HashTest extends AbstractTestCase
 
         $result = $this->redis->hGetAll($key);
         $this->assertEquals(['key' => 'value', 'key2' => 'value2', 'key3' => 'value3'], $result);
+
+        $this->redis->set($key, 'xxxxx');
+        $result = $this->redis->hGetAll($key);
+        $this->assertFalse($result);
+
+        $this->redis->delete($key);
+        $result = $this->redis->hGetAll($key);
+        $this->assertEquals([], $result);
+
+        $this->redis->sAdd($key, 'xxxxx');
+        $result = $this->redis->hGetAll($key);
+        $this->assertFalse($result);
     }
 
     public function testHGetAllByCo()
