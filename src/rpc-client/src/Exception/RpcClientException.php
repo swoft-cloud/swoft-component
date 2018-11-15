@@ -15,5 +15,4 @@ use Swoft\Exception\Exception;
  */
 class RpcClientException extends Exception
 {
-
 }

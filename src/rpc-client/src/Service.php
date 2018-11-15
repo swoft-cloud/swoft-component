@@ -81,7 +81,8 @@ class Service
     public function call(string $func, array $params)
     {
         $profileKey = $this->interface . '->' . $func;
-        $fallback   = $this->getFallbackHandler($func);
+        $fallback = $this->getFallbackHandler($func);
+        $closeStatus = true;
 
         try {
             $connectPool    = $this->getPool();
@@ -101,16 +102,48 @@ class Service
             }
 
             App::profileStart($profileKey);
-            $result = $client->receive();
+            try {
+                $result = $client->receive();
+            } catch (\Throwable $ex) {
+                // Client is not connected to server
+                if ($ex instanceof RpcClientException && in_array($ex->getCode(), [0, 5001, 104])) {
+                    // 0    Send failed, recv data is empty
+                    // 104  Connection reset by peer
+                    // 5001 SW_ERROR_CLIENT_NO_CONNECTION
+                    App::warning(sprintf('%s call %s retried, data=%s, message=%s, code=%s',
+                        $this->interface,
+                        $func,
+                        json_encode($data, JSON_UNESCAPED_UNICODE),
+                        $ex->getMessage(),
+                        $ex->getCode()
+                    ));
+                    $client->reconnect();
+                    $circuitBreaker->call([$client, 'send'], [$packData], $fallback);
+                    $result = $client->receive();
+                } else {
+                    throw $ex;
+                }
+            }
+
             App::profileEnd($profileKey);
             $client->release(true);
 
-            App::debug(sprintf('%s call %s success, data=%', $this->interface, $func, json_encode($data, JSON_UNESCAPED_UNICODE)));
+            App::debug(sprintf('%s call %s success, data=%s', $this->interface, $func, json_encode($data, JSON_UNESCAPED_UNICODE)));
+
             $result = $packer->unpack($result);
-            $data   = $packer->checkData($result);
+            $closeStatus = false;
+            $data = $packer->checkData($result);
         } catch (\Throwable $throwable) {
-            if (isset($client) && $client instanceof AbstractServiceConnection) {
+            // If the client is normal, no need to close it.
+            if ($closeStatus && isset($client) && $client instanceof AbstractServiceConnection) {
                 $client->close();
+                App::error(sprintf('%s call %s failed, data=%s, message=%s, code=%s',
+                    $this->interface,
+                    $func,
+                    json_encode($data, JSON_UNESCAPED_UNICODE),
+                    $ex->getMessage(),
+                    $ex->getCode()
+                ));
             }
             if (empty($fallback)) {
                 throw $throwable;
