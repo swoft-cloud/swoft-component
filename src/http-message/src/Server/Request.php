@@ -77,12 +77,13 @@ class Request extends \Swoft\Http\Message\Base\Request implements ServerRequestI
         $body = new SwooleStream($swooleRequest->rawContent());
         $protocol = isset($server['server_protocol']) ? str_replace('HTTP/', '', $server['server_protocol']) : '1.1';
         $request = new static($method, $uri, $headers, $body, $protocol);
-        return $request->withCookieParams($swooleRequest->cookie ?? [])
-                       ->withQueryParams($swooleRequest->get ?? [])
-                       ->withServerParams($server ?? [])
-                       ->withParsedBody($swooleRequest->post ?? [])
-                       ->withUploadedFiles(self::normalizeFiles($swooleRequest->files ?? []))
-                       ->setSwooleRequest($swooleRequest);
+        $request->cookieParams = ($swooleRequest->cookie ?? []);
+        $request->queryParams = ($swooleRequest->get ?? []);
+        $request->serverParams = ($server ?? []);
+        $request->parsedBody = ($swooleRequest->post ?? []);
+        $request->uploadedFiles = self::normalizeFiles($swooleRequest->files ?? []);
+        $request->swooleRequest = $swooleRequest;
+        return $request;
     }
 
     /**
