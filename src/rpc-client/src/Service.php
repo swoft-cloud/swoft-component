@@ -141,8 +141,8 @@ class Service
                     $this->interface,
                     $func,
                     json_encode($data, JSON_UNESCAPED_UNICODE),
-                    $ex->getMessage(),
-                    $ex->getCode()
+                    $throwable->getMessage(),
+                    $throwable->getCode()
                 ));
             }
             if (empty($fallback)) {
