@@ -4,6 +4,7 @@ namespace SwoftTest\Redis;
 
 use Swoft\App;
 use Swoft\Redis\Exception\RedisException;
+use Swoft\Redis\Redis;
 use SwoftTest\Redis\Pool\RedisEnvPoolConfig;
 use SwoftTest\Redis\Pool\RedisPptPoolConfig;
 use SwoftTest\Redis\Testing\Clients\TimeoutRedis;
@@ -72,5 +73,17 @@ class PoolTest extends AbstractTestCase
             }
         });
 
+    }
+
+    public function testRedisReconnectSelectDb()
+    {
+        $redis = bean(Redis::class);
+        $redis->set('test_select_db', 1);
+
+        $redis->reconnect();
+
+        $res = $redis->get('test_select_db');
+
+        $this->assertEquals(1, $res);
     }
 }
