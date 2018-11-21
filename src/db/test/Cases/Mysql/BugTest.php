@@ -317,21 +317,22 @@ class BugTest extends AbstractMysqlCase
         /* @var User $user*/
         $user = User::findById($uid)->getResult();
         $userAry = $user->toArray();
-
         $this->assertTrue(is_int($userAry['age']));
         $this->assertTrue(is_int($userAry['sex']));
         $this->assertTrue(is_string($userAry['desc']));
 
+        /**
+         * 通过 QueryBuilder 执行的查询将不再格式化结果属性的数据类型
+         * @see https://github.com/swoft-cloud/swoft-component/pull/209
+         */
         $row = Query::table(User::class)->where('id', $uid)->one()->getResult();
-
-        $this->assertTrue(is_int($row['age']));
-        $this->assertTrue(is_int($row['sex']));
+        $this->assertTrue(is_string($row['age']));
+        $this->assertTrue(is_string($row['sex']));
         $this->assertTrue(is_string($row['description']));
-
         $rows = Query::table(User::class)->where('id', $uid)->get()->getResult();
         foreach ($rows as $userRow){
-            $this->assertTrue(is_int($userRow['age']));
-            $this->assertTrue(is_int($userRow['sex']));
+            $this->assertTrue(is_string($userRow['age']));
+            $this->assertTrue(is_string($userRow['sex']));
             $this->assertTrue(is_string($userRow['description']));
         }
     }
