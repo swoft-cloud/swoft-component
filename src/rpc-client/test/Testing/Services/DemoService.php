@@ -31,7 +31,7 @@ class DemoService implements DemoServiceInterface
 
     public function get($id)
     {
-        sleep(2);
+        \co::sleep(2);
         return $id;
     }
 }

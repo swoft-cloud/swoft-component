@@ -173,10 +173,10 @@ class QueryBuilderTest extends AbstractMysqlCase
         $otherUser  = Query::table(OtherUser::class)->where('id', $userId)->one()->getResult();
         $this->assertEquals($otherUser['age'], $data['age']);
         $this->assertEquals($otherUser['id'], $userId);
-        
+
         $otherUser2  = Query::table(OtherUser::class)->selectInstance('default')->where('id', $userId2)->one()->getResult();
         $this->assertEquals('this my desc default instance', $otherUser2['description']);
-        
+
         $user  = OtherUser::findById($userId)->getResult();
         $this->assertEquals($user->getAge(), $data['age']);
         $this->assertEquals($user->getId(), $userId);
@@ -473,7 +473,7 @@ class QueryBuilderTest extends AbstractMysqlCase
         $result = User::query()->where('id', $id)->one()->getResult();
         $this->assertEquals($id, $result->getId());
     }
-    
+
     /**
      * 使用函数是否可用
      */
@@ -499,7 +499,7 @@ class QueryBuilderTest extends AbstractMysqlCase
             $this->testQueryWithFunc();
         });
     }
-           
+
     /**
     * 列别名查询
     * @throws \Swoft\Db\Exception\MysqlException
@@ -568,5 +568,29 @@ class QueryBuilderTest extends AbstractMysqlCase
         go(function () {
             $this->testColumnAlias();
         });
+    }
+
+    /**
+     * @dataProvider mysqlProvider
+     * @param int $id
+     */
+    public function testForUpdate(int $id)
+    {
+        Query::table(User::class)->where('id', $id)->forUpdate()->one()->getResult();
+        $lastSql = get_last_sql();
+        $lastSql = substr($lastSql, 0, strpos($lastSql, ' Params: '));
+        $this->assertTrue(StringHelper::endsWith($lastSql, 'FOR UPDATE'));
+    }
+
+    /**
+     * @dataProvider mysqlProvider
+     * @param int $id
+     */
+    public function testSharedLock(int $id)
+    {
+        Query::table(User::class)->where('id', $id)->sharedLock()->one()->getResult();
+        $lastSql = get_last_sql();
+        $lastSql = substr($lastSql, 0, strpos($lastSql, ' Params: '));
+        $this->assertTrue(StringHelper::endsWith($lastSql, 'LOCK IN SHARE MODE'));
     }
 }

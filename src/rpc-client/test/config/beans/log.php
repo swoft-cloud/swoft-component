@@ -23,7 +23,8 @@ return [
     "logger"             => [
         "class"         => \Swoft\Log\Logger::class,
         "name"          => APP_NAME,
-        "flushInterval" => 100,
+        "enable"        => true,
+        "flushInterval" => 1,
         "flushRequest"  => true,
         "handlers"      => [
             '${noticeHandler}',
