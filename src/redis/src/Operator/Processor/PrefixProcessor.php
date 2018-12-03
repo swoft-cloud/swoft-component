@@ -3,6 +3,7 @@
 namespace Swoft\Redis\Operator\Processor;
 
 use Swoft\Bean\Annotation\Inject;
+use Swoft\Helper\StringHelper;
 use Swoft\Redis\Operator\CommandInterface;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Redis\Pool\Config\RedisPoolConfig;
@@ -152,7 +153,7 @@ class PrefixProcessor implements ProcessorInterface
             'PFADD'            => 'static::first',
             'PFCOUNT'          => 'static::allarray',
             'PFMERGE'          => 'static::allarray',
-            'ZINTER'           => 'static::first',
+            'ZINTER'           => 'static::allarray2',
         ];
     }
 
@@ -267,12 +268,14 @@ class PrefixProcessor implements ProcessorInterface
      * @param CommandInterface $command Command instance.
      * @param string           $prefix  Prefix string.
      */
-    public static function allarray(CommandInterface $command, $prefix)
+    public static function allarray(CommandInterface $command, $prefix, $len = 0)
     {
         if ($arguments = $command->getArguments()) {
             $result = [];
-            foreach ($arguments as $key) {
-                if (is_array($key)) {
+            foreach ($arguments as $index => $key) {
+                if ($len > 0 && $index >= $len) {
+                    $result[] = $key;
+                } elseif (is_array($key)) {
                     foreach ($key as &$i) {
                         $i = "$prefix$i";
                     }
@@ -412,5 +415,16 @@ class PrefixProcessor implements ProcessorInterface
 
             $command->setRawArguments($arguments);
         }
+    }
+
+    public static function __callStatic($name, $arguments)
+    {
+        if (StringHelper::startsWith($name, 'allarray')) {
+            $len = (int)StringHelper::replaceFirst('allarray', '', $name);
+            $arguments[] = $len;
+            return static::allarray(...$arguments);
+        }
+
+        throw new \Exception("class 'Swoft\Redis\Operator\Processor\PrefixProcessor' does not have a method '{$name}'");
     }
 }
