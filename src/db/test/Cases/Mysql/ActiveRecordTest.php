@@ -13,6 +13,7 @@ namespace SwoftTest\Db\Cases\Mysql;
 use Swoft\Db\Query;
 use Swoft\Db\QueryBuilder;
 use Swoft\Exception\ValidatorException;
+use Swoft\Helper\StringHelper;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Testing\Entity\User2;
@@ -651,6 +652,34 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         $count = Query::table(User::class)->condition(['id' => $ids])->count()->getResult();
         $this->assertEquals(2, $count);
+    }
+
+    /**
+     * @dataProvider mysqlProvider
+     * @param int $id
+     */
+    public function testForUpdate(int $id)
+    {
+        User::findById($id, [
+                'for_update' => true,
+            ])->getResult();
+        $lastSql = get_last_sql();
+        $lastSql = substr($lastSql, 0, strpos($lastSql, ' Params: '));
+        $this->assertTrue(StringHelper::endsWith($lastSql, 'FOR UPDATE'));
+    }
+
+    /**
+     * @dataProvider mysqlProvider
+     * @param int $id
+     */
+    public function testSharedLock(int $id)
+    {
+        User::findById($id, [
+                'shared_lock' => true,
+            ])->getResult();
+        $lastSql = get_last_sql();
+        $lastSql = substr($lastSql, 0, strpos($lastSql, ' Params: '));
+        $this->assertTrue(StringHelper::endsWith($lastSql, 'LOCK IN SHARE MODE'));
     }
 
 }
