@@ -3,6 +3,7 @@
 namespace Swoft\Redis\Operator\Processor;
 
 use Swoft\Bean\Annotation\Inject;
+use Swoft\Helper\StringHelper;
 use Swoft\Redis\Operator\CommandInterface;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Redis\Pool\Config\RedisPoolConfig;
@@ -150,6 +151,10 @@ class PrefixProcessor implements ProcessorInterface
             'EVALSHA'          => 'static::evalKeys',
             'ZRANGEBYLEX'      => 'static::first',
             'ZREVRANGEBYLEX'   => 'static::first',
+            'PFADD'            => 'static::first',
+            'PFCOUNT'          => 'static::allarray',
+            'PFMERGE'          => 'static::allarray',
+            'ZINTER'           => 'static::allarray2',
         ];
     }
 
@@ -255,6 +260,33 @@ class PrefixProcessor implements ProcessorInterface
             $arguments = [$arguments];
 
             $command->setRawArguments($arguments);
+        }
+    }
+
+    /**
+     * Applies the specified prefix to all the arguments.
+     *
+     * @param CommandInterface $command Command instance.
+     * @param string           $prefix  Prefix string.
+     */
+    public static function allarray(CommandInterface $command, $prefix, $len = 0)
+    {
+        if ($arguments = $command->getArguments()) {
+            $result = [];
+            foreach ($arguments as $index => $key) {
+                if ($len > 0 && $index >= $len) {
+                    $result[] = $key;
+                } elseif (is_array($key)) {
+                    foreach ($key as &$i) {
+                        $i = "$prefix$i";
+                    }
+                    $result[] = $key;
+                } else {
+                    $result[] = "$prefix$key";
+                }
+            }
+
+            $command->setRawArguments($result);
         }
     }
 
@@ -384,5 +416,16 @@ class PrefixProcessor implements ProcessorInterface
 
             $command->setRawArguments($arguments);
         }
+    }
+
+    public static function __callStatic($name, $arguments)
+    {
+        if (StringHelper::startsWith($name, 'allarray')) {
+            $len = (int)StringHelper::replaceFirst('allarray', '', $name);
+            $arguments[] = $len;
+            return static::allarray(...$arguments);
+        }
+
+        throw new \Exception("class 'Swoft\Redis\Operator\Processor\PrefixProcessor' does not have a method '{$name}'");
     }
 }
