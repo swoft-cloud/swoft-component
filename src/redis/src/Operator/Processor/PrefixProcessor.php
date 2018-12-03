@@ -152,6 +152,7 @@ class PrefixProcessor implements ProcessorInterface
             'PFADD'            => 'static::first',
             'PFCOUNT'          => 'static::allarray',
             'PFMERGE'          => 'static::allarray',
+            'ZINTER'           => 'static::first',
         ];
     }
 

@@ -150,6 +150,7 @@ class RedisCommandProvider extends RedisProfile
             'ZREVRANK'            => '\Swoft\Redis\Operator\ZSets\ZSetReverseRank',
             'ZREMRANGEBYRANK'     => '\Swoft\Redis\Operator\ZSets\ZSetRemoveRangeByRank',
             'ZDELETERANGEBYRANK'  => '\Swoft\Redis\Operator\ZSets\ZSetRemoveRangeByRank',
+            'ZINTER'              => '\Swoft\Redis\Operator\ZSets\ZSetInterStore',
             /* ---------------- Redis 2.2 ---------------- */
             'ZREVRANGEBYSCORE'    => '\Swoft\Redis\Operator\ZSets\ZSetReverseRangeByScore',
             /* ---------------- Redis 2.8 ---------------- */
