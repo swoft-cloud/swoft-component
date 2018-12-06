@@ -102,6 +102,7 @@ class AopTest extends AbstractTestCase
         ob_start();
         $aopBean->throwSth($exception);
         ob_end_clean();
+
         $this->assertEquals($exception, AllPointAspectWithoutRound1::$catch);
     }
 

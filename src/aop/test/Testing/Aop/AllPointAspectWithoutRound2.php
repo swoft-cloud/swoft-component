@@ -68,7 +68,7 @@ class AllPointAspectWithoutRound2
      */
     public function afterThrowing(\Exception $e = null)
     {
-        static::$catch = $e;
+        AllPointAspectWithoutRound2::$catch = $e;
         throw $e;
     }
 }

@@ -132,7 +132,7 @@ trait AopTrait
             }
 
             // JoinPoint object
-            $type = $parameterType->getName();
+            $type = $parameterType->__toString();
             if ($type === \Swoft\Aop\JoinPoint::class) {
                 $aspectArgs[] = new \Swoft\Aop\JoinPoint($this, $method, $args, $return, $catch);
                 continue;
@@ -151,6 +151,7 @@ trait AopTrait
             }
             $aspectArgs[] = null;
         }
+
         $aspect = \bean($aspectClass);
         return $aspect->$aspectMethod(...$aspectArgs);
     }

@@ -64,6 +64,6 @@ class AllPointAspectWithoutRound1
      */
     public function afterThrowing(JoinPoint $joinPoint)
     {
-        static::$catch = $joinPoint->getCatch();
+        AllPointAspectWithoutRound1::$catch = $joinPoint->getCatch();
     }
 }
