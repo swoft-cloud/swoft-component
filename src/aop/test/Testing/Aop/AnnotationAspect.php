@@ -7,7 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-namespace SwoftTest\Aop;
+namespace SwoftTest\Aop\Testing\Aop;
 
 use Swoft\Aop\ProceedingJoinPoint;
 use Swoft\Aop\Bean\Annotation\Around;
@@ -15,8 +15,8 @@ use Swoft\Aop\Bean\Annotation\Aspect;
 use Swoft\Aop\Bean\Annotation\PointAnnotation;
 use Swoft\Bean\Annotation\Cacheable;
 use Swoft\Bean\Annotation\CachePut;
-use SwoftTest\Aop\Annotation\DemoAnnotation;
-use SwoftTest\Aop\Collector\DemoCollector;
+use SwoftTest\Aop\Testing\Aop\Annotation\DemoAnnotation;
+use SwoftTest\Aop\Testing\Aop\Collector\DemoCollector;
 
 /**
  * @Aspect
@@ -44,7 +44,9 @@ class AnnotationAspect
         $method = $proceedingJoinPoint->getMethod();
 
         $tag = '';
-        if ($annotation = DemoCollector::$methodAnnotations[get_class($class)][$method] ?? null) {
+
+        $className = $class->getOriginalClassName();
+        if ($annotation = DemoCollector::$methodAnnotations[$className][$method] ?? null) {
             $tag .= $annotation->getName();
         }
 

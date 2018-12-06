@@ -7,7 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-namespace SwoftTest\Aop;
+namespace SwoftTest\Aop\Testing\Aop;
 
 use Swoft\Aop\ProceedingJoinPoint;
 use Swoft\Aop\Bean\Annotation\Around;
@@ -18,7 +18,7 @@ use Swoft\Aop\Bean\Annotation\PointExecution;
  * @Aspect
  * @PointExecution(
  *     include={
- *         "SwoftTest\Aop\RegBean::reg.*",
+ *         "SwoftTest\Aop\Testing\Bean\RegBean::reg.*",
  *     }
  * )
  *

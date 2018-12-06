@@ -7,12 +7,12 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-namespace SwoftTest\Aop;
+namespace SwoftTest\Aop\Testing\Bean;
 
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\Cacheable;
 use Swoft\Bean\Annotation\CachePut;
-use SwoftTest\Aop\Annotation\DemoAnnotation;
+use SwoftTest\Aop\Testing\Aop\Annotation\DemoAnnotation;
 
 /**
  *

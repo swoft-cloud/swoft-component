@@ -11,13 +11,13 @@
 namespace SwoftTest;
 
 use Swoft\App;
-use SwoftTest\Aop\AllPointAspectWithoutRound1;
-use SwoftTest\Aop\AllPointAspectWithoutRound2;
-use SwoftTest\Aop\AnnotationAop;
-use SwoftTest\Aop\NestBean;
-use SwoftTest\Aop\RegBean;
 use SwoftTest\Aop\Testing\Bean\AopBean;
 use SwoftTest\Aop\Testing\Bean\AopBean2;
+use SwoftTest\Aop\Testing\Bean\AnnotationAop;
+use SwoftTest\Aop\Testing\Bean\RegBean;
+use SwoftTest\Aop\Testing\Aop\AllPointAspectWithoutRound1;
+use SwoftTest\Aop\Testing\Aop\AllPointAspectWithoutRound2;
+use SwoftTest\Aop\Testing\Bean\NestBean;
 
 /**
  * @uses      AopTest
@@ -55,7 +55,6 @@ class AopTest extends AbstractTestCase
 
     public function testAnnotationAop()
     {
-        /* @var AnnotationAop $annotationBean */
         $annotationBean = App::getBean(AnnotationAop::class);
         $result = $annotationBean->cacheable();
         $this->assertEquals('cacheable around before  around after ', $result);
@@ -74,7 +73,6 @@ class AopTest extends AbstractTestCase
 
     public function testRegAop()
     {
-        /* @var RegBean $annotationBean */
         $annotationBean = App::getBean(RegBean::class);
         $result = $annotationBean->regMethod();
         $this->assertEquals('regMethod RegAspect around before  RegAspect around after ', $result);
@@ -98,7 +96,6 @@ class AopTest extends AbstractTestCase
      */
     public function testThrowableInjectByJoinPoint()
     {
-        /* @var \SwoftTest\Aop\AopBean2 $aopBean */
         $aopBean = App::getBean(AopBean2::class);
         AllPointAspectWithoutRound1::$catch = null;
         $exception = new \LogicException('Bomb!');

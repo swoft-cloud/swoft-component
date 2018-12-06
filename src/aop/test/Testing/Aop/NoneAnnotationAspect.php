@@ -1,6 +1,6 @@
 <?php
 
-namespace SwoftTest\Aop;
+namespace SwoftTest\Aop\Testing\Aop;
 
 use Swoft\Aop\ProceedingJoinPoint;
 use Swoft\Aop\Bean\Annotation\Around;
