@@ -41,5 +41,7 @@ return [
         'log_file'        => env('LOG_FILE', '@runtime/logs/swoole.log'),
         'task_worker_num' => env('TASK_WORKER_NUM', 1),
         'upload_tmp_dir'  => env('UPLOAD_TMP_DIR', '@runtime/uploadfiles'),
+        'message_queue_key' => env('MESSAGE_QUEUE_KEY', 0x70001001),
+        'task_tmpdir'     => env('TASK_TMPDIR', '/tmp'),
     ],
 ];
