@@ -8,8 +8,14 @@ declare(strict_types=1);
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-namespace Swoft\Aop\Bean\Parser;
+namespace SwoftTest\Aop\Testing\Aop\Collector;
 
-abstract class AbstractParser extends \Swoft\Bean\Parser\AbstractParser
+class DemoCollector
 {
+    /**
+     * The annotations of method
+     *
+     * @var array
+     */
+    public static $methodAnnotations = [];
 }

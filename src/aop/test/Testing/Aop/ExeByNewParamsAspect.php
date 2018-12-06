@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -7,12 +8,12 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-namespace SwoftTest\Aop;
+namespace SwoftTest\Aop\Testing\Aop;
 
-use Swoft\Aop\ProceedingJoinPoint;
 use Swoft\Aop\Bean\Annotation\Around;
 use Swoft\Aop\Bean\Annotation\Aspect;
 use Swoft\Aop\Bean\Annotation\PointExecution;
+use Swoft\Aop\ProceedingJoinPoint;
 
 /**
  * the aspect of test
@@ -20,7 +21,7 @@ use Swoft\Aop\Bean\Annotation\PointExecution;
  * @Aspect
  * @PointExecution(
  *     include={
- *         "SwoftTest\Aop\RegBean::methodParams",
+ *         "SwoftTest\Aop\Testing\Bean\RegBean::methodParams",
  *     }
  * )
  */

@@ -1,17 +1,24 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
+namespace SwoftTest\Aop\Testing\Aop;
 
-namespace SwoftTest\Aop;
-
-use Swoft\Aop\ProceedingJoinPoint;
 use Swoft\Aop\Bean\Annotation\Around;
 use Swoft\Aop\Bean\Annotation\Aspect;
 use Swoft\Aop\Bean\Annotation\None;
 use Swoft\Aop\Bean\Annotation\PointAnnotation;
-
+use Swoft\Aop\ProceedingJoinPoint;
 
 /**
  * Class NoneAnnotationAspect
- * @Aspect()
+ * @Aspect
  * @PointAnnotation(
  *     include={
  *         None::class
@@ -20,9 +27,8 @@ use Swoft\Aop\Bean\Annotation\PointAnnotation;
  */
 class NoneAnnotationAspect
 {
-
     /**
-     * @Around()
+     * @Around
      * @param ProceedingJoinPoint $joinPoint
      * @return string
      */
@@ -35,5 +41,4 @@ class NoneAnnotationAspect
             'after'
         ]);
     }
-
 }

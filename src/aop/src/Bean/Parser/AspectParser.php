@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -10,8 +11,8 @@
 namespace Swoft\Aop\Bean\Parser;
 
 use Swoft\Aop\Bean\Annotation\Aspect;
-use Swoft\Bean\Annotation\Scope;
 use Swoft\Aop\Bean\Collector\AspectCollector;
+use Swoft\Bean\Annotation\Scope;
 
 /**
  * Class AspectParser

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -7,7 +8,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-namespace SwoftTest\Aop;
+namespace SwoftTest\Aop\Testing\Aop;
 
 use Swoft\Aop\Bean\Annotation\After;
 use Swoft\Aop\Bean\Annotation\AfterReturning;
@@ -15,33 +16,30 @@ use Swoft\Aop\Bean\Annotation\AfterThrowing;
 use Swoft\Aop\Bean\Annotation\Aspect;
 use Swoft\Aop\Bean\Annotation\Before;
 use Swoft\Aop\Bean\Annotation\PointBean;
+use Swoft\Aop\JoinPoint;
+use SwoftTest\Aop\Testing\Bean\AopBean2;
 
 /**
+ * the test of aspcet
  *
  * @Aspect
  * @PointBean(
  *     include={AopBean2::class},
  * )
- *
- * @uses      AllPointAspectWithoutRound2
- * @version   2018年03月27日
- * @author    maijiankang <maijiankang@foxmail.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
-class AllPointAspectWithoutRound2
+class AllPointAspectWithoutRound1
 {
     /**
-     * @var \Exception
+     * @var \Throwable
      */
     public static $catch;
-    
+
     /**
      * @Before
      */
     public function before()
     {
-        echo ' before2withoutaround ';
+        echo ' before1withoutaround ';
     }
 
     /**
@@ -49,7 +47,7 @@ class AllPointAspectWithoutRound2
      */
     public function after()
     {
-        echo ' after2withoutaround ';
+        echo ' after1withoutaround ';
     }
 
     /**
@@ -57,17 +55,16 @@ class AllPointAspectWithoutRound2
      */
     public function afterReturn()
     {
-        echo ' afterReturn2withoutaround ';
+        echo ' afterReturn1withoutaround ';
     }
 
     /**
-     * @param \Exception $e
-     * @AfterThrowing
+     * @param JoinPoint $joinPoint
      * @throws
+     * @AfterThrowing
      */
-    public function afterThrowing(\Exception $e = null)
+    public function afterThrowing(JoinPoint $joinPoint)
     {
-        static::$catch = $e;
-        throw $e;
+        AllPointAspectWithoutRound1::$catch = $joinPoint->getCatch();
     }
 }

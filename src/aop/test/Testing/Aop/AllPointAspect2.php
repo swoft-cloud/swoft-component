@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -7,10 +8,8 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-namespace SwoftTest\Aop;
+namespace SwoftTest\Aop\Testing\Aop;
 
-use Swoft\Aop\JoinPoint;
-use Swoft\Aop\ProceedingJoinPoint;
 use Swoft\Aop\Bean\Annotation\After;
 use Swoft\Aop\Bean\Annotation\AfterReturning;
 use Swoft\Aop\Bean\Annotation\AfterThrowing;
@@ -18,16 +17,18 @@ use Swoft\Aop\Bean\Annotation\Around;
 use Swoft\Aop\Bean\Annotation\Aspect;
 use Swoft\Aop\Bean\Annotation\Before;
 use Swoft\Aop\Bean\Annotation\PointBean;
+use Swoft\Aop\JoinPoint;
+use Swoft\Aop\ProceedingJoinPoint;
+use SwoftTest\Aop\Testing\Bean\AopBean;
 
 /**
- * the test of aspcet
  *
  * @Aspect
  * @PointBean(
  *     include={AopBean::class},
  * )
  */
-class AllPointAspect
+class AllPointAspect2
 {
     /**
      * @var
@@ -39,7 +40,7 @@ class AllPointAspect
      */
     public function before()
     {
-        $this->test .= ' before1 ';
+        $this->test .= ' before2 ';
     }
 
     /**
@@ -47,7 +48,7 @@ class AllPointAspect
      */
     public function after()
     {
-        $this->test .= ' after1 ';
+        $this->test .= ' after2 ';
     }
 
     /**
@@ -55,8 +56,7 @@ class AllPointAspect
      */
     public function afterReturn(JoinPoint $joinPoint)
     {
-        $result = $joinPoint->getReturn();
-        return $result.' afterReturn1 ';
+        return $joinPoint->getReturn().' afterReturn2 ';
     }
 
     /**
@@ -66,9 +66,9 @@ class AllPointAspect
      */
     public function around(ProceedingJoinPoint $proceedingJoinPoint)
     {
-        $this->test .= ' around-before1 ';
+        $this->test .= ' around-before2 ';
         $result = $proceedingJoinPoint->proceed();
-        $this->test .= ' around-after1 ';
+        $this->test .= ' around-after2 ';
         return $result.$this->test;
     }
 
@@ -77,6 +77,6 @@ class AllPointAspect
      */
     public function afterThrowing()
     {
-        echo "aop=1 afterThrowing !\n";
+        echo "aop=2 afterThrowing !\n";
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -7,28 +8,33 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-namespace SwoftTest\Aop;
+namespace SwoftTest\Aop\Testing\Bean;
 
 use Swoft\Bean\Annotation\Bean;
 
 /**
- *
  * @Bean
- * @uses      AopBean
- * @version   2017年12月26日
+ *
+ * @uses      RegBean
+ * @version   2017年12月27日
  * @author    stelin <phpcrazy@126.com>
  * @copyright Copyright 2010-2016 swoft software
  * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
-class AopBean
+class RegBean
 {
-    public function doAop()
+    public function regMethod()
     {
-        return 'do aop';
+        return 'regMethod';
     }
 
-    public function doAop2()
+    public function regMethod2()
     {
-        return 'do aop';
+        return 'regMethod2';
+    }
+
+    public function methodParams($a, $b)
+    {
+        return 'methodParams-'.$a.'-'.$b;
     }
 }

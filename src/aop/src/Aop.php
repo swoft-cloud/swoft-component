@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -10,11 +11,11 @@
 
 namespace Swoft\Aop;
 
-use Swoft\Bean\Annotation\Bean;
 use Swoft\Aop\Bean\Collector\AspectCollector;
+use Swoft\Bean\Annotation\Bean;
 
 /**
- * @Bean()
+ * @Bean
  */
 class Aop implements AopInterface
 {
