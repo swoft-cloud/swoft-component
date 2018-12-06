@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -9,13 +10,13 @@
  */
 namespace SwoftTest\Aop\Testing\Aop;
 
-use Swoft\Aop\JoinPoint;
 use Swoft\Aop\Bean\Annotation\After;
 use Swoft\Aop\Bean\Annotation\AfterReturning;
 use Swoft\Aop\Bean\Annotation\AfterThrowing;
 use Swoft\Aop\Bean\Annotation\Aspect;
 use Swoft\Aop\Bean\Annotation\Before;
 use Swoft\Aop\Bean\Annotation\PointBean;
+use Swoft\Aop\JoinPoint;
 use SwoftTest\Aop\Testing\Bean\AopBean2;
 
 /**

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -9,10 +10,10 @@
  */
 namespace SwoftTest\Aop\Testing\Aop;
 
-use Swoft\Aop\ProceedingJoinPoint;
 use Swoft\Aop\Bean\Annotation\Around;
 use Swoft\Aop\Bean\Annotation\Aspect;
 use Swoft\Aop\Bean\Annotation\PointExecution;
+use Swoft\Aop\ProceedingJoinPoint;
 
 /**
  * the aspect of test

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -22,7 +23,6 @@ use Swoft\Bean\CollectorInterface;
 
 class AspectCollector implements CollectorInterface
 {
-
     private static $aspects = [];
 
     public static function collect(string $className, $objectAnnotation = null, string $propertyName = '', string $methodName = '', $propertyValue = null)
@@ -46,6 +46,11 @@ class AspectCollector implements CollectorInterface
         } elseif ($objectAnnotation instanceof PointExecution) {
             self::collectPointExecution($objectAnnotation, $className);
         }
+    }
+
+    public static function getCollector(): array
+    {
+        return self::$aspects;
     }
 
     /**
@@ -166,10 +171,5 @@ class AspectCollector implements CollectorInterface
             return null;
         }
         self::$aspects[$className]['advice']['afterReturning'] = [$className, $methodName];
-    }
-
-    public static function getCollector(): array
-    {
-        return self::$aspects;
     }
 }

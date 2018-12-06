@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -35,5 +36,4 @@ class NestBean
     {
         return __FUNCTION__;
     }
-
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -77,25 +78,6 @@ class Parser
     }
 
     /**
-     * @param string $file
-     * @return string
-     */
-    private function getCodeByFile(string $file): string
-    {
-        if (! \file_exists($file) || ! is_readable($file)) {
-            return '';
-        }
-        // If read file co-method exist and running in Coroutine context,then use co-method to get file contents
-        if ($this->isUseAsyncIO() && SwCoroutine::getuid() > 0 && method_exists(SwCoroutine::class, 'readFile')) {
-            $code = SwCoroutine::readFile($file);
-        } else {
-            $code = \file_get_contents($file);
-        }
-
-        return (string)$code;
-    }
-
-    /**
      * @return \PhpParser\Parser
      */
     public function getAstParser(): \PhpParser\Parser
@@ -147,5 +129,24 @@ class Parser
     {
         $this->useAsyncIO = $useAsyncIO;
         return $this;
+    }
+
+    /**
+     * @param string $file
+     * @return string
+     */
+    private function getCodeByFile(string $file): string
+    {
+        if (! \file_exists($file) || ! is_readable($file)) {
+            return '';
+        }
+        // If read file co-method exist and running in Coroutine context,then use co-method to get file contents
+        if ($this->isUseAsyncIO() && SwCoroutine::getuid() > 0 && method_exists(SwCoroutine::class, 'readFile')) {
+            $code = SwCoroutine::readFile($file);
+        } else {
+            $code = \file_get_contents($file);
+        }
+
+        return (string)$code;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -79,9 +80,8 @@ trait AopTrait
         } catch (\Throwable $t) {
             if (isset($advice['afterThrowing']) && !empty($advice['afterThrowing'])) {
                 return $this->__doPoint($advice['afterThrowing'], $method, $params, $advice, $advices, null, $t);
-            } else {
-                throw $t;
             }
+            throw $t;
         }
 
         // AfterReturning
@@ -114,8 +114,7 @@ trait AopTrait
         array $advices,
         $return = null,
         \Throwable $catch = null
-    )
-    {
+    ) {
         list($aspectClass, $aspectMethod) = $pointAdvice;
 
         $reflectionClass = new \ReflectionClass($aspectClass);
