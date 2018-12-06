@@ -27,9 +27,8 @@ trait AopTrait
      */
     public function __proxyCall(\Closure $closure, string $method, array $params)
     {
-        /** @var Aop $aop */
-        $aop   = \bean(\Swoft\Aop\Aop::class);
-        $map   = $aop->getMap();
+        $aop = \bean(\Swoft\Aop\Aop::class);
+        $map = $aop->getMap();
         $class = $this->getOriginalClassName();
         // If doesn't have any advices, then execute the origin method
         if (!isset($map[$class][$method]) || empty($map[$class][$method])) {
@@ -38,20 +37,19 @@ trait AopTrait
         // Apply advices's functionality
         $advices = $map[$class][$method];
 
-        return $this->__doAdvice($closure, $method, $params, $advices);
+        return $this->__doAdvice($method, $params, $advices);
     }
 
     /**
      * AOP do advice method
      *
-     * @param \Closure $closure
-     * @param string   $method
-     * @param array    $params
-     * @param array    $advices
+     * @param string $method
+     * @param array  $params
+     * @param array  $advices
      * @return mixed|null
      * @throws \Throwable
      */
-    public function __doAdvice(\Closure $closure, string $method, array $params, array $advices)
+    public function __doAdvice(string $method, array $params, array $advices)
     {
         $result = null;
         $advice = array_shift($advices);
@@ -66,10 +64,9 @@ trait AopTrait
                     // The result of before point will not effect origin object method
                     $this->__doPoint($advice['before'], $method, $params, $advice, $advices);
                 }
-                if (0 === \count($advices)) {
-                    $result = $closure(...$params);
-                } else {
-                    $this->__doAdvice($closure, $method, $params, $advices);
+
+                if (!empty($advices)) {
+                    $this->__doAdvice($method, $params, $advices);
                 }
             }
 
@@ -115,11 +112,12 @@ trait AopTrait
         array $advices,
         $return = null,
         \Throwable $catch = null
-    ) {
+    )
+    {
         list($aspectClass, $aspectMethod) = $pointAdvice;
 
-        $reflectionClass      = new \ReflectionClass($aspectClass);
-        $reflectionMethod     = $reflectionClass->getMethod($aspectMethod);
+        $reflectionClass = new \ReflectionClass($aspectClass);
+        $reflectionMethod = $reflectionClass->getMethod($aspectMethod);
         $reflectionParameters = $reflectionMethod->getParameters();
 
         // Bind the param of method
@@ -132,7 +130,7 @@ trait AopTrait
             }
 
             // JoinPoint object
-            $type = $parameterType->__toString();
+            $type = $parameterType->getName();
             if ($type === \Swoft\Aop\JoinPoint::class) {
                 $aspectArgs[] = new \Swoft\Aop\JoinPoint($this, $method, $args, $return, $catch);
                 continue;
