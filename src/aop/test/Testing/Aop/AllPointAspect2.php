@@ -7,7 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-namespace SwoftTest\Aop;
+namespace SwoftTest\Aop\Testing\Aop;
 
 use Swoft\Aop\JoinPoint;
 use Swoft\Aop\ProceedingJoinPoint;
@@ -18,6 +18,7 @@ use Swoft\Aop\Bean\Annotation\Around;
 use Swoft\Aop\Bean\Annotation\Aspect;
 use Swoft\Aop\Bean\Annotation\Before;
 use Swoft\Aop\Bean\Annotation\PointBean;
+use SwoftTest\Aop\Testing\Bean\AopBean;
 
 /**
  *

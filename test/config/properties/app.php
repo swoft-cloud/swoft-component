@@ -11,9 +11,9 @@ return [
     'version'      => '1.0',
     'autoInitBean' => true,
     'beanScan'     => [
+        'SwoftTest\\Aop\\Testing'            => SRC_PATH . '/aop/test/Testing',
         'SwoftTest\\Db\\Testing'             => SRC_PATH . '/db/test/Testing',
         'Swoft\\Db'                          => SRC_PATH . '/db/src',
-        'SwoftTest\\Aop'                     => SRC_PATH . '/framework/test/Cases/Aop',
         'SwoftTest\\Bean'                    => SRC_PATH . '/framework/test/Cases/Bean',
         'SwoftTest\\Pool'                    => SRC_PATH . '/framework/test/Cases/Pool',
         'Swoft\\Http\\Server\\Test\\Testing' => SRC_PATH . '/http-server/test/Testing',

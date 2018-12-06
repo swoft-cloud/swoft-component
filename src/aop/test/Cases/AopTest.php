@@ -14,10 +14,10 @@ use Swoft\App;
 use SwoftTest\Aop\AllPointAspectWithoutRound1;
 use SwoftTest\Aop\AllPointAspectWithoutRound2;
 use SwoftTest\Aop\AnnotationAop;
-use SwoftTest\Aop\AopBean;
 use SwoftTest\Aop\AopBean2;
 use SwoftTest\Aop\NestBean;
 use SwoftTest\Aop\RegBean;
+use SwoftTest\Aop\Testing\Bean\AopBean;
 
 /**
  * @uses      AopTest
@@ -30,7 +30,7 @@ class AopTest extends AbstractTestCase
 {
     public function testAllAdvice()
     {
-        /* @var \SwoftTest\Aop\AopBean $aopBean */
+        /* @var AopBean $aopBean */
         $aopBean = App::getBean(AopBean::class);
         $result = $aopBean->doAop();
         $this->assertEquals('do aop around-before2  before2  around-after2  afterReturn2  around-before1  before1  around-after1  afterReturn1 ', $result);
@@ -67,7 +67,7 @@ class AopTest extends AbstractTestCase
 
     public function testCustomAnnotationAop()
     {
-        /* @var AnnotationAop $annotationBean*/
+        /* @var AnnotationAop $annotationBean */
         $annotationBean = App::getBean(AnnotationAop::class);
         $result = $annotationBean->demoAnnotation();
         $this->assertEquals('demo hello around before  around after ', $result);

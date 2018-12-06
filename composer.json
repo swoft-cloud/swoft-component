@@ -106,7 +106,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "SwoftTest\\Aop\\": "src/aop/test/Cases",
+            "SwoftTest\\Aop\\": "src/aop/test/",
             "SwoftTest\\Bean\\": "src/bean/test/Cases",
             "SwoftTest\\Cache\\": "src/cache/test/Cases",
             "SwoftTest\\Console\\": "src/console/test/Cases",
