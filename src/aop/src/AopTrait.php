@@ -67,6 +67,8 @@ trait AopTrait
 
                 if (!empty($advices)) {
                     $this->__doAdvice($method, $params, $advices);
+                } else {
+                    $result = $this->__invokeTarget($method, $params);
                 }
             }
 

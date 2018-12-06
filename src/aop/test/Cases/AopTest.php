@@ -14,10 +14,10 @@ use Swoft\App;
 use SwoftTest\Aop\AllPointAspectWithoutRound1;
 use SwoftTest\Aop\AllPointAspectWithoutRound2;
 use SwoftTest\Aop\AnnotationAop;
-use SwoftTest\Aop\AopBean2;
 use SwoftTest\Aop\NestBean;
 use SwoftTest\Aop\RegBean;
 use SwoftTest\Aop\Testing\Bean\AopBean;
+use SwoftTest\Aop\Testing\Bean\AopBean2;
 
 /**
  * @uses      AopTest
@@ -43,7 +43,6 @@ class AopTest extends AbstractTestCase
      */
     public function testNestWithourRound()
     {
-        /* @var \SwoftTest\Aop\AopBean2 $aopBean */
         $aopBean = App::getBean(AopBean2::class);
 
         ob_start();
