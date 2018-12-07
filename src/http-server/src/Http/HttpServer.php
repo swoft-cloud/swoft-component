@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Http\Server\Http;
 
 use Swoft\Bean\Collector\SwooleListenerCollector;
@@ -30,9 +37,9 @@ class HttpServer extends AbstractServer
         // add server type
         $this->serverSetting['server_type'] = self::TYPE_HTTP;
 
-    	if (!empty($this->setting['open_http2_protocol'])) {
-    		$this->httpSetting['type'] = SWOOLE_SOCK_TCP|SWOOLE_SSL;
-		}
+        if (!empty($this->setting['open_http2_protocol'])) {
+            $this->httpSetting['type'] = SWOOLE_SOCK_TCP|SWOOLE_SSL;
+        }
 
         $this->server = new Server($this->httpSetting['host'], $this->httpSetting['port'], $this->httpSetting['mode'], $this->httpSetting['type']);
 
