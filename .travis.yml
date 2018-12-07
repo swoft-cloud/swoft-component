@@ -6,53 +6,25 @@ php:
   - 7.2
 
 services:
-    - mysql
-    - redis
+  - mysql
+  - redis
 
 before_install:
-    - mysql -e 'CREATE DATABASE IF NOT EXISTS test;
-                USE test;
-                CREATE TABLE IF NOT EXISTS `user` (
-                  `id` INT (11) NOT NULL AUTO_INCREMENT,
-                  `name` VARCHAR (20) DEFAULT NULL,
-                  `sex` INT (1) NOT NULL DEFAULT '0',
-                  `age` INT (1) NOT NULL DEFAULT '0',
-                  `description` VARCHAR (240) DEFAULT NULL,
-                  PRIMARY KEY (`id`)
-                ) ENGINE = INNODB DEFAULT CHARSET = utf8 ;
-                CREATE TABLE `user2` (
-                  `id` INT (11) NOT NULL AUTO_INCREMENT,
-                  `name` VARCHAR (20) DEFAULT NULL,
-                  `sex` INT (1) NOT NULL DEFAULT '0',
-                  `age` INT (1) NOT NULL DEFAULT '0',
-                  `description` VARCHAR (240) DEFAULT NULL,
-                  PRIMARY KEY (`id`)
-                ) ENGINE = INNODB DEFAULT CHARSET = utf8 ;
-                CREATE TABLE `count` (
-                  `uid` INT (11) NOT NULL,
-                  `fans` INT (1) NOT NULL DEFAULT '0',
-                  `follows` INT (1) NOT NULL DEFAULT '0',
-                  PRIMARY KEY (`uid`)
-                ) ENGINE = INNODB DEFAULT CHARSET = utf8 ;
-                CREATE DATABASE IF NOT EXISTS test2;
-                USE test2;
-                CREATE TABLE IF NOT EXISTS `user` (
-                  `id` INT (11) NOT NULL AUTO_INCREMENT,
-                  `name` VARCHAR (20) DEFAULT NULL,
-                  `sex` INT (1) NOT NULL DEFAULT '0',
-                  `age` INT (1) NOT NULL DEFAULT '0',
-                  `description` VARCHAR (240) DEFAULT NULL,
-                  PRIMARY KEY (`id`)
-                ) ENGINE = INNODB DEFAULT CHARSET = utf8 ;'
-    - echo "extension = swoole.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - export PHP_MAJOR="$(`phpenv which php` -r 'echo phpversion();' | cut -d '.' -f 1)"
+  - export PHP_MINOR="$(`phpenv which php` -r 'echo phpversion();' | cut -d '.' -f 2)"
+  - echo $PHP_MAJOR
+  - echo $PHP_MINOR
 
 install:
-  - wget https://github.com/redis/hiredis/archive/v0.13.3.tar.gz -O hiredis.tar.gz && mkdir -p hiredis && tar -xf hiredis.tar.gz -C hiredis --strip-components=1 && cd hiredis && sudo make -j$(nproc) && sudo make install && sudo ldconfig && cd ..
-  - wget https://github.com/swoole/swoole-src/archive/v2.1.3.tar.gz -O swoole.tar.gz && mkdir -p swoole && tar -xf swoole.tar.gz -C swoole --strip-components=1 && rm swoole.tar.gz && cd swoole && phpize && ./configure --enable-async-redis --enable-coroutine && make -j$(nproc) && make install && echo 'no' | pecl install -f redis && cd -
+  - cd $TRAVIS_BUILD_DIR
+  - bash test/_ci/install_swoole.sh
+  - phpenv config-rm xdebug.ini
+  - phpenv config-add test/_ci/ci.ini
+  - bash test/_ci/setup_dbs.sh
 
 before_script:
+  - cd $TRAVIS_BUILD_DIR
   - composer config -g process-timeout 900 && composer update
-  - phpenv config-rm xdebug.ini
   - cp test/.env.example test/.env
 
 script: composer test

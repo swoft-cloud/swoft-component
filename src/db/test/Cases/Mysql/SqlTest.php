@@ -13,6 +13,7 @@ use Swoft\Db\Db;
 use SwoftTest\Db\Testing\Entity\Group;
 use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
+use function test_go as go;
 
 /**
  * SqlMysqlTest

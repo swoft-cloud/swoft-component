@@ -10,9 +10,6 @@
 namespace SwoftTest\Db\Testing\Pool;
 
 use Swoft\Bean\Annotation\Bean;
-use Swoft\Bean\Annotation\Value;
-use Swoft\Db\Driver\Driver;
-use Swoft\Db\Pool\Config\DbPoolProperties;
 
 /**
  * OtherDbConfig

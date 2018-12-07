@@ -1172,7 +1172,6 @@ class QueryBuilder implements QueryBuilderInterface
         return $this->execute();
     }
 
-
     /**
      * @param string $column
      * @param string $alias

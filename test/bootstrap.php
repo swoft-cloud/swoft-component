@@ -23,3 +23,16 @@ $bootstrap->bootstrap();
 
 $initApplicationContext = new \Swoft\Core\InitApplicationContext();
 $initApplicationContext->init();
+
+
+function test_go($func)
+{
+    $id = go(function () use ($func) {
+        $func();
+        swoole_event_exit();
+    });
+
+    \Swoole\Event::wait();
+
+    return $id;
+}

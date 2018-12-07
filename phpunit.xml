@@ -16,7 +16,7 @@
             <directory suffix="Test.php">./src/cache/test</directory>
             <directory suffix="Test.php">./src/console/test</directory>
             <directory suffix="Test.php">./src/data-parser/test</directory>
-            <!--<directory suffix="Test.php">./src/db/test</directory>-->
+            <directory suffix="Test.php">./src/db/test</directory>
             <!--<directory suffix="Test.php">./src/devtool/test</directory>-->
             <!--<directory suffix="Test.php">./src/framework/test</directory>-->
             <!--<directory suffix="Test.php">./src/http-client/test</directory>-->

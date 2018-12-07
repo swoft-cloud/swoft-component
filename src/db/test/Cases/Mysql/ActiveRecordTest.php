@@ -17,6 +17,7 @@ use Swoft\Helper\StringHelper;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Testing\Entity\User2;
+use function test_go as go;
 
 /**
  * MysqlTest
@@ -463,7 +464,6 @@ class ActiveRecordTest extends AbstractMysqlCase
         });
     }
 
-
     /**
      * @dataProvider mysqlProviders
      *
@@ -681,5 +681,4 @@ class ActiveRecordTest extends AbstractMysqlCase
         $lastSql = substr($lastSql, 0, strpos($lastSql, ' Params: '));
         $this->assertTrue(StringHelper::endsWith($lastSql, 'LOCK IN SHARE MODE'));
     }
-
 }

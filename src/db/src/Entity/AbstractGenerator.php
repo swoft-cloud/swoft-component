@@ -9,7 +9,6 @@
  */
 namespace Swoft\Db\Entity;
 
-use Swoft\App;
 use Swoft\Helper\StringHelper;
 
 abstract class AbstractGenerator

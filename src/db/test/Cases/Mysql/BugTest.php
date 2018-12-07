@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace SwoftTest\Db\Cases\Mysql;
 
 use Swoft\Db\Exception\MysqlException;
@@ -10,6 +17,7 @@ use SwoftTest\Db\Testing\Entity\Count;
 use SwoftTest\Db\Testing\Entity\Keyword;
 use SwoftTest\Db\Testing\Entity\NoInc;
 use SwoftTest\Db\Testing\Entity\User;
+use function test_go as go;
 
 /**
  * BugTest
@@ -330,7 +338,7 @@ class BugTest extends AbstractMysqlCase
         $this->assertTrue(is_string($row['sex']));
         $this->assertTrue(is_string($row['description']));
         $rows = Query::table(User::class)->where('id', $uid)->get()->getResult();
-        foreach ($rows as $userRow){
+        foreach ($rows as $userRow) {
             $this->assertTrue(is_string($userRow['age']));
             $this->assertTrue(is_string($userRow['sex']));
             $this->assertTrue(is_string($userRow['description']));
@@ -344,35 +352,33 @@ class BugTest extends AbstractMysqlCase
      */
     public function testListTypeByCo(int $uid)
     {
-        go(function () use ($uid){
+        go(function () use ($uid) {
             $this->testListType($uid);
         });
     }
 
     public function testNoInc()
     {
-        NoInc::query()->where('id',0)->delete()->getResult();
+        NoInc::query()->where('id', 0)->delete()->getResult();
 
         $entity = new NoInc();
         $entity->setId(0);
         $entity->setName('Agnes');
         $id = $entity->save()->getResult();
 
-        $this->assertEquals(0,$id);
+        $this->assertEquals(0, $id);
         $entity = NoInc::findById(0)->getResult();
-        $this->assertEquals(0,$entity->getId());
+        $this->assertEquals(0, $entity->getId());
 
-        NoInc::query()->where('id',123445)->delete()->getResult();
+        NoInc::query()->where('id', 123445)->delete()->getResult();
 
         $entity = new NoInc();
         $entity->setId(123445);
         $entity->setName('limx');
         $id = $entity->save()->getResult();
 
-        $this->assertEquals(123445,$id);
+        $this->assertEquals(123445, $id);
         $entity = NoInc::findById(123445)->getResult();
-        $this->assertEquals(123445,$entity->getId());
+        $this->assertEquals(123445, $entity->getId());
     }
-
-
 }

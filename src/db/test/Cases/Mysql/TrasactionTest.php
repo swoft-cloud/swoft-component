@@ -12,6 +12,7 @@ namespace SwoftTest\Db\Cases\Mysql;
 use Swoft\Db\Db;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\User;
+use function test_go as go;
 
 class TrasactionTest extends AbstractMysqlCase
 {

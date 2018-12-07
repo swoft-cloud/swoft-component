@@ -10,7 +10,6 @@
 
 namespace Swoft\Db\Driver\Mysql;
 
-use Swoft\App;
 use Swoft\Db\AbstractDbConnection;
 use Swoft\Db\Bean\Annotation\Connection;
 use Swoft\Db\Driver\DriverType;

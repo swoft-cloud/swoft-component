@@ -1,10 +1,18 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace SwoftTest\Db\Cases\Mysql;
 
 use Swoft\Db\Query;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\Detable;
+use function test_go as go;
 
 /**
  * DefaultTest
@@ -92,7 +100,6 @@ class DefaultTest extends AbstractMysqlCase
 
         $detable = Detable::findById($did)->getResult();
         $this->assertEquals($detable['dName'], 'dname...');
-
     }
 
     public function testUpdateByCo()
@@ -125,5 +132,4 @@ class DefaultTest extends AbstractMysqlCase
             $this->testGet();
         });
     }
-
 }

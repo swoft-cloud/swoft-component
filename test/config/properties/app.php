@@ -14,7 +14,6 @@ return [
         'SwoftTest\\Aop\\Testing'            => SRC_PATH . '/aop/test/Testing',
         'SwoftTest\\Auth\\Testing'           => SRC_PATH . '/auth/test/Testing',
         'SwoftTest\\Db\\Testing'             => SRC_PATH . '/db/test/Testing',
-        'Swoft\\Db'                          => SRC_PATH . '/db/src',
         'SwoftTest\\Bean'                    => SRC_PATH . '/framework/test/Cases/Bean',
         'SwoftTest\\Pool'                    => SRC_PATH . '/framework/test/Cases/Pool',
         'SwoftTest\\HttpServer\\Testing'     => SRC_PATH . '/http-server/test/Testing',
