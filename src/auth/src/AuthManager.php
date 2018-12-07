@@ -98,6 +98,7 @@ class AuthManager implements AuthManagerInterface
         if (! $account = $this->getAccountType($accountTypeName)) {
             throw new AuthException(ErrorCode::AUTH_INVALID_ACCOUNT_TYPE);
         }
+
         $result = $account->login($data);
         if (! $result instanceof AuthResult || $result->getIdentity() === '') {
             throw new AuthException(ErrorCode::AUTH_LOGIN_FAILED);

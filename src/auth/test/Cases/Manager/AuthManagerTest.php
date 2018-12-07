@@ -8,13 +8,13 @@
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
-namespace SwoftTest\Auth\Manager;
+namespace SwoftTest\Auth\Cases\Manager;
 
 use Swoft\App;
 use Swoft\Auth\AuthManager;
 use Swoft\Auth\Constants\AuthConstants;
 use Swoft\Auth\Mapping\AuthManagerInterface;
-use SwoftTest\Auth\AbstractTestCase;
+use SwoftTest\Auth\Cases\AbstractTestCase;
 use Swoft\Http\Message\Server\Request;
 use Swoft\Http\Server\Router\HandlerMapping;
 

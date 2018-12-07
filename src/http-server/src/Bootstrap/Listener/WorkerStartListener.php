@@ -1,7 +1,13 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Http\Server\Bootstrap\Listener;
-
 
 use Swoft\App;
 use Swoft\Bean\Annotation\ServerListener;
@@ -18,7 +24,6 @@ use Swoole\Server;
  */
 class WorkerStartListener implements WorkerStartInterface
 {
-
     public function onWorkerStart(Server $server, int $workerId, bool $isWorker)
     {
         $isWorker && ConsoleUtil::log(

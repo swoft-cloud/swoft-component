@@ -68,6 +68,7 @@ class HandlerAdapter implements HandlerAdapterInterface
 
         // execute handler
         $params = $this->bindParams($request, $handler, $matches);
+
         $response = PhpHelper::call($handler, $params);
 
         // response

@@ -142,6 +142,7 @@ class ProxyVisitor extends NodeVisitorAbstract
             $uses = [];
             foreach ($node->params as $key => $param) {
                 if ($param instanceof Param) {
+                    // TODO: Why is $byRef true ?
                     $uses[$key] = new Param($param->var, null, null, true);
                 }
             }

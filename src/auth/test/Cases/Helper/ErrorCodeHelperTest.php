@@ -8,11 +8,11 @@
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
-namespace SwoftTest\Auth\Helper;
+namespace SwoftTest\Auth\Cases\Helper;
 
 use Swoft\Auth\Helper\ErrorCode;
 use Swoft\Auth\Helper\ErrorCodeHelper;
-use SwoftTest\Auth\AbstractTestCase;
+use SwoftTest\Auth\Cases\AbstractTestCase;
 
 class ErrorCodeHelperTest extends AbstractTestCase
 {

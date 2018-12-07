@@ -1,12 +1,14 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2018/3/19
- * Time: 上午12:14
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
-namespace SwoftTest\HttpServer;
+namespace SwoftTest\HttpServer\Cases\Router;
 
 use PHPUnit\Framework\TestCase;
 use Swoft\Http\Server\Router\AbstractRouter;
@@ -104,4 +106,3 @@ class AbstractRouterTest extends TestCase
         // var_dump($ret);die;
     }
 }
-

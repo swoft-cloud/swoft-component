@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Http\Server\Router;
 
 /**
@@ -11,31 +18,48 @@ interface RouterInterface
 {
     /** match result status list */
     const FOUND = 1;
+
     const NOT_FOUND = 2;
+
     const METHOD_NOT_ALLOWED = 3;
 
     const FAV_ICON = '/favicon.ico';
+
     const DEFAULT_REGEX = '[^/]+';
 
     /** supported method list */
     const ANY = 'ANY';
 
     const GET = 'GET';
+
     const POST = 'POST';
+
     const PUT = 'PUT';
+
     const PATCH = 'PATCH';
+
     const DELETE = 'DELETE';
+
     const OPTIONS = 'OPTIONS';
+
     const HEAD = 'HEAD';
 
     const COPY = 'COPY';
+
     const PURGE = 'PURGE';
+
     const LINK = 'LINK';
+
     const UNLINK = 'UNLINK';
+
     const LOCK = 'LOCK';
+
     const UNLOCK = 'UNLOCK';
+
     const SEARCH = 'SEARCH';
+
     const CONNECT = 'CONNECT';
+
     const TRACE = 'TRACE';
 
     /** supported methods list */
@@ -46,12 +70,15 @@ interface RouterInterface
     ];
 
     // ,COPY,PURGE,LINK,UNLINK,LOCK,UNLOCK,VIEW,SEARCH,CONNECT,TRACE';
+
     /** supported methods string */
     const ALLOWED_METHODS_STR = 'ANY,GET,POST,PUT,PATCH,DELETE,OPTIONS,HEAD';
 
     /** the matched result index key */
     const INDEX_STATUS = 0;
+
     const INDEX_PATH = 1;
+
     const INDEX_INFO = 2;
 
     /**

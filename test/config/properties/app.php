@@ -12,11 +12,12 @@ return [
     'autoInitBean' => true,
     'beanScan'     => [
         'SwoftTest\\Aop\\Testing'            => SRC_PATH . '/aop/test/Testing',
+        'SwoftTest\\Auth\\Testing'           => SRC_PATH . '/auth/test/Testing',
         'SwoftTest\\Db\\Testing'             => SRC_PATH . '/db/test/Testing',
         'Swoft\\Db'                          => SRC_PATH . '/db/src',
         'SwoftTest\\Bean'                    => SRC_PATH . '/framework/test/Cases/Bean',
         'SwoftTest\\Pool'                    => SRC_PATH . '/framework/test/Cases/Pool',
-        'Swoft\\Http\\Server\\Test\\Testing' => SRC_PATH . '/http-server/test/Testing',
+        'SwoftTest\\HttpServer\\Testing'     => SRC_PATH . '/http-server/test/Testing',
         'Swoft\\I18n'                        => SRC_PATH . '/i18n/src',
         'SwoftTest\\Redis\\Pool'             => SRC_PATH . '/redis/test/Cases/Pool',
         'Swoft\\Redis'                       => SRC_PATH . '/redis/src',
@@ -35,4 +36,5 @@ return [
     'cache'        => require __DIR__ . DS . 'cache.php',
     'provider'     => require __DIR__ . DS . 'provider.php',
     'test'         => require __DIR__ . DS . 'test.php',
+    'auth'         => require __DIR__ . DS . 'auth.php',
 ];

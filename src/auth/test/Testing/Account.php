@@ -8,18 +8,18 @@
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
-namespace SwoftTest\Auth\Account;
+namespace SwoftTest\Auth\Testing;
 
 use Swoft\Auth\Bean\AuthResult;
 use Swoft\Auth\Mapping\AccountTypeInterface;
 use Swoft\Bean\Annotation\Bean;
 
 /**
- * Class TestAccount
+ * Class Account
  * @package SwoftTest\Auth
  * @Bean()
  */
-class TestAccount implements AccountTypeInterface
+class Account implements AccountTypeInterface
 {
     /**
      * @param array $data Login data

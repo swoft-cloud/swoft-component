@@ -8,13 +8,13 @@
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
-namespace SwoftTest\Auth\Parser;
+namespace SwoftTest\Auth\Cases\Handler;
 
 use Swoft\App;
 use Swoft\Auth\Constants\AuthConstants;
 use Swoft\Http\Message\Server\Request;
 use Swoft\Http\Server\Router\HandlerMapping;
-use SwoftTest\Auth\AbstractTestCase;
+use SwoftTest\Auth\Cases\AbstractTestCase;
 
 /**
  * Class BasicAuthParserTest
@@ -29,6 +29,7 @@ class BasicAuthParserTest extends AbstractTestCase
         $router->get('/', function (Request $request) {
             $name = $request->getAttribute(AuthConstants::BASIC_USER_NAME);
             $pd = $request->getAttribute(AuthConstants::BASIC_PASSWORD);
+
             return ['username' => $name, 'password' => $pd];
         });
     }

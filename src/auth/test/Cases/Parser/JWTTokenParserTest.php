@@ -8,13 +8,13 @@
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
-namespace SwoftTest\Auth\Parser;
+namespace SwoftTest\Auth\Cases\Parser;
 
 use Swoft\App;
 use Swoft\Auth\Bean\AuthSession;
 use Swoft\Auth\Parser\JWTTokenParser;
-use SwoftTest\Auth\AbstractTestCase;
-use SwoftTest\Auth\Account\TestAccount;
+use SwoftTest\Auth\Cases\AbstractTestCase;
+use SwoftTest\Auth\Testing\Account as TestAccount;
 
 class JWTTokenParserTest extends AbstractTestCase
 {
@@ -27,7 +27,7 @@ class JWTTokenParserTest extends AbstractTestCase
         $parser = App::getBean(JWTTokenParser::class);
         $session = new AuthSession();
         $session->setIdentity(2);
-        $session->setExpirationTime(time()+10);
+        $session->setExpirationTime(time() + 10);
         $session->setAccountTypeName(TestAccount::class);
         $token = $parser->getToken($session);
         $this->assertStringStartsWith('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9', $token);

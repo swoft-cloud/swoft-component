@@ -2,7 +2,7 @@
 
 namespace Swoft\Bootstrap;
 
-use Monolog\Formatter\LineFormatter;
+use Swoft\Log\Formatter\LineFormatter;
 use Swoft\App;
 use Swoft\Bean\Annotation\BootBean;
 use Swoft\Core\Application;

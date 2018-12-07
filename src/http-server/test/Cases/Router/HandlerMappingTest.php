@@ -1,12 +1,14 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2018/3/19
- * Time: 上午12:12
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
-namespace SwoftTest\HttpServer;
+namespace SwoftTest\HttpServer\Cases\Router;
 
 use PHPUnit\Framework\TestCase;
 use Swoft\Http\Server\Router\HandlerMapping;
@@ -47,7 +49,6 @@ class HandlerMappingTest extends TestCase
         $this->assertCount(2, $router->getStaticRoutes());
     }
 
-
     public function testStaticRoute()
     {
         $router = $this->createRouter();
@@ -62,7 +63,6 @@ class HandlerMappingTest extends TestCase
         $this->assertSame(HandlerMapping::FOUND, $status);
         $this->assertSame('/', $path);
         $this->assertSame('handler0', $route['handler']);
-
     }
 
     public function testOptionalParamRoute()
@@ -88,7 +88,6 @@ class HandlerMappingTest extends TestCase
 
         $this->assertSame(HandlerMapping::FOUND, $status);
         $this->assertSame('handler', $route['handler']);
-
     }
 
     public function testParamRoute()
@@ -111,7 +110,7 @@ class HandlerMappingTest extends TestCase
         $ret = $router->match('/hi/tom', 'GET');
 
         $this->assertCount(3, $ret);
-// var_dump($ret, $router->getRegularRoutes());die;
+        // var_dump($ret, $router->getRegularRoutes());die;
         list($status, $path, $route) = $ret;
 
         $this->assertSame(HandlerMapping::FOUND, $status);

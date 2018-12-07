@@ -15,8 +15,7 @@ return [
         'Swoft\\Auth' => BASE_PATH . '/../src',
     ],
     'beanScan' => [
-        'Swoft\\Auth' => BASE_PATH . '/../src',
-        'SwoftTest\\Auth\\Account'=> BASE_PATH .'/Cases/Account'
+        'SwoftTest\\Auth\\Testing'=> BASE_PATH .'/Testing'
     ],
     'I18n' => [
         'sourceLanguage' => '@root/resources/messages/',

@@ -8,13 +8,13 @@
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
-namespace SwoftTest\Auth\Manager;
+namespace SwoftTest\Auth\Testing;
 
 use Swoft\Auth\AuthManager;
 use Swoft\Redis\Redis;
-use SwoftTest\Auth\Account\TestAccount;
+use SwoftTest\Auth\Testing\Account as TestAccount;
 
-class TestManager extends AuthManager
+class Manager extends AuthManager
 {
     protected $cacheClass = Redis::class;
 
