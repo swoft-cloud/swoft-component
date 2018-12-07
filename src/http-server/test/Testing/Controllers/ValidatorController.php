@@ -1,5 +1,5 @@
 <?php
-namespace SwoftTest\Testing\Controllers;
+namespace SwoftTest\HttpServer\Testing\Controllers;
 
 use Swoft\Http\Message\Server\Request;
 use Swoft\Http\Server\Bean\Annotation\Controller;

@@ -6,7 +6,7 @@
  * Time: 上午12:12
  */
 
-namespace SwoftTest\HttpServer;
+namespace SwoftTest\HttpServer\Cases\Router;
 
 use PHPUnit\Framework\TestCase;
 use Swoft\Http\Server\Router\HandlerMapping;

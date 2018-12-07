@@ -3,7 +3,7 @@ return [
     "version"           => '1.0',
     'autoInitBean'      => true,
     'beanScan'          => [
-        'SwoftTest\\Testing'  => BASE_PATH . "/Testing",
+        'SwoftTest\\HttpServer\\Testing'  => BASE_PATH . "/Testing",
         'Swoft\\Http\\Server' => BASE_PATH . '/../src',
     ],
     'I18n'              => [

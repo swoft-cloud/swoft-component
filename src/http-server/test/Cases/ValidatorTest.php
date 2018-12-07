@@ -1,8 +1,9 @@
 <?php
 
-namespace SwoftTest\HttpServer;
+namespace SwoftTest\HttpServer\Cases;
 
 use Swoft\Helper\JsonHelper;
+use Swoft\Http\Server\Bean\Collector\ControllerCollector;
 
 class ValidatorTest extends AbstractTestCase
 {
