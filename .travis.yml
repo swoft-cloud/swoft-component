@@ -53,5 +53,6 @@ install:
 before_script:
   - composer config -g process-timeout 900 && composer update
   - phpenv config-rm xdebug.ini
+  - cp test/.env.example test/.env
 
 script: composer test
