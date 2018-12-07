@@ -9,22 +9,22 @@ declare(strict_types=1);
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
-namespace SwoftTest\DataParser;
+namespace SwoftTest\DataParser\Cases;
 
 use PHPUnit\Framework\TestCase;
-use Swoft\DataParser\JsonParser;
+use Swoft\DataParser\PhpParser;
 
 /**
- * Class JsonParserTest
- * @covers JsonParser
+ * Class PhpParserTest
+ * @covers PhpParser
  */
-class JsonParserTest extends TestCase
+class PhpParserTest extends TestCase
 {
     public function testDecode()
     {
-        $str = '{"name": "value"}';
+        $str = 'a:1:{s:4:"name";s:5:"value";}';
 
-        $parser = new JsonParser();
+        $parser = new PhpParser();
         $ret = $parser->decode($str);
 
         $this->assertInternalType('array', $ret);
@@ -37,10 +37,10 @@ class JsonParserTest extends TestCase
             'name' => 'value',
         ];
 
-        $parser = new JsonParser();
+        $parser = new PhpParser();
         $ret = $parser->encode($data);
 
         $this->assertInternalType('string', $ret);
-        $this->assertJson($ret);
+        $this->assertStringStartsWith('a:1:{', $ret);
     }
 }

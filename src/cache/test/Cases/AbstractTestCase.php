@@ -9,7 +9,7 @@ declare(strict_types=1);
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
-namespace SwoftTest\Cache;
+namespace SwoftTest\Cache\Cases;
 
 use PHPUnit\Framework\TestCase;
 
