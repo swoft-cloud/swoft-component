@@ -10,7 +10,6 @@
 namespace Swoft\Db;
 
 use Swoft\Core\AbstractResult;
-use Swoft\Db\Helper\EntityHelper;
 
 /**
  * DbResult

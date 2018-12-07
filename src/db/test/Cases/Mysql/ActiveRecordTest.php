@@ -463,7 +463,6 @@ class ActiveRecordTest extends AbstractMysqlCase
         });
     }
 
-
     /**
      * @dataProvider mysqlProviders
      *
@@ -681,5 +680,4 @@ class ActiveRecordTest extends AbstractMysqlCase
         $lastSql = substr($lastSql, 0, strpos($lastSql, ' Params: '));
         $this->assertTrue(StringHelper::endsWith($lastSql, 'LOCK IN SHARE MODE'));
     }
-
 }

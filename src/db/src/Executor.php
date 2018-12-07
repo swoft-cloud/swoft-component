@@ -16,7 +16,6 @@ use Swoft\Core\ResultInterface;
 use Swoft\Db\Bean\Collector\EntityCollector;
 use Swoft\Db\Exception\MysqlException;
 use Swoft\Db\Validator\ValidatorInterface;
-use Swoft\Exception\ValidatorException;
 use Swoft\Helper\StringHelper;
 
 /**
@@ -398,7 +397,7 @@ class Executor
 
             self::validate($proAry, $proValue);
 
-            if($type === 1 && $proValue === null){
+            if ($type === 1 && $proValue === null) {
                 continue;
             }
 
@@ -500,7 +499,7 @@ class Executor
             throw new MysqlException(sprintf('The %s must pass values', $column));
         }
 
-        if($propertyValue === null){
+        if ($propertyValue === null) {
             return ;
         }
 

@@ -15,7 +15,6 @@ use SwoftTest\Db\Testing\Pool\DbPptPoolConfig;
 use SwoftTest\Db\Testing\Pool\DbSlaveEnvPoolConfig;
 use SwoftTest\Db\Testing\Pool\DbSlavePptConfig;
 use SwoftTest\Db\Testing\Pool\OtherDbConfig;
-use SwoftTest\Db\Testing\Pool\OtherDbPool;
 
 /**
  * PoolTest
@@ -44,7 +43,7 @@ class PoolTest extends AbstractTestCase
     {
         /* @var \Swoft\Pool\PoolProperties $pConfig */
         $pConfig = App::getBean(DbEnvPoolConfig::class);
-        $this->assertEquals($pConfig->getName(), 'master2');
+        $this->assertEquals($pConfig->getName(), 'default.master');
         $this->assertEquals($pConfig->getProvider(), 'consul2');
         $this->assertEquals($pConfig->getTimeout(), 10);
         $this->assertEquals($pConfig->getUri(), [
@@ -79,7 +78,7 @@ class PoolTest extends AbstractTestCase
     {
         /* @var \Swoft\Pool\PoolProperties $pConfig */
         $pConfig = App::getBean(DbSlaveEnvPoolConfig::class);
-        $this->assertEquals($pConfig->getName(), 'slave2');
+        $this->assertEquals($pConfig->getName(), 'default.slave');
         $this->assertEquals($pConfig->getProvider(), 'consul2');
         $this->assertEquals($pConfig->getTimeout(), 10);
         $this->assertEquals($pConfig->getUri(), [

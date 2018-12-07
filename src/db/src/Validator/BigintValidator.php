@@ -29,7 +29,7 @@ class BigintValidator implements ValidatorInterface
         $min = '-9223372036854775808';
         $max = '18446744073709551615';
 
-        if (!preg_match("/^-?[0-9]+$/", $value)) {
+        if (!preg_match('/^-?[0-9]+$/', $value)) {
             throw new ValidatorException("数据库字段值验证失败，当前值 {$value} 不为有效整数，column={$column}");
         }
 
@@ -37,7 +37,7 @@ class BigintValidator implements ValidatorInterface
             throw new ValidatorException("数据库字段值验证失败，当前值小于{$min}，column={$column}");
         }
 
-        if(bccomp($value, $max) === 1){
+        if (bccomp($value, $max) === 1) {
             throw new ValidatorException("数据库字段值验证失败，当前值大于{$max}，column={$column}");
         }
 

@@ -219,7 +219,7 @@ class SetGetGenerator
 
         $default = trim($default);
 
-        switch (trim($dbType, "\"")) {
+        switch (trim($dbType, '"')) {
             case Schema::TYPE_INTEGER:
             case Schema::TYPE_BIGINT:
             case Schema::TYPE_SMALLINT:

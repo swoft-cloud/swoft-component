@@ -11,6 +11,7 @@
 namespace SwoftTest\Db\Cases\Mysql;
 
 use Swoft\Db\Query;
+use Swoft\Helper\StringHelper;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\OtherUser;
 use SwoftTest\Db\Testing\Entity\User;
@@ -445,8 +446,8 @@ class QueryBuilderTest extends AbstractMysqlCase
         });
     }
 
-    public function testCondionLikeOrNotLike(){
-
+    public function testCondionLikeOrNotLike()
+    {
         $name = uniqid();
         $values = [
             'name'        => $name,

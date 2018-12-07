@@ -15,7 +15,6 @@ use Swoft\Db\Entity\Generator;
 use Swoft\Db\Entity\Mysql\Schema;
 use Swoft\Db\Helper\DbHelper;
 use Swoft\Db\Pool;
-use Swoft\Db\Pool\DbPool;
 
 /**
  * the group command list of database entity
@@ -89,7 +88,9 @@ class EntityCommand
             $this->generatorEntity->tablesEnabled = $tablesEnabled;
             $this->generatorEntity->tablesDisabled = $tablesDisabled;
             $this->generatorEntity->removeTablePrefix = $removeTablePrefix;
-            if (isset($extends)) $this->generatorEntity->setExtends($extends);
+            if (isset($extends)) {
+                $this->generatorEntity->setExtends($extends);
+            }
             $this->generatorEntity->execute($this->schema);
         }
     }

@@ -10,7 +10,6 @@
 namespace SwoftTest\Db\Testing\Entity;
 
 use Swoft\Db\Bean\Annotation\Id;
-use Swoft\Db\Bean\Annotation\Required;
 use Swoft\Db\Bean\Annotation\Table;
 use Swoft\Db\Bean\Annotation\Column;
 use Swoft\Db\Bean\Annotation\Entity;

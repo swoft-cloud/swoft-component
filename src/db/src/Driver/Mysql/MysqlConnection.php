@@ -86,7 +86,7 @@ class MysqlConnection extends AbstractDbConnection
 
         // error
         if ($mysql->connected === false) {
-            throw new MysqlException('Database connection error，error=' . $mysql->connect_error);
+            throw new MysqlException('Database connection error，error=' . $mysql->error);
         }
 
         $this->originDb   = $options['database'];
@@ -254,7 +254,7 @@ class MysqlConnection extends AbstractDbConnection
         $newParams = [];
         foreach ($params as $key => $value) {
             if ($value === null) {
-                $value = " null ";
+                $value = ' null ';
             } elseif (\is_array($value)) {
                 $value = "'" . \implode("','", \array_map('addslashes', $value)) . "'";
             } else {

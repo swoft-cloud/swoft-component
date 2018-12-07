@@ -17,7 +17,7 @@ use Swoft\Helper\StringHelper;
 /**
  * ActiveRecord
  */
-class Model implements \ArrayAccess, \Iterator, Arrayable,\JsonSerializable
+class Model implements \ArrayAccess, \Iterator, Arrayable, \JsonSerializable
 {
     /**
      * Old data
@@ -431,7 +431,7 @@ class Model implements \ArrayAccess, \Iterator, Arrayable,\JsonSerializable
         reset($this->attrs);
     }
 
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return $this->toArray();
     }
