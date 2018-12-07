@@ -11,7 +11,7 @@ namespace SwoftTest\Auth\Testing;
 
 use Swoft\Auth\AuthManager;
 use Swoft\Redis\Redis;
-use SwoftTest\Auth\Account\TestAccount;
+use SwoftTest\Auth\Testing\Account as TestAccount;
 
 class Manager extends AuthManager
 {

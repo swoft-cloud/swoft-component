@@ -29,6 +29,7 @@ class BasicAuthParserTest extends AbstractTestCase
         $router->get('/', function (Request $request) {
             $name = $request->getAttribute(AuthConstants::BASIC_USER_NAME);
             $pd = $request->getAttribute(AuthConstants::BASIC_PASSWORD);
+
             return ['username' => $name, 'password' => $pd];
         });
     }
