@@ -219,6 +219,11 @@ abstract class AnnotationResource extends AbstractResource
      */
     abstract public function registerCustomNamespace();
 
+    public function getComponentNamespaces(): array
+    {
+        return $this->componentNamespaces;
+    }
+
     /**
      * 扫描目录下PHP文件
      */
@@ -339,10 +344,5 @@ abstract class AnnotationResource extends AbstractResource
                 $this->definitions[$beanName] = $objectDefinition;
             }
         }
-    }
-
-    public function getComponentNamespaces(): array
-    {
-        return $this->componentNamespaces;
     }
 }

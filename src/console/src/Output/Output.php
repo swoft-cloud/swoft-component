@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Console\Output;
 
@@ -6,7 +15,7 @@ use Swoft\Bean\Annotation\Bean;
 
 /**
  * 输出
- * @Bean()
+ * @Bean
  */
 class Output implements OutputInterface
 {

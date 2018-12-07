@@ -69,8 +69,8 @@ class ServerAnnotationResource extends AnnotationResource
             if (is_int($ns)) {
                 $ns = $componentDir;
                 $componentDir = ComposerHelper::getDirByNamespace($ns);
-                $ns = rtrim($ns, "\\");
-                $componentDir = rtrim($componentDir, "/");
+                $ns = rtrim($ns, '\\');
+                $componentDir = rtrim($componentDir, '/');
             }
 
             $this->componentNamespaces[] = $ns;
@@ -82,7 +82,7 @@ class ServerAnnotationResource extends AnnotationResource
                     continue;
                 }
 
-                $scanNs = $ns . "\\" . $dir;
+                $scanNs = $ns . '\\' . $dir;
                 $this->scanNamespaces[$scanNs] = $scanDir;
             }
         }

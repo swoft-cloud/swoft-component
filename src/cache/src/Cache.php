@@ -1,9 +1,18 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Cache;
 
-use Swoft\App;
 use Psr\SimpleCache\CacheInterface;
+use Swoft\App;
 
 /**
  * @method string|bool get($key, $default = null)
@@ -33,27 +42,6 @@ class Cache
     protected $serializer = null;
 
     /**
-     * Persists data in the cache, uniquely referenced by a key with an optional expiration TTL time.
-     *
-     * @param  string                $key   The key of the item to store.
-     * @param int|double|string|bool $value The value of the item to store, must be serializable.
-     * @param null|int|\DateInterval $ttl   Optional. The TTL value of this item. If no value is sent and the driver
-     *                                      supports TTL then the library may set a default value for it or let the
-     *                                      driver take care of that.
-     * @return bool True on success and false on failure.
-     * @throws \InvalidArgumentException If the $value string is not a legal value
-     */
-    public function set(string $key, $value, $ttl = null): bool
-    {
-        $valueType = \gettype($value);
-        if (! \in_array($valueType, ['integer', 'double', 'boolean', 'string'], true)) {
-            // TODO add serializer mechanism handle the other type
-            throw new \InvalidArgumentException('Invalid value type');
-        }
-        return $this->getDriver()->set($key, $value, $ttl);
-    }
-
-    /**
      * @param string $method
      * @param array  $arguments
      * @return mixed
@@ -77,6 +65,27 @@ class Cache
         }
         $driver = $this->getDriver();
         return $driver->$method(...$arguments);
+    }
+
+    /**
+     * Persists data in the cache, uniquely referenced by a key with an optional expiration TTL time.
+     *
+     * @param  string                $key   The key of the item to store.
+     * @param int|double|string|bool $value The value of the item to store, must be serializable.
+     * @param null|int|\DateInterval $ttl   Optional. The TTL value of this item. If no value is sent and the driver
+     *                                      supports TTL then the library may set a default value for it or let the
+     *                                      driver take care of that.
+     * @return bool True on success and false on failure.
+     * @throws \InvalidArgumentException If the $value string is not a legal value
+     */
+    public function set(string $key, $value, $ttl = null): bool
+    {
+        $valueType = \gettype($value);
+        if (! \in_array($valueType, ['integer', 'double', 'boolean', 'string'], true)) {
+            // TODO add serializer mechanism handle the other type
+            throw new \InvalidArgumentException('Invalid value type');
+        }
+        return $this->getDriver()->set($key, $value, $ttl);
     }
 
     /**

@@ -1,9 +1,12 @@
 <?php
+declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2017-12-14
- * Time: 19:07
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
 namespace Swoft\DataParser;

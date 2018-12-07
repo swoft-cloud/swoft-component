@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Console\Router;
 
@@ -6,7 +15,6 @@ use Swoft\Http\Message\Router\HandlerMappingInterface;
 
 class HandlerMapping implements HandlerMappingInterface
 {
-
     const DEFAULT_METHODS = [
         'start',
         'reload',
@@ -55,6 +63,39 @@ class HandlerMapping implements HandlerMappingInterface
         return $command === $this->defaultCommand;
     }
 
+    /**
+     * @throws \InvalidArgumentException
+     */
+    public function match(string $route): array
+    {
+        if (!isset($this->routes[$route])) {
+            return [];
+        }
+
+        return $this->routes[$route];
+    }
+
+    /**
+     * Get command from class name
+     */
+    public function getPrefix(string $prefix, string $className): string
+    {
+        // the prefix of annotation is exist
+        if (! empty($prefix)) {
+            return $prefix;
+        }
+
+        // the prefix of annotation is empty
+        $reg = '/^.*\\\(\w+)' . $this->suffix . '$/';
+        $prefix = '';
+
+        if ($result = \preg_match($reg, $className, $match)) {
+            $prefix = \lcfirst($match[1]);
+        }
+
+        return $prefix;
+    }
+
     private function getGroupAndCommand(): array
     {
         $cmd = \input()->getCommand();
@@ -82,18 +123,6 @@ class HandlerMapping implements HandlerMappingInterface
     }
 
     /**
-     * @throws \InvalidArgumentException
-     */
-    public function match(string $route): array
-    {
-        if (!isset($this->routes[$route])) {
-            return [];
-        }
-
-        return $this->routes[$route];
-    }
-
-    /**
      * Register one route
      */
     private function registerRoute(string $className, array $routes, string $prefix, bool $coroutine, $server)
@@ -111,27 +140,6 @@ class HandlerMapping implements HandlerMappingInterface
 
         $commandKey = $this->getCommandString($prefix, $this->defaultCommand);
         $this->routes[$commandKey] = [$className, $this->defaultCommand];
-    }
-
-    /**
-     * Get command from class name
-     */
-    public function getPrefix(string $prefix, string $className): string
-    {
-        // the prefix of annotation is exist
-        if (! empty($prefix)) {
-            return $prefix;
-        }
-
-        // the prefix of annotation is empty
-        $reg = '/^.*\\\(\w+)' . $this->suffix . '$/';
-        $prefix = '';
-
-        if ($result = \preg_match($reg, $className, $match)) {
-            $prefix = \lcfirst($match[1]);
-        }
-
-        return $prefix;
     }
 
     private function getCommandString(string $group, string $command): string

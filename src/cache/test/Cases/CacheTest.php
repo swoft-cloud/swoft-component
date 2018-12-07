@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\Cache;
 
@@ -6,7 +15,6 @@ use Swoft\Cache\Cache;
 
 class CacheTest extends AbstractTestCase
 {
-
     /**
      * @test
      * @requires extention redis
@@ -28,22 +36,22 @@ class CacheTest extends AbstractTestCase
         $setResult = $cache->set($key, $stringValue);
         $this->assertTrue($setResult);
         $getResult = $cache->get($key);
-        $this->assertEquals($stringValue, $getResult);
+        $this->assertSame($stringValue, $getResult);
         // int
         $setResult = $cache->set($key, $intValue);
         $this->assertTrue($setResult);
         $getResult = $cache->get($key);
-        $this->assertEquals($intValue, $getResult);
+        $this->assertSame($intValue, $getResult);
         // float
         $setResult = $cache->set($key, $floatValue);
         $this->assertTrue($setResult);
         $getResult = $cache->get($key);
-        $this->assertEquals($floatValue, $getResult);
+        $this->assertSame($floatValue, $getResult);
         // bool
         $setResult = $cache->set($key, $boolValue);
         $this->assertTrue($setResult);
         $getResult = $cache->get($key);
-        $this->assertEquals($boolValue, $getResult);
+        $this->assertSame($boolValue, $getResult);
 
         /**
          * Delete
@@ -84,7 +92,6 @@ class CacheTest extends AbstractTestCase
         $setMulResult = $cache->setMultiple($multiple);
         $this->assertTrue($setMulResult);
         $getMulResult = $cache->getMultiple(['key1', 'key2']);
-        $this->assertEquals($multiple, $getMulResult);
-
+        $this->assertSame($multiple, $getMulResult);
     }
 }
