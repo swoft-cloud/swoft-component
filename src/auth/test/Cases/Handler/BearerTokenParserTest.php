@@ -8,7 +8,7 @@
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
-namespace SwoftTest\Auth\Parser;
+namespace SwoftTest\Auth\Cases\Handler;
 
 use Swoft\App;
 use Swoft\Auth\AuthUserService;
@@ -16,8 +16,8 @@ use Swoft\Auth\Mapping\AuthManagerInterface;
 use Swoft\Auth\Mapping\AuthServiceInterface;
 use Swoft\Http\Message\Server\Request;
 use Swoft\Http\Server\Router\HandlerMapping;
-use SwoftTest\Auth\AbstractTestCase;
-use SwoftTest\Auth\Manager\TestManager;
+use SwoftTest\Auth\Testing\Manager as TestManager;
+use SwoftTest\Auth\Cases\AbstractTestCase;
 
 class BearerTokenParserTest extends AbstractTestCase
 {

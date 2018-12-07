@@ -23,7 +23,8 @@
         "seld/phar-utils": "^1.0",
         "text/template": "~2.3",
         "nesbot/carbon": "^1.26",
-        "nikic/php-parser": "^4.0"
+        "nikic/php-parser": "^4.0",
+        "firebase/php-jwt": "^5.0"
     },
     "require-dev": {
         "swoft/swoole-ide-helper": "dev-master",
@@ -33,6 +34,7 @@
     },
     "replace": {
         "swoft/aop": "self.version",
+        "swoft/auth": "self.version",
         "swoft/bean": "self.version",
         "swoft/cache": "self.version",
         "swoft/console": "self.version",
@@ -62,6 +64,7 @@
         "psr-4": {
             "Swoft\\": "src/framework/src/",
             "Swoft\\Aop\\": "src/aop/src/",
+            "Swoft\\Auth\\": "src/auth/src/",
             "Swoft\\Bean\\": "src/bean/src/",
             "Swoft\\Cache\\": "src/cache/src/",
             "Swoft\\Console\\": "src/console/src/",
@@ -107,6 +110,7 @@
     "autoload-dev": {
         "psr-4": {
             "SwoftTest\\Aop\\": "src/aop/test/",
+            "SwoftTest\\Auth\\": "src/auth/test/",
             "SwoftTest\\Bean\\": "src/bean/test/Cases",
             "SwoftTest\\Cache\\": "src/cache/test/Cases",
             "SwoftTest\\Console\\": "src/console/test/Cases",

@@ -1,20 +1,19 @@
 <?php
 /**
- * This file is part of Swoft.
- *
- * @link     https://swoft.org
- * @document https://doc.swoft.org
- * @contact  group@swoft.org
- * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ * Created by PhpStorm.
+ * User: limx
+ * Date: 2018/12/7
+ * Time: 9:57 AM
  */
 
-namespace SwoftTest\Auth\Manager;
+namespace SwoftTest\Auth\Testing;
+
 
 use Swoft\Auth\AuthManager;
 use Swoft\Redis\Redis;
 use SwoftTest\Auth\Account\TestAccount;
 
-class TestManager extends AuthManager
+class Manager extends AuthManager
 {
     protected $cacheClass = Redis::class;
 
