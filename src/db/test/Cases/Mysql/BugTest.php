@@ -39,6 +39,7 @@ class BugTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testColumnByKeyword();
+            swoole_event_exit();
         });
     }
 
@@ -64,6 +65,7 @@ class BugTest extends AbstractMysqlCase
     {
         go(function () use ($uid) {
             $this->testJoin($uid);
+            swoole_event_exit();
         });
     }
 
@@ -108,6 +110,7 @@ class BugTest extends AbstractMysqlCase
             } catch (\Throwable $e) {
                 $this->assertEquals(MysqlException::class, get_class($e));
             }
+            swoole_event_exit();
         });
     }
 
@@ -135,6 +138,7 @@ class BugTest extends AbstractMysqlCase
             } catch (\Throwable $e) {
                 $this->assertEquals(MysqlException::class, get_class($e));
             }
+            swoole_event_exit();
         });
     }
 
@@ -183,6 +187,7 @@ class BugTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testCounter();
+            swoole_event_exit();
         });
     }
 
@@ -203,6 +208,7 @@ class BugTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testIsNull();
+            swoole_event_exit();
         });
     }
 
@@ -244,6 +250,7 @@ class BugTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testUpdateNotDefault();
+            swoole_event_exit();
         });
     }
 
@@ -287,6 +294,7 @@ class BugTest extends AbstractMysqlCase
     {
         go(function () use ($uids) {
             $this->testCon($uids);
+            swoole_event_exit();
         });
     }
 
@@ -353,6 +361,7 @@ class BugTest extends AbstractMysqlCase
     {
         go(function () use ($uid) {
             $this->testListType($uid);
+            swoole_event_exit();
         });
     }
 

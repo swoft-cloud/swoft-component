@@ -57,6 +57,7 @@ class PrefixTest extends AbstractMysqlCase
     {
         go(function () use ($id) {
             $this->testSave($id);
+            swoole_event_exit();
         });
     }
 }

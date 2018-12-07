@@ -54,6 +54,7 @@ class DefaultTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testAdd();
+            swoole_event_exit();
         });
     }
 
@@ -105,6 +106,7 @@ class DefaultTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testUpdate();
+            swoole_event_exit();
         });
     }
 
@@ -129,6 +131,7 @@ class DefaultTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testGet();
+            swoole_event_exit();
         });
     }
 }

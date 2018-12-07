@@ -36,6 +36,7 @@ class SqlTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testInsert();
+            swoole_event_exit();
         });
     }
 
@@ -62,6 +63,7 @@ class SqlTest extends AbstractMysqlCase
     {
         go(function () use ($id) {
             $this->testSelect($id);
+            swoole_event_exit();
         });
     }
 
@@ -87,6 +89,7 @@ class SqlTest extends AbstractMysqlCase
     {
         go(function () use ($id) {
             $this->testSelect2($id);
+            swoole_event_exit();
         });
     }
 
@@ -110,6 +113,7 @@ class SqlTest extends AbstractMysqlCase
     {
         go(function () use ($id) {
             $this->testDelete($id);
+            swoole_event_exit();
         });
     }
 
@@ -141,6 +145,7 @@ class SqlTest extends AbstractMysqlCase
     {
         go(function () use ($id) {
             $this->testUpdate($id);
+            swoole_event_exit();
         });
     }
 
@@ -172,6 +177,7 @@ class SqlTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testErrorSql();
+            swoole_event_exit();
         });
     }
 
@@ -192,6 +198,7 @@ class SqlTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testTableNameIsDbKeyword();
+            swoole_event_exit();
         });
     }
 
@@ -209,6 +216,7 @@ class SqlTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testSqlQueryStrictType();
+            swoole_event_exit();
         });
     }
 }

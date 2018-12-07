@@ -46,6 +46,7 @@ class RelationTest extends AbstractMysqlCase
     {
         go(function () use ($uid) {
             $this->testJoin($uid);
+            swoole_event_exit();
         });
     }
 }

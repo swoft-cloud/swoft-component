@@ -22,10 +22,6 @@ abstract class AbstractTestCase extends TestCase
     {
         parent::tearDown();
 
-        swoole_timer_after(6 * 1000, function () {
-            swoole_event_exit();
-        });
-
         \Swoole\Event::wait();
     }
 }

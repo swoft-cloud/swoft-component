@@ -38,6 +38,7 @@ class AggregateTest extends AbstractMysqlCase
     {
         go(function () use ($ids) {
             $this->testCount($ids);
+            swoole_event_exit();
         });
     }
 
@@ -61,6 +62,7 @@ class AggregateTest extends AbstractMysqlCase
     {
         go(function () use ($ids) {
             $this->testSum($ids);
+            swoole_event_exit();
         });
     }
 
@@ -84,6 +86,7 @@ class AggregateTest extends AbstractMysqlCase
     {
         go(function () use ($ids) {
             $this->testMax($ids);
+            swoole_event_exit();
         });
     }
 
@@ -107,6 +110,7 @@ class AggregateTest extends AbstractMysqlCase
     {
         go(function () use ($ids) {
             $this->testMin($ids);
+            swoole_event_exit();
         });
     }
 
@@ -130,6 +134,7 @@ class AggregateTest extends AbstractMysqlCase
     {
         go(function () use ($ids) {
             $this->testAvg($ids);
+            swoole_event_exit();
         });
     }
 }

@@ -10,6 +10,7 @@
 
 namespace SwoftTest\Db\Cases\Mysql;
 
+use Swoft\App;
 use Swoft\Db\Query;
 use Swoft\Db\QueryBuilder;
 use Swoft\Exception\ValidatorException;
@@ -17,6 +18,7 @@ use Swoft\Helper\StringHelper;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Testing\Entity\User2;
+use Swoole\Event;
 
 /**
  * MysqlTest
@@ -57,13 +59,16 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testSave();
+            swoole_event_exit();
         });
+
     }
 
     public function testUpdateWhenNameIsNullByCo()
     {
         go(function () {
             $this->testUpdateWhenNameIsNull();
+            swoole_event_exit();
         });
     }
 
@@ -144,6 +149,7 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testValidator();
+            swoole_event_exit();
         });
     }
 
@@ -172,6 +178,7 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testBatchInsert();
+            swoole_event_exit();
         });
     }
 
@@ -197,6 +204,7 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         go(function () use ($id) {
             $this->testDelete($id);
+            swoole_event_exit();
         });
     }
 
@@ -220,6 +228,7 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         go(function () use ($id) {
             $this->testDeleteById($id);
+            swoole_event_exit();
         });
     }
 
@@ -243,6 +252,7 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         go(function () use ($ids) {
             $this->testDeleteByIds($ids);
+            swoole_event_exit();
         });
     }
 
@@ -289,6 +299,7 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         go(function () use ($id) {
             $this->testUpdate($id);
+            swoole_event_exit();
         });
     }
 
@@ -318,6 +329,7 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         go(function () use ($id) {
             $this->testFindById($id);
+            swoole_event_exit();
         });
     }
 
@@ -344,6 +356,7 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         go(function () use ($id) {
             $this->testFindByIdClass($id);
+            swoole_event_exit();
         });
     }
 
@@ -386,6 +399,7 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         go(function () use ($ids) {
             $this->testFindByIds($ids);
+            swoole_event_exit();
         });
     }
 
@@ -417,6 +431,7 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         go(function () use ($ids) {
             $this->testFindByIdsByClass($ids);
+            swoole_event_exit();
         });
     }
 
@@ -440,6 +455,7 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         go(function () use ($ids) {
             $this->testQuery($ids);
+            swoole_event_exit();
         });
     }
 
@@ -460,6 +476,7 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testDeleteOne();
+            swoole_event_exit();
         });
     }
 
@@ -483,6 +500,7 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         go(function () use ($ids) {
             $this->testDeleteAll($ids);
+            swoole_event_exit();
         });
     }
 
@@ -508,6 +526,7 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         go(function () use ($id) {
             $this->testUpdateOne($id);
+            swoole_event_exit();
         });
     }
 
@@ -547,6 +566,7 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         go(function () use ($id) {
             $this->testFindOne($id);
+            swoole_event_exit();
         });
     }
 
@@ -601,6 +621,7 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         go(function () use ($ids) {
             $this->testFindAll($ids);
+            swoole_event_exit();
         });
     }
 
@@ -616,6 +637,7 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testExist();
+            swoole_event_exit();
         });
     }
 
@@ -639,6 +661,7 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         go(function () use ($ids) {
             $this->testCount($ids);
+            swoole_event_exit();
         });
     }
 

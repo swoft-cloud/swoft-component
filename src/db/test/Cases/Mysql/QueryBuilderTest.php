@@ -41,6 +41,7 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         go(function () use ($id) {
             $this->testDbSelect($id);
+            swoole_event_exit();
         });
     }
 
@@ -64,6 +65,7 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         go(function () use ($id) {
             $this->testDbDelete($id);
+            swoole_event_exit();
         });
     }
 
@@ -88,6 +90,7 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         go(function () use ($id) {
             $this->testDbUpdate($id);
+            swoole_event_exit();
         });
     }
 
@@ -108,6 +111,7 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testDbInsert();
+            swoole_event_exit();
         });
     }
 
@@ -132,6 +136,7 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testSelectDb();
+            swoole_event_exit();
         });
     }
 
@@ -152,6 +157,7 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testSelectTable();
+            swoole_event_exit();
         });
     }
 
@@ -187,6 +193,7 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testSelectinstance();
+            swoole_event_exit();
         });
     }
 
@@ -214,6 +221,7 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testCondtionAndByF1();
+            swoole_event_exit();
         });
     }
 
@@ -237,6 +245,7 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         go(function () use ($ids) {
             $this->testCondtion2AndByF1($ids);
+            swoole_event_exit();
         });
     }
 
@@ -259,6 +268,7 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testCondtion1AndByF3();
+            swoole_event_exit();
         });
     }
 
@@ -281,6 +291,7 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testCondtion2AndByF3();
+            swoole_event_exit();
         });
     }
 
@@ -314,6 +325,7 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         go(function () use ($id) {
             $this->testCondtion3AndByF3($id);
+            swoole_event_exit();
         });
     }
 
@@ -338,6 +350,7 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         go(function () use ($ids) {
             $this->testCondtion4AndByF3($ids);
+            swoole_event_exit();
         });
     }
 
@@ -362,6 +375,7 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         go(function () use ($ids) {
             $this->testCondtion5AndByF3($ids);
+            swoole_event_exit();
         });
     }
 
@@ -386,6 +400,7 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         go(function () use ($ids) {
             $this->testLimit($ids);
+            swoole_event_exit();
         });
     }
 
@@ -443,6 +458,7 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         go(function () use ($ids) {
             $this->testCondtion6($ids);
+            swoole_event_exit();
         });
     }
 
@@ -498,6 +514,7 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testQueryWithFunc();
+            swoole_event_exit();
         });
     }
 
@@ -568,6 +585,7 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testColumnAlias();
+            swoole_event_exit();
         });
     }
 

@@ -47,6 +47,7 @@ class TrasactionTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testCommit();
+            swoole_event_exit();
         });
     }
 
@@ -82,6 +83,7 @@ class TrasactionTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testRollback();
+            swoole_event_exit();
         });
     }
 }
