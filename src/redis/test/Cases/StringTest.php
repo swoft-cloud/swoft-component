@@ -3,6 +3,7 @@
 namespace SwoftTest\Redis;
 
 use Swoft\App;
+use Swoole\Coroutine\Redis;
 
 /**
  * StringTest
@@ -12,7 +13,7 @@ class StringTest extends AbstractTestCase
     public function testSet()
     {
         $value = uniqid();
-        $key   = 'stringKey';
+        $key = 'stringKey';
         if (App::isCoContext()) {
             $key .= 'co';
         }
@@ -40,7 +41,7 @@ class StringTest extends AbstractTestCase
     public function testGet()
     {
         $default = 'defualtValue';
-        $result  = $this->redis->get("notKey" . uniqid(), $default);
+        $result = $this->redis->get("notKey" . uniqid(), $default);
         $this->assertSame($result, $default);
     }
 
@@ -53,13 +54,13 @@ class StringTest extends AbstractTestCase
 
     public function testMsetAndMget()
     {
-        $key    = uniqid();
-        $key2   = uniqid();
-        $value  = 'value1';
+        $key = uniqid();
+        $key2 = uniqid();
+        $value = 'value1';
         $value2 = 'val2';
 
         $result = $this->redis->mset([
-            $key  => $value,
+            $key => $value,
             $key2 => $value2,
         ]);
 
@@ -74,6 +75,39 @@ class StringTest extends AbstractTestCase
     {
         go(function () {
             $this->testMsetAndMget();
+        });
+    }
+
+    public function testHyperLoglog()
+    {
+        $this->redis->delete('pf:test');
+        $this->redis->delete('pf:test2');
+        $this->redis->delete('pf:test3');
+
+        $result = $this->redis->pfAdd('pf:test', [1, 2, 3]);
+
+        $this->assertEquals(1, $result);
+
+        $result = $this->redis->pfCount('pf:test');
+        $this->assertEquals(3, $result);
+
+        $result = $this->redis->pfAdd('pf:test2', [3, 4, 5]);
+        $this->assertEquals(1, $result);
+
+        $result = $this->redis->pfMerge('pf:test3', ['pf:test', 'pf:test2']);
+        $this->assertTrue($result);
+
+        $result = $this->redis->pfCount('pf:test3');
+        $this->assertEquals(5, $result);
+
+        $result = $this->redis->pfCount(['pf:test', 'pf:test2']);
+        $this->assertEquals(5, $result);
+    }
+
+    public function testHyperLoglogByCo()
+    {
+        go(function () {
+           $this->testHyperLoglog();
         });
     }
 }

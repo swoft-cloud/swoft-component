@@ -91,6 +91,33 @@ class ZsetTest extends AbstractTestCase
         $this->assertEquals(['key3' => 3.2, 'key2' => 1.3, 'key4' => 1.2], $rangeKeys);
     }
 
+    public function testZInter()
+    {
+        $key1 = 'test:zinter:1';
+        $key2 = 'test:zinter:2';
+        $output = 'test:zinter:output';
+
+        $this->redis->zAdd($key1, 0, 'i0');
+        $this->redis->zAdd($key1, 1, 'i1');
+        $this->redis->zAdd($key1, 1, 'i2');
+
+        $this->redis->zAdd($key2, 2, 'i2');
+        $this->redis->zAdd($key2, 2, 'i3');
+
+        $res = $this->redis->zInter($output, [$key1, $key2], [1, 2]);
+        $this->assertEquals(1, $res);
+
+        $res = $this->redis->zRange($output, 0, -1, true);
+        $this->assertEquals(['i2' => 5], $res);
+    }
+
+    public function testZInterByCo()
+    {
+        go(function () {
+            $this->testZInter();
+        });
+    }
+
     public function testZaddByCo()
     {
         go(function () {

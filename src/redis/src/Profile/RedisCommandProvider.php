@@ -80,6 +80,10 @@ class RedisCommandProvider extends RedisProfile
             'INCRBYFLOAT'         => '\Swoft\Redis\Operator\Strings\StringIncrementByFloat',
             'BITOP'               => '\Swoft\Redis\Operator\Strings\StringBitOp',
             'BITCOUNT'            => '\Swoft\Redis\Operator\Strings\StringBitCount',
+            /* ---------------- Redis 2.8 ---------------- */
+            'PFADD'               => '\Swoft\Redis\Operator\Strings\StringPfAdd',
+            'PFCOUNT'             => '\Swoft\Redis\Operator\Strings\StringPfCount',
+            'PFMERGE'             => '\Swoft\Redis\Operator\Strings\StringPfMerge',
 
             /* commands operating on lists */
             /* ---------------- Redis 1.2 ---------------- */
@@ -146,6 +150,7 @@ class RedisCommandProvider extends RedisProfile
             'ZREVRANK'            => '\Swoft\Redis\Operator\ZSets\ZSetReverseRank',
             'ZREMRANGEBYRANK'     => '\Swoft\Redis\Operator\ZSets\ZSetRemoveRangeByRank',
             'ZDELETERANGEBYRANK'  => '\Swoft\Redis\Operator\ZSets\ZSetRemoveRangeByRank',
+            'ZINTER'              => '\Swoft\Redis\Operator\ZSets\ZSetInterStore',
             /* ---------------- Redis 2.2 ---------------- */
             'ZREVRANGEBYSCORE'    => '\Swoft\Redis\Operator\ZSets\ZSetReverseRangeByScore',
             /* ---------------- Redis 2.8 ---------------- */
