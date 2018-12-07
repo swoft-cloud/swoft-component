@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Console\Bean\Collector;
 
@@ -24,6 +33,11 @@ class CommandCollector implements CollectorInterface
         } elseif ($objectAnnotation === null && isset(self::$commandMapping[$className])) {
             self::collectWithoutAnnotation($className, $methodName);
         }
+    }
+
+    public static function getCollector(): array
+    {
+        return self::$commandMapping;
     }
 
     private static function collectCommand(string $className, Command $objectAnnotation)
@@ -54,10 +68,5 @@ class CommandCollector implements CollectorInterface
             'mappedName' => '',
             'methodName' => $methodName,
         ];
-    }
-
-    public static function getCollector(): array
-    {
-        return self::$commandMapping;
     }
 }

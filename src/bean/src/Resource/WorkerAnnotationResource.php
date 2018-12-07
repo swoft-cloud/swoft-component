@@ -76,8 +76,8 @@ class WorkerAnnotationResource extends AnnotationResource
             if (is_int($ns)) {
                 $ns = $componentDir;
                 $componentDir = ComposerHelper::getDirByNamespace($ns);
-                $ns = rtrim($ns, "\\");
-                $componentDir = rtrim($componentDir, "/");
+                $ns = rtrim($ns, '\\');
+                $componentDir = rtrim($componentDir, '/');
             }
 
             $this->componentNamespaces[] = $ns;

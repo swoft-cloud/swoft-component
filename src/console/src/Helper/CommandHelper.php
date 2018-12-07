@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Console\Helper;
 
@@ -12,6 +21,7 @@ class CommandHelper
      * These words will be as a Boolean value
      */
     const TRUE_WORDS = '|on|yes|true|';
+
     const FALSE_WORDS = '|off|no|false|';
 
     /**
@@ -89,7 +99,7 @@ class CommandHelper
                     $val = $nxt;
                     next($params);
 
-                    // short-opt: bool opts. like -e -abc
+                // short-opt: bool opts. like -e -abc
                 } elseif (!$isLong && $val === true) {
                     foreach (str_split($opt) as $char) {
                         $sOpts[$char] = true;
@@ -179,7 +189,6 @@ class CommandHelper
         return $val{0} !== '-' && false === strpos($val, '=');
     }
 
-
     /**
      * Returns true if STDOUT supports colorization.
      * This code has been copied and adapted from
@@ -222,5 +231,4 @@ class CommandHelper
     {
         return \function_exists('posix_isatty') && @posix_isatty($fileDescriptor);
     }
-
 }

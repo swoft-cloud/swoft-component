@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Console\Style;
 
@@ -7,29 +16,47 @@ use Swoft\Console\Helper\CommandHelper;
 
 /**
  * The style of command
- * @Bean()
+ * @Bean
  */
 class Style
 {
     // 默认样式集合
     const NORMAL = 'normal';
+
     const FAINTLY = 'faintly';
+
     const BOLD = 'bold';
+
     const NOTICE = 'notice';
+
     const PRIMARY = 'primary';
+
     const SUCCESS = 'success';
+
     const INFO = 'info';
+
     const NOTE = 'note';
+
     const WARNING = 'warning';
+
     const COMMENT = 'comment';
+
     const QUESTION = 'question';
+
     const DANGER = 'danger';
+
     const ERROR = 'error';
+
     const UNDERLINE = 'underline';
+
     const BLUE = 'blue';
+
     const CYAN = 'cyan';
+
     const MAGENTA = 'magenta';
+
     const RED = 'red';
+
     const YELLOW = 'yellow';
 
     /**
@@ -131,21 +158,6 @@ class Style
     }
 
     /**
-     * 标签替换成颜色
-     *
-     * @param string $text
-     * @param string $tag
-     * @param string $match
-     * @param string $style
-     * @return string
-     */
-    private function replaceColor(string $text, string $tag, string $match, string $style): string
-    {
-        $replace = sprintf("\033[%sm%s\033[0m", $style, $match);
-        return str_replace("<$tag>$match</$tag>", $replace, $text);
-    }
-
-    /**
      * 移除颜色标签
      *
      * @param string $message
@@ -164,5 +176,20 @@ class Style
     public static function wrap(string $text, string $tag = 'info'): string
     {
         return \sprintf('<%s>%s</%s>', $tag, $text, $tag);
+    }
+
+    /**
+     * 标签替换成颜色
+     *
+     * @param string $text
+     * @param string $tag
+     * @param string $match
+     * @param string $style
+     * @return string
+     */
+    private function replaceColor(string $text, string $tag, string $match, string $style): string
+    {
+        $replace = sprintf("\033[%sm%s\033[0m", $style, $match);
+        return str_replace("<$tag>$match</$tag>", $replace, $text);
     }
 }

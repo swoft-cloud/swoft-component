@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Console\Style;
 
@@ -19,22 +28,36 @@ final class Color
 
     // 颜色组
     const BLACK = 'black';
+
     const RED = 'red';
+
     const GREEN = 'green';
+
     const YELLOW = 'yellow'; // BROWN
+
     const BLUE = 'blue';
+
     const MAGENTA = 'magenta';
+
     const CYAN = 'cyan';
+
     const WHITE = 'white';
+
     const NORMAL = 'normal';
 
     // 颜色选项
     const BOLD = 'bold';       // 加粗
+
     const FUZZY = 'fuzzy';      // 模糊(不是所有的终端仿真器都支持)
+
     const ITALIC = 'italic';     // 斜体(不是所有的终端仿真器都支持)
+
     const UNDERSCORE = 'underscore'; // 下划线
+
     const BLINK = 'blink';      // 闪烁
+
     const REVERSE = 'reverse';    // 颠倒的 交换背景色与前景色
+
     const CONCEALED = 'concealed';  // 隐匿的
 
     // 颜色集合
@@ -85,20 +108,6 @@ final class Color
     private $options = [];
 
     /**
-     * 新建一个颜色
-     *
-     * @param string $fg      前景色
-     * @param string $bg      背景色
-     * @param array  $options 选项
-     * @return Color
-     * @throws \InvalidArgumentException
-     */
-    public static function make(string $fg = '', string $bg = '', array $options = []): Color
-    {
-        return new self($fg, $bg, $options);
-    }
-
-    /**
      * 初始化
      *
      * @param string $fg      前景色
@@ -142,6 +151,20 @@ final class Color
     public function __toString()
     {
         return $this->getStyle();
+    }
+
+    /**
+     * 新建一个颜色
+     *
+     * @param string $fg      前景色
+     * @param string $bg      背景色
+     * @param array  $options 选项
+     * @return Color
+     * @throws \InvalidArgumentException
+     */
+    public static function make(string $fg = '', string $bg = '', array $options = []): Color
+    {
+        return new self($fg, $bg, $options);
     }
 
     /**

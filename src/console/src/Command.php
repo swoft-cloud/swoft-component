@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Console;
 
@@ -72,6 +81,49 @@ class Command
         }
 
         App::getBean(HandlerAdapter::class)->doHandler($handler);
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function showCommandList(bool $showLogo = true)
+    {
+        $commands = $this->parserCmdAndDesc();
+
+        $commandList = [];
+        $script = \input()->getFullScript();
+        $commandList['Usage:'] = ["php $script {command} [arguments] [options]"];
+        $commandList['Commands:'] = $commands;
+        $commandList['Options:'] = [
+            '-h, --help' => 'Display help information',
+            '-v, --version' => 'Display version information',
+        ];
+
+        if ($showLogo) {
+            \output()->writeLogo();
+        }
+
+        \output()->writeList($commandList, 'comment', 'info');
+    }
+
+    /**
+     * 替换注解中的变量为对应的值
+     */
+    protected function parseAnnotationVars(string $str, array $vars): string
+    {
+        // not use vars
+        if (false === strpos($str, '{')) {
+            return $str;
+        }
+
+        $map = [];
+
+        foreach ($vars as $key => $value) {
+            $key = sprintf(self::ANNOTATION_VAR, $key);
+            $map[$key] = $value;
+        }
+
+        return $map ? strtr($str, $map) : $str;
     }
 
     /**
@@ -168,29 +220,6 @@ class Command
         \output()->writeList($commands);
     }
 
-    /**
-     * @throws \ReflectionException
-     */
-    public function showCommandList(bool $showLogo = true)
-    {
-        $commands = $this->parserCmdAndDesc();
-
-        $commandList = [];
-        $script = \input()->getFullScript();
-        $commandList['Usage:'] = ["php $script {command} [arguments] [options]"];
-        $commandList['Commands:'] = $commands;
-        $commandList['Options:'] = [
-            '-h, --help' => 'Display help information',
-            '-v, --version' => 'Display version information',
-        ];
-
-        if ($showLogo) {
-            \output()->writeLogo();
-        }
-
-        \output()->writeList($commandList, 'comment', 'info');
-    }
-
     private function showVersion()
     {
         // 当前版本信息
@@ -251,25 +280,5 @@ class Command
 
         // 显示命令列表
         $this->showCommandList();
-    }
-
-    /**
-     * 替换注解中的变量为对应的值
-     */
-    protected function parseAnnotationVars(string $str, array $vars): string
-    {
-        // not use vars
-        if (false === strpos($str, '{')) {
-            return $str;
-        }
-
-        $map = [];
-
-        foreach ($vars as $key => $value) {
-            $key = sprintf(self::ANNOTATION_VAR, $key);
-            $map[$key] = $value;
-        }
-
-        return $map ? strtr($str, $map) : $str;
     }
 }

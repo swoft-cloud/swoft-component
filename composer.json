@@ -111,8 +111,8 @@
         "psr-4": {
             "SwoftTest\\Aop\\": "src/aop/test/",
             "SwoftTest\\Auth\\": "src/auth/test/",
-            "SwoftTest\\Bean\\": "src/bean/test/Cases",
-            "SwoftTest\\Cache\\": "src/cache/test/Cases",
+            "SwoftTest\\Bean\\": "src/bean/test/",
+            "SwoftTest\\Cache\\": "src/cache/test/",
             "SwoftTest\\Console\\": "src/console/test/Cases",
             "SwoftTest\\DataParser\\": "src/data-parser/test",
             "SwoftTest\\Db\\": "src/db/test",

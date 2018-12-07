@@ -12,27 +12,28 @@
         <testsuite name="Tests">
             <directory suffix="Test.php">./src/aop/test</directory>
             <directory suffix="Test.php">./src/auth/test</directory>
+            <directory suffix="Test.php">./src/bean/test</directory>
             <directory suffix="Test.php">./src/cache/test</directory>
             <directory suffix="Test.php">./src/console/test</directory>
             <directory suffix="Test.php">./src/data-parser/test</directory>
-            <directory suffix="Test.php">./src/db/test</directory>
-            <directory suffix="Test.php">./src/devtool/test</directory>
-            <directory suffix="Test.php">./src/framework/test</directory>
-            <directory suffix="Test.php">./src/http-client/test</directory>
+            <!--<directory suffix="Test.php">./src/db/test</directory>-->
+            <!--<directory suffix="Test.php">./src/devtool/test</directory>-->
+            <!--<directory suffix="Test.php">./src/framework/test</directory>-->
+            <!--<directory suffix="Test.php">./src/http-client/test</directory>-->
             <directory suffix="Test.php">./src/http-server/test</directory>
-            <directory suffix="Test.php">./src/i18n/test</directory>
-            <directory suffix="Test.php">./src/memory/test</directory>
-            <directory suffix="Test.php">./src/process/test</directory>
-            <directory suffix="Test.php">./src/redis/test</directory>
-            <directory suffix="Test.php">./src/rpc/test</directory>
-            <directory suffix="Test.php">./src/rpc-client/test</directory>
-            <directory suffix="Test.php">./src/rpc-server/test</directory>
-            <directory suffix="Test.php">./src/service-governance/test</directory>
-            <directory suffix="Test.php">./src/session/test</directory>
-            <directory suffix="Test.php">./src/task/test</directory>
-            <directory suffix="Test.php">./src/trace/test</directory>
-            <directory suffix="Test.php">./src/view/test</directory>
-            <directory suffix="Test.php">./src/websocket-server/test</directory>
+            <!--<directory suffix="Test.php">./src/i18n/test</directory>-->
+            <!--<directory suffix="Test.php">./src/memory/test</directory>-->
+            <!--<directory suffix="Test.php">./src/process/test</directory>-->
+            <!--<directory suffix="Test.php">./src/redis/test</directory>-->
+            <!--<directory suffix="Test.php">./src/rpc/test</directory>-->
+            <!--<directory suffix="Test.php">./src/rpc-client/test</directory>-->
+            <!--<directory suffix="Test.php">./src/rpc-server/test</directory>-->
+            <!--<directory suffix="Test.php">./src/service-governance/test</directory>-->
+            <!--<directory suffix="Test.php">./src/session/test</directory>-->
+            <!--<directory suffix="Test.php">./src/task/test</directory>-->
+            <!--<directory suffix="Test.php">./src/trace/test</directory>-->
+            <!--<directory suffix="Test.php">./src/view/test</directory>-->
+            <!--<directory suffix="Test.php">./src/websocket-server/test</directory>-->
         </testsuite>
     </testsuites>
     <filter>
