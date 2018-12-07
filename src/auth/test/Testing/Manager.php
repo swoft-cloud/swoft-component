@@ -1,13 +1,14 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: limx
- * Date: 2018/12/7
- * Time: 9:57 AM
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
 namespace SwoftTest\Auth\Testing;
-
 
 use Swoft\Auth\AuthManager;
 use Swoft\Redis\Redis;
