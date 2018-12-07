@@ -12,6 +12,7 @@ namespace SwoftTest\Db\Cases\Mysql;
 use Swoft\Db\Query;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\Prefix;
+use function test_go as go;
 
 /**
  * PrefixTest
@@ -57,7 +58,6 @@ class PrefixTest extends AbstractMysqlCase
     {
         go(function () use ($id) {
             $this->testSave($id);
-            swoole_event_exit();
         });
     }
 }

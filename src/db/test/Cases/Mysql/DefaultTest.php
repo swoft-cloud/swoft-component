@@ -12,6 +12,7 @@ namespace SwoftTest\Db\Cases\Mysql;
 use Swoft\Db\Query;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\Detable;
+use function test_go as go;
 
 /**
  * DefaultTest
@@ -54,7 +55,6 @@ class DefaultTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testAdd();
-            swoole_event_exit();
         });
     }
 
@@ -106,7 +106,6 @@ class DefaultTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testUpdate();
-            swoole_event_exit();
         });
     }
 
@@ -131,7 +130,6 @@ class DefaultTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testGet();
-            swoole_event_exit();
         });
     }
 }

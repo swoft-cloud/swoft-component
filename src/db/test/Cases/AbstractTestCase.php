@@ -21,7 +21,5 @@ abstract class AbstractTestCase extends TestCase
     protected function tearDown()
     {
         parent::tearDown();
-
-        \Swoole\Event::wait();
     }
 }

@@ -13,6 +13,7 @@ use Swoft\Db\Db;
 use SwoftTest\Db\Testing\Entity\Group;
 use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
+use function test_go as go;
 
 /**
  * SqlMysqlTest
@@ -36,7 +37,6 @@ class SqlTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testInsert();
-            swoole_event_exit();
         });
     }
 
@@ -63,7 +63,6 @@ class SqlTest extends AbstractMysqlCase
     {
         go(function () use ($id) {
             $this->testSelect($id);
-            swoole_event_exit();
         });
     }
 
@@ -89,7 +88,6 @@ class SqlTest extends AbstractMysqlCase
     {
         go(function () use ($id) {
             $this->testSelect2($id);
-            swoole_event_exit();
         });
     }
 
@@ -113,7 +111,6 @@ class SqlTest extends AbstractMysqlCase
     {
         go(function () use ($id) {
             $this->testDelete($id);
-            swoole_event_exit();
         });
     }
 
@@ -145,7 +142,6 @@ class SqlTest extends AbstractMysqlCase
     {
         go(function () use ($id) {
             $this->testUpdate($id);
-            swoole_event_exit();
         });
     }
 
@@ -177,7 +173,6 @@ class SqlTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testErrorSql();
-            swoole_event_exit();
         });
     }
 
@@ -198,7 +193,6 @@ class SqlTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testTableNameIsDbKeyword();
-            swoole_event_exit();
         });
     }
 
@@ -216,7 +210,6 @@ class SqlTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testSqlQueryStrictType();
-            swoole_event_exit();
         });
     }
 }

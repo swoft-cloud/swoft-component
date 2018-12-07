@@ -12,6 +12,7 @@ namespace SwoftTest\Db\Cases\Mysql;
 use Swoft\Db\Db;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\User;
+use function test_go as go;
 
 class TrasactionTest extends AbstractMysqlCase
 {
@@ -47,7 +48,6 @@ class TrasactionTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testCommit();
-            swoole_event_exit();
         });
     }
 
@@ -83,7 +83,6 @@ class TrasactionTest extends AbstractMysqlCase
     {
         go(function () {
             $this->testRollback();
-            swoole_event_exit();
         });
     }
 }

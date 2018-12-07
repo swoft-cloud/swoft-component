@@ -15,6 +15,7 @@ use SwoftTest\Db\Testing\Pool\DbPptPoolConfig;
 use SwoftTest\Db\Testing\Pool\DbSlaveEnvPoolConfig;
 use SwoftTest\Db\Testing\Pool\DbSlavePptConfig;
 use SwoftTest\Db\Testing\Pool\OtherDbConfig;
+use function test_go as go;
 
 /**
  * PoolTest

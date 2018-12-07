@@ -14,6 +14,7 @@ use Swoft\Db\QueryBuilder;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\Count;
 use SwoftTest\Db\Testing\Entity\User;
+use function test_go as go;
 
 /**
  * RelationTest
@@ -46,7 +47,6 @@ class RelationTest extends AbstractMysqlCase
     {
         go(function () use ($uid) {
             $this->testJoin($uid);
-            swoole_event_exit();
         });
     }
 }
