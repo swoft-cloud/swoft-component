@@ -5,6 +5,7 @@ namespace Swoft\HttpClient\Adapter;
 use Psr\Http\Message\RequestInterface;
 use Swoft\App;
 use Swoft\Helper\JsonHelper;
+use Swoft\HttpClient\Exception\RuntimeException;
 use Swoft\HttpClient\HttpResult;
 use Swoft\HttpClient\HttpResultInterface;
 
@@ -25,7 +26,7 @@ class CurlAdapter implements AdapterInterface
      * @param array            $options
      * @return HttpResultInterface
      * @throws \InvalidArgumentException
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function request(RequestInterface $request, array $options = []): HttpResultInterface
     {
@@ -59,7 +60,7 @@ class CurlAdapter implements AdapterInterface
         $errorString = curl_error($resource);
         if ($errorNo) {
             App::error(sprintf('HttpClient Request ERROR #%s url=%s', $errorNo, $url));
-            throw new \RuntimeException($errorString, $errorNo);
+            throw new RuntimeException($errorString, $errorNo);
         }
 
         $result = new HttpResult($result);

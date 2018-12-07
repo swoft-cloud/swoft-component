@@ -6,6 +6,7 @@ use Psr\Http\Message\RequestInterface;
 use Swoft\App;
 use Swoft\Helper\JsonHelper;
 use Swoft\Http\Message\Uri\Uri;
+use Swoft\HttpClient\Exception\RuntimeException;
 use Swoft\HttpClient\HttpCoResult;
 use Swoft\HttpClient\HttpResultInterface;
 use Swoole\Coroutine;
@@ -30,7 +31,7 @@ class CoroutineAdapter implements AdapterInterface
      * @param array            $options
      * @return HttpResultInterface
      * @throws \InvalidArgumentException
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function request(RequestInterface $request, array $options = []): HttpResultInterface
     {
@@ -61,7 +62,7 @@ class CoroutineAdapter implements AdapterInterface
 
         if (null !== $client->errCode && $client->errCode !== 0) {
             App::error(sprintf('HttpClient Request ERROR #%s url=%s', $client->errCode, $url));
-            throw new \RuntimeException(\socket_strerror($client->errCode), $client->errCode);
+            throw new RuntimeException(\socket_strerror($client->errCode), $client->errCode);
         }
 
         $result = new HttpCoResult(null, $client, $profileKey);
