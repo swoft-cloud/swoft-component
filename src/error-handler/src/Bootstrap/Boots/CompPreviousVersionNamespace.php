@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -16,7 +17,6 @@ use Swoft\ErrorHandler\Bean\Annotation;
 use Swoft\ErrorHandler\Bean\Collector;
 use Swoft\ErrorHandler\Bean\Parser;
 use Swoft\ErrorHandler\Bean\Wrapper;
-use Swoft\ErrorHandler\Proxy;
 
 /**
  * Namespace compatibility with previous versions, which non-componentization version

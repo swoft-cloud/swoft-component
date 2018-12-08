@@ -1,14 +1,16 @@
 <?php
+declare(strict_types=1);
 /**
- * This file is part of Know.
+ * This file is part of Swoft.
  *
- * @link     https://code.aliyun.com/ky_tech/swoft-parent.git
- * @author   知我探索 开发组
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
 namespace SwoftTest\ErrorHandler\Testing;
 
-use Swoft\Bean\Annotation\Inject;
 use Swoft\Bean\Annotation\ExceptionHandler;
 use Swoft\Bean\Annotation\Handler;
 use Swoft\Http\Message\Server\Response;
@@ -17,7 +19,7 @@ use SwoftTest\ErrorHandler\Testing\Exceptions\ParamsInvalidException;
 
 /**
  * the handler of http server exception
- * @ExceptionHandler()
+ * @ExceptionHandler
  */
 class ExampleExceptionHandler
 {

@@ -1,15 +1,18 @@
 <?php
+declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: limx
- * Date: 2018/12/8
- * Time: 1:55 PM
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace SwoftTest\ErrorHandler\Testing\Exceptions;
 
 use Exception;
 
 class ExampleException extends Exception
 {
-
 }

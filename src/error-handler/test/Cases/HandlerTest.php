@@ -1,13 +1,15 @@
 <?php
+declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: limx
- * Date: 2018/12/8
- * Time: 1:58 PM
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
 namespace SwoftTest\ErrorHandler\Cases;
-
 
 use Swoft\Bean\Collector\ExceptionHandlerCollector;
 use Swoft\ErrorHandler\ErrorHandler;
@@ -38,8 +40,8 @@ class HandlerTest extends AbstractTestCase
 
         $res = JsonHelper::decode($response->getBody()->getContents(), true);
 
-        $this->assertEquals($code, $res['code']);
-        $this->assertEquals($msg, $res['message']);
-        $this->assertEquals(ExampleException::class, $res['exception']);
+        $this->assertSame($code, $res['code']);
+        $this->assertSame($msg, $res['message']);
+        $this->assertSame(ExampleException::class, $res['exception']);
     }
 }
