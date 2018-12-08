@@ -1,6 +1,6 @@
 <?php
 
-namespace SwoftTest\Defer;
+namespace SwoftTest\Defer\Cases;
 
 use Swoft\Defer\Defer;
 
@@ -11,11 +11,12 @@ use Swoft\Defer\Defer;
  */
 class DeferTest extends AbstractTestCase
 {
+    public function testExample()
+    {
+        $this->assertTrue(true);
+    }
 
-    /**
-     * @test
-     */
-    public function stack()
+    public function testStack()
     {
         $defer = new Defer();
         ob_start();
@@ -31,7 +32,7 @@ class DeferTest extends AbstractTestCase
         $defer([$this, 'callMethod']);
         $defer([$this, 'noPermissionMethod']);
         $defer->run();
-        $content = ob_get_contents();
+        $content = ob_get_clean();
         $this->assertEquals('4321', $content);
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace SwoftTest\Defer;
+namespace SwoftTest\Defer\Cases;
 
 use PHPUnit\Framework\TestCase;
 

@@ -113,7 +113,7 @@
             "SwoftTest\\Auth\\": "src/auth/test/",
             "SwoftTest\\Bean\\": "src/bean/test/",
             "SwoftTest\\Cache\\": "src/cache/test/",
-            "SwoftTest\\Console\\": "src/console/test/Cases",
+            "SwoftTest\\Console\\": "src/console/test/",
             "SwoftTest\\DataParser\\": "src/data-parser/test",
             "SwoftTest\\Db\\": "src/db/test",
             "SwoftTest\\Defer\\": "src/defer/test",
