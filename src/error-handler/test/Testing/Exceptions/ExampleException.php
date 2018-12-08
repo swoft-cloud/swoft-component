@@ -9,12 +9,10 @@ declare(strict_types=1);
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
-namespace Swoft\ErrorHandler\Bean\Annotation;
+namespace SwoftTest\ErrorHandler\Testing\Exceptions;
 
-/**
- * @Annotation
- * @Target("CLASS")
- */
-class ExceptionHandler
+use Exception;
+
+class ExampleException extends Exception
 {
 }

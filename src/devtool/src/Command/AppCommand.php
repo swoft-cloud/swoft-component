@@ -1,14 +1,23 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Devtool\Command;
 
 use Swoft\App;
+use Swoft\Console\Bean\Annotation\Command;
 use Swoft\Console\Bean\Annotation\Mapping;
 use Swoft\Console\Output\Output;
 use Swoft\Devtool\Helper\DevToolHelper;
 use Swoft\Devtool\PharCompiler;
 use Swoft\Helper\DirHelper;
-use Swoft\Console\Bean\Annotation\Command;
 use Swoft\Helper\ProcessHelper;
 
 /**
@@ -85,7 +94,7 @@ class AppCommand
     public function check(Output $output)
     {
         // env check
-        list($code, $return,) = ProcessHelper::run('php --ri swoole');
+        list($code, $return, ) = ProcessHelper::run('php --ri swoole');
         $asyncRdsEnabled = $code === 0 ? \strpos($return, 'redis client => enabled') : false;
 
         $list = [

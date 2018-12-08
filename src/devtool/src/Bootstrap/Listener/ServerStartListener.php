@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Devtool\Bootstrap\Listener;
 
@@ -7,10 +16,8 @@ use Swoft\Bean\Annotation\ServerListener;
 use Swoft\Bean\Annotation\Value;
 use Swoft\Bootstrap\Listeners\Interfaces\WorkerStartInterface;
 use Swoft\Bootstrap\SwooleEvent;
-use Swoft\Bootstrap\Server\AbstractServer;
 use Swoft\Devtool\DevTool;
 use Swoft\Devtool\WebSocket\DevToolController;
-use Swoft\Memory\Table;
 use Swoole\Server;
 
 /**

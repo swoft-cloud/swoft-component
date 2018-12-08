@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Devtool;
 
@@ -13,6 +22,7 @@ use Swoft\Core\Coroutine;
 final class DevTool
 {
     const VERSION = '1.0.0';
+
     const ROUTE_PREFIX = '/__devtool';
 
     public static $table;

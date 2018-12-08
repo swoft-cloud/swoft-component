@@ -1,12 +1,20 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\ErrorHandler\Bootstrap\Listener;
 
-
 use Swoft\Bean\Annotation\ServerListener;
-use Swoft\ErrorHandler\Bean\Collector\ExceptionHandlerCollector;
 use Swoft\Bootstrap\Listeners\Interfaces\WorkerStartInterface;
 use Swoft\Bootstrap\SwooleEvent;
+use Swoft\ErrorHandler\Bean\Collector\ExceptionHandlerCollector;
 use Swoft\ErrorHandler\ErrorHandlerChain;
 use Swoole\Server;
 
@@ -16,7 +24,6 @@ use Swoole\Server;
  */
 class WorkerStartListener implements WorkerStartInterface
 {
-
     public function onWorkerStart(Server $server, int $workerId, bool $isWorker)
     {
         if ($isWorker && $collector = ExceptionHandlerCollector::getCollector()) {

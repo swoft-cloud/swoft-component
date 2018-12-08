@@ -1,6 +1,15 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
-namespace SwoftTest\Devtool\Unit;
+namespace SwoftTest\Devtool\Cases;
 
 use PHPUnit\Framework\TestCase;
 use Swoft\Devtool\FileGenerator;
@@ -22,7 +31,7 @@ class FileGeneratorTest extends TestCase
         ];
 
         $gen = new FileGenerator([
-            'tplDir' => __DIR__ . '/res',
+            'tplDir' => __DIR__ . '/../res',
         ]);
 
         $code = $gen

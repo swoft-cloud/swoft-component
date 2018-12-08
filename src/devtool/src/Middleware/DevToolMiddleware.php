@@ -1,18 +1,19 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
- * @link https://swoft.org
+ * @link     https://swoft.org
  * @document https://doc.swoft.org
- * @contact group@swoft.org
- * @license https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
 namespace Swoft\Devtool\Middleware;
 
-use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\Value;
@@ -24,7 +25,7 @@ use Swoft\Http\Message\Server\Request;
 
 /**
  * Class DevToolMiddleware - Custom middleware
- * @Bean()
+ * @Bean
  * @package Swoft\Devtool\Middleware
  */
 class DevToolMiddleware implements MiddlewareInterface
