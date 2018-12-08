@@ -1,11 +1,20 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Devtool\Command;
 
+use Swoft\Console\Bean\Annotation\Command;
 use Swoft\Console\Bean\Annotation\Mapping;
 use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
-use Swoft\Console\Bean\Annotation\Command;
 use Swoft\Helper\ProcessHelper;
 
 /**
@@ -17,6 +26,7 @@ use Swoft\Helper\ProcessHelper;
 class SwoftDevCommand
 {
     const TYPE_SSL = 'git@github.com:';
+
     const TYPE_HTTPS = 'https://github.com/';
 
     /**
@@ -75,7 +85,7 @@ class SwoftDevCommand
 
     /**
      * Update component directory code from git repo by 'git subtree pull'
-     * @Mapping()
+     * @Mapping
      * @Usage {fullCommand} [COMPONENTS ...] [--OPTION ...]
      * @Arguments
      *   Component[s]   The existing component name[s], allow multi by space.
@@ -130,7 +140,7 @@ class SwoftDevCommand
 
             // if '--dry-run' is true. do not exec.
             if (!$tryRun) {
-                list($code, $ret,) = ProcessHelper::run($command, $workDir);
+                list($code, $ret, ) = ProcessHelper::run($command, $workDir);
 
                 if ($code !== 0) {
                     throw new \RuntimeException("Exec command failed. command: $command return: \n$ret");
@@ -151,7 +161,7 @@ class SwoftDevCommand
 
     /**
      * Push component[s] directory code to component's repo by 'git subtree push'
-     * @Mapping()
+     * @Mapping
      * @Usage {fullCommand} [COMPONENTS ...] [--OPTION ...]
      * @Arguments
      *   Component[s]   The existing component name[s], allow multi by space.
@@ -218,7 +228,7 @@ class SwoftDevCommand
 
             // if '--dry-run' is true. do not exec.
             if (!$tryRun) {
-                list($code, $ret,) = ProcessHelper::run($command, $workDir);
+                list($code, $ret, ) = ProcessHelper::run($command, $workDir);
 
                 if ($code !== 0) {
                     throw new \RuntimeException("Exec command failed. command: $command return: \n$ret");
@@ -295,7 +305,7 @@ class SwoftDevCommand
 
         // if '--dry-run' is true. do not exec.
         if (!$tryRun) {
-            list($code, $ret,) = ProcessHelper::run($command, $workDir);
+            list($code, $ret, ) = ProcessHelper::run($command, $workDir);
 
             if ($code !== 0) {
                 throw new \RuntimeException("Exec command failed. command: $command return: \n$ret");

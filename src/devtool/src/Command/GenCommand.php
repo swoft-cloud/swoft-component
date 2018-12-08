@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Devtool\Command;
 
@@ -7,8 +16,8 @@ use Swoft\Console\Helper\ConsoleUtil;
 use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
 use Swoft\Devtool\FileGenerator;
-use Swoft\Helper\DirHelper;
 use Swoft\Devtool\Model\Logic\EntityLogic;
+use Swoft\Helper\DirHelper;
 
 /**
  * Generate some common application template classes[<cyan>built-in</cyan>]
@@ -285,7 +294,6 @@ class GenCommand
 
         return $this->writeFile('@app/Process', $data, $config, $output);
     }
-
 
     /**
      * Generate entity class

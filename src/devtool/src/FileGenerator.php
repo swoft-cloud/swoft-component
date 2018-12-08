@@ -1,9 +1,17 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Devtool;
 
 use Leuffen\TextTemplate\TextTemplate;
-use Swoft\App;
 
 /**
  * Class FileGenerator
@@ -11,11 +19,6 @@ use Swoft\App;
  */
 class FileGenerator
 {
-    /**
-     * @var TextTemplate
-     */
-    private $parser;
-
     /**
      * @var string Template file dir.
      */
@@ -35,6 +38,11 @@ class FileGenerator
      * @var array
      */
     protected $data = [];
+
+    /**
+     * @var TextTemplate
+     */
+    private $parser;
 
     /**
      * FileGenerator constructor.
@@ -179,7 +187,6 @@ class FileGenerator
     {
         return $this->parser;
     }
-
 
     /**
      * @return array
