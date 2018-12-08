@@ -1,6 +1,6 @@
 <?php
 
-namespace SwoftTest\Devtool\Unit;
+namespace SwoftTest\Devtool\Cases;
 
 use PHPUnit\Framework\TestCase;
 use Swoft\Devtool\FileGenerator;
@@ -22,7 +22,7 @@ class FileGeneratorTest extends TestCase
         ];
 
         $gen = new FileGenerator([
-            'tplDir' => __DIR__ . '/res',
+            'tplDir' => __DIR__ . '/../res',
         ]);
 
         $code = $gen
