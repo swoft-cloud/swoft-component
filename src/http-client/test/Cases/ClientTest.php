@@ -14,6 +14,7 @@ namespace SwoftTest\HttpClient\Cases;
 use Swoft\Helper\JsonHelper;
 use Swoft\HttpClient\Adapter;
 use Swoft\HttpClient\Client;
+use function test_go as go;
 
 class ClientTest extends AbstractTestCase
 {
