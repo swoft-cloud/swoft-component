@@ -1,12 +1,12 @@
 <?php
-namespace SwoftTest\Pool;
+namespace SwoftTest\Testing\Pool;
 
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\Value;
 use Swoft\Pool\ConnectionInterface;
 use Swoft\Pool\ConnectionPool;
 use Swoft\Pool\PoolProperties;
-use SwoftTest\Connection\DemoConnection;
+use SwoftTest\Testing\Connection\DemoConnection;
 use Swoft\Bean\Annotation\Inject;
 use Swoft\Bean\Annotation\Pool;
 

@@ -7,7 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-namespace SwoftTest\Pool;
+namespace SwoftTest\Testing\Pool;
 
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\Value;
@@ -17,12 +17,12 @@ use Swoft\Bean\Annotation\Value;
  *
  * @Bean
  */
-class ConsulPptConfig
+class ConsulEnvConfig
 {
     /**
      * adress
      *
-     * @Value(name="${config.provider.consul.address}")
+     * @Value(env="${PROVIDER_CONSUL_ADDRESS}")
      * @var string
      */
     protected $address = 'http://127.0.0.1:80';
@@ -30,7 +30,7 @@ class ConsulPptConfig
     /**
      * the tags of register service
      *
-     * @Value(name="${config.provider.consul.tags}")
+     * @Value(env="${PROVIDER_CONSUL_TAGS}")
      * @var array
      */
     protected $tags = [];
@@ -38,7 +38,7 @@ class ConsulPptConfig
     /**
      * the timeout of consul
      *
-     * @Value(name="${config.provider.consul.timeout}")
+     * @Value(env="${PROVIDER_CONSUL_TIMEOUT}")
      * @var int
      */
     protected $timeout = 300;
@@ -46,7 +46,7 @@ class ConsulPptConfig
     /**
      * the interval of register service
      *
-     * @Value(name="${config.provider.consul.interval}")
+     * @Value(env="${PROVIDER_CONSUL_INTERVAL}")
      * @var int
      */
     protected $interval = 3;

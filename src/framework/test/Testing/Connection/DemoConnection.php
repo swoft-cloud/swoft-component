@@ -1,5 +1,5 @@
 <?php
-namespace SwoftTest\Connection;
+namespace SwoftTest\Testing\Connection;
 
 use Swoft\Pool\AbstractConnection;
 

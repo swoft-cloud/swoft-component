@@ -7,19 +7,19 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-namespace SwoftTest;
+namespace SwoftTest\Cases;
 
 use Swoft\App;
-use SwoftTest\Pool\ConsulEnvConfig;
-use SwoftTest\Pool\ConsulPptConfig;
-use SwoftTest\Pool\DemoPool;
-use SwoftTest\Pool\DemoPoolConfig;
-use SwoftTest\Pool\EnvAndPptFromPptPoolConfig;
-use SwoftTest\Pool\EnvAndPptPoolConfig;
-use SwoftTest\Pool\EnvPoolConfig;
-use SwoftTest\Pool\PartEnvPoolConfig;
-use SwoftTest\Pool\PartPoolConfig;
-use SwoftTest\Pool\PropertyPoolConfig;
+use SwoftTest\Testing\Pool\ConsulEnvConfig;
+use SwoftTest\Testing\Pool\ConsulPptConfig;
+use SwoftTest\Testing\Pool\DemoPool;
+use SwoftTest\Testing\Pool\DemoPoolConfig;
+use SwoftTest\Testing\Pool\EnvAndPptFromPptPoolConfig;
+use SwoftTest\Testing\Pool\EnvAndPptPoolConfig;
+use SwoftTest\Testing\Pool\EnvPoolConfig;
+use SwoftTest\Testing\Pool\PartEnvPoolConfig;
+use SwoftTest\Testing\Pool\PartPoolConfig;
+use SwoftTest\Testing\Pool\PropertyPoolConfig;
 
 /**
  * Class PoolTest

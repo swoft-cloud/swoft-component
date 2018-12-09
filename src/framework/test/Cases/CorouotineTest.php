@@ -1,5 +1,5 @@
 <?php
-namespace SwoftTest;
+namespace SwoftTest\Cases;
 
 use Swoft\Core\Coroutine;
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace SwoftTest\Aop\Parser;
+namespace SwoftTest\Testing\Aop\Parser;
 
 use Swoft\Bean\Collector;
-use SwoftTest\Aop\Collector\DemoCollector;
+use SwoftTest\Testing\Aop\Collector\DemoCollector;
 
 class DemoAnnotationParser
 {

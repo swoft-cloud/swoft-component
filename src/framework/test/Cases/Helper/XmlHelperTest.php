@@ -12,7 +12,7 @@ namespace SwoftTest\Helper;
 
 
 use Swoft\Helper\XmlHelper;
-use SwoftTest\AbstractTestCase;
+use SwoftTest\Cases\AbstractTestCase;
 
 class XmlHelperTest extends AbstractTestCase
 {

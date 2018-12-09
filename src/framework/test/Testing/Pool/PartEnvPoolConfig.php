@@ -7,18 +7,18 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-namespace SwoftTest\Pool;
+namespace SwoftTest\Testing\Pool;
 
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\Value;
 use Swoft\Pool\PoolProperties;
 
 /**
- * the config of env
+ * part env of config
  *
  * @Bean
  */
-class EnvPoolConfig extends PoolProperties
+class PartEnvPoolConfig extends PoolProperties
 {
     /**
      * the name of pool
@@ -29,28 +29,12 @@ class EnvPoolConfig extends PoolProperties
     protected $name = '';
 
     /**
-     * the maximum number of idle connections
-     *
-     * @Value(env="${TEST_MAX_IDEL}")
-     * @var int
-     */
-    protected $maxIdel = 6;
-
-    /**
      * the maximum number of active connections
      *
      * @Value(env="${TEST_MAX_ACTIVE}")
      * @var int
      */
     protected $maxActive = 50;
-
-    /**
-     * the maximum number of wait connections
-     *
-     * @Value(env="${TEST_MAX_WAIT}")
-     * @var int
-     */
-    protected $maxWait = 100;
 
     /**
      * the time of connect timeout
@@ -74,22 +58,6 @@ class EnvPoolConfig extends PoolProperties
      * @var array
      */
     protected $uri = [];
-
-    /**
-     * whether to user provider(consul/etcd/zookeeper)
-     *
-     * @Value(env="${TEST_USE_PROVIDER}")
-     * @var bool
-     */
-    protected $useProvider = false;
-
-    /**
-     * the default balancer is random balancer
-     *
-     * @Value(env="${TEST_BALANCER}")
-     * @var string
-     */
-    protected $balancer = 'random';
 
     /**
      * the default provider is consul provider

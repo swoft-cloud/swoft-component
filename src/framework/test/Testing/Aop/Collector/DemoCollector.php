@@ -1,5 +1,5 @@
 <?php
-namespace SwoftTest\Aop\Collector;
+namespace SwoftTest\Testing\Aop\Collector;
 
 class DemoCollector
 {

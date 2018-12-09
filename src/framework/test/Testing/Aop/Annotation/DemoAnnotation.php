@@ -1,6 +1,6 @@
 <?php
 
-namespace SwoftTest\Aop\Annotation;
+namespace SwoftTest\Testing\Aop\Annotation;
 
 /**
  * Class DemoAnnotation
