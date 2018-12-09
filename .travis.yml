@@ -27,4 +27,5 @@ before_script:
   - composer config -g process-timeout 900 && composer update
   - cp test/.env.example test/.env
 
-script: composer test
+script:
+  - vendor/bin/phpunit -c phpunit.xml
