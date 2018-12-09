@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Helper;
 
 /**
@@ -20,6 +27,7 @@ class ComponentHelper
         $ns = $namespaceMapping['src/'] ?? self::getDefaultNamespace($component);
         return $ns;
     }
+
     /**
      * Get the default namespace of component
      *
@@ -35,7 +43,7 @@ class ComponentHelper
         $namespace = '';
         $nsAry = explode('-', $component);
         foreach ($nsAry as $ns) {
-            $namespace .= "\\" . ucfirst($ns);
+            $namespace .= '\\' . ucfirst($ns);
         }
 
         return $namespace;
@@ -90,7 +98,7 @@ class ComponentHelper
      */
     private static function handlerFrameworkNamespace(string  $componentNs):string
     {
-        if($componentNs === '\Swoft\Framework'){
+        if ($componentNs === '\Swoft\Framework') {
             return '';
         }
 

@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Pool;
 
 /**
@@ -41,9 +48,9 @@ abstract class AbstractConnection implements ConnectionInterface
      */
     public function __construct(PoolInterface $connectPool)
     {
-        $this->lastTime     = \time();
+        $this->lastTime = \time();
         $this->connectionId = \uniqid('', false);
-        $this->pool         = $connectPool;
+        $this->pool = $connectPool;
         $this->createConnection();
     }
 
@@ -123,11 +130,9 @@ abstract class AbstractConnection implements ConnectionInterface
 
     public function receive()
     {
-
     }
 
     public function setDefer($defer = true)
     {
-
     }
 }

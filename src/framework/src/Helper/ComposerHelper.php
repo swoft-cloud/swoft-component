@@ -1,17 +1,22 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Helper;
-
 
 use Composer\Autoload\ClassLoader;
 
 class ComposerHelper
 {
-
     /**
      * @var ClassLoader|mixed
      */
-    static $loader;
+    public static $loader;
 
     /**
      * @return ClassLoader
@@ -65,5 +70,4 @@ class ComposerHelper
         }
         return $dir;
     }
-
 }

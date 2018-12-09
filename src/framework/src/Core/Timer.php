@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Core;
 
 use Swoft\Bean\Annotation\Bean;
@@ -19,7 +26,7 @@ class Timer
     /**
      * 日志统计前缀
      */
-    const TIMER_PREFIX = "timer.";
+    const TIMER_PREFIX = 'timer.';
 
     /**
      * @var array 所有定时器
@@ -120,9 +127,9 @@ class Timer
     private function beforeTimer(string $name)
     {
         $contextData = [
-            'logid'       => uniqid(),
-            'spanid'      => 0,
-            'uri'         => $this->getTimerUri($name),
+            'logid' => uniqid(),
+            'spanid' => 0,
+            'uri' => $this->getTimerUri($name),
             'requestTime' => microtime(true),
         ];
         RequestContext::setContextData($contextData);

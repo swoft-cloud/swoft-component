@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Helper;
 
 /**
@@ -25,9 +32,9 @@ class ResponseHelper
     public static function formatData($data = '', $message = '', $status = 200)
     {
         return [
-            'data'   => $data,
+            'data' => $data,
             'status' => $status,
-            'msg'    => $message,
+            'msg' => $message,
         ];
     }
 }

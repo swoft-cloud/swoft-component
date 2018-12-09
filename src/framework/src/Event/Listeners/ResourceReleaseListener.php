@@ -1,10 +1,16 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Event\Listeners;
 
 use Swoft\App;
 use Swoft\Bean\Annotation\Listener;
-use Swoft\Core\Coroutine;
 use Swoft\Core\RequestContext;
 use Swoft\Event\AppEvent;
 use Swoft\Event\EventHandlerInterface;
@@ -29,7 +35,7 @@ class ResourceReleaseListener implements EventHandlerInterface
         App::trigger(AppEvent::RESOURCE_RELEASE_BEFORE);
 
         $connectionKey = PoolHelper::getContextCntKey();
-        $connections   = RequestContext::getContextDataByKey($connectionKey, []);
+        $connections = RequestContext::getContextDataByKey($connectionKey, []);
         if (empty($connections)) {
             return;
         }

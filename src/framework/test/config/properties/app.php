@@ -11,7 +11,7 @@ return [
     'version' => '1.0',
     'autoInitBean' => true,
     'beanScan' => [
-        'SwoftTest\\Testing'  => BASE_PATH . '/Testing',
+        'SwoftTest\\Testing' => BASE_PATH . '/Testing',
     ],
     'bootScan' => [],
     'env' => 'Base',

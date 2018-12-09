@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft;
 
 use Swoft\Bean\BeanFactory;
@@ -292,7 +299,7 @@ class App
             throw new \InvalidArgumentException('The set root alias does not exist，alias=' . $root);
         }
 
-        $rootPath  = self::$aliases[$root];
+        $rootPath = self::$aliases[$root];
         $aliasPath = str_replace($root, '', $path);
 
         self::$aliases[$alias] = $rootPath . $aliasPath;
@@ -322,7 +329,7 @@ class App
             throw new \InvalidArgumentException('The set root alias does not exist，alias=' . $root);
         }
 
-        $rootPath  = self::$aliases[$root];
+        $rootPath = self::$aliases[$root];
         $aliasPath = \str_replace($root, '', $alias);
 
         return $rootPath . $aliasPath;
@@ -352,7 +359,7 @@ class App
      * @param mixed $message 日志信息
      * @param array $context 附加信息
      */
-    public static function trace($message, array $context = array())
+    public static function trace($message, array $context = [])
     {
         self::getLogger()->addTrace($message, $context);
     }
@@ -363,7 +370,7 @@ class App
      * @param mixed $message 日志信息
      * @param array $context 附加信息
      */
-    public static function error($message, array $context = array())
+    public static function error($message, array $context = [])
     {
         self::getLogger()->error($message, $context);
     }
@@ -374,7 +381,7 @@ class App
      * @param mixed $message 日志信息
      * @param array $context 附加信息
      */
-    public static function info($message, array $context = array())
+    public static function info($message, array $context = [])
     {
         self::getLogger()->info($message, $context);
     }
@@ -385,7 +392,7 @@ class App
      * @param mixed $message 日志信息
      * @param array $context 附加信息
      */
-    public static function warning($message, array $context = array())
+    public static function warning($message, array $context = [])
     {
         self::getLogger()->warning($message, $context);
     }
@@ -396,7 +403,7 @@ class App
      * @param mixed $message 日志信息
      * @param array $context 附加信息
      */
-    public static function debug($message, array $context = array())
+    public static function debug($message, array $context = [])
     {
         self::getLogger()->debug($message, $context);
     }

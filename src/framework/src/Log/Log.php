@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Log;
 
 use Swoft\App;
@@ -21,7 +28,7 @@ class Log
      * @param mixed $message 日志信息
      * @param array $context 附加信息
      */
-    public static function trace($message, array $context = array())
+    public static function trace($message, array $context = [])
     {
         App::getLogger()->addTrace($message, $context);
     }
@@ -32,7 +39,7 @@ class Log
      * @param mixed $message 日志信息
      * @param array $context 附加信息
      */
-    public static function error($message, array $context = array())
+    public static function error($message, array $context = [])
     {
         App::getLogger()->error($message, $context);
     }
@@ -43,7 +50,7 @@ class Log
      * @param mixed $message 日志信息
      * @param array $context 附加信息
      */
-    public static function info($message, array $context = array())
+    public static function info($message, array $context = [])
     {
         App::getLogger()->info($message, $context);
     }
@@ -54,7 +61,7 @@ class Log
      * @param mixed $message 日志信息
      * @param array $context 附加信息
      */
-    public static function warning($message, array $context = array())
+    public static function warning($message, array $context = [])
     {
         App::getLogger()->warning($message, $context);
     }
@@ -65,7 +72,7 @@ class Log
      * @param mixed $message 日志信息
      * @param array $context 附加信息
      */
-    public static function debug($message, array $context = array())
+    public static function debug($message, array $context = [])
     {
         App::getLogger()->debug($message, $context);
     }

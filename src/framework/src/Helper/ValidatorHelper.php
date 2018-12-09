@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Helper;
 
 use Swoft\Exception\ValidatorException;
@@ -43,10 +50,10 @@ class ValidatorHelper
     public static function validateInteger(string $name, $value, $min = null, $max = null, bool $throws = true, string $template = '')
     {
         $params = [
-            'name'  => $name,
+            'name' => $name,
             'value' => $value,
-            'min'   => $min,
-            'max'   => $max,
+            'min' => $min,
+            'max' => $max,
         ];
 
         $template = self::getTemplate($template, $params);
@@ -94,10 +101,10 @@ class ValidatorHelper
     public static function validateNumber(string $name, $value, $min = null, $max = null, bool $throws = true, string $template)
     {
         $params = [
-            'name'  => $name,
+            'name' => $name,
             'value' => $value,
-            'min'   => $min,
-            'max'   => $max,
+            'min' => $min,
+            'max' => $max,
         ];
 
         $template = self::getTemplate($template, $params);
@@ -151,10 +158,10 @@ class ValidatorHelper
         string $template
     ) {
         $params = [
-            'name'  => $name,
+            'name' => $name,
             'value' => $value,
-            'min'   => $min,
-            'max'   => $max,
+            'min' => $min,
+            'max' => $max,
         ];
 
         $template = self::getTemplate($template, $params);
@@ -202,10 +209,10 @@ class ValidatorHelper
     public static function validateString(string $name, $value, int $min = null, int $max = null, bool $throws = true, string $template)
     {
         $params = [
-            'name'  => $name,
+            'name' => $name,
             'value' => $value,
-            'min'   => $min,
-            'max'   => $max,
+            'min' => $min,
+            'max' => $max,
         ];
 
         $template = self::getTemplate($template, $params);
@@ -251,7 +258,7 @@ class ValidatorHelper
     public static function validateEnum(string $name, $value, array $validValues, bool $throws = true, string $template)
     {
         $params = [
-            'name'  => $name,
+            'name' => $name,
             'value' => JsonHelper::encode($value, JSON_UNESCAPED_UNICODE),
         ];
 
@@ -281,9 +288,9 @@ class ValidatorHelper
         if (empty($template)) {
             return '';
         }
-        $names   = array_keys($params);
+        $names = array_keys($params);
         $replace = array_values($params);
-        $search  = array_map(function ($v) {
+        $search = array_map(function ($v) {
             return sprintf('{%s}', $v);
         }, $names);
 

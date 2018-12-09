@@ -10,7 +10,6 @@
 
 namespace SwoftTest\Helper;
 
-
 use Swoft\Helper\XmlHelper;
 use SwoftTest\Cases\AbstractTestCase;
 

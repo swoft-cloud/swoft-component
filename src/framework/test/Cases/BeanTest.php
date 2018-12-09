@@ -11,8 +11,6 @@ namespace SwoftTest\Cases;
 
 use Swoft\App;
 use Swoft\Bean\Resource\ServerAnnotationResource;
-use SwoftTest\Testing\Bean\ProxyTest;
-use SwoftTest\Testing\Bean\TestHandler;
 use SwoftTest\Testing\Bean\Config;
 
 /**
