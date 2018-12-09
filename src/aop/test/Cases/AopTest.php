@@ -9,7 +9,7 @@ declare(strict_types=1);
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
-namespace SwoftTest;
+namespace SwoftTest\Aop\Cases;
 
 use Swoft\App;
 use SwoftTest\Aop\Testing\Aop\AllPointAspectWithoutRound1;
