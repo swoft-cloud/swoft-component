@@ -1,18 +1,23 @@
 <?php
-namespace SwoftTest\Pool;
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
+namespace SwoftTest\Testing\Pool;
 
-use Swoft\Bean\Annotation\Bean;
-use Swoft\Bean\Annotation\Value;
 use Swoft\Pool\ConnectionInterface;
 use Swoft\Pool\ConnectionPool;
-use Swoft\Pool\PoolProperties;
-use SwoftTest\Connection\DemoConnection;
+use SwoftTest\Testing\Connection\DemoConnection;
 use Swoft\Bean\Annotation\Inject;
 use Swoft\Bean\Annotation\Pool;
 
 /**
  * Class DemoPool
- * @Pool()
+ * @Pool
  * @package SwoftTest\Pool
  */
 class DemoPool extends ConnectionPool
@@ -20,7 +25,7 @@ class DemoPool extends ConnectionPool
     /**
      * The config of poolbPool
      *
-     * @Inject()
+     * @Inject
      *
      * @var DemoPoolConfig
      */

@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Core;
 
 use Swoft\Pool\ConnectionInterface;
@@ -27,7 +34,7 @@ abstract class AbstractDataResult implements ResultInterface
      */
     public function __construct($data, $connection = null)
     {
-        $this->data       = $data;
+        $this->data = $data;
         $this->connection = $connection;
     }
 
@@ -42,5 +49,4 @@ abstract class AbstractDataResult implements ResultInterface
 
         return;
     }
-
 }

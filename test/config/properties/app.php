@@ -15,8 +15,7 @@ return [
         'SwoftTest\\Auth\\Testing'           => SRC_PATH . '/auth/test/Testing',
         'SwoftTest\\Db\\Testing'             => SRC_PATH . '/db/test/Testing',
         'SwoftTest\\ErrorHandler\\Testing'   => SRC_PATH . '/error-handler/test/Testing',
-        'SwoftTest\\Bean'                    => SRC_PATH . '/framework/test/Cases/Bean',
-        'SwoftTest\\Pool'                    => SRC_PATH . '/framework/test/Cases/Pool',
+        'SwoftTest\\Testing'                 => SRC_PATH . '/framework/test/Testing',
         'SwoftTest\\HttpServer\\Testing'     => SRC_PATH . '/http-server/test/Testing',
         'Swoft\\I18n'                        => SRC_PATH . '/i18n/src',
         'SwoftTest\\Redis\\Pool'             => SRC_PATH . '/redis/test/Cases/Pool',
@@ -37,4 +36,5 @@ return [
     'provider'     => require __DIR__ . DS . 'provider.php',
     'test'         => require __DIR__ . DS . 'test.php',
     'auth'         => require __DIR__ . DS . 'auth.php',
+    'components'   => require __DIR__ . DS . 'components.php',
 ];

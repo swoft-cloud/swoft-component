@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Bootstrap;
 
 use Swoft\Log\Formatter\LineFormatter;
@@ -14,19 +21,19 @@ use Swoft\Log\Logger;
 /**
  * The corebean of swoft
  *
- * @BootBean()
+ * @BootBean
  */
 class CoreBean implements BootBeanInterface
 {
     public function beans()
     {
         return [
-            'config'           => [
-                'class'      => Config::class,
+            'config' => [
+                'class' => Config::class,
                 'properties' => value(function () {
-                    $config     = new Config();
+                    $config = new Config();
                     $properties = [];
-                    $dir        = App::getAlias('@properties');
+                    $dir = App::getAlias('@properties');
                     if (is_readable($dir)) {
                         $config->load($dir);
                         $properties = $config->toArray();
@@ -35,22 +42,22 @@ class CoreBean implements BootBeanInterface
                     return $properties;
                 }),
             ],
-            'application'      => [
+            'application' => [
                 'class' => Application::class,
             ],
-            'eventManager'     => [
+            'eventManager' => [
                 'class' => EventManager::class,
             ],
-            'logger'           => [
-                'class'         => Logger::class,
-                'name'          => APP_NAME,
+            'logger' => [
+                'class' => Logger::class,
+                'name' => APP_NAME,
                 'flushInterval' => 100000,
-                'flushRequest'  => false,
-                'handlers'      => [],
+                'flushRequest' => false,
+                'handlers' => [],
             ],
-            'lineFormatter'    => [
-                'class'      => LineFormatter::class,
-                'format'     => '%datetime% [%level_name%] [%channel%] [logid:%logid%] [spanid:%spanid%] %messages%',
+            'lineFormatter' => [
+                'class' => LineFormatter::class,
+                'format' => '%datetime% [%level_name%] [%channel%] [logid:%logid%] [spanid:%spanid%] %messages%',
                 'dateFormat' => 'Y-m-d H:i:s',
             ],
         ];

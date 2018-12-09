@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Pool;
 
 use Swoft\App;
@@ -104,10 +111,10 @@ abstract class ConnectionPool implements PoolInterface
      */
     public function getConnectionAddress():string
     {
-        $serviceList  = $this->getServiceList();
+        $serviceList = $this->getServiceList();
         if (App::hasBean('balancerSelector')) {
             $balancerType = $this->poolConfig->getBalancer();
-            $balancer     = balancer()->select($balancerType);
+            $balancer = balancer()->select($balancerType);
             return $balancer->select($serviceList);
         }
         return current($serviceList);
@@ -178,7 +185,7 @@ abstract class ConnectionPool implements PoolInterface
      */
     private function releaseToChannel(ConnectionInterface $connection)
     {
-        $stats     = $this->channel->stats();
+        $stats = $this->channel->stats();
         $maxActive = $this->poolConfig->getMaxActive();
         if ($stats['queue_num'] < $maxActive) {
             $this->channel->push($connection);
@@ -193,7 +200,7 @@ abstract class ConnectionPool implements PoolInterface
      */
     private function getConnectionByQueue(): ConnectionInterface
     {
-        if($this->queue == null){
+        if ($this->queue == null) {
             $this->queue = new \SplQueue();
         }
         if (!$this->queue->isEmpty()) {
@@ -218,7 +225,7 @@ abstract class ConnectionPool implements PoolInterface
      */
     private function getConnectionByChannel(): ConnectionInterface
     {
-        if($this->channel === null){
+        if ($this->channel === null) {
             $this->channel = new Channel($this->poolConfig->getMaxActive());
         }
 
@@ -255,7 +262,7 @@ abstract class ConnectionPool implements PoolInterface
         }
 
         $writes = [];
-        $reads  = [$this->channel];
+        $reads = [$this->channel];
         $result = $this->channel->select($reads, $writes, $maxWaitTime);
 
         if ($result === false || empty($reads)) {
@@ -282,12 +289,13 @@ abstract class ConnectionPool implements PoolInterface
             return $this->getOriginalConnection($isChannel);
         }
 
-        $time        = time();
-        $moreActive  = $queueNum - $minActive;
+        $time = time();
+        $moreActive = $queueNum - $minActive;
         $maxWaitTime = $this->poolConfig->getMaxWaitTime();
         for ($i = 0; $i < $moreActive; $i++) {
             /* @var ConnectionInterface $connection */
-            $connection = $this->getOriginalConnection($isChannel);;
+            $connection = $this->getOriginalConnection($isChannel);
+            ;
             $lastTime = $connection->getLastTime();
             if ($time - $lastTime < $maxWaitTime) {
                 return $connection;
@@ -319,7 +327,7 @@ abstract class ConnectionPool implements PoolInterface
      */
     private function addContextConnection(ConnectionInterface $connection)
     {
-        $connectionId  = $connection->getConnectionId();
+        $connectionId = $connection->getConnectionId();
         $connectionKey = PoolHelper::getContextCntKey();
         RequestContext::setContextDataByChildKey($connectionKey, $connectionId, $connection);
     }

@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Log;
 
 use Monolog\Handler\AbstractProcessingHandler;
@@ -25,8 +32,7 @@ class FileHandler extends AbstractProcessingHandler
     /**
      * @var string 输入日志文件名称
      */
-    protected $logFile = "";
-
+    protected $logFile = '';
 
     /**
      * 批量输出日志

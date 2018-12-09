@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Log;
 
 use Swoft\App;
@@ -17,7 +24,6 @@ use Swoft\Core\RequestContext;
  */
 class Logger extends \Monolog\Logger
 {
-
     /**
      * trace 日志级别
      */
@@ -73,21 +79,20 @@ class Logger extends \Monolog\Logger
      */
     protected $enable = false;
 
-
     /**
      * @var array 日志级别对应名称
      */
-    protected static $levels = array(
-        self::DEBUG     => 'debug',
-        self::INFO      => 'info',
-        self::NOTICE    => 'notice',
-        self::WARNING   => 'warning',
-        self::ERROR     => 'error',
-        self::CRITICAL  => 'critical',
-        self::ALERT     => 'alert',
+    protected static $levels = [
+        self::DEBUG => 'debug',
+        self::INFO => 'info',
+        self::NOTICE => 'notice',
+        self::WARNING => 'warning',
+        self::ERROR => 'error',
+        self::CRITICAL => 'critical',
+        self::ALERT => 'alert',
         self::EMERGENCY => 'emergency',
-        self::TRACE     => 'trace'
-    );
+        self::TRACE => 'trace'
+    ];
 
     public function __construct()
     {
@@ -102,7 +107,7 @@ class Logger extends \Monolog\Logger
      * @param array $context 附加信息
      * @return bool
      */
-    public function addRecord($level, $message, array $context = array())
+    public function addRecord($level, $message, array $context = [])
     {
         if (! $this->enable) {
             return true;
@@ -153,17 +158,17 @@ class Logger extends \Monolog\Logger
      */
     public function formateRecord($message, $context, $level, $levelName, $ts, $extra)
     {
-        $record = array(
-            'logid'      => RequestContext::getLogid(),
-            'spanid'     => RequestContext::getSpanid(),
-            'messages'   => $message,
-            'context'    => $context,
-            'level'      => $level,
+        $record = [
+            'logid' => RequestContext::getLogid(),
+            'spanid' => RequestContext::getSpanid(),
+            'messages' => $message,
+            'context' => $context,
+            'level' => $level,
             'level_name' => $levelName,
-            'channel'    => $this->name,
-            'datetime'   => $ts,
-            'extra'      => $extra,
-        );
+            'channel' => $this->name,
+            'datetime' => $ts,
+            'extra' => $extra,
+        ];
 
         return $record;
     }
@@ -221,7 +226,7 @@ class Logger extends \Monolog\Logger
         $cid = Coroutine::tid();
         if (! isset($this->profiles[$cid][$name])) {
             $this->profiles[$cid][$name] = [
-                'cost'  => 0,
+                'cost' => 0,
                 'total' => 0,
             ];
         }
@@ -387,14 +392,14 @@ class Logger extends \Monolog\Logger
         $countingInfo = $this->getCountingInfo();
         $pushlogs = $this->pushlogs[$cid] ?? [];
 
-        $messageAry = array(
+        $messageAry = [
             "[$timeUsed(ms)]",
             "[$memUsed(MB)]",
             "[{$this->getUri()}]",
             '[' . implode(' ', $pushlogs) . ']',
             'profile[' . $profileInfo . ']',
             'counting[' . $countingInfo . ']'
-        );
+        ];
 
 
         $message = implode(' ', $messageAry);
@@ -455,7 +460,7 @@ class Logger extends \Monolog\Logger
      * @param array $context 附加信息
      * @return bool
      */
-    public function addTrace($message, array $context = array())
+    public function addTrace($message, array $context = [])
     {
         return $this->addRecord(static::TRACE, $message, $context);
     }

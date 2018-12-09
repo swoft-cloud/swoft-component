@@ -119,7 +119,7 @@
             "SwoftTest\\Defer\\": "src/defer/test/",
             "SwoftTest\\Devtool\\": "src/devtool/test/",
             "SwoftTest\\ErrorHandler\\": "src/error-handler/test/",
-            "SwoftTest\\": "src/framework/test/Cases",
+            "SwoftTest\\": "src/framework/test/",
             "SwoftTest\\HttpClient\\": "src/http-client/test/Cases",
             "SwoftTest\\HttpServer\\": "src/http-server/test",
             "SwoftTest\\I18n\\": "src/i18n/test/Cases",

@@ -7,7 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-namespace SwoftTest\Pool;
+namespace SwoftTest\Testing\Pool;
 
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\Value;

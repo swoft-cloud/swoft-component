@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Helper;
 
 /**
@@ -11,15 +18,16 @@ namespace Swoft\Helper;
  */
 class DirHelper
 {
-
     /**
      * 仅扫描当前层级文件夹
      */
     const SCAN_CURRENT_DIR = 'current';
+
     /**
      * 广度优先搜索
      */
     const SCAN_BFS = 'bfs';
+
     /**
      * 深度优先搜索
      */
@@ -237,7 +245,6 @@ class DirHelper
         return $files;
     }
 
-
     /**
      * @param string $dir
      * @param int $mode
@@ -261,8 +268,7 @@ class DirHelper
         string $srcDir,
         callable $filter,
         $flags = \FilesystemIterator::KEY_AS_PATHNAME | \FilesystemIterator::CURRENT_AS_FILEINFO
-    ): \RecursiveIteratorIterator
-    {
+    ): \RecursiveIteratorIterator {
         if (!$srcDir || !file_exists($srcDir)) {
             throw new \InvalidArgumentException('Please provide a exists source directory.');
         }

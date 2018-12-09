@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Helper;
 
 use Swoft\Contract\Arrayable;
@@ -86,7 +93,7 @@ class ArrayHelper
     public static function merge($a, $b)
     {
         $args = \func_get_args();
-        $res  = array_shift($args);
+        $res = array_shift($args);
         while (!empty($args)) {
             $next = array_shift($args);
             foreach ($next as $k => $v) {
@@ -166,7 +173,7 @@ class ArrayHelper
 
         if (($pos = strrpos($key, '.')) !== false) {
             $array = static::getValue($array, substr($key, 0, $pos), $default);
-            $key   = (string)substr($key, $pos + 1);
+            $key = (string)substr($key, $pos + 1);
         }
 
         if (\is_object($array)) {
@@ -502,7 +509,7 @@ class ArrayHelper
     {
         $result = [];
         foreach ($array as $element) {
-            $key   = static::getValue($element, $from);
+            $key = static::getValue($element, $from);
             $value = static::getValue($element, $to);
             if ($group !== null) {
                 $result[static::getValue($element, $group)][$key] = $value;
@@ -577,7 +584,7 @@ class ArrayHelper
         }
         $args = [];
         foreach ($keys as $i => $k) {
-            $flag   = $sortFlag[$i];
+            $flag = $sortFlag[$i];
             $args[] = static::getColumn($array, $k);
             $args[] = $direction[$i];
             $args[] = $flag;
@@ -790,13 +797,13 @@ class ArrayHelper
      */
     public static function filter($array, $filters)
     {
-        $result        = [];
+        $result = [];
         $forbiddenVars = [];
 
         foreach ($filters as $var) {
-            $keys      = explode('.', $var);
+            $keys = explode('.', $var);
             $globalKey = $keys[0];
-            $localKey  = $keys[1] ?? null;
+            $localKey = $keys[1] ?? null;
 
             if ($globalKey[0] === '!') {
                 $forbiddenVars[] = [

@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Pipe;
 
 use Swoft\Bean\Annotation\Bean;
@@ -8,7 +15,7 @@ use Swoft\Helper\JsonHelper;
 /**
  * Json pipe message
  *
- * @Bean()
+ * @Bean
  */
 class JsonPipeMessage implements PipeMessageInterface
 {
@@ -22,7 +29,7 @@ class JsonPipeMessage implements PipeMessageInterface
     {
         $data = [
             'pipeType' => $type,
-            'message'  => $data,
+            'message' => $data,
         ];
 
         return JsonHelper::encode($data, JSON_UNESCAPED_UNICODE);
@@ -36,8 +43,8 @@ class JsonPipeMessage implements PipeMessageInterface
     public function unpack(string $message): array
     {
         $messageAry = json_decode($message, true);
-        $type       = $messageAry['pipeType'];
-        $data       = $messageAry['message'];
+        $type = $messageAry['pipeType'];
+        $data = $messageAry['message'];
 
         return [$type, $data];
     }

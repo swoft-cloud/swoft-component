@@ -7,7 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-namespace SwoftTest;
+namespace SwoftTest\Cases;
 
 use Swoft\Helper\DirHelper;
 use Swoft\Log\Logger;

@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Bootstrap;
 
 /**
@@ -79,28 +86,30 @@ class SwooleEvent
      * for websocket
      */
     const ON_OPEN = 'open';
+
     const ON_HAND_SHAKE = 'handshake';
+
     const ON_MESSAGE = 'message';
 
     /**
      * @var array
      */
     private static $handlerFunctions = [
-        self::ON_START         => 'onStart',
-        self::ON_WORKER_START  => 'onWorkerStart',
+        self::ON_START => 'onStart',
+        self::ON_WORKER_START => 'onWorkerStart',
         self::ON_MANAGER_START => 'onManagerStart',
-        self::ON_REQUEST       => 'onRequest',
-        self::ON_TASK          => 'onTask',
-        self::ON_PIPE_MESSAGE  => 'onPipeMessage',
-        self::ON_FINISH        => 'onFinish',
-        self::ON_CONNECT       => 'onConnect',
-        self::ON_RECEIVE       => 'onReceive',
-        self::ON_CLOSE         => 'onClose',
-        self::ON_BEFORE_START  => 'onBeforeStart',
+        self::ON_REQUEST => 'onRequest',
+        self::ON_TASK => 'onTask',
+        self::ON_PIPE_MESSAGE => 'onPipeMessage',
+        self::ON_FINISH => 'onFinish',
+        self::ON_CONNECT => 'onConnect',
+        self::ON_RECEIVE => 'onReceive',
+        self::ON_CLOSE => 'onClose',
+        self::ON_BEFORE_START => 'onBeforeStart',
         // for ws
-        self::ON_OPEN  => 'onOpen',
-        self::ON_MESSAGE  => 'onMessage',
-        self::ON_HAND_SHAKE  => 'onHandshake',
+        self::ON_OPEN => 'onOpen',
+        self::ON_MESSAGE => 'onMessage',
+        self::ON_HAND_SHAKE => 'onHandshake',
     ];
 
     /**

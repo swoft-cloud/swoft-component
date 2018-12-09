@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Event;
 
 /**
@@ -141,7 +148,7 @@ class EventManager implements EventManagerInterface
             if (\is_string($listener) && \class_exists($listener)) {
                 $listener = new $listener;
 
-                // like 'function' OR '[object, method]'
+            // like 'function' OR '[object, method]'
             } else {
                 $listener = new LazyListener($listener);
             }
@@ -168,7 +175,7 @@ class EventManager implements EventManagerInterface
 
                 if (\is_string($conf)) {
                     $queue->add(new LazyListener([$listener, $conf]), $defaultPriority);
-                    // ['onPost', ListenerPriority::LOW]
+                // ['onPost', ListenerPriority::LOW]
                 } elseif (\is_string($conf[0])) {
                     $queue->add(new LazyListener([$listener, $conf[0]]), $conf[1] ?? $defaultPriority);
                 }

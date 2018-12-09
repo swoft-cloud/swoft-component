@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Bootstrap\Listeners;
 
 use Swoft\App;
@@ -14,7 +21,7 @@ use Swoole\Lock;
 /**
  * the listener of before server start
  *
- * @BeforeStart()
+ * @BeforeStart
  */
 class BeforeStartListener implements BeforeStartInterface
 {
@@ -37,11 +44,11 @@ class BeforeStartListener implements BeforeStartInterface
      */
     private function checkTask()
     {
-        $settings  = App::getAppProperties()->get('server');
-        $settings  = $settings['setting'];
+        $settings = App::getAppProperties()->get('server');
+        $settings = $settings['setting'];
         $collector = SwooleListenerCollector::getCollector();
 
-        $isConfigTask  = isset($settings['task_worker_num']) && $settings['task_worker_num'] > 0;
+        $isConfigTask = isset($settings['task_worker_num']) && $settings['task_worker_num'] > 0;
         $isInstallTask = isset($collector[SwooleEvent::TYPE_SERVER][SwooleEvent::ON_TASK]) && isset($collector[SwooleEvent::TYPE_SERVER][SwooleEvent::ON_FINISH]);
 
         if ($isConfigTask && !$isInstallTask) {

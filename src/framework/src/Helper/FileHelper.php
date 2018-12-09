@@ -1,9 +1,11 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2017-10-24
- * Time: 11:11
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
 namespace Swoft\Helper;
@@ -60,8 +62,8 @@ class FileHelper
             return '';
         }
 
-        $md5File = array();
-        $d       = dir($dir);
+        $md5File = [];
+        $d = dir($dir);
         while (false !== ($entry = $d->read())) {
             if ($entry !== '.' && $entry !== '..') {
                 if (is_dir($dir . '/' . $entry)) {

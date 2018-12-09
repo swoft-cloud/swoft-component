@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Helper;
 
 use \RuntimeException;
@@ -13,7 +20,6 @@ use \RuntimeException;
  */
 class StringHelper
 {
-
     /**
      * The cache of snake-cased words.
      *
@@ -1000,12 +1006,11 @@ class StringHelper
         }
 
         if (mb_strlen($str) <= $splitLength) {
-            return array($str);
+            return [$str];
         }
         preg_match_all('/.{' . $splitLength . '}|[^\x00]{1,' . $splitLength . '}$/us', $str, $matches);
         return $matches[0];
     }
-
 
     /**
      * Generates a random string of a given type and length. Possible
