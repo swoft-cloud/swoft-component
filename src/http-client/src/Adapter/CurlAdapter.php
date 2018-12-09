@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\HttpClient\Adapter;
 
@@ -82,6 +91,21 @@ class CurlAdapter implements AdapterInterface
             $userAgent .= ' curl/' . \curl_version()['version'];
         }
         return $userAgent;
+    }
+
+    /**
+     * Get the adapter User-Agent string
+     *
+     * @return string
+     */
+    public function getDefaultUserAgent(): string
+    {
+        $defaultAgent = 'Swoft/' . SWOFT_VERSION;
+        if (\extension_loaded('curl') && \function_exists('curl_version')) {
+            $defaultAgent .= ' curl/' . \curl_version()['version'];
+        }
+        $defaultAgent .= ' PHP/' . PHP_VERSION;
+        return $defaultAgent;
     }
 
     /**
@@ -237,21 +261,6 @@ class CurlAdapter implements AdapterInterface
             $postFields = $options['body'];
         }
         return (string)$postFields;
-    }
-
-    /**
-     * Get the adapter User-Agent string
-     *
-     * @return string
-     */
-    public function getDefaultUserAgent(): string
-    {
-        $defaultAgent = 'Swoft/' . SWOFT_VERSION;
-        if (\extension_loaded('curl') && \function_exists('curl_version')) {
-            $defaultAgent .= ' curl/' . \curl_version()['version'];
-        }
-        $defaultAgent .= ' PHP/' . PHP_VERSION;
-        return $defaultAgent;
     }
 
     /**

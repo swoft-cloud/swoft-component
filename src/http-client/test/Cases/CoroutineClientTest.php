@@ -1,6 +1,15 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
-namespace SwoftTest\HttpClient;
+namespace SwoftTest\HttpClient\Cases;
 
 use Swoft\Helper\JsonHelper;
 use Swoft\Http\Message\Testing\Base\Response;
@@ -8,7 +17,6 @@ use Swoft\HttpClient\Client;
 
 class CoroutineClientTest extends AbstractTestCase
 {
-
     /**
      * @test
      */
@@ -47,8 +55,7 @@ class CoroutineClientTest extends AbstractTestCase
             $response->assertSuccessful();
             $this->assertJson($response->getBody()->getContents());
             $body = json_decode($response->getBody()->getContents(), true);
-            $this->assertEquals('a=1', $body['uri']['query']);
-
+            $this->assertSame('a=1', $body['uri']['query']);
         });
     }
 
@@ -91,7 +98,6 @@ class CoroutineClientTest extends AbstractTestCase
                     'method' => $method,
                     'body' => $body,
                 ]);
-
         });
     }
 
@@ -140,7 +146,6 @@ class CoroutineClientTest extends AbstractTestCase
                     'method' => $method,
                     'body' => http_build_query($body),
                 ]);
-
         });
     }
 
@@ -189,7 +194,6 @@ class CoroutineClientTest extends AbstractTestCase
                     'method' => $method,
                     'body' => json_encode($body),
                 ]);
-
         });
     }
 
@@ -238,7 +242,6 @@ class CoroutineClientTest extends AbstractTestCase
                     'method' => $method,
                     'body' => json_encode($body),
                 ]);
-
         });
     }
 
@@ -287,7 +290,6 @@ class CoroutineClientTest extends AbstractTestCase
                     'method' => $method,
                     'body' => json_encode($body),
                 ]);
-
         });
     }
 
@@ -316,7 +318,6 @@ class CoroutineClientTest extends AbstractTestCase
             $response1->assertSuccessful()->assertSee('Swoft 官网');
             $response2->assertSuccessful()->assertSee('Swoft 官网');
             $response3->assertSuccessful()->assertSee('Swoft 官网');
-
         });
     }
 
@@ -329,8 +330,7 @@ class CoroutineClientTest extends AbstractTestCase
             $client = new Client();
             $client->setAdapter('coroutine');
             $expected = sprintf('Swoft/%s PHP/%s', SWOFT_VERSION, PHP_VERSION);
-            $this->assertEquals($expected, $client->getDefaultUserAgent());
-
+            $this->assertSame($expected, $client->getDefaultUserAgent());
         });
     }
 
@@ -347,7 +347,7 @@ class CoroutineClientTest extends AbstractTestCase
             ]);
 
             $res = $client->get('/info')->getResult();
-            $this->assertEquals(['message' => 'Route not found for /info'], JsonHelper::decode($res, true));
+            $this->assertSame(['message' => 'Route not found for /info'], JsonHelper::decode($res, true));
 
             $client = new Client([
                 'base_uri' => 'http://echo.swoft.org?id=xxx',
@@ -356,7 +356,7 @@ class CoroutineClientTest extends AbstractTestCase
 
             $res = $client->get('/?id2=yyy&id3=zzz')->getResult();
             $res = JsonHelper::decode($res, true);
-            $this->assertEquals('id2=yyy&id3=zzz', $res['uri']['query']);
+            $this->assertSame('id2=yyy&id3=zzz', $res['uri']['query']);
         });
     }
 
@@ -372,7 +372,7 @@ class CoroutineClientTest extends AbstractTestCase
             ]);
 
             $res = $client->get('0')->getResult();
-            $this->assertEquals(['message' => 'Route not found for /0'], JsonHelper::decode($res, true));
+            $this->assertSame(['message' => 'Route not found for /0'], JsonHelper::decode($res, true));
 
             $client = new Client([
                 'base_uri' => 'http://echo.swoft.org',
@@ -381,13 +381,13 @@ class CoroutineClientTest extends AbstractTestCase
 
             $res = $client->get(0)->getResult();
             $res = JsonHelper::decode($res, true);
-            $this->assertEquals('/', $res['uri']['path']);
+            $this->assertSame('/', $res['uri']['path']);
 
             $res = $client->get(' ')->getResult();
-            $this->assertEquals(['message' => 'Route not found for / '], JsonHelper::decode($res, true));
+            $this->assertSame(['message' => 'Route not found for / '], JsonHelper::decode($res, true));
 
             $res = $client->get(123)->getResult();
-            $this->assertEquals(['message' => 'Route not found for /123'], JsonHelper::decode($res, true));
+            $this->assertSame(['message' => 'Route not found for /123'], JsonHelper::decode($res, true));
         });
     }
 }

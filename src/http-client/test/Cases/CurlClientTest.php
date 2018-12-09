@@ -1,15 +1,23 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
-namespace SwoftTest\HttpClient;
+namespace SwoftTest\HttpClient\Cases;
 
-use Swoft\Http\Message\Testing\Base\Response;
 use Swoft\Helper\JsonHelper;
+use Swoft\Http\Message\Testing\Base\Response;
 use Swoft\HttpClient\Client;
 use Swoft\HttpClient\Exception\RuntimeException;
 
 class CurlClientTest extends AbstractTestCase
 {
-
     /**
      * @test
      */
@@ -49,7 +57,7 @@ class CurlClientTest extends AbstractTestCase
         $response->assertSuccessful();
         $this->assertJson($response->getBody()->getContents());
         $body = json_decode($response->getBody()->getContents(), true);
-        $this->assertEquals('a=1', $body['uri']['query']);
+        $this->assertSame('a=1', $body['uri']['query']);
     }
 
     /**
@@ -276,7 +284,7 @@ class CurlClientTest extends AbstractTestCase
         $client = new Client();
         $client->setAdapter('curl');
         $expected = sprintf('Swoft/%s curl/%s PHP/%s', SWOFT_VERSION, \curl_version()['version'], PHP_VERSION);
-        $this->assertEquals($expected, $client->getDefaultUserAgent());
+        $this->assertSame($expected, $client->getDefaultUserAgent());
     }
 
     /**
@@ -312,7 +320,7 @@ class CurlClientTest extends AbstractTestCase
         ]);
 
         $res = $client->get('/info')->getResult();
-        $this->assertEquals(['message' => 'Route not found for /info'], JsonHelper::decode($res, true));
+        $this->assertSame(['message' => 'Route not found for /info'], JsonHelper::decode($res, true));
 
         $client = new Client([
             'base_uri' => 'http://echo.swoft.org?id=xxx',
@@ -320,7 +328,7 @@ class CurlClientTest extends AbstractTestCase
 
         $res = $client->get('/?id2=yyy&id3=zzz')->getResult();
         $res = JsonHelper::decode($res, true);
-        $this->assertEquals('id2=yyy&id3=zzz', $res['uri']['query']);
+        $this->assertSame('id2=yyy&id3=zzz', $res['uri']['query']);
     }
 
     /**
@@ -333,7 +341,7 @@ class CurlClientTest extends AbstractTestCase
         ]);
 
         $res = $client->get('0')->getResult();
-        $this->assertEquals(['message' => 'Route not found for /0'], JsonHelper::decode($res, true));
+        $this->assertSame(['message' => 'Route not found for /0'], JsonHelper::decode($res, true));
 
         $client = new Client([
             'base_uri' => 'http://echo.swoft.org',
@@ -341,12 +349,12 @@ class CurlClientTest extends AbstractTestCase
 
         $res = $client->get(0)->getResult();
         $res = JsonHelper::decode($res, true);
-        $this->assertEquals('/', $res['uri']['path']);
+        $this->assertSame('/', $res['uri']['path']);
 
         $res = $client->get(' ')->getResult();
-        $this->assertEquals(['message' => 'Route not found for / '], JsonHelper::decode($res, true));
+        $this->assertSame(['message' => 'Route not found for / '], JsonHelper::decode($res, true));
 
         $res = $client->get(123)->getResult();
-        $this->assertEquals(['message' => 'Route not found for /123'], JsonHelper::decode($res, true));
+        $this->assertSame(['message' => 'Route not found for /123'], JsonHelper::decode($res, true));
     }
 }
