@@ -92,7 +92,7 @@ class BugTest extends AbstractMysqlCase
     public function testGetNotExistField(int $uid)
     {
         try {
-            User::findOne(['id' => $uid], ['fields' => ['NotExistField']]);
+            User::findOne(['id' => $uid], ['fields' => ['NotExistField']])->getResult();
         } catch (\Throwable $ex) {
             if (App::isCoContext()) {
                 $this->assertTrue($ex instanceof MysqlException);
