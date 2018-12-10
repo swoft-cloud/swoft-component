@@ -31,15 +31,13 @@ abstract class AbstractTestCase extends TestCase
 
     public function keysProvider()
     {
-        $key  = uniqid();
+        $key = uniqid();
         $key2 = uniqid();
 
         $this->redis->set($key, uniqid());
         $this->redis->set($key2, uniqid());
 
-        return [
-            [[$key, $key2]],
-        ];
+        return [$key, $key2];
     }
 
     /**
@@ -51,7 +49,7 @@ abstract class AbstractTestCase extends TestCase
 
         /* @var \Swoft\Redis\Pool\Config\RedisPoolConfig $redisConfig */
         $redisConfig = \bean(RedisPoolConfig::class);
-        $prefix      = $redisConfig->getPrefix();
+        $prefix = $redisConfig->getPrefix();
         foreach ($result as $key) {
             $this->assertStringStartsWith($prefix, $key);
         }

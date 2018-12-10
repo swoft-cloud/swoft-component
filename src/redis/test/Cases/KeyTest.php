@@ -17,12 +17,11 @@ use Swoft\Redis\Pool\Config\RedisPoolConfig;
 class KeyTest extends AbstractTestCase
 {
     /**
-     * @dataProvider  keysProvider
-     *
      * @param array $keys
      */
-    public function testDelete(array $keys)
+    public function testDelete()
     {
+        $keys = $this->keysProvider();
         $result = $this->redis->deleteMultiple($keys);
         $this->assertTrue($result);
 
@@ -44,12 +43,12 @@ class KeyTest extends AbstractTestCase
     }
 
     /**
-     * @dataProvider keysProvider
-     *
      * @param array $keys
      */
-    public function testHas(array $keys)
+    public function testHas()
     {
+        $keys = $this->keysProvider();
+
         foreach ($keys as $key) {
             $result = $this->redis->has($key);
             $this->assertTrue($result);
