@@ -92,7 +92,7 @@ class Translator
         $realKey = $this->getRealKey($key, $locale);
 
         $message = ArrayHelper::get($this->messages, $realKey);
-        
+
         // not exist, return key
         if (!\is_string($message)) {
             return $key;
@@ -125,7 +125,7 @@ class Translator
     {
         return $this->messages;
     }
-   
+
     /**
      * get languages
      * @return array
@@ -146,10 +146,11 @@ class Translator
             $iterator = new \RecursiveDirectoryIterator($sourcePath);
             $files = new \RecursiveIteratorIterator($iterator);
 
+            /** @var \SplFileInfo $file */
             foreach ($files as $file) {
                 // Only load php file
                 // TODO add .mo .po support
-                if (pathinfo($file, PATHINFO_EXTENSION) !== 'php') {
+                if (pathinfo((string)$file, PATHINFO_EXTENSION) !== 'php') {
                     continue;
                 }
 
@@ -176,7 +177,7 @@ class Translator
         if (!$locale) {
             $locale = $this->defaultLanguage;
         }
-        
+
         if (\strpos($key, '.') === false) {
             $key = implode([$this->defaultCategory, $key], '.');
         }
@@ -195,7 +196,7 @@ class Translator
     {
         $params = \array_values($params);
         \array_unshift($params, $message);
-        
+
         return \sprintf(...$params);
     }
 }
