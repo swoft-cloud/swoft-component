@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
+
 namespace Swoft\I18n;
 
 use Swoft\Bean\Annotation\Bean;
@@ -7,7 +16,7 @@ use Swoft\Bean\Annotation\Value;
 use Swoft\Helper\ArrayHelper;
 
 /**
- * @Bean()
+ * @Bean
  */
 class Translator
 {
@@ -70,36 +79,6 @@ class Translator
     }
 
     /**
-     * @param string $sourcePath
-     * @return void
-     */
-    protected function loadLanguages(string $sourcePath)
-    {
-        if ($this->loaded === false) {
-            $languages = [];
-            $iterator = new \RecursiveDirectoryIterator($sourcePath);
-            $files = new \RecursiveIteratorIterator($iterator);
-
-            foreach ($files as $file) {
-                // Only load php file
-                // TODO add .mo .po support
-                if (pathinfo($file, PATHINFO_EXTENSION) !== 'php') {
-                    continue;
-                }
-
-                $messages = str_replace([$sourcePath, '.php'], '', $file);
-                list($language, $category) = explode('/', $messages);
-
-                $languages[$language] = 1;
-                $this->messages[$language][$category] = require $file;
-            }
-
-            $this->loaded = true;
-            $this->languages = \array_keys($languages);
-        }
-    }
-
-    /**
      * Translate
      *
      * @param string $key "category.key" or "locale.category.key"
@@ -113,7 +92,7 @@ class Translator
         $realKey = $this->getRealKey($key, $locale);
 
         $message = ArrayHelper::get($this->messages, $realKey);
-        
+
         // not exist, return key
         if (!\is_string($message)) {
             return $key;
@@ -146,7 +125,7 @@ class Translator
     {
         return $this->messages;
     }
-   
+
     /**
      * get languages
      * @return array
@@ -154,6 +133,37 @@ class Translator
     public function getLanguages(): array
     {
         return $this->languages;
+    }
+
+    /**
+     * @param string $sourcePath
+     * @return void
+     */
+    protected function loadLanguages(string $sourcePath)
+    {
+        if ($this->loaded === false) {
+            $languages = [];
+            $iterator = new \RecursiveDirectoryIterator($sourcePath);
+            $files = new \RecursiveIteratorIterator($iterator);
+
+            /** @var \SplFileInfo $file */
+            foreach ($files as $file) {
+                // Only load php file
+                // TODO add .mo .po support
+                if (pathinfo((string)$file, PATHINFO_EXTENSION) !== 'php') {
+                    continue;
+                }
+
+                $messages = str_replace([$sourcePath, '.php'], '', $file);
+                list($language, $category) = explode('/', $messages);
+
+                $languages[$language] = 1;
+                $this->messages[$language][$category] = require $file;
+            }
+
+            $this->loaded = true;
+            $this->languages = \array_keys($languages);
+        }
     }
 
     /**
@@ -167,7 +177,7 @@ class Translator
         if (!$locale) {
             $locale = $this->defaultLanguage;
         }
-        
+
         if (\strpos($key, '.') === false) {
             $key = implode([$this->defaultCategory, $key], '.');
         }
@@ -186,7 +196,7 @@ class Translator
     {
         $params = \array_values($params);
         \array_unshift($params, $message);
-        
+
         return \sprintf(...$params);
     }
 }

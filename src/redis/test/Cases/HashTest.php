@@ -1,6 +1,13 @@
 <?php
-
-namespace SwoftTest\Redis;
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
+namespace SwoftTest\Redis\Cases;
 
 /**
  * HashTest
@@ -28,7 +35,7 @@ class HashTest extends AbstractTestCase
         $this->assertEquals($data, $values);
 
         $this->redis->set($key, 'xxxxx');
-        $result = $this->redis->hMGet($key,['key']);
+        $result = $this->redis->hMGet($key, ['key']);
         $this->assertFalse($result);
 
         $this->redis->delete($key);
@@ -38,13 +45,6 @@ class HashTest extends AbstractTestCase
         $this->redis->sAdd($key, 'xxxxx');
         $result = $this->redis->hMGet($key, ['key']);
         $this->assertFalse($result);
-    }
-
-    public function testHmsetAndHmgetByCo()
-    {
-        go(function () {
-            $this->testHmsetAndHmget();
-        });
     }
 
     public function testHGetAll()
@@ -69,13 +69,6 @@ class HashTest extends AbstractTestCase
         $this->assertFalse($result);
     }
 
-    public function testHGetAllByCo()
-    {
-        go(function () {
-            $this->testHGetAll();
-        });
-    }
-
     public function testHIncrBy()
     {
         $key = uniqid();
@@ -89,13 +82,6 @@ class HashTest extends AbstractTestCase
         $this->assertEquals(4, $result);
     }
 
-    public function testHIncrByCo()
-    {
-        go(function () {
-            $this->testHIncrBy();
-        });
-    }
-
     public function testHSetNx()
     {
         $key = uniqid();
@@ -106,13 +92,6 @@ class HashTest extends AbstractTestCase
 
         $result = $redis->hSetNx($key, 'one', 1);
         $this->assertFalse($result);
-    }
-
-    public function testHSetNxByCo()
-    {
-        go(function () {
-            $this->testHSetNx();
-        });
     }
 
     public function testHDel()
@@ -133,13 +112,6 @@ class HashTest extends AbstractTestCase
         $this->assertEquals(['three' => 3], $result);
     }
 
-    public function testHDelByCo()
-    {
-        go(function () {
-            $this->testHDel();
-        });
-    }
-
     public function testHLen()
     {
         $key = uniqid();
@@ -156,13 +128,6 @@ class HashTest extends AbstractTestCase
         $this->assertEquals(3, $result);
     }
 
-    public function testHLenByCo()
-    {
-        go(function () {
-            $this->testHLen();
-        });
-    }
-
     public function testHExists()
     {
         $key = uniqid();
@@ -175,13 +140,6 @@ class HashTest extends AbstractTestCase
         $this->assertTrue($result);
         $result = $redis->hExists($key, 'two');
         $this->assertFalse($result);
-    }
-
-    public function testHExistsByCo()
-    {
-        go(function () {
-            $this->testHExists();
-        });
     }
 
     public function testHValsAndHKeys()
@@ -197,12 +155,5 @@ class HashTest extends AbstractTestCase
 
         $result = $redis->hVals($key);
         $this->assertEquals([1, 'hello', 'world'], $result);
-    }
-
-    public function testHValsAndHKeysByCo()
-    {
-        go(function () {
-            $this->testHValsAndHKeys();
-        });
     }
 }

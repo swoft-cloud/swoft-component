@@ -12,9 +12,9 @@ namespace Swoft\Redis;
 
 use Swoft\App;
 use Swoft\Redis\Exception\RedisException;
+use Swoft\Redis\Pool\Config\RedisPoolConfig;
 use Swoft\Redis\Profile\RedisCommandProvider;
 use Swoole\Coroutine\Redis as CoRedis;
-use Swoft\Redis\Pool\Config\RedisPoolConfig;
 
 /**
  * Redis connection
@@ -23,6 +23,25 @@ use Swoft\Redis\Pool\Config\RedisPoolConfig;
  */
 class RedisConnection extends AbstractRedisConnection
 {
+    /**
+     * @param string $method
+     * @param array  $arguments
+     *
+     * @return mixed
+     * @throws RedisException
+     */
+    public function __call($method, $arguments)
+    {
+        /* @var RedisCommandProvider $commandProvider */
+        $commandProvider = App::getBean(RedisCommandProvider::class);
+        $commandProvider->setPrefix($this->pool->getPoolConfig()->getPrefix());
+        $command         = $commandProvider->createCommand($method, $arguments);
+        $arguments       = $command->getArguments();
+        $method          = $command->getId();
+
+        $data = parent::__call($method, $arguments);
+        return $command->parseResponse($data);
+    }
 
     /**
      * Create connection
@@ -61,27 +80,6 @@ class RedisConnection extends AbstractRedisConnection
         $this->recv = false;
         $this->connection->setDefer($defer);
     }
-
-    /**
-     * @param string $method
-     * @param array  $arguments
-     *
-     * @return mixed
-     * @throws RedisException
-     */
-    public function __call($method, $arguments)
-    {
-        /* @var RedisCommandProvider $commandProvider */
-        $commandProvider = App::getBean(RedisCommandProvider::class);
-        $commandProvider->setPrefix($this->pool->getPoolConfig()->getPrefix());
-        $command         = $commandProvider->createCommand($method, $arguments);
-        $arguments       = $command->getArguments();
-        $method          = $command->getId();
-
-        $data = parent::__call($method, $arguments);
-        return $command->parseResponse($data);
-    }
-
 
     /**
      * @return CoRedis

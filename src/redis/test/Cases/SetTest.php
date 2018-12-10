@@ -1,6 +1,13 @@
 <?php
-
-namespace SwoftTest\Redis;
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
+namespace SwoftTest\Redis\Cases;
 
 /**
  * SetTest
@@ -24,16 +31,9 @@ class SetTest extends AbstractTestCase
         sort($members);
         sort($values);
 
-        $this->assertEquals($members, $values);
+        $this->assertSame($members, $values);
 
         $this->assertPrefix($key);
-    }
-
-    public function testSaddAndSMembersByCo()
-    {
-        go(function () {
-            $this->testSaddAndSMembers();
-        });
     }
 
     public function testSremoveAndScontainsAndScard()
@@ -49,22 +49,14 @@ class SetTest extends AbstractTestCase
         $this->assertTrue($result);
 
         $result = $this->redis->sCard($key);
-        $this->assertEquals(2, $result);
+        $this->assertSame(2, $result);
 
         $result = $this->redis->sRem($key, $value1);
-        $this->assertEquals(1, $result);
+        $this->assertSame(1, $result);
 
         $members = $this->redis->sMembers($key);
         $this->assertCount(1, $members);
 
         $this->assertPrefix($key);
     }
-
-    public function testSremoveByCo()
-    {
-        go(function () {
-            $this->testSremoveAndScontainsAndScard();
-        });
-    }
-
 }

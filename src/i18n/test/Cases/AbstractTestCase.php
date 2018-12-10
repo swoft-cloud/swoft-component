@@ -1,12 +1,20 @@
 <?php
 
-namespace SwoftTest\I18n;
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
+
+namespace SwoftTest\I18n\Cases;
 
 use PHPUnit\Framework\TestCase;
 
 abstract class AbstractTestCase extends TestCase
 {
-
     /**
      * @param callable $func
      * @param          $expectedExceptionClass
@@ -16,7 +24,7 @@ abstract class AbstractTestCase extends TestCase
         try {
             value($func);
         } catch (\Exception $e) {
-            $this->assertEquals($expectedExceptionClass, \get_class($e));
+            $this->assertSame($expectedExceptionClass, \get_class($e));
         }
     }
 
@@ -29,8 +37,7 @@ abstract class AbstractTestCase extends TestCase
         try {
             value($func);
         } catch (\Throwable $t) {
-            $this->assertEquals($expectedErrorClass, \get_class($t));
+            $this->assertSame($expectedErrorClass, \get_class($t));
         }
     }
-
 }

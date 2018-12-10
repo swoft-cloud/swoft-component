@@ -1,6 +1,13 @@
 <?php
-
-namespace SwoftTest\Redis;
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
+namespace SwoftTest\Redis\Cases;
 
 use PHPUnit\Framework\TestCase;
 use Swoft\Redis\Pool\Config\RedisPoolConfig;
@@ -12,7 +19,7 @@ use Swoft\Redis\Redis;
 abstract class AbstractTestCase extends TestCase
 {
     /**
-     * @var \Swoft\Redis\Redis
+     * @var \Redis
      */
     public $redis;
 
@@ -22,29 +29,15 @@ abstract class AbstractTestCase extends TestCase
         parent::__construct($name, $data, $dataName);
     }
 
-
-    /**
-     * Tear down
-     */
-    protected function tearDown()
-    {
-        parent::tearDown();
-        swoole_timer_after(6 * 1000, function () {
-            swoole_event_exit();
-        });
-    }
-
     public function keysProvider()
     {
-        $key  = uniqid();
+        $key = uniqid();
         $key2 = uniqid();
 
         $this->redis->set($key, uniqid());
         $this->redis->set($key2, uniqid());
 
-        return [
-            [[$key, $key2]],
-        ];
+        return [$key, $key2];
     }
 
     /**
@@ -56,10 +49,9 @@ abstract class AbstractTestCase extends TestCase
 
         /* @var \Swoft\Redis\Pool\Config\RedisPoolConfig $redisConfig */
         $redisConfig = \bean(RedisPoolConfig::class);
-        $prefix      = $redisConfig->getPrefix();
+        $prefix = $redisConfig->getPrefix();
         foreach ($result as $key) {
             $this->assertStringStartsWith($prefix, $key);
         }
     }
-
 }

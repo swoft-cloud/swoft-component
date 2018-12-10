@@ -1,20 +1,27 @@
 <?php
-
-namespace SwoftTest\Redis\Pool;
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
+namespace SwoftTest\Redis\Testing\Pool;
 
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\Value;
 use Swoft\Pool\PoolProperties;
 
 /**
- * the redis properties
- * @Bean()
+ * the redis env config
+ * @Bean
  */
-class RedisPptPoolConfig extends PoolProperties
+class RedisEnvPoolConfig extends PoolProperties
 {
     /**
      * the name of pool
-     * @Value(name="${config.cache.redis.name}")
+     * @Value(env="${REDIS_NAME}")
      *
      * @var string
      */
@@ -22,7 +29,7 @@ class RedisPptPoolConfig extends PoolProperties
 
     /**
      * the maximum number of idle connections
-     * @Value(name="${config.cache.redis.maxIdel}")
+     * @Value(env="${REDIS_MAX_IDEL}")
      *
      * @var int
      */
@@ -30,7 +37,7 @@ class RedisPptPoolConfig extends PoolProperties
 
     /**
      * the maximum number of active connections
-     * @Value(name="${config.cache.redis.maxActive}")
+     * @Value(env="${REDIS_MAX_ACTIVE}")
      *
      * @var int
      */
@@ -38,7 +45,7 @@ class RedisPptPoolConfig extends PoolProperties
 
     /**
      * the maximum number of wait connections
-     * @Value(name="${config.cache.redis.maxWait}")
+     * @Value(env="${REDIS_MAX_WAIT}")
      *
      * @var int
      */
@@ -46,7 +53,7 @@ class RedisPptPoolConfig extends PoolProperties
 
     /**
      * the time of connect timeout
-     * @Value(name="${config.cache.redis.timeout}")
+     * @Value(env="${REDIS_TIMEOUT}")
      *
      * @var int
      */
@@ -60,7 +67,7 @@ class RedisPptPoolConfig extends PoolProperties
      *  '127.0.0.1:88'
      * ]
      * </pre>
-     * @Value(name="${config.cache.redis.uri}")
+     * @Value(env="${REDIS_URI}")
      *
      * @var array
      */
@@ -68,7 +75,7 @@ class RedisPptPoolConfig extends PoolProperties
 
     /**
      * whether to user provider(consul/etcd/zookeeper)
-     * @Value(name="${config.cache.redis.useProvider}")
+     * @Value(env="${REDIS_USE_PROVIDER}")
      *
      * @var bool
      */
@@ -76,7 +83,7 @@ class RedisPptPoolConfig extends PoolProperties
 
     /**
      * the default balancer is random balancer
-     * @Value(name="${config.cache.redis.balancer}")
+     * @Value(env="${REDIS_BALANCER}")
      *
      * @var string
      */
@@ -84,7 +91,7 @@ class RedisPptPoolConfig extends PoolProperties
 
     /**
      * the default provider is consul provider
-     * @Value(name="${config.cache.redis.provider}")
+     * @Value(env="${REDIS_PROVIDER}")
      *
      * @var string
      */

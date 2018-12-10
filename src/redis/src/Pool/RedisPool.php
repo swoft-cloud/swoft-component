@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Redis\Pool;
 
 use Swoft\App;
@@ -7,21 +14,21 @@ use Swoft\Bean\Annotation\Inject;
 use Swoft\Bean\Annotation\Pool;
 use Swoft\Pool\ConnectionInterface;
 use Swoft\Pool\ConnectionPool;
+use Swoft\Redis\Pool\Config\RedisPoolConfig;
 use Swoft\Redis\RedisConnection;
 use Swoft\Redis\SyncRedisConnection;
-use Swoft\Redis\Pool\Config\RedisPoolConfig;
 
 /**
  * Redis pool
  *
- * @Pool()
+ * @Pool
  */
 class RedisPool extends ConnectionPool
 {
     /**
      * Config
      *
-     * @Inject()
+     * @Inject
      * @var RedisPoolConfig
      */
     protected $poolConfig;

@@ -1,6 +1,13 @@
 <?php
-
-namespace SwoftTest\Redis;
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
+namespace SwoftTest\Redis\Cases;
 
 use Swoft\Redis\Pool\Config\RedisPoolConfig;
 
@@ -9,14 +16,12 @@ use Swoft\Redis\Pool\Config\RedisPoolConfig;
  */
 class KeyTest extends AbstractTestCase
 {
-
     /**
-     * @dataProvider  keysProvider
-     *
      * @param array $keys
      */
-    public function testDelete(array $keys)
+    public function testDelete()
     {
+        $keys = $this->keysProvider();
         $result = $this->redis->deleteMultiple($keys);
         $this->assertTrue($result);
 
@@ -26,44 +31,24 @@ class KeyTest extends AbstractTestCase
         }
     }
 
-    /**
-     * @dataProvider  keysProvider
-     *
-     * @param array $keys
-     */
-    public function testDeleteByCo(array $keys)
-    {
-        go(function () use ($keys) {
-            $this->testDelete($keys);
-        });
-    }
-
     public function testKeys()
     {
         $result = $this->redis->getKeys('*');
 
-        /* @var \Swoft\Redis\Pool\Config\RedisPoolConfig $redisConfig */
         $redisConfig = \bean(RedisPoolConfig::class);
-        $prefix      = $redisConfig->getPrefix();
+        $prefix = $redisConfig->getPrefix();
         foreach ($result as $key) {
             $this->assertStringStartsWith($prefix, $key);
         }
     }
 
-    public function testKeysByCo()
-    {
-        go(function () {
-            $this->testKeys();
-        });
-    }
-
     /**
-     * @dataProvider keysProvider
-     *
      * @param array $keys
      */
-    public function testHas(array $keys)
+    public function testHas()
     {
+        $keys = $this->keysProvider();
+
         foreach ($keys as $key) {
             $result = $this->redis->has($key);
             $this->assertTrue($result);
@@ -82,13 +67,6 @@ class KeyTest extends AbstractTestCase
     {
         $result = $this->redis->randomKey();
         $key = str_replace('swoft-test-redis_', '', $result);
-        $this->assertEquals(1, $this->redis->exists($key));
-    }
-
-    public function testRandomKeyByCo()
-    {
-        go(function () {
-            $this->testRandomKey();
-        });
+        $this->assertTrue($this->redis->exists($key) == true);
     }
 }

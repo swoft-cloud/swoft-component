@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Redis\Profile;
 
 use Swoft\Redis\Exception\RedisException;
@@ -9,16 +16,16 @@ use Swoft\Redis\Operator\Processor\PrefixProcessor;
 abstract class RedisProfile implements ProfileInterface
 {
     /**
+     * @var PrefixProcessor
+     */
+    protected $processor;
+
+    /**
      * SupportedCommands
      *
      * @var array
      */
     private $commands;
-
-    /**
-     * @var PrefixProcessor
-     */
-    protected $processor;
 
     /**
      * Setter prefix

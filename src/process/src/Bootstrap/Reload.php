@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
+
 namespace Swoft\Process\Bootstrap;
 
 use Swoft\App;
@@ -9,7 +18,7 @@ use Swoft\Helper\FileHelper;
 /**
  * 文件更新自动监听
  *
- * @Bean()
+ * @Bean
  */
 class Reload
 {
@@ -42,7 +51,6 @@ class Reload
         $this->watchDir = App::getAlias('@app');
         $this->md5File = FileHelper::md5File($this->watchDir);
     }
-
 
     /**
      * 启动监听

@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Redis\Operator\ZSets;
 
 use Swoft\Redis\Operator\Command;
@@ -17,6 +24,24 @@ class ZSetRange extends Command
     /**
      * {@inheritdoc}
      */
+    public function parseResponse($data)
+    {
+        if ($this->withScores()) {
+            $result = [];
+
+            for ($i = 0; $i < count($data); ++$i) {
+                $result[$data[$i]] = $data[++$i];
+            }
+
+            return $result;
+        }
+
+        return $data;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function filterArguments(array $arguments)
     {
         if (count($arguments) === 4) {
@@ -24,7 +49,7 @@ class ZSetRange extends Command
 
             if ($lastType !== 'array' && $arguments[3] != false) {
                 // Used for compatibility with older versions
-                $arguments[3] = array('WITHSCORES' => true);
+                $arguments[3] = ['WITHSCORES' => true];
                 $lastType = 'array';
             }
 
@@ -48,7 +73,7 @@ class ZSetRange extends Command
     protected function prepareOptions($options)
     {
         $opts = array_change_key_case($options, CASE_UPPER);
-        $finalizedOpts = array();
+        $finalizedOpts = [];
 
         if (!empty($opts['WITHSCORES'])) {
             $finalizedOpts[] = 'WITHSCORES';
@@ -71,23 +96,5 @@ class ZSetRange extends Command
         }
 
         return strtoupper($arguments[3]) === 'WITHSCORES';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function parseResponse($data)
-    {
-        if ($this->withScores()) {
-            $result = array();
-
-            for ($i = 0; $i < count($data); ++$i) {
-                $result[$data[$i]] = $data[++$i];
-            }
-
-            return $result;
-        }
-
-        return $data;
     }
 }

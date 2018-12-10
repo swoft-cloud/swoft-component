@@ -1,8 +1,16 @@
 <?php
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace SwoftTest\Redis\Testing\Pool\Config;
 
-use Swoft\Redis\Pool\Config\RedisPoolConfig;
 use Swoft\Bean\Annotation\Bean;
+use Swoft\Redis\Pool\Config\RedisPoolConfig;
 
 /**
  * Class TimeoutPoolConfig
