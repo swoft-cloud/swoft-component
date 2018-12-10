@@ -26,10 +26,10 @@ class PoolTest extends AbstractTestCase
         /* @var \Swoft\Pool\PoolProperties $pConfig */
         $pConfig = App::getBean(RedisPptPoolConfig::class);
         $this->assertSame($pConfig->getName(), 'redis');
-        // $this->assertEquals($pConfig->getUri(), [
-        //     'tcp://127.0.0.1:6379',
-        //     'tcp://127.0.0.1:6379',
-        // ]);
+        $this->assertEquals($pConfig->getUri(), [
+            'tcp://127.0.0.1:6379',
+            'tcp://127.0.0.1:6379',
+        ]);
         $this->assertSame($pConfig->getMaxActive(), 10);
         $this->assertSame($pConfig->getMaxWait(), 20);
         $this->assertSame($pConfig->getMaxWaitTime(), 3);
@@ -44,10 +44,10 @@ class PoolTest extends AbstractTestCase
         $this->assertSame($pConfig->getName(), 'redis');
         $this->assertSame($pConfig->getProvider(), 'consul');
         $this->assertSame($pConfig->getTimeout(), 3.0);
-        // $this->assertEquals($pConfig->getUri(), [
-        //     'tcp://127.0.0.1:6379',
-        //     'tcp://127.0.0.1:6379',
-        // ]);
+        $this->assertEquals($pConfig->getUri(), [
+            'tcp://127.0.0.1:6379',
+            'tcp://127.0.0.1:6379',
+        ]);
         $this->assertSame($pConfig->getBalancer(), 'random');
         $this->assertSame($pConfig->getMaxActive(), 10);
         $this->assertSame($pConfig->getMaxWait(), 20);

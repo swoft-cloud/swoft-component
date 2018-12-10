@@ -26,7 +26,7 @@
             <directory suffix="Test.php">./src/i18n/test</directory>
             <directory suffix="Test.php">./src/memory/test</directory>
             <directory suffix="Test.php">./src/process/test</directory>
-            <!--<directory suffix="Test.php">./src/redis/test</directory>-->
+            <directory suffix="Test.php">./src/redis/test</directory>
             <!--<directory suffix="Test.php">./src/rpc/test</directory>-->
             <!--<directory suffix="Test.php">./src/rpc-client/test</directory>-->
             <!--<directory suffix="Test.php">./src/rpc-server/test</directory>-->
