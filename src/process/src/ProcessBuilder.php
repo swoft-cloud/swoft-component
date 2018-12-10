@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Process;
 
@@ -112,7 +121,7 @@ class ProcessBuilder
             $processObject = App::getBean($name);
             self::beforeProcess($name, $boot);
 
-            if($processObject->check()){
+            if ($processObject->check()) {
                 PhpHelper::call([$processObject, 'run'], [$process]);
             }
 
@@ -133,7 +142,7 @@ class ProcessBuilder
         $processObject = App::getBean($name);
         self::beforeProcess($name, $boot);
 
-        if($processObject->check()){
+        if ($processObject->check()) {
             PhpHelper::call([$processObject, 'run'], [$process]);
         }
 
@@ -182,8 +191,8 @@ class ProcessBuilder
         $hasWait = \method_exists($processObject, 'wait');
 
         if ($hasWait || $boot) {
-            Process::signal(SIGCHLD, function($sig) use ($name, $processObject, $hasWait) {
-                while($ret =  Process::wait(false)) {
+            Process::signal(SIGCHLD, function ($sig) use ($name, $processObject, $hasWait) {
+                while ($ret =  Process::wait(false)) {
                     if ($hasWait) {
                         $processObject->wait($ret);
                     }

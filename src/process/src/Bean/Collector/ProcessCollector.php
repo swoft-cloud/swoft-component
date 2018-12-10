@@ -1,9 +1,18 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Process\Bean\Collector;
 
-use Swoft\Process\Bean\Annotation\Process;
 use Swoft\Bean\CollectorInterface;
+use Swoft\Process\Bean\Annotation\Process;
 
 /**
  * The process collector
@@ -27,7 +36,6 @@ class ProcessCollector implements CollectorInterface
     public static function collect(string $className, $objectAnnotation = null, string $propertyName = '', string $methodName = '', $propertyValue = null)
     {
         if ($objectAnnotation instanceof Process) {
-
             $num       = $objectAnnotation->getNum();
             $name      = $objectAnnotation->getName();
             $boot      = $objectAnnotation->isBoot();

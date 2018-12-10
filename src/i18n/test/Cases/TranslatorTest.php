@@ -58,7 +58,11 @@ class TranslatorTest extends AbstractTestCase
                 ],
             ],
         ];
-        $this->assertEquals($expected, $messagesAfterLoaded);
+
+        $this->assertSame('English title', $messagesAfterLoaded['en']['default']['title']);
+        $this->assertSame('This is a message [%s] %d', $messagesAfterLoaded['en']['msg']['body']);
+        $this->assertSame('中文标题', $messagesAfterLoaded['zh-cn']['default']['title']);
+        $this->assertSame('这是一条消息 [%s] %d', $messagesAfterLoaded['zh-cn']['msg']['body']);
 
         // Translate
         $enTitle = $translator->translate('default.title', [], 'en');
