@@ -1,14 +1,23 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
-namespace SwoftTest\HttpClient;
+namespace SwoftTest\HttpClient\Cases;
 
+use Swoft\App;
 use Swoft\Helper\JsonHelper;
-use Swoft\HttpClient\Client;
 use Swoft\HttpClient\Adapter;
+use Swoft\HttpClient\Client;
 
 class ClientTest extends AbstractTestCase
 {
-
     /**
      * @test
      */
@@ -25,12 +34,9 @@ class ClientTest extends AbstractTestCase
         $json2 = JsonHelper::decode($request()->getResult(), true);
 
         // FIXME : Travis Ci中，调用多次时，出口IP不同
-        unset($json['headers']['X-Real-Ip']);
-        unset($json2['headers']['X-Real-Ip']);
-        unset($json['headers']['X-Forwarded-For']);
-        unset($json2['headers']['X-Forwarded-For']);
+        unset($json['headers']['X-Real-Ip'], $json2['headers']['X-Real-Ip'], $json['headers']['X-Forwarded-For'], $json2['headers']['X-Forwarded-For']);
 
-        $this->assertEquals($json, $json2);
+        $this->assertSame($json, $json2);
     }
 
     /**
@@ -38,20 +44,19 @@ class ClientTest extends AbstractTestCase
      */
     public function adapters()
     {
-        go(function () {
-            $client = new Client([
-                'adapter' => 'co'
-            ]);
-            $this->assertInstanceOf(Adapter\CoroutineAdapter::class, $client->getAdapter());
-            $client = new Client([
-                'adapter' => 'coroutine'
-            ]);
-            $this->assertInstanceOf(Adapter\CoroutineAdapter::class, $client->getAdapter());
-            $client = new Client([
-                'adapter' => 'swoole'
-            ]);
-            $this->assertInstanceOf(Adapter\CoroutineAdapter::class, $client->getAdapter());
-        });
+        $client = new Client([
+            'adapter' => 'co'
+        ]);
+        $this->assertInstanceOf(Adapter\CoroutineAdapter::class, $client->getAdapter());
+        $client = new Client([
+            'adapter' => 'coroutine'
+        ]);
+        $this->assertInstanceOf(Adapter\CoroutineAdapter::class, $client->getAdapter());
+        $client = new Client([
+            'adapter' => 'swoole'
+        ]);
+        $this->assertInstanceOf(Adapter\CoroutineAdapter::class, $client->getAdapter());
+
         $client = new Client([
             'adapter' => 'curl'
         ]);
@@ -60,6 +65,13 @@ class ClientTest extends AbstractTestCase
             'adapter' => 'php'
         ]);
         $this->assertInstanceOf(Adapter\CurlAdapter::class, $client->getAdapter());
+
+        $client = new Client();
+        if (App::isCoContext()) {
+            $this->assertInstanceOf(Adapter\CoroutineAdapter::class, $client->getAdapter());
+        } else {
+            $this->assertInstanceOf(Adapter\CurlAdapter::class, $client->getAdapter());
+        }
     }
 
     /**
@@ -82,5 +94,4 @@ class ClientTest extends AbstractTestCase
         $client = new Client();
         $client->setAdapter('notExistAdapter');
     }
-
 }

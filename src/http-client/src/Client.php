@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\HttpClient;
 
@@ -19,7 +28,6 @@ use Swoft\Http\Message\Uri\Uri;
  */
 class Client
 {
-
     /**
      * @var Adapter\AdapterInterface
      */
@@ -73,6 +81,23 @@ class Client
     }
 
     /**
+     * @param string $method
+     * @param array $args
+     * @return HttpResult
+     * @throws \InvalidArgumentException
+     */
+    public function __call($method, $args)
+    {
+        if (\count($args) < 1) {
+            throw new \InvalidArgumentException('Magic request methods require a URI and optional options array');
+        }
+
+        $uri = $args[0];
+        $options = $args[1] ?? [];
+        return $this->request($method, $uri, $options);
+    }
+
+    /**
      * Send a Http request
      *
      * @param string $method
@@ -100,20 +125,98 @@ class Client
     }
 
     /**
-     * @param string $method
-     * @param array $args
-     * @return HttpResult
+     * @return Adapter\AdapterInterface
      * @throws \InvalidArgumentException
      */
-    public function __call($method, $args)
+    public function getAdapter(): Adapter\AdapterInterface
     {
-        if (\count($args) < 1) {
-            throw new \InvalidArgumentException('Magic request methods require a URI and optional options array');
+        if (! $this->adapter instanceof Adapter\AdapterInterface) {
+            if (App::isCoContext()) {
+                $this->setAdapter(new Adapter\CoroutineAdapter());
+            } else {
+                $this->setAdapter(new Adapter\CurlAdapter());
+            }
+        }
+        return $this->adapter;
+    }
+
+    /**
+     * @param Adapter\AdapterInterface|string $adapter
+     * @return Client
+     * @throws \InvalidArgumentException
+     */
+    public function setAdapter($adapter): Client
+    {
+        if (\is_string($adapter)) {
+            $adapter = strtolower($adapter);
+            if (!empty($this->adapters[$adapter]) && class_exists($this->adapters[$adapter])) {
+                $adapterClass = $this->adapters[$adapter];
+                $adapterInstance = new $adapterClass();
+                if ($adapterInstance instanceof Adapter\AdapterInterface) {
+                    $adapter = $adapterInstance;
+                }
+            }
+        }
+        if (! $adapter instanceof Adapter\AdapterInterface) {
+            throw new \InvalidArgumentException('Invalid http client adapter');
+        }
+        $this->adapter = $adapter;
+        return $this;
+    }
+
+    /**
+     * Get the default User-Agent string
+     *
+     * @return string
+     * @throws \InvalidArgumentException
+     */
+    public function getDefaultUserAgent(): string
+    {
+        if (! $this->defaultUserAgent) {
+            $currentMethodName = __FUNCTION__;
+            $isAdapterUserAgent = method_exists($this->getAdapter(), $currentMethodName);
+            if ($isAdapterUserAgent) {
+                $this->defaultUserAgent = $this->getAdapter()->$currentMethodName();
+            } else {
+                $defaultAgent = 'Swoft/' . SWOFT_VERSION;
+                if (! Coroutine::isSupportCoroutine() && \extension_loaded('curl') && \function_exists('curl_version')) {
+                    $defaultAgent .= ' curl/' . \curl_version()['version'];
+                }
+                $defaultAgent .= ' PHP/' . PHP_VERSION;
+                $this->defaultUserAgent = $defaultAgent;
+            }
         }
 
-        $uri = $args[0];
-        $options = $args[1] ?? [];
-        return $this->request($method, $uri, $options);
+        return $this->defaultUserAgent;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAdapters(): array
+    {
+        return $this->adapters;
+    }
+
+    /**
+     * @param array $adapters
+     * @return $this
+     */
+    public function setAdapters(array $adapters): self
+    {
+        $this->adapters = $adapters;
+        return $this;
+    }
+
+    /**
+     * @param string $key
+     * @param string $class
+     * @return $this
+     */
+    public function addAdapter(string $key, string $class): self
+    {
+        $this->adapters[$key] = $class;
+        return $this;
     }
 
     /**
@@ -219,46 +322,6 @@ class Client
     }
 
     /**
-     * @return Adapter\AdapterInterface
-     * @throws \InvalidArgumentException
-     */
-    public function getAdapter(): Adapter\AdapterInterface
-    {
-        if (! $this->adapter instanceof Adapter\AdapterInterface) {
-            if (App::isCoContext()) {
-                $this->setAdapter(new Adapter\CoroutineAdapter());
-            } else {
-                $this->setAdapter(new Adapter\CurlAdapter());
-            }
-        }
-        return $this->adapter;
-    }
-
-    /**
-     * @param Adapter\AdapterInterface|string $adapter
-     * @return Client
-     * @throws \InvalidArgumentException
-     */
-    public function setAdapter($adapter): Client
-    {
-        if (\is_string($adapter)) {
-            $adapter = strtolower($adapter);
-            if (!empty($this->adapters[$adapter]) && class_exists($this->adapters[$adapter])) {
-                $adapterClass = $this->adapters[$adapter];
-                $adapterInstance = new $adapterClass();
-                if ($adapterInstance instanceof Adapter\AdapterInterface) {
-                    $adapter = $adapterInstance;
-                }
-            }
-        }
-        if (! $adapter instanceof Adapter\AdapterInterface) {
-            throw new \InvalidArgumentException('Invalid http client adapter');
-        }
-        $this->adapter = $adapter;
-        return $this;
-    }
-
-    /**
      * @param string|UriInterface $baseUri
      * @return UriInterface|Uri
      */
@@ -331,32 +394,6 @@ class Client
     }
 
     /**
-     * Get the default User-Agent string
-     *
-     * @return string
-     * @throws \InvalidArgumentException
-     */
-    public function getDefaultUserAgent(): string
-    {
-        if (! $this->defaultUserAgent) {
-            $currentMethodName = __FUNCTION__;
-            $isAdapterUserAgent = method_exists($this->getAdapter(), $currentMethodName);
-            if ($isAdapterUserAgent) {
-                $this->defaultUserAgent = $this->getAdapter()->$currentMethodName();
-            } else {
-                $defaultAgent = 'Swoft/' . SWOFT_VERSION;
-                if (! Coroutine::isSupportCoroutine() && \extension_loaded('curl') && \function_exists('curl_version')) {
-                    $defaultAgent .= ' curl/' . \curl_version()['version'];
-                }
-                $defaultAgent .= ' PHP/' . PHP_VERSION;
-                $this->defaultUserAgent = $defaultAgent;
-            }
-        }
-
-        return $this->defaultUserAgent;
-    }
-
-    /**
      * Set default User-Agent to Client.
      *
      * @important Notice that this method should always
@@ -381,34 +418,4 @@ class Client
             $this->configs['headers']['User-Agent'] = $this->getDefaultUserAgent();
         }
     }
-
-    /**
-     * @return array
-     */
-    public function getAdapters(): array
-    {
-        return $this->adapters;
-    }
-
-    /**
-     * @param array $adapters
-     * @return $this
-     */
-    public function setAdapters(array $adapters): self
-    {
-        $this->adapters = $adapters;
-        return $this;
-    }
-
-    /**
-     * @param string $key
-     * @param string $class
-     * @return $this
-     */
-    public function addAdapter(string $key, string $class): self
-    {
-        $this->adapters[$key] = $class;
-        return $this;
-    }
-
 }

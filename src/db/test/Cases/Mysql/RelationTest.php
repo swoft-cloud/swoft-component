@@ -14,7 +14,6 @@ use Swoft\Db\QueryBuilder;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\Count;
 use SwoftTest\Db\Testing\Entity\User;
-use function test_go as go;
 
 /**
  * RelationTest
@@ -36,17 +35,5 @@ class RelationTest extends AbstractMysqlCase
 
         $this->assertEquals($uid, $data['id']);
         $this->assertEquals($uid, $data2['userid']);
-    }
-
-    /**
-     * @dataProvider relationProider
-     *
-     * @param int $uid
-     */
-    public function testJoinByCo(int $uid)
-    {
-        go(function () use ($uid) {
-            $this->testJoin($uid);
-        });
     }
 }

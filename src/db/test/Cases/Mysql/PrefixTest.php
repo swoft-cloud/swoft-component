@@ -12,7 +12,6 @@ namespace SwoftTest\Db\Cases\Mysql;
 use Swoft\Db\Query;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\Prefix;
-use function test_go as go;
 
 /**
  * PrefixTest
@@ -47,17 +46,5 @@ class PrefixTest extends AbstractMysqlCase
 
         $list = Prefix::findAll()->getResult();
         $this->assertGreaterThanOrEqual(1, count($list));
-    }
-
-    /**
-     * @dataProvider prefixProvider
-     *
-     * @param int $id
-     */
-    public function testSaveByCo(int $id)
-    {
-        go(function () use ($id) {
-            $this->testSave($id);
-        });
     }
 }

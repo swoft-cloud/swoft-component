@@ -166,13 +166,6 @@ class PoolTest extends AbstractTestCase
         $connection3->release(true);
     }
 
-    public function testGetConnectionByCo()
-    {
-        go(function () {
-            $this->testGetConnection();
-        });
-    }
-
     public function testPoolConfigTimeout()
     {
         $pConfig = App::getBean(EnvPoolConfig::class);

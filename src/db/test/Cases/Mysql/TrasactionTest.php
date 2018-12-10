@@ -12,7 +12,6 @@ namespace SwoftTest\Db\Cases\Mysql;
 use Swoft\Db\Db;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\User;
-use function test_go as go;
 
 class TrasactionTest extends AbstractMysqlCase
 {
@@ -44,13 +43,6 @@ class TrasactionTest extends AbstractMysqlCase
         $this->assertEquals($id2, $fid2);
     }
 
-    public function testCommitByCo()
-    {
-        go(function () {
-            $this->testCommit();
-        });
-    }
-
     public function testRollback()
     {
         $data = [
@@ -77,12 +69,5 @@ class TrasactionTest extends AbstractMysqlCase
 
         $this->assertTrue(empty($fid));
         $this->assertTrue(empty($fid2));
-    }
-
-    public function testRollbackByCo()
-    {
-        go(function () {
-            $this->testRollback();
-        });
     }
 }

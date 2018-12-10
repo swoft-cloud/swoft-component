@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\HttpClient\Adapter;
 
@@ -52,8 +61,12 @@ class CoroutineAdapter implements AdapterInterface
 
         $path = $request->getUri()->getPath();
         $query = $request->getUri()->getQuery();
-        if ($path === '') $path = '/';
-        if ($query !== '') $path .= '?' . $query;
+        if ($path === '') {
+            $path = '/';
+        }
+        if ($query !== '') {
+            $path .= '?' . $query;
+        }
 
         $client->setDefer();
         $client->execute($path);
@@ -83,6 +96,18 @@ class CoroutineAdapter implements AdapterInterface
     }
 
     /**
+     * Get the adapter User-Agent string
+     *
+     * @return string
+     */
+    public function getDefaultUserAgent(): string
+    {
+        $defaultAgent = 'Swoft/' . SWOFT_VERSION;
+        $defaultAgent .= ' PHP/' . PHP_VERSION;
+        return $defaultAgent;
+    }
+
+    /**
      * DNS lookup
      *
      * @param RequestInterface $request
@@ -106,40 +131,6 @@ class CoroutineAdapter implements AdapterInterface
         }
 
         return [$host, $port];
-    }
-
-    /**
-     * @param array $options
-     * @return array
-     */
-    private function handleOptions(array $options): array
-    {
-        // Auth
-        if (!empty($options['auth']) && \is_array($options['auth'])) {
-            $value = $options['auth'];
-            $type = isset($value[2]) ? strtolower($value[2]) : 'basic';
-            switch ($type) {
-                case 'basic':
-                    $options['_headers']['Authorization'] = 'Basic ' . base64_encode("$value[0]:$value[1]");
-                    break;
-                case 'digest':
-                    // TODO complete digest
-                    $options['_headers']['headers'] = "$value[0]:$value[1]";
-                    break;
-                case 'ntlm':
-                    // TODO complete ntlm
-                    $options['_headers'][CURLOPT_HTTPAUTH] = CURLAUTH_NTLM;
-                    $options['_headers'][CURLOPT_USERPWD] = "$value[0]:$value[1]";
-                    break;
-            }
-        }
-
-        // Timeout
-        if (isset($options['timeout']) && is_numeric($options['timeout'])) {
-            $options['_options']['timeout'] = $options['timeout'];
-        }
-
-        return $options;
     }
 
     /**
@@ -216,6 +207,40 @@ class CoroutineAdapter implements AdapterInterface
 
     /**
      * @param array $options
+     * @return array
+     */
+    private function handleOptions(array $options): array
+    {
+        // Auth
+        if (!empty($options['auth']) && \is_array($options['auth'])) {
+            $value = $options['auth'];
+            $type = isset($value[2]) ? strtolower($value[2]) : 'basic';
+            switch ($type) {
+                case 'basic':
+                    $options['_headers']['Authorization'] = 'Basic ' . base64_encode("$value[0]:$value[1]");
+                    break;
+                case 'digest':
+                    // TODO complete digest
+                    $options['_headers']['headers'] = "$value[0]:$value[1]";
+                    break;
+                case 'ntlm':
+                    // TODO complete ntlm
+                    $options['_headers'][CURLOPT_HTTPAUTH] = CURLAUTH_NTLM;
+                    $options['_headers'][CURLOPT_USERPWD] = "$value[0]:$value[1]";
+                    break;
+            }
+        }
+
+        // Timeout
+        if (isset($options['timeout']) && is_numeric($options['timeout'])) {
+            $options['_options']['timeout'] = $options['timeout'];
+        }
+
+        return $options;
+    }
+
+    /**
+     * @param array $options
      * @return mixed|string
      */
     private function buildPostFields(array $options)
@@ -225,17 +250,5 @@ class CoroutineAdapter implements AdapterInterface
             $postFields = $options['body'];
         }
         return (string)$postFields;
-    }
-
-    /**
-     * Get the adapter User-Agent string
-     *
-     * @return string
-     */
-    public function getDefaultUserAgent(): string
-    {
-        $defaultAgent = 'Swoft/' . SWOFT_VERSION;
-        $defaultAgent .= ' PHP/' . PHP_VERSION;
-        return $defaultAgent;
     }
 }

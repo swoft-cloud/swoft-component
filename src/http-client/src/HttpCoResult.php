@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\HttpClient;
 
@@ -7,7 +16,6 @@ use Swoft\Core\AbstractResult;
 use Swoft\Http\Message\Stream\SwooleStream;
 use Swoft\HttpClient\Adapter\ResponseTrait;
 
-
 /**
  * Http Defer Result
  *
@@ -15,7 +23,6 @@ use Swoft\HttpClient\Adapter\ResponseTrait;
  */
 class HttpCoResult extends AbstractResult implements HttpResultInterface
 {
-
     use ResponseTrait;
 
     /**
@@ -80,5 +87,4 @@ class HttpCoResult extends AbstractResult implements HttpResultInterface
         }
         return $statusCode > 0 ? $statusCode : 500;
     }
-
 }
