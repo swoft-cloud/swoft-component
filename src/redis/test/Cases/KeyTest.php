@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace SwoftTest\Redis\Cases;
 
 use Swoft\Redis\Pool\Config\RedisPoolConfig;
@@ -9,7 +16,6 @@ use Swoft\Redis\Pool\Config\RedisPoolConfig;
  */
 class KeyTest extends AbstractTestCase
 {
-
     /**
      * @dataProvider  keysProvider
      *
@@ -62,6 +68,6 @@ class KeyTest extends AbstractTestCase
     {
         $result = $this->redis->randomKey();
         $key = str_replace('swoft-test-redis_', '', $result);
-        $this->assertEquals(1, $this->redis->exists($key));
+        $this->assertSame(1, $this->redis->exists($key));
     }
 }

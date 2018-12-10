@@ -1,21 +1,28 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Redis\Operator\Processor;
 
+use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\Inject;
 use Swoft\Helper\StringHelper;
 use Swoft\Redis\Operator\CommandInterface;
-use Swoft\Bean\Annotation\Bean;
 use Swoft\Redis\Pool\Config\RedisPoolConfig;
 
 /**
  * Class PrefixProcessor
- * @Bean()
+ * @Bean
  */
 class PrefixProcessor implements ProcessorInterface
 {
     /**
-     * @Inject()
+     * @Inject
      * @var RedisPoolConfig
      */
     protected $redisPoolConfig;
@@ -29,6 +36,25 @@ class PrefixProcessor implements ProcessorInterface
      * @var array
      */
     protected $commands;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __toString()
+    {
+        return $this->getPrefix();
+    }
+
+    public static function __callStatic($name, $arguments)
+    {
+        if (StringHelper::startsWith($name, 'allarray')) {
+            $len = (int)StringHelper::replaceFirst('allarray', '', $name);
+            $arguments[] = $len;
+            return static::allarray(...$arguments);
+        }
+
+        throw new \Exception("class 'Swoft\Redis\Operator\Processor\PrefixProcessor' does not have a method '{$name}'");
+    }
 
     /**
      * Init
@@ -224,14 +250,6 @@ class PrefixProcessor implements ProcessorInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function __toString()
-    {
-        return $this->getPrefix();
-    }
-
-    /**
      * Applies the specified prefix only the first argument.
      *
      * @param CommandInterface $command Command instance.
@@ -374,7 +392,7 @@ class PrefixProcessor implements ProcessorInterface
                             }
                             break;
 
-                        case 'LIMIT';
+                        case 'LIMIT':
                             $i += 2;
                             break;
                     }
@@ -416,16 +434,5 @@ class PrefixProcessor implements ProcessorInterface
 
             $command->setRawArguments($arguments);
         }
-    }
-
-    public static function __callStatic($name, $arguments)
-    {
-        if (StringHelper::startsWith($name, 'allarray')) {
-            $len = (int)StringHelper::replaceFirst('allarray', '', $name);
-            $arguments[] = $len;
-            return static::allarray(...$arguments);
-        }
-
-        throw new \Exception("class 'Swoft\Redis\Operator\Processor\PrefixProcessor' does not have a method '{$name}'");
     }
 }

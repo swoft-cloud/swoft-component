@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Redis\Operator;
 
 /**
@@ -10,19 +17,7 @@ abstract class Command implements CommandInterface
     /**
      * @var array
      */
-    private $arguments = array();
-
-    /**
-     * Returns a filtered array of the arguments.
-     *
-     * @param array $arguments List of arguments.
-     *
-     * @return array
-     */
-    protected function filterArguments(array $arguments)
-    {
-        return $arguments;
-    }
+    private $arguments = [];
 
     /**
      * {@inheritdoc}
@@ -92,9 +87,21 @@ abstract class Command implements CommandInterface
     public static function normalizeVariadic(array $arguments)
     {
         if (count($arguments) === 2 && is_array($arguments[1])) {
-            return array_merge(array($arguments[0]), $arguments[1]);
+            return array_merge([$arguments[0]], $arguments[1]);
         }
 
+        return $arguments;
+    }
+
+    /**
+     * Returns a filtered array of the arguments.
+     *
+     * @param array $arguments List of arguments.
+     *
+     * @return array
+     */
+    protected function filterArguments(array $arguments)
+    {
         return $arguments;
     }
 }

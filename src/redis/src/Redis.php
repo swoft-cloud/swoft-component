@@ -20,7 +20,7 @@ use Swoft\Pool\PoolInterface;
 use Swoft\Redis\Pool\RedisPool;
 
 /**
- * Psr 16 implement by Redis 
+ * Psr 16 implement by Redis
  * @method string getLastError()
  * @method bool clearLastError()
  * key and string
@@ -104,6 +104,19 @@ class Redis implements CacheInterface
      * @var string
      */
     protected $poolName = RedisPool::class;
+
+    /**
+     * magic method
+     *
+     * @param string $method
+     * @param array  $arguments
+     *
+     * @return mixed
+     */
+    public function __call($method, $arguments)
+    {
+        return $this->call($method, $arguments);
+    }
 
     /**
      * Get the value related to the specified key
@@ -253,19 +266,6 @@ class Redis implements CacheInterface
     public function mget(array $keys)
     {
         return $this->getMultiple($keys, false);
-    }
-
-    /**
-     * magic method
-     *
-     * @param string $method
-     * @param array  $arguments
-     *
-     * @return mixed
-     */
-    public function __call($method, $arguments)
-    {
-        return $this->call($method, $arguments);
     }
 
     /**

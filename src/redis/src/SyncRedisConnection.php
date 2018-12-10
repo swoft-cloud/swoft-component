@@ -70,5 +70,4 @@ class SyncRedisConnection extends AbstractRedisConnection
 
         return $redis;
     }
-
 }

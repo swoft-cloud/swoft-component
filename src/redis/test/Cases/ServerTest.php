@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace SwoftTest\Redis\Cases;
 
 /**
@@ -11,17 +18,17 @@ class ServerTest extends AbstractTestCase
     {
         $expected = 3;
         $result = $this->redis->eval("return {$expected}");
-        $this->assertEquals($expected, $result);
+        $this->assertSame($expected, $result);
     }
 
     public function testEvalArray()
     {
         $expected = [1, 2, 3];
-        $result = $this->redis->eval("return {1,2,3}");
+        $result = $this->redis->eval('return {1,2,3}');
         $this->assertTrue(is_array($result));
 
         foreach ($result as $index => $value) {
-            $this->assertEquals($expected[$index], $value);
+            $this->assertSame($expected[$index], $value);
         }
     }
 
@@ -29,7 +36,7 @@ class ServerTest extends AbstractTestCase
     {
         $script = 'return 1';
         $sha = $this->redis->script('load', $script);
-        $this->assertEquals(sha1($script), $sha);
+        $this->assertSame(sha1($script), $sha);
     }
 
     public function testEvalSha()
@@ -38,6 +45,6 @@ class ServerTest extends AbstractTestCase
         $script = "return {$expected}";
         $sha = $this->redis->script('load', $script);
         $result = $this->redis->evalSha($sha);
-        $this->assertEquals($expected, $result);
+        $this->assertSame($expected, $result);
     }
 }

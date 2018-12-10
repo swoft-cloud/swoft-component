@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace SwoftTest\Redis\Cases;
 
 /**
@@ -28,7 +35,7 @@ class HashTest extends AbstractTestCase
         $this->assertEquals($data, $values);
 
         $this->redis->set($key, 'xxxxx');
-        $result = $this->redis->hMGet($key,['key']);
+        $result = $this->redis->hMGet($key, ['key']);
         $this->assertFalse($result);
 
         $this->redis->delete($key);
