@@ -19,11 +19,11 @@ class AbstractTestCase extends TestCase
     public function getOptions()
     {
         if (App::isCoContext()) {
-            return ['timeout' => 5];
+            return ['timeout' => 20];
         }
 
         return [
-            CURLOPT_TIMEOUT => 5,
+            CURLOPT_TIMEOUT => 20,
         ];
     }
 }
