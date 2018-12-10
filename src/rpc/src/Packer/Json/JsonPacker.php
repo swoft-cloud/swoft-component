@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Rpc\Packer\Json;
 
 use Swoft\Bean\Annotation\Bean;
@@ -9,7 +16,7 @@ use Swoft\Rpc\Packer\PackerInterface;
 
 /**
  * Class JsonPacker
- * @Bean()
+ * @Bean
  */
 class JsonPacker implements PackerInterface
 {
