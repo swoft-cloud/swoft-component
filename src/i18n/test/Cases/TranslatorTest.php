@@ -33,7 +33,7 @@ class TranslatorTest extends AbstractTestCase
 
         // Load
         $realLanguagesDir = App::getAlias($translator->languageDir);
-        if (! file_exists($realLanguagesDir)) {
+        if (!file_exists($realLanguagesDir)) {
             throw new \RuntimeException(sprintf('Testing config $languageDir(%s) is invalid', $realLanguagesDir));
         }
         $loadLanguagesMethod = $reflectClass->getMethod('loadLanguages');
@@ -41,11 +41,11 @@ class TranslatorTest extends AbstractTestCase
         $loadLanguagesMethod->invoke($translator, $realLanguagesDir);
         $messagesAfterLoaded = $messagesProperty->getValue($translator);
         $expected = [
-            'en'    => [
+            'en' => [
                 'default' => [
                     'title' => 'English title'
                 ],
-                'msg'     => [
+                'msg' => [
                     'body' => 'This is a message [%s] %d'
                 ],
             ],
@@ -53,12 +53,12 @@ class TranslatorTest extends AbstractTestCase
                 'default' => [
                     'title' => '中文标题'
                 ],
-                'msg'     => [
+                'msg' => [
                     'body' => '这是一条消息 [%s] %d'
                 ],
             ],
         ];
-        $this->assertSame($expected, $messagesAfterLoaded);
+        $this->assertEquals($expected, $messagesAfterLoaded);
 
         // Translate
         $enTitle = $translator->translate('default.title', [], 'en');

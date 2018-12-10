@@ -17,7 +17,6 @@ return [
         'SwoftTest\\ErrorHandler\\Testing'   => SRC_PATH . '/error-handler/test/Testing',
         'SwoftTest\\Testing'                 => SRC_PATH . '/framework/test/Testing',
         'SwoftTest\\HttpServer\\Testing'     => SRC_PATH . '/http-server/test/Testing',
-        'Swoft\\I18n'                        => SRC_PATH . '/i18n/src',
         'SwoftTest\\Redis\\Pool'             => SRC_PATH . '/redis/test/Cases/Pool',
         'Swoft\\Redis'                       => SRC_PATH . '/redis/src',
         'Swoft\\Rpc\\Client\\Testing'        => SRC_PATH . '/rpc-client/test/Testing',

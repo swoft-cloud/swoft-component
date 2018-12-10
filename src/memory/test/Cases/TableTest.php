@@ -8,7 +8,7 @@
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
-namespace SwoftTest\Memory;
+namespace SwoftTest\Memory\Cases;
 
 use Swoft\Memory\Table;
 use Swoft\Memory\Exception;
