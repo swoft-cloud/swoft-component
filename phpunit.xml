@@ -23,8 +23,7 @@
             <directory suffix="Test.php">./src/framework/test</directory>
             <directory suffix="Test.php">./src/http-client/test</directory>
             <directory suffix="Test.php">./src/http-server/test</directory>
-
-            <!--<directory suffix="Test.php">./src/i18n/test</directory>-->
+            <directory suffix="Test.php">./src/i18n/test</directory>
             <!--<directory suffix="Test.php">./src/memory/test</directory>-->
             <!--<directory suffix="Test.php">./src/process/test</directory>-->
             <!--<directory suffix="Test.php">./src/redis/test</directory>-->

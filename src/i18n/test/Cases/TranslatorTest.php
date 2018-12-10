@@ -1,6 +1,15 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
-namespace SwoftTest\I18n;
+namespace SwoftTest\I18n\Cases;
 
 use Swoft\App;
 use Swoft\I18n\Translator;
@@ -15,12 +24,12 @@ class TranslatorTest extends AbstractTestCase
         $translator = new Translator();
 
         // Init property
-        $this->assertEquals('@resources/languages/', $translator->languageDir);
+        $this->assertSame('@resources/languages/', $translator->languageDir);
         $reflectClass = new \ReflectionClass(Translator::class);
         $messagesProperty = $reflectClass->getProperty('messages');
         $messagesProperty->setAccessible(true);
         $messages = $messagesProperty->getValue($translator);
-        $this->assertEquals([], $messages);
+        $this->assertSame([], $messages);
 
         // Load
         $realLanguagesDir = App::getAlias($translator->languageDir);
@@ -49,17 +58,17 @@ class TranslatorTest extends AbstractTestCase
                 ],
             ],
         ];
-        $this->assertEquals($expected, $messagesAfterLoaded);
+        $this->assertSame($expected, $messagesAfterLoaded);
 
         // Translate
         $enTitle = $translator->translate('default.title', [], 'en');
-        $this->assertEquals('English title', $enTitle);
+        $this->assertSame('English title', $enTitle);
         $enTitle = translate('default.title', [], 'en');
-        $this->assertEquals('English title', $enTitle);
+        $this->assertSame('English title', $enTitle);
         $zhcnTitle = $translator->translate('default.title', [], 'zh-cn');
-        $this->assertEquals('中文标题', $zhcnTitle);
+        $this->assertSame('中文标题', $zhcnTitle);
         $zhcnTitle = $translator->translate('default.title', ['key' => 'value'], 'zh-cn');
-        $this->assertEquals('中文标题', $zhcnTitle);
+        $this->assertSame('中文标题', $zhcnTitle);
         $this->assertException(function () use ($translator) {
             $translator->translate('default.title', [], 'zh-hk');
         }, \InvalidArgumentException::class);
@@ -68,14 +77,13 @@ class TranslatorTest extends AbstractTestCase
         }, \InvalidArgumentException::class);
 
         $enBody = $translator->translate('msg.body', ['hello world', 1], 'en');
-        $this->assertEquals('This is a message [hello world] 1', $enBody);
+        $this->assertSame('This is a message [hello world] 1', $enBody);
         $enBody = $translator->translate('msg.body', ['key' => 'hello world', 'int' => 1], 'en');
-        $this->assertEquals('This is a message [hello world] 1', $enBody);
+        $this->assertSame('This is a message [hello world] 1', $enBody);
         $enBody = $translator->translate('msg.body', [1, 'hello world'], 'en');
-        $this->assertEquals('This is a message [1] 0', $enBody);
+        $this->assertSame('This is a message [1] 0', $enBody);
         $this->assertError(function () use ($translator) {
             $translator->translate('msg.body', ['hello world'], 'en');
         }, \PHPUnit_Framework_Error_Warning::class);
     }
-
 }

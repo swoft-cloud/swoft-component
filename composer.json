@@ -122,7 +122,7 @@
             "SwoftTest\\": "src/framework/test/",
             "SwoftTest\\HttpClient\\": "src/http-client/test/",
             "SwoftTest\\HttpServer\\": "src/http-server/test",
-            "SwoftTest\\I18n\\": "src/i18n/test/Cases",
+            "SwoftTest\\I18n\\": "src/i18n/test/",
             "SwoftTest\\Memory\\": "src/memory/test/Cases",
             "SwoftTest\\Process\\": "src/process/test",
             "SwoftTest\\Redis\\": "src/redis/test/Cases",
