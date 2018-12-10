@@ -9,6 +9,7 @@
  */
 namespace SwoftTest\Db\Cases\Mysql;
 
+use Swoft\App;
 use Swoft\Db\Exception\MysqlException;
 use Swoft\Db\Qb;
 use Swoft\Db\Query;
@@ -17,7 +18,6 @@ use SwoftTest\Db\Testing\Entity\Count;
 use SwoftTest\Db\Testing\Entity\Keyword;
 use SwoftTest\Db\Testing\Entity\NoInc;
 use SwoftTest\Db\Testing\Entity\User;
-use function test_go as go;
 
 /**
  * BugTest
@@ -30,17 +30,10 @@ class BugTest extends AbstractMysqlCase
         $kw->setAlert(mt_rand(1, 100));
         $kw->setDesc('test');
 
-        $id   = $kw->save()->getResult();
+        $id = $kw->save()->getResult();
         $user = Keyword::findOne(['id' => $id])->getResult();
 
         $this->assertEquals($id, $user['id']);
-    }
-
-    public function testColumnByKeywordByCo()
-    {
-        go(function () {
-            $this->testColumnByKeyword();
-        });
     }
 
     /**
@@ -50,22 +43,10 @@ class BugTest extends AbstractMysqlCase
      */
     public function testJoin(int $uid)
     {
-        $data  = Query::table('user', 'u')->leftJoin('count', 'u.id=c.uid', 'c')->condition(['u.id' => $uid])->one()->getResult();
+        $data = Query::table('user', 'u')->leftJoin('count', 'u.id=c.uid', 'c')->condition(['u.id' => $uid])->one()->getResult();
         $data2 = Query::table('user', 'u')->leftJoin('count', ['u.id=c.uid'], 'c')->condition(['u.id' => $uid])->one()->getResult();
         $this->assertEquals($data['id'], $uid);
         $this->assertEquals($data2['id'], $uid);
-    }
-
-    /**
-     * @dataProvider relationProider
-     *
-     * @param int $uid
-     */
-    public function testJoinByCo(int $uid)
-    {
-        go(function () use ($uid) {
-            $this->testJoin($uid);
-        });
     }
 
     /**
@@ -87,56 +68,38 @@ class BugTest extends AbstractMysqlCase
 
     /**
      * @dataProvider relationProider
-     * @expectedException \PDOException
      *
      * @param int $uid
      */
     public function testUpdateNotExistField(int $uid)
     {
-        User::updateOne(['errorField' => 1], ['id' => $uid])->getResult();
-    }
-
-    /**
-     * @dataProvider relationProider
-     *
-     * @param int $uid
-     */
-    public function testUpdateNotExistFieldByCo(int $uid)
-    {
-        go(function () use ($uid) {
-            try {
-                $this->testUpdateNotExistField($uid);
-            } catch (\Throwable $e) {
-                $this->assertEquals(MysqlException::class, get_class($e));
+        try {
+            User::updateOne(['errorField' => 1], ['id' => $uid])->getResult();
+        } catch (\Throwable $ex) {
+            if (App::isCoContext()) {
+                $this->assertTrue($ex instanceof MysqlException);
+            } else {
+                $this->assertTrue($ex instanceof \PDOException);
             }
-        });
+        }
     }
 
     /**
      * @dataProvider relationProider
-     * @expectedException \PDOException
      *
      * @param int $uid
      */
     public function testGetNotExistField(int $uid)
     {
-        User::findOne(['id' => $uid], ['fields' => ['NotExistField']]);
-    }
-
-    /**
-     * @dataProvider relationProider
-     *
-     * @param int $uid
-     */
-    public function testGetNotExistFieldByCo(int $uid)
-    {
-        go(function () use ($uid) {
-            try {
-                $this->testGetNotExistField($uid);
-            } catch (\Throwable $e) {
-                $this->assertEquals(MysqlException::class, get_class($e));
+        try {
+            User::findOne(['id' => $uid], ['fields' => ['NotExistField']]);
+        } catch (\Throwable $ex) {
+            if (App::isCoContext()) {
+                $this->assertTrue($ex instanceof MysqlException);
+            } else {
+                $this->assertTrue($ex instanceof \PDOException);
             }
-        });
+        }
     }
 
     public function testCounter()
@@ -170,7 +133,7 @@ class BugTest extends AbstractMysqlCase
         $user->setDesc('this my desc');
         $user->setAge($age);
 
-        $uid2   = $user->save()->getResult();
+        $uid2 = $user->save()->getResult();
         $result = User::counter(['age' => 12, 'sex' => -3], ['id' => $uid2])->getResult();
 
         $this->assertEquals(1, $result);
@@ -178,13 +141,6 @@ class BugTest extends AbstractMysqlCase
         $user = User::findById($uid2)->getResult();
         $this->assertEquals(($age + 12), $user['age']);
         $this->assertEquals(($sex - 3), $user['sex']);
-    }
-
-    public function testCounterByCo()
-    {
-        go(function () {
-            $this->testCounter();
-        });
     }
 
     public function testIsNull()
@@ -198,13 +154,6 @@ class BugTest extends AbstractMysqlCase
 
         $user = Query::table(User::class)->where('id', $uid)->where('description', null, Qb::IS)->one()->getResult();
         $this->assertEquals($user['id'], $uid);
-    }
-
-    public function testIsNullByCo()
-    {
-        go(function () {
-            $this->testIsNull();
-        });
     }
 
     public function testUpdateNotDefault()
@@ -241,13 +190,6 @@ class BugTest extends AbstractMysqlCase
         $this->assertEquals($user['desc'], 'new desc one');
     }
 
-    public function testUpdateNotDefaultByCo()
-    {
-        go(function () {
-            $this->testUpdateNotDefault();
-        });
-    }
-
     public function testLike()
     {
         $user = new User();
@@ -272,23 +214,11 @@ class BugTest extends AbstractMysqlCase
         $result1 = User::findById($uids[0]);
         $result2 = User::findById($uids[1]);
 
-        $user  = $result1->getResult();
+        $user = $result1->getResult();
         $user2 = $result2->getResult();
 
         $this->assertEquals($user['id'], $uids[0]);
         $this->assertEquals($user2['id'], $uids[1]);
-    }
-
-    /**
-     * @dataProvider mysqlProviders
-     *
-     * @param array $uids
-     */
-    public function testConByCo(array $uids)
-    {
-        go(function () use ($uids) {
-            $this->testCon($uids);
-        });
     }
 
     /**
@@ -322,7 +252,7 @@ class BugTest extends AbstractMysqlCase
      */
     public function testListType(int $uid)
     {
-        /* @var User $user*/
+        /* @var User $user */
         $user = User::findById($uid)->getResult();
         $userAry = $user->toArray();
         $this->assertTrue(is_int($userAry['age']));
@@ -343,18 +273,6 @@ class BugTest extends AbstractMysqlCase
             $this->assertTrue(is_string($userRow['sex']));
             $this->assertTrue(is_string($userRow['description']));
         }
-    }
-
-    /**
-     * @dataProvider relationProider
-     *
-     * @param int $uid
-     */
-    public function testListTypeByCo(int $uid)
-    {
-        go(function () use ($uid) {
-            $this->testListType($uid);
-        });
     }
 
     public function testNoInc()

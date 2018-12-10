@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace SwoftTest\HttpClient\Cases;
 
+use Swoft\App;
 use Swoft\Helper\JsonHelper;
 use Swoft\HttpClient\Adapter;
 use Swoft\HttpClient\Client;
-use function test_go as go;
 
 class ClientTest extends AbstractTestCase
 {
@@ -35,9 +35,6 @@ class ClientTest extends AbstractTestCase
 
         // FIXME : Travis Ci中，调用多次时，出口IP不同
         unset($json['headers']['X-Real-Ip'], $json2['headers']['X-Real-Ip'], $json['headers']['X-Forwarded-For'], $json2['headers']['X-Forwarded-For']);
-        
-        
-        
 
         $this->assertSame($json, $json2);
     }
@@ -47,20 +44,19 @@ class ClientTest extends AbstractTestCase
      */
     public function adapters()
     {
-        go(function () {
-            $client = new Client([
-                'adapter' => 'co'
-            ]);
-            $this->assertInstanceOf(Adapter\CoroutineAdapter::class, $client->getAdapter());
-            $client = new Client([
-                'adapter' => 'coroutine'
-            ]);
-            $this->assertInstanceOf(Adapter\CoroutineAdapter::class, $client->getAdapter());
-            $client = new Client([
-                'adapter' => 'swoole'
-            ]);
-            $this->assertInstanceOf(Adapter\CoroutineAdapter::class, $client->getAdapter());
-        });
+        $client = new Client([
+            'adapter' => 'co'
+        ]);
+        $this->assertInstanceOf(Adapter\CoroutineAdapter::class, $client->getAdapter());
+        $client = new Client([
+            'adapter' => 'coroutine'
+        ]);
+        $this->assertInstanceOf(Adapter\CoroutineAdapter::class, $client->getAdapter());
+        $client = new Client([
+            'adapter' => 'swoole'
+        ]);
+        $this->assertInstanceOf(Adapter\CoroutineAdapter::class, $client->getAdapter());
+
         $client = new Client([
             'adapter' => 'curl'
         ]);
@@ -69,6 +65,13 @@ class ClientTest extends AbstractTestCase
             'adapter' => 'php'
         ]);
         $this->assertInstanceOf(Adapter\CurlAdapter::class, $client->getAdapter());
+
+        $client = new Client();
+        if (App::isCoContext()) {
+            $this->assertInstanceOf(Adapter\CoroutineAdapter::class, $client->getAdapter());
+        } else {
+            $this->assertInstanceOf(Adapter\CurlAdapter::class, $client->getAdapter());
+        }
     }
 
     /**

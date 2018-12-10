@@ -17,7 +17,6 @@ use Swoft\Helper\StringHelper;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Testing\Entity\User2;
-use function test_go as go;
 
 /**
  * MysqlTest
@@ -32,7 +31,7 @@ class ActiveRecordTest extends AbstractMysqlCase
         $user->setDesc('this my desc');
         $user->setAge(mt_rand(1, 100));
 
-        $id     = $user->save()->getResult();
+        $id = $user->save()->getResult();
         $reuslt = $id > 0;
         $this->assertTrue($reuslt);
     }
@@ -44,7 +43,7 @@ class ActiveRecordTest extends AbstractMysqlCase
         $user->setDesc('this my desc');
         $user->setAge(mt_rand(1, 100));
 
-        $id     = $user->save()->getResult();
+        $id = $user->save()->getResult();
         $reuslt = $id > 0;
         $this->assertTrue($reuslt);
 
@@ -52,20 +51,6 @@ class ActiveRecordTest extends AbstractMysqlCase
         $rows = $user->update()->getResult();
         $reuslt = $rows > 0;
         $this->assertTrue($reuslt);
-    }
-
-    public function testSaveByCo()
-    {
-        go(function () {
-            $this->testSave();
-        });
-    }
-
-    public function testUpdateWhenNameIsNullByCo()
-    {
-        go(function () {
-            $this->testUpdateWhenNameIsNull();
-        });
     }
 
     public function testValidator()
@@ -77,7 +62,7 @@ class ActiveRecordTest extends AbstractMysqlCase
         $user->setDesc('hello world');
         $user->setAge(27);
 
-        $id     = $user->save()->getResult();
+        $id = $user->save()->getResult();
         $reuslt = $id > 0;
         $this->assertTrue($reuslt);
 
@@ -141,39 +126,25 @@ class ActiveRecordTest extends AbstractMysqlCase
         $this->assertEquals('18446744073709551615', $user->getOid());
     }
 
-    public function testValidatorByCo()
-    {
-        go(function () {
-            $this->testValidator();
-        });
-    }
-
     public function testBatchInsert()
     {
         $values = [
             [
-                'name'        => 'name',
-                'sex'         => 1,
+                'name' => 'name',
+                'sex' => 1,
                 'description' => 'this my desc',
-                'age'         => 99,
+                'age' => 99,
             ],
             [
-                'name'        => 'name2',
-                'sex'         => 1,
+                'name' => 'name2',
+                'sex' => 1,
                 'description' => 'this my desc2',
-                'age'         => 100,
+                'age' => 100,
             ],
         ];
 
         $result = User::batchInsert($values)->getResult();
         $this->assertTrue($result > 0);
-    }
-
-    public function testBatchInsertByCo()
-    {
-        go(function () {
-            $this->testBatchInsert();
-        });
     }
 
     /**
@@ -184,21 +155,9 @@ class ActiveRecordTest extends AbstractMysqlCase
     public function testDelete(int $id)
     {
         /* @var User $user */
-        $user   = User::findById($id)->getResult();
+        $user = User::findById($id)->getResult();
         $result = $user->delete()->getResult();
         $this->assertEquals(1, $result);
-    }
-
-    /**
-     * @dataProvider mysqlProvider
-     *
-     * @param int $id
-     */
-    public function testDeleteByCo(int $id)
-    {
-        go(function () use ($id) {
-            $this->testDelete($id);
-        });
     }
 
     /**
@@ -213,18 +172,6 @@ class ActiveRecordTest extends AbstractMysqlCase
     }
 
     /**
-     * @dataProvider mysqlProvider
-     *
-     * @param int $id
-     */
-    public function testDeleteByIdByCo(int $id)
-    {
-        go(function () use ($id) {
-            $this->testDeleteById($id);
-        });
-    }
-
-    /**
      * @dataProvider mysqlProviders
      *
      * @param array $ids
@@ -233,18 +180,6 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         $result = User::deleteByIds($ids)->getResult();
         $this->assertEquals($result, 2);
-    }
-
-    /**
-     * @dataProvider mysqlProviders
-     *
-     * @param array $ids
-     */
-    public function testDeleteByIdsByCo(array $ids)
-    {
-        go(function () use ($ids) {
-            $this->testDeleteByIds($ids);
-        });
     }
 
     /**
@@ -286,23 +221,11 @@ class ActiveRecordTest extends AbstractMysqlCase
      *
      * @param int $id
      */
-    public function testUpdateByCo(int $id)
-    {
-        go(function () use ($id) {
-            $this->testUpdate($id);
-        });
-    }
-
-    /**
-     * @dataProvider mysqlProvider
-     *
-     * @param int $id
-     */
     public function testFindById(int $id)
     {
-        $user      = User::findById($id)->getResult();
+        $user = User::findById($id)->getResult();
         $userEmpty = User::findById(99999999999)->getResult();
-        $user2     = User::findById($id, ['fields' => ['id']])->getResult();
+        $user2 = User::findById($id, ['fields' => ['id']])->getResult();
         $this->assertEquals($id, $user['id']);
         $this->assertEquals($userEmpty, null);
 
@@ -315,37 +238,13 @@ class ActiveRecordTest extends AbstractMysqlCase
      *
      * @param int $id
      */
-    public function testFindByIdByCo(int $id)
-    {
-        go(function () use ($id) {
-            $this->testFindById($id);
-        });
-    }
-
-    /**
-     * @dataProvider mysqlProvider
-     *
-     * @param int $id
-     */
     public function testFindByIdClass(int $id)
     {
         /* @var User $user */
-        $user      = User::findById($id)->getResult();
+        $user = User::findById($id)->getResult();
         $userEmpty = User::findById(99999999999)->getResult();
         $this->assertEquals($id, $user->getId());
         $this->assertEquals($userEmpty, null);
-    }
-
-    /**
-     * @dataProvider mysqlProvider
-     *
-     * @param int $id
-     */
-    public function testFindByIdClassByCo(int $id)
-    {
-        go(function () use ($id) {
-            $this->testFindByIdClass($id);
-        });
     }
 
     /**
@@ -355,9 +254,9 @@ class ActiveRecordTest extends AbstractMysqlCase
      */
     public function testFindByIds(array $ids)
     {
-        $users     = User::findByIds($ids)->getResult();
+        $users = User::findByIds($ids)->getResult();
         $userEmpty = User::findByIds([999999999999])->getResult();
-        $users2    = User::findByIds($ids, ['fields' => ['id'], 'orderby' => ['id' => 'asc'], 'limit' => 2])->getResult();
+        $users2 = User::findByIds($ids, ['fields' => ['id'], 'orderby' => ['id' => 'asc'], 'limit' => 2])->getResult();
 
         sort($ids);
         $resultIds = [];
@@ -383,21 +282,9 @@ class ActiveRecordTest extends AbstractMysqlCase
      *
      * @param array $ids
      */
-    public function testFindByIdsByCo(array $ids)
-    {
-        go(function () use ($ids) {
-            $this->testFindByIds($ids);
-        });
-    }
-
-    /**
-     * @dataProvider mysqlProviders
-     *
-     * @param array $ids
-     */
     public function testFindByIdsByClass(array $ids)
     {
-        $users     = User::findByIds($ids)->getResult();
+        $users = User::findByIds($ids)->getResult();
         $userEmpty = User::findByIds([999999999999])->getResult();
 
         $resultIds = [];
@@ -414,54 +301,23 @@ class ActiveRecordTest extends AbstractMysqlCase
      *
      * @param array $ids
      */
-    public function testFindByIdsByClassByCo(array $ids)
-    {
-        go(function () use ($ids) {
-            $this->testFindByIdsByClass($ids);
-        });
-    }
-
-    /**
-     * @dataProvider mysqlProviders
-     *
-     * @param array $ids
-     */
     public function testQuery(array $ids)
     {
         $result = User::query()->orderBy('id', QueryBuilder::ORDER_BY_DESC)->limit(2)->get()->getResult();
         $this->assertCount(2, $result);
     }
 
-    /**
-     * @dataProvider mysqlProviders
-     *
-     * @param array $ids
-     */
-    public function testQueryByCo(array $ids)
-    {
-        go(function () use ($ids) {
-            $this->testQuery($ids);
-        });
-    }
-
     public function testDeleteOne()
     {
-        $user         = new User();
+        $user = new User();
         $user['name'] = 'name2testDeleteOne';
-        $user['sex']  = 1;
+        $user['sex'] = 1;
         $user['desc'] = 'this my desc9';
-        $user['age']  = 99;
+        $user['age'] = 99;
 
-        $uid    = $user->save()->getResult();
+        $uid = $user->save()->getResult();
         $result = User::deleteOne(['name' => 'name2testDeleteOne', 'age' => 99, 'id' => $uid])->getResult();
         $this->assertEquals($result, 1);
-    }
-
-    public function testDeleteOneByCo()
-    {
-        go(function () {
-            $this->testDeleteOne();
-        });
     }
 
     /**
@@ -476,18 +332,6 @@ class ActiveRecordTest extends AbstractMysqlCase
     }
 
     /**
-     * @dataProvider mysqlProviders
-     *
-     * @param array $ids
-     */
-    public function testDeleteAllByCo(array $ids)
-    {
-        go(function () use ($ids) {
-            $this->testDeleteAll($ids);
-        });
-    }
-
-    /**
      * @dataProvider mysqlProvider
      *
      * @param int $id
@@ -495,21 +339,9 @@ class ActiveRecordTest extends AbstractMysqlCase
     public function testUpdateOne(int $id)
     {
         $result = User::updateOne(['name' => 'testUpdateOne'], ['id' => $id])->getResult();
-        $user   = User::findById($id)->getResult();
+        $user = User::findById($id)->getResult();
         $this->assertEquals(1, $result);
         $this->assertEquals($user['name'], 'testUpdateOne');
-    }
-
-    /**
-     * @dataProvider mysqlProvider
-     *
-     * @param int $id
-     */
-    public function testUpdateOneByCo(int $id)
-    {
-        go(function () use ($id) {
-            $this->testUpdateOne($id);
-        });
     }
 
     /**
@@ -520,7 +352,7 @@ class ActiveRecordTest extends AbstractMysqlCase
     public function testUpdateAll(array $ids)
     {
         $result = User::updateAll(['name' => 'testUpdateAll'], ['id' => $ids])->getResult();
-        $count  = User::findAll(['name' => 'testUpdateAll', 'id' => $ids])->getResult();
+        $count = User::findAll(['name' => 'testUpdateAll', 'id' => $ids])->getResult();
         $this->assertEquals(2, $result);
         $this->assertCount(2, $count);
     }
@@ -532,23 +364,11 @@ class ActiveRecordTest extends AbstractMysqlCase
      */
     public function testFindOne(int $id)
     {
-        $user  = User::findOne(['id' => $id, 'name' => 'name'], ['id' => 'desc', 'age' => 'desc'])->getResult();
+        $user = User::findOne(['id' => $id, 'name' => 'name'], ['id' => 'desc', 'age' => 'desc'])->getResult();
         $user2 = User::findOne(['id' => $id], ['fields' => ['id', 'name']])->getResult();
         $this->assertEquals($id, $user['id']);
         $this->assertEquals($id, $user2['id']);
         $this->assertEquals(null, $user2['desc']);
-    }
-
-    /**
-     * @dataProvider mysqlProvider
-     *
-     * @param int $id
-     */
-    public function testFindOneByCo(int $id)
-    {
-        go(function () use ($id) {
-            $this->testFindOne($id);
-        });
     }
 
     /**
@@ -562,9 +382,9 @@ class ActiveRecordTest extends AbstractMysqlCase
             'orderby' => [
                 'id' => 'desc',
             ],
-            'limit'   => 2,
-            'offset'  => 0,
-            'fields'  => ['id', 'name'],
+            'limit' => 2,
+            'offset' => 0,
+            'fields' => ['id', 'name'],
         ];
         /* @var \Swoft\Db\Collection $result */
         $result = User::findAll(['name' => 'name', 'id' => $ids], $options)->getResult();
@@ -593,31 +413,12 @@ class ActiveRecordTest extends AbstractMysqlCase
         $this->assertTrue($ids[0] > $ids[1]);
     }
 
-    /**
-     * @dataProvider mysqlProviders
-     *
-     * @param array $ids
-     */
-    public function testFindAllByCo(array $ids)
-    {
-        go(function () use ($ids) {
-            $this->testFindAll($ids);
-        });
-    }
-
     public function testExist()
     {
         $user = new User();
-        $id   = $user->fill(['name' => 'existTest'])->save()->getResult();
+        $id = $user->fill(['name' => 'existTest'])->save()->getResult();
         $this->assertTrue(User::exist($id)->getResult());
         $this->assertFalse(User::exist('NotExistId')->getResult());
-    }
-
-    public function testExistByCo()
-    {
-        go(function () {
-            $this->testExist();
-        });
     }
 
     /**
@@ -629,18 +430,6 @@ class ActiveRecordTest extends AbstractMysqlCase
     {
         $count = User::count('id', ['id' => $ids])->getResult();
         $this->assertEquals(2, $count);
-    }
-
-    /**
-     * @dataProvider mysqlProviders
-     *
-     * @param array $ids
-     */
-    public function testCountByCo(array $ids)
-    {
-        go(function () use ($ids) {
-            $this->testCount($ids);
-        });
     }
 
     /**
@@ -660,11 +449,13 @@ class ActiveRecordTest extends AbstractMysqlCase
      */
     public function testForUpdate(int $id)
     {
-        User::findById($id, [
-                'for_update' => true,
-            ])->getResult();
+        User::findById($id, ['for_update' => true])->getResult();
+
         $lastSql = get_last_sql();
-        $lastSql = substr($lastSql, 0, strpos($lastSql, ' Params: '));
+        if ($pos = strpos($lastSql, ' Params: ')) {
+            $lastSql = substr($lastSql, 0, $pos);
+        }
+
         $this->assertTrue(StringHelper::endsWith($lastSql, 'FOR UPDATE'));
     }
 
@@ -674,11 +465,12 @@ class ActiveRecordTest extends AbstractMysqlCase
      */
     public function testSharedLock(int $id)
     {
-        User::findById($id, [
-                'shared_lock' => true,
-            ])->getResult();
+        User::findById($id, ['shared_lock' => true])->getResult();
         $lastSql = get_last_sql();
-        $lastSql = substr($lastSql, 0, strpos($lastSql, ' Params: '));
+        if ($pos = strpos($lastSql, ' Params: ')) {
+            $lastSql = substr($lastSql, 0, $pos);
+        }
+
         $this->assertTrue(StringHelper::endsWith($lastSql, 'LOCK IN SHARE MODE'));
     }
 }

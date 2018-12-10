@@ -15,7 +15,6 @@ use Swoft\Helper\StringHelper;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\OtherUser;
 use SwoftTest\Db\Testing\Entity\User;
-use function test_go as go;
 
 /**
  * QueryTest
@@ -38,34 +37,10 @@ class QueryBuilderTest extends AbstractMysqlCase
      *
      * @param int $id
      */
-    public function testDbSelectByCo(int $id)
-    {
-        go(function () use ($id) {
-            $this->testDbSelect($id);
-        });
-    }
-
-    /**
-     * @dataProvider mysqlProvider
-     *
-     * @param int $id
-     */
     public function testDbDelete(int $id)
     {
         $result = Query::table(User::class)->where('id', $id)->delete()->getResult();
         $this->assertEquals(1, $result);
-    }
-
-    /**
-     * @dataProvider mysqlProvider
-     *
-     * @param int $id
-     */
-    public function testDbDeleteByCo(int $id)
-    {
-        go(function () use ($id) {
-            $this->testDbDelete($id);
-        });
     }
 
     /**
@@ -80,18 +55,6 @@ class QueryBuilderTest extends AbstractMysqlCase
         $this->assertEquals('name666', $user['name']);
     }
 
-    /**
-     * @dataProvider mysqlProvider
-     *
-     * @param int $id
-     */
-    public function testDbUpdateByCo(int $id)
-    {
-        go(function () use ($id) {
-            $this->testDbUpdate($id);
-        });
-    }
-
     public function testDbInsert()
     {
         $values = [
@@ -103,13 +66,6 @@ class QueryBuilderTest extends AbstractMysqlCase
         $result = Query::table(User::class)->insert($values)->getResult();
         $user   = User::findById($result)->getResult();
         $this->assertCount(5, $user);
-    }
-
-    public function testDbInsertByCo()
-    {
-        go(function () {
-            $this->testDbInsert();
-        });
     }
 
     public function testSelectDb()
@@ -129,13 +85,6 @@ class QueryBuilderTest extends AbstractMysqlCase
         $this->assertEquals($user2['id'], $userid);
     }
 
-    public function testSelectDbByCo()
-    {
-        go(function () {
-            $this->testSelectDb();
-        });
-    }
-
     public function testSelectTable()
     {
         $data   = [
@@ -147,13 +96,6 @@ class QueryBuilderTest extends AbstractMysqlCase
         $result = Query::table('user2')->insert($data)->getResult();
         $user2  = Query::table('user2')->where('id', $result)->one()->getResult();
         $this->assertEquals($user2['id'], $result);
-    }
-
-    public function testSelectTableByCo()
-    {
-        go(function () {
-            $this->testSelectTable();
-        });
     }
 
     public function testSelectinstance()
@@ -184,13 +126,6 @@ class QueryBuilderTest extends AbstractMysqlCase
         $this->assertEquals($user->getId(), $userId);
     }
 
-    public function testSelectinstanceByCo()
-    {
-        go(function () {
-            $this->testSelectinstance();
-        });
-    }
-
     public function testCondtionAndByF1()
     {
         $age    = mt_rand(1, 100);
@@ -211,13 +146,6 @@ class QueryBuilderTest extends AbstractMysqlCase
         $this->assertEquals($age, $user2['age']);
     }
 
-    public function testCondtionAndByF1ByCo()
-    {
-        go(function () {
-            $this->testCondtionAndByF1();
-        });
-    }
-
     /**
      * @dataProvider mysqlProviders
      *
@@ -227,18 +155,6 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         $users = Query::table(User::class)->condition(['sex' => 1, 'id' => $ids])->get()->getResult();
         $this->assertCount(2, $users);
-    }
-
-    /**
-     * @dataProvider mysqlProviders
-     *
-     * @param array $ids
-     */
-    public function testCondtion2AndByF1ByCo(array $ids)
-    {
-        go(function () use ($ids) {
-            $this->testCondtion2AndByF1($ids);
-        });
     }
 
     public function testCondtion1AndByF3()
@@ -256,13 +172,6 @@ class QueryBuilderTest extends AbstractMysqlCase
         $this->assertEquals($userid, $user['id']);
     }
 
-    public function testCondtion1AndByF3ByCo()
-    {
-        go(function () {
-            $this->testCondtion1AndByF3();
-        });
-    }
-
     public function testCondtion2AndByF3()
     {
         $age  = mt_rand(1, 100);
@@ -276,13 +185,6 @@ class QueryBuilderTest extends AbstractMysqlCase
         $userid = Query::table(User::class)->insert($data)->getResult();
         $users  = Query::table(User::class)->condition(['id', 'between', $userid - 1, $userid + 1])->orderBy('id', 'desc')->get()->getResult();
         $this->assertTrue(count($users) > 1);
-    }
-
-    public function testCondtion2AndByF3ByCo()
-    {
-        go(function () {
-            $this->testCondtion2AndByF3();
-        });
     }
 
     /**
@@ -307,18 +209,6 @@ class QueryBuilderTest extends AbstractMysqlCase
     }
 
     /**
-     * @dataProvider mysqlProvider
-     *
-     * @param int $id
-     */
-    public function testCondtion3AndByF3ByCo(int $id)
-    {
-        go(function () use ($id) {
-            $this->testCondtion3AndByF3($id);
-        });
-    }
-
-    /**
      * @dataProvider mysqlProviders
      *
      * @param array $ids
@@ -328,18 +218,6 @@ class QueryBuilderTest extends AbstractMysqlCase
         $users = Query::table(User::class)->condition(['id', 'in', $ids])->orderBy('id', 'desc')->get()->getResult();
 
         $this->assertCount(2, $users);
-    }
-
-    /**
-     * @dataProvider mysqlProviders
-     *
-     * @param array $ids
-     */
-    public function testCondtion4AndByF3ByCo(array $ids)
-    {
-        go(function () use ($ids) {
-            $this->testCondtion4AndByF3($ids);
-        });
     }
 
     /**
@@ -359,35 +237,11 @@ class QueryBuilderTest extends AbstractMysqlCase
      *
      * @param array $ids
      */
-    public function testCondtion5AndByF3ByCo(array $ids)
-    {
-        go(function () use ($ids) {
-            $this->testCondtion5AndByF3($ids);
-        });
-    }
-
-    /**
-     * @dataProvider mysqlProviders
-     *
-     * @param array $ids
-     */
     public function testLimit(array $ids)
     {
         sort($ids);
         $result = Query::table(User::class)->whereIn('id', $ids)->orderBy('id', 'asc')->limit(1, 1)->get()->getResult();
         $this->assertEquals($ids[1], $result[0]['id']);
-    }
-
-    /**
-     * @dataProvider mysqlProviders
-     *
-     * @param array $ids
-     */
-    public function testLimitByCo(array $ids)
-    {
-        go(function () use ($ids) {
-            $this->testLimit($ids);
-        });
     }
 
     /**
@@ -433,18 +287,6 @@ class QueryBuilderTest extends AbstractMysqlCase
 
         $users = Query::table(User::class)->condition(['id' => []])->get()->getResult();
         $this->assertGreaterThan(2, $users);
-    }
-
-    /**
-     * @dataProvider mysqlProviders
-     *
-     * @param array $ids
-     */
-    public function testCondtion6ByCo(array $ids)
-    {
-        go(function () use ($ids) {
-            $this->testCondtion6($ids);
-        });
     }
 
     public function testCondionLikeOrNotLike()
@@ -493,13 +335,6 @@ class QueryBuilderTest extends AbstractMysqlCase
         $count = Query::table(User::class)->where('sex', 1)->count()->getResult();
         // 比较结果
         $this->assertEquals($result['sum'], $count);
-    }
-
-    public function testQueryWithFuncByCo()
-    {
-        go(function () {
-            $this->testQueryWithFunc();
-        });
     }
 
     /**
@@ -562,17 +397,6 @@ class QueryBuilderTest extends AbstractMysqlCase
     }
 
     /**
-     * 列别名查询
-     * @throws \Swoft\Db\Exception\MysqlException
-     */
-    public function testColumnAliasByCo()
-    {
-        go(function () {
-            $this->testColumnAlias();
-        });
-    }
-
-    /**
      * @dataProvider mysqlProvider
      * @param int $id
      */
@@ -580,7 +404,9 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         Query::table(User::class)->where('id', $id)->forUpdate()->one()->getResult();
         $lastSql = get_last_sql();
-        $lastSql = substr($lastSql, 0, strpos($lastSql, ' Params: '));
+        if ($pos = strpos($lastSql, ' Params: ')) {
+            $lastSql = substr($lastSql, 0, $pos);
+        }
         $this->assertTrue(StringHelper::endsWith($lastSql, 'FOR UPDATE'));
     }
 
@@ -592,7 +418,9 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         Query::table(User::class)->where('id', $id)->sharedLock()->one()->getResult();
         $lastSql = get_last_sql();
-        $lastSql = substr($lastSql, 0, strpos($lastSql, ' Params: '));
+        if ($pos = strpos($lastSql, ' Params: ')) {
+            $lastSql = substr($lastSql, 0, $pos);
+        }
         $this->assertTrue(StringHelper::endsWith($lastSql, 'LOCK IN SHARE MODE'));
     }
 }

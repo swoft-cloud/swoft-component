@@ -12,8 +12,18 @@ declare(strict_types=1);
 namespace SwoftTest\HttpClient\Cases;
 
 use PHPUnit\Framework\TestCase;
+use Swoft\App;
 
 class AbstractTestCase extends TestCase
 {
-    protected $options = ['timeout' => 20];
+    public function getOptions()
+    {
+        if (App::isCoContext()) {
+            return ['timeout' => 5];
+        }
+
+        return [
+            CURLOPT_TIMEOUT => 5,
+        ];
+    }
 }

@@ -12,7 +12,6 @@ namespace SwoftTest\Db\Cases\Mysql;
 use Swoft\Db\Query;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\User;
-use function test_go as go;
 
 /**
  * AggregateTest
@@ -35,34 +34,10 @@ class AggregateTest extends AbstractMysqlCase
      *
      * @param array $ids
      */
-    public function testCountByCo(array $ids)
-    {
-        go(function () use ($ids) {
-            $this->testCount($ids);
-        });
-    }
-
-    /**
-     * @dataProvider mysqlProviders
-     *
-     * @param array $ids
-     */
     public function testSum(array $ids)
     {
         $ageNum    = Query::table(User::class)->sum('age')->getResult();
         $this->assertTrue($ageNum >= 0);
-    }
-
-    /**
-     * @dataProvider mysqlProviders
-     *
-     * @param array $ids
-     */
-    public function testSumByCo(array $ids)
-    {
-        go(function () use ($ids) {
-            $this->testSum($ids);
-        });
     }
 
     /**
@@ -81,18 +56,6 @@ class AggregateTest extends AbstractMysqlCase
      *
      * @param array $ids
      */
-    public function testMaxByCo(array $ids)
-    {
-        go(function () use ($ids) {
-            $this->testMax($ids);
-        });
-    }
-
-    /**
-     * @dataProvider mysqlProviders
-     *
-     * @param array $ids
-     */
     public function testMin(array $ids)
     {
         $minAge    = Query::table(User::class)->min('age')->getResult();
@@ -104,33 +67,9 @@ class AggregateTest extends AbstractMysqlCase
      *
      * @param array $ids
      */
-    public function testMinByCo(array $ids)
-    {
-        go(function () use ($ids) {
-            $this->testMin($ids);
-        });
-    }
-
-    /**
-     * @dataProvider mysqlProviders
-     *
-     * @param array $ids
-     */
     public function testAvg(array $ids)
     {
         $avgAge    = Query::table(User::class)->avg('age')->getResult();
         $this->assertTrue($avgAge >= 0);
-    }
-
-    /**
-     * @dataProvider mysqlProviders
-     *
-     * @param array $ids
-     */
-    public function testAvgByCo(array $ids)
-    {
-        go(function () use ($ids) {
-            $this->testAvg($ids);
-        });
     }
 }
