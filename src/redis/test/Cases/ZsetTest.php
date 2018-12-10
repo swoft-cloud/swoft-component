@@ -1,6 +1,6 @@
 <?php
 
-namespace SwoftTest\Redis;
+namespace SwoftTest\Redis\Cases;
 
 /**
  * ZsetTest
@@ -109,19 +109,5 @@ class ZsetTest extends AbstractTestCase
 
         $res = $this->redis->zRange($output, 0, -1, true);
         $this->assertEquals(['i2' => 5], $res);
-    }
-
-    public function testZInterByCo()
-    {
-        go(function () {
-            $this->testZInter();
-        });
-    }
-
-    public function testZaddByCo()
-    {
-        go(function () {
-            $this->testZadd();
-        });
     }
 }

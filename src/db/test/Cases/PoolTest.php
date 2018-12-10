@@ -46,10 +46,10 @@ class PoolTest extends AbstractTestCase
         $this->assertEquals($pConfig->getName(), 'default.master');
         $this->assertEquals($pConfig->getProvider(), 'consul2');
         $this->assertEquals($pConfig->getTimeout(), 10);
-        // $this->assertEquals($pConfig->getUri(), [
-        //     '127.0.0.1:3306/test?user=root&password=&charset=utf8',
-        //     '127.0.0.1:3306/test?user=root&password=&charset=utf8',
-        // ]);
+        $this->assertEquals($pConfig->getUri(), [
+            '127.0.0.1:3306/test?user=root&password=&charset=utf8',
+            '127.0.0.1:3306/test?user=root&password=&charset=utf8',
+        ]);
         $this->assertEquals($pConfig->getBalancer(), 'random');
         $this->assertEquals($pConfig->getMaxActive(), 60);
         $this->assertEquals($pConfig->isUseProvider(), false);
@@ -81,10 +81,10 @@ class PoolTest extends AbstractTestCase
         $this->assertEquals($pConfig->getName(), 'default.slave');
         $this->assertEquals($pConfig->getProvider(), 'consul2');
         $this->assertEquals($pConfig->getTimeout(), 10);
-        // $this->assertEquals($pConfig->getUri(), [
-        //     '127.0.0.1:3306/test?user=root&password=&charset=utf8',
-        //     '127.0.0.1:3306/test?user=root&password=&charset=utf8',
-        // ]);
+        $this->assertEquals($pConfig->getUri(), [
+            '127.0.0.1:3306/test?user=root&password=&charset=utf8',
+            '127.0.0.1:3306/test?user=root&password=&charset=utf8',
+        ]);
         $this->assertEquals($pConfig->getBalancer(), 'random');
         $this->assertEquals($pConfig->getMaxActive(), 60);
         $this->assertEquals($pConfig->isUseProvider(), false);

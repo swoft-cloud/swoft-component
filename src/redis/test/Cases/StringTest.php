@@ -1,6 +1,6 @@
 <?php
 
-namespace SwoftTest\Redis;
+namespace SwoftTest\Redis\Cases;
 
 use Swoft\App;
 use Swoole\Coroutine\Redis;
@@ -31,25 +31,11 @@ class StringTest extends AbstractTestCase
         $this->assertEquals($getValue, $value);
     }
 
-    public function testSetByCo()
-    {
-        go(function () {
-            $this->testSet();
-        });
-    }
-
     public function testGet()
     {
         $default = 'defualtValue';
         $result = $this->redis->get("notKey" . uniqid(), $default);
         $this->assertSame($result, $default);
-    }
-
-    public function testGetByCo()
-    {
-        go(function () {
-            $this->testGet();
-        });
     }
 
     public function testMsetAndMget()
@@ -69,13 +55,6 @@ class StringTest extends AbstractTestCase
         $values = $this->redis->mget([$key2, $key]);
         $this->assertEquals($values[$key], $value);
         $this->assertEquals($values[$key2], $value2);
-    }
-
-    public function testMsetAndMgetByCo()
-    {
-        go(function () {
-            $this->testMsetAndMget();
-        });
     }
 
     public function testHyperLoglog()
@@ -102,12 +81,5 @@ class StringTest extends AbstractTestCase
 
         $result = $this->redis->pfCount(['pf:test', 'pf:test2']);
         $this->assertEquals(5, $result);
-    }
-
-    public function testHyperLoglogByCo()
-    {
-        go(function () {
-           $this->testHyperLoglog();
-        });
     }
 }

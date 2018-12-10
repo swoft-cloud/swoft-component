@@ -1,6 +1,6 @@
 <?php
 
-namespace SwoftTest\Redis;
+namespace SwoftTest\Redis\Cases;
 
 /**
  * SetTest
@@ -29,13 +29,6 @@ class SetTest extends AbstractTestCase
         $this->assertPrefix($key);
     }
 
-    public function testSaddAndSMembersByCo()
-    {
-        go(function () {
-            $this->testSaddAndSMembers();
-        });
-    }
-
     public function testSremoveAndScontainsAndScard()
     {
         $key    = uniqid();
@@ -59,12 +52,4 @@ class SetTest extends AbstractTestCase
 
         $this->assertPrefix($key);
     }
-
-    public function testSremoveByCo()
-    {
-        go(function () {
-            $this->testSremoveAndScontainsAndScard();
-        });
-    }
-
 }

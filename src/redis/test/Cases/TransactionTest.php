@@ -1,6 +1,6 @@
 <?php
 
-namespace SwoftTest\Redis;
+namespace SwoftTest\Redis\Cases;
 
 /**
  * TransactionTest

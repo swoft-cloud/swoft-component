@@ -1,6 +1,6 @@
 <?php
 
-namespace SwoftTest\Redis;
+namespace SwoftTest\Redis\Cases;
 
 use Swoft\Redis\Pool\Config\RedisPoolConfig;
 
@@ -26,35 +26,15 @@ class KeyTest extends AbstractTestCase
         }
     }
 
-    /**
-     * @dataProvider  keysProvider
-     *
-     * @param array $keys
-     */
-    public function testDeleteByCo(array $keys)
-    {
-        go(function () use ($keys) {
-            $this->testDelete($keys);
-        });
-    }
-
     public function testKeys()
     {
         $result = $this->redis->getKeys('*');
 
-        /* @var \Swoft\Redis\Pool\Config\RedisPoolConfig $redisConfig */
         $redisConfig = \bean(RedisPoolConfig::class);
-        $prefix      = $redisConfig->getPrefix();
+        $prefix = $redisConfig->getPrefix();
         foreach ($result as $key) {
             $this->assertStringStartsWith($prefix, $key);
         }
-    }
-
-    public function testKeysByCo()
-    {
-        go(function () {
-            $this->testKeys();
-        });
     }
 
     /**
@@ -83,12 +63,5 @@ class KeyTest extends AbstractTestCase
         $result = $this->redis->randomKey();
         $key = str_replace('swoft-test-redis_', '', $result);
         $this->assertEquals(1, $this->redis->exists($key));
-    }
-
-    public function testRandomKeyByCo()
-    {
-        go(function () {
-            $this->testRandomKey();
-        });
     }
 }

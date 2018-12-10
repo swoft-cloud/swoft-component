@@ -1,6 +1,6 @@
 <?php
 
-namespace SwoftTest\Redis;
+namespace SwoftTest\Redis\Cases;
 
 use PHPUnit\Framework\TestCase;
 use Swoft\Redis\Pool\Config\RedisPoolConfig;
@@ -12,7 +12,7 @@ use Swoft\Redis\Redis;
 abstract class AbstractTestCase extends TestCase
 {
     /**
-     * @var \Swoft\Redis\Redis
+     * @var \Redis
      */
     public $redis;
 
@@ -20,18 +20,6 @@ abstract class AbstractTestCase extends TestCase
     {
         $this->redis = bean(Redis::class);
         parent::__construct($name, $data, $dataName);
-    }
-
-
-    /**
-     * Tear down
-     */
-    protected function tearDown()
-    {
-        parent::tearDown();
-        swoole_timer_after(6 * 1000, function () {
-            swoole_event_exit();
-        });
     }
 
     public function keysProvider()
