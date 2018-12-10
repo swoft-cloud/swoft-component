@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Rpc\Packer;
 
 use Swoft\App;
@@ -14,12 +21,6 @@ use Swoft\Rpc\Packer\Json\JsonPacker;
  */
 class ServicePacker implements PackerInterface
 {
-
-    /**
-     * @var string
-     */
-    private $defaultPacker = 'json';
-
     /**
      * Default packers configs
      *
@@ -29,6 +30,11 @@ class ServicePacker implements PackerInterface
         = [
             'json' => JsonPacker::class,
         ];
+
+    /**
+     * @var string
+     */
+    private $defaultPacker = 'json';
 
     /**
      * @var array
@@ -127,5 +133,4 @@ class ServicePacker implements PackerInterface
     {
         return array_merge($this->packers, $this->defaultPackers);
     }
-
 }

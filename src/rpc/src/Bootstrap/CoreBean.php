@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Rpc\Bootstrap;
 
 use Swoft\Bean\Annotation\BootBean;
@@ -9,7 +16,7 @@ use Swoft\Rpc\Packer\ServicePacker;
 /**
  * The core bean of rpc
  *
- * @BootBean()
+ * @BootBean
  */
 class CoreBean implements BootBeanInterface
 {

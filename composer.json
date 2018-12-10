@@ -126,7 +126,7 @@
             "SwoftTest\\Memory\\": "src/memory/test/",
             "SwoftTest\\Process\\": "src/process/test/",
             "SwoftTest\\Redis\\": "src/redis/test/",
-            "SwoftTest\\Rpc\\": "src/rpc/test/Cases",
+            "SwoftTest\\Rpc\\": "src/rpc/test/",
             "SwoftTest\\Rpc\\Client\\": "src/rpc-client/test/Cases",
             "SwoftTest\\RpcServer\\": "src/rpc-server/test/Cases",
             "SwoftTest\\Sg\\": "src/service-governance/test/Cases",
