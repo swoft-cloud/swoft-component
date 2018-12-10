@@ -69,7 +69,7 @@ class PoolTest extends AbstractTestCase
             } else {
                 // TODO: 单元测试内会返回 PHPUnit_Framework_Error_Warning
                 // $this->assertInstanceOf(\RedisException::class, $ex);
-                $this->assertSame('Operation timed out', $ex->getMessage());
+                $this->assertTrue(strpos($ex->getMessage(), 'timed out') >= 0);
             }
             $this->assertTrue(microtime(true) - $btime < 2);
         }
