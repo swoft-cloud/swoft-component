@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Http\Message\Base;
 
@@ -11,7 +20,6 @@ use Zend\Mime\Decode;
  */
 trait MessageTrait
 {
-
     /**
      * @var array 存放headers的小写name
      */
@@ -254,31 +262,6 @@ trait MessageTrait
     }
 
     /**
-     * @param array $headers
-     * @return static
-     */
-    private function setHeaders(array $headers)
-    {
-        $this->headerNames = $this->headers = [];
-        foreach ($headers as $header => $value) {
-            if (! \is_array($value)) {
-                $value = [$value];
-            }
-
-            $value = $this->trimHeaderValues($value);
-            $normalized = strtolower($header);
-            if (isset($this->headerNames[$normalized])) {
-                $header = $this->headerNames[$normalized];
-                $this->headers[$header] = array_merge($this->headers[$header], $value);
-            } else {
-                $this->headerNames[$normalized] = $header;
-                $this->headers[$header] = $value;
-            }
-        }
-        return $this;
-    }
-
-    /**
      * Gets the body of the message.
      *
      * @return StreamInterface Returns the body as a stream.
@@ -312,23 +295,6 @@ trait MessageTrait
         $new = clone $this;
         $new->stream = $body;
         return $new;
-    }
-
-    /**
-     * Trims whitespace from the header values.
-     * Spaces and tabs ought to be excluded by parsers when extracting the field value from a header field.
-     * header-field = field-name ":" OWS field-value OWS
-     * OWS          = *( SP / HTAB )
-     *
-     * @param string[] $values Header values
-     * @return string[] Trimmed header values
-     * @see https://tools.ietf.org/html/rfc7230#section-3.2.4
-     */
-    private function trimHeaderValues(array $values)
-    {
-        return array_map(function ($value) {
-            return trim($value, " \t");
-        }, $values);
     }
 
     /**
@@ -371,5 +337,50 @@ trait MessageTrait
         } catch (\ExceptionInterface $e) {
             return false;
         }
+    }
+
+    /**
+     * @param array $headers
+     * @return static
+     */
+    private function setHeaders(array $headers)
+    {
+        $this->headerNames = $this->headers = [];
+        foreach ($headers as $header => $value) {
+            if (! \is_array($value)) {
+                $value = [$value];
+            }
+
+            $value = $this->trimHeaderValues($value);
+            $normalized = strtolower($header);
+            if (isset($this->headerNames[$normalized])) {
+                $header = $this->headerNames[$normalized];
+                $this->headers[$header] = array_merge($this->headers[$header], $value);
+            } else {
+                $this->headerNames[$normalized] = $header;
+                $this->headers[$header] = $value;
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * Trims whitespace from the header values.
+     * Spaces and tabs ought to be excluded by parsers when extracting the field value from a header field.
+     * header-field = field-name ":" OWS field-value OWS
+     * OWS          = *( SP / HTAB )
+     *
+     * @param string[] $values Header values
+     * @return string[] Trimmed header values
+     * @see https://tools.ietf.org/html/rfc7230#section-3.2.4
+     */
+    private function trimHeaderValues(array $values)
+    {
+        return array_map(function ($value) {
+            if (is_string($value)) {
+                return trim($value, " \t");
+            }
+            return $value;
+        }, $values);
     }
 }

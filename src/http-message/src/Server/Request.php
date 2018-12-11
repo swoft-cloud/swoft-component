@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Http\Message\Server;
 
@@ -84,137 +93,6 @@ class Request extends \Swoft\Http\Message\Base\Request implements ServerRequestI
         $request->uploadedFiles = self::normalizeFiles($swooleRequest->files ?? []);
         $request->swooleRequest = $swooleRequest;
         return $request;
-    }
-
-    /**
-     * Return an UploadedFile instance array.
-     *
-     * @param array $files A array which respect $_FILES structure
-     * @throws \InvalidArgumentException for unrecognized values
-     * @return array
-     */
-    private static function normalizeFiles(array $files)
-    {
-        $normalized = [];
-
-        foreach ($files as $key => $value) {
-            if ($value instanceof UploadedFileInterface) {
-                $normalized[$key] = $value;
-            } elseif (is_array($value) && isset($value['tmp_name'])) {
-                $normalized[$key] = self::createUploadedFileFromSpec($value);
-            } elseif (is_array($value)) {
-                $normalized[$key] = self::normalizeFiles($value);
-                continue;
-            } else {
-                throw new \InvalidArgumentException('Invalid value in files specification');
-            }
-        }
-
-        return $normalized;
-    }
-
-    /**
-     * Create and return an UploadedFile instance from a $_FILES specification.
-     * If the specification represents an array of values, this method will
-     * delegate to normalizeNestedFileSpec() and return that return value.
-     *
-     * @param array $value $_FILES struct
-     * @return array|UploadedFileInterface
-     */
-    private static function createUploadedFileFromSpec(array $value)
-    {
-        if (is_array($value['tmp_name'])) {
-            return self::normalizeNestedFileSpec($value);
-        }
-
-        return new UploadedFile($value['tmp_name'], (int)$value['size'], (int)$value['error'], $value['name'], $value['type']);
-    }
-
-    /**
-     * Normalize an array of file specifications.
-     * Loops through all nested files and returns a normalized array of
-     * UploadedFileInterface instances.
-     *
-     * @param array $files
-     * @return UploadedFileInterface[]
-     */
-    private static function normalizeNestedFileSpec(array $files = [])
-    {
-        $normalizedFiles = [];
-
-        foreach (array_keys($files['tmp_name']) as $key) {
-            $spec = [
-                'tmp_name' => $files['tmp_name'][$key],
-                'size' => $files['size'][$key],
-                'error' => $files['error'][$key],
-                'name' => $files['name'][$key],
-                'type' => $files['type'][$key],
-            ];
-            $normalizedFiles[$key] = self::createUploadedFileFromSpec($spec);
-        }
-
-        return $normalizedFiles;
-    }
-
-    /**
-     * Get a Uri populated with values from $swooleRequest->server.
-     * @param \Swoole\Http\Request $swooleRequest
-     * @return \Psr\Http\Message\UriInterface
-     * @throws \InvalidArgumentException
-     */
-    private static function getUriFromGlobals(\Swoole\Http\Request $swooleRequest)
-    {
-        $server = $swooleRequest->server;
-        $header = $swooleRequest->header;
-        $uri = new Uri();
-        $uri = $uri->withScheme(! empty($server['https']) && $server['https'] !== 'off' ? 'https' : 'http');
-
-        $hasPort = false;
-        if (isset($server['http_host'])) {
-            $hostHeaderParts = explode(':', $server['http_host']);
-            $uri = $uri->withHost($hostHeaderParts[0]);
-            if (isset($hostHeaderParts[1])) {
-                $hasPort = true;
-                $uri = $uri->withPort($hostHeaderParts[1]);
-            }
-        } elseif (isset($server['server_name'])) {
-            $uri = $uri->withHost($server['server_name']);
-        } elseif (isset($server['server_addr'])) {
-            $uri = $uri->withHost($server['server_addr']);
-        } elseif (isset($header['host'])) {
-            if (\strpos($header['host'], ':')) {
-                $hasPort = true;
-                list($host, $port) = explode(':', $header['host'], 2);
-
-                if ($port !== '80') {
-                    $uri = $uri->withPort($port);
-                }
-            } else {
-                $host = $header['host'];
-            }
-
-            $uri = $uri->withHost($host);
-        }
-
-        if (! $hasPort && isset($server['server_port'])) {
-            $uri = $uri->withPort($server['server_port']);
-        }
-
-        $hasQuery = false;
-        if (isset($server['request_uri'])) {
-            $requestUriParts = explode('?', $server['request_uri']);
-            $uri = $uri->withPath($requestUriParts[0]);
-            if (isset($requestUriParts[1])) {
-                $hasQuery = true;
-                $uri = $uri->withQuery($requestUriParts[1]);
-            }
-        }
-
-        if (! $hasQuery && isset($server['query_string'])) {
-            $uri = $uri->withQuery($server['query_string']);
-        }
-
-        return $uri;
     }
 
     /**
@@ -597,5 +475,136 @@ class Request extends \Swoft\Http\Message\Base\Request implements ServerRequestI
     {
         $this->swooleRequest = $swooleRequest;
         return $this;
+    }
+
+    /**
+     * Return an UploadedFile instance array.
+     *
+     * @param array $files A array which respect $_FILES structure
+     * @throws \InvalidArgumentException for unrecognized values
+     * @return array
+     */
+    private static function normalizeFiles(array $files)
+    {
+        $normalized = [];
+
+        foreach ($files as $key => $value) {
+            if ($value instanceof UploadedFileInterface) {
+                $normalized[$key] = $value;
+            } elseif (is_array($value) && isset($value['tmp_name'])) {
+                $normalized[$key] = self::createUploadedFileFromSpec($value);
+            } elseif (is_array($value)) {
+                $normalized[$key] = self::normalizeFiles($value);
+                continue;
+            } else {
+                throw new \InvalidArgumentException('Invalid value in files specification');
+            }
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * Create and return an UploadedFile instance from a $_FILES specification.
+     * If the specification represents an array of values, this method will
+     * delegate to normalizeNestedFileSpec() and return that return value.
+     *
+     * @param array $value $_FILES struct
+     * @return array|UploadedFileInterface
+     */
+    private static function createUploadedFileFromSpec(array $value)
+    {
+        if (is_array($value['tmp_name'])) {
+            return self::normalizeNestedFileSpec($value);
+        }
+
+        return new UploadedFile($value['tmp_name'], (int)$value['size'], (int)$value['error'], $value['name'], $value['type']);
+    }
+
+    /**
+     * Normalize an array of file specifications.
+     * Loops through all nested files and returns a normalized array of
+     * UploadedFileInterface instances.
+     *
+     * @param array $files
+     * @return UploadedFileInterface[]
+     */
+    private static function normalizeNestedFileSpec(array $files = [])
+    {
+        $normalizedFiles = [];
+
+        foreach (array_keys($files['tmp_name']) as $key) {
+            $spec = [
+                'tmp_name' => $files['tmp_name'][$key],
+                'size' => $files['size'][$key],
+                'error' => $files['error'][$key],
+                'name' => $files['name'][$key],
+                'type' => $files['type'][$key],
+            ];
+            $normalizedFiles[$key] = self::createUploadedFileFromSpec($spec);
+        }
+
+        return $normalizedFiles;
+    }
+
+    /**
+     * Get a Uri populated with values from $swooleRequest->server.
+     * @param \Swoole\Http\Request $swooleRequest
+     * @return \Psr\Http\Message\UriInterface
+     * @throws \InvalidArgumentException
+     */
+    private static function getUriFromGlobals(\Swoole\Http\Request $swooleRequest)
+    {
+        $server = $swooleRequest->server;
+        $header = $swooleRequest->header;
+        $uri = new Uri();
+        $uri = $uri->withScheme(! empty($server['https']) && $server['https'] !== 'off' ? 'https' : 'http');
+
+        $hasPort = false;
+        if (isset($server['http_host'])) {
+            $hostHeaderParts = explode(':', $server['http_host']);
+            $uri = $uri->withHost($hostHeaderParts[0]);
+            if (isset($hostHeaderParts[1])) {
+                $hasPort = true;
+                $uri = $uri->withPort($hostHeaderParts[1]);
+            }
+        } elseif (isset($server['server_name'])) {
+            $uri = $uri->withHost($server['server_name']);
+        } elseif (isset($server['server_addr'])) {
+            $uri = $uri->withHost($server['server_addr']);
+        } elseif (isset($header['host'])) {
+            if (\strpos($header['host'], ':')) {
+                $hasPort = true;
+                list($host, $port) = explode(':', $header['host'], 2);
+
+                if ($port !== '80') {
+                    $uri = $uri->withPort($port);
+                }
+            } else {
+                $host = $header['host'];
+            }
+
+            $uri = $uri->withHost($host);
+        }
+
+        if (! $hasPort && isset($server['server_port'])) {
+            $uri = $uri->withPort($server['server_port']);
+        }
+
+        $hasQuery = false;
+        if (isset($server['request_uri'])) {
+            $requestUriParts = explode('?', $server['request_uri']);
+            $uri = $uri->withPath($requestUriParts[0]);
+            if (isset($requestUriParts[1])) {
+                $hasQuery = true;
+                $uri = $uri->withQuery($requestUriParts[1]);
+            }
+        }
+
+        if (! $hasQuery && isset($server['query_string'])) {
+            $uri = $uri->withQuery($server['query_string']);
+        }
+
+        return $uri;
     }
 }

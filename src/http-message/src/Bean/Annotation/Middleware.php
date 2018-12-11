@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Http\Message\Bean\Annotation;
 
@@ -13,7 +22,6 @@ use Swoft\Helper\StringHelper;
  */
 class Middleware
 {
-
     /**
      * @var string
      */
@@ -35,19 +43,19 @@ class Middleware
     }
 
     /**
+     * @return string
+     */
+    public function getClass(): string
+    {
+        return $this->class;
+    }
+
+    /**
      * @param string $value
      * @return string
      */
     protected function ltrimClass(string $value)
     {
         return StringHelper::startsWith($value, '\\') ? substr($value, 1) : $value;
-    }
-
-    /**
-     * @return string
-     */
-    public function getClass(): string
-    {
-        return $this->class;
     }
 }

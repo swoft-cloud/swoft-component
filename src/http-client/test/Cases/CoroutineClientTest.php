@@ -359,14 +359,10 @@ class CoroutineClientTest extends AbstractTestCase
             '_options' => $this->getOptions()
         ]);
 
-        $res = $client->get(0)->getResult();
-        $res = JsonHelper::decode($res, true);
-        $this->assertSame('/', $res['uri']['path']);
-
         $res = $client->get(' ')->getResult();
         $this->assertSame(['message' => 'Route not found for / '], JsonHelper::decode($res, true));
 
-        $res = $client->get(123)->getResult();
+        $res = $client->get('123')->getResult();
         $this->assertSame(['message' => 'Route not found for /123'], JsonHelper::decode($res, true));
     }
 }

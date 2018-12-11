@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Http\Message\Cookie;
 
@@ -6,14 +15,12 @@ use Psr\Http\Message\RequestInterface;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\Scope;
 
-
 /**
  * Class CookieManager
  * @Bean(scope=Scope::PROTOTYPE)
  */
 class CookieManager
 {
-
     /**
      * @var \ArrayIterator
      */
@@ -122,5 +129,4 @@ class CookieManager
     {
         return $this->request instanceof RequestInterface;
     }
-
 }

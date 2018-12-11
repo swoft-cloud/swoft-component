@@ -1,11 +1,19 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Http\Message\Bean\Collector;
 
-use App\Controllers\MiddlewareController;
+use Swoft\Bean\CollectorInterface;
 use Swoft\Http\Message\Bean\Annotation\Middleware;
 use Swoft\Http\Message\Bean\Annotation\Middlewares;
-use Swoft\Bean\CollectorInterface;
 
 /**
  * Middleware collector
@@ -69,7 +77,7 @@ class MiddlewareCollector implements CollectorInterface
 
         if (! empty($methodName)) {
             $scanMiddlewares = self::$middlewares[$className]['middlewares']['actions'][$methodName] ?? [];
-            self::$middlewares[$className]['middlewares']['actions'][$methodName] = array_unique(array_merge($classMiddlewares,$scanMiddlewares));
+            self::$middlewares[$className]['middlewares']['actions'][$methodName] = array_unique(array_merge($classMiddlewares, $scanMiddlewares));
         } else {
             $scanMiddlewares = self::$middlewares[$className]['middlewares']['group'] ?? [];
             self::$middlewares[$className]['middlewares']['group'] = array_unique(array_merge($classMiddlewares, $scanMiddlewares));
