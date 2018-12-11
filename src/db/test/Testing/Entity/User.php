@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -9,22 +10,22 @@
  */
 namespace SwoftTest\Db\Testing\Entity;
 
+use Swoft\Db\Bean\Annotation\Column;
+use Swoft\Db\Bean\Annotation\Entity;
 use Swoft\Db\Bean\Annotation\Id;
 use Swoft\Db\Bean\Annotation\Required;
 use Swoft\Db\Bean\Annotation\Table;
-use Swoft\Db\Bean\Annotation\Column;
-use Swoft\Db\Bean\Annotation\Entity;
 use Swoft\Db\Model;
 use Swoft\Db\Types;
 
 /**
- * @Entity()
+ * @Entity
  * @Table(name="user")
  */
 class User extends Model
 {
     /**
-     * @Id()
+     * @Id
      * @Column(name="id", type=Types::INT)
      * @var null|int
      */
@@ -32,7 +33,7 @@ class User extends Model
 
     /**
      * @Column(name="name", type=Types::STRING, length=20)
-     * @Required()
+     * @Required
      * @var null|string
      */
     private $name;

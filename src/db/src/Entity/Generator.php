@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -11,6 +12,16 @@ namespace Swoft\Db\Entity;
 
 class Generator extends AbstractGenerator implements GeneratorInterface
 {
+    /**
+     * @const string SchemaTables表
+     */
+    const SCHEMA_TABLES = 'information_schema.`tables`';
+
+    /**
+     * @const string SchemaColumn表
+     */
+    const SCHEMA_COLUMN = 'information_schema.`columns`';
+
     /**
      * @var string $db 数据库
      */
@@ -42,14 +53,54 @@ class Generator extends AbstractGenerator implements GeneratorInterface
     private $removeTablePrefix = '';
 
     /**
-     * @const string SchemaTables表
+     * __get()
+     *
+     * @override
+     *
+     * @param string $name 参数名
+     *
+     * @return mixed
+     * @throws \RuntimeException
      */
-    const SCHEMA_TABLES = 'information_schema.`tables`';
+    public function __get($name)
+    {
+        $method = 'get' . ucfirst($name);
+        if (method_exists($this, $method)) {
+            return $this->$method();
+        }
+
+        if (method_exists($this, 'set' . ucfirst($name))) {
+            throw new \RunTimeException('the property only access write' . \get_class($this) . '::' . $name);
+        }
+
+        throw new \RunTimeException('unknown the property' . \get_class($this) . '::' . $name);
+    }
 
     /**
-     * @const string SchemaColumn表
+     * __set()
+     *
+     * @override
+     *
+     * @param string $name  参数名
+     * @param mixed  $value 参数值
+     *
+     * @return self
+     * @throws \RuntimeException
      */
-    const SCHEMA_COLUMN = 'information_schema.`columns`';
+    public function __set($name, $value): self
+    {
+        // TODO add pair method __isset()
+        $method = 'set' . ucfirst($name);
+        if (\method_exists($this, $method)) {
+            return $this->$method($value);
+        }
+
+        if (\method_exists($this, 'get' . ucfirst($name))) {
+            throw new \RunTimeException('the property only access read' . \get_class($this) . '::' . $name);
+        }
+
+        throw new \RunTimeException('unknown the property' . \get_class($this) . '::' . $name);
+    }
 
     /**
      * 开始执行生成实体
@@ -264,55 +315,5 @@ class Generator extends AbstractGenerator implements GeneratorInterface
     public function getExtends(): string
     {
         return $this->extends;
-    }
-
-    /**
-     * __get()
-     *
-     * @override
-     *
-     * @param string $name 参数名
-     *
-     * @return mixed
-     * @throws \RuntimeException
-     */
-    public function __get($name)
-    {
-        $method = 'get' . ucfirst($name);
-        if (method_exists($this, $method)) {
-            return $this->$method();
-        }
-
-        if (method_exists($this, 'set' . ucfirst($name))) {
-            throw new \RunTimeException('the property only access write' . \get_class($this) . '::' . $name);
-        }
-
-        throw new \RunTimeException('unknown the property' . \get_class($this) . '::' . $name);
-    }
-
-    /**
-     * __set()
-     *
-     * @override
-     *
-     * @param string $name  参数名
-     * @param mixed  $value 参数值
-     *
-     * @return self
-     * @throws \RuntimeException
-     */
-    public function __set($name, $value): self
-    {
-        // TODO add pair method __isset()
-        $method = 'set' . ucfirst($name);
-        if (\method_exists($this, $method)) {
-            return $this->$method($value);
-        }
-
-        if (\method_exists($this, 'get' . ucfirst($name))) {
-            throw new \RunTimeException('the property only access read' . \get_class($this) . '::' . $name);
-        }
-
-        throw new \RunTimeException('unknown the property' . \get_class($this) . '::' . $name);
     }
 }

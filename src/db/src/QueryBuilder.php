@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -139,6 +140,57 @@ class QueryBuilder implements QueryBuilderInterface
     const IS_NOT = 'IS NOT';
 
     /**
+     * limit 语句
+     *
+     * @var array
+     */
+    protected $limit = [];
+
+    /**
+     * 参数集合
+     *
+     * @var array
+     */
+    protected $parameters = [];
+
+    /**
+     * @var array
+     */
+    protected $table = [];
+
+    /**
+     * @var string
+     */
+    protected $instance = Pool::INSTANCE;
+
+    /**
+     * @var string
+     */
+    protected $node = '';
+
+    /**
+     * Selected database
+     *
+     * @var string
+     */
+    protected $db = '';
+
+    /**
+     * @var array
+     */
+    protected $aggregate = [];
+
+    /**
+     * @var array
+     */
+    protected $decorators = [];
+
+    /**
+     * @var string
+     */
+    protected $className = '';
+
+    /**
      * 插入表名
      *
      * @var string
@@ -231,62 +283,11 @@ class QueryBuilder implements QueryBuilderInterface
     private $orderBy = [];
 
     /**
-     * limit 语句
-     *
-     * @var array
-     */
-    protected $limit = [];
-
-    /**
      * 共享锁，排他锁
      *
      * @var array
      */
     private $locks = [];
-
-    /**
-     * 参数集合
-     *
-     * @var array
-     */
-    protected $parameters = [];
-
-    /**
-     * @var array
-     */
-    protected $table = [];
-
-    /**
-     * @var string
-     */
-    protected $instance = Pool::INSTANCE;
-
-    /**
-     * @var string
-     */
-    protected $node = '';
-
-    /**
-     * Selected database
-     *
-     * @var string
-     */
-    protected $db = '';
-
-    /**
-     * @var array
-     */
-    protected $aggregate = [];
-
-    /**
-     * @var array
-     */
-    protected $decorators = [];
-
-    /**
-     * @var string
-     */
-    protected $className = '';
 
     /**
      * @param array $values
@@ -1022,81 +1023,6 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * 括号条件组拼
-     *
-     * @param array  $criteria
-     * @param string $bracket
-     * @param string $connector
-     *
-     * @return QueryBuilder
-     */
-    private function bracketCriteria(array &$criteria, string $bracket = self::BRACKET_OPEN, string $connector = self::LOGICAL_AND): self
-    {
-        $criteria[] = [
-            'bracket'   => $bracket,
-            'connector' => $connector,
-        ];
-
-        return $this;
-    }
-
-    /**
-     * join数据组装
-     *
-     * @param string       $table
-     * @param string|array $criteria
-     * @param string       $type
-     * @param string       $alias
-     *
-     * @return QueryBuilder
-     */
-    private function join(string $table, $criteria = null, string $type = self::INNER_JOIN, string $alias = null): self
-    {
-        // 是否存在判断...
-
-        if (\is_string($criteria)) {
-            $criteria = [$criteria];
-        }
-
-        $this->join[] = [
-            'table'    => $table,
-            'criteria' => $criteria,
-            'type'     => $type,
-            'alias'    => $alias,
-        ];
-
-        return $this;
-    }
-
-    /**
-     * 条件组装
-     *
-     * @param array  $criteria
-     * @param string $column
-     * @param mixed  $value
-     * @param string $operator
-     * @param string $connector
-     *
-     * @return QueryBuilder
-     */
-    private function criteria(
-        array &$criteria,
-        string $column,
-        $value,
-        string $operator = self::OPERATOR_EQ,
-        string $connector = self::LOGICAL_AND
-    ): self {
-        $criteria[] = [
-            'column'    => $column,
-            'value'     => $value,
-            'operator'  => $operator,
-            'connector' => $connector,
-        ];
-
-        return $this;
-    }
-
-    /**
      * @param string $db
      *
      * @return QueryBuilder
@@ -1239,52 +1165,6 @@ class QueryBuilder implements QueryBuilderInterface
         $result = Db::query($statement->getStatement(), $this->parameters, $this->getInstanceName(), $this->className, $this->getDecorators());
         $this->clearDecorators();
         return $result;
-    }
-
-    /**
-     * @return string
-     */
-    private function getInstanceName(): string
-    {
-        return sprintf('%s.%s.%s', $this->instance, $this->node, $this->db);
-    }
-
-    /**
-     * 实体类名获取表名
-     *
-     * @param string $tableName
-     *
-     * @return string
-     * @throws DbException
-     */
-    private function getTableNameByClassName($tableName): string
-    {
-        // 不是实体类名
-        if (strpos($tableName, '\\') === false) {
-            return $tableName;
-        }
-
-        $entities = EntityCollector::getCollector();
-        if (!isset($entities[$tableName]['table']['name'])) {
-            throw new DbException('Class is not an entity，className=' . $tableName);
-        }
-        // 选择数据库
-        $this->selectInstance($entities[$tableName]['instance']);
-
-        return $entities[$tableName]['table']['name'];
-    }
-
-    /**
-     * @return string
-     * @throws MysqlException
-     */
-    private function getTableName(): string
-    {
-        if (empty($this->table)) {
-            throw new MysqlException('Table name must be setting!');
-        }
-
-        return $this->table['table'];
     }
 
     /**
@@ -1514,5 +1394,126 @@ class QueryBuilder implements QueryBuilderInterface
 
             return $result;
         });
+    }
+
+    /**
+     * 括号条件组拼
+     *
+     * @param array  $criteria
+     * @param string $bracket
+     * @param string $connector
+     *
+     * @return QueryBuilder
+     */
+    private function bracketCriteria(array &$criteria, string $bracket = self::BRACKET_OPEN, string $connector = self::LOGICAL_AND): self
+    {
+        $criteria[] = [
+            'bracket'   => $bracket,
+            'connector' => $connector,
+        ];
+
+        return $this;
+    }
+
+    /**
+     * join数据组装
+     *
+     * @param string       $table
+     * @param string|array $criteria
+     * @param string       $type
+     * @param string       $alias
+     *
+     * @return QueryBuilder
+     */
+    private function join(string $table, $criteria = null, string $type = self::INNER_JOIN, string $alias = null): self
+    {
+        // 是否存在判断...
+
+        if (\is_string($criteria)) {
+            $criteria = [$criteria];
+        }
+
+        $this->join[] = [
+            'table'    => $table,
+            'criteria' => $criteria,
+            'type'     => $type,
+            'alias'    => $alias,
+        ];
+
+        return $this;
+    }
+
+    /**
+     * 条件组装
+     *
+     * @param array  $criteria
+     * @param string $column
+     * @param mixed  $value
+     * @param string $operator
+     * @param string $connector
+     *
+     * @return QueryBuilder
+     */
+    private function criteria(
+        array &$criteria,
+        string $column,
+        $value,
+        string $operator = self::OPERATOR_EQ,
+        string $connector = self::LOGICAL_AND
+    ): self {
+        $criteria[] = [
+            'column'    => $column,
+            'value'     => $value,
+            'operator'  => $operator,
+            'connector' => $connector,
+        ];
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    private function getInstanceName(): string
+    {
+        return sprintf('%s.%s.%s', $this->instance, $this->node, $this->db);
+    }
+
+    /**
+     * 实体类名获取表名
+     *
+     * @param string $tableName
+     *
+     * @return string
+     * @throws DbException
+     */
+    private function getTableNameByClassName($tableName): string
+    {
+        // 不是实体类名
+        if (strpos($tableName, '\\') === false) {
+            return $tableName;
+        }
+
+        $entities = EntityCollector::getCollector();
+        if (!isset($entities[$tableName]['table']['name'])) {
+            throw new DbException('Class is not an entity，className=' . $tableName);
+        }
+        // 选择数据库
+        $this->selectInstance($entities[$tableName]['instance']);
+
+        return $entities[$tableName]['table']['name'];
+    }
+
+    /**
+     * @return string
+     * @throws MysqlException
+     */
+    private function getTableName(): string
+    {
+        if (empty($this->table)) {
+            throw new MysqlException('Table name must be setting!');
+        }
+
+        return $this->table['table'];
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -15,7 +16,7 @@ use Swoft\Pool\PoolProperties;
 
 /**
  * db properties pool config
- * @Bean()
+ * @Bean
  */
 class DbPptPoolConfig extends PoolProperties
 {

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -15,14 +16,14 @@ use Swoft\Helper\StringHelper;
 class SetGetGenerator
 {
     /**
-     * @var Schema $schema schema对象
-     */
-    private $schema;
-
-    /**
      * @var string $folder 模板目录
      */
     public $folder = 'Stub';
+
+    /**
+     * @var Schema $schema schema对象
+     */
+    private $schema;
 
     /**
      * @var string $modelStub ModelStub

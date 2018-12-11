@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -66,29 +67,14 @@ class ActiveRecordTest extends AbstractMysqlCase
         $reuslt = $id > 0;
         $this->assertTrue($reuslt);
 
-        $user->setOid('18446744073709551615');
+        $user->setOid(PHP_INT_MAX);
+
         $row = $user->update()->getResult();
         $this->assertEquals(1, $row);
 
         try {
-            $user->setOid('18446744073709551616');
-            $user->update();
-            throw new \Exception('validate error');
-        } catch (\Exception $ex) {
-            $this->assertInstanceOf(ValidatorException::class, $ex);
-        }
-
-        try {
             $user->setOid('xxx');
-            $user->update();
-            throw new \Exception('validate error');
-        } catch (\Exception $ex) {
-            $this->assertInstanceOf(ValidatorException::class, $ex);
-        }
-
-        try {
-            $user->setOid('-9223372036854775809');
-            $user->update();
+            $user->update()->getResult();
             throw new \Exception('validate error');
         } catch (\Exception $ex) {
             $this->assertInstanceOf(ValidatorException::class, $ex);
@@ -123,7 +109,7 @@ class ActiveRecordTest extends AbstractMysqlCase
 
         /** @var User2 $user */
         $user = User2::findById($id)->getResult();
-        $this->assertEquals('18446744073709551615', $user->getOid());
+        $this->assertEquals(PHP_INT_MAX, $user->getOid());
     }
 
     public function testBatchInsert()

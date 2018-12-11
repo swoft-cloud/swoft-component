@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -104,23 +105,6 @@ class SyncMysqlConnection extends AbstractDbConnection
     }
 
     /**
-     * @param array|null $params
-     */
-    private function bindParams(array $params = null)
-    {
-        if (empty($params)) {
-            return;
-        }
-
-        foreach ($params as $key => $value) {
-            if (\is_int($key)) {
-                ++$key;
-            }
-            $this->stmt->bindValue($key, $value);
-        }
-    }
-
-    /**
      * @return void
      */
     public function reconnect()
@@ -220,6 +204,23 @@ class SyncMysqlConnection extends AbstractDbConnection
     public function getSql(): string
     {
         return $this->sql;
+    }
+
+    /**
+     * @param array|null $params
+     */
+    private function bindParams(array $params = null)
+    {
+        if (empty($params)) {
+            return;
+        }
+
+        foreach ($params as $key => $value) {
+            if (\is_int($key)) {
+                ++$key;
+            }
+            $this->stmt->bindValue($key, $value);
+        }
     }
 
     /**

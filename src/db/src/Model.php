@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -34,6 +35,14 @@ class Model implements \ArrayAccess, \Iterator, Arrayable, \JsonSerializable
     public function __construct(array $attributes = [])
     {
         $this->fill($attributes);
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->toJson();
     }
 
     /**
@@ -290,14 +299,6 @@ class Model implements \ArrayAccess, \Iterator, Arrayable, \JsonSerializable
         }
 
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString(): string
-    {
-        return $this->toJson();
     }
 
     /**
