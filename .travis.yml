@@ -38,7 +38,7 @@ before_script:
   - composer config -g process-timeout 900 && composer update
   - cp test/.env.example test/.env
   - docker run --rm -d -p 8500:8500 -h node1 --name consul consul agent -server -bootstrap-expect=1  -node=node1 -client 0.0.0.0 -ui
-  - php test/rpc_server.php -d
+  - php test/server.php -d
   - sleep 5
 script:
   - composer test

@@ -37,9 +37,9 @@ class SwooleStream implements StreamInterface
      *
      * @param string $contents
      */
-    public function __construct(string $contents = '')
+    public function __construct($contents = '')
     {
-        $this->contents = $contents;
+        $this->contents = (string)$contents;
         $this->size = strlen($this->contents);
     }
 

@@ -35,4 +35,32 @@ class ValidatorController
 
         return $response->json([$id, $name]);
     }
+
+    /**
+     * @RequestMapping(route="/", method={RequestMethod::POST,RequestMethod::GET,RequestMethod::PUT,RequestMethod::DELETE})
+     * @param Request $request
+     */
+    public function index(Request $request, Response $response)
+    {
+        return $response->json([
+            'headers' => [
+                'Host' => $request->getHeaderLine('Host'),
+                'User-Agent' => $request->getHeaderLine('User-Agent'),
+                'Accept' => $request->getHeaderLine('Accept'),
+                'Content-Type' => $request->getHeaderLine('Content-Type'),
+            ],
+            'server' => [],
+            'method' => $request->getMethod(),
+            'uri' => [
+                'scheme' => $request->getUri()->getScheme(),
+                'userInfo' => $request->getUri()->getUserInfo(),
+                'host' => $request->getUri()->getHost(),
+                'port' => $request->getUri()->getPort(),
+                'path' => $request->getUri()->getPath(),
+                'query' => $request->getUri()->getQuery(),
+                'fragment' => $request->getUri()->getFragment(),
+            ],
+            'body' => $request->getBody()->getContents(),
+        ]);
+    }
 }

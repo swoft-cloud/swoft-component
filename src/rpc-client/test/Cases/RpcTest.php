@@ -51,7 +51,7 @@ class RpcTest extends AbstractTestCase
     public function testRpcReconnect()
     {
         if (App::isCoContext()) {
-            $cmd = 'php ' . alias('@root') . '/rpc_server.php -d';
+            $cmd = 'php ' . alias('@root') . '/server.php -d';
 
             \co::exec($cmd);
             \co::sleep(5);

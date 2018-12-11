@@ -17,6 +17,8 @@ use Swoft\App;
 
 class AbstractTestCase extends TestCase
 {
+    public $baseUri = 'http://127.0.0.1:8080';
+
     public function getOptions()
     {
         if (App::isCoContext()) {

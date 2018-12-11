@@ -32,18 +32,24 @@ class ErrorHandler
      */
     public function handle(\Throwable $throwable)
     {
+        $response = null;
         try {
             $response = \bean(ErrorHandlerChain::class)->handle($throwable, function ($handler) use ($throwable) {
                 list($className, $method) = $handler;
                 $method = ($className && class_exists($className)) ? $method : 'handle';
+
                 if (is_string($className) && App::hasBean($className)) {
                     $class = App::getBean($className);
                 } else {
                     $class = $className;
                 }
+
+                // TODO: Without this line of comment, the program will throw a exception
                 return PhpHelper::call([$class, $method], $this->getBindParams($className, $method, $throwable));
             });
+
         } catch (\Throwable $t) {
+            
             /**
              * Do nothing, delegate to finally block,
              * and should not handle the excpetion throwed by ErrorHandler.
@@ -53,6 +59,7 @@ class ErrorHandler
                 $response = RequestContext::getResponse()->auto(ThrowableHelper::toArray($throwable));
             }
         }
+
         return $response;
     }
 

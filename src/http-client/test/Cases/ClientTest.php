@@ -27,7 +27,7 @@ class ClientTest extends AbstractTestCase
         $request = function () {
             $client = new Client();
             return $client->request('GET', '', [
-                'base_uri' => 'http://echo.swoft.org',
+                'base_uri' => $this->baseUri,
             ]);
         };
 
