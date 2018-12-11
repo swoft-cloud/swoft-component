@@ -12,9 +12,9 @@ require_once dirname(__FILE__, 2) . '/test/config/define.php';
 $bootstrap = \Swoft\App::getBean(\Swoft\Bootstrap\Bootstrap::class);
 $bootstrap->bootstrap();
 
-use Swoft\Rpc\Server\Command\RpcCommand;
+use Swoft\Http\Server\Command\ServerCommand;
 
-$command = bean(RpcCommand::class);
+$command = bean(ServerCommand::class);
 
 $dir = alias('@runtime/logs');
 @mkdir($dir, 0777, true);
