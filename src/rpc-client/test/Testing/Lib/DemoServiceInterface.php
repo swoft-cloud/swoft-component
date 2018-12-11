@@ -1,6 +1,6 @@
 <?php
 
-namespace SwoftTest\Rpc\Testing\Lib;
+namespace SwoftTest\RpcClient\Testing\Lib;
 
 use Swoft\Core\ResultInterface;
 

@@ -34,7 +34,8 @@ before_script:
   - cd $TRAVIS_BUILD_DIR
   - composer config -g process-timeout 900 && composer update
   - cp test/.env.example test/.env
-
+  - php test/rpc_server.php -d
+  - sleep 5
 script:
   - composer test
   - composer co_test

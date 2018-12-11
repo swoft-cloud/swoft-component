@@ -1,6 +1,6 @@
 <?php
 
-namespace SwoftTest\Rpc\Testing\Breaker;
+namespace SwoftTest\RpcClient\Testing\Breaker;
 
 use Swoft\Sg\Bean\Annotation\Breaker;
 use Swoft\Bean\Annotation\Value;

@@ -1,11 +1,11 @@
 <?php
 
-namespace SwoftTest\Rpc\Testing\Fallback;
+namespace SwoftTest\RpcClient\Testing\Fallback;
 
 
 use Swoft\Sg\Bean\Annotation\Fallback;
 use Swoft\Core\ResultInterface;
-use SwoftTest\Rpc\Testing\Lib\DemoServiceInterface;
+use SwoftTest\RpcClient\Testing\Lib\DemoServiceInterface;
 
 /**
  * Class DemoServiceFallback

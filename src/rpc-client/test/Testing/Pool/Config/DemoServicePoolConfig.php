@@ -1,5 +1,5 @@
 <?php
-namespace SwoftTest\Rpc\Testing\Pool\Config;
+namespace SwoftTest\RpcClient\Testing\Pool\Config;
 
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\Value;

@@ -1,13 +1,14 @@
 <?php
 
-namespace SwoftTest\Rpc\Client;
+namespace SwoftTest\RpcClient;
 
+use Swoft\App;
 use Swoft\Rpc\Client\Bean\Collector\ReferenceCollector;
 use Swoft\Rpc\Client\Service\ServiceProxy;
-use SwoftTest\Rpc\Testing\Clients\Demo8098ServiceClient;
-use SwoftTest\Rpc\Testing\Clients\DemoServiceClient;
-use SwoftTest\Rpc\Testing\Lib\DemoServiceInterface;
-use SwoftTest\Rpc\Testing\Pool\Config\DemoServicePoolConfig;
+use SwoftTest\RpcClient\Testing\Clients\Demo8098ServiceClient;
+use SwoftTest\RpcClient\Testing\Clients\DemoServiceClient;
+use SwoftTest\RpcClient\Testing\Lib\DemoServiceInterface;
+use SwoftTest\RpcClient\Testing\Pool\Config\DemoServicePoolConfig;
 
 class RpcTest extends AbstractTestCase
 {
@@ -27,7 +28,7 @@ class RpcTest extends AbstractTestCase
         $res = $client->get($id);
         $this->assertEquals($id, $res);
 
-        go(function () {
+        if (App::isCoContext()) {
             // Test Long Message
             $client = bean(DemoServiceClient::class);
             $string = 'Hi, Agnes! ';
@@ -49,13 +50,13 @@ class RpcTest extends AbstractTestCase
             \co::sleep(2);
 
             // Test Rpc Server Restart
-            $cmd = 'php ' . alias('@root') . '/server.php -d';
+            $cmd = 'php ' . alias('@root') . '/rpc_server.php -d';
             \co::exec($cmd);
             \co::sleep(1);
 
             $client = bean(DemoServiceClient::class);
             $res = $client->version();
             $this->assertEquals('1.0.0', $res);
-        });
+        }
     }
 }

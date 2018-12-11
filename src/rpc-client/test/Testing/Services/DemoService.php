@@ -1,7 +1,7 @@
 <?php
-namespace SwoftTest\Rpc\Testing\Services;
+namespace SwoftTest\RpcClient\Testing\Services;
 
-use SwoftTest\Rpc\Testing\Lib\DemoServiceInterface;
+use SwoftTest\RpcClient\Testing\Lib\DemoServiceInterface;
 use Swoft\Rpc\Server\Bean\Annotation\Service;
 use Swoft\Core\ResultInterface;
 

@@ -1,12 +1,11 @@
 <?php
-namespace SwoftTest\Rpc\Testing\Clients;
+namespace SwoftTest\RpcClient\Testing\Clients;
 
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Rpc\Client\Bean\Annotation\Reference;
-use SwoftTest\Rpc\Testing\Lib\DemoServiceInterface;
+use SwoftTest\RpcClient\Testing\Lib\DemoServiceInterface;
 
 /**
- * Class DemoServiceClient
  * @Bean
  * @method version
  * @method longMessage($string)
