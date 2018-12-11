@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -95,6 +96,9 @@ class ZSetRange extends Command
             return false;
         }
 
-        return strtoupper($arguments[3]) === 'WITHSCORES';
+        if (is_string($arguments[3])) {
+            return strtoupper($arguments[3]) === 'WITHSCORES';
+        }
+        return (bool)$arguments[3];
     }
 }
