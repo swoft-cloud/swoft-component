@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Rpc\Server\Bean\Collector;
 
 use Swoft\Bean\CollectorInterface;
@@ -33,8 +40,8 @@ class ServiceCollector implements CollectorInterface
             $methods = $rc->getMethods(\ReflectionMethod::IS_PUBLIC);
             $version = $objectAnnotation->getVersion();
 
-            foreach ($interfaces as $interfaceClass){
-                foreach ($methods as $method){
+            foreach ($interfaces as $interfaceClass) {
+                foreach ($methods as $method) {
                     $methodName = $method->getName();
                     self::$serviceMapping[$interfaceClass][$version][$methodName] = [$className, $methodName];
                 }

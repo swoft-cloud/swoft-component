@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Rpc\Server\Command;
 
 use Swoft\Console\Bean\Annotation\Command;
@@ -7,7 +14,7 @@ use Swoft\Rpc\Server\Rpc\RpcServer;
 
 /**
  * The group command list of rpc server
- * @Command(coroutine=false,server=true)
+ * @Command(coroutine=false, server=true)
  */
 class RpcCommand
 {

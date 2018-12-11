@@ -1,9 +1,17 @@
 <?php
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 return [
     'version' => '1.0',
     'autoInitBean'      => true,
     'beanScan'          => [
-        'SwoftTest\\Rpc\\Testing' => BASE_PATH . "/Testing",
+        'SwoftTest\\Rpc\\Testing' => BASE_PATH . '/Testing',
         'Swoft\\Rpc\\Client'      => BASE_PATH . '/../src',
     ],
     'I18n'              => [
@@ -21,5 +29,5 @@ return [
             'Swoft\\Rpc\\Client' => BASE_PATH . '/../src',
         ],
     ],
-    'cache' => require dirname(__FILE__) . DS . "cache.php",
+    'cache' => require dirname(__FILE__) . DS . 'cache.php',
 ];

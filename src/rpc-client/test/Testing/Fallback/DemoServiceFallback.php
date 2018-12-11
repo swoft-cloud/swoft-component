@@ -1,10 +1,16 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace SwoftTest\RpcClient\Testing\Fallback;
 
-
-use Swoft\Sg\Bean\Annotation\Fallback;
 use Swoft\Core\ResultInterface;
+use Swoft\Sg\Bean\Annotation\Fallback;
 use SwoftTest\RpcClient\Testing\Lib\DemoServiceInterface;
 
 /**

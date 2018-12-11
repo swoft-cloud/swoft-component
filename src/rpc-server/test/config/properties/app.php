@@ -1,9 +1,17 @@
 <?php
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 return [
-    "version"           => '1.0',
+    'version'           => '1.0',
     'autoInitBean'      => true,
     'beanScan'          => [
-        'Swoft\\Http\\Server\\Test\\Testing' => BASE_PATH."/Testing"
+        'Swoft\\Http\\Server\\Test\\Testing' => BASE_PATH.'/Testing'
     ],
     'I18n'              => [
         'sourceLanguage' => '@root/resources/messages/',
@@ -15,5 +23,5 @@ return [
             'timeout' => 3000
         ]
     ],
-    'cache' => require dirname(__FILE__) . DS . "cache.php",
+    'cache' => require dirname(__FILE__) . DS . 'cache.php',
 ];

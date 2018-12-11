@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Rpc\Client;
 
 use Swoft\App;
@@ -70,6 +77,30 @@ class Service
     protected $fallback;
 
     /**
+     * @param string $name
+     * @param array  $arguments
+     *
+     * @return ResultInterface
+     * @throws RpcClientException
+     */
+    public function __call(string $name, array $arguments)
+    {
+        $method = $name;
+        $prefix = self::DEFER_PREFIX;
+        if (\strpos($name, $prefix) !== 0) {
+            throw new RpcClientException(sprintf('the method of %s is not exist! ', $name));
+        }
+
+        if ($name === $prefix) {
+            $method = \array_shift($arguments);
+        } elseif (\strpos($name, $prefix) === 0) {
+            $method = \lcfirst(ltrim($name, $prefix));
+        }
+
+        return $this->deferCall($method, $arguments);
+    }
+
+    /**
      * Do call service
      *
      * @param string $func
@@ -110,7 +141,8 @@ class Service
                     // 0    Send failed, recv data is empty
                     // 104  Connection reset by peer
                     // 5001 SW_ERROR_CLIENT_NO_CONNECTION
-                    App::warning(sprintf('%s call %s retried, data=%s, message=%s, code=%s',
+                    App::warning(sprintf(
+                        '%s call %s retried, data=%s, message=%s, code=%s',
                         $this->interface,
                         $func,
                         json_encode($data, JSON_UNESCAPED_UNICODE),
@@ -137,7 +169,8 @@ class Service
             // If the client is normal, no need to close it.
             if ($closeStatus && isset($client) && $client instanceof AbstractServiceConnection) {
                 $client->close();
-                App::error(sprintf('%s call %s failed, data=%s, message=%s, code=%s',
+                App::error(sprintf(
+                    '%s call %s failed, data=%s, message=%s, code=%s',
                     $this->interface,
                     $func,
                     json_encode($data, JSON_UNESCAPED_UNICODE),
@@ -152,30 +185,6 @@ class Service
         }
 
         return $data;
-    }
-
-    /**
-     * @param string $name
-     * @param array  $arguments
-     *
-     * @return ResultInterface
-     * @throws RpcClientException
-     */
-    public function __call(string $name, array $arguments)
-    {
-        $method = $name;
-        $prefix = self::DEFER_PREFIX;
-        if (\strpos($name, $prefix) !== 0) {
-            throw new RpcClientException(sprintf('the method of %s is not exist! ', $name));
-        }
-
-        if ($name === $prefix) {
-            $method = \array_shift($arguments);
-        } elseif (\strpos($name, $prefix) === 0) {
-            $method = \lcfirst(ltrim($name, $prefix));
-        }
-
-        return $this->deferCall($method, $arguments);
     }
 
     /**

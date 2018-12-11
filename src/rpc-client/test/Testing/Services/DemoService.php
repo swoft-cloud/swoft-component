@@ -1,13 +1,21 @@
 <?php
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace SwoftTest\RpcClient\Testing\Services;
 
-use SwoftTest\RpcClient\Testing\Lib\DemoServiceInterface;
-use Swoft\Rpc\Server\Bean\Annotation\Service;
 use Swoft\Core\ResultInterface;
+use Swoft\Rpc\Server\Bean\Annotation\Service;
+use SwoftTest\RpcClient\Testing\Lib\DemoServiceInterface;
 
 /**
  * Class DemoService
- * @Service()
+ * @Service
  * @method ResultInterface deferVersion()
  * @method ResultInterface deferLongMessage($string)
  * @method ResultInterface deferGet($id)

@@ -1,11 +1,18 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Rpc\Server\Event\Listeners;
 
-use Swoft\Core\RequestContext;
 use Swoft\Bean\Annotation\Listener;
-use Swoft\Event\EventInterface;
+use Swoft\Core\RequestContext;
 use Swoft\Event\EventHandlerInterface;
+use Swoft\Event\EventInterface;
 use Swoft\Rpc\Server\Event\RpcServerEvent;
 
 /**
@@ -14,7 +21,6 @@ use Swoft\Rpc\Server\Event\RpcServerEvent;
  */
 class BeforeReceiveListener implements EventHandlerInterface
 {
-
     /**
      * @param EventInterface $event
      */

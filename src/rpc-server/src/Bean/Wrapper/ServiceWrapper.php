@@ -1,17 +1,24 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Rpc\Server\Bean\Wrapper;
 
 use Swoft\Bean\Annotation\Enum;
 use Swoft\Bean\Annotation\Floats;
 use Swoft\Bean\Annotation\Inject;
 use Swoft\Bean\Annotation\Integer;
-use Swoft\Http\Message\Bean\Annotation\Middleware;
-use Swoft\Http\Message\Bean\Annotation\Middlewares;
 use Swoft\Bean\Annotation\Number;
 use Swoft\Bean\Annotation\Strings;
 use Swoft\Bean\Annotation\Value;
 use Swoft\Bean\Wrapper\AbstractWrapper;
+use Swoft\Http\Message\Bean\Annotation\Middleware;
+use Swoft\Http\Message\Bean\Annotation\Middlewares;
 use Swoft\Rpc\Server\Bean\Annotation\Service;
 
 /**

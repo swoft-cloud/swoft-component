@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Rpc\Server;
 
 use Swoft\App;
@@ -111,6 +118,14 @@ class ServiceDispatcher implements DispatcherInterface
     }
 
     /**
+     * @return array
+     */
+    public function getMiddlewares(): array
+    {
+        return $this->middlewares;
+    }
+
+    /**
      * @param \Swoole\Server $server
      * @param int            $fd
      * @param int            $fromId
@@ -125,13 +140,5 @@ class ServiceDispatcher implements DispatcherInterface
                               ->withAttribute(PackerMiddleware::ATTRIBUTE_FD, $fd)
                               ->withAttribute(PackerMiddleware::ATTRIBUTE_FROMID, $fromId)
                               ->withAttribute(PackerMiddleware::ATTRIBUTE_DATA, $data);
-    }
-
-    /**
-     * @return array
-     */
-    public function getMiddlewares(): array
-    {
-        return $this->middlewares;
     }
 }

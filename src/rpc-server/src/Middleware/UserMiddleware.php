@@ -1,19 +1,26 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Rpc\Server\Middleware;
 
-use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Swoft\Core\RequestHandler;
+use Psr\Http\Server\RequestHandlerInterface;
 use Swoft\Bean\Annotation\Bean;
-use Swoft\Http\Message\Middleware\MiddlewareInterface;
+use Swoft\Core\RequestHandler;
 use Swoft\Http\Message\Bean\Collector\MiddlewareCollector;
+use Swoft\Http\Message\Middleware\MiddlewareInterface;
 
 /**
  * the annotation middlewares of action
  *
- * @Bean()
+ * @Bean
  * @uses      UserMiddleware
  * @version   2017年12月10日
  * @author    stelin <phpcrazy@126.com>

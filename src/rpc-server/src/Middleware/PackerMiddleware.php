@@ -1,10 +1,17 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Rpc\Server\Middleware;
 
-use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Swoft\App;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Http\Message\Middleware\MiddlewareInterface;
@@ -14,7 +21,7 @@ use Swoft\Rpc\Server\Router\HandlerAdapter;
 /**
  * service packer
  *
- * @Bean()
+ * @Bean
  * @uses      PackerMiddleware
  * @version   2017年11月26日
  * @author    stelin <phpcrazy@126.com>

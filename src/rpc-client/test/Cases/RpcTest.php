@@ -1,14 +1,16 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace SwoftTest\RpcClient;
 
 use Swoft\App;
-use Swoft\Rpc\Client\Bean\Collector\ReferenceCollector;
-use Swoft\Rpc\Client\Service\ServiceProxy;
-use SwoftTest\RpcClient\Testing\Clients\Demo8098ServiceClient;
 use SwoftTest\RpcClient\Testing\Clients\DemoServiceClient;
-use SwoftTest\RpcClient\Testing\Lib\DemoServiceInterface;
-use SwoftTest\RpcClient\Testing\Pool\Config\DemoServicePoolConfig;
 
 class RpcTest extends AbstractTestCase
 {

@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Rpc\Server\Router;
 
 use Swoft\Http\Message\Router\HandlerMappingInterface;
@@ -77,6 +84,14 @@ class HandlerMapping implements HandlerMappingInterface
     }
 
     /**
+     * @return array
+     */
+    public function getRoutes(): array
+    {
+        return $this->routes;
+    }
+
+    /**
      * Register one route
      *
      * @param string $interfaceName
@@ -104,13 +119,4 @@ class HandlerMapping implements HandlerMappingInterface
     {
         return \sprintf('%s_%s_%s', $interfaceClass, $version, $method);
     }
-
-    /**
-     * @return array
-     */
-    public function getRoutes(): array
-    {
-        return $this->routes;
-    }
-
 }
