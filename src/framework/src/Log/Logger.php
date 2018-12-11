@@ -483,7 +483,7 @@ class Logger extends \Monolog\Logger
     {
         $contextData = RequestContext::getContextData();
 
-        return $contextData['uri'] ?? '';
+        return (string)$contextData['uri'] ?? '';
     }
 
     /**
