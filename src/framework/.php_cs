@@ -17,17 +17,23 @@ return PhpCsFixer\Config::create()
         'header_comment' => [
             'commentType' => 'PHPDoc',
             'header' => $header,
-            'separate' => 'none'
+            'separate' => 'none',
+            'location' => 'after_declare_strict',
         ],
         'array_syntax' => [
             'syntax' => 'short'
         ],
-        'single_quote' => true,
         'class_attributes_separation' => true,
+        'combine_consecutive_unsets' => true,
+        'declare_strict_types' => false,
+        'linebreak_after_opening_tag' => true,
+        'no_useless_else' => true,
         'no_unused_imports' => true,
-        'binary_operator_spaces' => [
-            'default' => 'single_space',
-        ],
+        'ordered_class_elements' => true,
+        'ordered_imports' => true,
+        'php_unit_strict' => false,
+        'single_quote' => true,
+        'standardize_not_equals' => true,
     ])
     ->setFinder(
         PhpCsFixer\Finder::create()

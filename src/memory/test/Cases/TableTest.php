@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -10,15 +11,14 @@
 
 namespace SwoftTest\Memory\Cases;
 
-use Swoft\Memory\Table;
 use Swoft\Memory\Exception;
+use Swoft\Memory\Table;
 
 /**
  * Test
  */
 class TableTest extends AbstractTestCase
 {
-
     /**
      * @test
      */
@@ -37,7 +37,7 @@ class TableTest extends AbstractTestCase
      */
     public function tableSize()
     {
-        $size = '1024';
+        $size = 1024;
         $table = new Table('', $size);
         $this->assertEquals($size, $table->getSize());
         $table->setSize($size * 2);
@@ -233,5 +233,4 @@ class TableTest extends AbstractTestCase
         $this->assertTrue($table->del($key));
         $this->assertFalse($table->del($notExistKey));
     }
-
 }

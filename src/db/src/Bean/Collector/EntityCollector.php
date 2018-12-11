@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -53,6 +54,11 @@ class EntityCollector implements CollectorInterface
         } elseif ($objectAnnotation instanceof Table) {
             self::collectTable($objectAnnotation, $className);
         }
+    }
+
+    public static function getCollector(): array
+    {
+        return self::$entities;
     }
 
     /**
@@ -117,10 +123,5 @@ class EntityCollector implements CollectorInterface
         ];
         self::$entities[$className]['field'][$propertyName] = $entity;
         self::$entities[$className]['column'][$columnName] = $propertyName;
-    }
-
-    public static function getCollector(): array
-    {
-        return self::$entities;
     }
 }

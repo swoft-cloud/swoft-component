@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -13,7 +14,7 @@ use Swoft\Db\Bean\Annotation\Statement;
 
 /**
  * MysqlStatement
- * @Statement()
+ * @Statement
  */
 class MysqlStatement extends \Swoft\Db\Statement
 {

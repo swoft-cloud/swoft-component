@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -43,11 +44,6 @@ class AuthManager implements AuthManagerInterface
     protected $cacheEnable = false;
 
     /**
-     * @var CacheInterface
-     */
-    private $cache;
-
-    /**
      * @var string
      */
     protected $cacheClass = '';
@@ -56,6 +52,11 @@ class AuthManager implements AuthManagerInterface
      * @var string
      */
     protected $tokenParserClass = JWTTokenParser::class;
+
+    /**
+     * @var CacheInterface
+     */
+    private $cache;
 
     /**
      * @var TokenParserInterface
@@ -115,15 +116,6 @@ class AuthManager implements AuthManagerInterface
             }
         }
         return $session;
-    }
-
-    protected function getCacheKey(string $identity, array $extendedData): string
-    {
-        if (empty($extendedData)) {
-            return $this->prefix . $identity;
-        }
-        $str = json_encode($extendedData);
-        return $this->prefix . $identity . '.' . md5($str);
     }
 
     public function generateSession(string $accountTypeName, string $identity, array $data = []): AuthSession
@@ -233,5 +225,14 @@ class AuthManager implements AuthManagerInterface
 
         $this->setSession($session);
         return true;
+    }
+
+    protected function getCacheKey(string $identity, array $extendedData): string
+    {
+        if (empty($extendedData)) {
+            return $this->prefix . $identity;
+        }
+        $str = json_encode($extendedData);
+        return $this->prefix . $identity . '.' . md5($str);
     }
 }

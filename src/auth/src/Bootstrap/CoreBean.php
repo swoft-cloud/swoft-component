@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -21,7 +22,7 @@ use Swoft\Bean\Annotation\BootBean;
 use Swoft\Core\BootBeanInterface;
 
 /**
- * @BootBean()
+ * @BootBean
  */
 class CoreBean implements BootBeanInterface
 {

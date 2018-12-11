@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of Swoft.
@@ -347,14 +348,10 @@ class CurlClientTest extends AbstractTestCase
             'base_uri' => 'http://echo.swoft.org',
         ]);
 
-        $res = $client->get(0)->getResult();
-        $res = JsonHelper::decode($res, true);
-        $this->assertSame('/', $res['uri']['path']);
-
         $res = $client->get(' ')->getResult();
         $this->assertSame(['message' => 'Route not found for / '], JsonHelper::decode($res, true));
 
-        $res = $client->get(123)->getResult();
+        $res = $client->get('123')->getResult();
         $this->assertSame(['message' => 'Route not found for /123'], JsonHelper::decode($res, true));
     }
 }

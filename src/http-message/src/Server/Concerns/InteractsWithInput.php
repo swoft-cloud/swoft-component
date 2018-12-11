@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Http\Message\Server\Concerns;
 
@@ -13,7 +22,6 @@ use Swoft\Http\Message\Stream\SwooleStream;
  */
 trait InteractsWithInput
 {
-
     /**
      * Retrieve a server variable from the request
      *
@@ -148,9 +156,8 @@ trait InteractsWithInput
         }
         if (null === $key) {
             return $decodedBody ?? $default;
-        } else {
-            return ArrayHelper::get($decodedBody, $key, $default);
         }
+        return ArrayHelper::get($decodedBody, $key, $default);
     }
 
     /**

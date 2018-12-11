@@ -1,7 +1,15 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Http\Message\Cookie;
-
 
 /**
  * Represents a cookie
@@ -14,68 +22,27 @@ namespace Swoft\Http\Message\Cookie;
  */
 class Cookie
 {
-    protected $name;
-    protected $value;
-    protected $domain;
-    protected $expire;
-    protected $path;
-    protected $secure;
-    protected $httpOnly;
-    private $raw;
-    private $sameSite;
-
     const SAMESITE_LAX = 'lax';
+
     const SAMESITE_STRICT = 'strict';
 
-    /**
-     * Creates cookie from raw header string.
-     *
-     * @param string $cookie
-     * @param bool   $decode
-     * @return static
-     * @throws \InvalidArgumentException
-     */
-    public static function fromString($cookie, $decode = false)
-    {
-        $data = array(
-            'expires' => 0,
-            'path' => '/',
-            'domain' => null,
-            'secure' => false,
-            'httponly' => false,
-            'raw' => !$decode,
-            'samesite' => null,
-        );
-        foreach (explode(';', $cookie) as $part) {
-            if (false === strpos($part, '=')) {
-                $key = trim($part);
-                $value = true;
-            } else {
-                list($key, $value) = explode('=', trim($part), 2);
-                $key = trim($key);
-                $value = trim($value);
-            }
-            if (!isset($data['name'])) {
-                $data['name'] = $decode ? urldecode($key) : $key;
-                $data['value'] = true === $value ? null : ($decode ? urldecode($value) : $value);
-                continue;
-            }
-            switch ($key = strtolower($key)) {
-                case 'name':
-                case 'value':
-                    break;
-                case 'max-age':
-                    $data['expires'] = time() + (int)$value;
-                    break;
-                default:
-                    $data[$key] = $value;
-                    break;
-            }
-        }
+    protected $name;
 
-        return new static($data['name'], $data['value'], $data['expires'], $data['path'], $data['domain'],
-            $data['secure'], $data['httponly'], $data['raw'], $data['samesite']);
-    }
+    protected $value;
+
+    protected $domain;
+
+    protected $expire;
+
+    protected $path;
+
+    protected $secure;
+
+    protected $httpOnly;
+
+    private $raw;
+
+    private $sameSite;
 
     /**
      * @param string $name The name of the cookie
@@ -134,7 +101,7 @@ class Cookie
             $sameSite = strtolower($sameSite);
         }
 
-        if (! \in_array($sameSite, array(self::SAMESITE_LAX, self::SAMESITE_STRICT, null), true)) {
+        if (! \in_array($sameSite, [self::SAMESITE_LAX, self::SAMESITE_STRICT, null], true)) {
             throw new \InvalidArgumentException('The "sameSite" parameter value is not valid.');
         }
 
@@ -156,8 +123,10 @@ class Cookie
             $str .= $this->isRaw() ? $this->getValue() : rawurlencode($this->getValue());
 
             if (0 !== $this->getExpiresTime()) {
-                $str .= '; expires=' . gmdate('D, d-M-Y H:i:s T',
-                        $this->getExpiresTime()) . '; max-age=' . $this->getMaxAge();
+                $str .= '; expires=' . gmdate(
+                    'D, d-M-Y H:i:s T',
+                        $this->getExpiresTime()
+                ) . '; max-age=' . $this->getMaxAge();
             }
         }
 
@@ -182,6 +151,56 @@ class Cookie
         }
 
         return $str;
+    }
+
+    /**
+     * Creates cookie from raw header string.
+     *
+     * @param string $cookie
+     * @param bool   $decode
+     * @return static
+     * @throws \InvalidArgumentException
+     */
+    public static function fromString($cookie, $decode = false)
+    {
+        $data = [
+            'expires' => 0,
+            'path' => '/',
+            'domain' => null,
+            'secure' => false,
+            'httponly' => false,
+            'raw' => !$decode,
+            'samesite' => null,
+        ];
+        foreach (explode(';', $cookie) as $part) {
+            if (false === strpos($part, '=')) {
+                $key = trim($part);
+                $value = true;
+            } else {
+                list($key, $value) = explode('=', trim($part), 2);
+                $key = trim($key);
+                $value = trim($value);
+            }
+            if (!isset($data['name'])) {
+                $data['name'] = $decode ? urldecode($key) : $key;
+                $data['value'] = true === $value ? null : ($decode ? urldecode($value) : $value);
+                continue;
+            }
+            switch ($key = strtolower($key)) {
+                case 'name':
+                case 'value':
+                    break;
+                case 'max-age':
+                    $data['expires'] = time() + (int)$value;
+                    break;
+                default:
+                    $data[$key] = $value;
+                    break;
+            }
+        }
+
+        return new static($data['name'], $data['value'], $data['expires'], $data['path'], $data['domain'],
+            $data['secure'], $data['httponly'], $data['raw'], $data['samesite']);
     }
 
     /**

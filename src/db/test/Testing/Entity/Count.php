@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -17,14 +18,14 @@ use Swoft\Db\Model;
 use Swoft\Db\Types;
 
 /**
- * @Entity()
+ * @Entity
  * @Table("count")
  */
 class Count extends Model
 {
     /**
      * @Column(name="uid", type=Types::INT)
-     * @Id()
+     * @Id
      * @var null|int
      */
     private $uid;

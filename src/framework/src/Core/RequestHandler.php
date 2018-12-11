@@ -1,4 +1,5 @@
 <?php
+ 
 /**
  * This file is part of Swoft.
  *
@@ -9,11 +10,11 @@
  */
 namespace Swoft\Core;
 
-use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Swoft\Http\Message\Middleware\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Swoft\App;
+use Swoft\Http\Message\Middleware\MiddlewareInterface;
 
 /**
  * request handler
@@ -72,18 +73,6 @@ class RequestHandler implements RequestHandlerInterface
     }
 
     /**
-     * Get a handler pointing to the next middleware.
-     *
-     * @return static
-     */
-    private function next()
-    {
-        $clone = clone $this;
-        $clone->offset++;
-        return $clone;
-    }
-
-    /**
      * Insert middlewares to the next position
      *
      * @param array $middlewares
@@ -105,5 +94,17 @@ class RequestHandler implements RequestHandlerInterface
         $this->middlewares = $middlewares;
 
         return $this;
+    }
+
+    /**
+     * Get a handler pointing to the next middleware.
+     *
+     * @return static
+     */
+    private function next()
+    {
+        $clone = clone $this;
+        $clone->offset++;
+        return $clone;
     }
 }

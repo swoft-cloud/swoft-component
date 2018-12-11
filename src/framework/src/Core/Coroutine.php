@@ -1,4 +1,5 @@
 <?php
+ 
 /**
  * This file is part of Swoft.
  *
@@ -111,9 +112,8 @@ class Coroutine
     {
         if (version_compare(swoole_version(), '2.0.11', '>=')) {
             return true;
-        } else {
-            return App::isWorkerStatus();
         }
+        return App::isWorkerStatus();
     }
 
     /**

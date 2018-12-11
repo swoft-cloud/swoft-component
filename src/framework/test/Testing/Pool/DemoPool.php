@@ -1,4 +1,5 @@
 <?php
+ 
 /**
  * This file is part of Swoft.
  *
@@ -9,11 +10,11 @@
  */
 namespace SwoftTest\Testing\Pool;
 
+use Swoft\Bean\Annotation\Inject;
+use Swoft\Bean\Annotation\Pool;
 use Swoft\Pool\ConnectionInterface;
 use Swoft\Pool\ConnectionPool;
 use SwoftTest\Testing\Connection\DemoConnection;
-use Swoft\Bean\Annotation\Inject;
-use Swoft\Bean\Annotation\Pool;
 
 /**
  * Class DemoPool

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -9,15 +10,15 @@
  */
 namespace SwoftTest\Db\Testing\Entity;
 
-use Swoft\Db\Model;
 use Swoft\Db\Bean\Annotation\Column;
 use Swoft\Db\Bean\Annotation\Entity;
 use Swoft\Db\Bean\Annotation\Id;
 use Swoft\Db\Bean\Annotation\Required;
 use Swoft\Db\Bean\Annotation\Table;
+use Swoft\Db\Model;
 
 /**
- * @Entity()
+ * @Entity
  * @Table(name="detable")
  * @uses      Detable
  * @version   2018年05月03日
@@ -26,7 +27,7 @@ class Detable extends Model
 {
     /**
      * @var int $sId
-     * @Id()
+     * @Id
      * @Column(name="s_id", type="integer")
      */
     private $sId;
@@ -82,14 +83,14 @@ class Detable extends Model
     /**
      * @var int $books
      * @Column(name="books", type="integer")
-     * @Required()
+     * @Required
      */
     private $books;
 
     /**
      * @var string $shortName
      * @Column(name="short_name", type="string", length=20)
-     * @Required()
+     * @Required
      */
     private $shortName;
 
@@ -102,7 +103,7 @@ class Detable extends Model
     /**
      * @var string $utime
      * @Column(name="utime", type="datetime")
-     * @Required()
+     * @Required
      */
     private $utime;
 

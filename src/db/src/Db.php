@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -15,11 +16,11 @@ use Swoft\Core\ResultInterface;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Helper\DbHelper;
 use Swoft\Db\Helper\EntityHelper;
+use Swoft\Db\Pool\Config\DbPoolProperties;
+use Swoft\Db\Pool\DbPool;
 use Swoft\Helper\PoolHelper;
 use Swoft\Log\Log;
 use Swoft\Pool\ConnectionInterface;
-use Swoft\Db\Pool\Config\DbPoolProperties;
-use Swoft\Db\Pool\DbPool;
 
 /**
  * Db
@@ -168,9 +169,9 @@ class Db
     /**
      * @param string $sql
      *
-     * @return string
+     * @return int
      */
-    private static function getOperation(string $sql): string
+    private static function getOperation(string $sql): int
     {
         // remove annotion and blank
         $sql = preg_replace('/\/\*[^\/]+\*\//', '', $sql);

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -14,7 +15,7 @@ use Swoft\Bean\Annotation\Bean;
 
 /**
  * @package Swoft\Auth\Helper
- * @Bean()
+ * @Bean
  */
 class ErrorCodeHelper
 {

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -17,7 +18,7 @@ use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\Value;
 
 /**
- * @Bean()
+ * @Bean
  */
 class JWTTokenParser implements TokenParserInterface
 {
@@ -56,6 +57,16 @@ class JWTTokenParser implements TokenParserInterface
             ->setExpirationTime($tokenData->exp)
             ->setToken($token)
             ->setExtendedData((array)$tokenData->data);
+    }
+
+    public function encode($token): string
+    {
+        return (string)JWT::encode($token, $this->secret, $this->algorithm);
+    }
+
+    public function decode($token)
+    {
+        return JWT::decode($token, $this->secret, [$this->algorithm]);
     }
 
     protected function create(string $issuer, string $user, int $iat, int $exp, array $data): array
@@ -111,15 +122,5 @@ class JWTTokenParser implements TokenParserInterface
              ------------------------------------------------*/
             'data' => $data,
         ];
-    }
-
-    public function encode($token): string
-    {
-        return (string)JWT::encode($token, $this->secret, $this->algorithm);
-    }
-
-    public function decode($token)
-    {
-        return JWT::decode($token, $this->secret, [$this->algorithm]);
     }
 }

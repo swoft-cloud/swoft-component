@@ -8,17 +8,20 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-namespace SwoftTest\Testing\Pool;
 
-use Swoft\Bean\Annotation\Bean;
-use Swoft\Pool\PoolProperties;
+namespace Swoft\Core;
 
-/**
- * the config of env
- *
- * @Bean
- */
-class DemoPoolConfig extends PoolProperties
+class Types
 {
-    protected $timeout = 0.5;
+    const UNKNOWN = 0;
+
+    const BOOLEAN = 1;
+
+    const STRING = 2;
+
+    const INTEGER = 3;
+
+    const FLOAT = 4;
+
+    const ARRAY = 5;
 }

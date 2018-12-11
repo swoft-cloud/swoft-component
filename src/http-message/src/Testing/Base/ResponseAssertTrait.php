@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Http\Message\Testing\Base;
 
@@ -12,7 +21,6 @@ use Swoft\Helper\StringHelper;
  */
 trait ResponseAssertTrait
 {
-
     /**
      * Assert that the response has a successful status code.
      *
@@ -151,22 +159,6 @@ trait ResponseAssertTrait
     }
 
     /**
-     * Get the assertion message for assertJson.
-     *
-     * @param  array $data
-     * @return string
-     * @throws \PHPUnit_Framework_AssertionFailedError
-     */
-    protected function assertJsonMessage(array $data): string
-    {
-        $expected = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-
-        $actual = json_encode($this->decodeResponseJson(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-
-        return 'Unable to find JSON: ' . PHP_EOL . PHP_EOL . "[{$expected}]" . PHP_EOL . PHP_EOL . 'within response JSON:' . PHP_EOL . PHP_EOL . "[{$actual}]." . PHP_EOL . PHP_EOL;
-    }
-
-    /**
      * Assert that the response has the exact given JSON.
      *
      * @param  array $data
@@ -256,6 +248,22 @@ trait ResponseAssertTrait
     }
 
     /**
+     * Get the assertion message for assertJson.
+     *
+     * @param  array $data
+     * @return string
+     * @throws \PHPUnit_Framework_AssertionFailedError
+     */
+    protected function assertJsonMessage(array $data): string
+    {
+        $expected = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
+        $actual = json_encode($this->decodeResponseJson(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
+        return 'Unable to find JSON: ' . PHP_EOL . PHP_EOL . "[{$expected}]" . PHP_EOL . PHP_EOL . 'within response JSON:' . PHP_EOL . PHP_EOL . "[{$actual}]." . PHP_EOL . PHP_EOL;
+    }
+
+    /**
      * Validate and return the decoded response JSON.
      *
      * @return array
@@ -268,9 +276,8 @@ trait ResponseAssertTrait
         if (null === $decodedResponse || $decodedResponse === false) {
             if ($this->exception) {
                 throw $this->exception;
-            } else {
-                PHPUnit::fail('Invalid JSON was returned from the route.');
             }
+            PHPUnit::fail('Invalid JSON was returned from the route.');
         }
 
         return $decodedResponse;

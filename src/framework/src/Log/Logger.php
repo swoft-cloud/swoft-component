@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of Swoft.
  *
@@ -123,7 +124,7 @@ class Logger extends \Monolog\Logger
         if ($this->microsecondTimestamps && PHP_VERSION_ID < 70100) {
             $ts = \DateTime::createFromFormat('U.u', sprintf('%.6F', microtime(true)), static::$timezone);
         } else {
-            $ts = new \DateTime(null, static::$timezone);
+            $ts = new \DateTime('now', static::$timezone);
         }
 
         $ts->setTimezone(static::$timezone);
@@ -419,28 +420,6 @@ class Logger extends \Monolog\Logger
     }
 
     /**
-     * 获取去日志时间
-     *
-     * @return \DateTime
-     */
-    private function getLoggerTime()
-    {
-        if (! static::$timezone) {
-            static::$timezone = new \DateTimeZone(date_default_timezone_get() ? : 'UTC');
-        }
-
-        // php7.1+ always has microseconds enabled, so we do not need this hack
-        if ($this->microsecondTimestamps && PHP_VERSION_ID < 70100) {
-            $ts = \DateTime::createFromFormat('U.u', sprintf('%.6F', microtime(true)), static::$timezone);
-        } else {
-            $ts = new \DateTime(null, static::$timezone);
-        }
-
-        $ts->setTimezone(static::$timezone);
-        return $ts;
-    }
-
-    /**
      * 日志初始化
      */
     public function initialize()
@@ -474,6 +453,28 @@ class Logger extends \Monolog\Logger
     }
 
     /**
+     * 获取去日志时间
+     *
+     * @return \DateTime
+     */
+    private function getLoggerTime()
+    {
+        if (! static::$timezone) {
+            static::$timezone = new \DateTimeZone(date_default_timezone_get() ? : 'UTC');
+        }
+
+        // php7.1+ always has microseconds enabled, so we do not need this hack
+        if ($this->microsecondTimestamps && PHP_VERSION_ID < 70100) {
+            $ts = \DateTime::createFromFormat('U.u', sprintf('%.6F', microtime(true)), static::$timezone);
+        } else {
+            $ts = new \DateTime('now', static::$timezone);
+        }
+
+        $ts->setTimezone(static::$timezone);
+        return $ts;
+    }
+
+    /**
      * 请求URI
      *
      * @return string
@@ -482,18 +483,18 @@ class Logger extends \Monolog\Logger
     {
         $contextData = RequestContext::getContextData();
 
-        return $contextData['uri'] ?? '';
+        return (string)$contextData['uri'] ?? '';
     }
 
     /**
      * 请求开始时间
      *
-     * @return int
+     * @return float
      */
-    private function getRequestTime(): int
+    private function getRequestTime(): float
     {
         $contextData = RequestContext::getContextData();
 
-        return $contextData['requestTime'] ?? 0;
+        return $contextData['requestTime'] ?? 0.0;
     }
 }

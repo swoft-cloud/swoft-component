@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -29,6 +30,14 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
     public function __construct($items = [])
     {
         $this->items = $items;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->toJson();
     }
 
     /**
@@ -122,14 +131,6 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
     public function toJson(int $options = JSON_UNESCAPED_UNICODE): string
     {
         return json_encode($this->jsonSerialize(), $options);
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->toJson();
     }
 
     /**

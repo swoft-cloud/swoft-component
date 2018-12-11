@@ -1,4 +1,5 @@
 <?php
+ 
 /**
  * This file is part of Swoft.
  *
@@ -9,13 +10,13 @@
  */
 namespace Swoft\Bootstrap;
 
-use Swoft\Log\Formatter\LineFormatter;
 use Swoft\App;
 use Swoft\Bean\Annotation\BootBean;
 use Swoft\Core\Application;
 use Swoft\Core\BootBeanInterface;
 use Swoft\Core\Config;
 use Swoft\Event\EventManager;
+use Swoft\Log\Formatter\LineFormatter;
 use Swoft\Log\Logger;
 
 /**

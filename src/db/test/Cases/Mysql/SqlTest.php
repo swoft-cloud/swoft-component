@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -10,9 +11,9 @@
 namespace SwoftTest\Db\Cases\Mysql;
 
 use Swoft\Db\Db;
+use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\Group;
 use SwoftTest\Db\Testing\Entity\User;
-use SwoftTest\Db\Cases\AbstractMysqlCase;
 
 /**
  * SqlMysqlTest

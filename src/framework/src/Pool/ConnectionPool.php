@@ -1,4 +1,5 @@
 <?php
+ 
 /**
  * This file is part of Swoft.
  *
@@ -121,6 +122,22 @@ abstract class ConnectionPool implements PoolInterface
     }
 
     /**
+     * @return int
+     */
+    public function getTimeout(): float
+    {
+        return $this->poolConfig->getTimeout();
+    }
+
+    /**
+     * @return PoolConfigInterface
+     */
+    public function getPoolConfig(): PoolConfigInterface
+    {
+        return $this->poolConfig;
+    }
+
+    /**
      * Get service list
      *
      * @return array
@@ -148,22 +165,6 @@ abstract class ConnectionPool implements PoolInterface
         }
 
         return $uri;
-    }
-
-    /**
-     * @return int
-     */
-    public function getTimeout(): int
-    {
-        return $this->poolConfig->getTimeout();
-    }
-
-    /**
-     * @return PoolConfigInterface
-     */
-    public function getPoolConfig(): PoolConfigInterface
-    {
-        return $this->poolConfig;
     }
 
     /**

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -26,7 +27,7 @@ class JWTTokenParserTest extends AbstractTestCase
     {
         $parser = App::getBean(JWTTokenParser::class);
         $session = new AuthSession();
-        $session->setIdentity(2);
+        $session->setIdentity('2');
         $session->setExpirationTime(time() + 10);
         $session->setAccountTypeName(TestAccount::class);
         $token = $parser->getToken($session);

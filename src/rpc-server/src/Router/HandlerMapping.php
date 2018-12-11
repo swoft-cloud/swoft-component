@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -36,7 +37,7 @@ class HandlerMapping implements HandlerMappingInterface
     public function getHandler(...$params): array
     {
         list($interfaceClass, $version, $method) = $params;
-        return $this->match($interfaceClass, $version, $method);
+        return $this->match((string)$interfaceClass, (string)$version, (string)$method);
     }
 
     /**
@@ -48,7 +49,7 @@ class HandlerMapping implements HandlerMappingInterface
     {
         foreach ($serviceMapping as $interfaceName => $versions) {
             foreach ($versions as $version => $methods) {
-                $this->registerRoute($interfaceName, $version, $methods);
+                $this->registerRoute((string)$interfaceName, (string)$version, $methods);
             }
         }
     }

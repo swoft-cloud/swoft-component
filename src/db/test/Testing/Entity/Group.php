@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -16,13 +17,13 @@ use Swoft\Db\Bean\Annotation\Table;
 use Swoft\Db\Model;
 
 /**
- * @Entity()
+ * @Entity
  * @Table("group")
  */
 class Group extends Model
 {
     /**
-     * @Id()
+     * @Id
      * @Column(name="id", type="int")
      * @var int
      */

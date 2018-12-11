@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Http\Message\Uri;
 
@@ -13,7 +22,6 @@ use Psr\Http\Message\UriInterface;
  */
 class Uri implements UriInterface
 {
-
     /**
      * Absolute http and https URIs require a host per RFC 7230 Section 2.7
      * but in generic URIs the host can be empty. So for http(s) URIs
@@ -94,6 +102,38 @@ class Uri implements UriInterface
 
             $this->applyParts($parts);
         }
+    }
+
+    /**
+     * Return the string representation as a URI reference.
+     * Depending on which components of the URI are present, the resulting
+     * string is either a full URI or relative reference according to RFC 3986,
+     * Section 4.1. The method concatenates the various components of the URI,
+     * using the appropriate delimiters:
+     * - If a scheme is present, it MUST be suffixed by ":".
+     * - If an authority is present, it MUST be prefixed by "//".
+     * - The path can be concatenated without delimiters. But there are two
+     *   cases where the path has to be adjusted to make the URI reference
+     *   valid as PHP does not allow to throw an exception in __toString():
+     *     - If the path is rootless and an authority is present, the path MUST
+     *       be prefixed by "/".
+     *     - If the path is starting with more than one "/" and no authority is
+     *       present, the starting slashes MUST be reduced to one.
+     * - If a query is present, it MUST be prefixed by "?".
+     * - If a fragment is present, it MUST be prefixed by "#".
+     *
+     * @see http://tools.ietf.org/html/rfc3986#section-4.1
+     * @return string
+     */
+    public function __toString()
+    {
+        return self::composeComponents(
+            $this->scheme,
+            $this->getAuthority(),
+            $this->path,
+            $this->query,
+            $this->fragment
+        );
     }
 
     /**
@@ -466,38 +506,6 @@ class Uri implements UriInterface
     }
 
     /**
-     * Return the string representation as a URI reference.
-     * Depending on which components of the URI are present, the resulting
-     * string is either a full URI or relative reference according to RFC 3986,
-     * Section 4.1. The method concatenates the various components of the URI,
-     * using the appropriate delimiters:
-     * - If a scheme is present, it MUST be suffixed by ":".
-     * - If an authority is present, it MUST be prefixed by "//".
-     * - The path can be concatenated without delimiters. But there are two
-     *   cases where the path has to be adjusted to make the URI reference
-     *   valid as PHP does not allow to throw an exception in __toString():
-     *     - If the path is rootless and an authority is present, the path MUST
-     *       be prefixed by "/".
-     *     - If the path is starting with more than one "/" and no authority is
-     *       present, the starting slashes MUST be reduced to one.
-     * - If a query is present, it MUST be prefixed by "?".
-     * - If a fragment is present, it MUST be prefixed by "#".
-     *
-     * @see http://tools.ietf.org/html/rfc3986#section-4.1
-     * @return string
-     */
-    public function __toString()
-    {
-        return self::composeComponents(
-            $this->scheme,
-            $this->getAuthority(),
-            $this->path,
-            $this->query,
-            $this->fragment
-        );
-    }
-
-    /**
      * Composes a URI reference string from its various components.
      * Usually this method does not need to be called manually but instead is used indirectly via
      * `Psr\Http\Message\UriInterface::__toString`.
@@ -537,6 +545,28 @@ class Uri implements UriInterface
         }
 
         return $uri;
+    }
+
+    /**
+     * Whether the URI has the default port of the current scheme.
+     * `Psr\Http\Message\UriInterface::getPort` may return null or the standard port. This method can be used
+     * independently of the implementation.
+     *
+     * @return bool
+     */
+    public function isDefaultPort(): bool
+    {
+        return $this->getPort() === null || (isset(self::$defaultPorts[$this->getScheme()]) && $this->getPort() === self::$defaultPorts[$this->getScheme()]);
+    }
+
+    /**
+     * Get default port of the current scheme.
+     *
+     * @return int|null
+     */
+    public function getDefaultPort()
+    {
+        return self::$defaultPorts[$this->getScheme()] ?? null;
     }
 
     /**
@@ -635,28 +665,6 @@ class Uri implements UriInterface
         if ($this->port !== null && self::isDefaultPort($this)) {
             $this->port = null;
         }
-    }
-
-    /**
-     * Whether the URI has the default port of the current scheme.
-     * `Psr\Http\Message\UriInterface::getPort` may return null or the standard port. This method can be used
-     * independently of the implementation.
-     *
-     * @return bool
-     */
-    public function isDefaultPort(): bool
-    {
-        return $this->getPort() === null || (isset(self::$defaultPorts[$this->getScheme()]) && $this->getPort() === self::$defaultPorts[$this->getScheme()]);
-    }
-
-    /**
-     * Get default port of the current scheme.
-     *
-     * @return int|null
-     */
-    public function getDefaultPort()
-    {
-        return self::$defaultPorts[$this->getScheme()] ?? null;
     }
 
     /**

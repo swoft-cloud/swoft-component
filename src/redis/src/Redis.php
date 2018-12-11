@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -235,7 +236,7 @@ class Redis implements CacheInterface
      */
     public function has($key): bool
     {
-        return $this->call('exists', [$key]);
+        return (bool)$this->call('exists', [$key]);
     }
 
     /**

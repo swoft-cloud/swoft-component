@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -20,7 +21,7 @@ use Swoole\Coroutine\Mysql;
 /**
  * Mysql connection
  *
- * @Connection()
+ * @Connection
  */
 class MysqlConnection extends AbstractDbConnection
 {
@@ -258,7 +259,7 @@ class MysqlConnection extends AbstractDbConnection
             } elseif (\is_array($value)) {
                 $value = "'" . \implode("','", \array_map('addslashes', $value)) . "'";
             } else {
-                $value = "'" . \addslashes($value) . "'";
+                $value = "'" . \addslashes((string)$value) . "'";
             }
 
             if (\is_int($key)) {

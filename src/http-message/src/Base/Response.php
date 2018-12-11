@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Http\Message\Base;
 
@@ -14,6 +23,31 @@ use Swoft\Http\Message\Stream\SwooleStream;
 class Response implements ResponseInterface
 {
     use MessageTrait;
+
+    /**
+     * @var string
+     */
+    protected $reasonPhrase = '';
+
+    /**
+     * @var int
+     */
+    protected $statusCode = 200;
+
+    /**
+     * @var string
+     */
+    protected $charset = 'utf-8';
+
+    /**
+     * @var array
+     */
+    protected $attributes = [];
+
+    /**
+     * @var array
+     */
+    protected $cookies = [];
 
     /** @var array Map of standard HTTP status code/reason phrases */
     private static $phrases = [
@@ -76,31 +110,6 @@ class Response implements ResponseInterface
         508 => 'Loop Detected',
         511 => 'Network Authentication Required',
     ];
-
-    /**
-     * @var string
-     */
-    protected $reasonPhrase = '';
-
-    /**
-     * @var int
-     */
-    protected $statusCode = 200;
-
-    /**
-     * @var string
-     */
-    protected $charset = 'utf-8';
-
-    /**
-     * @var array
-     */
-    protected $attributes = [];
-
-    /**
-     * @var array
-     */
-    protected $cookies = [];
 
     /**
      * Retrieve attributes derived from the request.
@@ -353,14 +362,14 @@ class Response implements ResponseInterface
      */
     public function isRedirect($location = null): bool
     {
-        return \in_array($this->statusCode, array(
+        return \in_array($this->statusCode, [
                 201,
                 301,
                 302,
                 303,
                 307,
                 308
-            ), true) && (null === $location ?: $location === $this->getHeaderLine('Location'));
+            ], true) && (null === $location ?: $location === $this->getHeaderLine('Location'));
     }
 
     /**
@@ -370,7 +379,7 @@ class Response implements ResponseInterface
      */
     public function isEmpty(): bool
     {
-        return \in_array($this->statusCode, array(204, 304), true);
+        return \in_array($this->statusCode, [204, 304], true);
     }
 
     /**

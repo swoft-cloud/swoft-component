@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -14,29 +15,12 @@ use Swoft\App;
 use Swoft\Auth\AuthManager;
 use Swoft\Auth\Constants\AuthConstants;
 use Swoft\Auth\Mapping\AuthManagerInterface;
-use SwoftTest\Auth\Cases\AbstractTestCase;
 use Swoft\Http\Message\Server\Request;
 use Swoft\Http\Server\Router\HandlerMapping;
+use SwoftTest\Auth\Cases\AbstractTestCase;
 
 class AuthManagerTest extends AbstractTestCase
 {
-    protected function registerRoute()
-    {
-        /** @var HandlerMapping $router */
-        $router = App::getBean('httpRouter');
-        $router->post('/login', function (Request $request) {
-            $name = $request->getAttribute(AuthConstants::BASIC_USER_NAME);
-            $pd = $request->getAttribute(AuthConstants::BASIC_PASSWORD);
-            /** @var TestManager $manager */
-            $manager = App::getBean(AuthManagerInterface::class);
-            $session = $manager->testLogin($name, $pd);
-            return ['token' => $session->getToken()];
-        });
-        $router->get('/test', function (Request $request) {
-            return 'pass';
-        });
-    }
-
     /**
      * @covers AuthManager::login()
      */
@@ -52,5 +36,22 @@ class AuthManagerTest extends AbstractTestCase
         $res = $response->getBody()->getContents();
         $result = json_decode($res, true)['data'] ?? '';
         $this->assertNotEquals('', $result);
+    }
+
+    protected function registerRoute()
+    {
+        /** @var HandlerMapping $router */
+        $router = App::getBean('httpRouter');
+        $router->post('/login', function (Request $request) {
+            $name = $request->getAttribute(AuthConstants::BASIC_USER_NAME);
+            $pd = $request->getAttribute(AuthConstants::BASIC_PASSWORD);
+            /** @var TestManager $manager */
+            $manager = App::getBean(AuthManagerInterface::class);
+            $session = $manager->testLogin($name, $pd);
+            return ['token' => $session->getToken()];
+        });
+        $router->get('/test', function (Request $request) {
+            return 'pass';
+        });
     }
 }

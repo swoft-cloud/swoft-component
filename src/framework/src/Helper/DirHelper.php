@@ -1,4 +1,5 @@
 <?php
+ 
 /**
  * This file is part of Swoft.
  *
@@ -154,6 +155,67 @@ class DirHelper
     }
 
     /**
+     * @param string $dir
+     * @param int $mode
+     * @throws \RuntimeException
+     */
+    public static function mkdir($dir, $mode = 0775)
+    {
+        if (!file_exists($dir) && !mkdir($dir, $mode, true) && !is_dir($dir)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
+        }
+    }
+
+    /**
+     * @param string $srcDir
+     * @param callable $filter
+     * @param int $flags
+     * @return \RecursiveIteratorIterator
+     * @throws \InvalidArgumentException
+     */
+    public static function directoryIterator(
+        string $srcDir,
+        callable $filter,
+        $flags = \FilesystemIterator::KEY_AS_PATHNAME | \FilesystemIterator::CURRENT_AS_FILEINFO
+    ): \RecursiveIteratorIterator {
+        if (!$srcDir || !file_exists($srcDir)) {
+            throw new \InvalidArgumentException('Please provide a exists source directory.');
+        }
+
+        $directory = new \RecursiveDirectoryIterator($srcDir, $flags);
+        $filterIterator = new \RecursiveCallbackFilterIterator($directory, $filter);
+
+        return new \RecursiveIteratorIterator($filterIterator);
+    }
+
+    /**
+     * @param string $path
+     * @return bool
+     */
+    public static function deleteDirectory($path): bool
+    {
+        try {
+            $directoryIterator = new \DirectoryIterator($path);
+            foreach ($directoryIterator as $fileInfo) {
+                if ($fileInfo->valid() && $fileInfo->isExecutable()) {
+                    if ($fileInfo->isDot()) {
+                        continue;
+                    } elseif ($fileInfo->isDir()) {
+                        if (self::deleteDirectory($fileInfo->getPathname())) {
+                            rmdir($fileInfo->getPathname());
+                        }
+                    } elseif ($fileInfo->isFile()) {
+                        unlink($fileInfo->getPathname());
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * 扫描当前层级文件夹
      *
      * @param string $path 路径
@@ -243,66 +305,5 @@ class DirHelper
             }
         }
         return $files;
-    }
-
-    /**
-     * @param string $dir
-     * @param int $mode
-     * @throws \RuntimeException
-     */
-    public static function mkdir($dir, $mode = 0775)
-    {
-        if (!file_exists($dir) && !mkdir($dir, $mode, true) && !is_dir($dir)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
-        }
-    }
-
-    /**
-     * @param string $srcDir
-     * @param callable $filter
-     * @param int $flags
-     * @return \RecursiveIteratorIterator
-     * @throws \InvalidArgumentException
-     */
-    public static function directoryIterator(
-        string $srcDir,
-        callable $filter,
-        $flags = \FilesystemIterator::KEY_AS_PATHNAME | \FilesystemIterator::CURRENT_AS_FILEINFO
-    ): \RecursiveIteratorIterator {
-        if (!$srcDir || !file_exists($srcDir)) {
-            throw new \InvalidArgumentException('Please provide a exists source directory.');
-        }
-
-        $directory = new \RecursiveDirectoryIterator($srcDir, $flags);
-        $filterIterator = new \RecursiveCallbackFilterIterator($directory, $filter);
-
-        return new \RecursiveIteratorIterator($filterIterator);
-    }
-
-    /**
-     * @param string $path
-     * @return bool
-     */
-    public static function deleteDirectory($path): bool
-    {
-        try {
-            $directoryIterator = new \DirectoryIterator($path);
-            foreach ($directoryIterator as $fileInfo) {
-                if ($fileInfo->valid() && $fileInfo->isExecutable()) {
-                    if ($fileInfo->isDot()) {
-                        continue;
-                    } elseif ($fileInfo->isDir()) {
-                        if (self::deleteDirectory($fileInfo->getPathname())) {
-                            rmdir($fileInfo->getPathname());
-                        }
-                    } elseif ($fileInfo->isFile()) {
-                        unlink($fileInfo->getPathname());
-                    }
-                }
-            }
-        } catch (\Throwable $e) {
-            return false;
-        }
-        return true;
     }
 }

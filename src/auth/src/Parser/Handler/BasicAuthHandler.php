@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -16,7 +17,7 @@ use Swoft\Auth\Mapping\AuthHandlerInterface;
 use Swoft\Bean\Annotation\Bean;
 
 /**
- * @Bean()
+ * @Bean
  */
 class BasicAuthHandler implements AuthHandlerInterface
 {

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * This file is part of Swoft.
@@ -44,7 +45,9 @@ class ProcessBuilder
             return self::$processes[$name];
         }
 
-        list($name, $boot, $pipe, $inout, $co) = self::getProcessMapping($name);
+        list($name, $boot, $isOpenPipe, $inout, $co) = self::getProcessMapping($name);
+
+        $pipe = $isOpenPipe ? SOCK_STREAM : 0;
 
         $swooleProcess = new SwooleProcess(function (SwooleProcess $swooleProcess) use ($name, $co, $boot) {
             $process = new Process($swooleProcess);
@@ -130,9 +133,9 @@ class ProcessBuilder
     }
 
     /**
-     * @param string $name
+     * @param string  $name
      * @param Process $process
-     * @param bool $boot
+     * @param bool    $boot
      * @throws \InvalidArgumentException
      * @throws \ReflectionException
      */
@@ -153,7 +156,7 @@ class ProcessBuilder
      * After process
      *
      * @param string $processName
-     * @param bool $boot
+     * @param bool   $boot
      * @throws \InvalidArgumentException
      * @throws \ReflectionException
      */
@@ -182,7 +185,7 @@ class ProcessBuilder
     /**
      * Wait child process
      * @param string $name
-     * @param $boot
+     * @param        $boot
      */
     private static function waitChildProcess(string $name, $boot)
     {
@@ -192,7 +195,7 @@ class ProcessBuilder
 
         if ($hasWait || $boot) {
             Process::signal(SIGCHLD, function ($sig) use ($name, $processObject, $hasWait) {
-                while ($ret =  Process::wait(false)) {
+                while ($ret = Process::wait(false)) {
                     if ($hasWait) {
                         $processObject->wait($ret);
                     }

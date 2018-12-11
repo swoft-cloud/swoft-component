@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Http\Message\Cookie;
 
@@ -22,51 +31,6 @@ class SetCookie
 
     /** @var array Cookie data */
     private $data;
-
-    /**
-     * Create a new SetCookie object from a string
-     *
-     * @param string $cookie Set-Cookie header string
-     *
-     * @return self
-     */
-    public static function fromString($cookie)
-    {
-        // Create the default return array
-        $data = self::$defaults;
-        // Explode the cookie string using a series of semicolons
-        $pieces = array_filter(array_map('trim', explode(';', $cookie)));
-        // The name of the cookie (first kvp) must include an equal sign.
-        if (empty($pieces) || !strpos($pieces[0], '=')) {
-            return new self($data);
-        }
-
-        // Add the cookie pieces into the parsed data array
-        foreach ($pieces as $part) {
-
-            $cookieParts = explode('=', $part, 2);
-            $key = trim($cookieParts[0]);
-            $value = isset($cookieParts[1])
-                ? trim($cookieParts[1], " \n\r\t\0\x0B")
-                : true;
-
-            // Only check for non-cookies when cookies have been found
-            if (empty($data['Name'])) {
-                $data['Name'] = $key;
-                $data['Value'] = $value;
-            } else {
-                foreach (array_keys(self::$defaults) as $search) {
-                    if (!strcasecmp($search, $key)) {
-                        $data[$search] = $value;
-                        continue 2;
-                    }
-                }
-                $data[$key] = $value;
-            }
-        }
-
-        return new self($data);
-    }
 
     /**
      * @param array $data Array of cookie data provided by a Cookie parser
@@ -97,6 +61,50 @@ class SetCookie
         }
 
         return rtrim($str, '; ');
+    }
+
+    /**
+     * Create a new SetCookie object from a string
+     *
+     * @param string $cookie Set-Cookie header string
+     *
+     * @return self
+     */
+    public static function fromString($cookie)
+    {
+        // Create the default return array
+        $data = self::$defaults;
+        // Explode the cookie string using a series of semicolons
+        $pieces = array_filter(array_map('trim', explode(';', $cookie)));
+        // The name of the cookie (first kvp) must include an equal sign.
+        if (empty($pieces) || !strpos($pieces[0], '=')) {
+            return new self($data);
+        }
+
+        // Add the cookie pieces into the parsed data array
+        foreach ($pieces as $part) {
+            $cookieParts = explode('=', $part, 2);
+            $key = trim($cookieParts[0]);
+            $value = isset($cookieParts[1])
+                ? trim($cookieParts[1], " \n\r\t\0\x0B")
+                : true;
+
+            // Only check for non-cookies when cookies have been found
+            if (empty($data['Name'])) {
+                $data['Name'] = $key;
+                $data['Value'] = $value;
+            } else {
+                foreach (array_keys(self::$defaults) as $search) {
+                    if (!strcasecmp($search, $key)) {
+                        $data[$search] = $value;
+                        continue 2;
+                    }
+                }
+                $data[$key] = $value;
+            }
+        }
+
+        return new self($data);
     }
 
     public function toArray()
@@ -379,7 +387,8 @@ class SetCookie
         // Check if any of the invalid characters are present in the cookie name
         if (preg_match(
             '/[\x00-\x20\x22\x28-\x29\x2c\x2f\x3a-\x40\x5c\x7b\x7d\x7f]/',
-            $name)
+            $name
+        )
         ) {
             return 'Cookie name must not contain invalid characters: ASCII '
                 . 'Control characters (0-31;127), space, tab and the '

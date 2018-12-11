@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -22,18 +23,6 @@ use SwoftTest\Auth\Cases\AbstractTestCase;
  */
 class BasicAuthParserTest extends AbstractTestCase
 {
-    protected function registerRoute()
-    {
-        /** @var HandlerMapping $router */
-        $router = App::getBean('httpRouter');
-        $router->get('/', function (Request $request) {
-            $name = $request->getAttribute(AuthConstants::BASIC_USER_NAME);
-            $pd = $request->getAttribute(AuthConstants::BASIC_PASSWORD);
-
-            return ['username' => $name, 'password' => $pd];
-        });
-    }
-
     /**
      * @covers BasicAuthHandler::handle()
      */
@@ -45,5 +34,17 @@ class BasicAuthParserTest extends AbstractTestCase
         $response = $this->request('GET', '/', [], self::ACCEPT_JSON, ['Authorization' => 'Basic ' . $parser], 'test');
         $res = $response->getBody()->getContents();
         $this->assertEquals(json_decode($res, true), ['username' => $username, 'password' => $password]);
+    }
+
+    protected function registerRoute()
+    {
+        /** @var HandlerMapping $router */
+        $router = App::getBean('httpRouter');
+        $router->get('/', function (Request $request) {
+            $name = $request->getAttribute(AuthConstants::BASIC_USER_NAME);
+            $pd = $request->getAttribute(AuthConstants::BASIC_PASSWORD);
+
+            return ['username' => $name, 'password' => $pd];
+        });
     }
 }

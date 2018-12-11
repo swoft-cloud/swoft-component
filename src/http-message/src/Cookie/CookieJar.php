@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Http\Message\Cookie;
 
 use Psr\Http\Message\RequestInterface;
@@ -87,11 +96,11 @@ class CookieJar implements CookieJarInterface
     public function getCookieByName($name)
     {
         // don't allow a null name
-        if($name === null) {
+        if ($name === null) {
             return null;
         }
-        foreach($this->cookies as $cookie) {
-            if($cookie->getName() !== null && strcasecmp($cookie->getName(), $name) === 0) {
+        foreach ($this->cookies as $cookie) {
+            if ($cookie->getName() !== null && strcasecmp($cookie->getName(), $name) === 0) {
                 return $cookie;
             }
         }
@@ -160,10 +169,9 @@ class CookieJar implements CookieJarInterface
         if ($result !== true) {
             if ($this->strictMode) {
                 throw new \RuntimeException('Invalid cookie: ' . $result);
-            } else {
-                $this->removeCookieIfEmpty($cookie);
-                return false;
             }
+            $this->removeCookieIfEmpty($cookie);
+            return false;
         }
 
         // Resolve conflicts with previously set cookies
@@ -235,6 +243,30 @@ class CookieJar implements CookieJarInterface
         }
     }
 
+    public function withCookieHeader(RequestInterface $request)
+    {
+        $values = [];
+        $uri = $request->getUri();
+        $scheme = $uri->getScheme();
+        $host = $uri->getHost();
+        $path = $uri->getPath() ?: '/';
+
+        foreach ($this->cookies as $cookie) {
+            if ($cookie->matchesPath($path) &&
+                $cookie->matchesDomain($host) &&
+                !$cookie->isExpired() &&
+                (!$cookie->getSecure() || $scheme === 'https')
+            ) {
+                $values[] = $cookie->getName() . '='
+                    . $cookie->getValue();
+            }
+        }
+
+        return $values
+            ? $request->withHeader('Cookie', implode('; ', $values))
+            : $request;
+    }
+
     /**
      * Computes cookie path following RFC 6265 section 5.1.4
      *
@@ -260,30 +292,6 @@ class CookieJar implements CookieJarInterface
         }
 
         return substr($uriPath, 0, $lastSlashPos);
-    }
-
-    public function withCookieHeader(RequestInterface $request)
-    {
-        $values = [];
-        $uri = $request->getUri();
-        $scheme = $uri->getScheme();
-        $host = $uri->getHost();
-        $path = $uri->getPath() ?: '/';
-
-        foreach ($this->cookies as $cookie) {
-            if ($cookie->matchesPath($path) &&
-                $cookie->matchesDomain($host) &&
-                !$cookie->isExpired() &&
-                (!$cookie->getSecure() || $scheme === 'https')
-            ) {
-                $values[] = $cookie->getName() . '='
-                    . $cookie->getValue();
-            }
-        }
-
-        return $values
-            ? $request->withHeader('Cookie', implode('; ', $values))
-            : $request;
     }
 
     /**

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -46,6 +47,36 @@ class Statement implements StatementInterface
             $statement = $this->getUpdateStatement();
         } elseif ($this->isDelete()) {
             $statement = $this->getDeleteStatement();
+        }
+
+        return $statement;
+    }
+
+    /**
+     * from语句
+     *
+     * @return string
+     */
+    public function getFromString(): string
+    {
+        $statement = '';
+        if (empty($this->builder->getFrom())) {
+            return $statement;
+        }
+
+        // from语句
+        $statement .= $this->getFrom();
+        $fromAlias = $this->getFromAlias();
+
+        if (!empty($fromAlias)) {
+            $statement .= ' AS ' . $fromAlias;
+        }
+        // join语句
+        $statement .= ' ' . $this->getJoinString();
+        $statement = rtrim($statement);
+
+        if (!empty($statement)) {
+            $statement = 'FROM ' . $statement;
         }
 
         return $statement;
@@ -273,36 +304,6 @@ class Statement implements StatementInterface
         }
 
         return $select;
-    }
-
-    /**
-     * from语句
-     *
-     * @return string
-     */
-    public function getFromString(): string
-    {
-        $statement = '';
-        if (empty($this->builder->getFrom())) {
-            return $statement;
-        }
-
-        // from语句
-        $statement .= $this->getFrom();
-        $fromAlias = $this->getFromAlias();
-
-        if (!empty($fromAlias)) {
-            $statement .= ' AS ' . $fromAlias;
-        }
-        // join语句
-        $statement .= ' ' . $this->getJoinString();
-        $statement = rtrim($statement);
-
-        if (!empty($statement)) {
-            $statement = 'FROM ' . $statement;
-        }
-
-        return $statement;
     }
 
     /**

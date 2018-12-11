@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of Swoft.
  *
@@ -536,15 +537,14 @@ class ArrayHelper
     {
         if ($caseSensitive) {
             return array_key_exists($key, $array);
-        } else {
-            foreach (array_keys($array) as $k) {
-                if (strcasecmp($key, $k) === 0) {
-                    return true;
-                }
-            }
-
-            return false;
         }
+        foreach (array_keys($array) as $k) {
+            if (strcasecmp($key, $k) === 0) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -628,15 +628,14 @@ class ArrayHelper
             }
 
             return true;
-        } else {
-            foreach ($array as $key => $value) {
-                if (\is_string($key)) {
-                    return true;
-                }
-            }
-
-            return false;
         }
+        foreach ($array as $key => $value) {
+            if (\is_string($key)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -665,15 +664,14 @@ class ArrayHelper
 
         if ($consecutive) {
             return array_keys($array) === range(0, \count($array) - 1);
-        } else {
-            foreach ($array as $key => $value) {
-                if (!\is_int($key)) {
-                    return false;
-                }
-            }
-
-            return true;
         }
+        foreach ($array as $key => $value) {
+            if (!\is_int($key)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -746,9 +744,8 @@ class ArrayHelper
             }
 
             return true;
-        } else {
-            throw new \InvalidArgumentException('Argument $needles must be an array or implement Traversable');
         }
+        throw new \InvalidArgumentException('Argument $needles must be an array or implement Traversable');
     }
 
     /**

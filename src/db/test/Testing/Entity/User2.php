@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -9,21 +10,21 @@
  */
 namespace SwoftTest\Db\Testing\Entity;
 
-use Swoft\Db\Bean\Annotation\Id;
-use Swoft\Db\Bean\Annotation\Table;
 use Swoft\Db\Bean\Annotation\Column;
 use Swoft\Db\Bean\Annotation\Entity;
+use Swoft\Db\Bean\Annotation\Id;
+use Swoft\Db\Bean\Annotation\Table;
 use Swoft\Db\Model;
 use Swoft\Db\Types;
 
 /**
- * @Entity()
+ * @Entity
  * @Table(name="user2")
  */
 class User2 extends Model
 {
     /**
-     * @Id()
+     * @Id
      * @Column(name="id", type="bigint")
      * @var null|int
      */

@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Swoft\Bean\Parser;
 
 use Swoft\Bean\Annotation\Value;
+use Swoft\Core\Types;
 use Swoft\Helper\DocumentHelper;
 
 /**
@@ -25,27 +26,15 @@ use Swoft\Helper\DocumentHelper;
  */
 class ValueParser extends AbstractParser
 {
-    const UNKNOWN = 0;
-
-    const BOOLEAN = 1;
-
-    const STRING = 2;
-
-    const INTEGER = 3;
-
-    const FLOAT = 4;
-
-    const ARRAY = 5;
-
     private $supportTypes = [
-        'bool' => self::BOOLEAN,
-        'boolean' => self::BOOLEAN,
-        'string' => self::STRING,
-        'int' => self::INTEGER,
-        'integer' => self::INTEGER,
-        'float' => self::FLOAT,
-        'double' => self::FLOAT,
-        'array' => self::ARRAY,
+        'bool' => Types::BOOLEAN,
+        'boolean' => Types::BOOLEAN,
+        'string' => Types::STRING,
+        'int' => Types::INTEGER,
+        'integer' => Types::INTEGER,
+        'float' => Types::FLOAT,
+        'double' => Types::FLOAT,
+        'array' => Types::ARRAY,
     ];
 
     /**
@@ -99,19 +88,19 @@ class ValueParser extends AbstractParser
         }
 
         switch ($type) {
-            case self::BOOLEAN:
+            case Types::BOOLEAN:
                 $value = (bool)$value;
                 break;
-            case self::STRING:
+            case Types::STRING:
                 $value = (string)$value;
                 break;
-            case self::INTEGER:
+            case Types::INTEGER:
                 $value = (int)$value;
                 break;
-            case self::FLOAT:
+            case Types::FLOAT:
                 $value = (float)$value;
                 break;
-            case self::ARRAY:
+            case Types::ARRAY:
                 if (empty($value)) {
                     $value = [];
                 } else {
@@ -159,7 +148,7 @@ class ValueParser extends AbstractParser
             return $this->supportTypes[$tags['var']];
         }
 
-        return self::UNKNOWN;
+        return Types::UNKNOWN;
     }
 
     /**

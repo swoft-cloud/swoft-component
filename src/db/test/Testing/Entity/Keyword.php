@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -16,7 +17,7 @@ use Swoft\Db\Bean\Annotation\Table;
 use Swoft\Db\Model;
 
 /**
- * @Entity()
+ * @Entity
  * @Table(name="keyword")
  * @uses      Keyword
  */
@@ -24,7 +25,7 @@ class Keyword extends Model
 {
     /**
      * @var int $id
-     * @Id()
+     * @Id
      * @Column(name="id", type="integer")
      */
     private $id;

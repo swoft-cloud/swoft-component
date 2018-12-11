@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Http\Message\Cookie;
 
@@ -70,7 +79,7 @@ class SessionCookieJar extends CookieJar
                 $this->setCookie(new SetCookie($cookie));
             }
         } elseif (strlen($data)) {
-            throw new \RuntimeException("Invalid cookie data");
+            throw new \RuntimeException('Invalid cookie data');
         }
     }
 }

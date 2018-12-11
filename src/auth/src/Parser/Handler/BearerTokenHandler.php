@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -13,12 +14,12 @@ namespace Swoft\Auth\Parser\Handler;
 use Psr\Http\Message\ServerRequestInterface;
 use Swoft\App;
 use Swoft\Auth\Constants\AuthConstants;
-use Swoft\Auth\Mapping\AuthManagerInterface;
 use Swoft\Auth\Mapping\AuthHandlerInterface;
+use Swoft\Auth\Mapping\AuthManagerInterface;
 use Swoft\Bean\Annotation\Bean;
 
 /**
- * @Bean()
+ * @Bean
  */
 class BearerTokenHandler implements AuthHandlerInterface
 {

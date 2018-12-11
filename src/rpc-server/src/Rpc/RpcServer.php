@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -27,7 +28,7 @@ class RpcServer extends AbstractServer
         // add server type
         $this->serverSetting['server_type'] = self::TYPE_RPC;
 
-        $this->server = new Server($this->tcpSetting['host'], $this->tcpSetting['port'], $this->tcpSetting['mode'], $this->tcpSetting['type']);
+        $this->server = new Server($this->tcpSetting['host'], (int)$this->tcpSetting['port'], $this->tcpSetting['mode'], $this->tcpSetting['type']);
 
         // Bind event callback
         $listenSetting = $this->getListenTcpSetting();

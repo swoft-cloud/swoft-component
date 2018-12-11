@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -32,7 +33,8 @@ class SyncRedisConnection extends AbstractRedisConnection
         // init
         $redis = $this->initRedis();
         if ($serialize) {
-            $redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
+            // TODO: Redis::setOption() expects parameter 2 to be string, but \Redis::SERIALIZER_PHP is integer.
+            $redis->setOption(\Redis::OPT_SERIALIZER, (string)\Redis::SERIALIZER_PHP);
         }
 
         if (!empty($prefix) && is_string($prefix)) {

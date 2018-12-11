@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -15,6 +16,7 @@ use Swoft\Bean\BeanFactory;
 use Swoft\Core\ResultInterface;
 use Swoft\Db\Bean\Collector\EntityCollector;
 use Swoft\Db\Exception\MysqlException;
+use Swoft\Db\Helper\EntityHelper;
 use Swoft\Db\Validator\ValidatorInterface;
 use Swoft\Helper\StringHelper;
 
@@ -38,7 +40,9 @@ class Executor
         $query  = Query::table($table)->selectInstance($instance);
         // Set Primary Id to Entity
         $query->addDecorator(function ($primaryId) use ($entity, $className) {
-            list(, , $idColumn) = self::getTable($className);
+            list(, , $idColumn, , $type) = self::getTable($className);
+            $primaryId = EntityHelper::trasferTypes($type, $primaryId);
+
             // When Primary Id is auto increment
             $getter = 'get' . StringHelper::camel($idColumn, false);
             $setter = 'set' . StringHelper::camel($idColumn, false);
@@ -49,6 +53,7 @@ class Executor
                     $primaryId = $entity->$getter();
                 }
             }
+
             return $primaryId;
         });
         return $query->insert($fields);
@@ -373,6 +378,27 @@ class Executor
     }
 
     /**
+     * @param string $className
+     * @param array  $oldFields
+     *
+     * @return array
+     */
+    public static function getDbOldFields(string $className, array $oldFields): array
+    {
+        $fields       = [];
+        $entities     = EntityCollector::getCollector();
+        $entityfields = $entities[$className]['field'];
+        foreach ($oldFields as $fieldName => $value) {
+            if (isset($entityfields[$fieldName]) && $entityfields[$fieldName] != $fieldName) {
+                $fieldName = $entityfields[$fieldName]['column'];
+            }
+            $fields[$fieldName] = $value;
+        }
+
+        return $fields;
+    }
+
+    /**
      * @param object $entity 实体对象
      * @param int    $type   类型，1=insert 3=delete|find 2=update
      *
@@ -431,27 +457,6 @@ class Executor
             $changeFields = self::getUpdateFields($oldFields, $changeFields);
         }
         return [$table, $idColumn, $idValue, $changeFields];
-    }
-
-    /**
-     * @param string $className
-     * @param array  $oldFields
-     *
-     * @return array
-     */
-    public static function getDbOldFields(string $className, array $oldFields): array
-    {
-        $fields       = [];
-        $entities     = EntityCollector::getCollector();
-        $entityfields = $entities[$className]['field'];
-        foreach ($oldFields as $fieldName => $value) {
-            if (isset($entityfields[$fieldName]) && $entityfields[$fieldName] != $fieldName) {
-                $fieldName = $entityfields[$fieldName]['column'];
-            }
-            $fields[$fieldName] = $value;
-        }
-
-        return $fields;
     }
 
     /**
@@ -590,8 +595,9 @@ class Executor
         $idProperty = $entities[$className]['table']['id'];
         $tableName  = $entities[$className]['table']['name'];
         $idColumn   = $fields[$idProperty]['column'];
+        $type       = $fields[$idProperty]['type'];
 
-        return [$tableName, $idProperty, $idColumn, $fields];
+        return [$tableName, $idProperty, $idColumn, $fields, $type];
     }
 
     /**

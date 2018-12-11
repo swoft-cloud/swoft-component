@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -13,8 +14,8 @@ use Swoft\App;
 use Swoft\Db\Bean\Collector\StatementCollector;
 use Swoft\Db\Exception\MysqlException;
 use Swoft\Db\Pool;
-use Swoft\Pool\PoolInterface;
 use Swoft\Db\Pool\Config\DbPoolProperties;
+use Swoft\Pool\PoolInterface;
 
 /**
  * DbHelper

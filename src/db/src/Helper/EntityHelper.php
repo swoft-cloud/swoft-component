@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -48,7 +49,7 @@ class EntityHelper
      */
     public static function formatRowByType(array $row, string $className): array
     {
-        $rowAry   = [];
+        $rowAry = [];
         $entities = EntityCollector::getCollector();
         if (!isset($entities[$className])) {
             return $row;
@@ -59,7 +60,7 @@ class EntityHelper
         }
         foreach ($row as $name => $value) {
             $field = $entities[$className]['column'][$name];
-            $type  = $entities[$className]['field'][$field]['type'];
+            $type = $entities[$className]['field'][$field]['type'];
 
             $rowAry[$name] = self::trasferTypes($type, $value);
         }
@@ -94,8 +95,8 @@ class EntityHelper
      */
     public static function arrayToEntity(array $data, string $className)
     {
-        $attrs    = [];
-        $object   = new $className();
+        $attrs = [];
+        $object = new $className();
         $entities = EntityCollector::getCollector();
 
         foreach ($data as $col => $value) {
@@ -103,10 +104,10 @@ class EntityHelper
                 continue;
             }
 
-            $field        = $entities[$className]['column'][$col];
+            $field = $entities[$className]['column'][$col];
             $setterMethod = StringHelper::camel('set_' . $field);
 
-            $type  = $entities[$className]['field'][$field]['type'];
+            $type = $entities[$className]['field'][$field]['type'];
             $value = self::trasferTypes($type, $value);
 
             if (\method_exists($object, $setterMethod)) {
@@ -133,15 +134,24 @@ class EntityHelper
     public static function trasferTypes($type, $value)
     {
         if ($value === null) {
-            $value = null;
-        } elseif ($type === Types::INT || $type === Types::NUMBER) {
-            $value = (int)$value;
-        } elseif ($type === Types::STRING) {
-            $value = null === $value ? null : (string)$value;
-        } elseif ($type === Types::BOOLEAN) {
-            $value = (bool)$value;
-        } elseif ($type === Types::FLOAT) {
-            $value = (float)$value;
+            return null;
+        }
+
+        switch (Types::getPhpType($type)) {
+            case \Swoft\Core\Types::INTEGER:
+                $value = (int)$value;
+                break;
+            case \Swoft\Core\Types::STRING:
+                $value = null === $value ? null : (string)$value;
+                break;
+            case \Swoft\Core\Types::BOOLEAN:
+                $value = (bool)$value;
+                break;
+            case \Swoft\Core\Types::FLOAT:
+                $value = (float)$value;
+                break;
+            default:
+                break;
         }
 
         return $value;
@@ -173,10 +183,8 @@ class EntityHelper
 
     /**
      * @param mixed $key
-     *
-     * @return string
      */
-    private static function formatParamsKey($key): string
+    private static function formatParamsKey($key)
     {
         if (\is_string($key) && \strpos($key, ':') === false) {
             return ':' . $key;
