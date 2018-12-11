@@ -467,7 +467,7 @@ class Logger extends \Monolog\Logger
         if ($this->microsecondTimestamps && PHP_VERSION_ID < 70100) {
             $ts = \DateTime::createFromFormat('U.u', sprintf('%.6F', microtime(true)), static::$timezone);
         } else {
-            $ts = new \DateTime(null, static::$timezone);
+            $ts = new \DateTime('now', static::$timezone);
         }
 
         $ts->setTimezone(static::$timezone);
@@ -489,12 +489,12 @@ class Logger extends \Monolog\Logger
     /**
      * 请求开始时间
      *
-     * @return int
+     * @return float
      */
-    private function getRequestTime(): int
+    private function getRequestTime(): float
     {
         $contextData = RequestContext::getContextData();
 
-        return $contextData['requestTime'] ?? 0;
+        return $contextData['requestTime'] ?? 0.0;
     }
 }
