@@ -8,7 +8,7 @@ declare(strict_types=1);
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-namespace SwoftTest\RpcServer;
+namespace SwoftTest\RpcServer\Cases;
 
 class DemoTest extends AbstractTestCase
 {

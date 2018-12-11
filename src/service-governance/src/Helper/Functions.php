@@ -1,8 +1,17 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 use Swoft\App;
-use Swoft\Sg\Circuit\CircuitBreaker;
-use Swoft\Sg\Bean\Collector\BreakerCollector;
 use Swoft\Sg\BalancerSelector;
+use Swoft\Sg\Bean\Collector\BreakerCollector;
+use Swoft\Sg\Circuit\CircuitBreaker;
 use Swoft\Sg\ProviderSelector;
 
 if (!function_exists('breaker')) {
@@ -61,6 +70,3 @@ if (!function_exists('provider')) {
         return App::getBean('providerSelector');
     }
 }
-
-
-

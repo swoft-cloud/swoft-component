@@ -1,9 +1,18 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Sg\Bean\Collector;
 
-use Swoft\Sg\Bean\Annotation\Breaker;
 use Swoft\Bean\CollectorInterface;
+use Swoft\Sg\Bean\Annotation\Breaker;
 
 /**
  * the collector of breaker
@@ -41,5 +50,4 @@ class BreakerCollector implements CollectorInterface
     {
         return self::$breakers;
     }
-
 }

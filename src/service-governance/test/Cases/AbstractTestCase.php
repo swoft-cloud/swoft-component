@@ -1,12 +1,20 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
-namespace SwoftTest\Sg;
+namespace SwoftTest\Sg\Cases;
 
 use PHPUnit\Framework\TestCase;
 
 abstract class AbstractTestCase extends TestCase
 {
-
     /**
      * @param callable $func
      * @param          $expectedExceptionClass
@@ -32,5 +40,4 @@ abstract class AbstractTestCase extends TestCase
             $this->assertEquals($expectedErrorClass, \get_class($t));
         }
     }
-
 }

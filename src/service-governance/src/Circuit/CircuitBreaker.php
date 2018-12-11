@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -58,11 +59,6 @@ class CircuitBreaker
     public $serviceName = 'breakerService';
 
     /**
-     * @var CircuitBreakerState Current circuit breaker state
-     */
-    private $circuitState;
-
-    /**
      * @var \Swoole\Lock Lock of half open state
      */
     protected $halfOpenLock;
@@ -90,6 +86,11 @@ class CircuitBreaker
      * @var int
      */
     protected $delaySwitchTimer = 5000;
+
+    /**
+     * @var CircuitBreakerState Current circuit breaker state
+     */
+    private $circuitState;
 
     /**
      * Initialization

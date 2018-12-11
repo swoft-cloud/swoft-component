@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -10,8 +11,8 @@
 namespace Swoft\Sg\Circuit;
 
 use Swoft\App;
-use Swoole\Coroutine\Client;
 use Swoft\Pool\ConnectionInterface;
+use Swoole\Coroutine\Client;
 
 /**
  * Closed state and switch(close)

@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Sg;
 
@@ -57,18 +66,6 @@ class ProviderSelector implements SelectorInterface
     }
 
     /**
-     * the balancers of default
-     *
-     * @return array
-     */
-    private function defaultProviders(): array
-    {
-        return [
-            self::TYPE_CONSUL => ConsulProvider::class,
-        ];
-    }
-
-    /**
      * @return array
      */
     public function getProviders(): array
@@ -82,5 +79,17 @@ class ProviderSelector implements SelectorInterface
     public function setProviders(array $providers)
     {
         $this->providers = $providers;
+    }
+
+    /**
+     * the balancers of default
+     *
+     * @return array
+     */
+    private function defaultProviders(): array
+    {
+        return [
+            self::TYPE_CONSUL => ConsulProvider::class,
+        ];
     }
 }
