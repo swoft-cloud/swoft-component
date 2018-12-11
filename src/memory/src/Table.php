@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -10,8 +11,8 @@
 
 namespace Swoft\Memory;
 
-use Swoole\Table as SwooleTable;
 use Swoft\Memory\Table\TableInterface;
+use Swoole\Table as SwooleTable;
 
 /**
  * Memory Table
@@ -72,6 +73,66 @@ class Table implements TableInterface
         $this->setName($name);
         $this->setSize($size);
         $this->setColumns($columns);
+    }
+
+    /**
+     * Invoke
+     *
+     * @param string $method
+     * @param array $args
+     * @return mixed
+     * @throws Exception\RuntimeException
+     */
+    public function __call(string $method, array $args = [])
+    {
+        if (method_exists($this, $method)) {
+            return $this->$method(...$args);
+        }
+        throw new Exception\RuntimeException(printf('Call to undefined method %s', $method));
+    }
+
+    /**
+     * __get
+     *
+     * @param string $name
+     * @return mixed
+     * @throws Exception\RuntimeException
+     */
+    public function __get(string $name)
+    {
+        $method = 'get' . ucfirst($name);
+
+        if (!\method_exists($this, $method)) {
+            throw new Exception\RuntimeException(sprintf('Call to undefined property %s', $name));
+        }
+
+        return $this->$method();
+    }
+
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @return mixed
+     * @throws Exception\RuntimeException
+     */
+    public function __set($name, $value)
+    {
+        $method = 'set' . ucfirst($name);
+
+        if (!\method_exists($this, $method)) {
+            throw new Exception\RuntimeException(sprintf('Call to undefined property %s', $name));
+        }
+
+        return $this->$method();
+    }
+
+    /**
+     * @param $name
+     * @return bool
+     */
+    public function __isset($name): bool
+    {
+        return isset($this->$name);
     }
 
     /**
@@ -351,65 +412,5 @@ class Table implements TableInterface
                 throw new Exception\InvalidArgumentException(sprintf('Undefined Column Type %s', $type));
         }
         return [$type, $size];
-    }
-
-    /**
-     * Invoke
-     *
-     * @param string $method
-     * @param array $args
-     * @return mixed
-     * @throws Exception\RuntimeException
-     */
-    public function __call(string $method, array $args = [])
-    {
-        if (method_exists($this, $method)) {
-            return $this->$method(...$args);
-        }
-        throw new Exception\RuntimeException(printf('Call to undefined method %s', $method));
-    }
-
-    /**
-     * __get
-     *
-     * @param string $name
-     * @return mixed
-     * @throws Exception\RuntimeException
-     */
-    public function __get(string $name)
-    {
-        $method = 'get' . ucfirst($name);
-
-        if (!\method_exists($this, $method)) {
-            throw new Exception\RuntimeException(sprintf('Call to undefined property %s', $name));
-        }
-
-        return $this->$method();
-    }
-
-    /**
-     * @param string $name
-     * @param mixed $value
-     * @return mixed
-     * @throws Exception\RuntimeException
-     */
-    public function __set($name, $value)
-    {
-        $method = 'set' . ucfirst($name);
-
-        if (!\method_exists($this, $method)) {
-            throw new Exception\RuntimeException(sprintf('Call to undefined property %s', $name));
-        }
-
-        return $this->$method();
-    }
-
-    /**
-     * @param $name
-     * @return bool
-     */
-    public function __isset($name): bool
-    {
-        return isset($this->$name);
     }
 }

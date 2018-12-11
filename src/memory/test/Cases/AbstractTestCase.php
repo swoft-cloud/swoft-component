@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -14,7 +15,6 @@ use PHPUnit\Framework\TestCase;
 
 abstract class AbstractTestCase extends TestCase
 {
-
     /**
      * @param callable $func
      * @param string   $expectedExceptionClass
