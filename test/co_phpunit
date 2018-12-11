@@ -44,7 +44,7 @@ go(function () {
 
     require PHPUNIT_COMPOSER_INSTALL;
 
-    PHPUnit_TextUI_Command::main(false);
+    PHPUnit_TextUI_Command::main();
 
     swoole_event_exit();
 });
