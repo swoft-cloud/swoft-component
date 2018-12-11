@@ -7,7 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-namespace SwoftTest\RpcClient;
+namespace SwoftTest\RpcClient\Cases;
 
 use Swoft\App;
 use SwoftTest\RpcClient\Testing\Clients\DemoServiceClient;
