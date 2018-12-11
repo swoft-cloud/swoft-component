@@ -17,19 +17,10 @@ class RpcTest extends AbstractTestCase
         $this->assertTrue(true);
     }
 
-    public function testRpc()
+    public function testLongMessage()
     {
-        $client = bean(DemoServiceClient::class);
-        $this->assertEquals('1.0.0', $client->version());
-
-        // SyncServiceConnection not timeout
-        $client = bean(DemoServiceClient::class);
-        $id = rand(1000, 9999);
-        $res = $client->get($id);
-        $this->assertEquals($id, $res);
-
+        $this->assertTrue(true);
         if (App::isCoContext()) {
-            // Test Long Message
             $client = bean(DemoServiceClient::class);
             $string = 'Hi, Agnes! ';
             $str = $client->longMessage($string);
@@ -38,25 +29,41 @@ class RpcTest extends AbstractTestCase
                 $expect .= $string;
             }
             $this->assertEquals($expect, $str);
+        }
+    }
 
-            // Test Tcp Timeout
-            go(function () {
-                $client = bean(DemoServiceClient::class);
-                $id = rand(1000, 9999);
-                $res = $client->get($id);
-                $this->assertEquals('', $res);
-            });
+    public function testTcpTimeout()
+    {
+        $client = bean(DemoServiceClient::class);
+        $id = rand(1000, 9999);
+        $res = $client->get($id);
+        if (App::isCoContext()) {
+            $this->assertEquals('', $res);
+        } else {
+            // SyncServiceConnection not timeout
+            $this->assertEquals($id, $res);
+        }
+    }
 
-            \co::sleep(2);
-
-            // Test Rpc Server Restart
+    public function testRpcReconnect()
+    {
+        if (App::isCoContext()) {
             $cmd = 'php ' . alias('@root') . '/rpc_server.php -d';
+
             \co::exec($cmd);
-            \co::sleep(1);
+            \co::sleep(4);
 
             $client = bean(DemoServiceClient::class);
             $res = $client->version();
             $this->assertEquals('1.0.0', $res);
         }
+
+        $this->assertTrue(true);
+    }
+
+    public function testRpc()
+    {
+        $client = bean(DemoServiceClient::class);
+        $this->assertEquals('1.0.0', $client->version());
     }
 }
