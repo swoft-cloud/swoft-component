@@ -91,6 +91,7 @@ class ErrorHandlerChain
     public function getHandler($exception)
     {
         $handler = $this->handlers[$exception] ?? null;
+
         while (!is_array($handler)) {
             $ref = new \ReflectionClass($exception);
             $parentClass = $ref->getParentClass();

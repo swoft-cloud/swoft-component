@@ -49,7 +49,7 @@ class CoroutineClientTest extends AbstractTestCase
 
         /** @var Response $response */
         $response = $client->request($method, '/?a=1', [
-            'base_uri' => 'http://echo.swoft.org',
+            'base_uri' => $this->baseUri,
             '_options' => $this->getOptions()
         ])->getResponse();
         $response->assertSuccessful();
@@ -72,21 +72,21 @@ class CoroutineClientTest extends AbstractTestCase
         $method = 'POST';
         /** @var Response $response */
         $response = $client->request($method, '', [
-            'base_uri' => 'http://echo.swoft.org',
+            'base_uri' => $this->baseUri,
             'body' => $body,
             '_options' => $this->getOptions()
         ])->getResponse();
         $response->assertSuccessful()
-            ->assertHeader('Content-Type', 'application/json')
+            ->assertHeader('Content-Type', 'application/json;charset=utf-8')
             ->assertJsonFragment([
-                'Host' => 'echo.swoft.org',
+                'Host' => '127.0.0.1:8080',
                 'Content-Type' => 'text/plain',
             ])->assertJsonFragment([
                 'uri' => [
                     'scheme' => 'http',
                     'userInfo' => '',
-                    'host' => 'echo.swoft.org',
-                    'port' => 80,
+                    'host' => '127.0.0.1',
+                    'port' => 8080,
                     'path' => '/',
                     'query' => '',
                     'fragment' => '',
@@ -117,21 +117,21 @@ class CoroutineClientTest extends AbstractTestCase
         $method = 'POST';
         /** @var Response $response */
         $response = $client->request($method, '', [
-            'base_uri' => 'http://echo.swoft.org',
+            'base_uri' => $this->baseUri,
             '_options' => $this->getOptions(),
             'form_params' => $body,
         ])->getResponse();
         $response->assertSuccessful()
-            ->assertHeader('Content-Type', 'application/json')
+            ->assertHeader('Content-Type', 'application/json;charset=utf-8')
             ->assertJsonFragment([
-                'Host' => 'echo.swoft.org',
+                'Host' => '127.0.0.1:8080',
                 'Content-Type' => 'application/x-www-form-urlencoded',
             ])->assertJsonFragment([
                 'uri' => [
                     'scheme' => 'http',
                     'userInfo' => '',
-                    'host' => 'echo.swoft.org',
-                    'port' => 80,
+                    'host' => '127.0.0.1',
+                    'port' => 8080,
                     'path' => '/',
                     'query' => '',
                     'fragment' => '',
@@ -162,21 +162,21 @@ class CoroutineClientTest extends AbstractTestCase
         $method = 'POST';
         /** @var Response $response */
         $response = $client->request($method, '', [
-            'base_uri' => 'http://echo.swoft.org',
+            'base_uri' => $this->baseUri,
             '_options' => $this->getOptions(),
             'json' => $body,
         ])->getResponse();
         $response->assertSuccessful()
-            ->assertHeader('Content-Type', 'application/json')
+            ->assertHeader('Content-Type', 'application/json;charset=utf-8')
             ->assertJsonFragment([
-                'Host' => 'echo.swoft.org',
+                'Host' => '127.0.0.1:8080',
                 'Content-Type' => 'application/json',
             ])->assertJsonFragment([
                 'uri' => [
                     'scheme' => 'http',
                     'userInfo' => '',
-                    'host' => 'echo.swoft.org',
-                    'port' => 80,
+                    'host' => '127.0.0.1',
+                    'port' => 8080,
                     'path' => '/',
                     'query' => '',
                     'fragment' => '',
@@ -207,21 +207,21 @@ class CoroutineClientTest extends AbstractTestCase
         $method = 'PUT';
         /** @var Response $response */
         $response = $client->request($method, '', [
-            'base_uri' => 'http://echo.swoft.org',
+            'base_uri' => $this->baseUri,
             '_options' => $this->getOptions(),
             'json' => $body,
         ])->getResponse();
         $response->assertSuccessful()
-            ->assertHeader('Content-Type', 'application/json')
+            ->assertHeader('Content-Type', 'application/json;charset=utf-8')
             ->assertJsonFragment([
-                'Host' => 'echo.swoft.org',
+                'Host' => '127.0.0.1:8080',
                 'Content-Type' => 'application/json',
             ])->assertJsonFragment([
                 'uri' => [
                     'scheme' => 'http',
                     'userInfo' => '',
-                    'host' => 'echo.swoft.org',
-                    'port' => 80,
+                    'host' => '127.0.0.1',
+                    'port' => 8080,
                     'path' => '/',
                     'query' => '',
                     'fragment' => '',
@@ -252,21 +252,21 @@ class CoroutineClientTest extends AbstractTestCase
         $method = 'DELETE';
         /** @var Response $response */
         $response = $client->request($method, '', [
-            'base_uri' => 'http://echo.swoft.org',
+            'base_uri' => $this->baseUri,
             '_options' => $this->getOptions(),
             'json' => $body,
         ])->getResponse();
         $response->assertSuccessful()
-            ->assertHeader('Content-Type', 'application/json')
+            ->assertHeader('Content-Type', 'application/json;charset=utf-8')
             ->assertJsonFragment([
-                'Host' => 'echo.swoft.org',
+                'Host' => '127.0.0.1:8080',
                 'Content-Type' => 'application/json',
             ])->assertJsonFragment([
                 'uri' => [
                     'scheme' => 'http',
                     'userInfo' => '',
-                    'host' => 'echo.swoft.org',
-                    'port' => 80,
+                    'host' => '127.0.0.1',
+                    'port' => 8080,
                     'path' => '/',
                     'query' => '',
                     'fragment' => '',
@@ -324,7 +324,7 @@ class CoroutineClientTest extends AbstractTestCase
     {
         // 测试base_uri传入的域名带path时，会主动过滤path
         $client = new Client([
-            'base_uri' => 'http://echo.swoft.org/test',
+            'base_uri' => $this->baseUri . '/test',
             '_options' => $this->getOptions()
         ]);
 
@@ -332,7 +332,7 @@ class CoroutineClientTest extends AbstractTestCase
         $this->assertSame(['message' => 'Route not found for /info'], JsonHelper::decode($res, true));
 
         $client = new Client([
-            'base_uri' => 'http://echo.swoft.org?id=xxx',
+            'base_uri' => $this->baseUri . '?id=xxx',
             '_options' => $this->getOptions()
         ]);
 
@@ -347,7 +347,7 @@ class CoroutineClientTest extends AbstractTestCase
     public function queryNotInvalid()
     {
         $client = new Client([
-            'base_uri' => 'http://echo.swoft.org',
+            'base_uri' => $this->baseUri,
             '_options' => $this->getOptions()
         ]);
 
@@ -355,7 +355,7 @@ class CoroutineClientTest extends AbstractTestCase
         $this->assertSame(['message' => 'Route not found for /0'], JsonHelper::decode($res, true));
 
         $client = new Client([
-            'base_uri' => 'http://echo.swoft.org',
+            'base_uri' => $this->baseUri,
             '_options' => $this->getOptions()
         ]);
 

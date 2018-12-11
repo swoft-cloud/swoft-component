@@ -53,7 +53,7 @@ class CurlClientTest extends AbstractTestCase
 
         /** @var Response $response */
         $response = $client->request($method, '/?a=1', [
-            'base_uri' => 'http://echo.swoft.org',
+            'base_uri' => $this->baseUri,
         ])->getResponse();
         $response->assertSuccessful();
         $this->assertJson($response->getBody()->getContents());
@@ -76,20 +76,20 @@ class CurlClientTest extends AbstractTestCase
         $method = 'POST';
         /** @var Response $response */
         $response = $client->request($method, '', [
-            'base_uri' => 'http://echo.swoft.org',
+            'base_uri' => $this->baseUri,
             'body' => $body,
         ])->getResponse();
         $response->assertSuccessful()
-            ->assertHeader('Content-Type', 'application/json')
+            ->assertHeader('Content-Type', 'application/json;charset=utf-8')
             ->assertJsonFragment([
-                'Host' => 'echo.swoft.org',
+                'Host' => '127.0.0.1:8080',
                 'Content-Type' => 'text/plain',
             ])->assertJsonFragment([
                 'uri' => [
                     'scheme' => 'http',
                     'userInfo' => '',
-                    'host' => 'echo.swoft.org',
-                    'port' => 80,
+                    'host' => '127.0.0.1',
+                    'port' => 8080,
                     'path' => '/',
                     'query' => '',
                     'fragment' => '',
@@ -120,20 +120,20 @@ class CurlClientTest extends AbstractTestCase
         $method = 'POST';
         /** @var Response $response */
         $response = $client->request($method, '', [
-            'base_uri' => 'http://echo.swoft.org',
+            'base_uri' => $this->baseUri,
             'form_params' => $body,
         ])->getResponse();
         $response->assertSuccessful()
-            ->assertHeader('Content-Type', 'application/json')
+            ->assertHeader('Content-Type', 'application/json;charset=utf-8')
             ->assertJsonFragment([
-                'Host' => 'echo.swoft.org',
+                'Host' => '127.0.0.1:8080',
                 'Content-Type' => 'application/x-www-form-urlencoded',
             ])->assertJsonFragment([
                 'uri' => [
                     'scheme' => 'http',
                     'userInfo' => '',
-                    'host' => 'echo.swoft.org',
-                    'port' => 80,
+                    'host' => '127.0.0.1',
+                    'port' => 8080,
                     'path' => '/',
                     'query' => '',
                     'fragment' => '',
@@ -164,20 +164,20 @@ class CurlClientTest extends AbstractTestCase
         $method = 'POST';
         /** @var Response $response */
         $response = $client->request($method, '', [
-            'base_uri' => 'http://echo.swoft.org',
+            'base_uri' => $this->baseUri,
             'json' => $body,
         ])->getResponse();
         $response->assertSuccessful()
-            ->assertHeader('Content-Type', 'application/json')
+            ->assertHeader('Content-Type', 'application/json;charset=utf-8')
             ->assertJsonFragment([
-                'Host' => 'echo.swoft.org',
+                'Host' => '127.0.0.1:8080',
                 'Content-Type' => 'application/json',
             ])->assertJsonFragment([
                 'uri' => [
                     'scheme' => 'http',
                     'userInfo' => '',
-                    'host' => 'echo.swoft.org',
-                    'port' => 80,
+                    'host' => '127.0.0.1',
+                    'port' => 8080,
                     'path' => '/',
                     'query' => '',
                     'fragment' => '',
@@ -208,20 +208,20 @@ class CurlClientTest extends AbstractTestCase
         $method = 'PUT';
         /** @var Response $response */
         $response = $client->request($method, '', [
-            'base_uri' => 'http://echo.swoft.org',
+            'base_uri' => $this->baseUri,
             'json' => $body,
         ])->getResponse();
         $response->assertSuccessful()
-            ->assertHeader('Content-Type', 'application/json')
+            ->assertHeader('Content-Type', 'application/json;charset=utf-8')
             ->assertJsonFragment([
-                'Host' => 'echo.swoft.org',
+                'Host' => '127.0.0.1:8080',
                 'Content-Type' => 'application/json',
             ])->assertJsonFragment([
                 'uri' => [
                     'scheme' => 'http',
                     'userInfo' => '',
-                    'host' => 'echo.swoft.org',
-                    'port' => 80,
+                    'host' => '127.0.0.1',
+                    'port' => 8080,
                     'path' => '/',
                     'query' => '',
                     'fragment' => '',
@@ -252,20 +252,20 @@ class CurlClientTest extends AbstractTestCase
         $method = 'DELETE';
         /** @var Response $response */
         $response = $client->request($method, '', [
-            'base_uri' => 'http://echo.swoft.org',
+            'base_uri' => $this->baseUri,
             'json' => $body,
         ])->getResponse();
         $response->assertSuccessful()
-            ->assertHeader('Content-Type', 'application/json')
+            ->assertHeader('Content-Type', 'application/json;charset=utf-8')
             ->assertJsonFragment([
-                'Host' => 'echo.swoft.org',
+                'Host' => '127.0.0.1:8080',
                 'Content-Type' => 'application/json',
             ])->assertJsonFragment([
                 'uri' => [
                     'scheme' => 'http',
                     'userInfo' => '',
-                    'host' => 'echo.swoft.org',
-                    'port' => 80,
+                    'host' => '127.0.0.1',
+                    'port' => 8080,
                     'path' => '/',
                     'query' => '',
                     'fragment' => '',
@@ -317,14 +317,14 @@ class CurlClientTest extends AbstractTestCase
     {
         // 测试base_uri传入的域名带path时，会主动过滤path
         $client = new Client([
-            'base_uri' => 'http://echo.swoft.org/test',
+            'base_uri' => $this->baseUri . '/test',
         ]);
 
         $res = $client->get('/info')->getResult();
         $this->assertSame(['message' => 'Route not found for /info'], JsonHelper::decode($res, true));
 
         $client = new Client([
-            'base_uri' => 'http://echo.swoft.org?id=xxx',
+            'base_uri' => $this->baseUri .'?id=xxx',
         ]);
 
         $res = $client->get('/?id2=yyy&id3=zzz')->getResult();
@@ -338,14 +338,14 @@ class CurlClientTest extends AbstractTestCase
     public function queryNotInvalid()
     {
         $client = new Client([
-            'base_uri' => 'http://echo.swoft.org',
+            'base_uri' => $this->baseUri,
         ]);
 
         $res = $client->get('0')->getResult();
         $this->assertSame(['message' => 'Route not found for /0'], JsonHelper::decode($res, true));
 
         $client = new Client([
-            'base_uri' => 'http://echo.swoft.org',
+            'base_uri' => $this->baseUri,
         ]);
 
         $res = $client->get(' ')->getResult();

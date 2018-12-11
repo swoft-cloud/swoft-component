@@ -17,6 +17,7 @@ use Swoft\Bean\Annotation\Handler;
 use Swoft\Http\Message\Server\Response;
 use SwoftTest\ErrorHandler\Testing\Exceptions\ExampleException;
 use SwoftTest\ErrorHandler\Testing\Exceptions\ParamsInvalidException;
+use Exception;
 
 /**
  * the handler of http server exception
@@ -56,6 +57,19 @@ class ExampleExceptionHandler
         return $response->json([
             'code' => $code,
             'exception' => ParamsInvalidException::class,
+            'message' => $exception
+        ]);
+    }
+
+    /**
+     * @Handler(Exception::class)
+     * @return Response
+     */
+    public function handleException(Response $response, \Throwable $throwable)
+    {
+        $exception = $throwable->getMessage();
+
+        return $response->json([
             'message' => $exception
         ]);
     }
