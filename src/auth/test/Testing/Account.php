@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -17,7 +18,7 @@ use Swoft\Bean\Annotation\Bean;
 /**
  * Class Account
  * @package SwoftTest\Auth
- * @Bean()
+ * @Bean
  */
 class Account implements AccountTypeInterface
 {
@@ -32,10 +33,10 @@ class Account implements AccountTypeInterface
         $pw = $data[1] ?? '';
         $result = new AuthResult();
         if ($name !== '' && $pw !== '') {
-            $result->setIdentity(1);
+            $result->setIdentity('1');
             $result->setExtendedData(['role'=>'test']);
         } else {
-            $result->setIdentity(1);
+            $result->setIdentity('1');
         }
         return $result;
     }

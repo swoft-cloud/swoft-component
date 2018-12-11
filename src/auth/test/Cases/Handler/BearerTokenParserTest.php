@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -16,23 +17,11 @@ use Swoft\Auth\Mapping\AuthManagerInterface;
 use Swoft\Auth\Mapping\AuthServiceInterface;
 use Swoft\Http\Message\Server\Request;
 use Swoft\Http\Server\Router\HandlerMapping;
-use SwoftTest\Auth\Testing\Manager as TestManager;
 use SwoftTest\Auth\Cases\AbstractTestCase;
+use SwoftTest\Auth\Testing\Manager as TestManager;
 
 class BearerTokenParserTest extends AbstractTestCase
 {
-    protected function registerRoute()
-    {
-        /** @var HandlerMapping $router */
-        $router = App::getBean('httpRouter');
-        $router->get('/bearer', function (Request $request) {
-            /** @var AuthUserService $service */
-            $service = App::getBean(AuthServiceInterface::class);
-            $session = $service->getSession();
-            return ['id' => $session->getIdentity()];
-        });
-    }
-
     /**
      * @covers AuthManager::authenticateToken()
      * @covers BearerTokenHandler::handle()
@@ -47,5 +36,17 @@ class BearerTokenParserTest extends AbstractTestCase
         $response = $this->request('GET', '/bearer', [], self::ACCEPT_JSON, ['Authorization' => 'Bearer ' . $token], '');
         $res = $response->getBody()->getContents();
         $this->assertEquals(json_decode($res, true), ['id' => 1]);
+    }
+
+    protected function registerRoute()
+    {
+        /** @var HandlerMapping $router */
+        $router = App::getBean('httpRouter');
+        $router->get('/bearer', function (Request $request) {
+            /** @var AuthUserService $service */
+            $service = App::getBean(AuthServiceInterface::class);
+            $session = $service->getSession();
+            return ['id' => $session->getIdentity()];
+        });
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -56,6 +57,14 @@ class AuthorizationHeaderParser implements AuthorizationParserInterface
         return $request;
     }
 
+    public function defaultTypes(): array
+    {
+        return [
+            BearerTokenHandler::NAME => BearerTokenHandler::class,
+            BasicAuthHandler::NAME => BasicAuthHandler::class
+        ];
+    }
+
     private function getHeadString(string $val): string
     {
         return explode(' ', $val)[0] ?? '';
@@ -67,13 +76,5 @@ class AuthorizationHeaderParser implements AuthorizationParserInterface
             $this->authTypes = ArrayHelper::merge($this->types, $this->defaultTypes());
         }
         return $this->authTypes;
-    }
-
-    public function defaultTypes(): array
-    {
-        return [
-            BearerTokenHandler::NAME => BearerTokenHandler::class,
-            BasicAuthHandler::NAME => BasicAuthHandler::class
-        ];
     }
 }

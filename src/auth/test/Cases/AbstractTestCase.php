@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -13,11 +14,11 @@ namespace SwoftTest\Auth\Cases;
 use PHPUnit\Framework\TestCase;
 use Swoft\App;
 use Swoft\Helper\ArrayHelper;
+use Swoft\Http\Message\Testing\Web\Request;
+use Swoft\Http\Message\Testing\Web\Response;
 use Swoft\Http\Server\Router\HandlerMapping;
 use Swoft\Testing\SwooleRequest as TestSwooleRequest;
 use Swoft\Testing\SwooleResponse as TestSwooleResponse;
-use Swoft\Http\Message\Testing\Web\Request;
-use Swoft\Http\Message\Testing\Web\Response;
 
 /**
  * Class AbstractTestCase
@@ -30,16 +31,6 @@ class AbstractTestCase extends TestCase
     const ACCEPT_JSON = 'application/json';
 
     const ACCEPT_RAW = 'text/plain';
-
-    protected function registerRoute()
-    {
-        /** @var HandlerMapping $router */
-        $router = App::getBean('httpRouter');
-
-        $router->get('/', function () {
-            return [1];
-        });
-    }
 
     /**
      * Send a mock request
@@ -134,6 +125,16 @@ class AbstractTestCase extends TestCase
         string $rawContent = ''
     ) {
         return $this->request($method, $uri, $parameters, self::ACCEPT_RAW, $headers, $rawContent);
+    }
+
+    protected function registerRoute()
+    {
+        /** @var HandlerMapping $router */
+        $router = App::getBean('httpRouter');
+
+        $router->get('/', function () {
+            return [1];
+        });
     }
 
     /**
