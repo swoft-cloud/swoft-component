@@ -13,7 +13,6 @@ namespace Swoft\Bean\Parser;
 
 use Swoft\Bean\Annotation\Value;
 use Swoft\Helper\DocumentHelper;
-use Swoft\Helper\PhpDocHelper;
 
 /**
  * value注解解析器
@@ -27,10 +26,15 @@ use Swoft\Helper\PhpDocHelper;
 class ValueParser extends AbstractParser
 {
     const UNKNOWN = 0;
+
     const BOOLEAN = 1;
+
     const STRING = 2;
+
     const INTEGER = 3;
+
     const FLOAT = 4;
+
     const ARRAY = 5;
 
     private $supportTypes = [
