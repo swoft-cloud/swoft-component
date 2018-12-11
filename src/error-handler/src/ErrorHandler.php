@@ -44,7 +44,7 @@ class ErrorHandler
                     $class = $className;
                 }
 
-                // TODO: Without this line of comment, the program will report an error
+                // TODO: Without this line of comment, the program will throw a exception
                 return PhpHelper::call([$class, $method], $this->getBindParams($className, $method, $throwable));
             });
 
