@@ -32,6 +32,7 @@ class ErrorHandler
      */
     public function handle(\Throwable $throwable)
     {
+        $response = null;
         try {
             $response = \bean(ErrorHandlerChain::class)->handle($throwable, function ($handler) use ($throwable) {
                 list($className, $method) = $handler;
@@ -43,6 +44,7 @@ class ErrorHandler
                 }
                 return PhpHelper::call([$class, $method], $this->getBindParams($className, $method, $throwable));
             });
+
         } catch (\Throwable $t) {
             /**
              * Do nothing, delegate to finally block,
@@ -53,6 +55,7 @@ class ErrorHandler
                 $response = RequestContext::getResponse()->auto(ThrowableHelper::toArray($throwable));
             }
         }
+
         return $response;
     }
 
