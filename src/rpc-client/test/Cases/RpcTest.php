@@ -53,7 +53,7 @@ class RpcTest extends AbstractTestCase
             $cmd = 'php ' . alias('@root') . '/rpc_server.php -d';
 
             \co::exec($cmd);
-            \co::sleep(4);
+            \co::sleep(5);
 
             $client = bean(DemoServiceClient::class);
             $res = $client->version();
