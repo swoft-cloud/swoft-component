@@ -8,7 +8,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-namespace SwoftTest\Bean;
+namespace SwoftTest\Bean\Cases;
 
 use PHPUnit\Framework\TestCase;
 

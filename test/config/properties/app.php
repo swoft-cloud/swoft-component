@@ -13,6 +13,7 @@ return [
     'beanScan'     => [
         'SwoftTest\\Aop\\Testing'            => SRC_PATH . '/aop/test/Testing',
         'SwoftTest\\Auth\\Testing'           => SRC_PATH . '/auth/test/Testing',
+        'SwoftTest\\Bean\\Testing'           => SRC_PATH . '/bean/test/Testing',
         'SwoftTest\\Db\\Testing'             => SRC_PATH . '/db/test/Testing',
         'SwoftTest\\ErrorHandler\\Testing'   => SRC_PATH . '/error-handler/test/Testing',
         'SwoftTest\\Testing'                 => SRC_PATH . '/framework/test/Testing',
