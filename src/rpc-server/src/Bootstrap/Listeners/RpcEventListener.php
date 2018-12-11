@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Rpc\Server\Bootstrap\Listeners;
 
 use Swoft\App;
@@ -7,9 +14,9 @@ use Swoft\Bean\Annotation\SwooleListener;
 use Swoft\Bootstrap\Listeners\Interfaces\CloseInterface;
 use Swoft\Bootstrap\Listeners\Interfaces\ConnectInterface;
 use Swoft\Bootstrap\Listeners\Interfaces\ReceiveInterface;
+use Swoft\Bootstrap\SwooleEvent;
 use Swoft\Console\Helper\ConsoleUtil;
 use Swoole\Server;
-use Swoft\Bootstrap\SwooleEvent;
 
 /**
  *
@@ -18,10 +25,10 @@ use Swoft\Bootstrap\SwooleEvent;
  *     SwooleEvent::ON_CONNECT,
  *     SwooleEvent::ON_CLOSE
  * },
- *     type=SwooleEvent::TYPE_PORT
+ * type=SwooleEvent::TYPE_PORT
  * )
  */
-class RpcEventListener implements ReceiveInterface,ConnectInterface,CloseInterface
+class RpcEventListener implements ReceiveInterface, ConnectInterface, CloseInterface
 {
     /**
      * RPC 请求每次启动一个协程来处理

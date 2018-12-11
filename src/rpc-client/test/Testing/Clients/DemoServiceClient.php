@@ -1,12 +1,19 @@
 <?php
-namespace SwoftTest\Rpc\Testing\Clients;
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
+namespace SwoftTest\RpcClient\Testing\Clients;
 
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Rpc\Client\Bean\Annotation\Reference;
-use SwoftTest\Rpc\Testing\Lib\DemoServiceInterface;
+use SwoftTest\RpcClient\Testing\Lib\DemoServiceInterface;
 
 /**
- * Class DemoServiceClient
  * @Bean
  * @method version
  * @method longMessage($string)

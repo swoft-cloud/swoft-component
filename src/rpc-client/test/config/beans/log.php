@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 return [
     'noticeHandler' => [
         'class' => \Swoft\Log\FileHandler::class,
@@ -21,13 +29,13 @@ return [
         ]
     ],
 
-    "logger"             => [
-        "class"         => \Swoft\Log\Logger::class,
-        "name"          => APP_NAME,
-        "enable"        => true,
-        "flushInterval" => 1,
-        "flushRequest"  => true,
-        "handlers"      => [
+    'logger'             => [
+        'class'         => \Swoft\Log\Logger::class,
+        'name'          => APP_NAME,
+        'enable'        => true,
+        'flushInterval' => 1,
+        'flushRequest'  => true,
+        'handlers'      => [
             '${noticeHandler}',
             '${applicationHandler}'
         ]

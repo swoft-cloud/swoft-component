@@ -1,13 +1,16 @@
 <?php
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
+namespace SwoftTest\RpcClient\Cases;
 
-namespace SwoftTest\Rpc\Client;
-
-use Swoft\Rpc\Client\Bean\Collector\ReferenceCollector;
-use Swoft\Rpc\Client\Service\ServiceProxy;
-use SwoftTest\Rpc\Testing\Clients\Demo8098ServiceClient;
-use SwoftTest\Rpc\Testing\Clients\DemoServiceClient;
-use SwoftTest\Rpc\Testing\Lib\DemoServiceInterface;
-use SwoftTest\Rpc\Testing\Pool\Config\DemoServicePoolConfig;
+use Swoft\App;
+use SwoftTest\RpcClient\Testing\Clients\DemoServiceClient;
 
 class RpcTest extends AbstractTestCase
 {
@@ -16,19 +19,10 @@ class RpcTest extends AbstractTestCase
         $this->assertTrue(true);
     }
 
-    public function testRpc()
+    public function testLongMessage()
     {
-        $client = bean(DemoServiceClient::class);
-        $this->assertEquals('1.0.0', $client->version());
-
-        // SyncServiceConnection not timeout
-        $client = bean(DemoServiceClient::class);
-        $id = rand(1000, 9999);
-        $res = $client->get($id);
-        $this->assertEquals($id, $res);
-
-        go(function () {
-            // Test Long Message
+        $this->assertTrue(true);
+        if (App::isCoContext()) {
             $client = bean(DemoServiceClient::class);
             $string = 'Hi, Agnes! ';
             $str = $client->longMessage($string);
@@ -37,25 +31,41 @@ class RpcTest extends AbstractTestCase
                 $expect .= $string;
             }
             $this->assertEquals($expect, $str);
+        }
+    }
 
-            // Test Tcp Timeout
-            go(function () {
-                $client = bean(DemoServiceClient::class);
-                $id = rand(1000, 9999);
-                $res = $client->get($id);
-                $this->assertEquals('', $res);
-            });
+    public function testTcpTimeout()
+    {
+        $client = bean(DemoServiceClient::class);
+        $id = rand(1000, 9999);
+        $res = $client->get($id);
+        if (App::isCoContext()) {
+            $this->assertEquals('', $res);
+        } else {
+            // SyncServiceConnection not timeout
+            $this->assertEquals($id, $res);
+        }
+    }
 
-            \co::sleep(2);
+    public function testRpcReconnect()
+    {
+        if (App::isCoContext()) {
+            $cmd = 'php ' . alias('@root') . '/rpc_server.php -d';
 
-            // Test Rpc Server Restart
-            $cmd = 'php ' . alias('@root') . '/server.php -d';
             \co::exec($cmd);
-            \co::sleep(1);
+            \co::sleep(4);
 
             $client = bean(DemoServiceClient::class);
             $res = $client->version();
             $this->assertEquals('1.0.0', $res);
-        });
+        }
+
+        $this->assertTrue(true);
+    }
+
+    public function testRpc()
+    {
+        $client = bean(DemoServiceClient::class);
+        $this->assertEquals('1.0.0', $client->version());
     }
 }

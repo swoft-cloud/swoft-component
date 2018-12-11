@@ -7,11 +7,13 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-namespace Swoft\Rpc\Server\Rpc;
+require_once __DIR__ . '/bootstrap.php';
 
-/**
- * The request of rpc server
- */
-class Request extends \Swoft\Http\Message\Server\Request
-{
-}
+use Swoft\Rpc\Server\Command\RpcCommand;
+
+$command = bean(RpcCommand::class);
+
+$dir = alias('@runtime/logs');
+@mkdir($dir, 0777, true);
+
+$command->restart();

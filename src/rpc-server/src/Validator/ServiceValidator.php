@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Rpc\Server\Validator;
 
 use Swoft\Bean\Annotation\Bean;
@@ -7,7 +14,7 @@ use Swoft\Validator\AbstractValidator;
 
 /**
  * Service Validator
- * @Bean()
+ * @Bean
  */
 class ServiceValidator extends AbstractValidator
 {
@@ -26,7 +33,6 @@ class ServiceValidator extends AbstractValidator
             $this->validateArg($args, $validator);
         }
     }
-
 
     /**
      * validate arg

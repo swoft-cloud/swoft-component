@@ -1,6 +1,13 @@
 <?php
-
-namespace SwoftTest\Rpc\Client;
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
+namespace SwoftTest\RpcClient\Cases;
 
 use PHPUnit\Framework\TestCase;
 
@@ -13,11 +20,4 @@ use PHPUnit\Framework\TestCase;
  */
 class AbstractTestCase extends TestCase
 {
-    protected function tearDown()
-    {
-        parent::tearDown();
-        swoole_timer_after(10 * 1000, function () {
-            swoole_event_exit();
-        });
-    }
 }
