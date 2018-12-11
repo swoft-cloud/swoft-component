@@ -1,9 +1,18 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
-namespace SwoftTest\Session;
+namespace SwoftTest\Session\Cases;
 
+use Swoft\App;
 use Swoft\Session\Middleware\SessionMiddleware;
-use Swoft\Session\SessionInterface;
 use Swoft\Session\SessionManager;
 use Swoft\Session\SessionStore;
 
@@ -29,18 +38,16 @@ class SessionTest extends AbstractTestCase
         $manager->setSession($session);
         $this->assertEquals($session, $manager->getSession());
 
-        go(function () use ($manager) {
+        if (App::isCoContext()) {
             $session = $this->getSession();
             $manager->setSession($session);
             \co::sleep(0.5);
             $this->assertEquals($session, $manager->getSession());
-        });
 
-        go(function () use ($manager) {
             $session = $this->getSession();
             $manager->setSession($session);
             \co::sleep(0.5);
             $this->assertEquals($session, $manager->getSession());
-        });
+        }
     }
 }

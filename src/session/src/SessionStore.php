@@ -1,11 +1,19 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Session;
 
 use Swoft\Helper\ArrayHelper;
 use Swoft\Helper\StringHelper;
 use Swoft\Session\Handler\NeedRequestInterface;
-
 
 /**
  * @uses      SessionStore
@@ -16,7 +24,6 @@ use Swoft\Session\Handler\NeedRequestInterface;
  */
 class SessionStore implements SessionInterface
 {
-
     /**
      * The session ID.
      *
@@ -316,6 +323,17 @@ class SessionStore implements SessionInterface
     }
 
     /**
+     * Regenerate the CSRF token value.
+     *
+     * @return void
+     * @throws \RuntimeException
+     */
+    public function regenerateToken()
+    {
+        $this->put('_token', StringHelper::random(40));
+    }
+
+    /**
      * Load the session data from the handler
      *
      * @return void
@@ -353,17 +371,6 @@ class SessionStore implements SessionInterface
     }
 
     /**
-     * Regenerate the CSRF token value.
-     *
-     * @return void
-     * @throws \RuntimeException
-     */
-    public function regenerateToken()
-    {
-        $this->put('_token', StringHelper::random(40));
-    }
-
-    /**
      * Determine if this is valid session ID.
      *
      * @param $id
@@ -373,5 +380,4 @@ class SessionStore implements SessionInterface
     {
         return \is_string($id) && ctype_alnum($id) && \strlen($id) === 40;
     }
-
 }
