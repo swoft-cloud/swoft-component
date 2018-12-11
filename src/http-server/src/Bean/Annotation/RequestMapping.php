@@ -36,12 +36,6 @@ class RequestMapping
     private $params = [];
 
     /**
-     * {"id"=12}
-     * @var array
-     */
-    private $defaults = [];
-
-    /**
      * RequestMapping constructor.
      *
      * @param array $values
@@ -63,10 +57,6 @@ class RequestMapping
 
         if (isset($values['params'])) {
             $this->params = $values['params'];
-        }
-
-        if (isset($values['defaults'])) {
-            $this->defaults = $values['defaults'];
         }
     }
 
@@ -104,21 +94,5 @@ class RequestMapping
     public function setParams(array $params)
     {
         $this->params = $params;
-    }
-
-    /**
-     * @return array
-     */
-    public function getDefaults(): array
-    {
-        return $this->defaults;
-    }
-
-    /**
-     * @param array $defaults
-     */
-    public function setDefaults(array $defaults)
-    {
-        $this->defaults = $defaults;
     }
 }
