@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -33,6 +34,41 @@ class Config implements \ArrayAccess, \Iterator
      * @var array 所有配置参数
      */
     public $properties = [];
+
+    /**
+     * @param $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        return $this->offsetExists($name);
+    }
+
+    /**
+     * 初始化值
+     *
+     * @param string|int $name  key名称
+     * @param mixed      $value val值
+     */
+    public function __set($name, $value)
+    {
+        $this->properties[$name] = $value;
+    }
+
+    /**
+     * 查询值
+     *
+     * @param string|int $name
+     *
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        if (isset($this->properties[$name])) {
+            $this->properties[$name];
+        }
+        return null;
+    }
 
     /**
      * Return the current element
@@ -163,41 +199,6 @@ class Config implements \ArrayAccess, \Iterator
     public function set($name, $value)
     {
         ArrayHelper::set($this->properties, $name, $value);
-    }
-
-    /**
-     * @param $name
-     * @return bool
-     */
-    public function __isset($name)
-    {
-        return $this->offsetExists($name);
-    }
-
-    /**
-     * 初始化值
-     *
-     * @param string|int $name  key名称
-     * @param mixed      $value val值
-     */
-    public function __set($name, $value)
-    {
-        $this->properties[$name] = $value;
-    }
-
-    /**
-     * 查询值
-     *
-     * @param string|int $name
-     *
-     * @return mixed
-     */
-    public function __get($name)
-    {
-        if (isset($this->properties[$name])) {
-            $this->properties[$name];
-        }
-        return null;
     }
 
     /**

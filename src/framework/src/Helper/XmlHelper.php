@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -56,28 +57,6 @@ class XmlHelper
     }
 
     /**
-     * @param $data
-     * @return array
-     */
-    protected static function parseToArray($data): array
-    {
-        $res = null;
-        if (is_object($data)) {
-            $data = (array)$data;
-        }
-        if (is_array($data)) {
-            foreach ($data as $key => $val) {
-                if (is_iterable($val)) {
-                    $res[$key] = self::parseToArray($val);
-                } else {
-                    $res[$key] = $val;
-                }
-            }
-        }
-        return $res;
-    }
-
-    /**
      * @param array $data
      * @return string
      */
@@ -98,6 +77,28 @@ class XmlHelper
             }
         }
         return $xml;
+    }
+
+    /**
+     * @param $data
+     * @return array
+     */
+    protected static function parseToArray($data): array
+    {
+        $res = null;
+        if (is_object($data)) {
+            $data = (array)$data;
+        }
+        if (is_array($data)) {
+            foreach ($data as $key => $val) {
+                if (is_iterable($val)) {
+                    $res[$key] = self::parseToArray($val);
+                } else {
+                    $res[$key] = $val;
+                }
+            }
+        }
+        return $res;
     }
 
     /**

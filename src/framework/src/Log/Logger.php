@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -123,7 +124,7 @@ class Logger extends \Monolog\Logger
         if ($this->microsecondTimestamps && PHP_VERSION_ID < 70100) {
             $ts = \DateTime::createFromFormat('U.u', sprintf('%.6F', microtime(true)), static::$timezone);
         } else {
-            $ts = new \DateTime(null, static::$timezone);
+            $ts = new \DateTime('now', static::$timezone);
         }
 
         $ts->setTimezone(static::$timezone);
@@ -419,28 +420,6 @@ class Logger extends \Monolog\Logger
     }
 
     /**
-     * 获取去日志时间
-     *
-     * @return \DateTime
-     */
-    private function getLoggerTime()
-    {
-        if (! static::$timezone) {
-            static::$timezone = new \DateTimeZone(date_default_timezone_get() ? : 'UTC');
-        }
-
-        // php7.1+ always has microseconds enabled, so we do not need this hack
-        if ($this->microsecondTimestamps && PHP_VERSION_ID < 70100) {
-            $ts = \DateTime::createFromFormat('U.u', sprintf('%.6F', microtime(true)), static::$timezone);
-        } else {
-            $ts = new \DateTime(null, static::$timezone);
-        }
-
-        $ts->setTimezone(static::$timezone);
-        return $ts;
-    }
-
-    /**
      * 日志初始化
      */
     public function initialize()
@@ -471,6 +450,28 @@ class Logger extends \Monolog\Logger
     public function setFlushInterval(int $flushInterval)
     {
         $this->flushInterval = $flushInterval;
+    }
+
+    /**
+     * 获取去日志时间
+     *
+     * @return \DateTime
+     */
+    private function getLoggerTime()
+    {
+        if (! static::$timezone) {
+            static::$timezone = new \DateTimeZone(date_default_timezone_get() ? : 'UTC');
+        }
+
+        // php7.1+ always has microseconds enabled, so we do not need this hack
+        if ($this->microsecondTimestamps && PHP_VERSION_ID < 70100) {
+            $ts = \DateTime::createFromFormat('U.u', sprintf('%.6F', microtime(true)), static::$timezone);
+        } else {
+            $ts = new \DateTime(null, static::$timezone);
+        }
+
+        $ts->setTimezone(static::$timezone);
+        return $ts;
     }
 
     /**

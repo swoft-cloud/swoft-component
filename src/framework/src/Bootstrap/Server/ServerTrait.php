@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -26,14 +27,6 @@ use Swoole\Server;
  */
 trait ServerTrait
 {
-    /**
-     * Before swoole server start
-     */
-    protected function beforeServerStart()
-    {
-        $this->fireServerEvent(SwooleEvent::ON_BEFORE_START, [$this]);
-    }
-
     /**
      * onStart event callback
      *
@@ -117,16 +110,11 @@ trait ServerTrait
     }
 
     /**
-     * @param \Swoole\Server $server
-     * @param int $workerId
-     * @param bool $isWorker
-     * @throws \InvalidArgumentException
-     * @throws \ReflectionException
+     * Before swoole server start
      */
-    private function beforeWorkerStart(Server $server, int $workerId, bool $isWorker)
+    protected function beforeServerStart()
     {
-        // Load bean
-        $this->reloadBean($isWorker);
+        $this->fireServerEvent(SwooleEvent::ON_BEFORE_START, [$this]);
     }
 
     /**
@@ -165,5 +153,18 @@ trait ServerTrait
             $method = SwooleEvent::getHandlerFunction($event);
             $listener->$method(...$params);
         }
+    }
+
+    /**
+     * @param \Swoole\Server $server
+     * @param int $workerId
+     * @param bool $isWorker
+     * @throws \InvalidArgumentException
+     * @throws \ReflectionException
+     */
+    private function beforeWorkerStart(Server $server, int $workerId, bool $isWorker)
+    {
+        // Load bean
+        $this->reloadBean($isWorker);
     }
 }

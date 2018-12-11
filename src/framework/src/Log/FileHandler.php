@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -51,6 +52,22 @@ class FileHandler extends AbstractProcessingHandler
         $lines = array_column($records, 'formatted');
 
         $this->write($lines);
+    }
+
+    /**
+     * check是否输出日志
+     *
+     * @param array $record
+     *
+     * @return bool
+     */
+    public function isHandling(array $record)
+    {
+        if (empty($this->levels)) {
+            return true;
+        }
+
+        return in_array($record['level'], $this->levels);
     }
 
     /**
@@ -146,21 +163,5 @@ class FileHandler extends AbstractProcessingHandler
                 throw new \UnexpectedValueException(sprintf('There is no existing directory at "%s" and its not buildable: ', $dir));
             }
         }
-    }
-
-    /**
-     * check是否输出日志
-     *
-     * @param array $record
-     *
-     * @return bool
-     */
-    public function isHandling(array $record)
-    {
-        if (empty($this->levels)) {
-            return true;
-        }
-
-        return in_array($record['level'], $this->levels);
     }
 }

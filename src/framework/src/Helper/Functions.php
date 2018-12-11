@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -8,8 +9,8 @@
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
-use Swoft\Core\RequestContext;
 use Swoft\App;
+use Swoft\Core\RequestContext;
 
 if (! function_exists('value')) {
     /**

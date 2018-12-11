@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -62,6 +63,11 @@ class EventManager implements EventManagerInterface
         $this->init($parent);
     }
 
+    public function __destruct()
+    {
+        $this->clear();
+    }
+
     /**
      * @param EventManagerInterface|null $parent
      * @throws \InvalidArgumentException
@@ -73,11 +79,6 @@ class EventManager implements EventManagerInterface
         }
 
         $this->basicEvent = new Event;
-    }
-
-    public function __destruct()
-    {
-        $this->clear();
     }
 
     public function clear()
@@ -318,39 +319,6 @@ class EventManager implements EventManagerInterface
         }
 
         return $event;
-    }
-
-    /**
-     * @param array|ListenerQueue $listeners
-     * @param EventInterface $event
-     * @param null $method
-     */
-    protected function triggerListeners($listeners, EventInterface $event, $method = null)
-    {
-        // $handled = false;
-        $name = $event->getName();
-        $callable = false === \strpos($name, '.');
-
-        // 循环调用监听器，处理事件
-        foreach ($listeners as $listener) {
-            if ($event->isPropagationStopped()) {
-                break;
-            }
-
-            if (\is_object($listener)) {
-                if ($listener instanceof EventHandlerInterface) {
-                    $listener->handle($event);
-                } elseif ($method && method_exists($listener, $method)) {
-                    $listener->$method($event);
-                } elseif ($callable && method_exists($listener, $name)) {
-                    $listener->$name($event);
-                } elseif (method_exists($listener, '__invoke')) {
-                    $listener($event);
-                }
-            } elseif (\is_callable($listener)) {
-                $listener($event);
-            }
-        }
     }
 
     // protected function collectListeners(EventInterface $event)
@@ -699,5 +667,38 @@ class EventManager implements EventManagerInterface
     public function setBasicEvent(EventInterface $basicEvent)
     {
         $this->basicEvent = $basicEvent;
+    }
+
+    /**
+     * @param array|ListenerQueue $listeners
+     * @param EventInterface $event
+     * @param null $method
+     */
+    protected function triggerListeners($listeners, EventInterface $event, $method = null)
+    {
+        // $handled = false;
+        $name = $event->getName();
+        $callable = false === \strpos($name, '.');
+
+        // 循环调用监听器，处理事件
+        foreach ($listeners as $listener) {
+            if ($event->isPropagationStopped()) {
+                break;
+            }
+
+            if (\is_object($listener)) {
+                if ($listener instanceof EventHandlerInterface) {
+                    $listener->handle($event);
+                } elseif ($method && method_exists($listener, $method)) {
+                    $listener->$method($event);
+                } elseif ($callable && method_exists($listener, $name)) {
+                    $listener->$name($event);
+                } elseif (method_exists($listener, '__invoke')) {
+                    $listener($event);
+                }
+            } elseif (\is_callable($listener)) {
+                $listener($event);
+            }
+        }
     }
 }

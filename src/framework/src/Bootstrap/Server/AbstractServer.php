@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -85,36 +86,6 @@ abstract class AbstractServer implements ServerInterface
         $settings = App::getAppProperties()->get('server');
 
         $this->initSettings($settings);
-    }
-
-    /**
-     * Register the event callback of swoole server
-     */
-    protected function registerSwooleServerEvents()
-    {
-        $swooleListeners = SwooleListenerCollector::getCollector();
-
-        if (!isset($swooleListeners[SwooleEvent::TYPE_SERVER]) || empty($swooleListeners[SwooleEvent::TYPE_SERVER])) {
-            return;
-        }
-
-        $swooleServerListeners = $swooleListeners[SwooleEvent::TYPE_SERVER];
-        $this->registerSwooleEvents($this->server, $swooleServerListeners);
-    }
-
-    /**
-     * Register swoole server events
-     *
-     * @param Server $handler
-     * @param array  $events
-     */
-    protected function registerSwooleEvents($handler, array $events)
-    {
-        foreach ($events as $event => $beanName) {
-            $object = bean($beanName);
-            $method = SwooleEvent::getHandlerFunction($event);
-            $handler->on($event, [$object, $method]);
-        }
     }
 
     /**
@@ -280,18 +251,6 @@ abstract class AbstractServer implements ServerInterface
     }
 
     /**
-     * Get TCP listen setting
-     *
-     * @return array
-     */
-    protected function getListenTcpSetting(): array
-    {
-        $listenTcpSetting = $this->tcpSetting;
-        unset($listenTcpSetting['host'], $listenTcpSetting['port'], $listenTcpSetting['mode'], $listenTcpSetting['type']);
-        return $listenTcpSetting;
-    }
-
-    /**
      * Set server to Daemonize
      *
      * @return $this
@@ -327,5 +286,47 @@ abstract class AbstractServer implements ServerInterface
     public function getServerType(): string
     {
         return $this->serverSetting['server_type'] ?? 'unknown';
+    }
+
+    /**
+     * Register the event callback of swoole server
+     */
+    protected function registerSwooleServerEvents()
+    {
+        $swooleListeners = SwooleListenerCollector::getCollector();
+
+        if (!isset($swooleListeners[SwooleEvent::TYPE_SERVER]) || empty($swooleListeners[SwooleEvent::TYPE_SERVER])) {
+            return;
+        }
+
+        $swooleServerListeners = $swooleListeners[SwooleEvent::TYPE_SERVER];
+        $this->registerSwooleEvents($this->server, $swooleServerListeners);
+    }
+
+    /**
+     * Register swoole server events
+     *
+     * @param Server $handler
+     * @param array  $events
+     */
+    protected function registerSwooleEvents($handler, array $events)
+    {
+        foreach ($events as $event => $beanName) {
+            $object = bean($beanName);
+            $method = SwooleEvent::getHandlerFunction($event);
+            $handler->on($event, [$object, $method]);
+        }
+    }
+
+    /**
+     * Get TCP listen setting
+     *
+     * @return array
+     */
+    protected function getListenTcpSetting(): array
+    {
+        $listenTcpSetting = $this->tcpSetting;
+        unset($listenTcpSetting['host'], $listenTcpSetting['port'], $listenTcpSetting['mode'], $listenTcpSetting['type']);
+        return $listenTcpSetting;
     }
 }
