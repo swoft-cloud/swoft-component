@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -10,8 +11,8 @@
 namespace Swoft\Sg\Circuit;
 
 use Swoft\App;
-use Swoole\Coroutine\Client;
 use Swoft\Pool\ConnectionInterface;
+use Swoole\Coroutine\Client;
 
 /**
  * Half-open state and switching
@@ -51,7 +52,7 @@ class HalfOpenState extends CircuitBreakerState
                 ($class instanceof Client && $class->isConnected() == false) ||
                 ($class instanceof ConnectionInterface && $class->check() == false)
             ) {
-               throw new \RuntimeException($this->circuitBreaker->serviceName . ' service, current connection has been disconnected');
+                throw new \RuntimeException($this->circuitBreaker->serviceName . ' service, current connection has been disconnected');
             }
 
             $data = $class->$method(...$params);

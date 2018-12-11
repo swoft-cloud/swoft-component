@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Session\Middleware;
 
@@ -8,28 +17,27 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Swoft\Bean\Annotation\Bean;
 use Swoft\Bean\Annotation\Inject;
+use Swoft\Bean\Annotation\Scope;
 use Swoft\Helper\ArrayHelper;
-use Swoft\Http\Message\Middleware\MiddlewareInterface;
 use Swoft\Http\Message\Cookie\Cookie;
+use Swoft\Http\Message\Middleware\MiddlewareInterface;
 use Swoft\Http\Message\Server\Request;
 use Swoft\Http\Message\Server\Response;
 use Swoft\Session\SessionInterface;
 use Swoft\Session\SessionManager;
 use Swoft\Session\SessionStore;
-use Swoft\Bean\Annotation\Scope;
 
 /**
  * @Bean(scope=Scope::PROTOTYPE)
  */
 class SessionMiddleware implements MiddlewareInterface
 {
-
     /**
      * Default session name
      *
      * @var string
      */
-    CONST DEFAULT_SESSION_NAME = 'SWOFT_SESSION_ID';
+    const DEFAULT_SESSION_NAME = 'SWOFT_SESSION_ID';
 
     /**
      * Indicates if the session was handled for the current request.
@@ -90,6 +98,67 @@ class SessionMiddleware implements MiddlewareInterface
     }
 
     /**
+     * Remove the garbage from the session.
+     * This method should call in swoole timer
+     *
+     * @param  SessionInterface $session
+     * @return void
+     */
+    public function collectGarbage(SessionInterface $session)
+    {
+        $session->getHandler()->gc($this->getSessionLifetimeInSeconds());
+    }
+
+    /**
+     * Save session data after response
+     *
+     * @return void
+     */
+    public function save()
+    {
+        $this->sessionStore->save();
+    }
+
+    /**
+     * Store the current URL for the request if necessary.
+     *
+     * @param Request          $request
+     * @param SessionInterface $session
+     */
+    protected function storeCurrentUrl(Request $request, SessionInterface $session)
+    {
+        if ($request->getMethod() === 'GET') {
+            $session->setPreviousUrl($request->fullUrl());
+        }
+    }
+
+    /**
+     * Get the session lifetime in seconds.
+     *
+     * @return \DateTimeInterface|int
+     */
+    protected function getCookieExpirationDate()
+    {
+        if (!empty($this->sessionManager->getConfig()['expire_on_close'])) {
+            // Will set the cookies expired in Thu, 01-Jan-1970 00:00:01
+            $expirationDate = 1;
+        } else {
+            $expirationDate = Carbon::now()->addSeconds(ArrayHelper::get($this->sessionManager->getConfig(), 'lifetime', 1200));
+        }
+        return $expirationDate;
+    }
+
+    /**
+     * Get the cookie lifetime in seconds.
+     *
+     * @return int
+     */
+    protected function getSessionLifetimeInSeconds(): int
+    {
+        return ArrayHelper::get($this->sessionManager->getConfig(), 'lifetime', 120) * 60;
+    }
+
+    /**
      * @param Request $request
      * @return SessionInterface
      * @throws \InvalidArgumentException
@@ -116,31 +185,6 @@ class SessionMiddleware implements MiddlewareInterface
     }
 
     /**
-     * Remove the garbage from the session.
-     * This method should call in swoole timer
-     *
-     * @param  SessionInterface $session
-     * @return void
-     */
-    public function collectGarbage(SessionInterface $session)
-    {
-        $session->getHandler()->gc($this->getSessionLifetimeInSeconds());
-    }
-
-    /**
-     * Store the current URL for the request if necessary.
-     *
-     * @param Request          $request
-     * @param SessionInterface $session
-     */
-    protected function storeCurrentUrl(Request $request, SessionInterface $session)
-    {
-        if ($request->getMethod() === 'GET') {
-            $session->setPreviousUrl($request->fullUrl());
-        }
-    }
-
-    /**
      * Add the session cookie to the response·
      *
      * @param Request          $request
@@ -158,41 +202,4 @@ class SessionMiddleware implements MiddlewareInterface
         $httpOnly = true;
         return $response->withCookie(new Cookie($session->getName(), $session->getId(), $this->getCookieExpirationDate(), $path, $domain, $secure, $httpOnly));
     }
-
-    /**
-     * Get the session lifetime in seconds.
-     *
-     * @return \DateTimeInterface|int
-     */
-    protected function getCookieExpirationDate()
-    {
-        if (!empty($this->sessionManager->getConfig()['expire_on_close'])) {
-            // Will set the cookies expired in Thu, 01-Jan-1970 00:00:01
-            $expirationDate = 1;
-        } else {
-            $expirationDate = Carbon::now()->addSeconds(ArrayHelper::get($this->sessionManager->getConfig(), 'lifetime', 1200));
-        }
-        return $expirationDate;
-    }
-
-    /**
-     * Save session data after response
-     *
-     * @return void
-     */
-    public function save()
-    {
-        $this->sessionStore->save();
-    }
-
-    /**
-     * Get the cookie lifetime in seconds.
-     *
-     * @return int
-     */
-    protected function getSessionLifetimeInSeconds(): int
-    {
-        return ArrayHelper::get($this->sessionManager->getConfig(), 'lifetime', 120) * 60;
-    }
-
 }

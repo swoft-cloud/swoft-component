@@ -30,8 +30,8 @@
             <directory suffix="Test.php">./src/rpc/test</directory>
             <directory suffix="Test.php">./src/rpc-client/test</directory>
             <directory suffix="Test.php">./src/rpc-server/test</directory>
-            <!--<directory suffix="Test.php">./src/service-governance/test</directory>-->
-            <!--<directory suffix="Test.php">./src/session/test</directory>-->
+            <directory suffix="Test.php">./src/service-governance/test</directory>
+            <directory suffix="Test.php">./src/session/test</directory>
             <!--<directory suffix="Test.php">./src/task/test</directory>-->
             <!--<directory suffix="Test.php">./src/trace/test</directory>-->
             <!--<directory suffix="Test.php">./src/view/test</directory>-->

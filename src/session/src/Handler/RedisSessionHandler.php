@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Session\Handler;
 
@@ -8,7 +17,7 @@ use Swoft\Bean\Annotation\Inject;
 /**
  * Class RedisSessionHandler
  *
- * @Bean()
+ * @Bean
  * @package Swoft\Session\Handler
  */
 class RedisSessionHandler implements \SessionHandlerInterface, LifetimeInterface
@@ -26,7 +35,7 @@ class RedisSessionHandler implements \SessionHandlerInterface, LifetimeInterface
     private $glue = ':';
 
     /**
-     * @Inject()
+     * @Inject
      * @var \Swoft\Redis\Redis
      */
     private $redis;
@@ -120,5 +129,4 @@ class RedisSessionHandler implements \SessionHandlerInterface, LifetimeInterface
     {
         return \is_numeric($value) ? $value : \unserialize($value, ['allowed_classes' => false]);
     }
-
 }

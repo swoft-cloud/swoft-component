@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Session\Bootstrap;
 
@@ -7,7 +16,7 @@ use Swoft\Core\BootBeanInterface;
 use Swoft\Session\SessionManager;
 
 /**
- * @BootBean()
+ * @BootBean
  */
 class CoreBean implements BootBeanInterface
 {
@@ -30,5 +39,4 @@ class CoreBean implements BootBeanInterface
             ],
         ];
     }
-
 }

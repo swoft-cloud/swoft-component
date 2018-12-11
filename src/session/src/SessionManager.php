@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Session;
 
@@ -63,17 +72,6 @@ class SessionManager
     }
 
     /**
-     * @param string $name
-     * @throws \InvalidArgumentException
-     */
-    protected function isValidate(string $name)
-    {
-        if (!\array_key_exists($name, $this->handlers)) {
-            throw new \InvalidArgumentException('Invalid session handler');
-        }
-    }
-
-    /**
      * @return array
      */
     public function getConfig(): array
@@ -108,5 +106,16 @@ class SessionManager
     {
         RequestContext::setContextDataByKey(self::SESSION_KEY, $session);
         return $this;
+    }
+
+    /**
+     * @param string $name
+     * @throws \InvalidArgumentException
+     */
+    protected function isValidate(string $name)
+    {
+        if (!\array_key_exists($name, $this->handlers)) {
+            throw new \InvalidArgumentException('Invalid session handler');
+        }
     }
 }

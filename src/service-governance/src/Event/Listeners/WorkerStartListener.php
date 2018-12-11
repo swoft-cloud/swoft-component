@@ -1,11 +1,20 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Sg\Event\Listeners;
 
 use Swoft\Bean\Annotation\Listener;
+use Swoft\Event\AppEvent;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
-use Swoft\Event\AppEvent;
 
 /**
  * Worker start listener

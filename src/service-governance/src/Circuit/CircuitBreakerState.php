@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Sg\Circuit;
 
@@ -24,6 +33,14 @@ abstract class CircuitBreakerState
     }
 
     /**
+     * @param callable|array|mixed $callback
+     * @param array $params
+     * @param null $fallback
+     * @return mixed
+     */
+    abstract public function doCall($callback, array $params = [], $fallback = null);
+
+    /**
      * circuit breaker service name
      *
      * @return string
@@ -32,12 +49,4 @@ abstract class CircuitBreakerState
     {
         return $this->circuitBreaker->serviceName;
     }
-
-    /**
-     * @param callable|array|mixed $callback
-     * @param array $params
-     * @param null $fallback
-     * @return mixed
-     */
-    abstract public function doCall($callback, array $params = [], $fallback = null);
 }

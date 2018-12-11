@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Sg;
 
@@ -58,18 +67,6 @@ class BalancerSelector implements SelectorInterface
     }
 
     /**
-     * the balancers of default
-     *
-     * @return array
-     */
-    private function defaultBalancers(): array
-    {
-        return [
-            self::TYPE_RANDOM => RandomBalancer::class,
-        ];
-    }
-
-    /**
      * @return array
      */
     public function getBalancers(): array
@@ -83,5 +80,17 @@ class BalancerSelector implements SelectorInterface
     public function setBalancers(array $balancers)
     {
         $this->balancers = $balancers;
+    }
+
+    /**
+     * the balancers of default
+     *
+     * @return array
+     */
+    private function defaultBalancers(): array
+    {
+        return [
+            self::TYPE_RANDOM => RandomBalancer::class,
+        ];
     }
 }

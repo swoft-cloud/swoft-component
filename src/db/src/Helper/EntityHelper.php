@@ -12,9 +12,11 @@ declare(strict_types=1);
 namespace Swoft\Db\Helper;
 
 use Swoft\Db\Bean\Collector\EntityCollector;
+use Swoft\Db\Driver\Mysql\Schema;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Types;
 use Swoft\Helper\StringHelper;
+use Swoft\Core\Types as PhpTypes;
 
 /**
  * EntityHelper
@@ -137,17 +139,19 @@ class EntityHelper
             return null;
         }
 
-        switch (Types::getPhpType($type)) {
-            case \Swoft\Core\Types::INTEGER:
+        $type = Schema::$phpMap[$type] ?? $type;
+
+        switch (Types::MAPPING[$type] ?? PhpTypes::UNKNOWN) {
+            case PhpTypes::INTEGER:
                 $value = (int)$value;
                 break;
-            case \Swoft\Core\Types::STRING:
+            case PhpTypes::STRING:
                 $value = null === $value ? null : (string)$value;
                 break;
-            case \Swoft\Core\Types::BOOLEAN:
+            case PhpTypes::BOOLEAN:
                 $value = (bool)$value;
                 break;
-            case \Swoft\Core\Types::FLOAT:
+            case PhpTypes::FLOAT:
                 $value = (float)$value;
                 break;
             default:
