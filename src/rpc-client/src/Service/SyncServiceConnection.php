@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -80,7 +81,7 @@ class SyncServiceConnection extends AbstractServiceConnection
     {
         $result = fwrite($this->connection, $data);
         $this->recv = false;
-        return $result;
+        return (bool)$result;
     }
 
     /**

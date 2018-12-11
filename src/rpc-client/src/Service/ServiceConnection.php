@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -36,7 +37,7 @@ class ServiceConnection extends AbstractServiceConnection
         $setting && $client->set($setting);
 
         list($host, $port) = explode(':', $address);
-        if (!$client->connect($host, $port, $timeout)) {
+        if (!$client->connect($host, (int)$port, $timeout)) {
             $error = sprintf('Service connect fail errorCode=%s host=%s port=%s', $client->errCode, $host, $port);
             App::error($error);
             throw new RpcClientException($error);
@@ -76,7 +77,7 @@ class ServiceConnection extends AbstractServiceConnection
     {
         $result =  $this->connection->send($data);
         $this->recv = false;
-        return $result;
+        return (bool)$result;
     }
 
     /**
