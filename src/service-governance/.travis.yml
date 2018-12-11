@@ -15,7 +15,7 @@ install:
   - echo 'no' | pecl install -f redis
   - bash test/swoole.install.sh
   - echo "extension = swoole.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - docker run -d -p 8500:8500 -h node1 --name consul consul agent -server -bootstrap-expect=1  -node=node1 -client 0.0.0.0 -ui
+  - docker run --rm -d -p 8500:8500 -h node1 --name consul consul agent -server -bootstrap-expect=1  -node=node1 -client 0.0.0.0 -ui
   - sleep 10
 
 before_script:
