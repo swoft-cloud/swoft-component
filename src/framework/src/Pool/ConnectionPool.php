@@ -124,7 +124,7 @@ abstract class ConnectionPool implements PoolInterface
     /**
      * @return int
      */
-    public function getTimeout(): int
+    public function getTimeout(): float
     {
         return $this->poolConfig->getTimeout();
     }

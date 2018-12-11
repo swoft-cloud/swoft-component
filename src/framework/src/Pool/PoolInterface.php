@@ -45,7 +45,7 @@ interface PoolInterface
     public function getPoolConfig(): PoolConfigInterface;
 
     /**
-     * @return int
+     * @return float
      */
-    public function getTimeout(): int;
+    public function getTimeout(): float;
 }
