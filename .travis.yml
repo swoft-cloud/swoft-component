@@ -35,7 +35,7 @@ before_install:
 install:
   - cd $TRAVIS_BUILD_DIR
   - bash test/_ci/install_swoole.sh
-  - phpenv config-rm xdebug.ini
+  - phpenv config-rm xdebug.ini || echo "xdebug not available"
   - phpenv config-add test/_ci/ci.ini
   - bash test/_ci/setup_dbs.sh
 
