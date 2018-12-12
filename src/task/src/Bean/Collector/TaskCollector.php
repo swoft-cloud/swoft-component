@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Task\Bean\Collector;
 
@@ -45,6 +54,14 @@ class TaskCollector implements CollectorInterface
     }
 
     /**
+     * @return array
+     */
+    public static function getCollector(): array
+    {
+        return self::$tasks;
+    }
+
+    /**
      * collect the annotation of task
      *
      * @param string $className
@@ -86,13 +103,5 @@ class TaskCollector implements CollectorInterface
             'className' => $className,
             'description' => $objectAnnotation->getDescription(),
         ];
-    }
-
-    /**
-     * @return array
-     */
-    public static function getCollector(): array
-    {
-        return self::$tasks;
     }
 }

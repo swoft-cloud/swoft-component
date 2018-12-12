@@ -131,7 +131,7 @@
             "SwoftTest\\RpcServer\\": "src/rpc-server/test/",
             "SwoftTest\\Sg\\": "src/service-governance/test/",
             "SwoftTest\\Session\\": "src/session/test/",
-            "SwoftTest\\Task\\": "src/task/test/Cases",
+            "SwoftTest\\Task\\": "src/task/test/",
             "SwoftTest\\Trace\\": "src/trace/test/Cases",
             "Swoft\\View\\Test\\": "src/view/test",
             "SwoftTest\\WebSocket\\Server\\": "src/websocket-server/test/Cases"
