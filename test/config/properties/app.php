@@ -20,8 +20,7 @@ return [
         'SwoftTest\\HttpServer\\Testing'     => SRC_PATH . '/http-server/test/Testing',
         'SwoftTest\\Redis\\Testing'          => SRC_PATH . '/redis/test/Testing',
         'SwoftTest\\RpcClient\\Testing'      => SRC_PATH . '/rpc-client/test/Testing',
-        'SwoftTest\\Task\\Tasks'             => SRC_PATH . '/task/test/Cases/Tasks',
-        'Swoft\\Tasks'                       => SRC_PATH . '/task/src',
+        'SwoftTest\\Task\\Testing'           => SRC_PATH . '/task/test/Testing',
         'Swoft\\View\\Test\\Testing'         => SRC_PATH . '/view/test/Testing',
     ],
     'devtool'      => [

@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Task;
 
@@ -16,10 +25,30 @@ use function strlen;
 use function tempnam;
 
 /**
- * @Bean()
+ * @Bean
  */
 class QueueTask
 {
+    /**
+     * Tmp file
+     */
+    const SW_TASK_TMPFILE = 1;
+
+    /**
+     * Php serialize
+     */
+    const SW_TASK_SERIALIZE = 2;
+
+    /**
+     * Task block
+     */
+    const SW_TASK_NONBLOCK = 4;
+
+    /**
+     * Event
+     */
+    const SW_EVENT_TASK = 7;
+
     /**
      * @var int
      */
@@ -54,26 +83,6 @@ class QueueTask
      * @var int
      */
     private $taskId = 0;
-
-    /**
-     * Tmp file
-     */
-    const SW_TASK_TMPFILE = 1;
-
-    /**
-     * Php serialize
-     */
-    const SW_TASK_SERIALIZE = 2;
-
-    /**
-     * Task block
-     */
-    const SW_TASK_NONBLOCK = 4;
-
-    /**
-     * Event
-     */
-    const SW_EVENT_TASK = 7;
 
     public function init()
     {

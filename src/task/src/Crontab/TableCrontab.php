@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Task\Crontab;
 
@@ -16,11 +25,6 @@ class TableCrontab
     const TABLE_SIZE = 1024;
 
     /**
-     * @var TableCrontab $instance 实例对象
-     */
-    private static $instance;
-
-    /**
      * @var int $taskCount Maximum number of tasks
      */
     public static $taskCount = 1024;
@@ -29,6 +33,11 @@ class TableCrontab
      * @var int $taskQueue Maximum number of queues
      */
     public static $taskQueue = 1024;
+
+    /**
+     * @var TableCrontab $instance 实例对象
+     */
+    private static $instance;
 
     /**
      * @var \Swoft\Memory\Table $originTable Memory task table
