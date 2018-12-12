@@ -25,35 +25,35 @@ matrix:
   - php: master
     env: SW_VERSION="4.2.9"
 
-allow_failures:
+  allow_failures:
   - php: 7.3
   - php: master
 
 services:
-  - mysql
-  - redis
-  - docker
+- mysql
+- redis
+- docker
 
 before_install:
-  - export PHP_MAJOR="$(`phpenv which php` -r 'echo phpversion();' | cut -d '.' -f 1)"
-  - export PHP_MINOR="$(`phpenv which php` -r 'echo phpversion();' | cut -d '.' -f 2)"
-  - echo $PHP_MAJOR
-  - echo $PHP_MINOR
+- export PHP_MAJOR="$(`phpenv which php` -r 'echo phpversion();' | cut -d '.' -f 1)"
+- export PHP_MINOR="$(`phpenv which php` -r 'echo phpversion();' | cut -d '.' -f 2)"
+- echo $PHP_MAJOR
+- echo $PHP_MINOR
 
 install:
-  - cd $TRAVIS_BUILD_DIR
-  - bash test/_ci/install_swoole.sh
-  - phpenv config-rm xdebug.ini || echo "xdebug not available"
-  - phpenv config-add test/_ci/ci.ini
-  - bash test/_ci/setup_dbs.sh
+- cd $TRAVIS_BUILD_DIR
+- bash test/_ci/install_swoole.sh
+- phpenv config-rm xdebug.ini || echo "xdebug not available"
+- phpenv config-add test/_ci/ci.ini
+- bash test/_ci/setup_dbs.sh
 
 before_script:
-  - cd $TRAVIS_BUILD_DIR
-  - composer config -g process-timeout 900 && composer update
-  - cp test/.env.example test/.env
-  - docker run --rm -d -p 8500:8500 -h node1 --name consul consul agent -server -bootstrap-expect=1  -node=node1 -client 0.0.0.0 -ui
-  - php test/server.php -d
-  - sleep 5
+- cd $TRAVIS_BUILD_DIR
+- composer config -g process-timeout 900 && composer update
+- cp test/.env.example test/.env
+- docker run --rm -d -p 8500:8500 -h node1 --name consul consul agent -server -bootstrap-expect=1  -node=node1 -client 0.0.0.0 -ui
+- php test/server.php -d
+- sleep 5
 script:
-  - composer test
-  - composer co_test
+- composer test
+- composer co_test
