@@ -20,6 +20,14 @@ matrix:
     env: SW_VERSION="4.2.8"
   - php: 7.3
     env: SW_VERSION="4.2.9"
+  - php: master
+    env: SW_VERSION="4.2.8"
+  - php: master
+    env: SW_VERSION="4.2.9"
+
+allow_failures:
+  - php: 7.3
+  - php: master
 
 services:
   - mysql
