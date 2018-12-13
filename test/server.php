@@ -13,8 +13,9 @@ $bootstrap = \Swoft\App::getBean(\Swoft\Bootstrap\Bootstrap::class);
 $bootstrap->bootstrap();
 
 use Swoft\Http\Server\Command\ServerCommand;
+use Swoft\WebSocket\Server\Command\WsCommand;
 
-$command = bean(ServerCommand::class);
+$command = bean(WsCommand::class);
 
 $dir = alias('@runtime/logs');
 @mkdir($dir, 0777, true);

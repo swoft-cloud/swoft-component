@@ -33,9 +33,9 @@
             <directory suffix="Test.php">./src/service-governance/test</directory>
             <directory suffix="Test.php">./src/session/test</directory>
             <directory suffix="Test.php">./src/task/test</directory>
-            <!--<directory suffix="Test.php">./src/trace/test</directory>-->
-            <!--<directory suffix="Test.php">./src/view/test</directory>-->
-            <!--<directory suffix="Test.php">./src/websocket-server/test</directory>-->
+            <directory suffix="Test.php">./src/trace/test</directory>
+            <directory suffix="Test.php">./src/view/test</directory>
+            <directory suffix="Test.php">./src/websocket-server/test</directory>
         </testsuite>
     </testsuites>
     <filter>

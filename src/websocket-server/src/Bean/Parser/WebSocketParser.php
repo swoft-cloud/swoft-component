@@ -1,11 +1,20 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\WebSocket\Server\Bean\Parser;
 
-use Swoft\Bean\Parser\AbstractParser;
 use Swoft\Bean\Annotation\Scope;
-use Swoft\WebSocket\Server\Bean\Collector\WebSocketCollector;
+use Swoft\Bean\Parser\AbstractParser;
 use Swoft\WebSocket\Server\Bean\Annotation\WebSocket;
+use Swoft\WebSocket\Server\Bean\Collector\WebSocketCollector;
 
 /**
  * Class WebSocketParser

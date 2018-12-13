@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\WebSocket\Server\Router;
 
@@ -8,8 +17,8 @@ use Swoft\Http\Message\Server\Request;
 use Swoft\Http\Message\Server\Response;
 use Swoft\WebSocket\Server\Event\WsEvent;
 use Swoft\WebSocket\Server\Exception\ContextLostException;
-use Swoft\WebSocket\Server\HandlerInterface;
 use Swoft\WebSocket\Server\Exception\WsRouteException;
+use Swoft\WebSocket\Server\HandlerInterface;
 use Swoft\WebSocket\Server\WebSocketContext;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
@@ -33,7 +42,7 @@ class Dispatcher
     {
         try {
             $path = $request->getUri()->getPath();
-            list($className,) = $this->getHandler($path);
+            list($className, ) = $this->getHandler($path);
         } catch (\Throwable $e) {
             /* @var ErrorHandler $errorHandler */
             // $errorHandler = \bean(ErrorHandler::class);
@@ -72,7 +81,7 @@ class Dispatcher
     public function open(Server $server, Request $request, int $fd)
     {
         $path = $request->getUri()->getPath();
-        list($className,) = $this->getHandler($path);
+        list($className, ) = $this->getHandler($path);
 
         /** @var HandlerInterface $handler */
         $handler = \bean($className);

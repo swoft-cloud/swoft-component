@@ -1,11 +1,13 @@
 <?php
+declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2018/3/18
- * Time: 下午11:57
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-
 
 if (!function_exists('ws')) {
     /**
