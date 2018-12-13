@@ -134,13 +134,13 @@
             "SwoftTest\\Task\\": "src/task/test/",
             "SwoftTest\\Trace\\": "src/trace/test/",
             "SwoftTest\\View\\": "src/view/test/",
-            "SwoftTest\\WebSocket\\Server\\": "src/websocket-server/test/Cases"
+            "SwoftTest\\WebSocket\\Server\\": "src/websocket-server/test/"
         }
     },
     "extra": {
         "branch-alias": {
             "dev-master": "1.1-dev",
-            "dev-feature": "1.1-dev"
+            "dev-feature": "2.0-dev"
         }
     },
     "repositories": {
