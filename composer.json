@@ -140,7 +140,7 @@
     "extra": {
         "branch-alias": {
             "dev-master": "1.1-dev",
-            "dev-feature": "1.1-dev"
+            "dev-feature": "2.0-dev"
         }
     },
     "repositories": {
