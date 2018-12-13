@@ -1,9 +1,12 @@
 <?php
+declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2018/4/25
- * Time: 上午11:45
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
 namespace Swoft\WebSocket\Server;
@@ -14,5 +17,4 @@ namespace Swoft\WebSocket\Server;
  */
 interface CommandInterface
 {
-
 }

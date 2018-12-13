@@ -34,9 +34,15 @@ return [
     ],
     'http'    => [
         'host'  => env('HTTP_HOST', '0.0.0.0'),
-        'port'  => env('HTTP_PORT', 80),
+        'port'  => env('HTTP_PORT', 8080),
         'mode' => env('HTTP_MODE', SWOOLE_PROCESS),
         'type'  => env('HTTP_TYPE', SWOOLE_SOCK_TCP),
+    ],
+    'ws' => [
+        // enable handle http request ?
+        'enable_http' => env('WS_ENABLE_HTTP', true),
+        // other settings will extend the 'http' config
+        // you can define separately to overwrite existing settings
     ],
     'crontab' => [
         'task_count' => env('CRONTAB_TASK_COUNT', 1024),

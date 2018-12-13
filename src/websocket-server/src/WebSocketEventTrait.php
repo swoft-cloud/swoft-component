@@ -1,12 +1,21 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\WebSocket\Server;
 
+use \Swoft\Http\Message\Server\Request as Psr7Request;
 use Swoft\App;
 use Swoft\Core\Coroutine;
 use Swoft\WebSocket\Server\Event\WsEvent;
 use Swoft\WebSocket\Server\Router\Dispatcher;
-use \Swoft\Http\Message\Server\Request as Psr7Request;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\WebSocket\Frame;
@@ -97,36 +106,12 @@ trait WebSocketEventTrait
         // Handshaking successful, Manually triggering the open event
         $this->server->defer(function () use ($psr7Req, $fd) {
             $this->onWsOpen($this->server, $psr7Req, $fd);
-
         });
 
         // delete coId to fd mapping
         WebSocketContext::delFdByCoId();
 
         return true;
-    }
-
-    /**
-     * @param int $fd
-     * @param Request $request
-     * @return array
-     */
-    protected function buildConnectionMetadata(int $fd, Request $request): array
-    {
-        $info = $this->getClientInfo($fd);
-        $path = \parse_url($request->server['request_uri'], \PHP_URL_PATH);
-
-        $this->log("onHandShake: Client #{$fd} send handshake request to {$path}, client info: ", $info, 'debug');
-
-        return [
-            'fd' => $fd,
-            'ip' => $info['remote_ip'],
-            'port' => $info['remote_port'],
-            'path' => $path,
-            'handshake' => false,
-            'connectTime' => $info['connect_time'],
-            'handshakeTime' => \microtime(true),
-        ];
     }
 
     /**
@@ -210,5 +195,28 @@ trait WebSocketEventTrait
             // clear context info of the connection
             WebSocketContext::del($fd);
         }
+    }
+
+    /**
+     * @param int $fd
+     * @param Request $request
+     * @return array
+     */
+    protected function buildConnectionMetadata(int $fd, Request $request): array
+    {
+        $info = $this->getClientInfo($fd);
+        $path = \parse_url($request->server['request_uri'], \PHP_URL_PATH);
+
+        $this->log("onHandShake: Client #{$fd} send handshake request to {$path}, client info: ", $info, 'debug');
+
+        return [
+            'fd' => $fd,
+            'ip' => $info['remote_ip'],
+            'port' => $info['remote_port'],
+            'path' => $path,
+            'handshake' => false,
+            'connectTime' => $info['connect_time'],
+            'handshakeTime' => \microtime(true),
+        ];
     }
 }

@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\View\Base;
 
 use Swoft\App;
@@ -171,16 +180,6 @@ class View implements ViewInterface
     }
 
     /**
-     * @param string $file
-     * @param array $data
-     */
-    protected function protectedIncludeScope($file, array $data)
-    {
-        \extract($data, EXTR_OVERWRITE);
-        include $file;
-    }
-
-    /**
      * Get the attributes for the renderer
      *
      * @return array
@@ -286,22 +285,6 @@ class View implements ViewInterface
     }
 
     /**
-     * @param string $view
-     * @return string
-     */
-    protected function getRealView(string $view): string
-    {
-        $sfx = FileHelper::getSuffix($view, true);
-        $ext = $this->suffix;
-
-        if ($sfx === $ext || \in_array($sfx, $this->suffixes, true)) {
-            return $view;
-        }
-
-        return $view . '.' . $ext;
-    }
-
-    /**
      * @return string
      */
     public function getSuffix(): string
@@ -315,5 +298,31 @@ class View implements ViewInterface
     public function setSuffix(string $suffix)
     {
         $this->suffix = $suffix;
+    }
+
+    /**
+     * @param string $file
+     * @param array $data
+     */
+    protected function protectedIncludeScope($file, array $data)
+    {
+        \extract($data, EXTR_OVERWRITE);
+        include $file;
+    }
+
+    /**
+     * @param string $view
+     * @return string
+     */
+    protected function getRealView(string $view): string
+    {
+        $sfx = FileHelper::getSuffix($view, true);
+        $ext = $this->suffix;
+
+        if ($sfx === $ext || \in_array($sfx, $this->suffixes, true)) {
+            return $view;
+        }
+
+        return $view . '.' . $ext;
     }
 }

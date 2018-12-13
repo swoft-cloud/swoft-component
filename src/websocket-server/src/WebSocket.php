@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\WebSocket\Server;
 
@@ -9,7 +18,9 @@ namespace Swoft\WebSocket\Server;
 final class WebSocket
 {
     const VERSION = 13;
+
     const KEY_PATTEN = '#^[+/0-9A-Za-z]{21}[AQgw]==$#';
+
     const SIGN_KEY = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 
     /**

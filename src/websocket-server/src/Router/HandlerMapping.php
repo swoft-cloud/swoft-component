@@ -1,9 +1,17 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\WebSocket\Server\Router;
 
 use Swoft\Http\Message\Router\HandlerMappingInterface;
-
 
 /**
  * Class HandlerMapping
@@ -12,6 +20,7 @@ use Swoft\Http\Message\Router\HandlerMappingInterface;
 class HandlerMapping implements HandlerMappingInterface
 {
     const FOUND = 0;
+
     const NOT_FOUND = 1;
 
     /**
@@ -78,23 +87,6 @@ class HandlerMapping implements HandlerMappingInterface
     }
 
     /**
-     * Register one route
-     *
-     * @param string $path
-     * @param mixed $handler
-     * @param array $option
-     */
-    private function registerRoute(string $path, $handler, array $option = [])
-    {
-        $path = '/' . \trim($path, '/ ');
-
-        $this->routes[$path] = [
-            'handler' => $handler,
-            'option' => $option
-        ];
-    }
-
-    /**
      * Auto register routes
      *
      * @param array $serviceMapping
@@ -120,5 +112,22 @@ class HandlerMapping implements HandlerMappingInterface
     public function setRoutes(array $routes)
     {
         $this->routes = $routes;
+    }
+
+    /**
+     * Register one route
+     *
+     * @param string $path
+     * @param mixed $handler
+     * @param array $option
+     */
+    private function registerRoute(string $path, $handler, array $option = [])
+    {
+        $path = '/' . \trim($path, '/ ');
+
+        $this->routes[$path] = [
+            'handler' => $handler,
+            'option' => $option
+        ];
     }
 }
