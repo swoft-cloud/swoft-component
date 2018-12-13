@@ -21,7 +21,6 @@ return [
         'SwoftTest\\Redis\\Testing'          => SRC_PATH . '/redis/test/Testing',
         'SwoftTest\\RpcClient\\Testing'      => SRC_PATH . '/rpc-client/test/Testing',
         'SwoftTest\\Task\\Testing'           => SRC_PATH . '/task/test/Testing',
-        'Swoft\\View\\Test\\Testing'         => SRC_PATH . '/view/test/Testing',
     ],
     'devtool'      => [
         'enable'                  => false,
