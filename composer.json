@@ -134,7 +134,7 @@
             "SwoftTest\\Task\\": "src/task/test/",
             "SwoftTest\\Trace\\": "src/trace/test/",
             "SwoftTest\\View\\": "src/view/test/",
-            "SwoftTest\\WebSocket\\Server\\": "src/websocket-server/test/Cases"
+            "SwoftTest\\WebSocket\\Server\\": "src/websocket-server/test/"
         }
     },
     "extra": {
