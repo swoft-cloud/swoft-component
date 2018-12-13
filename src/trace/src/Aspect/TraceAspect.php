@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://doc.swoft.org
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Trace\Aspect;
 
@@ -11,7 +20,7 @@ use Swoft\Trace\Tracer;
 
 /**
  * Trace aspect
- * @Aspect()
+ * @Aspect
  * @PointAnnotation(
  *     include={
  *         Trace::class
@@ -20,9 +29,8 @@ use Swoft\Trace\Tracer;
  */
 class TraceAspect
 {
-
     /**
-     * @Before()
+     * @Before
      * @param JoinPoint $joinPoint
      */
     public function before(JoinPoint $joinPoint)
@@ -31,5 +39,4 @@ class TraceAspect
         $tracer = bean(Tracer::class);
         $tracer->trace(\get_class($joinPoint->getTarget()) . '::' . $joinPoint->getMethod());
     }
-
 }
