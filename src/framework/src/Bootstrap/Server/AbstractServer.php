@@ -8,6 +8,7 @@ use Swoft\Bootstrap\SwooleEvent;
 use Swoft\Helper\StringHelper;
 use Swoole\Lock;
 use Swoole\Server;
+use swoole_process;
 
 /**
  * Abstract Server
@@ -119,7 +120,7 @@ abstract class AbstractServer implements ServerInterface
     public function reload($onlyTask = false)
     {
         $signal = $onlyTask ? SIGUSR2 : SIGUSR1;
-        posix_kill($this->serverSetting['managerPid'], $signal);
+        swoole_process::kill($this->serverSetting['managerPid'], $signal);
     }
 
     /**
@@ -130,12 +131,12 @@ abstract class AbstractServer implements ServerInterface
         // 获取master进程ID
         $masterPid = $this->serverSetting['masterPid'];
         // 使用swoole_process::kill代替posix_kill
-        $result = \swoole_process::kill($masterPid);
+        $result = swoole_process::kill($masterPid);
         $timeout = 60;
         $startTime = time();
         while (true) {
             // Check the process status
-            if (\swoole_process::kill($masterPid, 0)) {
+            if (swoole_process::kill($masterPid, 0)) {
                 // 判断是否超时
                 if (time() - $startTime >= $timeout) {
                     return false;
@@ -166,7 +167,7 @@ abstract class AbstractServer implements ServerInterface
 
             $this->serverSetting['masterPid'] = $pids[0];
             $this->serverSetting['managerPid'] = $pids[1];
-            $masterIsLive = $this->serverSetting['masterPid'] && @posix_kill($this->serverSetting['managerPid'], 0);
+            $masterIsLive = $this->serverSetting['masterPid'] && @swoole_process::kill($this->serverSetting['managerPid'], 0);
         }
 
         return $masterIsLive;
