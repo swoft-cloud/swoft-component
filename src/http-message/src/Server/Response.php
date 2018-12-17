@@ -222,4 +222,22 @@ class Response extends \Swoft\Http\Message\Base\Response
     {
         return StringHelper::contains($accept, $keyword) === true;
     }
+
+    /**
+     * @return \Swoole\Http\Response
+     */
+    public function getSwooleResponse(): \Swoole\Http\Response
+    {
+        return $this->swooleResponse;
+    }
+
+    /**
+     * @param \Swoole\Http\Response $swooleResponse
+     * @return $this
+     */
+    public function setSwooleResponse(\Swoole\Http\Response $swooleResponse)
+    {
+        $this->swooleResponse = $swooleResponse;
+        return $this;
+    }
 }
