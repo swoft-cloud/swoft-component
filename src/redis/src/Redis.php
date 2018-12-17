@@ -46,6 +46,7 @@ use Swoft\Redis\Pool\RedisPool;
  * @method bool hIncrBy($key, $hashKey, $value)
  * @method bool hIncrByFloat($key, $field, $increment)
  * @method bool hMset($key, $hashKeys)
+ * @method bool hMget($key, $hashKeys)
  * list
  * @method array brPop(array $keys, $timeout)
  * @method array blPop(array $keys, $timeout)
