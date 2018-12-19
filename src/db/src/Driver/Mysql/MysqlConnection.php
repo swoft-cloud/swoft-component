@@ -120,12 +120,13 @@ class MysqlConnection extends AbstractDbConnection
     {
         $result = $this->connection->recv();
         $this->recv = true;
-
+           
+        $this->connection->setDefer(false);
+        
         if ($result === false) {
             throw new MysqlException('Mysql recv error，connectError=' . $this->connection->connect_error . ' error=' . $this->connection->error);
         }
-        $this->connection->setDefer(false);
-
+        
         $this->result = $result;
 
         return $result;
