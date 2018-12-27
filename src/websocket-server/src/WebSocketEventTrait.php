@@ -4,6 +4,7 @@ namespace Swoft\WebSocket\Server;
 
 use Swoft\App;
 use Swoft\Core\Coroutine;
+use Swoft\Core\RequestContext;
 use Swoft\WebSocket\Server\Event\WsEvent;
 use Swoft\WebSocket\Server\Router\Dispatcher;
 use \Swoft\Http\Message\Server\Request as Psr7Request;
@@ -102,6 +103,7 @@ trait WebSocketEventTrait
 
         // delete coId to fd mapping
         WebSocketContext::delFdByCoId();
+        RequestContext::destroy();
 
         return true;
     }
@@ -169,6 +171,7 @@ trait WebSocketEventTrait
 
         // delete coId to fd mapping
         WebSocketContext::delFdByCoId();
+        RequestContext::destroy();
     }
 
     /**
