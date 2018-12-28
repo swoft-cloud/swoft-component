@@ -240,7 +240,7 @@ class WebSocketServer extends HttpServer
             foreach ($fdList as $fd) {
                 $info = $this->getClientInfo($fd);
 
-                if ($info && $info['websocket_status'] > 0) {
+                if (isset($info['websocket_status']) && $info['websocket_status'] > 0) {
                     $this->server->push($fd, $data);
                 }
             }
