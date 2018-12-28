@@ -5,7 +5,7 @@ namespace Swoft\Sg\Balancer;
 use Swoft\Bean\Annotation\Bean;
 
 /**
- * 随机选取负责
+ * 随机选取负载
  *
  * @Bean()
  */
