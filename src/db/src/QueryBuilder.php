@@ -637,19 +637,20 @@ class QueryBuilder implements QueryBuilderInterface
 
     /**
      * where in 语句
-     *
      * @param string $column
-     * @param array  $values
+     * @param array $values
      * @param string $connector
-     *
      * @return QueryBuilder
+     * @throws MysqlException
      */
     public function whereIn(string $column, array $values, string $connector = self::LOGICAL_AND): self
     {
-        if (!empty($values)) {
-            $this->criteria($this->where, $column, $values, self::IN, $connector);
+        if(empty($values)){
+            $row   = debug_backtrace()[0];
+            $error = $row['file'].':'.$row['line'].'行';
+            throw new MysqlException('whereIn参数不能为空!'.substr($error,strrpos($error,'/')+1));
         }
-
+        $this->criteria($this->where, $column, $values, self::IN, $connector);
         return $this;
     }
 
