@@ -30,11 +30,6 @@ class SwoftMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        // Fix Chrome ico request bug
-        if ($request->getUri()->getPath() === '/favicon.ico') {
-            throw new NotAcceptableException('access favicon.ico');
-        }
-
         // Parser
         /* @var \Swoft\Http\Server\Parser\RequestParserInterface $requestParser */
         $requestParser = App::getBean('requestParser');
