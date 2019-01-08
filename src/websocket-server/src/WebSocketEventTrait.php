@@ -212,6 +212,7 @@ trait WebSocketEventTrait
 
             // clear context info of the connection
             WebSocketContext::del($fd);
+            RequestContext::destroy();
         }
     }
 }
