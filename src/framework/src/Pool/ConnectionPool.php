@@ -284,12 +284,12 @@ abstract class ConnectionPool implements PoolInterface
 
         $time        = time();
         $moreActive  = $queueNum - $minActive;
-        $maxWaitTime = $this->poolConfig->getMaxWaitTime();
+        $maxIdleTime = $this->poolConfig->getMaxIdleTime();
         for ($i = 0; $i < $moreActive; $i++) {
             /* @var ConnectionInterface $connection */
             $connection = $this->getOriginalConnection($isChannel);;
             $lastTime = $connection->getLastTime();
-            if ($time - $lastTime < $maxWaitTime) {
+            if ($time - $lastTime < $maxIdleTime) {
                 return $connection;
             }
             $this->currentCount--;
