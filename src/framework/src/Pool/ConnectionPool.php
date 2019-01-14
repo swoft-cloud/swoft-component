@@ -84,17 +84,19 @@ abstract class ConnectionPool implements PoolInterface
     public function release(ConnectionInterface $connection)
     {
         $connectionId = $connection->getConnectionId();
-        $connection->updateLastTime();
-        $connection->setRecv(true);
-        $connection->setAutoRelease(true);
+        if($this->hasContextConnection($connectionId)) {
+            $connection->updateLastTime();
+            $connection->setRecv(true);
+            $connection->setAutoRelease(true);
 
-        if (App::isCoContext()) {
-            $this->releaseToChannel($connection);
-        } else {
-            $this->releaseToQueue($connection);
+            if (App::isCoContext()) {
+                $this->releaseToChannel($connection);
+            } else {
+                $this->releaseToQueue($connection);
+            }
+
+            $this->removeContextConnection($connectionId);
         }
-
-        $this->removeContextConnection($connectionId);
     }
 
     /**
@@ -331,5 +333,15 @@ abstract class ConnectionPool implements PoolInterface
     {
         $connectionKey = PoolHelper::getContextCntKey();
         RequestContext::removeContextDataByChildKey($connectionKey, $connectionId);
+    }
+
+    /**
+     * @param string $connectionId
+     * @return bool
+     */
+    private function hasContextConnection(string $connectionId): bool
+    {
+        $connectionKey = PoolHelper::getContextCntKey();
+        return RequestContext::hasContextDataByChildKey($connectionKey, $connectionId);
     }
 }

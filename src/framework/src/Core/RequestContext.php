@@ -168,6 +168,19 @@ class RequestContext
     }
 
     /**
+     * has exists child key
+     *
+     * @param string $key
+     * @param string $child
+     * @return bool
+     */
+    public static function hasContextDataByChildKey(string $key, string $child): bool
+    {
+        $coroutineId = self::getCoroutineId();
+        return isset(self::$context[$coroutineId][self::DATA_KEY][$key][$child]);
+    }
+
+    /**
      * Get Current Request Log ID
      *
      * @return string
