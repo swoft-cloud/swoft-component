@@ -64,6 +64,9 @@ class WebSocketServer extends HttpServer
         $this->server->on(SwooleEvent::ON_WORKER_START, [$this, 'onWorkerStart']);
         $this->server->on(SwooleEvent::ON_MANAGER_START, [$this, 'onManagerStart']);
         $this->server->on(SwooleEvent::ON_PIPE_MESSAGE, [$this, 'onPipeMessage']);
+        $this->server->on(SwooleEvent::ON_WORKER_STOP, [$this, 'onWorkerStop']);
+        $this->server->on(SwooleEvent::ON_MANAGER_STOP, [$this, 'onManagerStop']);
+        $this->server->on(SwooleEvent::ON_SHUTDOWN, [$this, 'onShutdown']);
 
         // bind events for ws server
         $this->server->on(SwooleEvent::ON_HAND_SHAKE, [$this, 'onHandshake']);
