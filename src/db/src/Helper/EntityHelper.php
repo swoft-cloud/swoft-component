@@ -58,6 +58,12 @@ class EntityHelper
             $className = $entities[$className];
         }
         foreach ($row as $name => $value) {
+            if (!isset($entities[$className]['column'][$name])) {
+                $rowAry[$name] = $value;
+
+                continue;
+            }
+
             $field = $entities[$className]['column'][$name];
             $type  = $entities[$className]['field'][$field]['type'];
 
