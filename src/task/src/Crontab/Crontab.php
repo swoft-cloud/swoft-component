@@ -150,7 +150,6 @@ class Crontab
     {
         $currentTime = time();
         foreach ($this->getRunTimeTable()->table as $key => $value) {
-            //判断当前时间戳是否大于任务表中时间戳
             if ($value['runStatus'] === self::FINISH || $value['sec'] < $currentTime) {
                 $this->getRunTimeTable()->del($key);
             }
