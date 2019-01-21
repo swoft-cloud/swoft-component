@@ -64,7 +64,7 @@
       "src/http-server/src/Helper/Functions.php",
       "src/log/src/Helper/Functions.php",
       "src/server/src/Helper/Functions.php",
-      "src/Stdlib/src/Helper/Functions.php",
+      "src/stdlib/src/Helper/Functions.php",
       "src/tcp-server/src/Helper/Functions.php",
       "src/websocket-server/src/Helper/Functions.php"
     ]
