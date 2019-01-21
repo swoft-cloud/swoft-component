@@ -9,9 +9,15 @@
   "description": "microservice framework base on swoole",
   "license": "Apache-2.0",
   "require": {
-    "php": ">=7.0",
+    "php": ">=7.1",
     "psr/http-message": "^1.0",
-    "psr/http-server-middleware": "^1.0"
+    "psr/http-server-handler": "^1.0",
+    "psr/http-server-middleware": "^1.0",
+    "doctrine/annotations": "^1.4",
+    "php-di/phpdoc-reader": "^2.0",
+    "psr/container": "^1.0",
+    "vlucas/phpdotenv": "^2.5",
+    "symfony/yaml": "^4.2"
   },
   "require-dev": {
     "swoft/swoole-ide-helper": "dev-master"
