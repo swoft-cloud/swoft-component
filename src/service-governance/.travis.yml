@@ -1,0 +1,25 @@
+language: php
+
+sudo: required
+
+services:
+  - docker
+
+php:
+  - 7.0
+  - 7.1
+  - 7.2
+
+install:
+  - wget https://github.com/redis/hiredis/archive/v0.13.3.tar.gz -O hiredis.tar.gz && mkdir -p hiredis && tar -xf hiredis.tar.gz -C hiredis --strip-components=1 && cd hiredis && sudo make -j$(nproc) && sudo make install && sudo ldconfig && cd ..
+  - echo 'no' | pecl install -f redis
+  - bash test/swoole.install.sh
+  - echo "extension = swoole.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - docker run -d -p 8500:8500 -h node1 --name consul consul agent -server -bootstrap-expect=1  -node=node1 -client 0.0.0.0 -ui
+  - sleep 10
+
+before_script:
+  - phpenv config-rm xdebug.ini
+  - composer update
+
+script: composer test
