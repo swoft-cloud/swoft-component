@@ -49,7 +49,7 @@
       "Swoft\\Http\\Server\\": "src/http-server/src/",
       "Swoft\\Log\\": "src/log/src/",
       "Swoft\\Server\\": "src/server/src/",
-      "Swoft\\stdlib\\": "src/Stdlib/src/",
+      "Swoft\\stdlib\\": "src/stdlib/src/",
       "Swoft\\Tcp\\Server\\": "src/tcp-server/src/",
       "Swoft\\Websocket\\Server\\": "src/websocket-server/src/"
     },
