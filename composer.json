@@ -42,7 +42,7 @@
       "Swoft\\Annotation\\": "src/annotation/src/",
       "Swoft\\Aop\\": "src/aop/src/",
       "Swoft\\Bean\\": "src/bean/src/",
-      "Swoft\\config\\": "src/config/src/",
+      "Swoft\\Config\\": "src/config/src/",
       "Swoft\\Event\\": "src/event/src/",
       "Swoft\\": "src/framework/src/",
       "Swoft\\Http\\Message\\": "src/http-message/src/",
