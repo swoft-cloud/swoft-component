@@ -33,19 +33,19 @@
   },
   "autoload": {
     "psr-4": {
-      "Swoft\\Annotation\\": "src/annotation/src",
-      "Swoft\\Aop\\": "src/aop/src",
-      "Swoft\\Bean\\": "src/bean/src",
-      "Swoft\\config\\": "src/config/src",
-      "Swoft\\Event\\": "src/event/src",
-      "Swoft\\": "src/framework/src",
-      "Swoft\\Http\\Message\\": "src/http-message/src",
-      "Swoft\\Http\\Server\\": "src/http-server/src",
-      "Swoft\\Log\\": "src/log/src",
-      "Swoft\\Server\\": "src/server/src",
-      "Swoft\\stdlib\\": "src/Stdlib/src",
-      "Swoft\\Tcp\\Server\\": "src/tcp-server/src",
-      "Swoft\\Websocket\\Server\\": "src/websocket-server/src"
+      "Swoft\\Annotation\\": "src/annotation/src/",
+      "Swoft\\Aop\\": "src/aop/src/",
+      "Swoft\\Bean\\": "src/bean/src/",
+      "Swoft\\config\\": "src/config/src/",
+      "Swoft\\Event\\": "src/event/src/",
+      "Swoft\\": "src/framework/src/",
+      "Swoft\\Http\\Message\\": "src/http-message/src/",
+      "Swoft\\Http\\Server\\": "src/http-server/src/",
+      "Swoft\\Log\\": "src/log/src/",
+      "Swoft\\Server\\": "src/server/src/",
+      "Swoft\\stdlib\\": "src/Stdlib/src/",
+      "Swoft\\Tcp\\Server\\": "src/tcp-server/src/",
+      "Swoft\\Websocket\\Server\\": "src/websocket-server/src/"
     },
     "files": [
       "src/annotation/src/Helper/Functions.php",
