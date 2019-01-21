@@ -48,19 +48,19 @@
       "Swoft\\Websocket\\Server\\": "src/websocket-server"
     },
     "files": [
-      "src/annotation/Helper/Functions.php",
-      "src/aop/Helper/Functions.php",
-      "src/bean/Helper/Functions.php",
-      "src/config/Helper/Functions.php",
-      "src/event/Helper/Functions.php",
-      "src/framework/Helper/Functions.php",
-      "src/http-message/Helper/Functions.php",
-      "src/http-server/Helper/Functions.php",
-      "src/log/Helper/Functions.php",
-      "src/server/Helper/Functions.php",
-      "src/Stdlib/Helper/Functions.php",
-      "src/tcp-server/Helper/Functions.php",
-      "src/websocket-server/Helper/Functions.php"
+      "src/annotation/src/Helper/Functions.php",
+      "src/aop/src/Helper/Functions.php",
+      "src/bean/src/Helper/Functions.php",
+      "src/config/src/Helper/Functions.php",
+      "src/event/src/Helper/Functions.php",
+      "src/framework/src/Helper/Functions.php",
+      "src/http-message/src/Helper/Functions.php",
+      "src/http-server/src/Helper/Functions.php",
+      "src/log/src/Helper/Functions.php",
+      "src/server/src/Helper/Functions.php",
+      "src/Stdlib/src/Helper/Functions.php",
+      "src/tcp-server/src/Helper/Functions.php",
+      "src/websocket-server/src/Helper/Functions.php"
     ]
   },
   "autoload-dev": {
