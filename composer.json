@@ -1,0 +1,35 @@
+{
+  "name": "swoft/tcp-server",
+  "type": "library",
+  "keywords": [
+    "php",
+    "swoole",
+    "swoft"
+  ],
+  "description": "websocket server for swoft",
+  "license": "Apache-2.0",
+  "require": {
+  },
+  "autoload": {
+    "psr-4": {
+      "Swoft\\Tcp\\Server\\": "src/"
+    },
+    "files": [
+      "src/Helper/Functions.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+    }
+  },
+  "repositories": {
+    "packagist": {
+      "type": "composer",
+      "url": "https://packagist.laravel-china.org"
+    }
+  },
+  "require-dev": {
+  },
+  "scripts": {
+  }
+}
