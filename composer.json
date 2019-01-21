@@ -1,57 +1,83 @@
 {
-    "name": "swoft/component",
-    "type": "library",
-    "keywords": [
-        "php",
-        "swoole",
-        "swoft"
-    ],
-    "description": "microservice framework base on swoole",
-    "license": "Apache-2.0",
-    "require": {
-        "php": ">=7.0",
-        "psr/http-message": "^1.0",
-        "psr/http-server-middleware": "^1.0"
+  "name": "swoft/component",
+  "type": "library",
+  "keywords": [
+    "php",
+    "swoole",
+    "swoft"
+  ],
+  "description": "microservice framework base on swoole",
+  "license": "Apache-2.0",
+  "require": {
+    "php": ">=7.0",
+    "psr/http-message": "^1.0",
+    "psr/http-server-middleware": "^1.0"
+  },
+  "require-dev": {
+    "swoft/swoole-ide-helper": "dev-master"
+  },
+  "replace": {
+    "swoft/annotation": "self.version",
+    "swoft/aop": "self.version",
+    "swoft/bean": "self.version",
+    "swoft/config": "self.version",
+    "swoft/event": "self.version",
+    "swoft/framework": "self.version",
+    "swoft/http-message": "self.version",
+    "swoft/http-server": "self.version",
+    "swoft/log": "self.version",
+    "swoft/server": "self.version",
+    "swoft/stdlib": "self.version",
+    "swoft/tcp-server": "self.version",
+    "swoft/websocket-server": "self.version"
+  },
+  "autoload": {
+    "psr-4": {
+      "Swoft\\Annotation\\": "src/annotation",
+      "Swoft\\Aop\\": "src/aop",
+      "Swoft\\Bean\\": "src/bean",
+      "Swoft\\config\\": "src/config",
+      "Swoft\\Event\\": "src/event",
+      "Swoft\\": "src/framework",
+      "Swoft\\Http\\Message\\": "src/http-message",
+      "Swoft\\Http\\Server\\": "src/http-server",
+      "Swoft\\Log\\": "src/log",
+      "Swoft\\Server\\": "src/server",
+      "Swoft\\stdlib\\": "src/Stdlib",
+      "Swoft\\Tcp\\Server\\": "src/tcp-server",
+      "Swoft\\Websocket\\Server\\": "src/websocket-server"
     },
-    "require-dev": {
-        "swoft/swoole-ide-helper": "dev-master"
-    },
-    "replace": {
-        "swoft/annotation": "self.version",
-        "swoft/aop": "self.version",
-        "swoft/bean": "self.version",
-        "swoft/config": "self.version",
-        "swoft/event": "self.version",
-        "swoft/framework": "self.version",
-        "swoft/http-message": "self.version",
-        "swoft/http-server": "self.version",
-        "swoft/log": "self.version",
-        "swoft/server": "self.version",
-        "swoft/stdlib": "self.version",
-        "swoft/tcp-server": "self.version",
-        "swoft/websocket-server": "self.version"
-    },
-    "autoload": {
-        "psr-4": {
-        },
-        "files": [
-        ]
-    },
-    "autoload-dev": {
-        "psr-4": {
-        }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "2.0.x-dev"
-        }
-    },
-    "repositories": {
-        "packagist": {
-            "type": "composer",
-            "url": "https://packagist.laravel-china.org"
-        }
-    },
-    "scripts": {
+    "files": [
+      "src/annotation/Helper/Functions.php",
+      "src/aop/Helper/Functions.php",
+      "src/bean/Helper/Functions.php",
+      "src/config/Helper/Functions.php",
+      "src/event/Helper/Functions.php",
+      "src/framework/Helper/Functions.php",
+      "src/http-message/Helper/Functions.php",
+      "src/http-server/Helper/Functions.php",
+      "src/log/Helper/Functions.php",
+      "src/server/Helper/Functions.php",
+      "src/Stdlib/Helper/Functions.php",
+      "src/tcp-server/Helper/Functions.php",
+      "src/websocket-server/Helper/Functions.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
     }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "2.0.x-dev"
+    }
+  },
+  "repositories": {
+    "packagist": {
+      "type": "composer",
+      "url": "https://packagist.laravel-china.org"
+    }
+  },
+  "scripts": {
+  }
 }
