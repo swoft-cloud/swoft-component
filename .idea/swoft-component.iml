@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="WEB_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/data-parser/src" isTestSource="false" packagePrefix="Swoft\DataParser\" />
+      <sourceFolder url="file://$MODULE_DIR$/src/service-governance/src" isTestSource="false" packagePrefix="Swoft\Sg\" />
+      <sourceFolder url="file://$MODULE_DIR$/src/memory/src" isTestSource="false" packagePrefix="Swoft\Memory\" />
+      <sourceFolder url="file://$MODULE_DIR$/src/task/src" isTestSource="false" packagePrefix="Swoft\Task\" />
+      <sourceFolder url="file://$MODULE_DIR$/src/process/src" isTestSource="false" packagePrefix="Swoft\Process\" />
+      <sourceFolder url="file://$MODULE_DIR$/src/rpc/src" isTestSource="false" packagePrefix="Swoft\Rpc\" />
+      <sourceFolder url="file://$MODULE_DIR$/src/devtool/src" isTestSource="false" packagePrefix="Swoft\Devtool\" />
+      <sourceFolder url="file://$MODULE_DIR$/src/i18n/src" isTestSource="false" packagePrefix="Swoft\I18n\" />
+      <sourceFolder url="file://$MODULE_DIR$/src/view/src" isTestSource="false" packagePrefix="Swoft\View\" />
+      <sourceFolder url="file://$MODULE_DIR$/src/rpc-server/src" isTestSource="false" packagePrefix="Swoft\Rpc\Server\" />
+      <sourceFolder url="file://$MODULE_DIR$/src/http-client/src" isTestSource="false" packagePrefix="Swoft\HttpClient\" />
+      <sourceFolder url="file://$MODULE_DIR$/src/framework/src" isTestSource="false" packagePrefix="Swoft\" />
+      <sourceFolder url="file://$MODULE_DIR$/src/http-message/src" isTestSource="false" packagePrefix="Swoft\Http\Message\" />
+      <sourceFolder url="file://$MODULE_DIR$/src/console/src" isTestSource="false" packagePrefix="Swoft\Console\" />
+      <sourceFolder url="file://$MODULE_DIR$/src/websocket-server/src" isTestSource="false" packagePrefix="Swoft\WebSocket\Server\" />
+      <sourceFolder url="file://$MODULE_DIR$/src/db/src" isTestSource="false" packagePrefix="Swoft\Db\" />
+      <sourceFolder url="file://$MODULE_DIR$/src/redis/src" isTestSource="false" packagePrefix="Swoft\Redis\" />
+      <sourceFolder url="file://$MODULE_DIR$/src/cache/src" isTestSource="false" packagePrefix="Swoft\Cache\" />
+      <sourceFolder url="file://$MODULE_DIR$/src/session/src" isTestSource="false" packagePrefix="Swoft\Session\" />
+      <sourceFolder url="file://$MODULE_DIR$/src/http-server/src" isTestSource="false" packagePrefix="Swoft\Http\Server\" />
+      <sourceFolder url="file://$MODULE_DIR$/src/rpc-client/src" isTestSource="false" packagePrefix="Swoft\Rpc\Client\" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
