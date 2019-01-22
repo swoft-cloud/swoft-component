@@ -22,7 +22,6 @@ class BeanProxy implements ClassProxyInterface
      */
     public function proxy(string $className): string
     {
-        $proxyClassName = Proxy::newClassName($className);
-        return $proxyClassName;
+        return Proxy::newClassName($className);
     }
 }

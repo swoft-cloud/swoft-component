@@ -24,7 +24,7 @@ class EventProcessor extends Processor
         $logic = bean(DemoLogic::class);
         
         $logic->getData()->getDao();
-
+        
 //        var_dump(config('db.host'));
 //        var_dump(config('db'));
 //        var_dump(config('name'));

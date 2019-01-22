@@ -35,7 +35,7 @@ class ProxyVisitor extends NodeVisitorAbstract
      *
      * @var string
      */
-    private $originClassName = '';
+    private $originalClassName = '';
 
     /**
      * Proxy class name without namespace
@@ -83,8 +83,8 @@ class ProxyVisitor extends NodeVisitorAbstract
         if ($node instanceof Node\Stmt\Class_) {
             $name = $node->name->toString();
 
-            $this->proxyName       = sprintf('%s_%s', $name, $this->proxyId);
-            $this->originClassName = sprintf('%s\\%s', $this->namespace, $name);
+            $this->proxyName         = sprintf('%s_%s', $name, $this->proxyId);
+            $this->originalClassName = sprintf('%s\\%s', $this->namespace, $name);
 
             return;
         }
@@ -104,7 +104,7 @@ class ProxyVisitor extends NodeVisitorAbstract
             $newClassNodes = [
                 'flags'   => $node->flags,
                 'stmts'   => $node->stmts,
-                'extends' => new Node\Name('\\' . $this->originClassName),
+                'extends' => new Node\Name('\\' . $this->originalClassName),
             ];
 
             return new Node\Stmt\Class_($this->proxyName, $newClassNodes);
@@ -121,55 +121,29 @@ class ProxyVisitor extends NodeVisitorAbstract
                 return NodeTraverser::REMOVE_NODE;
             }
 
-            $methodName = $node->name->toString();
-
-            // Origin method params
-            $params = [];
-            foreach ($node->params as $key => $param) {
-                $params[] = $param;
-            }
-
-            // Proxy method params
-            $newParams = [
-                new Node\Scalar\String_($this->originClassName),
-                new Node\Scalar\String_($methodName),
-                new Node\Expr\FuncCall(new Node\Name('func_get_args')),
-            ];
-
-            $proxyMerthodCall = new Node\Expr\MethodCall(
-                new Node\Expr\Variable('this'),
-                '__proxyCall',
-                $newParams
-            );
-
-            $returnType = ($node->returnType != null) ? $node->returnType->toString() : '';
-
-            // New method stmts
-            $stmts = [
-                new Node\Stmt\Return_($proxyMerthodCall)
-            ];
-
-            if ($returnType == 'void') {
-                $stmts = [
-                    new Node\Stmt\Expression($proxyMerthodCall)
-                ];
-            }
-
-            // New method nodes
-            $newMethodNodes = [
-                'flags'      => $node->flags,
-                'byRef'      => $node->byRef,
-                'name'       => $node->name,
-                'params'     => $node->params,
-                'returnType' => $node->returnType,
-                'stmts'      => $stmts,
-            ];
-
-            return new Node\Stmt\ClassMethod($methodName, $newMethodNodes);
+            return $this->proxyMethod($node);
         }
 
-
         return $node;
+    }
+
+    /**
+     * After traverse
+     *
+     * @param array $nodes
+     *
+     * @return array|Node[]|null
+     */
+    public function afterTraverse(array $nodes)
+    {
+        $nodeFinder = new NodeFinder();
+        $classNode  = $nodeFinder->findFirstInstanceOf($nodes, Node\Stmt\Class_::class);
+
+        $traitNode          = $this->getTraitNode();
+        $originalMethodNode = $this->getOrigianalClassNameMethodNode();
+
+        array_unshift($classNode->stmts, $traitNode, $originalMethodNode);
+        return $nodes;
     }
 
     /**
@@ -187,26 +161,90 @@ class ProxyVisitor extends NodeVisitorAbstract
      *
      * @return string
      */
-    public function getOriginClassName(): string
+    public function getOriginalClassName(): string
     {
-        return $this->getOriginClassName();
+        return $this->originalClassName;
     }
 
     /**
-     * After traverse
+     * Proxy method
      *
-     * @param array $nodes
+     * @param Node $node
      *
-     * @return array|Node[]|null
+     * @return Node\Stmt\ClassMethod
      */
-    public function afterTraverse(array $nodes)
+    private function proxyMethod(Node $node)
     {
-        $nodeFinder = new NodeFinder();
-        $traitNode  = new Node\Stmt\TraitUse([new Node\Name('\\' . $this->aopClassName)]);
+        $methodName = $node->name->toString();
 
-        // Add aop trait
-        $classNode = $nodeFinder->findFirstInstanceOf($nodes, Node\Stmt\Class_::class);
-        array_unshift($classNode->stmts, $traitNode);
-        return $nodes;
+        // Origin method params
+        $params = [];
+        foreach ($node->params as $key => $param) {
+            $params[] = $param;
+        }
+
+        // Proxy method params
+        $newParams = [
+            new Node\Scalar\String_($this->originalClassName),
+            new Node\Scalar\String_($methodName),
+            new Node\Expr\FuncCall(new Node\Name('func_get_args')),
+        ];
+
+        // Proxy method call
+        $proxyCall = new Node\Expr\MethodCall(
+            new Node\Expr\Variable('this'),
+            '__proxyCall',
+            $newParams
+        );
+
+        // New method stmts
+        $type = $node->returnType;
+        $stmt = new Node\Stmt\Return_($proxyCall);
+        if ($type != null && $type == 'void') {
+            $stmt = new Node\Stmt\Expression($proxyCall);
+        }
+
+        // New method nodes
+        $newMethodNodes = [
+            'flags'      => $node->flags,
+            'byRef'      => $node->byRef,
+            'name'       => $node->name,
+            'params'     => $node->params,
+            'returnType' => $node->returnType,
+            'stmts'      => [
+                $stmt
+            ],
+        ];
+
+        return new Node\Stmt\ClassMethod($methodName, $newMethodNodes);
+    }
+
+    /**
+     * Get aop trait node
+     *
+     * @return Node\Stmt\TraitUse
+     */
+    private function getTraitNode(): Node\Stmt\TraitUse
+    {
+        return new Node\Stmt\TraitUse([
+            new Node\Name('\\' . $this->aopClassName)
+        ]);
+    }
+
+    /**
+     * Get original class method node
+     *
+     * @return \PhpParser\Node\Stmt\ClassMethod
+     */
+    private function getOrigianalClassNameMethodNode(): Node\Stmt\ClassMethod
+    {
+        // Add getOriginalClassName method
+        return new Node\Stmt\ClassMethod('getOriginalClassName', [
+            'flags'      => Node\Stmt\Class_::MODIFIER_PUBLIC,
+            'returnType' => 'string',
+            'stmts'      => [
+                new Node\Stmt\Return_(new Node\Scalar\String_($this->getOriginalClassName()))
+            ],
+        ]);
     }
 }
