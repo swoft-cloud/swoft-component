@@ -3,6 +3,7 @@
 namespace Swoft\Proxy;
 
 
+use Swoft\Aop\Proxy;
 use Swoft\Bean\ClassProxyInterface;
 
 /**
@@ -21,6 +22,7 @@ class BeanProxy implements ClassProxyInterface
      */
     public function proxy(string $className): string
     {
-        return $className;
+        $proxyClassName = Proxy::newClassName($className);
+        return $proxyClassName;
     }
 }
