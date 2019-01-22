@@ -11,6 +11,7 @@ use Swoft\Bean\Definition\Parser\AnnotationObjParser;
 use Swoft\Bean\Definition\Parser\DefinitionObjParser;
 use Swoft\Bean\Definition\PropertyInjection;
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Bean\Listener\ListenerInterface;
 use Swoft\Stdlib\Helper\ArrayHelper;
 
 /**
@@ -114,20 +115,6 @@ class Container implements ContainerInterface
     private $definitions = [];
 
     /**
-     * Bean static proxy
-     *
-     * @var ClassProxyInterface
-     */
-    private $classProxy;
-
-    /**
-     * Bean dynamic proxy
-     *
-     * @var ObjectProxyInterface
-     */
-    private $objectProxy;
-
-    /**
      * All alias
      *
      * @var array
@@ -179,9 +166,11 @@ class Container implements ContainerInterface
     private $singletonPool = [];
 
     /**
-     * @var ReferenceInterface
+     * Bean handler
+     *
+     * @var HandlerInterface
      */
-    private $reference;
+    private $handler;
 
     /**
      * Container constructor.
@@ -405,38 +394,6 @@ class Container implements ContainerInterface
     }
 
     /**
-     * Set class proxy
-     *
-     * @param ClassProxyInterface $classProxy
-     *
-     * @return void
-     */
-    public function setClassProxy(ClassProxyInterface $classProxy): void
-    {
-        $this->classProxy = $classProxy;
-    }
-
-    /**
-     * Set object proxy
-     *
-     * @param ObjectProxyInterface $objectProxy
-     *
-     * @return void
-     */
-    public function setObjectProxy(ObjectProxyInterface $objectProxy): void
-    {
-        $this->objectProxy = $objectProxy;
-    }
-
-    /**
-     * @param ReferenceInterface $reference
-     */
-    public function setReference(ReferenceInterface $reference): void
-    {
-        $this->reference = $reference;
-    }
-
-    /**
      * Parse annotations
      */
     private function parseAnnotations(): void
@@ -456,6 +413,14 @@ class Container implements ContainerInterface
         $annotationData   = $annotationParser->parseDefinitions();
 
         list($this->definitions, $this->objectDefinitions) = $annotationData;
+    }
+
+    /**
+     * @param HandlerInterface $handler
+     */
+    public function setHandler(HandlerInterface $handler): void
+    {
+        $this->handler = $handler;
     }
 
     /**
@@ -493,6 +458,9 @@ class Container implements ContainerInterface
         $alias     = $objectDefinition->getAlias();
         $className = $objectDefinition->getClassName();
 
+        // Before initialize bean
+        $this->beforeInit($beanName, $className, $objectDefinition);
+
         $constructArgs   = [];
         $constructInject = $objectDefinition->getConstructorInjection();
         if (!empty($constructInject)) {
@@ -502,8 +470,8 @@ class Container implements ContainerInterface
         $propertyInjects = $objectDefinition->getPropertyInjections();
 
         // Proxy class
-        if (!empty($this->classProxy)) {
-            $className = $this->classProxy->proxy($className);
+        if (!empty($this->handler)) {
+            $className = $this->handler->classProxy($className);
         }
 
         $reflectionClass = new \ReflectionClass($className);
@@ -644,6 +612,27 @@ class Container implements ContainerInterface
     }
 
     /**
+     * Before initialize bean
+     *
+     * @param string           $beanName
+     * @param string           $className
+     * @param ObjectDefinition $objectDefinition
+     */
+    private function beforeInit(string $beanName, string $className, ObjectDefinition $objectDefinition)
+    {
+        if (empty($this->handler)) {
+            return;
+        }
+
+        $annotation = [];
+        foreach ($this->annotations as $ns => $classAnnotations) {
+            $annotation = $classAnnotations[$className] ?? $annotation;
+        }
+
+        $this->handler->beforeInit($beanName, $className, $objectDefinition, $annotation);
+    }
+
+    /**
      * New property array
      *
      * @param array $propertyValue
@@ -681,8 +670,8 @@ class Container implements ContainerInterface
         }
 
         // Other reference
-        if (!empty($this->reference)) {
-            $value = $this->reference->getValue($value);
+        if (!empty($this->handler)) {
+            $value = $this->handler->getReferenceValue($value);
         }
 
         return $value;

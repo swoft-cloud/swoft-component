@@ -6,7 +6,9 @@ use http\Exception\InvalidArgumentException;
 use Swoft\Annotation\AnnotationRegister;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
+use Swoft\BeanHandler;
 use Swoft\DefinitionInterface;
+use Swoft\Proxy\BeanInitialize;
 use Swoft\Proxy\BeanProxy;
 use Swoft\Reference\ConfigReference;
 use Swoft\Stdlib\Helper\ArrayHelper;
@@ -25,8 +27,7 @@ class BeanProcessor extends Processor
             return false;
         }
 
-        $beanProxy   = new BeanProxy();
-        $reference   = new ConfigReference();
+        $handler     = new BeanHandler();
         $definitions = $this->getDefinitions();
         $parsers     = AnnotationRegister::getParsers();
         $annotations = AnnotationRegister::getAnnotations();
@@ -34,8 +35,7 @@ class BeanProcessor extends Processor
         BeanFactory::addDefinitions($definitions);
         BeanFactory::addAnnotations($annotations);
         BeanFactory::addParsers($parsers);
-        BeanFactory::setClassProxy($beanProxy);
-        BeanFactory::setReference($reference);
+        BeanFactory::setHandler($handler);
         BeanFactory::init();
 
         return $this->application->afterBean();

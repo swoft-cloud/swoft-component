@@ -116,38 +116,12 @@ class BeanFactory
     }
 
     /**
-     * Set class proxy
+     * Set bean handler
      *
-     * @param ClassProxyInterface $classProxy
-     *
-     * @return void
+     * @param HandlerInterface $handler
      */
-    public static function setClassProxy(ClassProxyInterface $classProxy): void
+    public static function setHandler(HandlerInterface $handler): void
     {
-        Container::getInstance()->setClassProxy($classProxy);
-    }
-
-    /**
-     * Set object proxy
-     *
-     * @param ObjectProxyInterface $objectProxy
-     *
-     * @return void
-     */
-    public static function setObjectProxy(ObjectProxyInterface $objectProxy): void
-    {
-        Container::getInstance()->setObjectProxy($objectProxy);
-    }
-
-    /**
-     * Set reference
-     *
-     * @param ReferenceInterface $reference
-     *
-     * @return void
-     */
-    public static function setReference(ReferenceInterface $reference): void
-    {
-        Container::getInstance()->setReference($reference);
+        Container::getInstance()->setHandler($handler);
     }
 }
