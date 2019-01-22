@@ -501,6 +501,11 @@ class Container implements ContainerInterface
 
         $propertyInjects = $objectDefinition->getPropertyInjections();
 
+        // Proxy class
+        if (!empty($this->classProxy)) {
+            $className = $this->classProxy->proxy($className);
+        }
+
         $reflectionClass = new \ReflectionClass($className);
         $reflectObject   = $this->newInstance($reflectionClass, $constructArgs);
 
@@ -601,17 +606,23 @@ class Container implements ContainerInterface
      */
     private function newProperty($reflectObject, \ReflectionClass $reflectionClass, array $propertyInjects)
     {
+        // New parent properties
+        $parentClass = $reflectionClass->getParentClass();
+        if ($parentClass !== false) {
+            $this->newProperty($reflectObject, $parentClass, $propertyInjects);
+        }
+
         /* @var PropertyInjection $propertyInject */
         foreach ($propertyInjects as $propertyInject) {
             $propertyName = $propertyInject->getPropertyName();
             if (!$reflectionClass->hasProperty($propertyName)) {
-                throw new ContainerException('Property for bean is not exist!');
+                continue;
             }
 
             $reflectProperty = $reflectionClass->getProperty($propertyName);
 
             if ($reflectProperty->isStatic()) {
-                throw new ContainerException('Property for bean can not be `static` ');
+                throw new ContainerException('Property %s for bean can not be `static` ', $propertyName);
             }
 
             if (!$reflectProperty->isPublic()) {

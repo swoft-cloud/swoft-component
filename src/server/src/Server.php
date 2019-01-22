@@ -112,7 +112,7 @@ abstract class Server implements ServerInterface
     /**
      * Init
      */
-    protected function init(): void
+    public function init(): void
     {
 
     }

@@ -17,7 +17,8 @@
     "php-di/phpdoc-reader": "^2.0",
     "psr/container": "^1.0",
     "vlucas/phpdotenv": "^2.5",
-    "symfony/yaml": "^4.2"
+    "symfony/yaml": "^4.2",
+    "nikic/php-parser": "~4.2"
   },
   "require-dev": {
     "swoft/swoole-ide-helper": "dev-master"

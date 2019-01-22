@@ -9,7 +9,8 @@
   "description": "microservice framework base on swoole",
   "license": "Apache-2.0",
   "require": {
-    "php": ">=7.1"
+    "php": ">=7.1",
+    "nikic/php-parser": "~4.2"
   },
   "autoload": {
     "classmap": [

@@ -15,12 +15,12 @@ class BeanProxy implements ClassProxyInterface
     /**
      * Proxy class
      *
-     * @param string $class
+     * @param string $className
      *
      * @return string
      */
     public function proxy(string $className): string
     {
-        return $class;
+        return $className;
     }
 }
