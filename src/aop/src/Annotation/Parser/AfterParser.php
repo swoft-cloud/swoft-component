@@ -6,6 +6,9 @@ namespace Swoft\Aop\Annotation\Parser;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Aop\Annotation\Mapping\After;
+use Swoft\Aop\Annotation\Mapping\Aspect;
+use Swoft\Aop\AspectRegister;
+use Swoft\Aop\Exception\AopException;
 
 /**
  * Class AfterParser
@@ -26,6 +29,12 @@ class AfterParser extends Parser
      */
     public function parse(int $type, $annotationObject): array
     {
-        // TODO: Implement parse() method.
+        if ($type != self::TYPE_METHOD) {
+            throw new AopException('`@After` must be defined by method!');
+        }
+
+        AspectRegister::registerAdvice(AspectRegister::ADVICE_AFTER, $this->className, $this->methodName);
+
+        return [];
     }
 }

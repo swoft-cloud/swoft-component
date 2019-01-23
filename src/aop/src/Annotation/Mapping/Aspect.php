@@ -5,7 +5,6 @@ namespace Swoft\Aop\Annotation\Mapping;
 use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;
 use Doctrine\Common\Annotations\Annotation\Target;
-use Swoft\Bean\Annotation\Mapping\Bean;
 
 /**
  * Class Aspect
@@ -18,7 +17,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
  *
  * @since 2.0
  */
-class Aspect extends Bean
+class Aspect
 {
     /**
      * Default order

@@ -6,6 +6,9 @@ namespace Swoft\Aop\Annotation\Parser;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Aop\Annotation\Mapping\Aspect;
+use Swoft\Aop\AspectRegister;
+use Swoft\Aop\Exception\AopException;
+use Swoft\Bean\Annotation\Mapping\Bean;
 
 /**
  * Class AspectParser
@@ -26,6 +29,12 @@ class AspectParser extends Parser
      */
     public function parse(int $type, $annotationObject): array
     {
-        // TODO: Implement parse() method.
+        if ($type != self::TYPE_CLASS) {
+            throw new AopException('`@Aspect` must be defined by class!');
+        }
+
+        AspectRegister::registerAspect($this->className, $annotationObject->getOrder());
+
+        return [$this->className, $this->className, Bean::SINGLETON, ''];
     }
 }

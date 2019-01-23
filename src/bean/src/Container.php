@@ -321,7 +321,7 @@ class Container implements ContainerInterface
             return true;
         }
 
-        if (isset($this->aliases)) {
+        if (isset($this->aliases[$id])) {
             return true;
         }
 

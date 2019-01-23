@@ -20,6 +20,13 @@ trait AopTrait
      */
     public function __proxyCall(string $className, string $methodName, array $args)
     {
+        $mathAspects = Aop::match($className, $methodName);
+        if (empty($mathAspects)) {
+            return $this->__invokeTarget($methodName, $args);
+        }
+
+//        var_dump($mathAspect);
+
         return $this->__invokeTarget($methodName, $args);
     }
 
