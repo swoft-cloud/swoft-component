@@ -26,7 +26,7 @@ trait AopTrait
         }
 
         $handler = new Handler($this, $methodName, $args, $mathAspects);
-        return $handler->doAspect();
+        return $handler->invokeAspect();
     }
 
     /**

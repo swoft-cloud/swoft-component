@@ -3,7 +3,6 @@
 namespace Swoft\Bean;
 
 
-use App\Aspect\LogAspect;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Definition\ArgsInjection;
 use Swoft\Bean\Definition\MethodInjection;
@@ -12,7 +11,6 @@ use Swoft\Bean\Definition\Parser\AnnotationObjParser;
 use Swoft\Bean\Definition\Parser\DefinitionObjParser;
 use Swoft\Bean\Definition\PropertyInjection;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Bean\Listener\ListenerInterface;
 use Swoft\Stdlib\Helper\ArrayHelper;
 
 /**
@@ -219,7 +217,8 @@ class Container implements ContainerInterface
     /**
      * Init
      *
-     * @return void
+     * @throws ContainerException
+     * @throws \ReflectionException
      */
     public function init(): void
     {
@@ -240,7 +239,9 @@ class Container implements ContainerInterface
      *
      * When class name will return all of instance for class name
      *
-     * @return object
+     * @return object|array
+     * @throws ContainerException
+     * @throws \ReflectionException
      */
     public function get($id)
     {
@@ -312,9 +313,9 @@ class Container implements ContainerInterface
      *     ]
      * ]
      *
-     * @param string $alias
-     *
      * @return object
+     * @throws ContainerException
+     * @throws \ReflectionException
      */
     public function create(string $name, array $definition = [])
     {
@@ -328,10 +329,6 @@ class Container implements ContainerInterface
                 'class' => $name
             ];
         }
-
-        $definitions = [
-            $name => $definition
-        ];
 
         $definitionObjParser = new DefinitionObjParser($definition, []);
         list(, $objectDefinitions) = $definitionObjParser->parseDefinitions();
@@ -429,6 +426,8 @@ class Container implements ContainerInterface
 
     /**
      * Parse annotations
+     *
+     * @throws ContainerException
      */
     private function parseAnnotations(): void
     {
@@ -440,6 +439,8 @@ class Container implements ContainerInterface
 
     /**
      * Parse definitions
+     *
+     * @throws ContainerException
      */
     private function parseDefinitions(): void
     {
@@ -459,6 +460,9 @@ class Container implements ContainerInterface
 
     /**
      * Initialize beans
+     *
+     * @throws ContainerException
+     * @throws \ReflectionException
      */
     private function initializeBeans()
     {
@@ -489,7 +493,6 @@ class Container implements ContainerInterface
 
         $objectDefinition = $this->objectDefinitions[$beanName];
 
-        $name      = $objectDefinition->getName();
         $scope     = $objectDefinition->getScope();
         $alias     = $objectDefinition->getAlias();
         $className = $objectDefinition->getClassName();
@@ -544,6 +547,7 @@ class Container implements ContainerInterface
      *
      * @return array
      * @throws ContainerException
+     * @throws \ReflectionException
      */
     private function getConstructParams(MethodInjection $methodInjection): array
     {
@@ -606,11 +610,13 @@ class Container implements ContainerInterface
     /**
      * New bean property
      *
-     * @param object $reflectObject
-     * @param array  $propertyInjects
+     * @param  object          $reflectObject
+     * @param \ReflectionClass $reflectionClass
+     * @param array            $propertyInjects
      *
-     * @return object
+     * @return void
      * @throws ContainerException
+     * @throws \ReflectionException
      */
     private function newProperty($reflectObject, \ReflectionClass $reflectionClass, array $propertyInjects)
     {

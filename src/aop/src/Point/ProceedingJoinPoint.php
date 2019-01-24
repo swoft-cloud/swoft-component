@@ -17,10 +17,11 @@ class ProceedingJoinPoint extends JoinPoint implements ProceedingJoinPointInterf
      * If the params is not empty, the params is used to call the method of target
      *
      * @return mixed
+     * @throws \Throwable
      */
     public function proceed($params = [])
     {
-        return $this->handler->doTarget($params);
+        return $this->handler->invokeTarget($params);
     }
 
     public function reProceed(array $args = [])

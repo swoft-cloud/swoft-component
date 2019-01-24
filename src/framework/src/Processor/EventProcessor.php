@@ -22,7 +22,7 @@ class EventProcessor extends Processor
         /* @var DemoLogic $logic*/
         $logic = bean(DemoLogic::class);
         
-        $logic->getData();
+        $logic->getData()->getDao();
         
 //        var_dump(config('db.host'));
 //        var_dump(config('db'));

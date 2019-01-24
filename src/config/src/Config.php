@@ -102,6 +102,18 @@ class Config extends Collection
     }
 
     /**
+     * Determine if an item exists at an offset.
+     *
+     * @param  mixed $key
+     *
+     * @return bool
+     */
+    public function offsetExists($key)
+    {
+        return ArrayHelper::has($this->items, $key);
+    }
+
+    /**
      * Get parse resourcers
      *
      * @return array
