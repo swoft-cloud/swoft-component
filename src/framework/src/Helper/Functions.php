@@ -28,7 +28,7 @@ if (!function_exists('env')) {
                 return '';
             case 'null':
             case '(null)':
-                return;
+                return null;
         }
 
         if (defined($value)) {
@@ -55,6 +55,9 @@ if (!function_exists('config')) {
      *
      * @param string $key
      * @param mixed  $default
+     *
+     * @return mixed|string
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     function config(string $key, $default = null)
     {
@@ -64,6 +67,9 @@ if (!function_exists('config')) {
 
         /* @var \Swoft\Config\Config $config */
         $config = \Swoft\Bean\BeanFactory::getBean('config');
+        if (!$config->has($key)) {
+            return $default;
+        }
 
         return $config->get($key);
     }

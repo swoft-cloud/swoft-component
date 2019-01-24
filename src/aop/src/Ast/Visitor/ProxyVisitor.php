@@ -76,7 +76,7 @@ class ProxyVisitor extends NodeVisitorAbstract
         if ($node instanceof Node\Stmt\Namespace_) {
 
             $this->namespace = $node->name->toString();
-            return;
+            return null;
         }
 
         // Origin class node
@@ -86,8 +86,10 @@ class ProxyVisitor extends NodeVisitorAbstract
             $this->proxyName         = sprintf('%s_%s', $name, $this->proxyId);
             $this->originalClassName = sprintf('%s\\%s', $this->namespace, $name);
 
-            return;
+            return null;
         }
+
+        return null;
     }
 
     /**
@@ -137,7 +139,9 @@ class ProxyVisitor extends NodeVisitorAbstract
     public function afterTraverse(array $nodes)
     {
         $nodeFinder = new NodeFinder();
-        $classNode  = $nodeFinder->findFirstInstanceOf($nodes, Node\Stmt\Class_::class);
+
+        /** @var Node\Stmt\Class_ $classNode */
+        $classNode = $nodeFinder->findFirstInstanceOf($nodes, Node\Stmt\Class_::class);
 
         $traitNode          = $this->getTraitNode();
         $originalMethodNode = $this->getOrigianalClassNameMethodNode();
@@ -169,11 +173,11 @@ class ProxyVisitor extends NodeVisitorAbstract
     /**
      * Proxy method
      *
-     * @param Node $node
+     * @param Node\Stmt\ClassMethod $node
      *
      * @return Node\Stmt\ClassMethod
      */
-    private function proxyMethod(Node $node)
+    private function proxyMethod(Node\Stmt\ClassMethod $node)
     {
         $methodName = $node->name->toString();
 

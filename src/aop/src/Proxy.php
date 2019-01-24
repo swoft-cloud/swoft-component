@@ -4,6 +4,7 @@ namespace Swoft\Aop;
 
 use Swoft\Aop\Ast\Parser;
 use Swoft\Aop\Ast\Visitor\ProxyVisitor;
+use Swoft\Aop\Exception\AopException;
 
 /**
  * Class Proxy
@@ -18,7 +19,7 @@ class Proxy
      * @param string $className
      *
      * @return string
-     * @throws Exception\AopException
+     * @throws AopException
      */
     public static function newClassName(string $className): string
     {

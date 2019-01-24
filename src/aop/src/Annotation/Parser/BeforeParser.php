@@ -25,6 +25,7 @@ class BeforeParser extends Parser
      * @param Before $annotationObject
      *
      * @return array
+     * @throws AopException
      */
     public function parse(int $type, $annotationObject): array
     {

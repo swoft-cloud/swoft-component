@@ -2,10 +2,6 @@
 
 namespace Swoft;
 
-use Dotenv\Dotenv;
-use Swoft\ApplicationInterface;
-use Swoft\SwoftInterface;
-use Swoft\SwoftTrait;
 use Swoft\Processor\AnnotationProcessor;
 use Swoft\Processor\ApplicationProcessor;
 use Swoft\Processor\BeanProcessor;

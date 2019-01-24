@@ -4,8 +4,8 @@
 namespace Swoft;
 
 
-use App\Model\Logic\DemoLogic;
 use Swoft\Aop\Aop;
+use Swoft\Aop\Exception\AopException;
 use Swoft\Aop\Proxy;
 use Swoft\Bean\Definition\ObjectDefinition;
 use Swoft\Bean\Handler;
@@ -54,6 +54,8 @@ class BeanHandler extends Handler
      *          ]
      *    ],
      * ]
+     *
+     * @throws \ReflectionException
      */
     public function beforeInit(string $beanName, string $className, ObjectDefinition $objDfn, array $annotation): void
     {
@@ -72,7 +74,7 @@ class BeanHandler extends Handler
             $methodAnnotations = $annotation['methods'][$methodName]['annotation'] ?? [];
 
             // Bean name and alias
-            $beanNames = [];
+            $beanNames   = [];
             $beanNames[] = $beanName;
 
             if (!empty($alias)) {
@@ -94,6 +96,8 @@ class BeanHandler extends Handler
      * @param string $className
      *
      * @return string
+     *
+     * @throws AopException
      */
     public function classProxy(string $className): string
     {
@@ -105,7 +109,8 @@ class BeanHandler extends Handler
      *
      * @param $value
      *
-     * @return mixed
+     * @return mixed|string
+     * @throws Bean\Exception\ContainerException
      */
     public function getReferenceValue($value)
     {

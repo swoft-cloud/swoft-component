@@ -3,6 +3,8 @@
 
 namespace Swoft\Aop\Point;
 
+use Swoft\Aop\Handler;
+
 /**
  * Class JoinPoint
  *
@@ -31,26 +33,27 @@ class JoinPoint implements JoinPointInterface
     protected $method;
 
     /**
-     * @var Throwable
+     * @var \Throwable
      */
     protected $catch;
 
     /**
+     * @var Handler
+     */
+    protected $handler;
+
+    /**
      * JoinPoint constructor.
      *
-     * @param object    $target the object of origin
-     * @param string    $method the method of origin
-     * @param array     $args   the params of method
-     * @param mixed     $return the return of executed method
-     * @param Throwable $catch  the throwable caught of the origin
+     * @param object $target the object of origin
+     * @param string $method the method of origin
+     * @param array  $args   the params of method
      */
-    public function __construct($target, string $method, array $args, $return = null, $catch = null)
+    public function __construct($target, string $method, array $args)
     {
         $this->args   = $args;
-        $this->return = $return;
         $this->target = $target;
         $this->method = $method;
-        $this->catch  = $catch;
     }
 
     /**
@@ -86,10 +89,34 @@ class JoinPoint implements JoinPointInterface
     }
 
     /**
-     * @return null|Throwable
+     * @return \Throwable
      */
     public function getCatch()
     {
         return $this->catch;
+    }
+
+    /**
+     * @param mixed $return
+     */
+    public function setReturn($return): void
+    {
+        $this->return = $return;
+    }
+
+    /**
+     * @param \Throwable $catch
+     */
+    public function setCatch(\Throwable $catch): void
+    {
+        $this->catch = $catch;
+    }
+
+    /**
+     * @param Handler $handler
+     */
+    public function setHandler(Handler $handler): void
+    {
+        $this->handler = $handler;
     }
 }

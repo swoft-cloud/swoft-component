@@ -8,7 +8,6 @@ use Swoft\Config\Parser\ParserInterface;
 use Swoft\Config\Parser\PhpParser;
 use Swoft\Stdlib\Collection;
 use Swoft\Stdlib\Helper\ArrayHelper;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * Class Config

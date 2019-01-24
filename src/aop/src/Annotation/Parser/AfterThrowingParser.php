@@ -24,6 +24,7 @@ class AfterThrowingParser extends Parser
      * @param AfterThrowing $annotationObject
      *
      * @return array
+     * @throws AopException
      */
     public function parse(int $type, $annotationObject): array
     {

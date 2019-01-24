@@ -2,7 +2,6 @@
 
 namespace Swoft\Processor;
 
-use Composer\Autoload\ClassLoader;
 use Swoft\Annotation\AnnotationRegister;
 
 /**
@@ -10,8 +9,12 @@ use Swoft\Annotation\AnnotationRegister;
  */
 class AnnotationProcessor extends Processor
 {
+
     /**
      * Handle annotation
+     *
+     * @return bool
+     * @throws \Exception
      */
     public function handle(): bool
     {

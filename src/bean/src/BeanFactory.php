@@ -2,8 +2,7 @@
 
 namespace Swoft\Bean;
 
-use function foo\func;
-use Swoft\Stdlib\Helper\ArrayHelper;
+use Swoft\Bean\Exception\ContainerException;
 
 /**
  * Class BeanFactory
@@ -26,6 +25,7 @@ class BeanFactory
      * @param string $name
      *
      * @return object
+     * @throws ContainerException
      */
     public static function getBean(string $name)
     {
@@ -48,6 +48,7 @@ class BeanFactory
      * ]);
      *
      * @return object
+     * @throws Exception\ContainerException
      */
     public static function createBean(string $name, array $definition = [])
     {
@@ -123,5 +124,15 @@ class BeanFactory
     public static function setHandler(HandlerInterface $handler): void
     {
         Container::getInstance()->setHandler($handler);
+    }
+
+    /**
+     * @param string $className
+     *
+     * @return array
+     */
+    public static function getReflectionClass(string $className): array
+    {
+        return Container::getInstance()->getReflectionClass($className);
     }
 }

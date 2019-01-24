@@ -2,15 +2,10 @@
 
 namespace Swoft\Processor;
 
-use http\Exception\InvalidArgumentException;
 use Swoft\Annotation\AnnotationRegister;
-use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\BeanHandler;
 use Swoft\DefinitionInterface;
-use Swoft\Proxy\BeanInitialize;
-use Swoft\Proxy\BeanProxy;
-use Swoft\Reference\ConfigReference;
 use Swoft\Stdlib\Helper\ArrayHelper;
 
 /**

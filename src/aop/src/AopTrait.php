@@ -25,9 +25,8 @@ trait AopTrait
             return $this->__invokeTarget($methodName, $args);
         }
 
-//        var_dump($mathAspect);
-
-        return $this->__invokeTarget($methodName, $args);
+        $handler = new Handler($this, $methodName, $args, $mathAspects);
+        return $handler->doAspect();
     }
 
     /**

@@ -73,7 +73,11 @@ class AnnotationObjParser extends ObjectParser
     /**
      * Parse annotations
      *
+     * @param array $annotations
+     * @param array $parsers
+     *
      * @return array
+     * @throws ContainerException
      */
     public function parseAnnotations(array $annotations, array $parsers): array
     {
@@ -94,6 +98,8 @@ class AnnotationObjParser extends ObjectParser
      *
      * @param string $className
      * @param array  $classOneAnnotations
+     *
+     * @throws ContainerException
      */
     private function parseOneClassAnnotations(string $className, array $classOneAnnotations): void
     {
@@ -113,8 +119,7 @@ class AnnotationObjParser extends ObjectParser
         $propertyAllAnnotations = $classOneAnnotations['properties'] ?? [];
         foreach ($propertyAllAnnotations as $propertyName => $propertyOneAnnotations) {
             $proAnnotatios  = $propertyOneAnnotations['annotation'] ?? [];
-            $rftPro         = $propertyOneAnnotations['reflection'];
-            $propertyInject = $this->parsePropertyAnnotations($classAry, $propertyName, $proAnnotatios, $rftPro);
+            $propertyInject = $this->parsePropertyAnnotations($classAry, $propertyName, $proAnnotatios);
             if (!empty($propertyInject)) {
                 $propertyInjects[$propertyName] = $propertyInject;
             }
@@ -125,9 +130,8 @@ class AnnotationObjParser extends ObjectParser
         $methodAllAnnotations = $classOneAnnotations['methods'] ?? [];
         foreach ($methodAllAnnotations as $methodName => $methodOneAnnotations) {
             $methodAnnotations = $methodOneAnnotations['annotation'] ?? [];
-            $reflectMethod     = $methodOneAnnotations['reflection'];
 
-            $methodInject = $this->parseMethodAnnotations($classAry, $methodName, $methodAnnotations, $reflectMethod);
+            $methodInject = $this->parseMethodAnnotations($classAry, $methodName, $methodAnnotations);
             if (!empty($methodInject)) {
                 $methodInjects[$methodName] = $methodInject;
             }
@@ -154,10 +158,11 @@ class AnnotationObjParser extends ObjectParser
      * @param array $classAry
      *
      * @return ObjectDefinition|null
+     * @throws ContainerException
      */
     private function parseClassAnnotations(array $classAry): ?ObjectDefinition
     {
-        list($className, $reflectionClass, $classAnnotations) = $classAry;
+        list(, , $classAnnotations) = $classAry;
 
         $objectDefinition = null;
         foreach ($classAnnotations as $annotation) {
@@ -193,20 +198,17 @@ class AnnotationObjParser extends ObjectParser
     }
 
     /**
-     * Parse property annotations
-     *
-     * @param array               $classAry
-     * @param string              $propertyName
-     * @param array               $propertyAnnotations
-     * @param \ReflectionProperty $reflectionProperty
+     * @param array  $classAry
+     * @param string $propertyName
+     * @param array  $propertyAnnotations
      *
      * @return PropertyInjection|null
+     * @throws ContainerException
      */
     private function parsePropertyAnnotations(
         array $classAry,
         string $propertyName,
-        array $propertyAnnotations,
-        \ReflectionProperty $reflectionProperty
+        array $propertyAnnotations
     ): ?PropertyInjection {
 
         $propertyInjection = null;
@@ -246,15 +248,16 @@ class AnnotationObjParser extends ObjectParser
     /**
      * Parse method annotations
      *
-     * @param string $className
-     * @param array  $classAnnotations
+     * @param array  $classAry
+     * @param string $methodName
      * @param array  $methodAnnotations
+     *
+     * @return MethodInjection|null
      */
     private function parseMethodAnnotations(
         array $classAry,
         string $methodName,
-        array $methodAnnotations,
-        \ReflectionMethod $reflectionMethod
+        array $methodAnnotations
     ): ?MethodInjection {
         $methodInject = null;
 

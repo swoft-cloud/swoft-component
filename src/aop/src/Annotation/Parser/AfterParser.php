@@ -6,7 +6,6 @@ namespace Swoft\Aop\Annotation\Parser;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Aop\Annotation\Mapping\After;
-use Swoft\Aop\Annotation\Mapping\Aspect;
 use Swoft\Aop\AspectRegister;
 use Swoft\Aop\Exception\AopException;
 
@@ -26,6 +25,7 @@ class AfterParser extends Parser
      * @param After $annotationObject
      *
      * @return array
+     * @throws AopException
      */
     public function parse(int $type, $annotationObject): array
     {

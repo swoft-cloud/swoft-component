@@ -23,6 +23,9 @@ class InjectParser extends Parser
      * @param Inject $annotationObject
      *
      * @return array
+     * @throws BeanException
+     * @throws \PhpDocReader\AnnotationException
+     * @throws \ReflectionException
      */
     public function parse(int $type, $annotationObject): array
     {
@@ -40,7 +43,7 @@ class InjectParser extends Parser
         $phpReader       = new PhpDocReader();
         $reflectProperty = new \ReflectionProperty($this->className, $this->propertyName);
         $docInject       = $phpReader->getPropertyClass($reflectProperty);
-        
+
         if (empty($docInject)) {
             throw new BeanException('`@Inejct` must be define inejct value or `@var type` ');
         }

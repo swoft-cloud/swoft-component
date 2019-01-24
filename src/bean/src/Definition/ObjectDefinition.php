@@ -168,20 +168,11 @@ class ObjectDefinition
 
     /**
      * @param string            $propertyName
-     * @param PropertyInjection $propertyInjections
+     * @param PropertyInjection $propertyInjection
      */
     public function setPropertyInjection(string $propertyName, PropertyInjection $propertyInjection): void
     {
         $this->propertyInjections[$propertyName] = $propertyInjection;
-    }
-
-    /**
-     * @param string          $methodName
-     * @param MethodInjection $methodInjections
-     */
-    public function setMethodInjection(string $methodName, MethodInjection $methodInjection): void
-    {
-        $this->methodInjections = $methodInjections;
     }
 
     /**

@@ -2,7 +2,6 @@
 
 namespace Swoft\Processor;
 
-use Swoft\ApplicationInterface;
 use Swoft\SwoftInterface;
 
 /**
@@ -19,6 +18,8 @@ abstract class Processor implements ProcessorInterface
 
     /**
      * Processor constructor.
+     *
+     * @param SwoftInterface $application
      */
     public function __construct(SwoftInterface $application)
     {

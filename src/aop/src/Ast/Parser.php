@@ -6,7 +6,6 @@ namespace Swoft\Aop\Ast;
 use PhpParser\ErrorHandler;
 use PhpParser\Lexer;
 use PhpParser\NodeTraverser;
-use PhpParser\NodeTraverserInterface;
 use PhpParser\NodeVisitor;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard;
@@ -112,7 +111,7 @@ class Parser
      * @param string $className
      *
      * @return string
-     * @throws AopException
+     * @throws AopException|\Exception
      */
     private function getCodeByClassName(string $className): string
     {

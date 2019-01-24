@@ -26,6 +26,7 @@ class AspectParser extends Parser
      * @param Aspect $annotationObject
      *
      * @return array
+     * @throws AopException
      */
     public function parse(int $type, $annotationObject): array
     {

@@ -20,6 +20,7 @@ class DefinitionObjParser extends ObjectParser
      * Parse definitions
      *
      * @return array
+     * @throws ContainerException
      */
     public function parseDefinitions(): array
     {
@@ -42,6 +43,8 @@ class DefinitionObjParser extends ObjectParser
      * @param string           $beanName
      * @param ObjectDefinition $objDefinition
      * @param array            $definition
+     *
+     * @throws ContainerException
      */
     private function resetObjectDefinition(string $beanName, ObjectDefinition $objDefinition, array $definition): void
     {
@@ -63,6 +66,8 @@ class DefinitionObjParser extends ObjectParser
      *
      * @param string $beanName
      * @param array  $definition
+     *
+     * @throws ContainerException
      */
     private function createObjectDefinition(string $beanName, array $definition): void
     {
@@ -150,6 +155,7 @@ class DefinitionObjParser extends ObjectParser
      * @param array            $definition
      *
      * @return ObjectDefinition
+     * @throws ContainerException
      */
     private function updateObjectDefinitionByDefinition(ObjectDefinition $objDfn, array $definition): ObjectDefinition
     {

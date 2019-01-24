@@ -3,7 +3,6 @@
 namespace Swoft\Processor;
 
 use App\Model\Logic\DemoLogic;
-use Swoft\Bean\BeanFactory;
 
 /**
  * Event processor
@@ -23,7 +22,7 @@ class EventProcessor extends Processor
         /* @var DemoLogic $logic*/
         $logic = bean(DemoLogic::class);
         
-        $logic->getData()->getDao();
+        $logic->getData();
         
 //        var_dump(config('db.host'));
 //        var_dump(config('db'));

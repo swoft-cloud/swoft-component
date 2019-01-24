@@ -23,6 +23,7 @@ class PointAnnotationParser extends Parser
      * @param PointAnnotation $annotationObject
      *
      * @return array
+     * @throws AopException
      */
     public function parse(int $type, $annotationObject): array
     {

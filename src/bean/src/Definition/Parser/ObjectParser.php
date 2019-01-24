@@ -2,6 +2,8 @@
 
 namespace Swoft\Bean\Definition\Parser;
 
+use Swoft\Bean\Definition\ObjectDefinition;
+
 /**
  * Class ObjectParser
  *

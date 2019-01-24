@@ -13,7 +13,7 @@ use Swoft\Aop\Exception\AopException;
  * Class AfterReturningParser
  *
  * @AnnotationParser(AfterReturning::class)
- * 
+ *
  * @since 2.0
  */
 class AfterReturningParser extends Parser
@@ -25,6 +25,7 @@ class AfterReturningParser extends Parser
      * @param AfterReturning $annotationObject
      *
      * @return array
+     * @throws AopException
      */
     public function parse(int $type, $annotationObject): array
     {

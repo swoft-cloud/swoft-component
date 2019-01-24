@@ -76,6 +76,8 @@ class AnnotationRegister
 
     /**
      * Load annoation class
+     *
+     * @throws \Exception
      */
     public static function load(): void
     {

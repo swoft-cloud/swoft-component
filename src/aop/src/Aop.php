@@ -2,8 +2,6 @@
 
 namespace Swoft\Aop;
 
-use App\Model\Logic\DemoLogic;
-
 /**
  * Class AopRegister
  *
@@ -11,6 +9,14 @@ use App\Model\Logic\DemoLogic;
  */
 class Aop
 {
+    /**
+     * Ignore methods
+     */
+    const IGNORE_METHODS = [
+        '__construct',
+        'init'
+    ];
+
     /**
      * Class mapping for aspect
      *
@@ -78,6 +84,11 @@ class Aop
      */
     public static function match(string $className, string $method): array
     {
+        // Ignore methods
+        if (in_array(strtolower($method), self::IGNORE_METHODS)) {
+            return [];
+        }
+
         $aspects = self::$mapping[$className][$method] ?? [];
         return $aspects;
     }

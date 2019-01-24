@@ -2,8 +2,6 @@
 
 namespace Swoft\Processor;
 
-use Swoft\Annotation\AnnotationRegister;
-
 /**
  * Config processor
  */

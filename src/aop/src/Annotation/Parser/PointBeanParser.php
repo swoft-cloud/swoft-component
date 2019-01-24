@@ -25,6 +25,7 @@ class PointBeanParser extends Parser
      * @param PointBean $annotationObject
      *
      * @return array
+     * @throws AopException
      */
     public function parse(int $type, $annotationObject): array
     {

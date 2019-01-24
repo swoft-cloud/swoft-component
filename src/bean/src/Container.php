@@ -3,6 +3,7 @@
 namespace Swoft\Bean;
 
 
+use App\Aspect\LogAspect;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Definition\ArgsInjection;
 use Swoft\Bean\Definition\MethodInjection;
@@ -166,6 +167,29 @@ class Container implements ContainerInterface
     private $singletonPool = [];
 
     /**
+     * Reflection pool
+     *
+     * @var array
+     *
+     * @example
+     * [
+     *     'className' => [
+     *         'methods' => [
+     *             'methodName' => [
+     *                'params' => [
+     *                    'argType',
+     *                    'argType',
+     *                    null
+     *                ],
+     *                'returnType' => 'returnType/null'
+     *            ]
+     *         ]
+     *     ]
+     * ]
+     */
+    private $reflectionPool = [];
+
+    /**
      * Bean handler
      *
      * @var HandlerInterface
@@ -252,6 +276,16 @@ class Container implements ContainerInterface
 
         // Prototype
         return $this->newBean($objectDefinition->getName());
+    }
+
+    /**
+     * @param string $className
+     *
+     * @return array
+     */
+    public function getReflectionClass(string $className): array
+    {
+        return $this->reflectionPool[$className];
     }
 
     /**
@@ -440,6 +474,8 @@ class Container implements ContainerInterface
      * @param string $beanName
      *
      * @return object
+     * @throws ContainerException
+     * @throws \ReflectionException
      */
     private function newBean(string $beanName)
     {
@@ -457,6 +493,9 @@ class Container implements ContainerInterface
         $scope     = $objectDefinition->getScope();
         $alias     = $objectDefinition->getAlias();
         $className = $objectDefinition->getClassName();
+
+        // Init reflection pool
+        $this->initRelectionPool($className);
 
         // Before initialize bean
         $this->beforeInit($beanName, $className, $objectDefinition);
@@ -571,6 +610,7 @@ class Container implements ContainerInterface
      * @param array  $propertyInjects
      *
      * @return object
+     * @throws ContainerException
      */
     private function newProperty($reflectObject, \ReflectionClass $reflectionClass, array $propertyInjects)
     {
@@ -612,6 +652,35 @@ class Container implements ContainerInterface
     }
 
     /**
+     * @param string $className
+     *
+     * @throws \ReflectionException
+     */
+    private function initRelectionPool(string $className)
+    {
+        if (isset($this->reflectionPool[$className])) {
+            return;
+        }
+
+        $reflectionClass   = new \ReflectionClass($className);
+        $reflectionMethods = $reflectionClass->getMethods();
+        foreach ($reflectionMethods as $reflectionMethod) {
+
+            $methodName = $reflectionMethod->getName();
+
+            $methodParams = [];
+            foreach ($reflectionMethod->getParameters() as $parameter) {
+                $methodParams[] = [
+                    $parameter->getName(),
+                    $parameter->getType()
+                ];
+            }
+            $this->reflectionPool[$className]['methods'][$methodName]['params']     = $methodParams;
+            $this->reflectionPool[$className]['methods'][$methodName]['returnType'] = $reflectionMethod->getReturnType();
+        }
+    }
+
+    /**
      * Before initialize bean
      *
      * @param string           $beanName
@@ -638,6 +707,8 @@ class Container implements ContainerInterface
      * @param array $propertyValue
      *
      * @return array
+     * @throws ContainerException
+     * @throws \ReflectionException
      */
     private function newPropertyArray(array $propertyValue): array
     {
@@ -657,6 +728,8 @@ class Container implements ContainerInterface
      * @param mixed $value
      *
      * @return mixed
+     * @throws ContainerException
+     * @throws \ReflectionException
      */
     private function getRefValue($value)
     {

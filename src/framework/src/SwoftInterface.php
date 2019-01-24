@@ -151,11 +151,11 @@ interface SwoftInterface
     /**
      * Add first processor
      *
-     * @param Processor[] $processor
+     * @param Processor[] $processors
      *
      * @return true
      */
-    public function addFirstProcessor(Processor ...$processorsA): bool;
+    public function addFirstProcessor(Processor ...$processors): bool;
 
     /**
      * Add last processor
