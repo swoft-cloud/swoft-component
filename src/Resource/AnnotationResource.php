@@ -5,13 +5,9 @@ namespace Swoft\Annotation\Resource;
 use Composer\Autoload\ClassLoader;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
-use mysql_xdevapi\Exception;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
-use Swoft\Annotation\Annotation\Parser\Parser;
-use Swoft\Annotation\Annotation\Parser\ParserInterface;
 use Swoft\Annotation\AnnotationRegister;
 use Swoft\Annotation\LoaderInterface;
-use Swoft\Bean\Exception\BeanException;
 use Swoft\Stdlib\Helper\ComposerHelper;
 use Swoft\Stdlib\Helper\DirectoryHelper;
 
@@ -40,6 +36,8 @@ class AnnotationResource extends Resource
 
     /**
      * AnnotationResource constructor.
+     *
+     * @throws \Exception
      */
     public function __construct()
     {
@@ -49,6 +47,9 @@ class AnnotationResource extends Resource
 
     /**
      * Load annoation resource
+     *
+     * @throws \Doctrine\Common\Annotations\AnnotationException
+     * @throws \ReflectionException
      */
     public function load(): void
     {
@@ -80,6 +81,9 @@ class AnnotationResource extends Resource
      * Load annotations
      *
      * @param LoaderInterface $loader
+     *
+     * @throws \Doctrine\Common\Annotations\AnnotationException
+     * @throws \ReflectionException
      */
     private function loadAnnoation(LoaderInterface $loader): void
     {
@@ -108,7 +112,7 @@ class AnnotationResource extends Resource
                 }
 
                 // Parse annotation
-                $this->parseAnnotation($ns, $className, $pathName);
+                $this->parseAnnotation($ns, $className);
             }
         }
     }
@@ -116,7 +120,7 @@ class AnnotationResource extends Resource
     /**
      * @return ClassLoader
      */
-    public function getClassLoader(): \Composer\Autoload\ClassLoader
+    public function getClassLoader(): ClassLoader
     {
         return $this->classLoader;
     }
@@ -124,7 +128,7 @@ class AnnotationResource extends Resource
     /**
      * @param ClassLoader $classLoader
      */
-    public function setClassLoader(\Composer\Autoload\ClassLoader $classLoader): void
+    public function setClassLoader(ClassLoader $classLoader): void
     {
         $this->classLoader = $classLoader;
     }
@@ -138,11 +142,11 @@ class AnnotationResource extends Resource
     }
 
     /**
-     * @param string $classLoaderName
+     * @param string $loaderClassName
      */
     public function setLoaderClassName(string $loaderClassName): void
     {
-        $this->loaderClassName = $classLoaderName;
+        $this->loaderClassName = $loaderClassName;
     }
 
     /**
@@ -150,12 +154,11 @@ class AnnotationResource extends Resource
      *
      * @param string $namespace
      * @param string $className
-     * @param string $pathName
      *
      * @throws \Doctrine\Common\Annotations\AnnotationException
      * @throws \ReflectionException
      */
-    private function parseAnnotation(string $namespace, string $className, string $pathName): void
+    private function parseAnnotation(string $namespace, string $className): void
     {
         // Annotation reader
         $reflectionClass    = new \ReflectionClass($className);
@@ -282,25 +285,5 @@ class AnnotationResource extends Resource
     private function getAnnotationLoaderClassName(string $namespace)
     {
         return sprintf('%s%s', $namespace, $this->loaderClassName);
-    }
-
-    private function isAnnotationParser(\ReflectionClass $reflectionClass, $classAnnotation): bool
-    {
-        $isInstance = $classAnnotation instanceof AnnotationParser;
-
-        if (!$isInstance) {
-            return false;
-        }
-
-        $parentClasses = array();
-        while ($parent = $reflectionClass->getParentClass()) {
-            $parentClasses[] = $parent->getName();
-        }
-
-        if (!in_array(Parser::class, $parentClasses)) {
-            throw new BeanException('`@BeanParser` with class must be extend Swoft\Annotation\Annotation\Parser');
-        }
-
-        return true;
     }
 }
