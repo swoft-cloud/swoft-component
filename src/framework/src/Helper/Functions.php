@@ -38,6 +38,7 @@ if (!function_exists('env')) {
         return $value;
     }
 }
+
 if (!function_exists('alias')) {
     /**
      * @param string $key
@@ -49,6 +50,7 @@ if (!function_exists('alias')) {
         return \Swoft\Swoft::getAlias($key);
     }
 }
+
 if (!function_exists('config')) {
     /**
      * Get value from config by key or default
@@ -57,6 +59,7 @@ if (!function_exists('config')) {
      * @param mixed  $default
      *
      * @return mixed|string
+     * @throws ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
     function config(string $key, $default = null)
@@ -72,5 +75,30 @@ if (!function_exists('config')) {
         }
 
         return $config->get($key);
+    }
+}
+
+if (!function_exists('sgo')) {
+    /**
+     * Create coroutine like 'go()'
+     * In the swoft, you must use `sgo()` instead of  swoole `go()` function
+     *
+     * @param callable $callable
+     */
+    function sgo(callable $callable)
+    {
+        \Swoft\Co::create($callable);
+    }
+}
+
+if (!function_exists('context')) {
+    /**
+     * Get current context
+     *
+     * @return \Swoft\Context\ContextInterface|\Swoft\Http\Server\HttpContext
+     */
+    function context(): \Swoft\Context\ContextInterface
+    {
+        return \Swoft\Context\Context::get();
     }
 }
