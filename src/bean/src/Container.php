@@ -165,6 +165,14 @@ class Container implements ContainerInterface
     private $singletonPool = [];
 
     /**
+     * Prototype pool
+     *
+     * @var array
+     */
+    private $prototypePool = [];
+
+
+    /**
      * Reflection pool
      *
      * @var array
@@ -250,9 +258,14 @@ class Container implements ContainerInterface
             return $this->singletonPool[$id];
         }
 
+        // Prototype
+        if (isset($this->prototypePool[$id])) {
+            return clone $this->prototypePool[$id];
+        }
+
         // Alias
         $aliasId = $this->aliases[$id] ?? '';
-        if (!empty($aliasId) && isset($this->singletonPool[$aliasId])) {
+        if (!empty($aliasId)) {
             return $this->get($aliasId);
         }
 
@@ -280,12 +293,20 @@ class Container implements ContainerInterface
     }
 
     /**
+     * Get reflection array by className
+     *
      * @param string $className
      *
      * @return array
+     * @throws \ReflectionException
      */
     public function getReflectionClass(string $className): array
     {
+        // Not exist
+        if (!isset($this->reflectionPool[$className])) {
+            $this->cacheRelectionClass($className);
+        }
+
         return $this->reflectionPool[$className];
     }
 
@@ -497,8 +518,8 @@ class Container implements ContainerInterface
         $alias     = $objectDefinition->getAlias();
         $className = $objectDefinition->getClassName();
 
-        // Init reflection pool
-        $this->initRelectionPool($className);
+        // Cache reflection class
+        $this->cacheRelectionClass($className);
 
         // Before initialize bean
         $this->beforeInit($beanName, $className, $objectDefinition);
@@ -521,19 +542,23 @@ class Container implements ContainerInterface
 
         $this->newProperty($reflectObject, $reflectionClass, $propertyInjects);
 
+        // Alias
+        if (!empty($alias)) {
+            $this->aliases[$alias] = $beanName;
+        }
+
         // Init method
         if ($reflectionClass->hasMethod(self::INIT_MEHTOD)) {
             $reflectObject->{self::INIT_MEHTOD}();
         }
 
+        // Prototype
         if ($scope == Bean::PROTOTYPE) {
-            return $reflectObject;
+            $this->prototypePool[$beanName] = $reflectObject;
+            return clone $reflectObject;
         }
 
-        if (!empty($alias)) {
-            $this->aliases[$alias] = $beanName;
-        }
-
+        // Singleton
         $this->classNames[$className]   = $beanName;
         $this->singletonPool[$beanName] = $reflectObject;
 
@@ -662,7 +687,7 @@ class Container implements ContainerInterface
      *
      * @throws \ReflectionException
      */
-    private function initRelectionPool(string $className)
+    private function cacheRelectionClass(string $className)
     {
         if (isset($this->reflectionPool[$className])) {
             return;
@@ -670,6 +695,8 @@ class Container implements ContainerInterface
 
         $reflectionClass   = new \ReflectionClass($className);
         $reflectionMethods = $reflectionClass->getMethods();
+
+        $this->reflectionPool[$className]['name'] = $reflectionClass->getName();
         foreach ($reflectionMethods as $reflectionMethod) {
 
             $methodName = $reflectionMethod->getName();

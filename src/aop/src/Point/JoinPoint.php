@@ -3,7 +3,7 @@
 
 namespace Swoft\Aop\Point;
 
-use Swoft\Aop\Handler;
+use Swoft\Aop\AspectHandler;
 
 /**
  * Class JoinPoint
@@ -38,7 +38,7 @@ class JoinPoint implements JoinPointInterface
     protected $catch;
 
     /**
-     * @var Handler
+     * @var AspectHandler
      */
     protected $handler;
 
@@ -113,9 +113,9 @@ class JoinPoint implements JoinPointInterface
     }
 
     /**
-     * @param Handler $handler
+     * @param AspectHandler $handler
      */
-    public function setHandler(Handler $handler): void
+    public function setHandler(AspectHandler $handler): void
     {
         $this->handler = $handler;
     }

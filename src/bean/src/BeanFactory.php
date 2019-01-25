@@ -13,6 +13,8 @@ class BeanFactory
      * Init
      *
      * @return void
+     * @throws ContainerException
+     * @throws \ReflectionException
      */
     public static function init(): void
     {
@@ -26,6 +28,7 @@ class BeanFactory
      *
      * @return object
      * @throws ContainerException
+     * @throws \ReflectionException
      */
     public static function getBean(string $name)
     {
@@ -48,7 +51,8 @@ class BeanFactory
      * ]);
      *
      * @return object
-     * @throws Exception\ContainerException
+     * @throws ContainerException
+     * @throws \ReflectionException
      */
     public static function createBean(string $name, array $definition = [])
     {
@@ -130,6 +134,7 @@ class BeanFactory
      * @param string $className
      *
      * @return array
+     * @throws \ReflectionException
      */
     public static function getReflectionClass(string $className): array
     {

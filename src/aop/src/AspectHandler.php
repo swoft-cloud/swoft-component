@@ -5,14 +5,16 @@ namespace Swoft\Aop;
 
 use Swoft\Aop\Point\JoinPoint;
 use Swoft\Aop\Point\ProceedingJoinPoint;
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 
 /**
  * Class Handler
  *
+ * @Bean(scope=Bean::PROTOTYPE, alias="aspectHandler")
  * @since 2.0
  */
-class Handler
+class AspectHandler
 {
     /**
      * Method target
@@ -49,22 +51,22 @@ class Handler
      */
     private $aspect;
 
-    /**
-     * Handler constructor.
-     *
-     * @param AopTrait $target
-     * @param string   $methodName
-     * @param array    $args
-     * @param array    $aspects
-     */
-    public function __construct($target, string $methodName, array $args, array $aspects)
-    {
-        $this->target     = $target;
-        $this->methodName = $methodName;
-        $this->args       = $args;
-        $this->aspect     = array_shift($aspects);
-        $this->aspects    = $aspects;
-    }
+//    /**
+//     * Handler constructor.
+//     *
+//     * @param AopTrait $target
+//     * @param string   $methodName
+//     * @param array    $args
+//     * @param array    $aspects
+//     */
+//    public function __construct($target, string $methodName, array $args, array $aspects)
+//    {
+//        $this->target     = $target;
+//        $this->methodName = $methodName;
+//        $this->args       = $args;
+//        $this->aspect     = array_shift($aspects);
+//        $this->aspects    = $aspects;
+//    }
 
     /**
      * Invoke aspect
@@ -140,6 +142,39 @@ class Handler
     }
 
     /**
+     * @param AopTrait $target
+     */
+    public function setTarget($target): void
+    {
+        $this->target = $target;
+    }
+
+    /**
+     * @param string $methodName
+     */
+    public function setMethodName(string $methodName): void
+    {
+        $this->methodName = $methodName;
+    }
+
+    /**
+     * @param array $args
+     */
+    public function setArgs(array $args): void
+    {
+        $this->args = $args;
+    }
+
+    /**
+     * @param array $aspects
+     */
+    public function setAspects(array $aspects): void
+    {
+        $this->aspect  = array_shift($aspects);
+        $this->aspects = $aspects;
+    }
+
+    /**
      * Invoke advice
      *
      * @param array      $aspectAry
@@ -147,6 +182,7 @@ class Handler
      * @param mixed      $return
      *
      * @return mixed
+     * @throws \ReflectionException
      */
     private function invokeAdvice(array $aspectAry, \Throwable $catch = null, $return = null)
     {
@@ -234,9 +270,9 @@ class Handler
     /**
      * Next aspect handler
      *
-     * @return Handler
+     * @return AspectHandler
      */
-    private function nextHandler(): Handler
+    private function nextHandler(): AspectHandler
     {
         $aspect = clone  $this;
 

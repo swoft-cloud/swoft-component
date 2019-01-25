@@ -17,6 +17,7 @@ trait AopTrait
      * @param array  $args
      *
      * @return mixed
+     * @throws \Throwable
      */
     public function __proxyCall(string $className, string $methodName, array $args)
     {
@@ -24,9 +25,14 @@ trait AopTrait
         if (empty($mathAspects)) {
             return $this->__invokeTarget($methodName, $args);
         }
+        /* @var AspectHandler $aspectHandler */
+        $aspectHandler = bean(AspectHandler::class);
+        $aspectHandler->setTarget($this);
+        $aspectHandler->setMethodName($methodName);
+        $aspectHandler->setArgs($args);
+        $aspectHandler->setAspects($mathAspects);
 
-        $handler = new Handler($this, $methodName, $args, $mathAspects);
-        return $handler->invokeAspect();
+        return $aspectHandler->invokeAspect();
     }
 
     /**
