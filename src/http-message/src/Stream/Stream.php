@@ -1,11 +1,19 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Http\Message;
+namespace Swoft\Http\Message\Stream;
 
 
 use Psr\Http\Message\StreamInterface;
+use Swoft\Bean\Annotation\Mapping\Bean;
 
+/**
+ * Class Stream
+ *
+ * @Bean(scope=Bean::PROTOTYPE)
+ *
+ * @since 2.0
+ */
 class Stream implements StreamInterface
 {
     /**
@@ -24,6 +32,15 @@ class Stream implements StreamInterface
      * @param string $contents
      */
     public function __construct(string $contents = '')
+    {
+        $this->contents = $contents;
+        $this->size     = strlen($this->contents);
+    }
+
+    /**
+     * @param string $contents
+     */
+    public function initialize(string $contents): void
     {
         $this->contents = $contents;
         $this->size     = strlen($this->contents);

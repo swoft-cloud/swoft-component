@@ -5,7 +5,6 @@ namespace Swoft\Http\Server;
 
 
 use Swoft\Context\AbstractContext;
-use Swoft\Context\Context;
 
 class HttpContext extends AbstractContext
 {

@@ -38,6 +38,13 @@ class ObjectDefinition
     private $alias = '';
 
     /**
+     * Default object pool size
+     *
+     * @var int
+     */
+    private $size = 100;
+
+    /**
      * Constructor parameter injection.
      *
      * @var MethodInjection
@@ -77,13 +84,23 @@ class ObjectDefinition
      * @param string $className
      * @param string $scope
      * @param string $alias
+     * @param int    $size
      */
-    public function __construct(string $name, string $className, string $scope = Bean::SINGLETON, string $alias = '')
-    {
+    public function __construct(
+        string $name,
+        string $className,
+        string $scope = Bean::SINGLETON,
+        string $alias = '',
+        int $size = 0
+    ) {
         $this->name      = $name;
         $this->scope     = $scope;
         $this->alias     = $alias;
         $this->className = $className;
+
+        if ($size > 0) {
+            $this->size = $size;
+        }
     }
 
     /**
@@ -189,5 +206,13 @@ class ObjectDefinition
     public function setAlias(string $alias): void
     {
         $this->alias = $alias;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSize(): int
+    {
+        return $this->size;
     }
 }

@@ -179,19 +179,19 @@ class AnnotationObjParser extends ObjectParser
                 continue;
             }
 
-            if (count($data) != 4) {
-                throw new ContainerException('Return array with class annotation parse must be 4 size');
+            if (count($data) != 5) {
+                throw new ContainerException(sprintf('%s annotation parse must be 5 size', $annotationClass));
             }
 
-            list($name, $className, $scope, $alias) = $data;
+            list($name, $className, $scope, $alias, $size) = $data;
             $name = empty($name) ? $className : $name;
 
             if (empty($className)) {
-                throw new ContainerException('Return array paramter with class name can not be empty');
+                throw new ContainerException(sprintf('%s with class name can not be empty', $annotationClass));
             }
 
             // Multiple coverage
-            $objectDefinition = new ObjectDefinition($name, $className, $scope, $alias);
+            $objectDefinition = new ObjectDefinition($name, $className, $scope, $alias, $size);
         }
 
         return $objectDefinition;

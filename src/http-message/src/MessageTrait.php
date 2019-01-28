@@ -4,6 +4,7 @@
 namespace Swoft\Http\Message;
 
 use Psr\Http\Message\StreamInterface;
+use Swoft\Http\Message\Stream\Stream;
 
 /**
  * Class MessageTrait
@@ -280,11 +281,13 @@ trait MessageTrait
      * Gets the body of the message.
      *
      * @return StreamInterface Returns the body as a stream.
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function getBody()
     {
         if (!$this->stream) {
-            $this->stream = new Stream('');
+            $this->stream = bean(Stream::class);
         }
 
         return $this->stream;
@@ -323,7 +326,7 @@ trait MessageTrait
      *
      * @return $this
      */
-    private function setHeaders(array $headers)
+    protected function setHeaders(array $headers)
     {
         $this->headerNames = $this->headers = [];
         foreach ($headers as $header => $value) {

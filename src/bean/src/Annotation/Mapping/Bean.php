@@ -33,6 +33,11 @@ class Bean
     const PROTOTYPE = 'prototype';
 
     /**
+     * Object pool
+     */
+    const POOL = 'pool';
+
+    /**
      * New bean from every request
      */
     const REQUEST = 'request';
@@ -60,6 +65,13 @@ class Bean
     private $alias = '';
 
     /**
+     * Default object pool size
+     *
+     * @var int
+     */
+    private $size = 100;
+
+    /**
      * Bean constructor.
      *
      * @param array $values
@@ -77,6 +89,9 @@ class Bean
         }
         if (isset($values['alias'])) {
             $this->alias = $values['alias'];
+        }
+        if (isset($values['size'])) {
+            $this->size = $values['size'];
         }
     }
 
@@ -102,5 +117,13 @@ class Bean
     public function getAlias(): string
     {
         return $this->alias;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSize(): int
+    {
+        return $this->size;
     }
 }

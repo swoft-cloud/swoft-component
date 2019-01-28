@@ -204,8 +204,16 @@ class ProxyVisitor extends NodeVisitorAbstract
         // New method stmts
         $type = $node->returnType;
         $stmt = new Node\Stmt\Return_($proxyCall);
-        if ($type != null && $type == 'void') {
+        if ($type != null && $type instanceof Node\Identifier && $type->name == 'void') {
             $stmt = new Node\Stmt\Expression($proxyCall);
+        }
+
+        // Return `self` to return `originalClassName`
+        $returnType = $node->returnType;
+        if ($returnType instanceof Node\Name && $returnType->toString() == 'self') {
+            $returnType->parts = [
+                sprintf('\\%s', $this->originalClassName)
+            ];
         }
 
         // New method nodes
@@ -214,7 +222,7 @@ class ProxyVisitor extends NodeVisitorAbstract
             'byRef'      => $node->byRef,
             'name'       => $node->name,
             'params'     => $node->params,
-            'returnType' => $node->returnType,
+            'returnType' => $returnType,
             'stmts'      => [
                 $stmt
             ],

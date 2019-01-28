@@ -29,6 +29,11 @@ class Container implements ContainerInterface
     const DESTORY_MEHTOD = 'destroy';
 
     /**
+     * Default pool size
+     */
+    const DEFAULT_POOL_SIZE = 100;
+
+    /**
      * @var Container
      */
     private static $instance;
@@ -161,6 +166,13 @@ class Container implements ContainerInterface
      * Singleton pool
      *
      * @var array
+     *
+     * @example
+     * [
+     *     'beanName' => object,
+     *     'beanName' => object,
+     *     'beanName' => object,
+     * ]
      */
     private $singletonPool = [];
 
@@ -168,8 +180,43 @@ class Container implements ContainerInterface
      * Prototype pool
      *
      * @var array
+     *
+     * @example
+     * [
+     *     'beanName' => object,
+     *     'beanName' => object,
+     *     'beanName' => object,
+     * ]
      */
     private $prototypePool = [];
+
+    /**
+     * Object pool
+     *
+     * @var array
+     *
+     * @example
+     * [
+     *     'beanName' => \SplQueue,
+     *     'beanName' => \SplQueue,
+     *     'beanName' => \SplQueue,
+     * ]
+     */
+    private $objectPool = [];
+
+    /**
+     * Object pool size
+     *
+     * @var array
+     *
+     * @example
+     * [
+     *     'beanName' => $size,
+     *     'beanName' => $size,
+     *     'beanName' => $size,
+     * ]
+     */
+    private $objectSize = [];
 
 
     /**
@@ -282,7 +329,7 @@ class Container implements ContainerInterface
 
         // Not defined
         if (!isset($this->objectDefinitions[$id])) {
-            throw new ContainerException('The bean of' . $id . 'is not defined');
+            throw new ContainerException(sprintf('The bean of %s is not defined', $id));
         }
 
         /* @var ObjectDefinition $objectDefinition */
@@ -300,7 +347,7 @@ class Container implements ContainerInterface
      * @return array
      * @throws \ReflectionException
      */
-    public function getReflectionClass(string $className): array
+    public function getReflection(string $className): array
     {
         // Not exist
         if (!isset($this->reflectionPool[$className])) {
@@ -308,6 +355,59 @@ class Container implements ContainerInterface
         }
 
         return $this->reflectionPool[$className];
+    }
+
+    /**
+     * Get object from pool
+     *
+     * @param string $name Bean name Or alias Or class name
+     *
+     * @return object
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
+    public function getObject(string $name)
+    {
+        if (!isset($this->objectPool[$name])) {
+            throw new ContainerException(sprintf('%s object is not exist!', $name));
+        }
+
+        /* @var \SplQueue $splQueue */
+        $splQueue = $this->objectPool[$name];
+        if ($splQueue->isEmpty()) {
+            return $this->get($name);
+        }
+
+        $object = $splQueue->pop();
+
+        $this->objectPool[$name] = $splQueue;
+        return $object;
+    }
+
+    /**
+     * Release object
+     *
+     * @param string $name Bean name Or alias Or class name
+     * @param object $object
+     *
+     * @throws ContainerException
+     */
+    public function releaseObject(string $name, $object): void
+    {
+        if (!isset($this->objectPool[$name])) {
+            throw new ContainerException(sprintf('%s object is not exist!', $name));
+        }
+
+        /* @var \SplQueue $splQueue */
+        $splQueue = $this->objectPool[$name];
+        $poolSize = $this->objectSize[$name] ?? self::DEFAULT_POOL_SIZE;
+
+        if ($splQueue->count() >= $poolSize) {
+            return;
+        }
+
+        $splQueue->push($object);
+        $this->objectPool[$name] = $splQueue;
     }
 
     /**
@@ -489,6 +589,18 @@ class Container implements ContainerInterface
     {
         /* @var ObjectDefinition $objectDefinition */
         foreach ($this->objectDefinitions as $beanName => $objectDefinition) {
+            if (!isset($this->objectDefinitions[$beanName])) {
+                throw new ContainerException('Bean name of ' . $beanName . ' is not defined!');
+            }
+
+            // Object pool
+            $objectDefinition = $this->objectDefinitions[$beanName];
+            if ($objectDefinition->getScope() == Bean::POOL) {
+                $this->newObjectPool($beanName, $objectDefinition);
+                continue;
+            }
+
+            // Singleton and prototype
             $this->newBean($beanName);
         }
     }
@@ -498,9 +610,9 @@ class Container implements ContainerInterface
      *
      * @param string $beanName
      *
-     * @return object
      * @throws ContainerException
      * @throws \ReflectionException
+     * @return object
      */
     private function newBean(string $beanName)
     {
@@ -563,6 +675,30 @@ class Container implements ContainerInterface
         $this->singletonPool[$beanName] = $reflectObject;
 
         return $reflectObject;
+    }
+
+    /**
+     * New pool bean
+     *
+     * @param string           $beanName
+     * @param ObjectDefinition $objectDefinition
+     */
+    private function newObjectPool(string $beanName, ObjectDefinition $objectDefinition)
+    {
+        $alias     = $objectDefinition->getAlias();
+        $className = $objectDefinition->getClassName();
+        $size      = $objectDefinition->getSize();
+
+        // Alias
+        if (!empty($alias)) {
+            $this->aliases[$alias] = $beanName;
+        }
+
+        // Class name map
+        $this->classNames[$className] = $beanName;
+
+        $this->objectSize[$beanName] = $size;
+        $this->objectPool[$beanName] = new \SplQueue();
     }
 
     /**

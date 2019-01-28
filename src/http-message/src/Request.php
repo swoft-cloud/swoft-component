@@ -42,41 +42,6 @@ class Request implements RequestInterface
      */
     protected $uri;
 
-
-    /**
-     * Request constructor.
-     *
-     * @param string                               $method
-     * @param UriInterface|string                  $uri
-     * @param array                                $headers
-     * @param string|null|resource|StreamInterface $body
-     * @param string                               $version ]
-     */
-    public function __construct(
-        string $method,
-        $uri,
-        array $headers = [],
-        $body = null,
-        string $version = '1.1'
-    ) {
-        if (!$uri instanceof UriInterface) {
-            $uri = new Uri($uri);
-        }
-
-        $this->method = strtoupper($method);
-        $this->uri    = $uri;
-        $this->setHeaders($headers);
-        $this->protocol = $version;
-
-        if (!$this->hasHeader('Host')) {
-            $this->updateHostFromUri();
-        }
-
-        if ($body !== '' && $body !== null) {
-            $this->stream = ($body instanceof StreamInterface ? $body : new Stream($body));
-        }
-    }
-
     /**
      * Retrieves the message's request target.
      * Retrieves the message's request-target either as it will appear (for
@@ -224,7 +189,7 @@ class Request implements RequestInterface
         $new->uri = $uri;
 
         if (!$preserveHost) {
-            $new->updateHostFromUri();
+            $new->updateHostByUri();
         }
 
         return $new;
@@ -235,7 +200,7 @@ class Request implements RequestInterface
      *
      * @link http://tools.ietf.org/html/rfc7230#section-5.4
      */
-    private function updateHostFromUri()
+    protected function updateHostByUri()
     {
         $host = $this->uri->getHost();
 

@@ -20,7 +20,7 @@ class HttpServer extends Server
      */
     public function start(): void
     {
-        $this->swooleServer = new \Co\Http\Server($this->host, $this->port, $this->mode, $this->type);
+        $this->swooleServer = new \Swoole\Http\Server($this->host, $this->port, $this->mode, $this->type);
         $this->startSwoole();
     }
 }

@@ -5,7 +5,15 @@ namespace Swoft\Http\Message\Uri;
 
 
 use Psr\Http\Message\UriInterface;
+use Swoft\Bean\Annotation\Mapping\Bean;
 
+/**
+ * Class Uri
+ *
+ * @Bean(scope=Bean::PROTOTYPE)
+ *
+ * @since 2.0
+ */
 class Uri implements UriInterface
 {
     /**
@@ -103,6 +111,23 @@ class Uri implements UriInterface
      * @param string $uri URI to parse
      */
     public function __construct($uri = '')
+    {
+        // weak type check to also accept null until we can add scalar type hints
+        if ($uri == '') {
+            return;
+        }
+
+        $parts = parse_url($uri);
+        if ($parts === false) {
+            throw new \InvalidArgumentException("Unable to parse URI: $uri");
+        }
+        $this->applyParts($parts);
+    }
+
+    /**
+     * @param string $uri
+     */
+    public function initialize($uri = '')
     {
         // weak type check to also accept null until we can add scalar type hints
         if ($uri == '') {
@@ -445,7 +470,7 @@ class Uri implements UriInterface
      * @return static A new instance with the specified path.
      * @throws \InvalidArgumentException for invalid paths.
      */
-    public function withPath($path)
+    public function withPath($path): self
     {
         $path = $this->filterPath($path);
         if ($this->path === $path) {

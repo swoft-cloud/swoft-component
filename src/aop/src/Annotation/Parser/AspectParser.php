@@ -36,6 +36,6 @@ class AspectParser extends Parser
 
         AspectRegister::registerAspect($this->className, $annotationObject->getOrder());
 
-        return [$this->className, $this->className, Bean::SINGLETON, ''];
+        return [$this->className, $this->className, Bean::SINGLETON, '', 0];
     }
 }

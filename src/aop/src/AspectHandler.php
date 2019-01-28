@@ -6,7 +6,6 @@ namespace Swoft\Aop;
 use Swoft\Aop\Point\JoinPoint;
 use Swoft\Aop\Point\ProceedingJoinPoint;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\BeanFactory;
 
 /**
  * Class Handler
@@ -50,23 +49,6 @@ class AspectHandler
      * @var array
      */
     private $aspect;
-
-//    /**
-//     * Handler constructor.
-//     *
-//     * @param AopTrait $target
-//     * @param string   $methodName
-//     * @param array    $args
-//     * @param array    $aspects
-//     */
-//    public function __construct($target, string $methodName, array $args, array $aspects)
-//    {
-//        $this->target     = $target;
-//        $this->methodName = $methodName;
-//        $this->args       = $args;
-//        $this->aspect     = array_shift($aspects);
-//        $this->aspects    = $aspects;
-//    }
 
     /**
      * Invoke aspect
@@ -183,13 +165,14 @@ class AspectHandler
      *
      * @return mixed
      * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     private function invokeAdvice(array $aspectAry, \Throwable $catch = null, $return = null)
     {
         list($aspectClass, $aspectMethod) = $aspectAry;
 
         // Reflection data from cache
-        $rftAry = BeanFactory::getReflectionClass($aspectClass);
+        $rftAry = container()->getReflection($aspectClass);
         $params = $rftAry['methods'][$aspectMethod]['params'] ?? [];
 
         $aspectArgs = [];

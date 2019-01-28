@@ -2,8 +2,8 @@
 
 namespace Swoft\Server\Swoole;
 
-use Co\Http\Request;
-use Co\Http\Response;
+use Swoole\Http\Request;
+use Swoole\Http\Response;
 
 /**
  * Interface RequestInterface

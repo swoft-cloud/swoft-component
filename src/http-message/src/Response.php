@@ -210,6 +210,18 @@ class Response implements ResponseInterface
     }
 
     /**
+     * Return an instance with the specified charset content type.
+     *
+     * @param $charset
+     * @return static
+     * @throws \InvalidArgumentException
+     */
+    public function withCharset($charset): self
+    {
+        return $this->withAddedHeader('Content-Type', sprintf('charset=%s', $charset));
+    }
+
+    /**
      * Gets the response reason phrase associated with the status code.
      *
      * Because a reason phrase is not a required element in a response

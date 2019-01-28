@@ -26,7 +26,7 @@ interface ParserInterface
      *
      * @return array
      * Return empty array is nothing to do!
-     * When class type return [$beanName, $className, $scope, $alias] is to inject bean
+     * When class type return [$beanName, $className, $scope, $alias, $size] is to inject bean
      * When property type return [$propertyValue, $isRef] is to reference value
      */
     public function parse(int $type, $annotationObject): array;

@@ -4,9 +4,14 @@ namespace Swoft;
 
 
 use Swoft\Config\Config;
-use Swoft\Config\Parser\PhpParser;
+use Swoft\Annotation\AutoLoader as AnnotationAutoLoader;
 
-class AutoLoader extends \Swoft\Annotation\AutoLoader implements DefinitionInterface
+/**
+ * Class AutoLoader
+ *
+ * @since 2.0
+ */
+class AutoLoader extends AnnotationAutoLoader implements DefinitionInterface
 {
     /**
      * Get namespace and dirs

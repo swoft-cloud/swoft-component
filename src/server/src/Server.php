@@ -33,7 +33,7 @@ abstract class Server implements ServerInterface
      *
      * @var int
      */
-    protected $port = 9501;
+    protected $port = 88;
 
     /**
      * Default mode
@@ -222,7 +222,7 @@ abstract class Server implements ServerInterface
 
         $this->swooleServer->set($this->setting);
         foreach ($this->on as $name => $listener) {
-            if (!array_keys(SwooleEvent::LISTENER_MAPPING, $name)) {
+            if (!isset(SwooleEvent::LISTENER_MAPPING[$name])) {
                 throw new ServerException(sprintf('Swoole %s event is not defined!', $name));
             }
 

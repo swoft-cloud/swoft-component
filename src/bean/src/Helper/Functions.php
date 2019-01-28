@@ -3,12 +3,26 @@ if (!function_exists('bean')) {
     /**
      * Get bean by name
      *
-     * @param string $key
+     * @param string $name Bean name Or alias Or class name
      *
-     * @return mixed
+     * @return object
+     * @throws ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
-    function bean(string $key)
+    function bean(string $name)
     {
-        return \Swoft\Bean\BeanFactory::getBean($key);
+        return \Swoft\Bean\BeanFactory::getBean($name);
+    }
+}
+
+if (!function_exists('container')) {
+    /**
+     * Get container
+     *
+     * @return \Swoft\Bean\Container
+     */
+    function container(): \Swoft\Bean\Container
+    {
+        return \Swoft\Bean\Container::getInstance();
     }
 }
