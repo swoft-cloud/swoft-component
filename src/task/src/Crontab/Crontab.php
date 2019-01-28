@@ -148,8 +148,9 @@ class Crontab
      */
     private function cleanRunTimeTable()
     {
+        $currentTime = time();
         foreach ($this->getRunTimeTable()->table as $key => $value) {
-            if ($value['runStatus'] === self::FINISH) {
+            if ($value['runStatus'] === self::FINISH || $value['sec'] < $currentTime) {
                 $this->getRunTimeTable()->del($key);
             }
         }
