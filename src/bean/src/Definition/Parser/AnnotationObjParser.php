@@ -90,7 +90,7 @@ class AnnotationObjParser extends ObjectParser
             }
         }
 
-        return [$this->definitions, $this->objectDefinitions];
+        return [$this->definitions, $this->objectDefinitions, $this->classNames];
     }
 
     /**
@@ -149,8 +149,12 @@ class AnnotationObjParser extends ObjectParser
             $objectDefinition->setMethodInjections($methodInjects);
         }
 
-        $name = $objectDefinition->getName();
+        // Object definition and class name
+        $name         = $objectDefinition->getName();
+        $classNames   = $this->classNames[$className] ?? [];
+        $classNames[] = $name;
 
+        $this->classNames[$className]   = array_unique($classNames);
         $this->objectDefinitions[$name] = $objectDefinition;
     }
 
@@ -179,11 +183,11 @@ class AnnotationObjParser extends ObjectParser
                 continue;
             }
 
-            if (count($data) != 5) {
-                throw new ContainerException(sprintf('%s annotation parse must be 5 size', $annotationClass));
+            if (count($data) != 4) {
+                throw new ContainerException(sprintf('%s annotation parse must be 4 size', $annotationClass));
             }
 
-            list($name, $className, $scope, $alias, $size) = $data;
+            list($name, $className, $scope, $alias) = $data;
             $name = empty($name) ? $className : $name;
 
             if (empty($className)) {
@@ -191,7 +195,7 @@ class AnnotationObjParser extends ObjectParser
             }
 
             // Multiple coverage
-            $objectDefinition = new ObjectDefinition($name, $className, $scope, $alias, $size);
+            $objectDefinition = new ObjectDefinition($name, $className, $scope, $alias);
         }
 
         return $objectDefinition;

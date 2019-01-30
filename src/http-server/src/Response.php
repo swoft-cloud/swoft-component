@@ -14,12 +14,32 @@ use Swoft\Stdlib\Helper\Str;
 /**
  * Class Response
  *
- * @Bean(scope=Bean::PROTOTYPE)
+ * @Bean(name="httpResponse", scope=Bean::PROTOTYPE)
  *
  * @since 2.0
  */
 class Response extends PsrResponse
 {
+    /**
+     * Raw
+     */
+    const FORMAT_RAW = 'raw';
+
+    /**
+     * Html
+     */
+    const FORMAT_HTML = 'html';
+
+    /**
+     * Json
+     */
+    const FORMAT_JSON = 'json';
+
+    /**
+     * Xml
+     */
+    const FORMAT_XML = 'xml';
+
     /**
      * Exception
      *
@@ -33,6 +53,27 @@ class Response extends PsrResponse
      * @var CoResponse
      */
     protected $coResponse;
+
+    /**
+     * Default format
+     *
+     * @var string
+     */
+    protected $format = self::FORMAT_JSON;
+
+    /**
+     * All formatters
+     *
+     * @var array
+     *
+     * @example
+     * [
+     *     Response::FORMAT_JSON => new FormatterInterface,
+     *     Response::FORMAT_XML => new FormatterInterface,
+     *     Response::FORMAT_RAW => new FormatterInterface
+     * ]
+     */
+    public $formatters = [];
 
     /**
      * Cookie

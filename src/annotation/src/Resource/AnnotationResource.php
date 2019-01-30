@@ -245,7 +245,7 @@ class AnnotationResource extends Resource
      */
     private function registerParser(string $parserClassName, AnnotationParser $annotationParser): void
     {
-        $annotationClass = $annotationParser->annotation;
+        $annotationClass = $annotationParser->getAnnotation();
         AnnotationRegister::registerParser($annotationClass, $parserClassName);
     }
 

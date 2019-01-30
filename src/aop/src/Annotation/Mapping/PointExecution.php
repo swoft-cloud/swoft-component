@@ -18,7 +18,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
  *
  * @since 2.0
  */
-class PointExecution
+final class PointExecution
 {
     /**
      * Include regular expression

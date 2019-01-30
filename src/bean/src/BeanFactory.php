@@ -141,31 +141,4 @@ BeanFactory
     {
         return Container::getInstance()->getReflection($className);
     }
-
-    /**
-     * Get object from pool
-     *
-     * @param string $name Bean name Or alias Or class name
-     *
-     * @return object
-     * @throws ContainerException
-     * @throws \ReflectionException
-     */
-    public function getObject(string $name)
-    {
-        return Container::getInstance()->getObject($name);
-    }
-
-    /**
-     * Release object
-     *
-     * @param string $name Bean name Or alias Or class name
-     * @param object $object
-     *
-     * @throws ContainerException
-     */
-    public function releaseObject(string $name, $object): void
-    {
-        Container::getInstance()->releaseObject($name, $object);
-    }
 }

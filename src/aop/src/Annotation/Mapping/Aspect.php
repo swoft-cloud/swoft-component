@@ -17,7 +17,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
  *
  * @since 2.0
  */
-class Aspect
+final class Aspect
 {
     /**
      * Default order

@@ -4,8 +4,12 @@
 namespace Swoft\Http\Server;
 
 
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Context\Context;
+use Swoft\Dispatcher;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\DispatcherInterface;
+use Swoft\Http\Server\Middleware\DefaultMiddleware;
+use Swoft\Http\Server\Middleware\RequestMiddleware;
 
 /**
  * Class HttpDispatcher
@@ -13,12 +17,22 @@ use Swoft\DispatcherInterface;
  * @Bean("httpDispatcher")
  * @since 2.0
  */
-class HttpDispatcher implements DispatcherInterface
+class HttpDispatcher extends Dispatcher
 {
     /**
-     * Dispatch http
+     * Default middleware to handler request
+     *
+     * @var string
+     */
+    protected $defaultMiddleware = DefaultMiddleware::class;
+
+    /**
+     * Dispatch http request
      *
      * @param array ...$params
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function dispatch(...$params)
     {
@@ -28,15 +42,24 @@ class HttpDispatcher implements DispatcherInterface
          */
         list($request, $response) = $params;
 
-        $response->withContent("<h1>Hello Swoole. #".rand(1000, 9999)."</h1>")->send();
-    }
+        try {
 
-    /**
-     * @return array
-     */
-    public function requestMiddleware(): array
-    {
-        return [];
+            $this->before($request, $response);
+
+            /* @var RequestHandler $requestHandler */
+            $requestHandler = \bean(RequestHandler::class);
+            $middlewares    = $this->requestMiddleware();
+
+            $requestHandler->initialize($middlewares, $this->defaultMiddleware);
+            $response = $requestHandler->handle($request);
+        } catch (\Throwable $e) {
+            var_dump($e->getMessage(), $e->getFile(), $e->getLine());
+        }
+
+        $this->after($response);
+
+//      $response->withContent("<h1>Hello Swoole. #" . rand(1000, 9999) . "</h1>")->send();
+
     }
 
     /**
@@ -44,7 +67,9 @@ class HttpDispatcher implements DispatcherInterface
      */
     public function preMiddleware(): array
     {
-        return [];
+        return [
+            RequestMiddleware::class
+        ];
     }
 
     /**
@@ -52,7 +77,41 @@ class HttpDispatcher implements DispatcherInterface
      */
     public function afterMiddleware(): array
     {
-        return [];
+        return [
+
+        ];
+    }
+
+    /**
+     * @param mixed ...$params
+     *
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
+    public function before(...$params): void
+    {
+        list($request, $response) = $params;
+
+        /* @var HttpContext $httpContext */
+        $httpContext = \bean(HttpContext::class);
+        $httpContext->initialize($request, $response);
+
+        Context::set($httpContext);
+    }
+
+    /**
+     * @param array ...$params
+     *
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
+    public function after(...$params): void
+    {
+        /* @var Response $response */
+        list($response) = $params;
+
+        $response->send();
+        Context::destroy();
     }
 
 }

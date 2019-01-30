@@ -34,7 +34,7 @@ class DefinitionObjParser extends ObjectParser
             $this->createObjectDefinition($beanName, $definition);
         }
 
-        return [$this->definitions, $this->objectDefinitions];
+        return [$this->definitions, $this->objectDefinitions, $this->classNames];
     }
 
     /**
@@ -78,6 +78,10 @@ class DefinitionObjParser extends ObjectParser
         $objDefinition = new ObjectDefinition($beanName, $className);
         $objDefinition = $this->updateObjectDefinitionByDefinition($objDefinition, $definition);
 
+        $classNames   = $this->classNames[$className] ?? [];
+        $classNames[] = $beanName;
+
+        $this->classNames[$className]       = array_unique($classNames);
         $this->objectDefinitions[$beanName] = $objDefinition;
     }
 

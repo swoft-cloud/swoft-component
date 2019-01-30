@@ -18,13 +18,6 @@ interface DispatcherInterface
     public function dispatch(...$params);
 
     /**
-     * Request middleware
-     *
-     * @return array
-     */
-    public function requestMiddleware(): array;
-
-    /**
      * Pre middleware
      *
      * @return array
@@ -37,4 +30,18 @@ interface DispatcherInterface
      * @return array
      */
     public function afterMiddleware(): array;
+
+    /**
+     * Before dispatch
+     *
+     * @param array $params
+     */
+    public function before(...$params): void;
+
+    /**
+     * After dispatch
+     *
+     * @param array $params
+     */
+    public function after(...$params): void;
 }

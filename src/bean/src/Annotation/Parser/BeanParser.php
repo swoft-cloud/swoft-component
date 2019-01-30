@@ -33,8 +33,7 @@ class BeanParser extends Parser
         $name  = $annotationObject->getName();
         $scope = $annotationObject->getScope();
         $alias = $annotationObject->getAlias();
-        $size  = $annotationObject->getSize();
 
-        return [$name, $this->className, $scope, $alias, $size];
+        return [$name, $this->className, $scope, $alias];
     }
 }

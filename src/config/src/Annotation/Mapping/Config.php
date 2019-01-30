@@ -2,15 +2,22 @@
 
 namespace Swoft\Config\Annotation;
 
+use Doctrine\Common\Annotations\Annotation\Attribute;
+use Doctrine\Common\Annotations\Annotation\Attributes;
+use Doctrine\Common\Annotations\Annotation\Target;
+
 /**
  * Class Config
  *
  * @Annotation
  * @Target({"CLASS","PROPERTY"})
+ * @Attributes({
+ *     @Attribute("key", type="string")
+ * })
  *
  * @since 2.0
  */
-class Config
+final class Config
 {
     /**
      * @var string

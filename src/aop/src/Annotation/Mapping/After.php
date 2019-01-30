@@ -12,7 +12,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
  *
  * @since 2.0
  */
-class After
+final class After
 {
 
 }
