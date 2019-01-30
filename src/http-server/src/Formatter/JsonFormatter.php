@@ -5,6 +5,7 @@ namespace Swoft\Http\Server\Formatter;
 
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Http\Server\Request;
 use Swoft\Http\Server\Response;
 
 /**
@@ -27,6 +28,6 @@ class JsonFormatter implements FormatterInterface
      */
     public function format(Response $response): Response
     {
-
+        // TODO: Implement format() method.
     }
 }

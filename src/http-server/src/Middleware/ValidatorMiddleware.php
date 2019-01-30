@@ -10,13 +10,13 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
 
 /**
- * Class UserMiddleware
+ * Class ValidatorMiddleware
  *
  * @Bean()
  *
  * @since 2.0
  */
-class UserMiddleware implements MiddlewareInterface
+class ValidatorMiddleware implements MiddlewareInterface
 {
     /**
      * @param ServerRequestInterface  $request

@@ -201,9 +201,9 @@ class Container implements ContainerInterface
      *         'methods' => [
      *             'methodName' => [
      *                'params' => [
-     *                    'argType',
-     *                    'argType',
-     *                    null
+     *                    'argType',  // like `int $arg`
+     *                    'argType',  // like `class $arg`
+     *                    null // like `$arg`
      *                ],
      *                'returnType' => 'returnType/null'
      *            ]

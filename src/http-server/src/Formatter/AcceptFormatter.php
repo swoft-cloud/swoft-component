@@ -4,6 +4,7 @@
 namespace Swoft\Http\Server\Formatter;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Http\Server\Request;
 use Swoft\Http\Server\Response;
 
 /**
@@ -34,6 +35,22 @@ class AcceptFormatter implements FormatterInterface
      */
     public function format(Response $response): Response
     {
+        $request    = context()->getRequest();
+        $accepts    = $request->getHeader('accept');
+        $acceptType = \current($accepts);
 
+        $format = '';
+        foreach ($this->formats as $type => $typeFormat) {
+            if (strpos($acceptType, $type) !== false) {
+                $format = $typeFormat;
+                break;
+            }
+        }
+
+        if (!empty($format)) {
+            $response->setFormat($format);
+        }
+
+        return $response;
     }
 }

@@ -4,10 +4,14 @@
 namespace Swoft\Http\Server\Middleware;
 
 
+use App\Controller\TestController;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Annotation\Mapping\Inject;
+use Swoft\Http\Server\Formatter\AcceptFormatter;
+use Swoft\Http\Server\Response;
 
 /**
  * Class DefaultMiddleware
@@ -18,6 +22,14 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 class DefaultMiddleware implements MiddlewareInterface
 {
     /**
+     * Accept formatter
+     *
+     * @var AcceptFormatter
+     * @Inject()
+     */
+    private $acceptFormatter;
+
+    /**
      * @param ServerRequestInterface  $request
      * @param RequestHandlerInterface $handler
      *
@@ -27,8 +39,30 @@ class DefaultMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $response = context()->getResponse();
+        $response = $this->handle($request);
+        $response = $this->acceptFormatter->format($response);
+        return $response;
+    }
 
-        return $response->withContent("<h1>Hello Swoole. #" . rand(1000, 9999) . "</h1>");
+    /**
+     * @param ServerRequestInterface $request
+     *
+     * @return Response
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    private function handle(ServerRequestInterface $request): Response
+    {
+        /* @var TestController $controller */
+        $controller = \bean(TestController::class);
+        $data       = $controller->test();
+
+        // Return is not `ResponseInterface`
+        if ($data instanceof ResponseInterface) {
+            return $data;
+        }
+
+        $response = context()->getResponse();
+        return $response->withData($data);
     }
 }

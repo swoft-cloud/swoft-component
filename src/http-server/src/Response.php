@@ -188,7 +188,13 @@ class Response extends PsrResponse
         $this->coResponse->status($response->getStatusCode());
 
         // Set body
-        $this->coResponse->end($response->getBody()->getContents());
+        if ($this->data !== null) {
+            $content = $this->data;
+        } else {
+            $content = $response->getBody()->getContents();
+        }
+
+        $this->coResponse->end($content);
     }
 
     /**
@@ -273,5 +279,13 @@ class Response extends PsrResponse
     {
         $this->coResponse = $coResponse;
         return $this;
+    }
+
+    /**
+     * @param string $format
+     */
+    public function setFormat(string $format): void
+    {
+        $this->format = $format;
     }
 }

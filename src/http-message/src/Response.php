@@ -105,6 +105,13 @@ class Response implements ResponseInterface
     protected $attributes = [];
 
     /**
+     * Original response data. When this is not null, it will be converted into stream content
+     *
+     * @var mixed
+     */
+    protected $data;
+
+    /**
      * Retrieve attributes derived from the request.
      * The request "attributes" may be used to allow injection of any
      * parameters derived from the request: e.g., the results of path
@@ -162,6 +169,21 @@ class Response implements ResponseInterface
     }
 
     /**
+     * Return instance with the specified data
+     *
+     * @param mixed $data
+     *
+     * @return static
+     */
+    public function withData($data)
+    {
+        $clone = clone $this;
+
+        $clone->data = $data;
+        return $clone;
+    }
+
+    /**
      * Gets the response status code.
      *
      * The status code is a 3-digit integer result code of the server's attempt
@@ -213,6 +235,7 @@ class Response implements ResponseInterface
      * Return an instance with the specified charset content type.
      *
      * @param $charset
+     *
      * @return static
      * @throws \InvalidArgumentException
      */
@@ -237,6 +260,14 @@ class Response implements ResponseInterface
     public function getReasonPhrase()
     {
         return $this->reasonPhrase;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getData()
+    {
+        return $this->data;
     }
 
     /**

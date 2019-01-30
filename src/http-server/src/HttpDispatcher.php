@@ -10,6 +10,8 @@ use Swoft\Dispatcher;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Server\Middleware\DefaultMiddleware;
 use Swoft\Http\Server\Middleware\RequestMiddleware;
+use Swoft\Http\Server\Middleware\UserMiddleware;
+use Swoft\Http\Server\Middleware\ValidatorMiddleware;
 
 /**
  * Class HttpDispatcher
@@ -78,7 +80,8 @@ class HttpDispatcher extends Dispatcher
     public function afterMiddleware(): array
     {
         return [
-
+            UserMiddleware::class,
+            ValidatorMiddleware::class
         ];
     }
 
