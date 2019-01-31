@@ -8,13 +8,17 @@
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
-namespace Swoft\Event;
+namespace Swoft\Event\Manager;
 
-use Swoft\Event\{ ListenerQueue, ListenerPriority, LazyListener };
+use Swoft\Event\Event;
+use Swoft\Event\EventInterface;
+use Swoft\Event\EventHandlerInterface;
+use Swoft\Event\EventSubscriberInterface;
+use Swoft\Event\Listener\{ ListenerQueue, ListenerPriority, LazyListener };
 
 /**
  * Class EventManager
- * @package Swoft\Event
+ * @package Swoft\Event\Manager
  * @author  inhere <in.798@qq.com>
  */
 class EventManager implements EventManagerInterface

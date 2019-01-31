@@ -60,7 +60,7 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
         $name = trim($name, '. ');
 
         if (!$name || \strlen($name) > 64) {
-            throw new \InvalidArgumentException('Set up the name can be a not empty string of not more than 64 characters!');
+            throw new \InvalidArgumentException('Setup the name cannot be a empty string of not more than 64 characters!');
         }
 
         return $name;

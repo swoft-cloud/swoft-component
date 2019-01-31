@@ -1,12 +1,12 @@
 <?php
 
-namespace Swoft\EventTest;
+namespace SwoftTest\Event;
 
 use Swoft\Event\Event;
 use Swoft\Event\EventInterface;
-use Swoft\Event\EventManager;
-use Swoft\Event\EventManagerInterface;
-use Swoft\EventTest\TestHandler;
+use Swoft\Event\Manager\EventManager;
+use Swoft\Event\Manager\EventManagerInterface;
+use SwoftTest\Event\Fixture\TestHandler;
 use PHPUnit\Framework\TestCase;
 
 /**

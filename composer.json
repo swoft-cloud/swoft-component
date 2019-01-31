@@ -72,6 +72,29 @@
   },
   "autoload-dev": {
     "psr-4": {
+      "SwoftTest\\Aop\\": "src/aop/test/",
+      "SwoftTest\\Auth\\": "src/auth/test/",
+      "SwoftTest\\Bean\\": "src/bean/test/",
+      "SwoftTest\\Cache\\": "src/cache/test/",
+      "SwoftTest\\Console\\": "src/console/test/",
+      "SwoftTest\\DataParser\\": "src/data-parser/test/",
+      "SwoftTest\\Db\\": "src/db/test",
+      "SwoftTest\\Defer\\": "src/defer/test/",
+      "SwoftTest\\Event\\": "src/event/test/",
+      "SwoftTest\\Devtool\\": "src/devtool/test/",
+      "SwoftTest\\ErrorHandler\\": "src/error-handler/test/",
+      "SwoftTest\\": "src/framework/test/",
+      "SwoftTest\\HttpServer\\": "src/http-server/test",
+      "SwoftTest\\I18n\\": "src/i18n/test/",
+      "SwoftTest\\Memory\\": "src/memory/test/",
+      "SwoftTest\\Process\\": "src/process/test/",
+      "SwoftTest\\Redis\\": "src/redis/test/",
+      "SwoftTest\\Rpc\\": "src/rpc/test/",
+      "SwoftTest\\RpcClient\\": "src/rpc-client/test/",
+      "SwoftTest\\RpcServer\\": "src/rpc-server/test/",
+      "SwoftTest\\Task\\": "src/task/test/",
+      "SwoftTest\\Trace\\": "src/trace/test/",
+      "SwoftTest\\WebSocket\\Server\\": "src/websocket-server/test/"
     }
   },
   "extra": {

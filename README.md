@@ -65,3 +65,13 @@ e.g. Pull [swoft/pipeline](https://github.com/swoft-cloud/swoft-pipeline) reposi
 ```bash
 git subtree pull --prefix=src/pipeline git@github.com:swoft-cloud/swoft-pipeline master --squash
 ```
+
+## Unit Tests
+
+```bash
+phpunit
+// output coverage. require xdebug ext
+phpunit --coverage-text
+// output coverage without xdebug
+phpdbg -dauto_globals_jit=Off -qrr /usr/local/bin/phpunit --coverage-text
+```

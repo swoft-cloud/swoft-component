@@ -8,12 +8,14 @@
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
-namespace Swoft\Event;
+namespace Swoft\Event\Manager;
+
+use Swoft\Event\EventInterface;
 
 /**
  * Interface EventManagerInterface - Interface for EventManager
- * @package Swoft\Event
- * @author    inhere <in.798@qq.com>
+ * @package Swoft\Event\Manager
+ * @author inhere <in.798@qq.com>
  */
 interface EventManagerInterface
 {
