@@ -13,7 +13,7 @@ namespace Swoft\Event\Manager;
 /**
  * Trait EventAwareTrait
  * @package Swoft\Event\Manager
- * @author  inhere <in.798@qq.com>
+ * @since 2.0
  */
 trait EventManagerAwareTrait
 {

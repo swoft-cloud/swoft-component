@@ -13,7 +13,7 @@ namespace Swoft\Event\Listener;
 /**
  * Class ListenerQueue - 一个事件的监听器队列存储管理类
  * @package Swoft\Event\Listener
- * @author  inhere <in.798@qq.com>
+ * @since 2.0
  */
 class ListenerQueue implements \IteratorAggregate, \Countable
 {

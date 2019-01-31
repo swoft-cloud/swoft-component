@@ -13,7 +13,7 @@ namespace Swoft\Event;
 /**
  * Class Event
  * @package Swoft\Event
- * @author  inhere <in.798@qq.com>
+ * @since 2.0
  */
 class Event implements EventInterface, \ArrayAccess, \Serializable
 {

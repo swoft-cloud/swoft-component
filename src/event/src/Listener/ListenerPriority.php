@@ -13,7 +13,7 @@ namespace Swoft\Event\Listener;
 /**
  * Class ListenerPriority
  * @package Swoft\Event\Listener
- * @author  inhere <in.798@qq.com>
+ * @since 2.0
  */
 class ListenerPriority
 {
