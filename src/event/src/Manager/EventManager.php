@@ -10,10 +10,7 @@
 
 namespace Swoft\Event\Manager;
 
-use Swoft\Event\Event;
-use Swoft\Event\EventInterface;
-use Swoft\Event\EventHandlerInterface;
-use Swoft\Event\EventSubscriberInterface;
+use Swoft\Event\{ Event, EventInterface, EventHandlerInterface, EventSubscriberInterface };
 use Swoft\Event\Listener\{ ListenerQueue, ListenerPriority, LazyListener };
 
 /**

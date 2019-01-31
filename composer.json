@@ -59,7 +59,6 @@
       "src/aop/src/Helper/Functions.php",
       "src/bean/src/Helper/Functions.php",
       "src/config/src/Helper/Functions.php",
-      "src/event/src/Helper/Functions.php",
       "src/framework/src/Helper/Functions.php",
       "src/http-message/src/Helper/Functions.php",
       "src/http-server/src/Helper/Functions.php",

@@ -16,10 +16,7 @@
   "autoload": {
     "psr-4": {
       "Swoft\\Event\\": "src/"
-    },
-    "files": [
-      "src/Helper/Functions.php"
-    ]
+    }
   },
   "autoload-dev": {
     "psr-4": {

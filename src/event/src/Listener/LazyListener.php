@@ -10,7 +10,7 @@
 
 namespace Swoft\Event\Listener;
 
-use Swoft\Helper\PhpHelper;
+use Swoft\Stdlib\Helper\PhpHelper;
 
 /**
  * Class LazyListener - 将callable包装成对象
