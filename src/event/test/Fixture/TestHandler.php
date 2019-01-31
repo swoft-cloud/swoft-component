@@ -1,13 +1,13 @@
 <?php
 
-namespace Swoft\EventTest\Fixture;
+namespace SwoftTest\Event\Fixture;
 
 use Swoft\Event\EventInterface;
 use Swoft\Event\EventHandlerInterface;
 
 /**
  * Class TestHandler
- * @package Swoft\EventTest\Fixture
+ * @package SwoftTest\Event\Fixture
  */
 class TestHandler implements EventHandlerInterface
 {

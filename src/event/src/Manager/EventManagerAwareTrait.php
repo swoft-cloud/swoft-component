@@ -8,12 +8,12 @@
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
-namespace Swoft\Event;
+namespace Swoft\Event\Manager;
 
 /**
  * Trait EventAwareTrait
- * @package Swoft\Event
- * @author  inhere <in.798@qq.com>
+ * @package Swoft\Event\Manager
+ * @since 2.0
  */
 trait EventManagerAwareTrait
 {

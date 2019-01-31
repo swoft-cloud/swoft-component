@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         bootstrap="test/bootstrap.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false">
+    <testsuites>
+        <testsuite name="aop-tests">
+            <directory suffix="Test.php">src/aop/test</directory>
+        </testsuite>
+        <testsuite name="auth-tests">
+            <directory suffix="Test.php">src/auth/test</directory>
+        </testsuite>
+        <testsuite name="bean-tests">
+            <directory suffix="Test.php">src/bean/test</directory>
+        </testsuite>
+        <testsuite name="cache-tests">
+            <directory suffix="Test.php">src/cache/test</directory>
+        </testsuite>
+        <testsuite name="console-tests">
+            <directory suffix="Test.php">src/console/test</directory>
+        </testsuite>
+        <testsuite name="db-tests">
+            <directory suffix="Test.php">src/db/test</directory>
+        </testsuite>
+        <testsuite name="defer-tests">
+            <directory suffix="Test.php">src/defer/test</directory>
+        </testsuite>
+        <testsuite name="devtool-tests">
+            <directory suffix="Test.php">src/devtool/test</directory>
+        </testsuite>
+        <testsuite name="handler-tests">
+            <directory suffix="Test.php">src/error-handler/test</directory>
+        </testsuite>
+        <testsuite name="framework-tests">
+            <directory suffix="Test.php">src/framework/test</directory>
+        </testsuite>
+        <testsuite name="event-tests">
+            <directory suffix="Test.php">src/event/test</directory>
+        </testsuite>
+        <testsuite name="http-server-tests">
+            <directory suffix="Test.php">src/http-server/test</directory>
+        </testsuite>
+        <testsuite name="server-tests">
+            <directory suffix="Test.php">src/server/test</directory>
+        </testsuite>
+        <testsuite name="memory-tests">
+            <directory suffix="Test.php">src/memory/test</directory>
+        </testsuite>
+        <testsuite name="process-tests">
+            <directory suffix="Test.php">src/process/test</directory>
+        </testsuite>
+        <testsuite name="redis-tests">
+            <directory suffix="Test.php">src/redis/test</directory>
+        </testsuite>
+        <testsuite name="rpc-tests">
+            <directory suffix="Test.php">src/rpc/test</directory>
+        </testsuite>
+        <testsuite name="client-tests">
+            <directory suffix="Test.php">src/rpc-client/test</directory>
+        </testsuite>
+        <testsuite name="server-tests">
+            <directory suffix="Test.php">src/rpc-server/test</directory>
+        </testsuite>
+        <testsuite name="governance-tests">
+            <directory suffix="Test.php">src/service-governance/test</directory>
+        </testsuite>
+        <testsuite name="task-tests">
+            <directory suffix="Test.php">src/task/test</directory>
+        </testsuite>
+        <testsuite name="trace-tests">
+            <directory suffix="Test.php">src/trace/test</directory>
+        </testsuite>
+        <testsuite name="server-tests">
+            <directory suffix="Test.php">src/websocket-server/test</directory>
+        </testsuite>
+        <testsuite name="stdlib-tests">
+            <directory suffix="Test.php">src/stdlib/test</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">src/*/src</directory>
+        </whitelist>
+    </filter>
+</phpunit>

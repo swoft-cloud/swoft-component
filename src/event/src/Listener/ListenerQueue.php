@@ -13,7 +13,7 @@ namespace Swoft\Event\Listener;
 /**
  * Class ListenerQueue - 一个事件的监听器队列存储管理类
  * @package Swoft\Event\Listener
- * @author  inhere <in.798@qq.com>
+ * @since 2.0
  */
 class ListenerQueue implements \IteratorAggregate, \Countable
 {
@@ -33,7 +33,7 @@ class ListenerQueue implements \IteratorAggregate, \Countable
      * 计数器。设定最大值为 PHP_INT_MAX
      * @var int
      */
-    private $counter = PHP_INT_MAX;
+    private $counter = \PHP_INT_MAX;
 
     public function __construct()
     {
@@ -183,7 +183,7 @@ class ListenerQueue implements \IteratorAggregate, \Countable
     /**
      * clear queue
      */
-    public function clear()
+    public function clear(): void
     {
         while (!$this->queue->isEmpty()) {
             $this->queue->pop();

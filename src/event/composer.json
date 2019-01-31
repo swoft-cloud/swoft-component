@@ -16,18 +16,15 @@
   "autoload": {
     "psr-4": {
       "Swoft\\Event\\": "src/"
-    },
-    "files": [
-      "src/Helper/Functions.php"
-    ]
+    }
   },
   "autoload-dev": {
     "psr-4": {
-      "Swoft\\EventTest\\": "test/"
+      "SwoftTest\\Event\\": "test/"
     }
   },
   "require-dev": {
-    "phpunit/phpunit": "^7.0"
+    "phpunit/phpunit": "^7.5"
   },
   "repositories": [
     {
