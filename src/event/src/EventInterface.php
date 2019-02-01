@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -37,7 +37,7 @@ interface EventInterface
      *
      * @return array
      */
-    public function getParams(): array ;
+    public function getParams(): array;
 
     /**
      * Get a single parameter by name
@@ -53,7 +53,7 @@ interface EventInterface
      * @param  string $name
      * @return void
      */
-    public function setName($name);
+    public function setName(string $name): void;
 
     /**
      * Set the event target
@@ -61,7 +61,7 @@ interface EventInterface
      * @param  null|string|object $target
      * @return void
      */
-    public function setTarget($target);
+    public function setTarget($target): void;
 
     /**
      * Set event parameters
@@ -69,7 +69,7 @@ interface EventInterface
      * @param  array $params
      * @return void
      */
-    public function setParams(array $params);
+    public function setParams(array $params): void;
 
     /**
      * Indicate whether or not to stop propagating this event
@@ -83,5 +83,5 @@ interface EventInterface
      *
      * @return bool
      */
-    public function isPropagationStopped(): bool ;
+    public function isPropagationStopped(): bool;
 }
