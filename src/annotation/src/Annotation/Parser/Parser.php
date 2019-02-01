@@ -47,7 +47,7 @@ abstract class Parser implements ParserInterface
     protected $classAnnotations = [];
 
     /**
-     * Defintions
+     * Definitions
      *
      * @var array
      */

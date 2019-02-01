@@ -20,7 +20,7 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
     /**
      * @var string Event name
      */
-    protected $name;
+    protected $name = '';
 
     /**
      * @var array Event params

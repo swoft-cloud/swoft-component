@@ -18,7 +18,7 @@ namespace Swoft\Event;
 interface EventSubscriberInterface
 {
     /**
-     * 配置事件与对应的处理方法(可以配置优先级)
+     * Configure events and corresponding processing methods (you can configure the priority)
      * @return array
      * [
      *  'event name' => 'handler method'

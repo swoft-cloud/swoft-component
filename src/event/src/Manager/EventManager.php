@@ -616,7 +616,7 @@ class EventManager implements EventManagerInterface
     /**
      * @return EventManagerInterface
      */
-    public function getParent(): EventManagerInterface
+    public function getParent(): ?EventManagerInterface
     {
         return $this->parent;
     }

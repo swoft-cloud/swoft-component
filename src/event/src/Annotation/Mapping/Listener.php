@@ -13,7 +13,9 @@ use Doctrine\Common\Annotations\Annotation\Attributes;
 use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
- * Listener annotation
+ * Listener annotation - for mark an event listener handler class.
+ * @since 2.0
+ * @package Swoft\Event\Annotation\Mapping
  *
  * @Annotation
  * @Target("CLASS")
@@ -27,6 +29,7 @@ final class Listener
      * Listen event name
      *
      * @var string
+     * @Required()
      */
     private $event = '';
 

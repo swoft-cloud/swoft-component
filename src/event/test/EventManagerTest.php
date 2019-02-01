@@ -8,6 +8,7 @@ use Swoft\Event\EventInterface;
 use Swoft\Event\Manager\EventManager;
 use Swoft\Event\Manager\EventManagerInterface;
 use SwoftTest\Event\Fixture\TestHandler;
+use SwoftTest\Event\Fixture\TestSubscriber;
 
 /**
  * Class EventManagerTest
@@ -41,6 +42,8 @@ class EventManagerTest extends TestCase
             //
         });
 
+        $this->assertTrue($em->hasListener($l1));
+        $this->assertTrue($em->hasListener($l1, 'test'));
         $this->assertCount(2, $em->getListeners('test'));
 
         $em->detach('test', $l1);
@@ -85,5 +88,22 @@ class EventManagerTest extends TestCase
         $this->assertEquals('new target', $evt->getTarget());
         $this->assertEquals('new val', $evt->getParam('key'));
         $this->assertArrayHasKey('key1', $evt->getParams());
+    }
+
+    public function testSubscriber(): void
+    {
+        $em = new EventManager();
+        $em->addListener(TestSubscriber::class);
+
+        $this->assertTrue($em->hasListeners(TestSubscriber::EVENT_ONE));
+        $this->assertTrue($em->hasListeners(TestSubscriber::EVENT_TWO));
+
+        $evt = $em->trigger(TestSubscriber::EVENT_ONE);
+
+        $this->assertArrayHasKey('msg', $evt->getParams());
+        $this->assertSame(
+            'handle the event: test.event1 position: TestSubscriber.handleEvent1()',
+            $evt->getParam('msg')
+        );
     }
 }
