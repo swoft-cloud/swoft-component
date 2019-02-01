@@ -126,7 +126,8 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
      */
     public function clearParams()
     {
-        $old          = $this->params;
+        $old = $this->params;
+        // clear
         $this->params = [];
 
         return $old;
@@ -134,8 +135,8 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
 
     /**
      * add a argument
-     * @param $name
-     * @param $value
+     * @param string $name
+     * @param mixed  $value
      * @return $this
      * @throws \InvalidArgumentException
      */
@@ -150,8 +151,8 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
 
     /**
      * set a argument
-     * @param $name
-     * @param $value
+     * @param string $name
+     * @param mixed  $value
      * @throws  \InvalidArgumentException  If the argument name is null.
      * @return $this
      */
@@ -167,9 +168,9 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
     }
 
     /**
-     * @param      $name
-     * @param null $default
-     * @return null
+     * @param string $name
+     * @param mixed  $default
+     * @return mixed
      */
     public function getParam($name, $default = null)
     {
@@ -177,7 +178,7 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @return bool
      */
     public function hasParam($name): bool
@@ -186,7 +187,7 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
     }
 
     /**
-     * @param $name
+     * @param string $name
      */
     public function removeParam($name)
     {
