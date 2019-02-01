@@ -29,7 +29,7 @@ class AbstractContext implements ContextInterface
      */
     public function set(string $key, $value): void
     {
-        $this->data = ArrayHelper::set($this->data, $key, $value);
+        ArrayHelper::set($this->data, $key, $value);
     }
 
     /**
@@ -37,16 +37,12 @@ class AbstractContext implements ContextInterface
      * If key is like `a.b`. Equal to get $context['a']['b']
      *
      * @param string $key
-     * @param null   $default
+     * @param mixed  $default
      *
      * @return mixed
      */
     public function get(string $key, $default = null)
     {
-        if (!ArrayHelper::has($this->data, $key)) {
-            return $default;
-        }
-
-        return ArrayHelper::get($this->data, $key);
+        return ArrayHelper::get($this->data, $key, $default);
     }
 }

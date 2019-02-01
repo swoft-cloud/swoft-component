@@ -20,19 +20,19 @@ class PhpHelper
     public static function call(callable $cb, ...$args)
     {
         if (\is_string($cb)) {
-            // function
-            if (\strpos($cb, '::') === false) {
+            // className::method
+            if (\strpos($cb, '::') > 0) {
+                $cb = \explode('::', $cb, 2);
+                // function
+            } elseif (\function_exists($cb)) {
                 return $cb(...$args);
             }
-
-            // ClassName::method
-            $cb = \explode('::', $cb, 2);
         } elseif (\is_object($cb) && \method_exists($cb, '__invoke')) {
             return $cb(...$args);
         }
 
         if (\is_array($cb)) {
-            list($obj, $mhd) = $cb;
+            [$obj, $mhd] = $cb;
 
             return \is_object($obj) ? $obj->$mhd(...$args) : $obj::$mhd(...$args);
         }
