@@ -11,17 +11,28 @@ use Swoft\Http\Message\Stream\Stream;
 use Swoft\Http\Message\Upload\UploadedFile;
 use Swoft\Http\Message\Uri\Uri;
 use Swoft\Http\Server\Concerns\InteractsWithInput;
+use Swoft\Http\Server\Parser\RequestParserInterface;
 use Swoole\Http\Request as CoReques;
 
 /**
  * Class Request
  *
- * @Bean(scope=Bean::PROTOTYPE)
+ * @Bean(name="httpRequest",scope=Bean::PROTOTYPE)
  *
  * @since 2.0
  */
 class Request extends PsrRequest implements ServerRequestInterface
 {
+    /**
+     * Json
+     */
+    const CONTENT_JSON = 'application/json';
+
+    /**
+     * Xml
+     */
+    const CONTENT_XML = 'application/xml';
+
     /**
      * Interacts input
      */
@@ -63,11 +74,18 @@ class Request extends PsrRequest implements ServerRequestInterface
     protected $uploadedFiles = [];
 
     /**
-     * the body of parser
+     * All parsers
      *
-     * @var mixed
+     * @var array
+     *
+     * @example
+     * [
+     *     'content-type' => new XxxParser(),
+     *     'content-type' => new XxxParser(),
+     *     'content-type' => new XxxParser(),
+     * ]
      */
-    protected $bodyParams;
+    protected $parsers = [];
 
     /**
      * @param CoReques $coRequest
@@ -95,22 +113,27 @@ class Request extends PsrRequest implements ServerRequestInterface
             $this->protocol = str_replace('HTTP/', '', $server['server_protocol']);
         }
 
+        // Parse body
+        $parsedBody = $coRequest->post ?? [];
+        if (empty($parsedBody) && !$this->isGet()) {
+            $parsedBody = $this->parseBody($content);
+        }
+
         $this->method        = strtoupper($method);
         $this->uri           = $this->getUriByCoRequest($coRequest);
         $this->stream        = $stream;
         $this->cookieParams  = ($coRequest->cookie ?? []);
         $this->queryParams   = ($coRequest->get ?? []);
         $this->serverParams  = ($server ?? []);
-        $this->parsedBody    = ($coRequest->post ?? []);
         $this->uploadedFiles = self::normalizeFiles($coRequest->files ?? []);
         $this->coRequest     = $coRequest;
+        $this->parsedBody    = $parsedBody;
 
         // Update uri by host
         if (!$this->hasHeader('Host')) {
             $this->updateHostByUri();
         }
     }
-
 
     /**
      * Retrieve server parameters.
@@ -309,16 +332,6 @@ class Request extends PsrRequest implements ServerRequestInterface
     }
 
     /**
-     * return parser result of body
-     *
-     * @return mixed
-     */
-    public function getBodyParams()
-    {
-        return $this->bodyParams;
-    }
-
-    /**
      * Return an instance with the specified body parameters.
      * These MAY be injected during instantiation.
      * If the request Content-Type is either application/x-www-form-urlencoded
@@ -349,22 +362,6 @@ class Request extends PsrRequest implements ServerRequestInterface
         $clone->parsedBody = $data;
         return $clone;
     }
-
-    /**
-     * init body params from parser result
-     *
-     * @param mixed $data
-     *
-     * @return static
-     */
-    public function withBodyParams($data)
-    {
-        $clone = clone $this;
-
-        $clone->bodyParams = $data;
-        return $clone;
-    }
-
 
     /**
      * Retrieve attributes derived from the request.
@@ -514,6 +511,24 @@ class Request extends PsrRequest implements ServerRequestInterface
     {
         $this->coRequest = $coRequest;
         return $this;
+    }
+
+    /**
+     * @param string $content
+     *
+     * @return mixed
+     */
+    private function parseBody(string $content)
+    {
+        $contentTypes = $this->getHeader('content-type');
+        foreach ($contentTypes as $contentType) {
+            $parser = $this->parsers[$contentType] ?? null;
+            if (!empty($parser) && $parser instanceof RequestParserInterface) {
+                return $parser->parse($content);
+            }
+        }
+
+        return $content;
     }
 
     /**

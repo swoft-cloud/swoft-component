@@ -196,6 +196,16 @@ class Request implements RequestInterface
     }
 
     /**
+     * Is GET
+     *
+     * @return bool
+     */
+    public function isGet(): bool
+    {
+        return $this->method == 'GET';
+    }
+
+    /**
      * Update Host Header according to Uri
      *
      * @link http://tools.ietf.org/html/rfc7230#section-5.4
