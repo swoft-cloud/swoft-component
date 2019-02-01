@@ -52,7 +52,8 @@ class RouterTest extends TestCase
         foreach (Router::METHODS_ARRAY as $method) {
             $r->$method("/$method", "handle_$method");
         }
-        $string = $r->toString();
+
+        $string = (string)$r;
         foreach (Router::METHODS_ARRAY as $method) {
             $s = \sprintf('%-7s %-25s --> %s', $method, "/$method", "handle_$method");
             $this->assertContains($s, $string);
