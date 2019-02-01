@@ -156,95 +156,95 @@ class Router implements RouterInterface
      * register a route, allow GET request method.
      * {@inheritdoc}
      */
-    public function get(string $path, $handler, array $binds = [], array $opts = []): Route
+    public function get(string $path, $handler, array $pathParams = [], array $opts = []): Route
     {
-        return $this->add('GET', $path, $handler, $binds, $opts);
-        // return $this->map(['GET', 'HEAD'], $path, $handler, $binds, $opts);
+        return $this->add('GET', $path, $handler, $pathParams, $opts);
+        // return $this->map(['GET', 'HEAD'], $path, $handler, $pathParams, $opts);
     }
 
     /**
      * register a route, allow POST request method.
      * {@inheritdoc}
      */
-    public function post(string $path, $handler, array $binds = [], array $opts = []): Route
+    public function post(string $path, $handler, array $pathParams = [], array $opts = []): Route
     {
-        return $this->add('POST', $path, $handler, $binds, $opts);
+        return $this->add('POST', $path, $handler, $pathParams, $opts);
     }
 
     /**
      * register a route, allow PUT request method.
      * {@inheritdoc}
      */
-    public function put(string $path, $handler, array $binds = [], array $opts = []): Route
+    public function put(string $path, $handler, array $pathParams = [], array $opts = []): Route
     {
-        return $this->add('PUT', $path, $handler, $binds, $opts);
+        return $this->add('PUT', $path, $handler, $pathParams, $opts);
     }
 
     /**
      * register a route, allow PATCH request method.
      * {@inheritdoc}
      */
-    public function patch(string $path, $handler, array $binds = [], array $opts = []): Route
+    public function patch(string $path, $handler, array $pathParams = [], array $opts = []): Route
     {
-        return $this->add('PATCH', $path, $handler, $binds, $opts);
+        return $this->add('PATCH', $path, $handler, $pathParams, $opts);
     }
 
     /**
      * register a route, allow DELETE request method.
      * {@inheritdoc}
      */
-    public function delete(string $path, $handler, array $binds = [], array $opts = []): Route
+    public function delete(string $path, $handler, array $pathParams = [], array $opts = []): Route
     {
-        return $this->add('DELETE', $path, $handler, $binds, $opts);
+        return $this->add('DELETE', $path, $handler, $pathParams, $opts);
     }
 
     /**
      * register a route, allow HEAD request method.
      * {@inheritdoc}
      */
-    public function head(string $path, $handler, array $binds = [], array $opts = []): Route
+    public function head(string $path, $handler, array $pathParams = [], array $opts = []): Route
     {
-        return $this->add('HEAD', $path, $handler, $binds, $opts);
+        return $this->add('HEAD', $path, $handler, $pathParams, $opts);
     }
 
     /**
      * register a route, allow OPTIONS request method.
      * {@inheritdoc}
      */
-    public function options(string $path, $handler, array $binds = [], array $opts = []): Route
+    public function options(string $path, $handler, array $pathParams = [], array $opts = []): Route
     {
-        return $this->add('OPTIONS', $path, $handler, $binds, $opts);
+        return $this->add('OPTIONS', $path, $handler, $pathParams, $opts);
     }
 
     /**
      * register a route, allow CONNECT request method.
      * {@inheritdoc}
      */
-    public function connect(string $path, $handler, array $binds = [], array $opts = []): Route
+    public function connect(string $path, $handler, array $pathParams = [], array $opts = []): Route
     {
-        return $this->add('CONNECT', $path, $handler, $binds, $opts);
+        return $this->add('CONNECT', $path, $handler, $pathParams, $opts);
     }
 
     /**
      * register a route, allow any request METHOD.
      * {@inheritdoc}
      */
-    public function any(string $path, $handler, array $binds = [], array $opts = []): void
+    public function any(string $path, $handler, array $pathParams = [], array $opts = []): void
     {
-        $this->map(self::METHODS_ARRAY, $path, $handler, $binds, $opts);
+        $this->map(self::METHODS_ARRAY, $path, $handler, $pathParams, $opts);
     }
 
     /**
      * @param array|string    $methods
      * @param string          $path
      * @param callable|string $handler
-     * @param array           $binds
+     * @param array           $pathParams
      * @param array           $opts
      */
-    public function map($methods, string $path, $handler, array $binds = [], array $opts = [])
+    public function map($methods, string $path, $handler, array $pathParams = [], array $opts = [])
     {
         foreach ((array)$methods as $method) {
-            $this->add($method, $path, $handler, $binds, $opts);
+            $this->add($method, $path, $handler, $pathParams, $opts);
         }
     }
 
@@ -252,11 +252,11 @@ class Router implements RouterInterface
      * @param string $method
      * @param string $path
      * @param        $handler
-     * @param array  $binds
+     * @param array  $pathParams
      * @param array  $opts
      * @return Route
      */
-    public function add(string $method, string $path, $handler, array $binds = [], array $opts = []): Route
+    public function add(string $method, string $path, $handler, array $pathParams = [], array $opts = []): Route
     {
         if (!$method || !$handler) {
             throw new \InvalidArgumentException('The method and route handler is not allow empty.');
@@ -265,7 +265,7 @@ class Router implements RouterInterface
         $method = \strtoupper($method);
 
         if ($method === 'ANY') {
-            $this->any($path, $handler, $binds, $opts);
+            $this->any($path, $handler, $pathParams, $opts);
             return Route::createFromArray();
         }
 
@@ -276,7 +276,7 @@ class Router implements RouterInterface
         }
 
         // create Route
-        $route = Route::create($method, $path, $handler, $binds, $opts);
+        $route = Route::create($method, $path, $handler, $pathParams, $opts);
 
         return $this->addRoute($route);
     }

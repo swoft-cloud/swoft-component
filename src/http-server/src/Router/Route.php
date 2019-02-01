@@ -86,7 +86,7 @@ final class Route implements \IteratorAggregate
      * @param string $method
      * @param string $path
      * @param        $handler
-     * @param array  $paramBinds
+     * @param array  $pathParams
      * @param array  $options
      * @return Route
      */
@@ -94,10 +94,10 @@ final class Route implements \IteratorAggregate
         string $method,
         string $path,
         $handler,
-        array $paramBinds = [],
+        array $pathParams = [],
         array $options = []
     ): Route {
-        return new self($method, $path, $handler, $paramBinds, $options);
+        return new self($method, $path, $handler, $pathParams, $options);
     }
 
     /**
@@ -122,14 +122,14 @@ final class Route implements \IteratorAggregate
      * @param string $method
      * @param string $path
      * @param mixed  $handler
-     * @param array  $paramBinds
+     * @param array  $pathParams
      * @param array  $options
      */
-    public function __construct(string $method, string $path, $handler, array $paramBinds = [], array $options = [])
+    public function __construct(string $method, string $path, $handler, array $pathParams = [], array $options = [])
     {
         $this->path     = \trim($path);
         $this->method   = \strtoupper($method);
-        $this->bindVars = $paramBinds;
+        $this->bindVars = $pathParams;
         $this->handler  = $handler;
         $this->options  = $options;
 
