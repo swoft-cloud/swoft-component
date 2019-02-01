@@ -6,11 +6,11 @@ namespace Swoft\Http\Server\Formatter;
 use Swoft\Http\Server\Response;
 
 /**
- * Class FormatterInterface
+ * Class ResponseFormatterInterface
  *
  * @since 2.0
  */
-interface FormatterInterface
+interface ResponseFormatterInterface
 {
     /**
      * @param Response $response

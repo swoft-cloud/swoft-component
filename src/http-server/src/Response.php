@@ -6,10 +6,8 @@ namespace Swoft\Http\Server;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Message\Response as PsrResponse;
 use Swoft\Http\Message\Stream\Stream;
+use Swoft\Http\Server\Formatter\ResponseFormatterInterface;
 use Swoole\Http\Response as CoResponse;
-use Swoft\Stdlib\Arrayable;
-use Swoft\Stdlib\Helper\JsonHelper;
-use Swoft\Stdlib\Helper\Str;
 
 /**
  * Class Response
@@ -20,11 +18,6 @@ use Swoft\Stdlib\Helper\Str;
  */
 class Response extends PsrResponse
 {
-    /**
-     * Raw
-     */
-    const FORMAT_RAW = 'raw';
-
     /**
      * Html
      */
@@ -68,9 +61,8 @@ class Response extends PsrResponse
      *
      * @example
      * [
-     *     Response::FORMAT_JSON => new FormatterInterface,
-     *     Response::FORMAT_XML => new FormatterInterface,
-     *     Response::FORMAT_RAW => new FormatterInterface
+     *     Response::FORMAT_JSON => new ResponseFormatterInterface,
+     *     Response::FORMAT_XML => new ResponseFormatterInterface,
      * ]
      */
     public $formatters = [];
@@ -107,69 +99,6 @@ class Response extends PsrResponse
     }
 
     /**
-     * return a Raw format response
-     *
-     * @param  string $data   The data
-     * @param  int    $status The HTTP status code.
-     *
-     * @return static when $data not jsonable
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     */
-    public function raw(string $data = '', int $status = 200): self
-    {
-        // Headers
-        $response = $this;
-        $response = $response->withoutHeader('Content-Type')->withAddedHeader('Content-Type', 'text/plain');
-        $this->getCharset() && $response = $response->withCharset($this->getCharset());
-
-        // Content
-        $data && $response = $response->withContent($data);
-
-        // Status code
-        $status && $response = $response->withStatus($status);
-
-        return $response;
-    }
-
-    /**
-     * return a Json format response
-     *
-     * @param  array|Arrayable $data            The data
-     * @param  int             $status          The HTTP status code.
-     * @param  int             $encodingOptions Json encoding options
-     *
-     * @return static when $data not jsonable
-     * @throws \InvalidArgumentException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     */
-    public function json($data = [], int $status = 200, int $encodingOptions = JSON_UNESCAPED_UNICODE): self
-    {
-        $response = $this;
-
-        // Headers
-        $response = $response->withoutHeader('Content-Type')
-            ->withAddedHeader('Content-Type', 'application/json');
-
-        $this->getCharset() && $response = $response->withCharset($this->getCharset());
-
-        // Content
-        if ($data && ($this->isArrayable($data) || is_string($data))) {
-            is_string($data) && $data = ['data' => $data];
-            $content  = JsonHelper::encode($data, $encodingOptions);
-            $response = $response->withContent($content);
-        } else {
-            $response = $response->withContent('{}');
-        }
-
-        // Status code
-        $status && $response = $response->withStatus($status);
-
-        return $response;
-    }
-
-    /**
      * Send response
      *
      * @throws \ReflectionException
@@ -177,7 +106,8 @@ class Response extends PsrResponse
      */
     public function send()
     {
-        $response = $this;
+        // Prepare
+        $response = $this->prepare();
 
         // Write Headers to co response
         foreach ($response->getHeaders() as $key => $value) {
@@ -188,13 +118,24 @@ class Response extends PsrResponse
         $this->coResponse->status($response->getStatusCode());
 
         // Set body
-        if ($this->data !== null) {
-            $content = $this->data;
-        } else {
-            $content = $response->getBody()->getContents();
-        }
+        $content = $response->getBody()->getContents();
 
         $this->coResponse->end($content);
+    }
+
+    /**
+     * Prepare response
+     *
+     * @return Response
+     */
+    private function prepare(): Response
+    {
+        $formatter = $this->formatters[$this->format] ?? null;
+        if (!empty($formatter) && $formatter instanceof ResponseFormatterInterface) {
+            return $formatter->format($this);
+        }
+
+        return $this;
     }
 
     /**
@@ -239,27 +180,6 @@ class Response extends PsrResponse
     {
         $this->exception = $exception;
         return $this;
-    }
-
-    /**
-     * @param mixed $value
-     *
-     * @return bool
-     */
-    public function isArrayable($value): bool
-    {
-        return is_array($value) || $value instanceof Arrayable;
-    }
-
-    /**
-     * @param string $accept
-     * @param string $keyword
-     *
-     * @return bool
-     */
-    public function isMatchAccept(string $accept, string $keyword): bool
-    {
-        return Str::contains($accept, $keyword) === true;
     }
 
     /**

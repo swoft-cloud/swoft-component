@@ -4,16 +4,16 @@
 namespace Swoft\Http\Server\Formatter;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Http\Server\Request;
 use Swoft\Http\Server\Response;
 
 /**
- * Class AcceptFormatter
+ * Class AcceptResponseFormatter
  *
  * @Bean("acceptFormatter")
+ *
  * @since 2.0
  */
-class AcceptFormatter implements FormatterInterface
+class AcceptResponseFormatter implements ResponseFormatterInterface
 {
     /**
      * Formats
@@ -23,7 +23,7 @@ class AcceptFormatter implements FormatterInterface
      * @example
      * [
      *   'application/json' => Response::FORMAT_JSON,
-     *   'application/xml' => Response::FORMAT_XML,
+     *   'application/xml' => Response::FORMAT_JSON,
      * ]
      */
     protected $formats = [];
@@ -39,16 +39,16 @@ class AcceptFormatter implements FormatterInterface
         $accepts    = $request->getHeader('accept');
         $acceptType = \current($accepts);
 
-        $format = '';
-        foreach ($this->formats as $type => $typeFormat) {
-            if (strpos($acceptType, $type) !== false) {
-                $format = $typeFormat;
+        $type = '';
+        foreach ($this->formats as $contentType => $formatType) {
+            if (strpos($acceptType, $contentType) !== false) {
+                $type = $formatType;
                 break;
             }
         }
 
-        if (!empty($format)) {
-            $response->setFormat($format);
+        if (!empty($type)) {
+            $response->setFormat($type);
         }
 
         return $response;

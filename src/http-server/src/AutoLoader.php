@@ -2,7 +2,10 @@
 
 namespace Swoft\Http\Server;
 
-use Swoft\Http\Server\Formatter\JsonFormatter;
+use Swoft\Http\Server\Formatter\JsonResponseFormatter;
+use Swoft\Http\Server\Formatter\XmlResponseFormatter;
+use Swoft\Http\Server\Parser\JsonRequestParser;
+use Swoft\Http\Server\Parser\XmlRequestParser;
 use Swoft\Http\Server\Swoole\RequestListener;
 use Swoft\Server\Swoole\SwooleEvent;
 
@@ -33,15 +36,23 @@ class AutoLoader extends \Swoft\AutoLoader
     public function coreBean(): array
     {
         return [
+            'httpRequest'     => [
+                'parsers' => [
+                    Request::CONTENT_JSON => bean(JsonRequestParser::class),
+                    Request::CONTENT_XML  => bean(XmlRequestParser::class),
+                ]
+            ],
             'httpResponse'    => [
                 'format'     => Response::FORMAT_JSON,
                 'formatters' => [
-                    Response::FORMAT_JSON => bean(JsonFormatter::class),
+                    JsonResponseFormatter::CONTENT_TYPE => bean(JsonResponseFormatter::class),
+                    XmlResponseFormatter::CONTENT_TYPE  => bean(XmlResponseFormatter::class),
                 ]
             ],
             'acceptFormatter' => [
                 'formats' => [
-                    JsonFormatter::CONTENT_TYPE => Response::FORMAT_JSON
+                    'json' => Request::CONTENT_JSON,
+                    'xml'  => Request::CONTENT_XML,
                 ]
             ],
             'httpServer'      => [

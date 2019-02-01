@@ -2,6 +2,8 @@
 
 namespace Swoft\Stdlib\Helper;
 
+use Swoft\Stdlib\Arrayable;
+
 /**
  * Array helper
  *
@@ -983,5 +985,15 @@ class ArrayHelper
         }
 
         return is_array($value) ? $value : [$value];
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return bool
+     */
+    public static function isArrayable($value): bool
+    {
+        return is_array($value) || $value instanceof Arrayable;
     }
 }
