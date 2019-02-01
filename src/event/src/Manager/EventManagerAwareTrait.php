@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -9,6 +9,8 @@
  */
 
 namespace Swoft\Event\Manager;
+
+use Swoft\Event\EventInterface;
 
 /**
  * Trait EventAwareTrait
@@ -50,8 +52,8 @@ trait EventManagerAwareTrait
 
     /**
      * @param  string|EventInterface $event 'app.start' 'app.stop'
-     * @param  mixed|string $target
-     * @param  array|mixed $args
+     * @param  mixed|string          $target
+     * @param  array|mixed           $args
      * @return mixed
      */
     public function trigger($event, $target = null, array $args = [])

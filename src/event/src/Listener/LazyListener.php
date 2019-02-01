@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -10,6 +10,8 @@
 
 namespace Swoft\Event\Listener;
 
+use Swoft\Event\EventHandlerInterface;
+use Swoft\Event\EventInterface;
 use Swoft\Stdlib\Helper\PhpHelper;
 
 /**
@@ -23,6 +25,15 @@ class LazyListener implements EventHandlerInterface
      * @var callable
      */
     private $callback;
+
+    /**
+     * @param callable $callback
+     * @return LazyListener
+     */
+    public static function create(callable $callback): self
+    {
+        return new self($callback);
+    }
 
     public function __construct(callable $callback)
     {

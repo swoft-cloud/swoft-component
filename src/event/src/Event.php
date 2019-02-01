@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -17,10 +17,14 @@ namespace Swoft\Event;
  */
 class Event implements EventInterface, \ArrayAccess, \Serializable
 {
-    /** @var string Event name */
+    /**
+     * @var string Event name
+     */
     protected $name;
 
-    /** @var array Event params */
+    /**
+     * @var array Event params
+     */
     protected $params = [];
 
     /**
@@ -34,12 +38,17 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
      */
     protected $stopPropagation = false;
 
+    public static function create(string $name = '', array $params = []): self
+    {
+        return new static($name, $params);
+    }
+
     /**
      * @param string|null $name
-     * @param array $params
+     * @param array       $params
      * @throws \InvalidArgumentException
      */
-    public function __construct($name = null, array $params = [])
+    public function __construct(string $name = '', array $params = [])
     {
         if ($name) {
             $this->setName($name);
@@ -57,7 +66,7 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
      */
     public static function checkName(string $name): string
     {
-        $name = trim($name, '. ');
+        $name = \trim($name, '. ');
 
         if (!$name || \strlen($name) > 64) {
             throw new \InvalidArgumentException('Setup the name cannot be a empty string of not more than 64 characters!');
@@ -78,7 +87,7 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
      * {@inheritdoc}
      * @throws \InvalidArgumentException
      */
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = self::checkName($name);
     }
@@ -87,7 +96,7 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
      * set all params
      * @param array $params
      */
-    public function setParams(array $params)
+    public function setParams(array $params): void
     {
         $this->params = $params;
     }
@@ -117,7 +126,7 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
      */
     public function clearParams()
     {
-        $old = $this->params;
+        $old          = $this->params;
         $this->params = [];
 
         return $old;
@@ -158,7 +167,7 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
     }
 
     /**
-     * @param $name
+     * @param      $name
      * @param null $default
      * @return null
      */
@@ -200,7 +209,7 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
      * @param  null|string|mixed $target
      * @return void
      */
-    public function setTarget($target)
+    public function setTarget($target): void
     {
         $this->target = $target;
     }
@@ -236,13 +245,13 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
      * @param   string $serialized The serialized event.
      * @return  void
      */
-    public function unserialize($serialized)
+    public function unserialize($serialized): void
     {
-        list(
+        [
             $this->name,
             $this->params,
             $this->stopPropagation
-            ) = \unserialize($serialized, ['allowed_classes' => false]);
+        ] = \unserialize($serialized, ['allowed_classes' => false]);
     }
 
     /**
@@ -268,11 +277,11 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
     /**
      * Set the value of an event argument.
      * @param   string $name The argument name.
-     * @param   mixed $value The argument value.
+     * @param   mixed  $value The argument value.
      * @return  void
      * @throws \InvalidArgumentException
      */
-    public function offsetSet($name, $value)
+    public function offsetSet($name, $value): void
     {
         $this->setParam($name, $value);
     }
@@ -282,7 +291,7 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
      * @param   string $name The argument name.
      * @return  void
      */
-    public function offsetUnset($name)
+    public function offsetUnset($name): void
     {
         $this->removeParam($name);
     }

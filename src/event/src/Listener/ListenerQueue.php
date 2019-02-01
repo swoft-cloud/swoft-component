@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 /**
  * This file is part of Swoft.
  *
@@ -43,8 +43,8 @@ class ListenerQueue implements \IteratorAggregate, \Countable
 
     /**
      * 添加一个监听器, 增加了添加 callback(string|array)
-     * @param \Closure|callable|\stdClass|mixed $listener  监听器
-     * @param integer $priority 优先级
+     * @param \Closure|callable|\stdClass|mixed $listener 监听器
+     * @param integer                           $priority 优先级
      * @return $this
      */
     public function add($listener, $priority): self
@@ -94,10 +94,10 @@ class ListenerQueue implements \IteratorAggregate, \Countable
     /**
      * Get the priority of the given listener. 得到指定监听器的优先级
      * @param   mixed $listener The listener.
-     * @param   mixed $default The default value to return if the listener doesn't exist.
-     * @return  mixed  The listener priority if it exists, null otherwise.
+     * @param   int   $default The default value to return if the listener doesn't exist.
+     * @return  int|null  The listener priority if it exists, null otherwise.
      */
-    public function getPriority($listener, $default = null)
+    public function getPriority($listener, int $default = null): ?int
     {
         if ($this->store->contains($listener)) {
             // @see self::add(). attach as: `[priority, counter value]`
@@ -109,11 +109,11 @@ class ListenerQueue implements \IteratorAggregate, \Countable
 
     /**
      * getPriority() alias method
-     * @param $listener
-     * @param null $default
+     * @param mixed $listener
+     * @param int   $default
      * @return mixed
      */
-    public function getLevel($listener, $default = null)
+    public function getLevel($listener, int $default = null)
     {
         return $this->getPriority($listener, $default);
     }
@@ -159,7 +159,7 @@ class ListenerQueue implements \IteratorAggregate, \Countable
      * Get the inner queue with its cursor on top of the heap.
      * @return  \SplPriorityQueue  The inner queue.
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         // SplPriorityQueue queue is a heap.
         $queue = clone $this->queue;
@@ -185,8 +185,7 @@ class ListenerQueue implements \IteratorAggregate, \Countable
      */
     public function clear(): void
     {
-        while (!$this->queue->isEmpty()) {
-            $this->queue->pop();
-        }
+        $this->queue = null;
+        $this->store->removeAll($this->store);
     }
 }
