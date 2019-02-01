@@ -85,7 +85,7 @@
       "SwoftTest\\Devtool\\": "src/devtool/test/",
       "SwoftTest\\ErrorHandler\\": "src/error-handler/test/",
       "SwoftTest\\": "src/framework/test/",
-      "SwoftTest\\HttpServer\\": "src/http-server/test",
+      "SwoftTest\\Http\\Server\\": "src/http-server/test",
       "SwoftTest\\I18n\\": "src/i18n/test/",
       "SwoftTest\\Memory\\": "src/memory/test/",
       "SwoftTest\\Process\\": "src/process/test/",
