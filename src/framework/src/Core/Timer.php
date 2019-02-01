@@ -91,7 +91,7 @@ class Timer
      * @param array $params 参数传递
      * @param int   $timerId 定时器id
      */
-    public function timerCallback($timerId,$params)
+    public function timerCallback($timerId, $params)
     {
         if (count($params) < 2) {
             return;
