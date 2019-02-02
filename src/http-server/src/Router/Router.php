@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2017/7/14
- * Time: 下午8:03
- */
 
 namespace Swoft\Http\Server\Router;
 
@@ -14,10 +8,9 @@ use Swoft\Http\Server\Helper\RouteHelper;
 /**
  * Class Router - This is object version
  *
- * @since 2.0
- * @package Swoft\Http\Server\Router
+ * @Bean("httpRouter")
  *
- * @Bean("httpRotuer")
+ * @since 2.0
  */
 class Router implements RouterInterface
 {
@@ -104,7 +97,9 @@ class Router implements RouterInterface
 
     /**
      * object creator.
+     *
      * @param array $config
+     *
      * @return self
      * @throws \LogicException
      */
@@ -115,7 +110,9 @@ class Router implements RouterInterface
 
     /**
      * object constructor.
+     *
      * @param array $config
+     *
      * @throws \LogicException
      */
     public function __construct(array $config = [])
@@ -131,7 +128,9 @@ class Router implements RouterInterface
 
     /**
      * alias of the method: middleware()
+     *
      * @param array ...$middleware
+     *
      * @return self
      */
     public function use(...$middleware): Router
@@ -141,7 +140,9 @@ class Router implements RouterInterface
 
     /**
      * push middleware(s) for the route
+     *
      * @param mixed ...$middleware
+     *
      * @return Router
      */
     public function middleware(...$middleware): Router
@@ -259,6 +260,7 @@ class Router implements RouterInterface
      * @param        $handler
      * @param array  $pathParams
      * @param array  $opts
+     *
      * @return Route
      */
     public function add(string $method, string $path, $handler, array $pathParams = [], array $opts = []): Route
@@ -288,6 +290,7 @@ class Router implements RouterInterface
 
     /**
      * @param Route $route
+     *
      * @return Route
      */
     public function addRoute(Route $route): Route
@@ -324,6 +327,7 @@ class Router implements RouterInterface
     /**
      * Create a route group with a common prefix.
      * All routes created in the passed callback will have the given group prefix prepended.
+     *
      * @param string   $prefix
      * @param \Closure $callback
      * @param array    $middleware
@@ -351,7 +355,9 @@ class Router implements RouterInterface
 
     /**
      * prepare for add
+     *
      * @param Route $route
+     *
      * @return void
      */
     protected function appendGroupInfo(Route $route): void
@@ -385,8 +391,10 @@ class Router implements RouterInterface
 
     /**
      * find the matched route info for the given request uri path
+     *
      * @param string $method
      * @param string $path
+     *
      * @return array returns array.
      * [
      *  match status, // found, not found, method not allowed
@@ -455,8 +463,10 @@ class Router implements RouterInterface
 
     /**
      * is a dynamic route, match by regexp
+     *
      * @param string $path
      * @param string $method
+     *
      * @return array
      * [
      *  status,
@@ -499,6 +509,7 @@ class Router implements RouterInterface
     /**
      * @param string $path
      * @param string $method
+     *
      * @return array
      */
     protected function findAllowedMethods(string $path, string $method): array
@@ -556,6 +567,7 @@ class Router implements RouterInterface
     /**
      * @param string $name Route name
      * @param array  $pathVars
+     *
      * @return string
      */
     public function createUri(string $name, array $pathVars = []): string
@@ -596,7 +608,9 @@ class Router implements RouterInterface
 
     /**
      * get a name route by given name.
+     *
      * @param string $name
+     *
      * @return Route|null
      */
     public function getRoute(string $name): ?Route
@@ -659,7 +673,7 @@ class Router implements RouterInterface
 
     /**
      * Retrieve an external iterator
-     * @link https://php.net/manual/en/iteratoraggregate.getiterator.php
+     * @link  https://php.net/manual/en/iteratoraggregate.getiterator.php
      * @return \Traversable An instance of an object implementing <b>Iterator</b> or
      * <b>Traversable</b>
      * @since 5.0.0

@@ -71,7 +71,7 @@ class DefinitionObjParser extends ObjectParser
      */
     private function createObjectDefinition(string $beanName, array $definition): void
     {
-        $className = $definition['class'];
+        $className = $definition['class'] ?? '';
         if (empty($className)) {
             throw new ContainerException(sprintf('%s key for definition must be defined', $beanName));
         }

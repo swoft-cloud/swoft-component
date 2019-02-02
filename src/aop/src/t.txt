@@ -1,0 +1,145 @@
+namespace Swoft\Http\Server\Router;
+
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Http\Server\Helper\RouteHelper;
+class Router_5c55ae6ac2082 extends \Swoft\Http\Server\Router\Router
+{
+    use \Swoft\Aop\AopTrait;
+    public function getOriginalClassName() : string
+    {
+        return 'Swoft\\Http\\Server\\Router\\Router';
+    }
+    use RouterConfigTrait;
+    public function __construct(array $config = [])
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', '__construct', func_get_args());
+    }
+    public function use(...$middleware) : Router
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'use', func_get_args());
+    }
+    public function middleware(...$middleware) : Router
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'middleware', func_get_args());
+    }
+    public function get(string $path, $handler, array $pathParams = [], array $opts = []) : Route
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'get', func_get_args());
+    }
+    public function post(string $path, $handler, array $pathParams = [], array $opts = []) : Route
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'post', func_get_args());
+    }
+    public function put(string $path, $handler, array $pathParams = [], array $opts = []) : Route
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'put', func_get_args());
+    }
+    public function patch(string $path, $handler, array $pathParams = [], array $opts = []) : Route
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'patch', func_get_args());
+    }
+    public function delete(string $path, $handler, array $pathParams = [], array $opts = []) : Route
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'delete', func_get_args());
+    }
+    public function head(string $path, $handler, array $pathParams = [], array $opts = []) : Route
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'head', func_get_args());
+    }
+    public function options(string $path, $handler, array $pathParams = [], array $opts = []) : Route
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'options', func_get_args());
+    }
+    public function connect(string $path, $handler, array $pathParams = [], array $opts = []) : Route
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'connect', func_get_args());
+    }
+    public function any(string $path, $handler, array $pathParams = [], array $opts = []) : void
+    {
+        $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'any', func_get_args());
+    }
+    public function map($methods, string $path, $handler, array $pathParams = [], array $opts = [])
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'map', func_get_args());
+    }
+    public function add(string $method, string $path, $handler, array $pathParams = [], array $opts = []) : Route
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'add', func_get_args());
+    }
+    public function addRoute(Route $route) : Route
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'addRoute', func_get_args());
+    }
+    public function group(string $prefix, \Closure $callback, array $middleware = [], array $opts = []) : void
+    {
+        $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'group', func_get_args());
+    }
+    protected function appendGroupInfo(Route $route) : void
+    {
+        $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'appendGroupInfo', func_get_args());
+    }
+    public function match(string $path, string $method = 'GET') : array
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'match', func_get_args());
+    }
+    protected function matchDynamicRoute(string $path, string $method) : array
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'matchDynamicRoute', func_get_args());
+    }
+    protected function findAllowedMethods(string $path, string $method) : array
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'findAllowedMethods', func_get_args());
+    }
+    protected function cacheMatchedParamRoute(string $path, string $method, Route $route) : void
+    {
+        $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'cacheMatchedParamRoute', func_get_args());
+    }
+    public function createUri(string $name, array $pathVars = []) : string
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'createUri', func_get_args());
+    }
+    public function nameRoute(string $name, Route $route) : void
+    {
+        $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'nameRoute', func_get_args());
+    }
+    public function clearCacheRoutes() : void
+    {
+        $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'clearCacheRoutes', func_get_args());
+    }
+    public function cacheCount() : int
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'cacheCount', func_get_args());
+    }
+    public function getRoute(string $name) : ?Route
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'getRoute', func_get_args());
+    }
+    public function count() : int
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'count', func_get_args());
+    }
+    public function each(\Closure $func) : void
+    {
+        $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'each', func_get_args());
+    }
+    public function getRoutes() : array
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'getRoutes', func_get_args());
+    }
+    public function getChains() : array
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'getChains', func_get_args());
+    }
+    public function getIterator() : \Traversable
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'getIterator', func_get_args());
+    }
+    public function __toString() : string
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', '__toString', func_get_args());
+    }
+    public function toString() : string
+    {
+        return $this->__proxyCall('Swoft\\Http\\Server\\Router\\Router', 'toString', func_get_args());
+    }
+}

@@ -101,6 +101,11 @@ class ProxyVisitor extends NodeVisitorAbstract
      */
     public function leaveNode(Node $node)
     {
+        // Remove trait use to fix return `self` bug
+        if($node instanceof  Node\Stmt\TraitUse){
+            return NodeTraverser::REMOVE_NODE;
+        }
+
         // Parse new class node
         if ($node instanceof Node\Stmt\Class_) {
             $newClassNodes = [
@@ -125,7 +130,7 @@ class ProxyVisitor extends NodeVisitorAbstract
 
             return $this->proxyMethod($node);
         }
-
+        
         return $node;
     }
 
