@@ -26,7 +26,7 @@ class BeanFactory
      *
      * @param string $name Bean name Or alias Or class name
      *
-     * @return object
+     * @return object|mixed
      * @throws ContainerException
      * @throws \ReflectionException
      */
