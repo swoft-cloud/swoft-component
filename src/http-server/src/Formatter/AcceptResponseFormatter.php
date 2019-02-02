@@ -5,6 +5,7 @@ namespace Swoft\Http\Server\Formatter;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Server\Response;
+use Swoft\Stdlib\Helper\StringHelper;
 
 /**
  * Class AcceptResponseFormatter
@@ -41,10 +42,8 @@ class AcceptResponseFormatter implements ResponseFormatterInterface
 
         $type = '';
         foreach ($this->formats as $contentType => $formatType) {
-            if (strpos($acceptType, $contentType) !== false) {
                 $type = $formatType;
                 break;
-            }
         }
 
         if (!empty($type)) {

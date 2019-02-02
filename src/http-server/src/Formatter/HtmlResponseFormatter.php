@@ -6,21 +6,20 @@ namespace Swoft\Http\Server\Formatter;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Server\Response;
-use Swoft\Stdlib\Helper\XmlHelper;
 
 /**
- * Class XmlResponseFormatter
+ * Class HtmlResponseFormatter
  *
  * @Bean()
  *
  * @since 2.0
  */
-class XmlResponseFormatter implements ResponseFormatterInterface
+class HtmlResponseFormatter implements ResponseFormatterInterface
 {
     /**
-     * Content type
+     * content type
      */
-    const CONTENT_TYPE = 'application/xml';
+    const CONTENT_TYPE = 'text/html';
 
     /**
      * @param Response $response
@@ -35,11 +34,8 @@ class XmlResponseFormatter implements ResponseFormatterInterface
             ->withAddedHeader('Content-Type', self::CONTENT_TYPE);
 
         $data = $response->getData();
-
         if ($data !== null) {
-            $data = !is_array($data) ? [$data => $data] : $data;
-            $content = XmlHelper::encode($data);
-            return $response->withContent($content);
+            return $response->withContent($data);
         }
 
         return $response;

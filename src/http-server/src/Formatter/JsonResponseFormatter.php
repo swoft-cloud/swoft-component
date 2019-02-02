@@ -7,7 +7,6 @@ namespace Swoft\Http\Server\Formatter;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Server\Response;
 use Swoft\Stdlib\Helper\Arr;
-use Swoft\Stdlib\Helper\ArrayHelper;
 use Swoft\Stdlib\Helper\JsonHelper;
 
 /**
@@ -34,7 +33,7 @@ class JsonResponseFormatter implements ResponseFormatterInterface
     public function format(Response $response): Response
     {
         $response = $response->withoutHeader('Content-Type')
-            ->withAddedHeader('Content-Type', Response::CONTENT_JSON);
+            ->withAddedHeader('Content-Type', self::CONTENT_TYPE);
 
         $data = $response->getData();
 

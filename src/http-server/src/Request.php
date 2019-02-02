@@ -24,6 +24,11 @@ use Swoole\Http\Request as CoReques;
 class Request extends PsrRequest implements ServerRequestInterface
 {
     /**
+     * Html
+     */
+    const CONTENT_HTML = 'application/xml';
+
+    /**
      * Json
      */
     const CONTENT_JSON = 'application/json';

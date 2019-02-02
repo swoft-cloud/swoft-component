@@ -2,6 +2,7 @@
 
 namespace Swoft\Http\Server;
 
+use Swoft\Http\Server\Formatter\HtmlResponseFormatter;
 use Swoft\Http\Server\Formatter\JsonResponseFormatter;
 use Swoft\Http\Server\Formatter\XmlResponseFormatter;
 use Swoft\Http\Server\Parser\JsonRequestParser;
@@ -45,14 +46,16 @@ class AutoLoader extends \Swoft\AutoLoader
             'httpResponse'    => [
                 'format'     => Response::FORMAT_JSON,
                 'formatters' => [
-                    JsonResponseFormatter::CONTENT_TYPE => bean(JsonResponseFormatter::class),
-                    XmlResponseFormatter::CONTENT_TYPE  => bean(XmlResponseFormatter::class),
+                    Response::FORMAT_HTML => bean(HtmlResponseFormatter::class),
+                    Response::FORMAT_JSON => bean(JsonResponseFormatter::class),
+                    Response::FORMAT_XML  => bean(XmlResponseFormatter::class),
                 ]
             ],
             'acceptFormatter' => [
                 'formats' => [
-                    'json' => Request::CONTENT_JSON,
-                    'xml'  => Request::CONTENT_XML,
+                    Response::CONTENT_HTML => Response::FORMAT_HTML,
+                    Response::CONTENT_JSON => Response::FORMAT_JSON,
+                    Response::CONTENT_XML  => Response::FORMAT_XML,
                 ]
             ],
             'httpServer'      => [
