@@ -1,114 +1,40 @@
 {
-  "name": "swoft/component",
-  "type": "library",
-  "keywords": [
-    "php",
-    "swoole",
-    "swoft"
-  ],
-  "description": "microservice framework base on swoole",
-  "license": "Apache-2.0",
-  "require": {
-    "php": ">=7.1",
-    "ext-json": "*",
-    "ext-mbstring": "*",
-    "psr/http-message": "^1.0",
-    "psr/http-server-handler": "^1.0",
-    "psr/http-server-middleware": "^1.0",
-    "doctrine/annotations": "^1.4",
-    "php-di/phpdoc-reader": "^2.0",
-    "psr/container": "^1.0",
-    "vlucas/phpdotenv": "^2.5",
-    "symfony/yaml": "^4.2",
-    "nikic/php-parser": "~4.2"
-  },
-  "require-dev": {
-    "swoft/swoole-ide-helper": "dev-master"
-  },
-  "replace": {
-    "swoft/annotation": "self.version",
-    "swoft/aop": "self.version",
-    "swoft/bean": "self.version",
-    "swoft/config": "self.version",
-    "swoft/event": "self.version",
-    "swoft/framework": "self.version",
-    "swoft/http-message": "self.version",
-    "swoft/http-server": "self.version",
-    "swoft/log": "self.version",
-    "swoft/server": "self.version",
-    "swoft/stdlib": "self.version",
-    "swoft/tcp-server": "self.version",
-    "swoft/websocket-server": "self.version"
-  },
-  "autoload": {
-    "psr-4": {
-      "Swoft\\Annotation\\": "src/annotation/src/",
-      "Swoft\\Aop\\": "src/aop/src/",
-      "Swoft\\Bean\\": "src/bean/src/",
-      "Swoft\\Config\\": "src/config/src/",
-      "Swoft\\Event\\": "src/event/src/",
-      "Swoft\\": "src/framework/src/",
-      "Swoft\\Http\\Message\\": "src/http-message/src/",
-      "Swoft\\Http\\Server\\": "src/http-server/src/",
-      "Swoft\\Log\\": "src/log/src/",
-      "Swoft\\Server\\": "src/server/src/",
-      "Swoft\\Stdlib\\": "src/stdlib/src/",
-      "Swoft\\Tcp\\Server\\": "src/tcp-server/src/",
-      "Swoft\\Websocket\\Server\\": "src/websocket-server/src/"
+    "name": "swoft/db",
+    "type": "library",
+    "keywords": [
+        "php",
+        "swoole",
+        "swoft",
+        "db",
+        "orm",
+        "active record"
+    ],
+    "description": "microservice framework base on swoole",
+    "license": "Apache-2.0",
+    "require": {
     },
-    "files": [
-      "src/annotation/src/Helper/Functions.php",
-      "src/aop/src/Helper/Functions.php",
-      "src/bean/src/Helper/Functions.php",
-      "src/config/src/Helper/Functions.php",
-      "src/framework/src/Helper/Functions.php",
-      "src/http-message/src/Helper/Functions.php",
-      "src/http-server/src/Helper/Functions.php",
-      "src/log/src/Helper/Functions.php",
-      "src/server/src/Helper/Functions.php",
-      "src/stdlib/src/Helper/Functions.php",
-      "src/tcp-server/src/Helper/Functions.php",
-      "src/websocket-server/src/Helper/Functions.php"
-    ]
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "SwoftTest\\Aop\\": "src/aop/test/",
-      "SwoftTest\\Auth\\": "src/auth/test/",
-      "SwoftTest\\Bean\\": "src/bean/test/",
-      "SwoftTest\\Cache\\": "src/cache/test/",
-      "SwoftTest\\Console\\": "src/console/test/",
-      "SwoftTest\\DataParser\\": "src/data-parser/test/",
-      "SwoftTest\\Db\\": "src/db/test",
-      "SwoftTest\\Defer\\": "src/defer/test/",
-      "SwoftTest\\Event\\": "src/event/test/",
-      "SwoftTest\\Devtool\\": "src/devtool/test/",
-      "SwoftTest\\ErrorHandler\\": "src/error-handler/test/",
-      "SwoftTest\\": "src/framework/test/",
-      "SwoftTest\\Http\\Server\\": "src/http-server/test",
-      "SwoftTest\\I18n\\": "src/i18n/test/",
-      "SwoftTest\\Memory\\": "src/memory/test/",
-      "SwoftTest\\Process\\": "src/process/test/",
-      "SwoftTest\\Redis\\": "src/redis/test/",
-      "SwoftTest\\Rpc\\": "src/rpc/test/",
-      "SwoftTest\\RpcClient\\": "src/rpc-client/test/",
-      "SwoftTest\\RpcServer\\": "src/rpc-server/test/",
-      "SwoftTest\\Task\\": "src/task/test/",
-      "SwoftTest\\Trace\\": "src/trace/test/",
-      "SwoftTest\\WebSocket\\Server\\": "src/websocket-server/test/"
+    "autoload": {
+        "psr-4": {
+            "Swoft\\Db\\": "src/"
+        },
+        "files": [
+            "src/Helper/Functions.php"
+        ]
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SwoftTest\\Db\\": "test"
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packagist.laravel-china.org"
+        }
+    ],
+    "scripts": {
     }
-  },
-  "extra": {
-    "branch-alias": {
-      "2.0.x-dev": "2.0-dev"
-    }
-  },
-  "repositories": {
-    "packagist": {
-      "type": "composer",
-      "url": "https://packagist.laravel-china.org"
-    }
-  },
-  "scripts": {
-  }
 }

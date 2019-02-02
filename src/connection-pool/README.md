@@ -1,2 +1,0 @@
-# swoft-pool
-Swoft Pool
