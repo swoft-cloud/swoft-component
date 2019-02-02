@@ -23,12 +23,12 @@ class ConfigParser extends Parser
      */
     public function parse(int $type, $annotationObject): array
     {
-        if ($type != Parser::TYPE_PROPERTY) {
+        if ($type !== Parser::TYPE_PROPERTY) {
             return [];
         }
 
         $key   = $annotationObject->getKey();
-        $value = sprintf('config.%s', $key);
+        $value = \sprintf('config.%s', $key);
 
         return [$value, true];
     }

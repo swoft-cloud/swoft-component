@@ -2,9 +2,9 @@
 
 namespace Swoft;
 
-
 use Swoft\Config\Config;
 use Swoft\Annotation\AutoLoader as AnnotationAutoLoader;
+use Swoft\Event\Manager\EventManager;
 
 /**
  * Class AutoLoader
@@ -39,7 +39,10 @@ class AutoLoader extends AnnotationAutoLoader implements DefinitionInterface
                 'parsers' => [
                     Config::TYPE_PHP => '${phpParser}'
                 ]
-            ]
+            ],
+            'eventManager' => [
+                'class' => EventManager::class,
+            ],
         ];
     }
 }

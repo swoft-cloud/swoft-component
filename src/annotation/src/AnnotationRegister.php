@@ -129,7 +129,7 @@ class AnnotationRegister
     }
 
     /**
-     * Add autolaoder
+     * Add autoloader
      *
      * @param string          $namespace
      * @param LoaderInterface $autoLoader
@@ -139,5 +139,14 @@ class AnnotationRegister
     public static function addAutoLoader(string $namespace, LoaderInterface $autoLoader): void
     {
         self::$autoLoaders[$namespace] = $autoLoader;
+    }
+
+    /**
+     * @param string $namespace
+     * @return LoaderInterface|null
+     */
+    public static function getAutoLoader(string $namespace): ?LoaderInterface
+    {
+        return self::$autoLoaders[$namespace] ?? null;
     }
 }

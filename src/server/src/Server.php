@@ -61,7 +61,7 @@ abstract class Server implements ServerInterface
      *
      * @var string
      */
-    protected $pidFille = '@runtime/swoft.pid';
+    protected $pidFile = '@runtime/swoft.pid';
 
     /**
      * Pid name
@@ -126,7 +126,7 @@ abstract class Server implements ServerInterface
      */
     protected function onStart(CoServer $server): void
     {
-        $pidFile = alias($this->pidFille);
+        $pidFile = alias($this->pidFile);
         $pidStr  = sprintf('%s,%s', $server->master_pid, $server->manager_pid);
         $title   = sprintf('%s master process (%s)', $this->pidName, $this->scriptFile);
 
@@ -167,12 +167,12 @@ abstract class Server implements ServerInterface
 
         // TaskWorker
         if ($workerId >= $setting['worker_num']) {
-            Sys::setProcessTitle(sprintf('%s task process'));
+            Sys::setProcessTitle(sprintf('%s task process', $workerId));
             return;
         }
 
         // Worker
-        Sys::setProcessTitle(sprintf('%s worker process'));
+        Sys::setProcessTitle(sprintf('%s worker process', $workerId));
 
     }
 
@@ -213,10 +213,11 @@ abstract class Server implements ServerInterface
 
     /**
      * Bind swoole event
+     * @throws ServerException
      */
     protected function startSwoole(): void
     {
-        if (empty($this->swooleServer)) {
+        if ($this->swooleServer === null) {
             throw new ServerException('You must to new server before start swoole!');
         }
 

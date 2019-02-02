@@ -1,17 +1,17 @@
 <?php
 
-namespace SwoftTest\Event;
+namespace SwoftTest\Event\Listener;
 
-use Swoft\Event\Listener\ListenerQueue;
 use PHPUnit\Framework\TestCase;
+use Swoft\Event\Listener\ListenerQueue;
 
 /**
  * Class ListenerQueueTest
- * @package SwoftTest\Event
+ * @package SwoftTest\Event\Listener
  */
 class ListenerQueueTest extends TestCase
 {
-    public function testQueue()
+    public function testQueue(): void
     {
         $cb0 = (object)'handler0';
         $cb1 = (object)'handler1';

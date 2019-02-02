@@ -2,7 +2,9 @@
 
 namespace Swoft\Processor;
 
-use App\Model\Logic\DemoLogic;
+use Swoft\Event\Annotation\Parser\ListenerParser;
+use Swoft\Event\Annotation\Parser\SubscriberParser;
+use Swoft\Event\Manager\EventManager;
 
 /**
  * Event processor
@@ -10,23 +12,23 @@ use App\Model\Logic\DemoLogic;
 class EventProcessor extends Processor
 {
     /**
-     * Handle event
+     * Handle event register
+     * @return bool
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function handle(): bool
     {
         if (!$this->application->beforeEvent()) {
             return false;
         }
-//        echo 'event' . PHP_EOL;
 
-        /* @var DemoLogic $logic*/
-        $logic = bean(DemoLogic::class);
-        
-        $logic->getData()->getDao();
-        
-//        var_dump(config('db.host'));
-//        var_dump(config('db'));
-//        var_dump(config('name'));
+        /** @var EventManager $em */
+        $em = \bean('eventManager');
+
+        ListenerParser::addListeners($em);
+        SubscriberParser::addSubscribers($em);
+
         return $this->application->afterEvent();
     }
 }

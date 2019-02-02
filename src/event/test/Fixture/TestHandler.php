@@ -2,12 +2,14 @@
 
 namespace SwoftTest\Event\Fixture;
 
-use Swoft\Event\EventInterface;
+use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
+use Swoft\Event\EventInterface;
 
 /**
  * Class TestHandler
  * @package SwoftTest\Event\Fixture
+ * @Listener("test.evt")
  */
 class TestHandler implements EventHandlerInterface
 {

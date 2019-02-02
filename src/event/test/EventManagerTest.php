@@ -2,37 +2,55 @@
 
 namespace SwoftTest\Event;
 
+use PHPUnit\Framework\TestCase;
 use Swoft\Event\Event;
 use Swoft\Event\EventInterface;
 use Swoft\Event\Manager\EventManager;
 use Swoft\Event\Manager\EventManagerInterface;
 use SwoftTest\Event\Fixture\TestHandler;
-use PHPUnit\Framework\TestCase;
+use SwoftTest\Event\Fixture\TestSubscriber;
 
 /**
  * Class EventManagerTest
  */
 class EventManagerTest extends TestCase
 {
-    public function testCreate()
+    public function testCreate(): void
     {
         $em = new EventManager();
-
         $this->assertInstanceOf(EventManagerInterface::class, $em);
+        $this->assertEmpty($em->getParent());
+        $this->assertNotEmpty($em->getBasicEvent());
+        $this->assertSame(0, $em->countEvents());
+
+        $em->setBasicEvent(new Event('new'));
+        $this->assertNotEmpty($evt = $em->getBasicEvent());
+        $this->assertSame('new', $evt->getName());
+
+        $em1 = new EventManager();
+        $em1->setParent($em);
+
+        $this->assertNotEmpty($em1->getParent());
     }
 
-    public function testAttach()
+    public function testAttach(): void
     {
         $em = new EventManager();
-        $em->attach('test', new TestHandler());
+        $l1 = new TestHandler();
+        $em->attach('test', $l1);
         $em->attach('test', function () {
             //
         });
 
+        $this->assertTrue($em->hasListener($l1));
+        $this->assertTrue($em->hasListener($l1, 'test'));
         $this->assertCount(2, $em->getListeners('test'));
+
+        $em->detach('test', $l1);
+        $this->assertCount(1, $em->getListeners('test'));
     }
 
-    public function testPriority()
+    public function testPriority(): void
     {
         $l0 = new TestHandler();
         $l1 = function () {
@@ -47,7 +65,7 @@ class EventManagerTest extends TestCase
         $this->assertEquals(5, $em->getListenerPriority($l1, 'test'));
     }
 
-    public function testTrigger()
+    public function testTrigger(): void
     {
         $l0 = new class
         {
@@ -67,9 +85,25 @@ class EventManagerTest extends TestCase
 
         $evt = $em->trigger('test', 'target', ['key' => 'val']);
 
-        $this->assertInstanceOf(EventInterface::class, $evt);
         $this->assertEquals('new target', $evt->getTarget());
         $this->assertEquals('new val', $evt->getParam('key'));
         $this->assertArrayHasKey('key1', $evt->getParams());
+    }
+
+    public function testSubscriber(): void
+    {
+        $em = new EventManager();
+        $em->addListener(TestSubscriber::class);
+
+        $this->assertTrue($em->hasListeners(TestSubscriber::EVENT_ONE));
+        $this->assertTrue($em->hasListeners(TestSubscriber::EVENT_TWO));
+
+        $evt = $em->trigger(TestSubscriber::EVENT_ONE);
+
+        $this->assertArrayHasKey('msg', $evt->getParams());
+        $this->assertSame(
+            'handle the event: test.event1 position: TestSubscriber.handleEvent1()',
+            $evt->getParam('msg')
+        );
     }
 }

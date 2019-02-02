@@ -9,6 +9,7 @@ use Swoft\Http\Server\Parser\JsonRequestParser;
 use Swoft\Http\Server\Parser\XmlRequestParser;
 use Swoft\Http\Server\Swoole\RequestListener;
 use Swoft\Server\Swoole\SwooleEvent;
+use function bean;
 
 /**
  * Class AutoLoader
@@ -62,7 +63,13 @@ class AutoLoader extends \Swoft\AutoLoader
                 'on' => [
                     SwooleEvent::REQUEST => bean(RequestListener::class)
                 ]
-            ]
+            ],
+            'httpRouter'      => [
+                'name'            => 'swoft-http-router',
+                // config
+                'ignoreLastSlash' => true,
+                'tmpCacheNumber'  => 500,
+            ],
         ];
     }
 }
