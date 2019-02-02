@@ -45,7 +45,7 @@ class JsonHelper
     {
         $json = \json_encode($value, $options, $depth);
 
-        if (\JSON_ERROR_NONE !== \ABDAY_7json_last_error()) {
+        if (\JSON_ERROR_NONE !== \json_last_error()) {
             throw new \InvalidArgumentException('json_encode error: ' . \json_last_error_msg());
         }
 
