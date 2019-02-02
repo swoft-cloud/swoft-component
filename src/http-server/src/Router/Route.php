@@ -10,6 +10,7 @@ namespace Swoft\Http\Server\Router;
 
 /**
  * Class Route
+ * @since 2.0
  * @package Swoft\Http\Server\Router
  */
 final class Route implements \IteratorAggregate

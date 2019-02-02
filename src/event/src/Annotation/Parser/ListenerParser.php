@@ -13,6 +13,7 @@ use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Event\Annotation\Mapping\Listener;
+use Swoft\Event\Manager\EventManager;
 
 /**
  * Class ListenerParser
@@ -23,6 +24,11 @@ use Swoft\Event\Annotation\Mapping\Listener;
  */
 class ListenerParser extends Parser
 {
+    /**
+     * @var array
+     */
+    private static $listeners = [];
+
     /**
      * @param int      $type
      * @param Listener $annotation
@@ -36,6 +42,20 @@ class ListenerParser extends Parser
             throw new AnnotationException('`@Listener` must be defined by class!');
         }
 
+        self::$listeners[] = [$annotation->getEvent(), $this->className];
+
         return [$this->className, $this->className, Bean::SINGLETON, ''];
+    }
+
+    /**
+     * register collected event listeners to EventManager
+     *
+     * @param EventManager $em
+     */
+    public static function register(EventManager $em): void
+    {
+        foreach (self::$listeners as [$event, $listener]) {
+            $em->addListener($listener, $event);
+        }
     }
 }

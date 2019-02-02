@@ -6,11 +6,12 @@
  * Time: 23:06
  */
 
-namespace Swoft;
+namespace Swoft\Contract;
 
 /**
- * Interface RouterInterface - base interface for router
- * @package Swoft
+ * Interface RouterInterface - base interface for service router
+ * @since 2.0
+ * @package Swoft\Contract
  */
 interface RouterInterface
 {

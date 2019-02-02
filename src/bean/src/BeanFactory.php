@@ -7,8 +7,7 @@ use Swoft\Bean\Exception\ContainerException;
 /**
  * Class BeanFactory
  */
-class
-BeanFactory
+class BeanFactory
 {
     /**
      * Init

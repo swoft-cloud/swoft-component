@@ -2,12 +2,12 @@
 
 namespace Swoft\Http\Server\Annotation\Parser;
 
-
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Server\Annotation\Mapping\Controller;
 use Swoft\Http\Server\HttpServerException;
+use Swoft\Http\Server\Router\RoutesCollector;
 
 /**
  * Class ControllerParser
@@ -20,16 +20,19 @@ class ControllerParser extends Parser
 {
     /**
      * @param int        $type
-     * @param Controller $annotationObject
+     * @param Controller $annotation
      *
      * @return array
      * @throws HttpServerException
      */
-    public function parse(int $type, $annotationObject): array
+    public function parse(int $type, $annotation): array
     {
-        if ($type != self::TYPE_CLASS) {
+        if ($type !== self::TYPE_CLASS) {
             throw new HttpServerException('`@Controller` must be defined by class!');
         }
+
+        // add route prefix for controller
+        RoutesCollector::addPrefix($this->className, $annotation->getPrefix());
 
         return [$this->className, $this->className, Bean::SINGLETON, ''];
     }

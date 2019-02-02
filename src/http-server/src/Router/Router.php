@@ -8,11 +8,16 @@
 
 namespace Swoft\Http\Server\Router;
 
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Server\Helper\RouteHelper;
 
 /**
  * Class Router - This is object version
+ *
+ * @since 2.0
  * @package Swoft\Http\Server\Router
+ *
+ * @Bean("httpRotuer")
  */
 class Router implements RouterInterface
 {

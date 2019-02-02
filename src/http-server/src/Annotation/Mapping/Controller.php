@@ -22,6 +22,8 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 final class Controller
 {
     /**
+     * Route group prefix for the controller
+     *
      * @var string
      */
     private $prefix = '';
