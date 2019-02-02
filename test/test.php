@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Db;
+namespace SwoftTest\Db;
 
 
-class Db
+class test
 {
 
 }
