@@ -30,9 +30,15 @@ interface ComponentInterface extends DefinitionInterface, LoaderInterface
      *
      * @return array
      * [
-     *  'name'        => 'my component',
-     *  'author'      => 'tom',
+     *  'name'        => 'user/package', // same composer.json -> name
+     *  'title'       => 'my component',
      *  'version'     => '1.0.0',
+     *  'authors'     => [
+     *      [
+     *          'name' => 'tom',
+     *          'homepage' => 'https://github.com/tom'
+     *      ]
+     *  ],
      *  'createAt'    => '2019.02.12',
      *  'updateAt'    => '2019.04.12',
      *  'description' => 'description for the component',

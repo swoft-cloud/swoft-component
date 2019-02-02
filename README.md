@@ -79,5 +79,5 @@ phpdbg -dauto_globals_jit=Off -qrr /usr/local/bin/phpunit --coverage-text
 only tests an special component:
 
 ```bash
-phpunit --testsuite event-tests
+phpunit --testsuite event
 ```

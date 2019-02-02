@@ -17,6 +17,25 @@ use Swoft\Contract\ComponentInterface;
 abstract class SwoftComponent implements ComponentInterface
 {
     /**
+     * @var array
+     */
+    private $metadata;
+
+    /**
+     * Class constructor.
+     */
+    public function __construct()
+    {
+        $defaultData = [
+            'name'        => '',
+            'title'       => '',
+            'description' => '',
+        ];
+
+        $this->metadata = \array_merge($defaultData, $this->metadata());
+    }
+
+    /**
      * @return bool
      */
     public function enable(): bool
@@ -30,5 +49,21 @@ abstract class SwoftComponent implements ComponentInterface
     public function coreBean(): array
     {
         return [];
+    }
+
+    /**
+     * Metadata information for the component.
+     *
+     * @return array
+     * @see ComponentInterface::getMetadata()
+     */
+    abstract public function metadata(): array;
+
+    /**
+     * @return array
+     */
+    public function getMetadata(): array
+    {
+        return $this->metadata;
     }
 }
