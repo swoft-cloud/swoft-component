@@ -39,7 +39,7 @@ class SubscriberParser extends Parser
     public function parse(int $type, $annotation): array
     {
         if ($type !== self::TYPE_CLASS) {
-            throw new AnnotationException('`@Subscriber` must be defined by class!');
+            throw new AnnotationException('`@Subscriber` must be defined on class!');
         }
 
         self::$subscribers[] = $this->className;
@@ -52,7 +52,7 @@ class SubscriberParser extends Parser
      *
      * @param EventManager $em
      */
-    public static function register(EventManager $em): void
+    public static function addSubscribers(EventManager $em): void
     {
         foreach (self::$subscribers as $className) {
             $em->addSubscriber(new $className);

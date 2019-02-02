@@ -39,10 +39,17 @@ class ListenerParser extends Parser
     public function parse(int $type, $annotation): array
     {
         if ($type !== self::TYPE_CLASS) {
-            throw new AnnotationException('`@Listener` must be defined by class!');
+            throw new AnnotationException('`@Listener` must be defined on class!');
         }
 
-        self::$listeners[] = [$annotation->getEvent(), $this->className];
+        // collect listeners
+        self::$listeners[] = [
+            $this->className,
+            [
+                // event name => listener priority
+                $annotation->getEvent() => $annotation->getPriority()
+            ]
+        ];
 
         return [$this->className, $this->className, Bean::SINGLETON, ''];
     }
@@ -52,10 +59,10 @@ class ListenerParser extends Parser
      *
      * @param EventManager $em
      */
-    public static function register(EventManager $em): void
+    public static function addListeners(EventManager $em): void
     {
-        foreach (self::$listeners as [$event, $listener]) {
-            $em->addListener($listener, $event);
+        foreach (self::$listeners as [$listener, $eventInfo]) {
+            $em->addListener($listener, $eventInfo);
         }
     }
 }

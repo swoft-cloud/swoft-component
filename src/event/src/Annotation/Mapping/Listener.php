@@ -34,6 +34,13 @@ final class Listener
     private $event = '';
 
     /**
+     * Listener priority value
+     *
+     * @var int
+     */
+    private $priority = 0;
+
+    /**
      * Class constructor.
      *
      * @param array $values
@@ -42,10 +49,12 @@ final class Listener
     {
         if (isset($values['value'])) {
             $this->event = (string)$values['value'];
+        } elseif (isset($values['event'])) {
+            $this->event = $values['event'];
         }
 
-        if (isset($values['event'])) {
-            $this->event = $values['event'];
+        if (isset($values['priority'])) {
+            $this->priority = (int)$values['priority'];
         }
     }
 
@@ -57,5 +66,13 @@ final class Listener
     public function getEvent(): string
     {
         return $this->event;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPriority(): int
+    {
+        return $this->priority;
     }
 }
