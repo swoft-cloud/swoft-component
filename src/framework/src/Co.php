@@ -7,10 +7,15 @@ namespace Swoft;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoole\Coroutine;
 
+/**
+ * Class Co
+ * @since 2.0
+ * @package Swoft
+ */
 class Co
 {
     /**
-     * Coroutine id mappping
+     * Coroutine id mapping
      *
      * @var array
      * @example
@@ -48,10 +53,12 @@ class Co
      *
      * @param callable $callable
      */
-    public static function create(callable $callable)
+    public static function create(callable $callable): void
     {
         $tid = self::tid();
-        go(function () use ($callable, $tid) {
+
+        // return coroutine ID for created.
+        \go(function () use ($callable, $tid) {
 
             $id = Coroutine::getCid();
 

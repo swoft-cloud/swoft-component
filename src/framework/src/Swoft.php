@@ -10,6 +10,8 @@ use Swoft\Event\Manager\EventManager;
  */
 class Swoft
 {
+    public const VERSION = '2.0.0-beta';
+
     /**
      * Aliases
      *
