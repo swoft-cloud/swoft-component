@@ -30,12 +30,12 @@ class MiddlewareParser extends Parser
     {
         $name = $annotationObject->getName();
 
-        if ($type == self::TYPE_CLASS) {
+        if ($type === self::TYPE_CLASS) {
             MiddlewareRegister::registerByClassName($name, $this->className);
             return [];
         }
 
-        if ($type == self::TYPE_METHOD) {
+        if ($type === self::TYPE_METHOD) {
             MiddlewareRegister::registerByMethodName($name, $this->className, $this->methodName);
             return [];
         }

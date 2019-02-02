@@ -46,10 +46,10 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
      */
     public function __construct()
     {
-        $processorss = $this->processors();
+        $processors = $this->processors();
 
         $this->processor = new ApplicationProcessor($this);
-        $this->processor->addFirstProcessor(...$processorss);
+        $this->processor->addFirstProcessor(...$processors);
     }
 
     /**
@@ -57,9 +57,14 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
      */
     public function run(): void
     {
-        if ($this->beforeRun()) {
-            $this->processor->handle();
+        if (!$this->beforeRun()) {
+            return;
         }
+
+        $this->processor->handle();
+
+        // trigger a app init event
+        \Swoft::trigger(SwoftEvent::APP_INIT_AFTER);
     }
 
     /**

@@ -30,6 +30,13 @@ trait RouterConfigTrait
         'act' => '[a-zA-Z][\w-]+', // match a action name
     ];
 
+    /** @var array global Options */
+    private $globalOptions = [
+        // 'domains' => [ 'localhost' ], // allowed domains
+        // 'schemas' => [ 'http' ], // allowed schemas
+        // 'time' => ['12'],
+    ];
+
     /*******************************************************************************
      * router config
      ******************************************************************************/
@@ -52,12 +59,11 @@ trait RouterConfigTrait
      */
     public $handleMethodNotAllowed = false;
 
-    /** @var array global Options */
-    private $globalOptions = [
-        // 'domains' => [ 'localhost' ], // allowed domains
-        // 'schemas' => [ 'http' ], // allowed schemas
-        // 'time' => ['12'],
-    ];
+    /**
+     * Controller suffix. eg: 'Controller'
+     * @var string
+     */
+    public $controllerSuffix = 'Controller';
 
     /**
      * config the router
@@ -78,7 +84,7 @@ trait RouterConfigTrait
             'handleMethodNotAllowed' => 1,
             // 'autoRoute'              => 1,
             // 'controllerNamespace'    => 1,
-            // 'controllerSuffix'       => 1,
+            'controllerSuffix'       => 1,
         ];
 
         foreach ($config as $name => $value) {

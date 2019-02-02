@@ -12,7 +12,7 @@ namespace Swoft\Http\Server\Router;
  * Interface RouterInterface
  * @package Swoft\Http\Server\Router
  */
-interface RouterInterface extends \IteratorAggregate, \Countable, \Swoft\RouterInterface
+interface RouterInterface extends \IteratorAggregate, \Countable, \Swoft\Contract\RouterInterface
 {
     /** match result status list */
     public const FOUND              = 1;

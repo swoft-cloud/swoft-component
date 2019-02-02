@@ -7,8 +7,7 @@ use Swoft\Bean\Exception\ContainerException;
 /**
  * Class BeanFactory
  */
-class
-BeanFactory
+class BeanFactory
 {
     /**
      * Init
@@ -27,7 +26,7 @@ BeanFactory
      *
      * @param string $name Bean name Or alias Or class name
      *
-     * @return object
+     * @return object|mixed
      * @throws ContainerException
      * @throws \ReflectionException
      */
