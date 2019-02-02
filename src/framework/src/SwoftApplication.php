@@ -59,6 +59,9 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     {
         if ($this->beforeRun()) {
             $this->processor->handle();
+
+            // trigger a app init event
+            Swoft::trigger(SwoftEvent::APP_INIT_AFTER);
         }
     }
 

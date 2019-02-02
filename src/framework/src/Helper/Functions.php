@@ -47,7 +47,19 @@ if (!function_exists('alias')) {
      */
     function alias(string $key): string
     {
-        return \Swoft\Swoft::getAlias($key);
+        return \Swoft::getAlias($key);
+    }
+}
+
+if (!function_exists('event')) {
+    /**
+     * @return \Swoft\Event\Manager\EventManager
+     * @throws ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    function event(): \Swoft\Event\Manager\EventManager
+    {
+        return \Swoft\Bean\BeanFactory::getBean('eventManager');
     }
 }
 

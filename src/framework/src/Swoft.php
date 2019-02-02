@@ -1,6 +1,7 @@
 <?php
 
-namespace Swoft;
+use Swoft\Event\EventInterface;
+use Swoft\Event\Manager\EventManager;
 
 /**
  * Swoft is a helper class serving common framework functions.
@@ -15,14 +16,14 @@ class Swoft
      * @var array
      */
     private static $aliases = [
-        '@app'     => APP_PATH,
-        '@base'    => BASE_PATH,
-        '@config'  => CONFIG_PATH,
-        '@runtime' => RUNTIME_PATH
+        '@app'     => \APP_PATH,
+        '@base'    => \BASE_PATH,
+        '@config'  => \CONFIG_PATH,
+        '@runtime' => \RUNTIME_PATH
     ];
 
     /**
-     * Register multi aliase
+     * Register multi aliases
      *
      * @param array $aliases
      */
@@ -111,7 +112,7 @@ class Swoft
     }
 
     /**
-     * Whether the aliase is exist
+     * Whether the alias is exist
      *
      * @param string $alias
      *
@@ -126,5 +127,54 @@ class Swoft
         }
 
         return isset(self::$aliases[$alias]);
+    }
+
+    /*******************************************************************************
+     * bean short methods
+     ******************************************************************************/
+
+    /**
+     * Whether has bean
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
+    public static function hasBean(string $name): bool
+    {
+        return \Swoft\Bean\Container::getInstance()->has($name);
+    }
+
+    /**
+     * Get object by name
+     *
+     * @param string $name Bean name Or alias Or class name
+     *
+     * @return object|mixed
+     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \ReflectionException
+     */
+    public static function getBean(string $name)
+    {
+        return \Swoft\Bean\Container::getInstance()->get($name);
+    }
+
+    /*******************************************************************************
+     * event short methods
+     ******************************************************************************/
+
+    /**
+     * trigger an swoft application event
+     * @param string|EventInterface $event eg: 'app.start' 'app.stop'
+     * @param array                 $params
+     * @param null|mixed            $target
+     * @return mixed|EventInterface
+     * @throws ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public static function trigger($event, array $params = [], $target = null)
+    {
+        /** @see EventManager::trigger() */
+        return \bean('eventManager')->trigger($event, $target, $params);
     }
 }
