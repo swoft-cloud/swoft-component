@@ -38,7 +38,9 @@
     "swoft/server": "self.version",
     "swoft/stdlib": "self.version",
     "swoft/tcp-server": "self.version",
-    "swoft/websocket-server": "self.version"
+    "swoft/websocket-server": "self.version",
+    "swoft/connection-pool": "self.version",
+    "swoft/db": "self.version"
   },
   "autoload": {
     "psr-4": {
@@ -54,7 +56,9 @@
       "Swoft\\Server\\": "src/server/src/",
       "Swoft\\Stdlib\\": "src/stdlib/src/",
       "Swoft\\Tcp\\Server\\": "src/tcp-server/src/",
-      "Swoft\\Websocket\\Server\\": "src/websocket-server/src/"
+      "Swoft\\Websocket\\Server\\": "src/websocket-server/src/",
+      "Swoft\\Connection\\Pool\\": "src/connection-pool/src/",
+      "Swoft\\Db\\": "src/db/src/"
     },
     "files": [
       "src/annotation/src/Helper/Functions.php",
