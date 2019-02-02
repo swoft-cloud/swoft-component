@@ -2,7 +2,11 @@
 
 namespace Swoft;
 
-
+/**
+ * Trait SwoftTrait
+ * @since 2.0
+ * @package Swoft
+ */
 trait SwoftTrait
 {
     /**

@@ -37,11 +37,32 @@ class ComposerJSON
     public function __construct(string $jsonFile)
     {
         if (!\file_exists($jsonFile)) {
-            throw new \InvalidArgumentException('composer.json file is not exist! FILE: ' . $jsonFile);
+            throw new \InvalidArgumentException('composer.json is not exist! FILE: ' . $jsonFile);
         }
 
         $content = \file_get_contents($jsonFile);
+        // decode
         $this->data = \json_decode($content, true);
+    }
+
+    /**
+     * get a component metadata from package composer.json
+     * @return array
+     */
+    public function getMetadata(): array
+    {
+        return [
+            'name'        => $this->data['name'] ?? 'Unknown',
+            'title'       => $this->data['name'] ?? 'Unknown',
+            'authors'     => $this->data['authors'] ?? [],
+            'license'     => $this->data['license'] ?? 'Unknown',
+            'version'     => $this->data['version'] ?? '1.0.0',
+            // 'createAt'    => '2019.02.12',
+            // 'updateAt'    => '2019.04.12',
+            'description' => $this->data['description'] ?? 'no description message',
+            'homepage'    => $this->data['homepage'] ?? '',
+            'keywords'    => $this->data['keywords'] ?? [],
+        ];
     }
 
     /**
