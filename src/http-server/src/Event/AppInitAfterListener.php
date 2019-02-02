@@ -8,14 +8,19 @@
 
 namespace Swoft\Http\Server\Event;
 
+use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Http\Server\Router\Router;
 use Swoft\Http\Server\Router\RoutesCollector;
+use Swoft\SwoftEvent;
 
 /**
  * Class AppInitAfterListener
+ * @since 2.0
  * @package Swoft\Http\Server\Event
+ *
+ * @Listener(SwoftEvent::APP_INIT_AFTER)
  */
 class AppInitAfterListener implements EventHandlerInterface
 {
@@ -26,7 +31,7 @@ class AppInitAfterListener implements EventHandlerInterface
      */
     public function handle(EventInterface $event): void
     {
-        // - register routes
+        // - register HTTP routes
 
         /** @var Router $router */
         $router = \bean('httpRouter');

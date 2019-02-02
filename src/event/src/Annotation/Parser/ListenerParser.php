@@ -64,5 +64,8 @@ class ListenerParser extends Parser
         foreach (self::$listeners as [$listener, $eventInfo]) {
             $em->addListener($listener, $eventInfo);
         }
+
+        // clear data
+        self::$listeners = [];
     }
 }

@@ -57,12 +57,14 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
      */
     public function run(): void
     {
-        if ($this->beforeRun()) {
-            $this->processor->handle();
-
-            // trigger a app init event
-            Swoft::trigger(SwoftEvent::APP_INIT_AFTER);
+        if (!$this->beforeRun()) {
+            return;
         }
+
+        $this->processor->handle();
+
+        // trigger a app init event
+        \Swoft::trigger(SwoftEvent::APP_INIT_AFTER);
     }
 
     /**

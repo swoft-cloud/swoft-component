@@ -57,5 +57,8 @@ class SubscriberParser extends Parser
         foreach (self::$subscribers as $className) {
             $em->addSubscriber(new $className);
         }
+
+        // clear data
+        self::$subscribers = [];
     }
 }
