@@ -1,17 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2018/4/24
- * Time: 上午10:32
- */
 
 namespace Swoft\Http\Server\Router;
 
 /**
  * Class Route
+ *
  * @since 2.0
- * @package Swoft\Http\Server\Router
  */
 final class Route implements \IteratorAggregate
 {
@@ -89,6 +83,7 @@ final class Route implements \IteratorAggregate
      * @param        $handler
      * @param array  $pathParams
      * @param array  $options
+     *
      * @return Route
      */
     public static function create(
@@ -103,6 +98,7 @@ final class Route implements \IteratorAggregate
 
     /**
      * @param array $config
+     *
      * @return Route
      */
     public static function createFromArray(array $config = []): self
@@ -120,6 +116,7 @@ final class Route implements \IteratorAggregate
 
     /**
      * Route constructor.
+     *
      * @param string $method
      * @param string $path
      * @param mixed  $handler
@@ -141,7 +138,9 @@ final class Route implements \IteratorAggregate
 
     /**
      * register route to the router
+     *
      * @param Router $router
+     *
      * @return Route
      */
     public function attachTo(Router $router): self
@@ -152,6 +151,7 @@ final class Route implements \IteratorAggregate
 
     /**
      * name the route and bind name to router.
+     *
      * @param string $name
      * @param Router $router
      * @param bool   $register
@@ -174,7 +174,9 @@ final class Route implements \IteratorAggregate
 
     /**
      * parse route path string. fetch route params
+     *
      * @param array $bindParams
+     *
      * @return string returns the first node string.
      */
     public function parseParam(array $bindParams = []): string
@@ -257,6 +259,7 @@ final class Route implements \IteratorAggregate
 
     /**
      * @param string $path
+     *
      * @return array returns match result. has two elements.
      * [
      *  match ok?,
@@ -302,6 +305,7 @@ final class Route implements \IteratorAggregate
 
     /**
      * @param array $params
+     *
      * @return Route
      */
     public function copyWithParams(array $params): self
@@ -314,7 +318,9 @@ final class Route implements \IteratorAggregate
 
     /**
      * push middleware(s) to the route
+     *
      * @param array ...$middleware
+     *
      * @return Route
      */
     public function middleware(...$middleware): self
@@ -329,7 +335,9 @@ final class Route implements \IteratorAggregate
     /**
      * alias of the method: middleware()
      * @see middleware()
+     *
      * @param mixed ...$middleware
+     *
      * @return Route
      */
     public function push(...$middleware): self
@@ -339,6 +347,7 @@ final class Route implements \IteratorAggregate
 
     /**
      * replace set chains.
+     *
      * @param callable[] $chains
      */
     public function setChains(array $chains): void
@@ -348,7 +357,9 @@ final class Route implements \IteratorAggregate
 
     /**
      * build uri string.
+     *
      * @param array $pathVars
+     *
      * @return string
      */
     public function toUri(array $pathVars = []): string
@@ -417,6 +428,7 @@ final class Route implements \IteratorAggregate
 
     /**
      * @param string $name
+     *
      * @return Route
      */
     public function setName(string $name): self
@@ -439,6 +451,7 @@ final class Route implements \IteratorAggregate
     /**
      * @param string $name
      * @param        $value
+     *
      * @return Route
      */
     public function addOption(string $name, $value): self
@@ -449,6 +462,7 @@ final class Route implements \IteratorAggregate
 
     /**
      * @param array $options
+     *
      * @return Route
      */
     public function setOptions(array $options): self
@@ -463,7 +477,7 @@ final class Route implements \IteratorAggregate
 
     /**
      * Retrieve an external iterator
-     * @link https://php.net/manual/en/iteratoraggregate.getiterator.php
+     * @link  https://php.net/manual/en/iteratoraggregate.getiterator.php
      * @return \Traversable An instance of an object implementing <b>Iterator</b> or <b>Traversable</b>
      * @since 5.0.0
      */
@@ -499,6 +513,7 @@ final class Route implements \IteratorAggregate
     /**
      * @param string     $name
      * @param null|mixed $default
+     *
      * @return string|mixed
      */
     public function getParam(string $name, $default = null)

@@ -1,23 +1,17 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-02
- * Time: 14:50
- */
 
 namespace Swoft\Http\Server\Annotation\Mapping;
 
 use Doctrine\Common\Annotations\Annotation\Required;
+use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
  * HTTP action method annotation
  *
- * @since 2.0
- * @package Swoft\Http\Server\Annotation\Mapping
- *
  * @Annotation
  * @Target("METHOD")
+ *
+ * @since 2.0
  */
 class RequestMapping
 {

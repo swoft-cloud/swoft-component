@@ -40,14 +40,16 @@ class AcceptResponseFormatter implements ResponseFormatterInterface
         $accepts    = $request->getHeader('accept');
         $acceptType = \current($accepts);
 
-        $type = '';
+        $format = '';
         foreach ($this->formats as $contentType => $formatType) {
-                $type = $formatType;
+            if (strpos($acceptType, $contentType) === 0) {
+                $format = $formatType;
                 break;
+            }
         }
 
-        if (!empty($type)) {
-            $response->setFormat($type);
+        if (!empty($format)) {
+            $response->setFormat($format);
         }
 
         return $response;
