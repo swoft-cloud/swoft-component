@@ -15,11 +15,11 @@ class ComposerHelper
      * Get composer class loader
      *
      * @return ClassLoader
-     * @throws \Exception
+     * @throws \RuntimeException
      */
     public static function getClassLoader(): ClassLoader
     {
-        $autoloadFunctions = spl_autoload_functions();
+        $autoloadFunctions = \spl_autoload_functions();
 
         foreach ($autoloadFunctions as $autoloader) {
             if (\is_array($autoloader) && isset($autoloader[0]) && \is_object($autoloader[0])) {
@@ -29,6 +29,6 @@ class ComposerHelper
             }
         }
 
-        throw new \Exception('Composer ClassLoader not found!');
+        throw new \RuntimeException('Composer ClassLoader not found!');
     }
 }

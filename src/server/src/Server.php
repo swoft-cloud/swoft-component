@@ -94,7 +94,7 @@ abstract class Server implements ServerInterface
     /**
      * Swoole Server
      *
-     * @var \Co\Server
+     * @var \Co\Server|\Co\Http\Server|\Co\Websocket\Server
      */
     protected $swooleServer;
 
@@ -319,5 +319,41 @@ abstract class Server implements ServerInterface
     public function stop(): void
     {
         // TODO: Implement stop() method.
+    }
+
+    /**
+     * print log message to terminal
+     * @param string $msg
+     * @param array $data
+     * @param string $type
+     */
+    public function log(string $msg, array $data = [], string $type = 'info'): void
+    {
+        if ($this->isDaemonize()) {
+            return;
+        }
+
+        if (\config('debug')) {
+            // ConsoleUtil::log($msg, $data, $type);
+        }
+    }
+
+    /**
+     * Set server to Daemonize
+     *
+     * @return $this
+     */
+    public function setDaemonize(): self
+    {
+        $this->setting['daemonize'] = 1;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDaemonize(): bool
+    {
+        return (int)$this->setting['daemonize'] === 1;
     }
 }

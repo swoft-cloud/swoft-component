@@ -4,7 +4,7 @@ namespace Swoft\Stdlib\Helper;
 
 /**
  * String helper
- * 
+ *
  * @since 2.0
  */
 class StringHelper
@@ -54,13 +54,37 @@ class StringHelper
      *
      * @return string
      */
-    public static function camel($value, $lcfirst = true)
+    public static function camel($value, $lcfirst = true): string
     {
         if (isset(static::$camelCache[$value])) {
             return static::$camelCache[$value];
         }
 
         return static::$camelCache[$value] = ($lcfirst ? lcfirst(static::studly($value)) : static::studly($value));
+    }
+
+    public static function toArray(string $string, string $delimiter = ',', int $limit = 0): array
+    {
+        $string = \trim($string, "$delimiter ");
+        if ($string === '') {
+            return [];
+        }
+
+        $values  = [];
+        $rawList = $limit < 1 ? \explode($delimiter, $string) : \explode($delimiter, $string, $limit);
+
+        foreach ($rawList as $val) {
+            if (($val = \trim($val)) !== '') {
+                $values[] = $val;
+            }
+        }
+
+        return $values;
+    }
+
+    public static function explode(string $str, string $separator = ',', int $limit = 0): array
+    {
+        return static::toArray($str, $separator, $limit);
     }
 
     /**
@@ -255,10 +279,10 @@ class StringHelper
             $bytes = openssl_random_pseudo_bytes($length, $strong);
 
             if ($bytes === false || $strong === false) {
-                throw new RuntimeException('Unable to generate random string.');
+                throw new \RuntimeException('Unable to generate random string.');
             }
         } else {
-            throw new RuntimeException('OpenSSL extension or paragonie/random_compat is required for PHP 5 users.');
+            throw new \RuntimeException('OpenSSL extension or paragonie/random_compat is required for PHP 5 users.');
         }
 
         return $bytes;

@@ -8,8 +8,17 @@
 
 namespace Swoft\Http\Message;
 
+use Psr\Http\Message\ServerRequestInterface;
 
-class ServerRequest
+/**
+ * Class ServerRequest
+ * @package Swoft\Http\Message
+ * @since 2.0
+ */
+class ServerRequest implements ServerRequestInterface
 {
-
+    /**
+     * Message trait
+     */
+    use MessageTrait;
 }

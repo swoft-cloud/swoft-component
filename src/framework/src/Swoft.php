@@ -12,6 +12,14 @@ class Swoft
 {
     public const VERSION = '2.0.0-beta';
 
+    public const FONT_LOGO = "
+ ____                __ _
+/ ___|_      _____  / _| |_
+\___ \ \ /\ / / _ \| |_| __|
+ ___) \ V  V / (_) |  _| |_
+|____/ \_/\_/ \___/|_|  \__|
+";
+
     /**
      * Aliases
      *
