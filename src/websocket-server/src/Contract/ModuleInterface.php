@@ -1,15 +1,20 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: inhere
+ * Date: 2019-02-04
+ * Time: 18:02
+ */
 
-namespace Swoft\WebSocket\Server;
+namespace Swoft\WebSocket\Server\Contract;
 
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
-use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
 
 /**
  * Interface ModuleInterface
- * @package Swoft\WebSocket\Server\Controller
+ * @package Swoft\WebSocket\Server\Contract
  */
 interface ModuleInterface
 {
@@ -37,13 +42,7 @@ interface ModuleInterface
      * @param Request $request
      * @param int $fd
      */
-    public function onOpen(Server $server, Request $request, int $fd);
-
-    /**
-     * @param Server $server
-     * @param Frame $frame
-     */
-    public function onMessage(Server $server, Frame $frame);
+    public function onOpen(Server $server, Request $request, int $fd): void;
 
     /**
      * on connection closed

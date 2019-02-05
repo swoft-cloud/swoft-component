@@ -2,6 +2,9 @@
 
 namespace Swoft\WebSocket\Server\Helper;
 
+use Swoole\Http\Request;
+use Swoole\Http\Response;
+
 /**
  * Class WSHelper
  * @package Swoft\WebSocket\Server\Helper
@@ -44,6 +47,41 @@ class WSHelper
             'Sec-WebSocket-Accept'  => self::genSign($secWSKey),
             'Sec-WebSocket-Version' => self::WS_VERSION,
         ];
+    }
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @return bool
+     */
+    public static function quickHandshake(Request $request, Response $response): bool
+    {
+        // $this->log("received handshake request from fd #{$request->fd}, co ID #" . Coroutine::tid());
+
+        // websocket握手连接算法验证
+        $secWSKey = $request->header['sec-websocket-key'];
+
+        if (self::isInvalidSecWSKey($secWSKey)) {
+            $response->end();
+            return false;
+        }
+
+        $headers = self::handshakeHeaders($secWSKey);
+
+        // WebSocket connection to 'ws://127.0.0.1:9502/'
+        // failed: Error during WebSocket handshake:
+        // Response must not include 'Sec-WebSocket-Protocol' header if not present in request: websocket
+        if (isset($request->header['sec-websocket-protocol'])) {
+            $headers['Sec-WebSocket-Protocol'] = $request->header['sec-websocket-protocol'];
+        }
+
+        foreach ($headers as $key => $val) {
+            $response->header($key, $val);
+        }
+
+        $response->status(101);
+        $response->end();
+        return true;
     }
 
     /**

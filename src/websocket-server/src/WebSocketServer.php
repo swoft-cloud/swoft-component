@@ -44,11 +44,11 @@ class WebSocketServer extends Server
      */
     public function push(string $fd, string $data, $isBinary = false, bool $finish = true): bool
     {
-        if (!$this->server->exist($fd)) {
+        if (!$this->swooleServer->exist($fd)) {
             return false;
         }
 
-        return $this->server->push($fd, $data, $isBinary, $finish);
+        return $this->swooleServer->push($fd, $data, $isBinary, $finish);
     }
 
     /**
@@ -98,7 +98,7 @@ class WebSocketServer extends Server
 
         $this->log("(private)The #{$fromUser} send message to the user #{$receiver}. Data: {$data}");
 
-        return $this->server->push($receiver, $data, $opcode, $finish) ? 1 : 0;
+        return $this->swooleServer->push($receiver, $data, $opcode, $finish) ? 1 : 0;
     }
 
     /**
@@ -149,7 +149,7 @@ class WebSocketServer extends Server
         $this->log("(broadcast)The #{$fromUser} send a message to all users. Data: {$data}");
 
         while (true) {
-            $fdList = $this->server->connection_list($startFd, $pageSize);
+            $fdList = $this->swooleServer->connection_list($startFd, $pageSize);
 
             if ($fdList === false || ($num = \count($fdList)) === 0) {
                 break;
@@ -163,7 +163,7 @@ class WebSocketServer extends Server
                 $info = $this->getClientInfo($fd);
 
                 if ($info && $info['websocket_status'] > 0) {
-                    $this->server->push($fd, $data);
+                    $this->swooleServer->push($fd, $data);
                 }
             }
         }
@@ -220,7 +220,7 @@ class WebSocketServer extends Server
                     continue;
                 }
 
-                $this->server->push($fd, $data);
+                $this->swooleServer->push($fd, $data);
             }
         }
 

@@ -6,7 +6,7 @@ use Swoft\App;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
-use Swoft\WebSocket\Server\Event\WsEvent;
+use Swoft\WebSocket\Server\WsEvent;
 use Swoft\WebSocket\Server\Exception\ContextLostException;
 use Swoft\WebSocket\Server\Exception\WsException;
 use Swoft\WebSocket\Server\ModuleInterface;
@@ -105,13 +105,13 @@ class Dispatcher
 
             $className = $this->getHandler($path)[0];
 
-            \ws()->log("call ws controller $className, method is 'onMessage'", [], 'debug');
+            \server()->log("call ws controller $className, method is 'onMessage'", [], 'debug');
 
             /** @var ModuleInterface $handler */
             $handler = \bean($className);
             $handler->onMessage($server, $frame);
         } catch (\Throwable $e) {
-            \ws()->log('error on handle message, ERR: ' . $e->getMessage(), [], 'error');
+            \server()->log('error on handle message, ERR: ' . $e->getMessage(), [], 'error');
 
             /** @see \Swoft\Event\EventManager::hasListenerQueue() */
             if (App::hasBean('eventManager') && \bean('eventManager')->hasListenerQueue(WsEvent::ON_ERROR)) {
@@ -132,7 +132,7 @@ class Dispatcher
      * @throws \Swoft\WebSocket\Server\Exception\WsRouteException
      * @throws \Swoft\WebSocket\Server\Exception\ContextLostException
      */
-    public function close(Server $server, int $fd)
+    public function close(Server $server, int $fd): void
     {
         try {
             if (!$path = WebSocketContext::getMeta('path', $fd)) {
@@ -163,11 +163,11 @@ class Dispatcher
      */
     protected function getHandler(string $path): array
     {
-        /** @var HandlerMapping $router */
+        /** @var Router $router */
         $router = \bean('wsRouter');
-        list($status, $info) = $router->getHandler($path);
+        [$status, $info] = $router->getHandler($path);
 
-        if ($status !== HandlerMapping::FOUND) {
+        if ($status !== Router::FOUND) {
             throw new WsRouteException(sprintf(
                 'The requested websocket route "%s" path is not exist!',
                 $path

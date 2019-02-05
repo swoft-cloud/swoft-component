@@ -1,14 +1,17 @@
 <?php
 
-namespace Swoft\WebSocket\Server\Message;
+namespace Swoft\WebSocket\Server\Router;
 
 use Swoft\App;
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\WebSocket\Server\Exception\WsException;
 use Swoole\WebSocket\Frame;
 
 /**
  * Class MessageDispatcher
  * @package Swoft\WebSocket\Server\Message
+ *
+ * @Bean("messageDispatcher")
  */
 class MessageDispatcher
 {
@@ -39,7 +42,7 @@ class MessageDispatcher
      */
     public function dispatch($controller, string $command, $body, Frame $frame)
     {
-        \ws()->log("will call message handler, command is $command", [
+        \server()->log("will call message handler, command is $command", [
             'fd' => $frame->fd,
             'body' => $body,
         ], 'debug');
@@ -58,7 +61,7 @@ class MessageDispatcher
             }
 
             if (\class_exists($handler)) {
-                $obj = App::hasBean($handler) ? App::getBean($handler) : new $handler;
+                $obj = \Swoft::hasBean($handler) ? \Swoft::getBean($handler) : new $handler;
 
                 if (\method_exists($obj, 'execute')) {
                     $obj->execute($body, $frame);
@@ -106,7 +109,7 @@ class MessageDispatcher
     /**
      * @param array $handlers
      */
-    public function setHandlers(array $handlers)
+    public function setHandlers(array $handlers): void
     {
         $this->handlers = $handlers;
     }

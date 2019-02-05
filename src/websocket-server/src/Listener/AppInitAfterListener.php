@@ -14,6 +14,7 @@ use Swoft\Event\EventInterface;
 use Swoft\Http\Server\Router\Router;
 use Swoft\Http\Server\Router\RoutesCollector;
 use Swoft\SwoftEvent;
+use Swoft\WebSocket\Server\Annotation\Parser\WebSocketParser;
 
 /**
  * Class AppInitAfterListener
@@ -35,6 +36,6 @@ class AppInitAfterListener implements EventHandlerInterface
         /** @var Router $router */
         $router = \bean('wsRouter');
 
-        RoutesCollector::registerRoutes($router);
+        WebSocketParser::registerTo($router);
     }
 }

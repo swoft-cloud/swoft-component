@@ -1,25 +1,19 @@
 <?php
 
-namespace Swoft\WebSocket\Server\Message;
+namespace Swoft\WebSocket\Server;
 
-use Swoft\DataParser\DataParserAwareTrait;
-use Swoft\DataParser\DataParserInterface;
-use Swoft\DataParser\JsonParser;
-use Swoft\Http\Message\Server\Request;
-use Swoft\Http\Message\Server\Response;
-use Swoft\WebSocket\Server\ModuleInterface;
+use Swoft\WebSocket\Server\Contract\RequestHandlerInterface;
+use Swoft\WebSocket\Server\Router\MessageDispatcher;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
 
 /**
- * Class MessageController
- * @package Swoft\WebSocket\Server\Message
- * @property DataParserInterface $parser
+ * Class AbstractModule
+ * @since 2.0
+ * @package Swoft\WebSocket\Server
  */
-abstract class MessageController implements ModuleInterface
+abstract class AbstractModule implements RequestHandlerInterface
 {
-    use DataParserAwareTrait;
-
     /** @var array */
     protected $options = [];
 
@@ -108,7 +102,7 @@ abstract class MessageController implements ModuleInterface
      *  'body' => ...    // body data
      * ]
      */
-    final public function onMessage(Server $server, Frame $frame)
+    final public function onMessage(Server $server, Frame $frame): void
     {
         $cmd    = $this->defaultCommand;
         $parser = $this->getParser();
@@ -156,7 +150,7 @@ abstract class MessageController implements ModuleInterface
      */
     protected function onFormatError(Frame $frame)
     {
-        \ws()->push($frame->fd, 'your sent data format is invalid');
+        \server()->push($frame->fd, 'your sent data format is invalid');
     }
 
     /**

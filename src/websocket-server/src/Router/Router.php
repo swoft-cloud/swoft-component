@@ -2,15 +2,17 @@
 
 namespace Swoft\WebSocket\Server\Router;
 
-use Swoft\Http\Message\Router\HandlerMappingInterface;
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Contract\RouterInterface;
 use Swoft\WebSocket\Server\Helper\WSHelper;
 
-
 /**
- * Class HandlerMapping
+ * Class Router
  * @package Swoft\WebSocket\Server\Router
+ *
+ * @Bean("wsRouter")
  */
-class HandlerMapping implements HandlerMappingInterface
+class Router implements RouterInterface
 {
     const FOUND = 0;
     const NOT_FOUND = 1;
