@@ -21,7 +21,7 @@ class Response extends PsrResponse
     /**
      * Html
      */
-    const CONTENT_HTML = 'application/xml';
+    const CONTENT_HTML = 'text/html';
 
     /**
      * Json
