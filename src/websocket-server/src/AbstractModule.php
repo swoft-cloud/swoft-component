@@ -2,6 +2,7 @@
 
 namespace Swoft\WebSocket\Server;
 
+use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 use Swoft\WebSocket\Server\Contract\RequestHandlerInterface;
 use Swoft\WebSocket\Server\Router\MessageDispatcher;
 use Swoole\WebSocket\Frame;
@@ -14,19 +15,37 @@ use Swoole\WebSocket\Server;
  */
 abstract class AbstractModule implements RequestHandlerInterface
 {
-    /** @var array */
+    /**
+     * @var array
+     */
     protected $options = [];
 
-    /** @var MessageDispatcher */
+    /**
+     * @var MessageParserInterface
+     */
+    protected $parser;
+
+    /**
+     * @var MessageDispatcher
+     */
     protected $dispatcher;
 
-    /** @var string */
-    protected $defaultParser = JsonParser::class;
-
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $defaultCommand = 'default';
 
-    public function init()
+    /**
+     * command handlers map
+     * @var array
+     * handler is a method name in ws controller, or is a class implement MessageHandlerInterface
+     * [
+     *   'command name' => 'callback handler'
+     * ]
+     */
+    private $handlers = [];
+
+    public function init(): void
     {
         if (!$this->parser) {
             $this->setParser(new JsonParser());
@@ -65,32 +84,12 @@ abstract class AbstractModule implements RequestHandlerInterface
     }
 
     /**
-     * @param mixed $body
      * @param Frame $frame
      */
-    public function defaultCommand($body, Frame $frame)
+    public function defaultCommand(Frame $frame): void
     {
         //\ws()->send("hello, we have received your message: $body", $frame->fd);
-        \ws()->push($frame->fd, "hello, we have received your message: $body");
-    }
-
-    /**
-     * 在这里你可以验证握手的请求信息
-     * - 必须返回含有两个元素的array
-     *  - 第一个元素的值来决定是否进行握手
-     *  - 第二个元素是response对象
-     * - 可以在response设置一些自定义header,body等信息
-     * @param Request  $request
-     * @param Response $response
-     * @return array
-     * [
-     *  self::HANDSHAKE_OK,
-     *  $response
-     * ]
-     */
-    public function checkHandshake(Request $request, Response $response): array
-    {
-        return [self::HANDSHAKE_OK, $response];
+        \server()->push($frame->fd, "hello, we have received your message: {$frame->data}");
     }
 
     /**
@@ -171,5 +170,13 @@ abstract class AbstractModule implements RequestHandlerInterface
     public function getOptions(): array
     {
         return $this->options;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHandlers(): array
+    {
+        return $this->handlers;
     }
 }

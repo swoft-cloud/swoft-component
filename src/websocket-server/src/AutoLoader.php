@@ -6,7 +6,7 @@
  * Time: 12:47
  */
 
-namespace Swoft\WebSocket\Server\Event;
+namespace Swoft\WebSocket\Server;
 
 use Swoft\SwoftComponent;
 
@@ -19,6 +19,14 @@ use Swoft\SwoftComponent;
 class AutoLoader extends SwoftComponent
 {
     /**
+     * @return bool
+     */
+    public function enable(): bool
+    {
+        return false;
+    }
+
+    /**
      * Get namespace and dir
      *
      * @return array
@@ -28,7 +36,7 @@ class AutoLoader extends SwoftComponent
      */
     public function getPrefixDirs(): array
     {
-        // TODO: Implement getPrefixDirs() method.
+        return [__NAMESPACE__ => __DIR__];
     }
 
     /**
@@ -48,7 +56,7 @@ class AutoLoader extends SwoftComponent
             'wsDispatcher' => [
                 'class' => Dispatcher::class,
             ],
-            'wsRouter' => [
+            'wsRouter'     => [
                 'class' => HandlerMapping::class,
             ],
         ];

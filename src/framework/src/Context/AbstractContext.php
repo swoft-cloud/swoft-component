@@ -11,7 +11,7 @@ use Swoft\Stdlib\Helper\ArrayHelper;
  *
  * @since 2.0
  */
-class AbstractContext implements ContextInterface
+abstract class AbstractContext implements ContextInterface
 {
     /**
      * Context data
@@ -44,5 +44,13 @@ class AbstractContext implements ContextInterface
     public function get(string $key, $default = null)
     {
         return ArrayHelper::get($this->data, $key, $default);
+    }
+
+    /**
+     * Clear resource
+     */
+    public function clear(): void
+    {
+        $this->data = [];
     }
 }

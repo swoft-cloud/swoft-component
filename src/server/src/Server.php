@@ -118,6 +118,14 @@ abstract class Server implements ServerInterface
     }
 
     /**
+     * @return \Co\Http\Server|CoServer|\Co\Websocket\Server
+     */
+    public function getSwooleServer()
+    {
+        return $this->swooleServer;
+    }
+
+    /**
      * On start event
      *
      * @param CoServer $server

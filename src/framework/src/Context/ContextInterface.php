@@ -27,4 +27,9 @@ interface ContextInterface
      * @param mixed  $value
      */
     public function set(string $key, $value): void;
+
+    /**
+     * Clear resource
+     */
+    public function clear(): void;
 }

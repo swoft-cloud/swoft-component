@@ -18,8 +18,9 @@ use Swoole\WebSocket\Server;
  */
 interface ModuleInterface
 {
-    public const HANDSHAKE_OK   = 1;
-    public const HANDSHAKE_FAIL = 2;
+    // accept or reject for handshake
+    public const ACCEPT = 1;
+    public const REJECT = 2;
 
     /**
      * 在这里你可以验证握手的请求信息

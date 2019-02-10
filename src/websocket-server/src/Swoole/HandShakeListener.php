@@ -11,9 +11,14 @@ namespace Swoft\WebSocket\Server\Swoole;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Co;
+use Swoft\Context\Context;
 use Swoft\Http\Message\Request as Psr7Request;
 use Swoft\Server\Swoole\HandShakeInterface;
-use Swoft\WebSocket\Server\Event\WsEvent;
+use Swoft\WebSocket\Server\Connection;
+use Swoft\WebSocket\Server\Contract\RequestHandlerInterface;
+use Swoft\WebSocket\Server\Helper\WSHelper;
+use Swoft\WebSocket\Server\Router\Dispatcher;
+use Swoft\WebSocket\Server\WsEvent;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\WebSocket\Server;
@@ -33,21 +38,100 @@ class HandShakeListener implements HandShakeInterface
      * @param Request  $request
      * @param Response $response
      * @return bool
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function onHandShake(Request $request, Response $response): bool
     {
-        // TODO: Implement onHandShake() method.
+        $fd = $request->fd;
+        $secWSKey = $request->header['sec-websocket-key'];
+
+        // sec-websocket-key 错误
+        if (WSHelper::isInvalidSecWSKey($secWSKey)) {
+            \server()->log("Handshake: shake hands failed with the #$fd. 'sec-websocket-key' is error!");
+            return false;
+        }
+
+        // bind fd
+        Connection::bindFd($fd);
+
+        // Initialize psr7 Request and Response and metadata
+        $cid = Co::tid();
+
+        // get a clean connection instance.
+        /** @var Connection $conn */
+        $conn = \bean(Connection::class);
+        // initialize connection
+        $conn->initialize($fd, $request);
+
+        $psr7Req = Psr7Request::loadFromSwooleRequest($request);
+        $psr7Res = new \Swoft\Http\Message\Response($response);
+
+        // bind context
+        Context::set($conn, $fd);
+
+        \Swoft::trigger(WsEvent::ON_HANDSHAKE, $fd, $request, $response);
+
+        /** @var Dispatcher $dispatcher */
+        $dispatcher = \bean('wsDispatcher');
+
+        /** @var \Swoft\Http\Message\Response $psr7Res */
+        [$status, $psr7Res] = $dispatcher->handshake($psr7Req, $psr7Res);
+
+        $meta = $conn->getMetadata();
+
+        // handshake check is failed -- 拒绝连接，比如需要认证，限定路由，限定ip，限定domain等
+        if (RequestHandlerInterface::ACCEPT !== $status) {
+            \server()->log("Client #$fd handshake check failed, request path {$meta['path']}");
+            $psr7Res->send();
+
+            Connection::unbindFd();
+            // NOTICE: Rejecting a handshake still triggers a close event.
+            return false;
+        }
+
+        // setting response
+        $psr7Res = $psr7Res->withStatus(101)->withHeaders(WSHelper::handshakeHeaders($secWSKey));
+
+        if (isset($request->header['sec-websocket-protocol'])) {
+            $psr7Res = $psr7Res->withHeader('Sec-WebSocket-Protocol', $request->header['sec-websocket-protocol']);
+        }
+
+        // $this->log("Handshake: response headers:\n", $psr7Res->getHeaders());
+
+        // Response handshake successfully
+        $psr7Res->send();
+
+        // mark handshake is ok
+        $conn->setHandshake(true);
+
+        \server()->log(
+            "Handshake: Client #{$fd} handshake successful! path {$meta['path']}, co Id #$cid, Meta:",
+            $meta,
+            'debug'
+        );
+
+        // Handshaking successful, Manually triggering the open event
+        \server()->getSwooleServer()->defer(function () use ($psr7Req, $fd) {
+            $this->onOpen($psr7Req, $fd);
+        });
+
+        // unbind fd
+        Connection::unbindFd();
+        return true;
     }
 
     /**
-     * @param Server $server
      * @param Psr7Request $request
-     * @param int $fd
-     * @throws \InvalidArgumentException
+     * @param int         $fd
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public function onWsOpen(Server $server, Psr7Request $request, int $fd)
+    public function onOpen(Psr7Request $request, int $fd): void
     {
-        App::trigger(WsEvent::ON_OPEN, null, $server, $request, $fd);
+        $server = \server()->getSwooleServer();
+
+        \Swoft::trigger(WsEvent::ON_OPEN, null, $server, $request, $fd);
 
         \server()->log("connection #$fd has been opened, co ID #" . Co::tid(), [], 'debug');
 

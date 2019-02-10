@@ -9,7 +9,7 @@ use Swoft\Http\Message\Response;
 use Swoft\WebSocket\Server\WsEvent;
 use Swoft\WebSocket\Server\Exception\ContextLostException;
 use Swoft\WebSocket\Server\Exception\WsException;
-use Swoft\WebSocket\Server\ModuleInterface;
+use Swoft\WebSocket\Server\Contract\ModuleInterface;
 use Swoft\WebSocket\Server\Exception\WsRouteException;
 use Swoft\WebSocket\Server\WebSocketContext;
 use Swoole\WebSocket\Frame;
@@ -35,16 +35,16 @@ class Dispatcher
     {
         try {
             $path = $request->getUri()->getPath();
-            list($className,) = $this->getHandler($path);
+            [$className,] = $this->getHandler($path);
 
-            \ws()->log("found handler for path '$path', ws controller is $className", [], 'debug');
+            \server()->log("found handler for path '$path', ws controller is $className", [], 'debug');
         } catch (\Throwable $e) {
             /* @var ErrorHandler $errorHandler */
             // $errorHandler = \bean(ErrorHandler::class);
             // $response = $errorHandler->handle($e);
             if ($e instanceof WsRouteException) {
                 return [
-                    ModuleInterface::HANDSHAKE_FAIL,
+                    ModuleInterface::REJECT,
                     $response->withStatus(404)->withAddedHeader('Failure-Reason', 'Route not found')
                 ];
             }
@@ -58,7 +58,7 @@ class Dispatcher
 
         if (!\method_exists($handler, 'checkHandshake')) {
             return [
-                ModuleInterface::HANDSHAKE_OK,
+                ModuleInterface::ACCEPT,
                 $response->withAddedHeader('swoft-ws-handshake', 'auto')
             ];
         }

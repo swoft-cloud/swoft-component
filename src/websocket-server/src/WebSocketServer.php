@@ -2,7 +2,6 @@
 
 namespace Swoft\WebSocket\Server;
 
-
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Server\Server;
 

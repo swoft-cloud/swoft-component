@@ -40,7 +40,7 @@ class MessageDispatcher
      * @param array|mixed $body
      * @param Frame $frame
      */
-    public function dispatch($controller, string $command, $body, Frame $frame)
+    public function dispatch($controller, string $command, $body, Frame $frame): void
     {
         \server()->log("will call message handler, command is $command", [
             'fd' => $frame->fd,

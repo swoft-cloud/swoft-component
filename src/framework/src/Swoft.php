@@ -182,7 +182,7 @@ class Swoft
      * @throws ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public static function trigger($event, array $params = [], $target = null)
+    public static function trigger($event, $target = null, ...$params)
     {
         /** @see EventManager::trigger() */
         return \bean('eventManager')->trigger($event, $target, $params);
