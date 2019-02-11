@@ -149,12 +149,9 @@ trait RouterConfigTrait
 
     /**
      * @param array $globalOptions
-     * @return $this
      */
-    public function setGlobalOptions(array $globalOptions): self
+    public function setGlobalOptions(array $globalOptions): void
     {
         $this->globalOptions = $globalOptions;
-
-        return $this;
     }
 }

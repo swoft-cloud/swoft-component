@@ -15,5 +15,6 @@ namespace Swoft\Contract;
  */
 interface RouterInterface
 {
-    public function add(string $method, string $path, $handler, array $binds = [], array $opts = []);
+    // public function add(string $method, string $path, $handler, array $binds = [], array $opts = []);
+    // public function match(...$params): array;
 }

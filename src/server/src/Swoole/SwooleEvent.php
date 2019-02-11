@@ -60,6 +60,11 @@ class SwooleEvent
     const WORKER_ERROR = 'workerError';
 
     /**
+     * HandShake
+     */
+    const HANDSHAKE = 'handShake';
+
+    /**
      * Message
      */
     const MESSAGE = 'message';
@@ -108,6 +113,18 @@ class SwooleEvent
      * Event interface listener mapping
      */
     const LISTENER_MAPPING = [
-        self::REQUEST => RequestInterface::class,
+        // for http server
+        self::REQUEST   => RequestInterface::class,
+        // for websocket server
+        self::HANDSHAKE => HandShakeInterface::class,
+        self::MESSAGE   => MessageInterface::class,
+        self::CLOSE     => CloseInterface::class,
+    ];
+
+    /**
+     * for websocket
+     */
+    public const WS_EVENTS = [
+
     ];
 }

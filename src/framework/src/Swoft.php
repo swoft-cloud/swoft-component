@@ -10,6 +10,16 @@ use Swoft\Event\Manager\EventManager;
  */
 class Swoft
 {
+    public const VERSION = '2.0.0-beta';
+
+    public const FONT_LOGO = "
+ ____                __ _
+/ ___|_      _____  / _| |_
+\___ \ \ /\ / / _ \| |_| __|
+ ___) \ V  V / (_) |  _| |_
+|____/ \_/\_/ \___/|_|  \__|
+";
+
     /**
      * Aliases
      *
@@ -172,7 +182,7 @@ class Swoft
      * @throws ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public static function trigger($event, array $params = [], $target = null)
+    public static function trigger($event, $target = null, ...$params)
     {
         /** @see EventManager::trigger() */
         return \bean('eventManager')->trigger($event, $target, $params);

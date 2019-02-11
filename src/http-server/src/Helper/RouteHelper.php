@@ -52,7 +52,6 @@ class RouteHelper
         return $ignoreLastSlash ? \rtrim($path, '/') : $path;
     }
 
-
     /**
      * Get controller prefix for register route
      *

@@ -12,7 +12,7 @@ use Swoft\Http\Message\Upload\UploadedFile;
 use Swoft\Http\Message\Uri\Uri;
 use Swoft\Http\Server\Concerns\InteractsWithInput;
 use Swoft\Http\Server\Parser\RequestParserInterface;
-use Swoole\Http\Request as CoReques;
+use Swoole\Http\Request as CoRequest;
 
 /**
  * Class Request
@@ -44,7 +44,7 @@ class Request extends PsrRequest implements ServerRequestInterface
     use InteractsWithInput;
 
     /**
-     * @var CoReques
+     * @var CoRequest
      */
     protected $coRequest;
 
@@ -93,12 +93,12 @@ class Request extends PsrRequest implements ServerRequestInterface
     protected $parsers = [];
 
     /**
-     * @param CoReques $coRequest
+     * @param CoRequest $coRequest
      *
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public function initialize(CoReques $coRequest): void
+    public function initialize(CoRequest $coRequest): void
     {
         $server  = $coRequest->server;
         $method  = $server['request_method'] ?? 'GET';
@@ -470,7 +470,7 @@ class Request extends PsrRequest implements ServerRequestInterface
     public function fullUrl(): string
     {
         $query    = $this->getUri()->getQuery();
-        $question = $this->getUri()->getHost() . $this->getUri()->getPath() == '/' ? '/?' : '?';
+        $question = $this->getUri()->getHost() . ($this->getUri()->getPath() === '/' ? '/?' : '?');
         return $query ? $this->url() . $question . $query : $this->url();
     }
 
@@ -479,7 +479,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      *
      * @return bool
      */
-    public function isAjax()
+    public function isAjax(): bool
     {
         return $this->isXmlHttpRequest();
     }
@@ -494,25 +494,25 @@ class Request extends PsrRequest implements ServerRequestInterface
      *
      * @return bool true if the request is an XMLHttpRequest, false otherwise
      */
-    public function isXmlHttpRequest()
+    public function isXmlHttpRequest(): bool
     {
-        return 'XMLHttpRequest' == $this->hasHeader('X-Requested-With');
+        return 'XMLHttpRequest' === $this->getHeaderLine('X-Requested-With');
     }
 
     /**
-     * @return CoReques
+     * @return CoRequest
      */
-    public function getCoRequest(): CoReques
+    public function getCoRequest(): CoRequest
     {
         return $this->coRequest;
     }
 
     /**
-     * @param CoReques $coRequest
+     * @param CoRequest $coRequest
      *
      * @return $this
      */
-    public function setCoRequest(CoReques $coRequest)
+    public function setCoRequest(CoRequest $coRequest)
     {
         $this->coRequest = $coRequest;
         return $this;
@@ -619,13 +619,13 @@ class Request extends PsrRequest implements ServerRequestInterface
     /**
      * Get a Uri populated with values from $swooleRequest->server.
      *
-     * @param CoReques $coRequest
+     * @param CoRequest $coRequest
      *
      * @return Uri
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    private function getUriByCoRequest(CoReques $coRequest)
+    private function getUriByCoRequest(CoRequest $coRequest)
     {
         $server = $coRequest->server;
         $header = $coRequest->header;
