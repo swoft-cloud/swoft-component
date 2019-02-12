@@ -28,7 +28,7 @@ interface ModuleInterface
      *  - 第一个元素的值来决定是否进行握手
      *  - 第二个元素是response对象
      * - 可以在response设置一些自定义header,body等信息
-     * @param Request $request
+     * @param Request  $request
      * @param Response $response
      * @return array
      * [
@@ -39,9 +39,9 @@ interface ModuleInterface
     public function checkHandshake(Request $request, Response $response): array;
 
     /**
-     * @param Server $server
+     * @param Server  $server
      * @param Request $request
-     * @param int $fd
+     * @param int     $fd
      */
     public function onOpen(Server $server, Request $request, int $fd): void;
 
@@ -49,7 +49,7 @@ interface ModuleInterface
      * on connection closed
      * - you can do something. eg. record log
      * @param Server $server
-     * @param int $fd
+     * @param int    $fd
      * @return mixed
      */
     public function onClose(Server $server, int $fd);

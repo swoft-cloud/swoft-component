@@ -10,7 +10,8 @@ namespace Swoft\WebSocket\Server;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Context\AbstractContext;
+use Swoft\Connection\ConnectionInterface;
+use Swoft\Helper\DataPropertyTrait;
 use Swoft\Http\Message\ServerRequest;
 use Swoole\Http\Request;
 
@@ -20,8 +21,10 @@ use Swoole\Http\Request;
  * @since 2.0
  * @Bean(scope=Bean::PROTOTYPE)
  */
-class Connection extends AbstractContext implements ConnectionInterface
+class Connection implements ConnectionInterface
 {
+    use DataPropertyTrait;
+
     private const METADATA_KEY = 'metadata';
 
     /**
@@ -118,4 +121,14 @@ class Connection extends AbstractContext implements ConnectionInterface
         return $this->fd;
     }
 
+    /**
+     * Clear resource
+     */
+    public function clear(): void
+    {
+        $this->data = [];
+        // clear
+        $this->request   = null;
+        $this->handshake = false;
+    }
 }

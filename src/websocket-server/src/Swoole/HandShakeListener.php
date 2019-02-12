@@ -11,18 +11,16 @@ namespace Swoft\WebSocket\Server\Swoole;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Co;
-use Swoft\Context\Context;
+use Swoft\Connection\Connections;
 use Swoft\Http\Message\Request as Psr7Request;
 use Swoft\Server\Swoole\HandShakeInterface;
 use Swoft\WebSocket\Server\Connection;
-use Swoft\WebSocket\Server\Connections;
 use Swoft\WebSocket\Server\Contract\RequestHandlerInterface;
+use Swoft\WebSocket\Server\Dispatcher;
 use Swoft\WebSocket\Server\Helper\WSHelper;
-use Swoft\WebSocket\Server\Router\Dispatcher;
 use Swoft\WebSocket\Server\WsEvent;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
-use Swoole\WebSocket\Server;
 
 /**
  * Class HandShakeListener
@@ -44,7 +42,7 @@ class HandShakeListener implements HandShakeInterface
      */
     public function onHandShake(Request $request, Response $response): bool
     {
-        $fd = $request->fd;
+        $fd       = $request->fd;
         $secWSKey = $request->header['sec-websocket-key'];
 
         // sec-websocket-key 错误
@@ -139,5 +137,4 @@ class HandShakeListener implements HandShakeInterface
         /** @see Dispatcher::open() */
         \bean('wsDispatcher')->open($server, $request, $fd);
     }
-
 }

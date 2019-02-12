@@ -7,9 +7,9 @@ use Co\Websocket\Frame;
 use Co\Websocket\Server;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Co;
+use Swoft\Connection\Connections;
 use Swoft\Context\Context;
 use Swoft\Server\Swoole\MessageInterface;
-use Swoft\WebSocket\Server\Connections;
 use Swoft\WebSocket\Server\WsContext;
 use Swoft\WebSocket\Server\WsEvent;
 

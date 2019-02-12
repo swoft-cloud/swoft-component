@@ -43,7 +43,7 @@ abstract class AbstractStorage
     }
 
     /**
-     * @param int $fd
+     * @param int    $fd
      * @param string $name
      */
     public function joinRoom(int $fd, string $name)
@@ -52,7 +52,7 @@ abstract class AbstractStorage
     }
 
     /**
-     * @param int $fd
+     * @param int    $fd
      * @param string $name
      */
     public function leaveRoom(int $fd, string $name)

@@ -6,13 +6,14 @@
  * Time: 13:11
  */
 
-namespace Swoft\WebSocket\Server;
+namespace Swoft\Connection;
 
 use Swoft\Co;
+use Swoft\WebSocket\Server\Connection;
 
 /**
  * Class Connections
- * @package Swoft\WebSocket\Server
+ * @package Swoft\Connection
  */
 class Connections
 {

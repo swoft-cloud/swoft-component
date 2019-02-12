@@ -50,7 +50,7 @@ class WSHelper
     }
 
     /**
-     * @param Request $request
+     * @param Request  $request
      * @param Response $response
      * @return bool
      */

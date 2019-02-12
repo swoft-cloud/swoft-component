@@ -6,13 +6,13 @@
  * Time: 13:12
  */
 
-namespace Swoft\WebSocket\Server;
+namespace Swoft\Connection;
 
 use Swoft\Context\ContextInterface;
 
 /**
  * Class ConnectionInterface - use for TCP, WS connection manage
- * @package Swoft\WebSocket\Server
+ * @package Swoft\Connection
  */
 interface ConnectionInterface extends ContextInterface
 {

@@ -9,7 +9,8 @@
 namespace Swoft\WebSocket\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Context\AbstractContext;
+use Swoft\Context\ContextInterface;
+use Swoft\Helper\DataPropertyTrait;
 use Swoole\WebSocket\Frame;
 
 /**
@@ -18,8 +19,10 @@ use Swoole\WebSocket\Frame;
  * @since 2.0
  * @Bean(scope=Bean::PROTOTYPE)
  */
-class WsContext extends AbstractContext
+class WsContext implements ContextInterface
 {
+    use DataPropertyTrait;
+
     /**
      * @var Frame
      */
@@ -47,5 +50,14 @@ class WsContext extends AbstractContext
     public function getFrame(): Frame
     {
         return $this->frame;
+    }
+
+    /**
+     * Clear resource
+     */
+    public function clear(): void
+    {
+        $this->data  = [];
+        $this->frame = null;
     }
 }

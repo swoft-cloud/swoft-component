@@ -37,8 +37,8 @@ class WebSocketServer extends Server
     /**
      * @param string $fd
      * @param string $data
-     * @param bool $isBinary
-     * @param bool $finish
+     * @param bool   $isBinary
+     * @param bool   $finish
      * @return bool
      */
     public function push(string $fd, string $data, $isBinary = false, bool $finish = true): bool
@@ -52,11 +52,11 @@ class WebSocketServer extends Server
 
     /**
      * send message to client(s)
-     * @param string $data
+     * @param string    $data
      * @param int|array $receivers
      * @param int|array $excluded
-     * @param int $sender
-     * @param int $pageSize
+     * @param int       $sender
+     * @param int       $pageSize
      * @return int
      */
     public function send(string $data, $receivers = 0, $excluded = 0, int $sender = 0, int $pageSize = 50): int
@@ -66,7 +66,7 @@ class WebSocketServer extends Server
         }
 
         $receivers = (array)$receivers;
-        $excluded = (array)$excluded;
+        $excluded  = (array)$excluded;
 
         // only one receiver
         if (1 === \count($receivers)) {
@@ -84,15 +84,15 @@ class WebSocketServer extends Server
 
     /**
      * Send a message to the specified user 发送消息给指定的用户
-     * @param int $receiver 接收者 fd
+     * @param int    $receiver 接收者 fd
      * @param string $data
-     * @param int $sender 发送者 fd
+     * @param int    $sender 发送者 fd
      * @return int
      */
     public function sendTo(int $receiver, string $data, int $sender = 0): int
     {
-        $finish = true;
-        $opcode = 1;
+        $finish   = true;
+        $opcode   = 1;
         $fromUser = $sender < 1 ? 'SYSTEM' : $sender;
 
         $this->log("(private)The #{$fromUser} send message to the user #{$receiver}. Data: {$data}");
@@ -103,9 +103,9 @@ class WebSocketServer extends Server
     /**
      * broadcast message, will exclude sender
      * @param string $data 消息数据
-     * @param int $sender 发送者
-     * @param int[] $receivers 指定接收者们
-     * @param int[] $excluded 要排除的接收者
+     * @param int    $sender 发送者
+     * @param int[]  $receivers 指定接收者们
+     * @param int[]  $excluded 要排除的接收者
      * @return int Return socket last error number code.  gt 0 on failure, eq 0 on success
      */
     public function broadcast(string $data, array $receivers = [], array $excluded = [], int $sender = 0): int
@@ -136,14 +136,14 @@ class WebSocketServer extends Server
     /**
      * send message to all connections
      * @param string $data
-     * @param int $sender
-     * @param int $pageSize
+     * @param int    $sender
+     * @param int    $pageSize
      * @return int
      */
     public function sendToAll(string $data, int $sender = 0, int $pageSize = 50): int
     {
-        $startFd = 0;
-        $count = 0;
+        $startFd  = 0;
+        $count    = 0;
         $fromUser = $sender < 1 ? 'SYSTEM' : $sender;
         $this->log("(broadcast)The #{$fromUser} send a message to all users. Data: {$data}");
 
@@ -154,7 +154,7 @@ class WebSocketServer extends Server
                 break;
             }
 
-            $count += $num;
+            $count   += $num;
             $startFd = \end($fdList);
 
             /** @var $fdList array */
@@ -172,15 +172,20 @@ class WebSocketServer extends Server
 
     /**
      * @param string $data
-     * @param array $receivers
-     * @param array $excluded
-     * @param int $sender
-     * @param int $pageSize
+     * @param array  $receivers
+     * @param array  $excluded
+     * @param int    $sender
+     * @param int    $pageSize
      * @return int
      */
-    public function sendToSome(string $data, array $receivers = [], array $excluded = [], int $sender = 0, int $pageSize = 50): int
-    {
-        $count = 0;
+    public function sendToSome(
+        string $data,
+        array $receivers = [],
+        array $excluded = [],
+        int $sender = 0,
+        int $pageSize = 50
+    ): int {
+        $count    = 0;
         $fromUser = $sender < 1 ? 'SYSTEM' : $sender;
 
         // to receivers
@@ -198,7 +203,7 @@ class WebSocketServer extends Server
         }
 
         // to special users
-        $startFd = 0;
+        $startFd  = 0;
         $excluded = $excluded ? (array)\array_flip($excluded) : [];
 
         $this->log("(broadcast)The #{$fromUser} send the message to everyone except some people. Data: {$data}");
@@ -210,7 +215,7 @@ class WebSocketServer extends Server
                 break;
             }
 
-            $count += $num;
+            $count   += $num;
             $startFd = \end($fdList);
 
             /** @var $fdList array */
@@ -232,7 +237,7 @@ class WebSocketServer extends Server
 
     /**
      * response data to client by socket connection
-     * @param int $fd
+     * @param int    $fd
      * @param string $data
      * param int $length
      * @return bool

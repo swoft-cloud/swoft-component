@@ -10,5 +10,6 @@ namespace Swoft\WebSocket\Server\Contract;
 interface MessageParserInterface
 {
     public function encode(): string;
+
     public function decode(): array;
 }

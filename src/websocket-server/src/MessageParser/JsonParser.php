@@ -24,7 +24,7 @@ class JsonParser implements MessageParserInterface
     public function decode(): array
     {
         return [
-            'cmd' => 'login',
+            'cmd'  => 'login',
             'data' => 'hello',
         ];
     }

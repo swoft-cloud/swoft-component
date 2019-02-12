@@ -11,10 +11,9 @@ namespace Swoft\WebSocket\Server\Listener;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
-use Swoft\Http\Server\Router\Router;
-use Swoft\Http\Server\Router\RoutesCollector;
 use Swoft\SwoftEvent;
 use Swoft\WebSocket\Server\Annotation\Parser\WebSocketParser;
+use Swoft\WebSocket\Server\Router\Router;
 
 /**
  * Class AppInitAfterListener

@@ -13,7 +13,7 @@ interface RequestHandlerInterface extends ModuleInterface
 {
     /**
      * @param Server $server
-     * @param Frame $frame
+     * @param Frame  $frame
      */
     public function onMessage(Server $server, Frame $frame): void;
 }
