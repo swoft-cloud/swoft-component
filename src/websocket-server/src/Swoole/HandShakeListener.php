@@ -15,6 +15,7 @@ use Swoft\Context\Context;
 use Swoft\Http\Message\Request as Psr7Request;
 use Swoft\Server\Swoole\HandShakeInterface;
 use Swoft\WebSocket\Server\Connection;
+use Swoft\WebSocket\Server\Connections;
 use Swoft\WebSocket\Server\Contract\RequestHandlerInterface;
 use Swoft\WebSocket\Server\Helper\WSHelper;
 use Swoft\WebSocket\Server\Router\Dispatcher;
@@ -53,7 +54,7 @@ class HandShakeListener implements HandShakeInterface
         }
 
         // bind fd
-        Connection::bindFd($fd);
+        Connections::bindFd($fd);
 
         // Initialize psr7 Request and Response and metadata
         $cid = Co::tid();
@@ -67,8 +68,8 @@ class HandShakeListener implements HandShakeInterface
         $psr7Req = Psr7Request::loadFromSwooleRequest($request);
         $psr7Res = new \Swoft\Http\Message\Response($response);
 
-        // bind context
-        Context::set($conn, $fd);
+        // bind connection
+        Connections::set($fd, $conn);
 
         \Swoft::trigger(WsEvent::ON_HANDSHAKE, $fd, $request, $response);
 
@@ -85,7 +86,7 @@ class HandShakeListener implements HandShakeInterface
             \server()->log("Client #$fd handshake check failed, request path {$meta['path']}");
             $psr7Res->send();
 
-            Connection::unbindFd();
+            Connections::unbindFd();
             // NOTICE: Rejecting a handshake still triggers a close event.
             return false;
         }
@@ -117,7 +118,7 @@ class HandShakeListener implements HandShakeInterface
         });
 
         // unbind fd
-        Connection::unbindFd();
+        Connections::unbindFd();
         return true;
     }
 
