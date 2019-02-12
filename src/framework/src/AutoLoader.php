@@ -4,6 +4,7 @@ namespace Swoft;
 
 use Swoft\Config\Config;
 use Swoft\Annotation\AutoLoader as AnnotationAutoLoader;
+use Swoft\Contract\DefinitionInterface;
 use Swoft\Event\Manager\EventManager;
 
 /**

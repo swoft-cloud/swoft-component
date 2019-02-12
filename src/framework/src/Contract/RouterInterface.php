@@ -11,7 +11,6 @@ namespace Swoft\Contract;
 /**
  * Interface RouterInterface - base interface for service router
  * @since 2.0
- * @package Swoft\Contract
  */
 interface RouterInterface
 {

@@ -10,8 +10,8 @@ namespace Swoft\WebSocket\Server;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Co;
-use Swoft\Context\AbstractContext;
+use Swoft\Connection\ConnectionInterface;
+use Swoft\Helper\DataPropertyTrait;
 use Swoft\Http\Message\ServerRequest;
 use Swoole\Http\Request;
 
@@ -19,18 +19,13 @@ use Swoole\Http\Request;
  * Class Connection
  * @package Swoft\WebSocket\Server
  * @since 2.0
- * @Bean(scope=Bean::REQUEST)
+ * @Bean(scope=Bean::PROTOTYPE)
  */
-class Connection extends AbstractContext
+class Connection implements ConnectionInterface
 {
-    private const METADATA_KEY = 'metadata';
+    use DataPropertyTrait;
 
-    /**
-     * The map for coroutine id to fd
-     * @var array
-     * [ coID => fd ]
-     */
-    private static $map = [];
+    private const METADATA_KEY = 'metadata';
 
     /**
      * @var int
@@ -46,41 +41,6 @@ class Connection extends AbstractContext
      * @var bool
      */
     private $handshake = false;
-
-    /**
-     * bind FD and CID relationship. (should call it on handshake ok)
-     * @param int $fd
-     */
-    public static function bindFd(int $fd): void
-    {
-        self::$map[Co::tid()] = $fd;
-    }
-
-    /**
-     * unbind FD and CID relationship. (should call it on close OR error)
-     * @return int
-     */
-    public static function unbindFd(): int
-    {
-        $fd  = 0;
-        $tid = Co::tid();
-
-        if (isset(self::$map[$tid])) {
-            $fd = self::$map[$tid];
-            unset(self::$map[$tid]);
-        }
-
-        return $fd;
-    }
-
-    /**
-     * @return int
-     */
-    public static function getBoundedFd(): int
-    {
-        $tid = Co::tid();
-        return self::$map[$tid] ?? 0;
-    }
 
     /**
      * Initialize connection object
@@ -161,4 +121,14 @@ class Connection extends AbstractContext
         return $this->fd;
     }
 
+    /**
+     * Clear resource
+     */
+    public function clear(): void
+    {
+        $this->data = [];
+        // clear
+        $this->request   = null;
+        $this->handshake = false;
+    }
 }

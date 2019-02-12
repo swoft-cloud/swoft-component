@@ -10,15 +10,22 @@ namespace SwoftTest\WebSocket\Server\Fixture;
 
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
+use Swoft\WebSocket\Server\Annotation\Mapping\MessageMapping;
+use Swoft\WebSocket\Server\Annotation\Mapping\WebSocket;
+use Swoft\WebSocket\Server\Annotation\Mapping\WsClose;
+use Swoft\WebSocket\Server\Annotation\Mapping\WsHandShake;
+use Swoft\WebSocket\Server\Annotation\Mapping\WsOpen;
 use Swoft\WebSocket\Server\Contract\RequestHandlerInterface;
 use Swoole\WebSocket\Frame;
+use Swoft\WebSocket\Server\MessageParser\JsonParser;
 use Swoole\WebSocket\Server;
 
 /**
- * Class ChatModule
- * @package SwoftTest\WebSocket\Server\Fixture
+ * Class ChatController
+ *
+ * @WebSocket("/chat", messageParser=JsonParser::class)
  */
-class ChatModule implements RequestHandlerInterface
+class ChatController
 {
     /**
      * 在这里你可以验证握手的请求信息
@@ -26,6 +33,8 @@ class ChatModule implements RequestHandlerInterface
      *  - 第一个元素的值来决定是否进行握手
      *  - 第二个元素是response对象
      * - 可以在response设置一些自定义header,body等信息
+     *
+     * @WsHandShake()
      * @param Request  $request
      * @param Response $response
      * @return array
@@ -40,6 +49,7 @@ class ChatModule implements RequestHandlerInterface
     }
 
     /**
+     * @WsOpen()
      * @param Server  $server
      * @param Request $request
      * @param int     $fd
@@ -50,15 +60,7 @@ class ChatModule implements RequestHandlerInterface
     }
 
     /**
-     * @param Server $server
-     * @param Frame  $frame
-     */
-    public function onMessage(Server $server, Frame $frame): void
-    {
-        // TODO: Implement onMessage() method.
-    }
-
-    /**
+     * @WsClose()
      * on connection closed
      * - you can do something. eg. record log
      * @param Server $server
@@ -74,5 +76,27 @@ class ChatModule implements RequestHandlerInterface
      * handle message commands
      ****************************************************************************/
 
+    /**
+     * @MessageMapping("login")
+     */
+    public function login(): void
+    {
 
+    }
+
+    /**
+     * @MessageMapping()
+     */
+    public function chat(): void
+    {
+
+    }
+
+    /**
+     * @MessageMapping()
+     */
+    public function logout(): void
+    {
+
+    }
 }

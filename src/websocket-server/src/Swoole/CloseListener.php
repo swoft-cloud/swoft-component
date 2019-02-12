@@ -11,7 +11,7 @@ namespace Swoft\WebSocket\Server\Swoole;
 
 use Co\Server as CoServer;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Context\Context;
+use Swoft\Connection\Connections;
 use Swoft\Server\Swoole\CloseInterface;
 use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\WsEvent;
@@ -31,6 +31,8 @@ class CloseListener implements CloseInterface
      * @param CoServer $server
      * @param int      $fd
      * @param int      $reactorId
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function onClose(CoServer $server, int $fd, int $reactorId): void
     {
@@ -45,11 +47,12 @@ class CloseListener implements CloseInterface
             return;
         }
 
-        /** @var Connection $conn */
-        $conn  = Context::get();
-
         $total = \server()->count();
-        \server()->log("onClose: Client #{$fd} connection has been closed. client count $total, client info:", $fdInfo, 'debug');
+        \server()->log("onClose: Client #{$fd} connection has been closed. client count $total, client info:", $fdInfo,
+            'debug');
+
+        /** @var Connection $conn */
+        $conn = Connections::get();
 
         if (!$meta = $conn->getMetadata()) {
             \server()->log("onClose: Client #{$fd} connection meta info has been lost");
@@ -68,8 +71,8 @@ class CloseListener implements CloseInterface
         \Swoft::trigger(WsEvent::ON_CLOSE, $fd, $server);
 
         // unbind fd
-        Connection::unbindFd();
-        // clear context of the connection
-        Context::destroy($fd);
+        Connections::unbindFd();
+        // remove connection
+        Connections::destroy($fd);
     }
 }

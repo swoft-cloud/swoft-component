@@ -1,6 +1,6 @@
 <?php
 
-namespace Swoft\WebSocket\Server\Router;
+namespace Swoft\WebSocket\Server;
 
 use Swoft\App;
 use Swoft\Bean\Annotation\Mapping\Bean;
@@ -9,7 +9,7 @@ use Swoole\WebSocket\Frame;
 
 /**
  * Class MessageDispatcher
- * @package Swoft\WebSocket\Server\Message
+ * @package Swoft\WebSocket\Server
  *
  * @Bean("messageDispatcher")
  */
@@ -35,15 +35,15 @@ class MessageDispatcher
     }
 
     /**
-     * @param object $controller
-     * @param string $command
+     * @param object      $controller
+     * @param string      $command
      * @param array|mixed $body
-     * @param Frame $frame
+     * @param Frame       $frame
      */
     public function dispatch($controller, string $command, $body, Frame $frame): void
     {
         \server()->log("will call message handler, command is $command", [
-            'fd' => $frame->fd,
+            'fd'   => $frame->fd,
             'body' => $body,
         ], 'debug');
 

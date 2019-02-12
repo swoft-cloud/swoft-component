@@ -14,7 +14,7 @@ use Swoft\WebSocket\Server\Helper\WSHelper;
  */
 class Router implements RouterInterface
 {
-    const FOUND = 0;
+    const FOUND     = 0;
     const NOT_FOUND = 1;
 
     /**
@@ -31,8 +31,8 @@ class Router implements RouterInterface
 
     /**
      * @param string $path
-     * @param $handler
-     * @param array $options
+     * @param        $handler
+     * @param array  $options
      */
     public function add(string $path, $handler, array $options = [])
     {
@@ -84,8 +84,8 @@ class Router implements RouterInterface
      * Register one route
      *
      * @param string $path
-     * @param mixed $handler
-     * @param array $option
+     * @param mixed  $handler
+     * @param array  $option
      */
     private function registerRoute(string $path, $handler, array $option = [])
     {
@@ -93,7 +93,7 @@ class Router implements RouterInterface
 
         $this->routes[$path] = [
             'handler' => $handler,
-            'option' => $option
+            'option'  => $option
         ];
     }
 

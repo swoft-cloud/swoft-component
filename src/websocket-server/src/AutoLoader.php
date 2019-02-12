@@ -8,7 +8,13 @@
 
 namespace Swoft\WebSocket\Server;
 
+use Swoft\Helper\ComposerJSON;
+use Swoft\Server\Swoole\SwooleEvent;
 use Swoft\SwoftComponent;
+use Swoft\WebSocket\Server\Router\Router;
+use Swoft\WebSocket\Server\Swoole\CloseListener;
+use Swoft\WebSocket\Server\Swoole\HandShakeListener;
+use Swoft\WebSocket\Server\Swoole\MessageListener;
 
 /**
  * Class AutoLoader
@@ -47,17 +53,34 @@ class AutoLoader extends SwoftComponent
      */
     public function metadata(): array
     {
-        // TODO: Implement metadata() method.
+        $jsonFile = \dirname(__DIR__) . '/composer.json';
+
+        return ComposerJSON::open($jsonFile)->getMetadata();
     }
 
+    /**
+     * @return array
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
     public function coreBean(): array
     {
         return [
-            'wsDispatcher' => [
-                'class' => Dispatcher::class,
+            'wsServer'     => [
+                'on' => [
+                    // http
+                    // SwooleEvent::REQUEST   => \bean(RequestListener::class),
+                    // websocket
+                    SwooleEvent::HANDSHAKE => \bean(HandShakeListener::class),
+                    SwooleEvent::MESSAGE   => \bean(MessageListener::class),
+                    SwooleEvent::CLOSE     => \bean(CloseListener::class),
+                ]
             ],
             'wsRouter'     => [
-                'class' => HandlerMapping::class,
+                'class' => Router::class,
+            ],
+            'wsDispatcher' => [
+                'class' => Dispatcher::class,
             ],
         ];
     }

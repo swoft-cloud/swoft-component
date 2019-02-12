@@ -9,12 +9,10 @@
 namespace Swoft\Contract;
 
 use Swoft\Annotation\LoaderInterface;
-use Swoft\DefinitionInterface;
 
 /**
  * Interface ComponentInterface
  * @since 2.0
- * @package Swoft\Contract
  */
 interface ComponentInterface extends DefinitionInterface, LoaderInterface
 {

@@ -8,10 +8,10 @@
 
 namespace Swoft\WebSocket\Server\Annotation\Mapping;
 
-use Doctrine\Common\Annotations\Annotation\Required;
-use Doctrine\Common\Annotations\Annotation\Target;
 use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;
+use Doctrine\Common\Annotations\Annotation\Required;
+use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
  * Class MessageMapping - Use for mark websocket message request command handler method
