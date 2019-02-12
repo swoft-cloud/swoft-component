@@ -90,7 +90,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      *     'content-type' => new XxxParser(),
      * ]
      */
-    protected $parsers = [];
+    private $parsers = [];
 
     /**
      * @param CoRequest $coRequest

@@ -15,10 +15,6 @@ use Psr\Http\Message\ServerRequestInterface;
  * @package Swoft\Http\Message
  * @since 2.0
  */
-class ServerRequest implements ServerRequestInterface
+class ServerRequest extends Request implements ServerRequestInterface
 {
-    /**
-     * Message trait
-     */
-    use MessageTrait;
 }

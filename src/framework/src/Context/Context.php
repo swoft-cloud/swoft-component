@@ -44,22 +44,20 @@ class Context
      * Set context
      *
      * @param ContextInterface $context
-     * @param int|null         $id On websocket server, context bind by fd.
      */
-    public static function set(ContextInterface $context, int $id = null): void
+    public static function set(ContextInterface $context): void
     {
-        $tid = $id ?: Co::tid();
+        $tid = Co::tid();
 
         self::$context[$tid] = $context;
     }
 
     /**
      * Destroy context
-     * @param int|null $id On websocket server, context bind by fd.
      */
-    public static function destroy(int $id = null): void
+    public static function destroy(): void
     {
-        $tid = $id ?: Co::tid();
+        $tid = Co::tid();
 
         if (isset(self::$context[$tid])) {
             $ctx = self::$context[$tid];

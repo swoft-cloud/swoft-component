@@ -47,11 +47,11 @@ class CloseListener implements CloseInterface
             return;
         }
 
-        /** @var Connection $conn */
-        $conn  = Connections::get();
-
         $total = \server()->count();
         \server()->log("onClose: Client #{$fd} connection has been closed. client count $total, client info:", $fdInfo, 'debug');
+
+        /** @var Connection $conn */
+        $conn  = Connections::get();
 
         if (!$meta = $conn->getMetadata()) {
             \server()->log("onClose: Client #{$fd} connection meta info has been lost");

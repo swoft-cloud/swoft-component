@@ -7,6 +7,7 @@ use Co\Websocket\Frame;
 use Co\Websocket\Server;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Co;
+use Swoft\Context\Context;
 use Swoft\Server\Swoole\MessageInterface;
 use Swoft\WebSocket\Server\Connections;
 use Swoft\WebSocket\Server\WsContext;
@@ -31,11 +32,14 @@ class MessageListener implements MessageInterface
     {
         $fd = $frame->fd;
 
+        /** @var WsContext $ctx */
+        $ctx = \bean(WsContext::class);
+        $ctx->initialize($frame);
+
+        // storage context
+        Context::set($ctx);
         // init fd and coId mapping
         Connections::bindFd($fd);
-
-        /** @var WsContext $conn */
-        $ctx = \bean(WsContext::class);
 
         \Swoft::trigger(WsEvent::ON_MESSAGE, null, $server, $frame);
 
@@ -44,6 +48,8 @@ class MessageListener implements MessageInterface
         /** @see Dispatcher::message() */
         \bean('wsDispatcher')->message($server, $frame);
 
+        // destroy context
+        Context::destroy();
         // delete coId from fd mapping
         Connections::unbindFd();
     }

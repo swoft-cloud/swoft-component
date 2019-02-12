@@ -25,9 +25,20 @@ class WsContext extends AbstractContext
      */
     private $frame;
 
+    /**
+     * @param Frame $frame
+     */
     public function initialize(Frame $frame): void
     {
 
+    }
+
+    /**
+     * @return int
+     */
+    public function getFd(): int
+    {
+        return $this->frame->fd;
     }
 
     /**
