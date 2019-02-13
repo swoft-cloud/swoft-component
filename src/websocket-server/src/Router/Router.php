@@ -14,8 +14,8 @@ use Swoft\WebSocket\Server\Helper\WSHelper;
  */
 class Router implements RouterInterface
 {
-    const FOUND     = 0;
-    const NOT_FOUND = 1;
+    public const FOUND     = 0;
+    public const NOT_FOUND = 1;
 
     /**
      * @var array

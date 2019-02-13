@@ -12,27 +12,27 @@ use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\AnnotationException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\WebSocket\Server\Annotation\Mapping\WsModule;
+use Swoft\WebSocket\Server\Annotation\Mapping\WsController;
 use Swoft\WebSocket\Server\Router\Router;
 
 /**
  * Class WebSocketParser
  * @since 2.0
  *
- * @AnnotationParser(WsModule::class)
+ * @AnnotationParser(WsController::class)
  */
-class WsModuleParser extends Parser
+class WsControllerParser extends Parser
 {
     /**
      * @var array
      */
-    private static $modules = [];
+    private static $routes = [];
 
     /**
      * Parse object
      *
-     * @param int      $type Class or Method or Property
-     * @param WsModule $annotation Annotation object
+     * @param int          $type Class or Method or Property
+     * @param WsController $annotation Annotation object
      *
      * @return array
      * Return empty array is nothing to do!
@@ -42,17 +42,15 @@ class WsModuleParser extends Parser
     public function parse(int $type, $annotation): array
     {
         if ($type !== self::TYPE_CLASS) {
-            throw new AnnotationException('`@WsModule` must be defined on class!');
+            throw new AnnotationException('`@WsController` must be defined on class!');
         }
 
         $class = $this->className;
+        $path  = $annotation->getPrefix();
 
-        self::$modules[$class] = [
-            'path'           => $annotation->getPath(),
-            'name'           => $annotation->getName(),
-            'class'          => $class,
-            'defaultCommand' => $annotation->getDefaultCommand(),
-            'messageParser'  => $annotation->getMessageParser(),
+        self::$routes[$class] = [
+            'prefix' => $path,
+            'class'  => $class,
         ];
 
         return [$class, $class, Bean::SINGLETON, ''];
@@ -63,10 +61,11 @@ class WsModuleParser extends Parser
         // $router->add($path, $handler);
     }
 
-    public static function bindEvent(string $class, string $method, string $event): void
+    public static function bindCommand(string $class, string $method, string $command): void
     {
-        self::$modules[$class] = \array_merge(self::$modules[$class], [
-            $event => $method,
-        ]);
+        self::$routes[$class]['routes'][] = [
+            'command' => $command,
+            'method'  => $method,
+        ];
     }
 }

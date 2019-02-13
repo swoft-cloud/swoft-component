@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2018/3/18
- * Time: 下午1:06
- */
 
 namespace Swoft\WebSocket\Server\Annotation\Mapping;
 
@@ -20,13 +14,22 @@ use Doctrine\Common\Annotations\Annotation\Target;
  * @Annotation
  * @Target("CLASS")
  * @Attributes(
+ *     @Attribute("name", type="string"),
  *     @Attribute("path", type="string")
  * )
  */
 final class WsModule
 {
     /**
-     * websocket route path
+     * Module name.(it must unique in a application)
+     *
+     * @var string
+     * @Required()
+     */
+    private $name;
+
+    /**
+     * Websocket route path
      *
      * @var string
      * @Required()
@@ -53,8 +56,12 @@ final class WsModule
     public function __construct(array $values)
     {
         if (isset($values['value'])) {
-            $this->path = (string)$values['value'];
-        } elseif (isset($values['path'])) {
+            $this->name = (string)$values['value'];
+        } elseif (isset($values['name'])) {
+            $this->name = (string)$values['name'];
+        }
+
+        if (isset($values['path'])) {
             $this->path = (string)$values['path'];
         }
 
@@ -89,5 +96,13 @@ final class WsModule
     public function getDefaultCommand(): string
     {
         return $this->defaultCommand;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
     }
 }

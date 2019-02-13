@@ -1,30 +1,25 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-12
- * Time: 20:02
- */
 
 namespace Swoft\WebSocket\Server\Annotation\Parser;
 
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\AnnotationException;
-use Swoft\WebSocket\Server\Annotation\Mapping\OnMessage;
+use Swoft\Server\Swoole\SwooleEvent;
+use Swoft\WebSocket\Server\Annotation\Mapping\MessageMapping;
 
 /**
  * Class WsHandShakeParser
  * @since 2.0
- * @AnnotationParser(OnMessage::class)
+ * @AnnotationParser(MessageMapping::class)
  */
-class WsMessageParser extends Parser
+class MessageMappingParser extends Parser
 {
     /**
      * Parse object
      *
      * @param int       $type Class or Method or Property
-     * @param OnMessage $annotation Annotation object
+     * @param MessageMapping $annotation Annotation object
      *
      * @return array
      * Return empty array is nothing to do!
@@ -34,10 +29,10 @@ class WsMessageParser extends Parser
     public function parse(int $type, $annotation): array
     {
         if ($type !== self::TYPE_METHOD) {
-            throw new AnnotationException('`@OnMessage` must be defined on class method!');
+            throw new AnnotationException('`@MessageMapping` must be defined on class method!');
         }
 
-        WsModuleParser::addMethodBind($this->className, $this->methodName);
+        WsControllerParser::bindCommand($this->className, $this->methodName, $annotation->getCommand());
 
         return [];
     }

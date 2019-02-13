@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-13
- * Time: 13:28
- */
 
 namespace SwoftTest\WebSocket\Server\Fixture\Chat;
 
@@ -13,7 +7,7 @@ use Swoft\WebSocket\Server\Annotation\Mapping\WsController;
 
 /**
  * Class UserController
- * @WsController()
+ * @WsController(prefix="user", module="chat")
  */
 class UserController
 {

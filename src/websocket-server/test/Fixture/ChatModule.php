@@ -10,15 +10,15 @@ use Swoole\Http\Response;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
 use Swoft\WebSocket\Server\MessageParser\JsonParser;
-use Swoft\WebSocket\Server\Annotation\Mapping\WsClose;
-use Swoft\WebSocket\Server\Annotation\Mapping\WsHandShake;
-use Swoft\WebSocket\Server\Annotation\Mapping\WsOpen;
+use Swoft\WebSocket\Server\Annotation\Mapping\OnClose;
+use Swoft\WebSocket\Server\Annotation\Mapping\OnHandShake;
+use Swoft\WebSocket\Server\Annotation\Mapping\OnOpen;
 
 /**
  * Class AbstractModule
  * @since 2.0
  *
- * @WsModule("/chat", messageParser=JsonParser::class)
+ * @WsModule("chat", path="/chat", messageParser=JsonParser::class)
  */
 class ChatModule implements RequestHandlerInterface
 {
@@ -26,11 +26,6 @@ class ChatModule implements RequestHandlerInterface
      * @var array
      */
     protected $options = [];
-
-    /**
-     * @var MessageParserInterface
-     */
-    protected $parser;
 
     /**
      * @var string
@@ -49,12 +44,8 @@ class ChatModule implements RequestHandlerInterface
 
     public function init(): void
     {
-        if (!$this->parser) {
-            $this->setParser(new JsonParser());
-        }
-
         $this->options    = $this->configure();
-        $this->dispatcher = new MessageDispatcher($this->registerCommands());
+        // $this->dispatcher = new MessageDispatcher($this->registerCommands());
     }
 
     /**
@@ -64,7 +55,7 @@ class ChatModule implements RequestHandlerInterface
      *  - 第二个元素是response对象
      * - 可以在response设置一些自定义header,body等信息
      *
-     * @WsHandShake()
+     * @OnHandShake()
      * @param Request  $request
      * @param Response $response
      * @return array
@@ -79,7 +70,7 @@ class ChatModule implements RequestHandlerInterface
     }
 
     /**
-     * @WsOpen()
+     * @OnOpen()
      * @param Server  $server
      * @param Request $request
      * @param int     $fd
@@ -90,7 +81,7 @@ class ChatModule implements RequestHandlerInterface
     }
 
     /**
-     * @WsClose()
+     * @OnClose()
      * on connection closed
      * - you can do something. eg. record log
      * @param Server $server
