@@ -29,7 +29,7 @@ class Entity
      *
      * @var string
      */
-    private $connection = '';
+    private $pool = '';
 
     /**
      * Entity constructor.
@@ -44,8 +44,8 @@ class Entity
         if (isset($values['table'])) {
             $this->table = $values['table'];
         }
-        if (isset($values['connection'])) {
-            $this->connection = $values['connection'];
+        if (isset($values['pool'])) {
+            $this->pool = $values['pool'];
         }
     }
 
@@ -60,8 +60,8 @@ class Entity
     /**
      * @return string
      */
-    public function getConnection(): string
+    public function getPool(): string
     {
-        return $this->connection;
+        return $this->pool;
     }
 }

@@ -3,20 +3,29 @@
 
 namespace Swoft\Db;
 
+use Swoft\Connection\Pool\PoolInterface;
+
 /**
  * Class Db
  *
- * @see Connection
+ * @see   Connection
  * @since 2.0
  */
 class DB
 {
     /**
-     * @param $name
-     * @param $arguments
+     * @param string $name
+     *
+     * @return Connection
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public static function __callStatic($name, $arguments)
+    public static function pool(string $name = Pool::DEFAULT_POOL): Connection
     {
+        $pool = bean($name);
+        if (!$pool instanceof PoolInterface) {
 
+        }
+        return $pool->getConnection();
     }
 }
