@@ -14,8 +14,8 @@ use Doctrine\Common\Annotations\Annotation\Required;
 use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
- * Class WebSocket - mark an websocket module handler
- * @package Swoft\WebSocket\Server\Bean\Annotation
+ * Class WebSocket - mark an websocket connection/module handler
+ * @since 2.0
  *
  * @Annotation
  * @Target("CLASS")
@@ -23,7 +23,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
  *     @Attribute("path", type="string")
  * )
  */
-final class WebSocket
+final class WsModule
 {
     /**
      * websocket route path
@@ -34,16 +34,16 @@ final class WebSocket
     private $path = '/';
 
     /**
-     * @var
+     * Message parser class
+     * @var string
      */
     private $messageParser;
 
     /**
-     * dispatch message request
-     *
-     * @var bool
+     * Default message command
+     * @var string
      */
-    private $dispatchMessage = false;
+    private $defaultCommand = 'index';
 
     /**
      * Class constructor.
@@ -57,6 +57,14 @@ final class WebSocket
         } elseif (isset($values['path'])) {
             $this->path = (string)$values['path'];
         }
+
+        if (isset($values['messageParser'])) {
+            $this->messageParser = $values['messageParser'];
+        }
+
+        if (isset($values['defaultCommand'])) {
+            $this->defaultCommand = $values['defaultCommand'];
+        }
     }
 
     /**
@@ -65,5 +73,21 @@ final class WebSocket
     public function getPath(): string
     {
         return $this->path;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMessageParser(): string
+    {
+        return $this->messageParser;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultCommand(): string
+    {
+        return $this->defaultCommand;
     }
 }

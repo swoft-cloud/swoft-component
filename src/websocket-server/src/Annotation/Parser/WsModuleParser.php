@@ -10,18 +10,18 @@ namespace Swoft\WebSocket\Server\Annotation\Parser;
 
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
+use Swoft\Annotation\AnnotationException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\WebSocket\Server\Annotation\Mapping\WebSocket;
+use Swoft\WebSocket\Server\Annotation\Mapping\WsModule;
 use Swoft\WebSocket\Server\Router\Router;
 
 /**
  * Class WebSocketParser
  * @since 2.0
- * @package Swoft\WebSocket\Server\Annotation\Parser
  *
  * @AnnotationParser(WebSocket::class)
  */
-class WebSocketParser extends Parser
+class WsModuleParser extends Parser
 {
     /**
      * @var array
@@ -32,7 +32,7 @@ class WebSocketParser extends Parser
      * Parse object
      *
      * @param int       $type Class or Method or Property
-     * @param WebSocket $annotation Annotation object
+     * @param WsModule $annotation Annotation object
      *
      * @return array
      * Return empty array is nothing to do!
@@ -41,18 +41,32 @@ class WebSocketParser extends Parser
      */
     public function parse(int $type, $annotation): array
     {
-        $path = $annotation->getPath();
+        if ($type !== self::TYPE_CLASS) {
+            throw new AnnotationException('`@WebSocket` must be defined on class!');
+        }
 
-        self::$routes[$path] = [
-            'path'    => $path,
-            'handler' => $this->className,
+        $class = $this->className;
+        $path  = $annotation->getPath();
+
+        self::$routes[$class] = [
+            'path'           => $path,
+            'handler'        => $this->className,
+            'defaultCommand' => $annotation->getDefaultCommand(),
+            'messageParser'  => $annotation->getMessageParser(),
         ];
 
-        return [$this->className, $this->className, Bean::SINGLETON, ''];
+        return [$class, $class, Bean::SINGLETON, ''];
     }
 
     public static function registerTo(Router $router): void
     {
+        // $router->add($path, $handler);
+    }
 
+    public static function addMethodBind(string $class, string $method, array $option = []): void
+    {
+        self::$routes[$class] = \array_merge(self::$routes[$class], [
+
+        ]);
     }
 }
