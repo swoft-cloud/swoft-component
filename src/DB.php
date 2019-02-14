@@ -13,17 +13,10 @@ use Swoft\Connection\Pool\PoolInterface;
  */
 class DB
 {
-    /**
-     * @param string $name
-     *
-     * @return Connection
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     */
     public static function pool(string $name = Pool::DEFAULT_POOL): Connection
     {
         $pool = bean($name);
-        if (!$pool instanceof PoolInterface) {
+        if (!$pool instanceof Pool) {
 
         }
         return $pool->getConnection();

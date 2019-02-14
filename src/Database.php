@@ -5,6 +5,8 @@ namespace Swoft\Db;
 
 use Swoft\Db\Connector\ConnectorInterface;
 use Swoft\Db\Connector\MySqlConnector;
+use Swoft\Server\Swoole\ConnectInterface;
+use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\ArrayHelper;
 
 /**
@@ -81,11 +83,102 @@ class Database
     protected $connectors = [];
 
     /**
+     * @var array
+     */
+    protected $connections = [];
+
+    /**
+     * @var ConnectInterface
+     */
+    protected $connector;
+
+    /**
+     * @var array
+     */
+    protected $writes = [];
+
+    /**
+     * @var array
+     */
+    protected $reads = [];
+
+    /**
+     * @param Pool $pool
+     *
      * @return Connection
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public function createConnection(): Connection
+    public function createConnection(Pool $pool): Connection
+    {
+        $connection = $this->getConnection();
+        $connection->initialize($pool, $this);
+        $connection->create();
+
+        return $connection;
+    }
+
+    public function getWrites(): array
+    {
+        $config = [
+            'dsn'      => $this->dsn,
+            'username' => $this->username,
+            'password' => $this->password,
+            'charset'  => $this->charset,
+            'prefix'   => $this->prefix,
+            'options'  => $this->options,
+        ];
+
+        $config = array_merge($config, $this->options);
+
+        $masters = [];
+        foreach ($this->writes as $master) {
+            $masters[] = Arr::merge($config, $master);
+        }
+
+        if (empty($masters)) {
+            $masters[] = $config;
+        }
+
+        return $masters;
+    }
+
+    public function getReads(): array
+    {
+        if (empty($this->reads)) {
+            return [];
+        }
+
+        $config = [
+            'dsn'      => $this->dsn,
+            'username' => $this->username,
+            'password' => $this->password,
+            'charset'  => $this->charset,
+            'prefix'   => $this->prefix,
+            'options'  => $this->options,
+        ];
+
+        $config = array_merge($config, $this->options);
+
+        $slaves = [];
+        foreach ($this->reads as $slave) {
+            $slaves[] = Arr::merge($config, $slave);
+        }
+
+        if (empty($slaves)) {
+            $slaves[] = $config;
+        }
+
+        return $slaves;
+    }
+
+    /**
+     *
+     * @return ConnectorInterface
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function getConnector(): ConnectorInterface
     {
         $driver     = $this->getDriver();
         $connectors = ArrayHelper::merge($this->defaultConnectors(), $this->connectors);
@@ -95,7 +188,25 @@ class Database
 
         }
 
-        return $connector->connect($this);
+        return $connector;
+    }
+
+    /**
+     * @return Connection
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function getConnection(): Connection
+    {
+        $driver      = $this->getDriver();
+        $connections = ArrayHelper::merge($this->defaultConnections(), $this->connections);
+        $connection  = $connections[$driver] ?? null;
+
+        if (!$connection instanceof Connection) {
+
+        }
+
+        return Connection;
     }
 
     /**
@@ -119,6 +230,18 @@ class Database
     {
         return [
             self::MYSQL => bean(MySqlConnector::class)
+        ];
+    }
+
+    /**
+     * @return array
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function defaultConnections()
+    {
+        return [
+            self::MYSQL => bean(MySqlConnection::class)
         ];
     }
 
