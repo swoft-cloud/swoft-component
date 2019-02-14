@@ -1137,4 +1137,23 @@ class StringHelper
     {
         return is_string($str) && !preg_match('/[^\x00-\x7F]/S', $str);
     }
+
+    /**
+     * Get class name without suffix
+     *
+     * @param string $class full class name, with namespace.
+     * @param string $suffix class suffix
+     *
+     * @return string
+     */
+    public static function getClassName(string $class, string $suffix): string
+    {
+        $regex  = '/^.*\\\(\w+)' . $suffix . '$/';
+
+        if ($result = \preg_match($regex, $class, $match)) {
+            return \lcfirst($match[1]);
+        }
+
+        return '';
+    }
 }

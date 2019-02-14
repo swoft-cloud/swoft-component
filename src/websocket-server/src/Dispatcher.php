@@ -8,7 +8,7 @@ use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\WebSocket\Server\Contract\ModuleInterface;
 use Swoft\WebSocket\Server\Exception\ContextLostException;
-use Swoft\WebSocket\Server\Exception\WsException;
+use Swoft\WebSocket\Server\Exception\WsServerException;
 use Swoft\WebSocket\Server\Exception\WsRouteException;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
@@ -48,7 +48,7 @@ class Dispatcher
             }
 
             // other error
-            throw new WsException('handshake error: ' . $e->getMessage(), -500, $e);
+            throw new WsServerException('handshake error: ' . $e->getMessage(), -500, $e);
         }
 
         /** @var ModuleInterface $handler */

@@ -2,6 +2,7 @@
 
 namespace Swoft\WebSocket\Server;
 
+use Co\Websocket\Frame;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Server\Server;
 
@@ -35,19 +36,37 @@ class WebSocketServer extends Server
      ****************************************************************************/
 
     /**
+     * Send data to client by frame object.
+     *
+     * NOTICE: require swoole version >= 4.2.0
+     * @param Frame $frame
+     * @return bool
+     */
+    public function pushFrame(Frame $frame): bool
+    {
+        return $this->swooleServer->push($frame);
+    }
+
+    /**
      * @param string $fd
-     * @param string $data
-     * @param bool   $isBinary
+     * @param string $data Data for send to client. NOTICE: max size is 2M.
+     * @param int    $opcode
+     * text:   WEBSOCKET_OPCODE_TEXT   = 1
+     * binary: WEBSOCKET_OPCODE_BINARY = 2
+     * close:  WEBSOCKET_OPCODE_CLOSE  = 8
+     * ping:   WEBSOCKET_OPCODE_PING   = 9
+     * pong:   WEBSOCKET_OPCODE_PONG   = 10
      * @param bool   $finish
      * @return bool
      */
-    public function push(string $fd, string $data, $isBinary = false, bool $finish = true): bool
+    public function push(string $fd, string $data, int $opcode = \WEBSOCKET_OPCODE_TEXT, bool $finish = true): bool
     {
-        if (!$this->swooleServer->exist($fd)) {
+        // if (!$this->swooleServer->exist($fd)) {
+        if (!$this->swooleServer->isEstablished($fd)) {
             return false;
         }
 
-        return $this->swooleServer->push($fd, $data, $isBinary, $finish);
+        return $this->swooleServer->push($fd, $data, $opcode, $finish);
     }
 
     /**
@@ -87,12 +106,12 @@ class WebSocketServer extends Server
      * @param int    $receiver 接收者 fd
      * @param string $data
      * @param int    $sender 发送者 fd
+     * @param int    $opcode
      * @return int
      */
-    public function sendTo(int $receiver, string $data, int $sender = 0): int
+    public function sendTo(int $receiver, string $data, int $sender = 0, int $opcode = \WEBSOCKET_OPCODE_TEXT): int
     {
-        $finish   = true;
-        $opcode   = 1;
+        $finish = true;;
         $fromUser = $sender < 1 ? 'SYSTEM' : $sender;
 
         $this->log("(private)The #{$fromUser} send message to the user #{$receiver}. Data: {$data}");
@@ -101,12 +120,12 @@ class WebSocketServer extends Server
     }
 
     /**
-     * broadcast message, will exclude sender
-     * @param string $data 消息数据
-     * @param int    $sender 发送者
-     * @param int[]  $receivers 指定接收者们
-     * @param int[]  $excluded 要排除的接收者
-     * @return int Return socket last error number code.  gt 0 on failure, eq 0 on success
+     * Broadcast message to all user, but will exclude sender
+     * @param string $data Message data
+     * @param int    $sender Sender FD
+     * @param int[]  $receivers Designated recipients(FD list)
+     * @param int[]  $excluded Recipient to be excluded
+     * @return int Return send count
      */
     public function broadcast(string $data, array $receivers = [], array $excluded = [], int $sender = 0): int
     {
@@ -134,7 +153,7 @@ class WebSocketServer extends Server
     }
 
     /**
-     * send message to all connections
+     * Send message to all connections
      * @param string $data
      * @param int    $sender
      * @param int    $pageSize
@@ -142,32 +161,12 @@ class WebSocketServer extends Server
      */
     public function sendToAll(string $data, int $sender = 0, int $pageSize = 50): int
     {
-        $startFd  = 0;
-        $count    = 0;
         $fromUser = $sender < 1 ? 'SYSTEM' : $sender;
         $this->log("(broadcast)The #{$fromUser} send a message to all users. Data: {$data}");
 
-        while (true) {
-            $fdList = $this->swooleServer->connection_list($startFd, $pageSize);
-
-            if ($fdList === false || ($num = \count($fdList)) === 0) {
-                break;
-            }
-
-            $count   += $num;
-            $startFd = \end($fdList);
-
-            /** @var $fdList array */
-            foreach ($fdList as $fd) {
-                $info = $this->getClientInfo($fd);
-
-                if ($info && $info['websocket_status'] > 0) {
-                    $this->swooleServer->push($fd, $data);
-                }
-            }
-        }
-
-        return $count;
+        return $this->pageEach(function (int $fd) use($data) {
+            $this->swooleServer->push($fd, $data);
+        }, $pageSize);
     }
 
     /**
@@ -192,10 +191,10 @@ class WebSocketServer extends Server
         if ($receivers) {
             $this->log("(broadcast)The #{$fromUser} gave some specified user sending a message. Data: {$data}");
 
-            foreach ($receivers as $receiver) {
-                if ($this->exist($receiver)) {
+            foreach ($receivers as $fd) {
+                if ($this->swooleServer->isEstablished($fd)) {
                     $count++;
-                    $this->swooleServer->push($receiver, $data);
+                    $this->swooleServer->push($fd, $data);
                 }
             }
 
@@ -203,37 +202,94 @@ class WebSocketServer extends Server
         }
 
         // to special users
-        $startFd  = 0;
         $excluded = $excluded ? (array)\array_flip($excluded) : [];
 
         $this->log("(broadcast)The #{$fromUser} send the message to everyone except some people. Data: {$data}");
 
-        while (true) {
-            $fdList = $this->swooleServer->connection_list($startFd, $pageSize);
-
-            if ($fdList === false || ($num = \count($fdList)) === 0) {
-                break;
+        return $this->pageEach(function (int $fd) use($excluded, $data) {
+            if (isset($excluded[$fd])) {
+                return;
             }
 
-            $count   += $num;
-            $startFd = \end($fdList);
+            $this->swooleServer->push($fd, $data);
+        }, $pageSize);
+    }
 
-            /** @var $fdList array */
-            foreach ($fdList as $fd) {
-                if (isset($excluded[$fd]) || !$this->exist($fd)) {
-                    continue;
-                }
+    /*****************************************************************************
+     * helper methods
+     ****************************************************************************/
 
-                $this->swooleServer->push($fd, $data);
+    /**
+     * Traverse all valid WS connections FD
+     * @param callable $handler
+     * @return int
+     */
+    public function each(callable $handler): int
+    {
+        $count = 0;
+
+        foreach ($this->swooleServer->connections as $fd) {
+            if ($this->swooleServer->isEstablished($fd)) {
+                $count++;
+                $handler($fd);
             }
         }
 
         return $count;
     }
 
-    /*****************************************************************************
-     * helper methods
-     ****************************************************************************/
+    /**
+     * Pagination traverse all valid WS connection
+     *
+     * @param callable $handler
+     * @param int      $pageSize
+     * @return int
+     */
+    public function pageEach(callable $handler, int $pageSize = 50): int
+    {
+        $count = $startFd = 0;
+
+        while (true) {
+            $fdList = (array)$this->swooleServer->getClientList($startFd, $pageSize);
+
+            // is empty
+            if (($num = \count($fdList)) === 0) {
+                break;
+            }
+
+            $count += $num;
+
+            /** @var $fdList array */
+            foreach ($fdList as $fd) {
+
+                if ($this->swooleServer->isEstablished($fd)) {
+                    $handler($fd);
+                }
+            }
+
+            // is last page.
+            if ($num < $pageSize) {
+                break;
+            }
+
+            // get start fd for next page.
+            $startFd = \end($fdList);
+        }
+
+        return $count;
+    }
+
+    /**
+     * Disconnect for client
+     * @param int    $fd
+     * @param int    $code
+     * @param string $reason
+     * @return bool
+     */
+    public function disconnect(int $fd, int $code = 0, string $reason = ''): bool
+    {
+        return $this->swooleServer->disconnect($fd, $code, $reason);
+    }
 
     /**
      * response data to client by socket connection
@@ -254,6 +310,16 @@ class WebSocketServer extends Server
     public function exist(int $fd): bool
     {
         return $this->swooleServer->exist($fd);
+    }
+
+    /**
+     * Check it is valid websocket connection(has been handshake)
+     * @param int $fd
+     * @return bool
+     */
+    public function isEstablished(int $fd): bool
+    {
+        return $this->swooleServer->isEstablished($fd);
     }
 
     /**

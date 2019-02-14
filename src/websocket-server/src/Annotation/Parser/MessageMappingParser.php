@@ -5,7 +5,6 @@ namespace Swoft\WebSocket\Server\Annotation\Parser;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\AnnotationException;
-use Swoft\Server\Swoole\SwooleEvent;
 use Swoft\WebSocket\Server\Annotation\Mapping\MessageMapping;
 
 /**
@@ -32,7 +31,7 @@ class MessageMappingParser extends Parser
             throw new AnnotationException('`@MessageMapping` must be defined on class method!');
         }
 
-        WsControllerParser::bindCommand($this->className, $this->methodName, $annotation->getCommand());
+        WsModuleParser::bindCommand($this->className, $this->methodName, $annotation->getCommand());
 
         return [];
     }

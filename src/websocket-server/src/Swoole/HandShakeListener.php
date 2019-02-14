@@ -17,7 +17,7 @@ use Swoft\Server\Swoole\HandShakeInterface;
 use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\Dispatcher;
-use Swoft\WebSocket\Server\Helper\WSHelper;
+use Swoft\WebSocket\Server\Helper\WsHelper;
 use Swoft\WebSocket\Server\WsEvent;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
@@ -46,7 +46,7 @@ class HandShakeListener implements HandShakeInterface
         $secWSKey = $request->header['sec-websocket-key'];
 
         // sec-websocket-key 错误
-        if (WSHelper::isInvalidSecWSKey($secWSKey)) {
+        if (WsHelper::isInvalidSecWSKey($secWSKey)) {
             \server()->log("Handshake: shake hands failed with the #$fd. 'sec-websocket-key' is error!");
             return false;
         }
@@ -90,7 +90,7 @@ class HandShakeListener implements HandShakeInterface
         }
 
         // setting response
-        $psr7Res = $psr7Res->withStatus(101)->withHeaders(WSHelper::handshakeHeaders($secWSKey));
+        $psr7Res = $psr7Res->withStatus(101)->withHeaders(WsHelper::handshakeHeaders($secWSKey));
 
         if (isset($request->header['sec-websocket-protocol'])) {
             $psr7Res = $psr7Res->withHeader('Sec-WebSocket-Protocol', $request->header['sec-websocket-protocol']);

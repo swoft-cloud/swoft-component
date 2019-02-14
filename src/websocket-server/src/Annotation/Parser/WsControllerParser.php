@@ -24,11 +24,6 @@ use Swoft\WebSocket\Server\Router\Router;
 class WsControllerParser extends Parser
 {
     /**
-     * @var array
-     */
-    private static $routes = [];
-
-    /**
      * Parse object
      *
      * @param int          $type Class or Method or Property
@@ -48,26 +43,8 @@ class WsControllerParser extends Parser
         $class = $this->className;
         $path  = $annotation->getPrefix();
 
-        self::$routes[$class] = [
-            'prefix' => $path,
-            'class'  => $class,
-        ];
-
         WsModuleParser::bindController($annotation->getModule(), $class, $annotation->getPrefix());
 
         return [$class, $class, Bean::SINGLETON, ''];
-    }
-
-    public static function registerTo(Router $router): void
-    {
-        // $router->add($path, $handler);
-    }
-
-    public static function bindCommand(string $class, string $method, string $command): void
-    {
-        self::$routes[$class]['routes'][] = [
-            'command' => $command,
-            'method'  => $method,
-        ];
     }
 }

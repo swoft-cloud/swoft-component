@@ -12,6 +12,7 @@ use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\AnnotationException;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Stdlib\Helper\Str;
 use Swoft\WebSocket\Server\Annotation\Mapping\WsModule;
 use Swoft\WebSocket\Server\Router\Router;
 
@@ -27,6 +28,11 @@ class WsModuleParser extends Parser
      * @var array
      */
     private static $modules = [];
+
+    /**
+     * @var array
+     */
+    private static $commands = [];
 
     /**
      * Parse object
@@ -63,9 +69,25 @@ class WsModuleParser extends Parser
         return [$class, $class, Bean::SINGLETON, ''];
     }
 
+    /**
+     * @param Router $router
+     */
     public static function registerTo(Router $router): void
     {
-        // $router->add($path, $handler);
+        // modules
+        foreach (self::$modules as $mdlClass => $mdlInfo) {
+            $router->addModule($mdlInfo['path'], $mdlInfo);
+        }
+
+        // commands
+        foreach (self::$commands as $ctrlClass => $info) {
+            $path = self::$modules[$info['module']]['path'];
+
+            foreach ($info['routes'] as $route) {
+                $id = $info['prefix'] . '.' . $route['command'];
+                $router->addCommand($path, $id, [$ctrlClass, $route['method']]);
+            }
+        }
     }
 
     /**
@@ -75,16 +97,36 @@ class WsModuleParser extends Parser
      */
     public static function bindEvent(string $moduleClass, string $method, string $event): void
     {
-        self::$modules[$moduleClass][$event] = $method;
+        self::$modules[$moduleClass]['events'][$event] = $method;
     }
 
+    /**
+     * @param string $moduleClass
+     * @param string $controllerClass
+     * @param string $prefix
+     */
     public static function bindController(string $moduleClass, string $controllerClass, string $prefix): void
     {
-        self::$modules[$moduleClass]['routes'][] = [];
+        self::$modules[$moduleClass]['controllers'][] = $controllerClass;
+
+        self::$commands[$controllerClass] = [
+            'prefix' => $prefix ?: Str::getClassName($controllerClass, 'Controller'),
+            'module' => $moduleClass,
+            'class'  => $controllerClass,
+            'routes' => [], // see bindCommand()
+        ];
     }
 
-    public static function bindCommand(): void
+    /**
+     * @param string $controllerClass
+     * @param string $method
+     * @param string $command
+     */
+    public static function bindCommand(string $controllerClass, string $method, string $command): void
     {
-
+        self::$commands[$controllerClass]['routes'][] = [
+            'method'  => $method,
+            'command' => $command ?: $method,
+        ];
     }
 }
