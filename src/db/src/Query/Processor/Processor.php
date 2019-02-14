@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Db\Processor;
+namespace Swoft\Db\Query\Processor;
 
 /**
  * Class Processor

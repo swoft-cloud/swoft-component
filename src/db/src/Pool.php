@@ -26,11 +26,8 @@ class Pool extends AbstractPool
      */
     protected $database;
 
-    /**
-     * @return ConnectionInterface
-     */
     public function createConnection(): ConnectionInterface
     {
-        return $this->database->createConnection();
+        return $this->database->createConnection($this);
     }
 }

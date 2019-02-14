@@ -19,17 +19,6 @@ class AutoLoader
                 'dsn'      => '',
                 'username' => '',
                 'password' => '',
-                'master'   => [
-                    [
-                        'dsn' => '',
-                    ]
-                ],
-                'slave'    => [
-                    [
-                        'dsn'      => '',
-                        'username' => '',
-                    ]
-                ]
             ],
             'db.pool' => [
                 'class' => Pool::class,
