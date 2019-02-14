@@ -21,18 +21,20 @@ use Doctrine\Common\Annotations\Annotation\Target;
 final class WsController
 {
     /**
+     * Controller prefix.
+     *
      * @var string
      */
     private $prefix = '';
 
     /**
+     * The module class full name.
      * Which module does the controller belong to?
      *
      * @var string
      * @Required()
      */
     private $module;
-
 
     /**
      * Class constructor.

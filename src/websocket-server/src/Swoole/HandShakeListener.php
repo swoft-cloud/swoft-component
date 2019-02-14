@@ -15,7 +15,7 @@ use Swoft\Connection\Connections;
 use Swoft\Http\Message\Request as Psr7Request;
 use Swoft\Server\Swoole\HandShakeInterface;
 use Swoft\WebSocket\Server\Connection;
-use Swoft\WebSocket\Server\Contract\RequestHandlerInterface;
+use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\Dispatcher;
 use Swoft\WebSocket\Server\Helper\WSHelper;
 use Swoft\WebSocket\Server\WsEvent;
@@ -80,7 +80,7 @@ class HandShakeListener implements HandShakeInterface
         $meta = $conn->getMetadata();
 
         // handshake check is failed -- 拒绝连接，比如需要认证，限定路由，限定ip，限定domain等
-        if (RequestHandlerInterface::ACCEPT !== $status) {
+        if (WsModuleInterface::ACCEPT !== $status) {
             \server()->log("Client #$fd handshake check failed, request path {$meta['path']}");
             $psr7Res->send();
 

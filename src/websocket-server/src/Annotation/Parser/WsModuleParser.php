@@ -45,15 +45,20 @@ class WsModuleParser extends Parser
             throw new AnnotationException('`@WsModule` must be defined on class!');
         }
 
-        $class = $this->className;
-
-        self::$modules[$class] = [
+        $class  = $this->className;
+        $option = [
             'path'           => $annotation->getPath(),
             'name'           => $annotation->getName(),
             'class'          => $class,
             'defaultCommand' => $annotation->getDefaultCommand(),
             'messageParser'  => $annotation->getMessageParser(),
         ];
+
+        if (isset(self::$modules[$class])) {
+            self::$modules[$class] = \array_merge(self::$modules[$class], $option);
+        } else {
+            self::$modules[$class] = $option;
+        }
 
         return [$class, $class, Bean::SINGLETON, ''];
     }
@@ -63,10 +68,23 @@ class WsModuleParser extends Parser
         // $router->add($path, $handler);
     }
 
-    public static function bindEvent(string $class, string $method, string $event): void
+    /**
+     * @param string $moduleClass
+     * @param string $method
+     * @param string $event such as: message, handShake, open, close
+     */
+    public static function bindEvent(string $moduleClass, string $method, string $event): void
     {
-        self::$modules[$class] = \array_merge(self::$modules[$class], [
-            $event => $method,
-        ]);
+        self::$modules[$moduleClass][$event] = $method;
+    }
+
+    public static function bindController(string $moduleClass, string $controllerClass, string $prefix): void
+    {
+        self::$modules[$moduleClass]['routes'][] = [];
+    }
+
+    public static function bindCommand(): void
+    {
+
     }
 }

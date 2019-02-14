@@ -8,7 +8,7 @@ use Doctrine\Common\Annotations\Annotation\Required;
 use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
- * Class WebSocket - mark an websocket connection/module handler
+ * Class WebSocket - mark an websocket module handler class
  * @since 2.0
  *
  * @Annotation
@@ -21,20 +21,19 @@ use Doctrine\Common\Annotations\Annotation\Target;
 final class WsModule
 {
     /**
-     * Module name.(it must unique in a application)
-     *
-     * @var string
-     * @Required()
-     */
-    private $name;
-
-    /**
-     * Websocket route path
+     * Websocket route path.(it must unique in a application)
      *
      * @var string
      * @Required()
      */
     private $path = '/';
+
+    /**
+     * Module name.
+     *
+     * @var string
+     */
+    private $name;
 
     /**
      * Message parser class
@@ -56,13 +55,13 @@ final class WsModule
     public function __construct(array $values)
     {
         if (isset($values['value'])) {
-            $this->name = (string)$values['value'];
+            $this->path = (string)$values['value'];
         } elseif (isset($values['name'])) {
-            $this->name = (string)$values['name'];
+            $this->path = (string)$values['path'];
         }
 
-        if (isset($values['path'])) {
-            $this->path = (string)$values['path'];
+        if (isset($values['name'])) {
+            $this->name = (string)$values['name'];
         }
 
         if (isset($values['messageParser'])) {

@@ -4,14 +4,12 @@ namespace Swoft\WebSocket\Server\Contract;
 
 use Swoole\Http\Request;
 use Swoole\Http\Response;
-use Swoole\WebSocket\Frame;
-use Swoole\WebSocket\Server;
 
 /**
- * Interface RequestHandlerInterface
+ * Interface WsModuleInterface
  * @since 2.0
  */
-interface RequestHandlerInterface
+interface WsModuleInterface
 {
     // accept or reject for handshake
     public const ACCEPT = 1;

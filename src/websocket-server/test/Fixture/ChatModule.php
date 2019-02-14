@@ -3,8 +3,7 @@
 namespace SwoftTest\WebSocket\Server\Fixture;
 
 use Swoft\WebSocket\Server\Annotation\Mapping\WsModule;
-use Swoft\WebSocket\Server\Contract\MessageParserInterface;
-use Swoft\WebSocket\Server\Contract\RequestHandlerInterface;
+use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\WebSocket\Frame;
@@ -18,9 +17,9 @@ use Swoft\WebSocket\Server\Annotation\Mapping\OnOpen;
  * Class AbstractModule
  * @since 2.0
  *
- * @WsModule("chat", path="/chat", messageParser=JsonParser::class)
+ * @WsModule(path="/chat", messageParser=JsonParser::class)
  */
-class ChatModule implements RequestHandlerInterface
+class ChatModule implements WsModuleInterface
 {
     /**
      * @var array

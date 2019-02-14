@@ -53,6 +53,8 @@ class WsControllerParser extends Parser
             'class'  => $class,
         ];
 
+        WsModuleParser::bindController($annotation->getModule(), $class, $annotation->getPrefix());
+
         return [$class, $class, Bean::SINGLETON, ''];
     }
 
