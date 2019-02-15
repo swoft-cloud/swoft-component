@@ -22,6 +22,13 @@ abstract class Server implements ServerInterface
     protected static $server;
 
     /**
+     * Server type name. eg: http, ws, tcp ...
+     *
+     * @var string
+     */
+    protected static $serverType = 'TCP';
+
+    /**
      * Default host
      *
      * @var string
@@ -40,17 +47,17 @@ abstract class Server implements ServerInterface
      *
      * @var int
      */
-    protected $mode = SWOOLE_PROCESS;
+    protected $mode = \SWOOLE_PROCESS;
 
     /**
      * Default socket type
      *
      * @var int
      */
-    protected $type = SWOOLE_SOCK_TCP;
+    protected $type = \SWOOLE_SOCK_TCP;
 
     /**
-     * Server setting for swoole settting
+     * Server setting for swoole settings
      *
      * @var array
      */
@@ -118,6 +125,14 @@ abstract class Server implements ServerInterface
     }
 
     /**
+     * @return string
+     */
+    public function getServerType(): string
+    {
+        return static::$serverType;
+    }
+
+    /**
      * @return \Co\Http\Server|CoServer|\Co\Websocket\Server
      */
     public function getSwooleServer()
@@ -126,40 +141,52 @@ abstract class Server implements ServerInterface
     }
 
     /**
-     * On start event
+     * On master start event
      *
      * @param CoServer $server
      *
      * @return void
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function onStart(CoServer $server): void
     {
-        $pidFile = alias($this->pidFile);
+        $pidFile = \alias($this->pidFile);
         $pidStr  = sprintf('%s,%s', $server->master_pid, $server->manager_pid);
         $title   = sprintf('%s master process (%s)', $this->pidName, $this->scriptFile);
 
         \file_put_contents($pidFile, $pidStr);
+
+        // set process title
         Sys::setProcessTitle($title);
+
+        \Swoft::trigger(SwooleEvent::START, null, $server);
     }
 
     /**
      * Manager start event
      *
      * @param CoServer $server
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function onManagerStart(CoServer $server): void
     {
         Sys::setProcessTitle(sprintf('%s manager process', $this->pidName));
+
+        \Swoft::trigger(SwooleEvent::MANAGER_START, null, $server);
     }
 
     /**
      * Manager stop event
      *
      * @param CoServer $server
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function onManagerStop(CoServer $server): void
     {
-
+        \Swoft::trigger(SwooleEvent::MANAGER_STOP, null, $server);
     }
 
     /**
@@ -167,61 +194,75 @@ abstract class Server implements ServerInterface
      *
      * @param CoServer $server
      * @param int      $workerId
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function onWorkerStart(CoServer $server, int $workerId): void
     {
+        \Swoft::trigger(SwooleEvent::WORKER_START, $workerId, $server);
+
         // Init Worker and TaskWorker
         $setting = $server->setting;
 
-        // TaskWorker
+        // Task process
         if ($workerId >= $setting['worker_num']) {
             Sys::setProcessTitle(sprintf('%s task process', $workerId));
+            \Swoft::trigger(ServerEvent::TASK_PROCESS_START, $workerId, $server);
+
             return;
         }
 
-        // Worker
+        // Worker process
         Sys::setProcessTitle(sprintf('%s worker process', $workerId));
-
+        \Swoft::trigger(ServerEvent::WORK_PROCESS_START, $workerId, $server);
     }
 
     /**
-     * Worker stop
+     * Worker stop event
      *
      * @param CoServer $server
      * @param int      $workerId
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function onWorkerStop(CoServer $server, int $workerId): void
     {
-
+        \Swoft::trigger(SwooleEvent::WORKER_STOP, $workerId, $server);
     }
 
     /**
-     * Worker error stop
+     * Worker error stop event
      *
      * @param CoServer $server
      * @param int      $workerId
      * @param int      $workerPid
      * @param int      $exitCode
-     * @param int      $signa
+     * @param int      $signal
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
-    protected function onWorkerError(CoServer $server, int $workerId, int $workerPid, int $exitCode, int $signa): void
+    protected function onWorkerError(CoServer $server, int $workerId, int $workerPid, int $exitCode, int $signal): void
     {
-
+        \Swoft::trigger(SwooleEvent::WORKER_ERROR, $workerId, $server, $workerPid, $exitCode, $signal);
     }
 
     /**
      * Shutdown event
      *
      * @param CoServer $server
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function onShutdown(CoServer $server): void
     {
-
+        \Swoft::trigger(SwooleEvent::SHUTDOWN, null, $server);
     }
 
     /**
-     * Bind swoole event
+     * Bind swoole event and start swoole server
      * @throws ServerException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function startSwoole(): void
     {
@@ -229,7 +270,14 @@ abstract class Server implements ServerInterface
             throw new ServerException('You must to new server before start swoole!');
         }
 
+        \Swoft::trigger(ServerEvent::BEFORE_SETTING);
+
+        // set settings
         $this->swooleServer->set($this->setting);
+
+        \Swoft::trigger(ServerEvent::BEFORE_BIND_EVENT);
+
+        // register events
         foreach ($this->on as $name => $listener) {
             if (!isset(SwooleEvent::LISTENER_MAPPING[$name])) {
                 throw new ServerException(sprintf('Swoole %s event is not defined!', $name));
@@ -243,6 +291,8 @@ abstract class Server implements ServerInterface
             $listenerMethod = sprintf('on%s', ucfirst($name));
             $this->swooleServer->on($name, [$listener, $listenerMethod]);
         }
+
+        \Swoft::trigger(ServerEvent::BEFORE_START);
 
         $this->swooleServer->start();
     }
@@ -272,11 +322,27 @@ abstract class Server implements ServerInterface
     }
 
     /**
+     * @return string
+     */
+    public function getModeName(): string
+    {
+        return self::MODE_LIST[$this->mode] ?? 'Unknown';
+    }
+
+    /**
      * @return int
      */
     public function getType(): int
     {
         return $this->type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTypeName(): string
+    {
+        return self::MODE_LIST[$this->type] ?? 'Unknown';
     }
 
     /**
@@ -342,6 +408,7 @@ abstract class Server implements ServerInterface
         }
 
         if (\config('debug')) {
+            // TODO ...
             // ConsoleUtil::log($msg, $data, $type);
         }
     }

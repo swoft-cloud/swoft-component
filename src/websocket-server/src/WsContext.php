@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-12
- * Time: 13:03
- */
 
 namespace Swoft\WebSocket\Server;
 

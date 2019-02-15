@@ -1,12 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-02
- * Time: 18:51
- */
 
-namespace Swoft\Http\Server\Event;
+namespace Swoft\Http\Server\Listener;
 
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
@@ -18,7 +12,6 @@ use Swoft\SwoftEvent;
 /**
  * Class AppInitAfterListener
  * @since 2.0
- * @package Swoft\Http\Server\Event
  *
  * @Listener(SwoftEvent::APP_INIT_AFTER)
  */
