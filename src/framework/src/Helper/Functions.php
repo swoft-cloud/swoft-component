@@ -114,3 +114,15 @@ if (!function_exists('context')) {
         return \Swoft\Context\Context::get();
     }
 }
+
+if (!function_exists('server')) {
+    /**
+     * Get server instance
+     *
+     * @return \Swoft\Server\Server|\Swoft\Http\Server\HttpServer|\Swoft\WebSocket\Server\WebSocketServer
+     */
+    function server(): \Swoft\Server\Server
+    {
+        return \Swoft\Server\Server::getServer();
+    }
+}

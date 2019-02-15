@@ -21,6 +21,7 @@ class WsHelper
     public const OPCODE_BINARY = 0x02;
     public const OPCODE_CLOSE  = 0x08;
     public const OPCODE_PING   = 0x09;
+    public const OPCODE_PONG   = 0x10;
 
     /**
      * Generate WebSocket sign.(for server)

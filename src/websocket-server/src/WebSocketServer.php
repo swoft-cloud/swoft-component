@@ -37,8 +37,8 @@ class WebSocketServer extends Server
 
     /**
      * Send data to client by frame object.
-     *
      * NOTICE: require swoole version >= 4.2.0
+     *
      * @param Frame $frame
      * @return bool
      */
