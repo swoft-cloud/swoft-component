@@ -3,27 +3,34 @@
 
 namespace PHPSTORM_META {
 
-    $STATIC_METHOD_TYPES = [
-        \Swoft::getBean('') => [
-            'config' instanceof \Swoft\Config\Config,
-            'eventManager' instanceof \Swoft\Event\Manager\EventManager,
+    // This is a saner and self-documented format for PhpStorm 2016.2 and later
+    // Try QuickDoc on these "magic" functions, or even Go to definition!
+    override(\Swoft::getBean(0),
+        map([
+            'config'         => \Swoft\Config\Config::class,
+            'eventManager'   => \Swoft\Event\Manager\EventManager::class,
             // http server
-            'httpRouter' instanceof \Swoft\Http\Server\Router\Router,
-            'httpDispatcher' instanceof \Swoft\Http\Server\HttpDispatcher,
+            'httpRouter'     => \Swoft\Http\Server\Router\Router::class,
+            'httpDispatcher' => \Swoft\Http\Server\HttpDispatcher::class,
             // ws server
-            'wsRouter' instanceof \Swoft\WebSocket\Server\Router\Router,
-            'wsDispatcher' instanceof \Swoft\WebSocket\Server\Dispatcher,
-        ],
-        // bean function
-        \bean('')           => [
-            'config' instanceof \Swoft\Config\Config,
-            'eventManager' instanceof \Swoft\Event\Manager\EventManager,
+            'wsRouter'       => \Swoft\WebSocket\Server\Router\Router::class,
+            'wsDispatcher'   => \Swoft\WebSocket\Server\Dispatcher::class,
+            // default
+            ''               => '@'
+        ])
+    );
+
+    // for bean function
+    override(\bean(0),
+        map([
+            'config'         => \Swoft\Config\Config::class,
+            'eventManager'   => \Swoft\Event\Manager\EventManager::class,
             // http server
-            'httpRouter' instanceof \Swoft\Http\Server\Router\Router,
-            'httpDispatcher' instanceof \Swoft\Http\Server\HttpDispatcher,
+            'httpRouter'     => \Swoft\Http\Server\Router\Router::class,
+            'httpDispatcher' => \Swoft\Http\Server\HttpDispatcher::class,
             // ws server
-            'wsRouter' instanceof \Swoft\WebSocket\Server\Router\Router,
-            'wsDispatcher' instanceof \Swoft\WebSocket\Server\Dispatcher,
-        ]
-    ];
+            'wsRouter'       => \Swoft\WebSocket\Server\Router\Router::class,
+            'wsDispatcher'   => \Swoft\WebSocket\Server\Dispatcher::class,
+        ])
+    );
 }
