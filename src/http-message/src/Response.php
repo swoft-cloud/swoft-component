@@ -1,10 +1,9 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Http\Message;
 
-
 use Psr\Http\Message\ResponseInterface;
+use Swoft\Http\Concern\MessageTrait;
 
 /**
  * Class Response

@@ -1,11 +1,10 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Http\Server\Formatter;
 
-
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Http\Server\Response;
+use Swoft\Http\Message\Contract\ResponseFormatterInterface;
+use Swoft\Http\Message\Response;
 
 /**
  * Class HtmlResponseFormatter
@@ -19,7 +18,7 @@ class HtmlResponseFormatter implements ResponseFormatterInterface
     /**
      * content type
      */
-    const CONTENT_TYPE = 'text/html';
+    public const CONTENT_TYPE = 'text/html';
 
     /**
      * @param Response $response
@@ -30,7 +29,8 @@ class HtmlResponseFormatter implements ResponseFormatterInterface
      */
     public function format(Response $response): Response
     {
-        $response = $response->withoutHeader('Content-Type')
+        $response = $response
+            ->withoutHeader('Content-Type')
             ->withAddedHeader('Content-Type', self::CONTENT_TYPE);
 
         $data = $response->getData();

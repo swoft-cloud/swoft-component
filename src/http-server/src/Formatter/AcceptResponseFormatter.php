@@ -1,11 +1,10 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Http\Server\Formatter;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Http\Server\Response;
-use Swoft\Stdlib\Helper\StringHelper;
+use Swoft\Http\Message\Contract\ResponseFormatterInterface;
+use Swoft\Http\Message\Response;
 
 /**
  * Class AcceptResponseFormatter

@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
+namespace Swoft\Http\Message\Contract;
 
-namespace Swoft\Http\Server\Formatter;
-
-use Swoft\Http\Server\Response;
+use Psr\Http\Message\ResponseInterface;
+use Swoft\Http\Message\Response;
 
 /**
  * Class ResponseFormatterInterface
@@ -15,7 +15,7 @@ interface ResponseFormatterInterface
     /**
      * @param Response $response
      *
-     * @return Response
+     * @return Response|ResponseInterface
      */
     public function format(Response $response): Response;
 }

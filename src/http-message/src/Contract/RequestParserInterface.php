@@ -1,9 +1,6 @@
 <?php declare(strict_types=1);
 
-
-namespace Swoft\Http\Server\Parser;
-
-use Swoft\Http\Server\Request;
+namespace Swoft\Http\Message\Contract;
 
 /**
  * Class RequestParserInterface

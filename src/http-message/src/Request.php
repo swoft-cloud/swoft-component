@@ -3,11 +3,9 @@
 
 namespace Swoft\Http\Message;
 
-
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
-use Swoft\Http\Message\Uri\Uri;
+use Swoft\Http\Concern\MessageTrait;
 
 /**
  * Class Request
@@ -174,7 +172,7 @@ class Request implements RequestInterface
      *
      * @link http://tools.ietf.org/html/rfc3986#section-4.3
      *
-     * @param UriInterface $uri          New request URI to use.
+     * @param UriInterface $uri New request URI to use.
      * @param bool         $preserveHost Preserve the original state of the Host header.
      *
      * @return static

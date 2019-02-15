@@ -6,7 +6,7 @@ namespace Swoft\Http\Server;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Message\Response as PsrResponse;
 use Swoft\Http\Message\Stream\Stream;
-use Swoft\Http\Server\Formatter\ResponseFormatterInterface;
+use Swoft\Http\Message\Contract\ResponseFormatterInterface;
 use Swoole\Http\Response as CoResponse;
 
 /**
@@ -21,32 +21,32 @@ class Response extends PsrResponse
     /**
      * Html
      */
-    const CONTENT_HTML = 'application/xml';
+    public const CONTENT_HTML = 'application/xml';
 
     /**
      * Json
      */
-    const CONTENT_JSON = 'application/json';
+    public const CONTENT_JSON = 'application/json';
 
     /**
      * Xml
      */
-    const CONTENT_XML = 'application/xml';
+    public const CONTENT_XML = 'application/xml';
 
     /**
      * Html
      */
-    const FORMAT_HTML = 'html';
+    public const FORMAT_HTML = 'html';
 
     /**
      * Json
      */
-    const FORMAT_JSON = 'json';
+    public const FORMAT_JSON = 'json';
 
     /**
      * Xml
      */
-    const FORMAT_XML = 'xml';
+    public const FORMAT_XML = 'xml';
 
     /**
      * Exception

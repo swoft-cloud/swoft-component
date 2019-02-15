@@ -1,10 +1,8 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Context;
 
-
-use Swoft\Stdlib\Helper\ArrayHelper;
+use Swoft\Concern\DataPropertyTrait;
 
 /**
  * Class AbstractContext
@@ -13,4 +11,5 @@ use Swoft\Stdlib\Helper\ArrayHelper;
  */
 abstract class AbstractContext implements ContextInterface
 {
+    use DataPropertyTrait;
 }

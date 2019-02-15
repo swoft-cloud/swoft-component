@@ -1,7 +1,6 @@
 <?php declare(strict_types=1);
 
-
-namespace Swoft\Http\Message;
+namespace Swoft\Http\Concern;
 
 use Psr\Http\Message\StreamInterface;
 use Swoft\Http\Message\Stream\Stream;
@@ -48,7 +47,7 @@ trait MessageTrait
      *
      * @return string HTTP protocol version.
      */
-    public function getProtocolVersion()
+    public function getProtocolVersion(): string
     {
         return $this->protocol;
     }

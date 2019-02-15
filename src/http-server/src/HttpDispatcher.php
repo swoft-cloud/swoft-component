@@ -1,13 +1,12 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Http\Server;
-
 
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\Context;
 use Swoft\Dispatcher;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Http\Message\ServerRequest;
 use Swoft\Http\Server\Middleware\DefaultMiddleware;
 use Swoft\Http\Server\Middleware\RequestMiddleware;
 use Swoft\Http\Server\Middleware\UserMiddleware;
@@ -39,10 +38,10 @@ class HttpDispatcher extends Dispatcher
     public function dispatch(...$params)
     {
         /**
-         * @var Request  $request
+         * @var ServerRequest  $request
          * @var Response $response
          */
-        list($request, $response) = $params;
+        [$request, $response] = $params;
 
         try {
 

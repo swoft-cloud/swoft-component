@@ -57,9 +57,11 @@ event(@inhere):
 
 ## 2019.01.25
 
-- 基础的上下文管理实现(@stelin)
+- 添加 stdlib 组件包(@inhere)
+- 基础的请求上下文管理实现(@stelin)
 - 添加 http-server 组件包(@stelin)
 - 添加 http-message 组件包(@stelin)
+- 添加 server, tcp-server 核心组件包(@stelin)
 
 ## 2019.01.22
 

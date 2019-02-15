@@ -5,7 +5,7 @@ namespace Swoft\Http\Server\Formatter;
 
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Http\Server\Response;
+use Swoft\Http\Message\Response;
 use Swoft\Stdlib\Helper\XmlHelper;
 
 /**

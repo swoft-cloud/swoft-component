@@ -4,6 +4,7 @@
 namespace Swoft\Http\Server\Parser;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Http\Message\Contract\RequestParserInterface;
 use Swoft\Stdlib\Helper\XmlHelper;
 
 /**

@@ -4,7 +4,7 @@ namespace Swoft\WebSocket\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Context\ContextInterface;
-use Swoft\Helper\DataPropertyTrait;
+use Swoft\Concern\DataPropertyTrait;
 use Swoole\WebSocket\Frame;
 
 /**

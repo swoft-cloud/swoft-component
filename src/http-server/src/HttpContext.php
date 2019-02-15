@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Http\Server;
 
-
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Context\AbstractContext;
+use Swoft\Context\ContextInterface;
+use Swoft\Concern\DataPropertyTrait;
+use Swoft\Http\Message\ServerRequest;
 
 /**
  * Class HttpContext
@@ -14,10 +14,12 @@ use Swoft\Context\AbstractContext;
  *
  * @since 2.0
  */
-class HttpContext extends AbstractContext
+class HttpContext implements ContextInterface
 {
+    use DataPropertyTrait;
+
     /**
-     * @var Request
+     * @var ServerRequest
      */
     protected $request;
 
@@ -27,19 +29,19 @@ class HttpContext extends AbstractContext
     protected $response;
 
     /**
-     * @param Request  $request
+     * @param ServerRequest  $request
      * @param Response $response
      */
-    public function initialize(Request $request, Response $response): void
+    public function initialize(ServerRequest $request, Response $response): void
     {
         $this->request  = $request;
         $this->response = $response;
     }
 
     /**
-     * @return Request
+     * @return ServerRequest
      */
-    public function getRequest(): Request
+    public function getRequest(): ServerRequest
     {
         return $this->request;
     }
@@ -50,5 +52,15 @@ class HttpContext extends AbstractContext
     public function getResponse(): Response
     {
         return $this->response;
+    }
+
+    /**
+     * Clear resource
+     */
+    public function clear(): void
+    {
+        $this->data = [];
+        // unset
+        $this->request = $this->response = null;
     }
 }

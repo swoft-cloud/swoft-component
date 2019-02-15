@@ -1,12 +1,6 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-12
- * Time: 19:43
- */
+<?php declare(strict_types=1);
 
-namespace Swoft\Helper;
+namespace Swoft\Concern;
 
 use Swoft\Stdlib\Helper\ArrayHelper;
 
