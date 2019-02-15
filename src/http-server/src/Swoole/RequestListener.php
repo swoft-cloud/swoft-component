@@ -2,12 +2,12 @@
 
 namespace Swoft\Http\Server\Swoole;
 
-
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Http\Message\ServerRequest;
 use Swoft\Http\Server\HttpDispatcher;
+use Swoft\Server\Swoole\RequestInterface;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
-use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Server\Swoole\RequestInterface;
 
 /**
  * Class RequestListener
@@ -27,14 +27,14 @@ class RequestListener implements RequestInterface
      */
     public function onRequest(Request $request, Response $response): void
     {
-//        $response->end("<h1>Hello origin Swoole. #".rand(1000, 9999)."</h1>");
+        // $response->end("<h1>Hello origin Swoole. #".rand(1000, 9999)."</h1>");
 
-        /* @var \Swoft\Http\Server\Request $psrRequest */
-        $psrRequest = \bean(\Swoft\Http\Server\Request::class);
+        /* @var ServerRequest $psrRequest */
+        $psrRequest = \bean(ServerRequest::class);
         $psrRequest->initialize($request);
 
-        /* @var \Swoft\Http\Server\Response $psrResponse */
-        $psrResponse = \bean(\Swoft\Http\Server\Response::class);
+        /* @var \Swoft\Http\Message\Response $psrResponse */
+        $psrResponse = \bean(\Swoft\Http\Message\Response::class);
         $psrResponse->initialize($response);
 
         /* @var HttpDispatcher $httpDispatcher */

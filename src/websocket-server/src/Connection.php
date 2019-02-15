@@ -1,17 +1,16 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\WebSocket\Server;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Connection\ConnectionInterface;
-use Swoft\Helper\DataPropertyTrait;
+use Swoft\Concern\DataPropertyTrait;
 use Swoft\Http\Message\ServerRequest;
 use Swoole\Http\Request;
 
 /**
  * Class Connection
- * @package Swoft\WebSocket\Server
  * @since 2.0
  * @Bean(scope=Bean::PROTOTYPE)
  */

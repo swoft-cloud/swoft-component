@@ -1,7 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Http\Server;
 
+use Swoft\Http\Message\ContentType;
+use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Formatter\HtmlResponseFormatter;
 use Swoft\Http\Server\Formatter\JsonResponseFormatter;
 use Swoft\Http\Server\Formatter\XmlResponseFormatter;
@@ -40,8 +42,8 @@ class AutoLoader extends \Swoft\AutoLoader
         return [
             'httpRequest'     => [
                 'parsers' => [
-                    Request::CONTENT_JSON => bean(JsonRequestParser::class),
-                    Request::CONTENT_XML  => bean(XmlRequestParser::class),
+                    ContentType::XML  => bean(XmlRequestParser::class),
+                    ContentType::JSON => bean(JsonRequestParser::class),
                 ]
             ],
             'httpResponse'    => [
@@ -54,9 +56,9 @@ class AutoLoader extends \Swoft\AutoLoader
             ],
             'acceptFormatter' => [
                 'formats' => [
-                    Response::CONTENT_HTML => Response::FORMAT_HTML,
-                    Response::CONTENT_JSON => Response::FORMAT_JSON,
-                    Response::CONTENT_XML  => Response::FORMAT_XML,
+                    ContentType::HTML => Response::FORMAT_HTML,
+                    ContentType::JSON => Response::FORMAT_JSON,
+                    ContentType::XML  => Response::FORMAT_XML,
                 ]
             ],
             'httpServer'      => [
