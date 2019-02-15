@@ -1,20 +1,14 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-12
- * Time: 13:11
- */
+<?php declare(strict_types=1);
 
 namespace Swoft\Connection;
 
 use Swoft\Co;
+use Swoft\Exception\ConnectionException;
 use Swoft\WebSocket\Server\Connection;
-use Swoft\WebSocket\Server\Exception\WsServerException;
 
 /**
  * Class Connections
- * @package Swoft\Connection
+ * @since 2.0
  */
 class Connections
 {
@@ -109,7 +103,7 @@ class Connections
             return self::$connections[$fd];
         }
 
-        throw new WsServerException('connection information has been lost of the FD: ' . $fd);
+        throw new ConnectionException('connection information has been lost of the FD: ' . $fd);
     }
 
     /**
@@ -132,9 +126,8 @@ class Connections
         $fd = $fd > -1 ? $fd : self::getBoundedFd();
 
         if (isset(self::$connections[$fd])) {
-            $conn = self::$connections[$fd];
-            $conn->clear();
-
+            // clear self data.
+            self::$connections[$fd]->clear();
             unset(self::$connections[$fd], $conn);
         }
     }
