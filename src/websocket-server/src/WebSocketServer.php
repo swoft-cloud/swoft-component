@@ -15,6 +15,8 @@ use Swoft\Server\Server;
  */
 class WebSocketServer extends Server
 {
+    protected static $serverType = 'WebSocket';
+
     /**
      * Start
      * @throws \Swoft\Server\Exception\ServerException

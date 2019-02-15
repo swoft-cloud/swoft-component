@@ -22,6 +22,13 @@ abstract class Server implements ServerInterface
     protected static $server;
 
     /**
+     * Server type name. eg: http, ws, tcp ...
+     *
+     * @var string
+     */
+    protected static $serverType = 'TCP';
+
+    /**
      * Default host
      *
      * @var string
@@ -40,17 +47,17 @@ abstract class Server implements ServerInterface
      *
      * @var int
      */
-    protected $mode = SWOOLE_PROCESS;
+    protected $mode = \SWOOLE_PROCESS;
 
     /**
      * Default socket type
      *
      * @var int
      */
-    protected $type = SWOOLE_SOCK_TCP;
+    protected $type = \SWOOLE_SOCK_TCP;
 
     /**
-     * Server setting for swoole settting
+     * Server setting for swoole settings
      *
      * @var array
      */
@@ -118,6 +125,14 @@ abstract class Server implements ServerInterface
     }
 
     /**
+     * @return string
+     */
+    public static function getServerType(): string
+    {
+        return static::$serverType;
+    }
+
+    /**
      * @return \Co\Http\Server|CoServer|\Co\Websocket\Server
      */
     public function getSwooleServer()
@@ -134,7 +149,7 @@ abstract class Server implements ServerInterface
      */
     protected function onStart(CoServer $server): void
     {
-        $pidFile = alias($this->pidFile);
+        $pidFile = \alias($this->pidFile);
         $pidStr  = sprintf('%s,%s', $server->master_pid, $server->manager_pid);
         $title   = sprintf('%s master process (%s)', $this->pidName, $this->scriptFile);
 
@@ -272,11 +287,27 @@ abstract class Server implements ServerInterface
     }
 
     /**
+     * @return string
+     */
+    public function getModeName(): string
+    {
+        return self::MODE_LIST[$this->mode] ?? 'Unknown';
+    }
+
+    /**
      * @return int
      */
     public function getType(): int
     {
         return $this->type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTypeName(): string
+    {
+        return self::MODE_LIST[$this->type] ?? 'Unknown';
     }
 
     /**
@@ -342,6 +373,7 @@ abstract class Server implements ServerInterface
         }
 
         if (\config('debug')) {
+            // TODO ...
             // ConsoleUtil::log($msg, $data, $type);
         }
     }

@@ -16,6 +16,7 @@ class TcpServer extends Server
 {
     /**
      * Start server
+     * @throws \Swoft\Server\Exception\ServerException
      */
     public function start(): void
     {

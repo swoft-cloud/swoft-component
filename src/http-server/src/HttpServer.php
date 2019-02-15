@@ -15,8 +15,11 @@ use Swoft\Server\Server;
  */
 class HttpServer extends Server
 {
+    protected static $serverType = 'HTTP';
+
     /**
      * Start server
+     * @throws \Swoft\Server\Exception\ServerException
      */
     public function start(): void
     {
