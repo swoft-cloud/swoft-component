@@ -506,7 +506,7 @@ class QueryBuilder implements QueryBuilderInterface
      * - ['id', '<', 13]
      * - ['id', '>=', 13]
      * - ['id', '<=', 13]
-     * - ['id', '<>', 13]
+     * - ['id', '!=', 13]
      *
      * - ['id', 'in', [1, 2, 3]]
      * - ['id', 'not in', [1, 2, 3]]
