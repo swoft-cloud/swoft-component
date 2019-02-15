@@ -20,9 +20,10 @@ trait InteractsWithInput
      */
     public function server(string $key = null, $default = null)
     {
-        if (is_null($key)) {
+        if ($key === null) {
             return $this->getServerParams();
         }
+
         return $this->getServerParams()[$key] ?? $default;
     }
 
@@ -36,7 +37,7 @@ trait InteractsWithInput
      */
     public function header(string $key = null, $default = null)
     {
-        if (is_null($key)) {
+        if ($key === null) {
             return $this->getHeaders();
         }
         return $this->getHeader($key) ?? $default;
@@ -52,7 +53,7 @@ trait InteractsWithInput
      */
     public function query(string $key = null, $default = null)
     {
-        if (is_null($key)) {
+        if ($key === null) {
             return $this->getQueryParams();
         }
         return $this->getQueryParams()[$key] ?? $default;
@@ -68,7 +69,7 @@ trait InteractsWithInput
      */
     public function post(string $key = null, $default = null)
     {
-        if (is_null($key)) {
+        if ($key === null) {
             return $this->getParsedBody();
         }
         return $this->getParsedBody()[$key] ?? $default;
@@ -85,7 +86,7 @@ trait InteractsWithInput
     public function input(string $key = null, $default = null)
     {
         $inputs = $this->getQueryParams() + $this->getParsedBody();
-        if (is_null($key)) {
+        if ($key === null) {
             return $inputs;
         }
         return $inputs[$key] ?? $default;
@@ -101,7 +102,7 @@ trait InteractsWithInput
      */
     public function cookie(string $key = null, $default = null)
     {
-        if (is_null($key)) {
+        if ($key === null) {
             return $this->getCookieParams();
         }
         return $this->getCookieParams()[$key] ?? $default;
@@ -118,9 +119,11 @@ trait InteractsWithInput
     {
         $body = $this->getBody();
         $raw  = $default;
+
         if ($body instanceof SwooleStream) {
             $raw = $body->getContents();
         }
+
         return $raw;
     }
 
@@ -151,7 +154,7 @@ trait InteractsWithInput
         } catch (\Exception $e) {
             return $default;
         }
-        if (is_null($key)) {
+        if ($key === null) {
             return $decodedBody ?? $default;
         } else {
             return ArrayHelper::get($decodedBody, $key, $default);
@@ -168,7 +171,7 @@ trait InteractsWithInput
      */
     public function file(string $key = null, $default = null)
     {
-        if (is_null($key)) {
+        if ($key === null) {
             return $this->getUploadedFiles();
         }
         return $this->getUploadedFiles()[$key] ?? $default;
