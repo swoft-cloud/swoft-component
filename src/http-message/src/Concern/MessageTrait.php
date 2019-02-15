@@ -103,7 +103,7 @@ trait MessageTrait
      *     key MUST be a header name, and each value MUST be an array of strings
      *     for that header.
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }
@@ -117,7 +117,7 @@ trait MessageTrait
      *     name using a case-insensitive string comparison. Returns false if
      *     no matching header name is found in the message.
      */
-    public function hasHeader($name)
+    public function hasHeader($name): bool
     {
         return isset($this->headerNames[strtolower($name)]);
     }
@@ -137,7 +137,7 @@ trait MessageTrait
      *    header. If the header does not appear in the message, this method MUST
      *    return an empty array.
      */
-    public function getHeader($name)
+    public function getHeader($name): array
     {
         $header = strtolower($name);
         if (!isset($this->headerNames[$header])) {
@@ -168,7 +168,7 @@ trait MessageTrait
      *    concatenated together using a comma. If the header does not appear in
      *    the message, this method MUST return an empty string.
      */
-    public function getHeaderLine($name)
+    public function getHeaderLine($name): string
     {
         return implode(', ', $this->getHeader($name));
     }
@@ -283,7 +283,7 @@ trait MessageTrait
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public function getBody()
+    public function getBody(): StreamInterface
     {
         if (!$this->stream) {
             $this->stream = bean(Stream::class);
@@ -325,7 +325,7 @@ trait MessageTrait
      *
      * @return $this
      */
-    protected function setHeaders(array $headers)
+    protected function setHeaders(array $headers): self
     {
         $this->headerNames = $this->headers = [];
         foreach ($headers as $header => $value) {
@@ -363,7 +363,7 @@ trait MessageTrait
      *
      * @see https://tools.ietf.org/html/rfc7230#section-3.2.4
      */
-    private function trimHeaderValues(array $values)
+    private function trimHeaderValues(array $values): array
     {
         return array_map(function ($value) {
             return trim($value, " \t");

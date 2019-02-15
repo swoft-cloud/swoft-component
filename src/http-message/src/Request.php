@@ -208,7 +208,7 @@ class Request implements RequestInterface
      *
      * @link http://tools.ietf.org/html/rfc7230#section-5.4
      */
-    protected function updateHostByUri()
+    protected function updateHostByUri(): void
     {
         $host = $this->uri->getHost();
 

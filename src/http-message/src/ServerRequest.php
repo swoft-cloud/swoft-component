@@ -375,7 +375,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      *
      * @return array Attributes derived from the request.
      */
-    public function getAttributes()
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
@@ -594,7 +594,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      *
      * @return UploadedFileInterface[]
      */
-    private static function normalizeNestedFileSpec(array $files = [])
+    private static function normalizeNestedFileSpec(array $files = []): array
     {
         $normalizedFiles = [];
 
@@ -621,7 +621,7 @@ class ServerRequest extends Request implements ServerRequestInterface
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    private function getUriByCoRequest(CoRequest $coRequest)
+    private function getUriByCoRequest(CoRequest $coRequest): Uri
     {
         $server = $coRequest->server;
         $header = $coRequest->header;
@@ -645,7 +645,7 @@ class ServerRequest extends Request implements ServerRequestInterface
         } elseif (isset($header['host'])) {
             if (\strpos($header['host'], ':')) {
                 $hasPort = true;
-                list($host, $port) = explode(':', $header['host'], 2);
+                [$host, $port] = explode(':', $header['host'], 2);
 
                 if ($port !== '80') {
                     $uri = $uri->withPort($port);

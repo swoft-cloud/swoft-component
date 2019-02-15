@@ -127,7 +127,7 @@ class Uri implements UriInterface
     /**
      * @param string $uri
      */
-    public function initialize($uri = '')
+    public function initialize($uri = ''): void
     {
         // weak type check to also accept null until we can add scalar type hints
         if ($uri == '') {
@@ -526,7 +526,7 @@ class Uri implements UriInterface
      *
      * @return UriInterface
      */
-    public static function withQueryValue(UriInterface $uri, $key, $value)
+    public static function withQueryValue(UriInterface $uri, $key, $value): UriInterface
     {
         $result   = self::getFilteredQueryString($uri, [$key]);
         $result[] = self::generateQueryString($key, $value);
@@ -618,7 +618,7 @@ class Uri implements UriInterface
      * @return string
      * @link https://tools.ietf.org/html/rfc3986#section-5.3
      */
-    public static function composeComponents($scheme, $authority, $path, $query, $fragment)
+    public static function composeComponents($scheme, $authority, $path, $query, $fragment): string
     {
         $uri = '';
         // weak type checks to also accept null until we can add scalar type hints
@@ -647,7 +647,7 @@ class Uri implements UriInterface
      *
      * @param array $parts Array of parse_url parts to apply.
      */
-    private function applyParts(array $parts)
+    private function applyParts(array $parts): void
     {
         $this->scheme   = isset($parts['scheme']) ? $this->filterScheme($parts['scheme']) : '';
         $this->userInfo = isset($parts['user']) ? $this->filterUserInfoComponent($parts['user']) : '';
@@ -671,7 +671,7 @@ class Uri implements UriInterface
      *
      * @throws \InvalidArgumentException If the scheme is invalid.
      */
-    private function filterScheme($scheme)
+    private function filterScheme($scheme): string
     {
         if (!is_string($scheme)) {
             throw new \InvalidArgumentException('Scheme must be a string');
@@ -687,7 +687,7 @@ class Uri implements UriInterface
      *
      * @throws \InvalidArgumentException If the user info is invalid.
      */
-    private function filterUserInfoComponent($component)
+    private function filterUserInfoComponent($component): string
     {
         if (!is_string($component)) {
             throw new \InvalidArgumentException('User info must be a string');
@@ -707,7 +707,7 @@ class Uri implements UriInterface
      *
      * @throws \InvalidArgumentException If the host is invalid.
      */
-    private function filterHost($host)
+    private function filterHost($host): string
     {
         if (!is_string($host)) {
             throw new \InvalidArgumentException('Host must be a string');
@@ -722,7 +722,7 @@ class Uri implements UriInterface
      *
      * @throws \InvalidArgumentException If the port is invalid.
      */
-    private function filterPort($port)
+    private function filterPort($port): ?int
     {
         if ($port === null) {
             return null;
@@ -743,7 +743,7 @@ class Uri implements UriInterface
      *
      * @return array
      */
-    private static function getFilteredQueryString(UriInterface $uri, array $keys)
+    private static function getFilteredQueryString(UriInterface $uri, array $keys): array
     {
         $current = $uri->getQuery();
         if ($current === '') {
@@ -762,7 +762,7 @@ class Uri implements UriInterface
      *
      * @return string
      */
-    private static function generateQueryString($key, $value)
+    private static function generateQueryString($key, $value): string
     {
         // Query string separators ("=", "&") within the key or value need to be encoded
         // (while preventing double-encoding) before setting the query string. All other
@@ -778,7 +778,7 @@ class Uri implements UriInterface
     /**
      * Remove default port
      */
-    private function removeDefaultPort()
+    private function removeDefaultPort(): void
     {
         if ($this->port !== null && self::isDefaultPort()) {
             $this->port = null;
@@ -805,7 +805,7 @@ class Uri implements UriInterface
      *
      * @return int|null
      */
-    public function getDefaultPort()
+    public function getDefaultPort(): ?int
     {
         return self::$defaultPorts[$this->getScheme()] ?? null;
     }
@@ -819,7 +819,7 @@ class Uri implements UriInterface
      *
      * @throws \InvalidArgumentException If the path is invalid.
      */
-    private function filterPath($path)
+    private function filterPath($path): string
     {
         if (!is_string($path)) {
             throw new \InvalidArgumentException('Path must be a string');
@@ -841,7 +841,7 @@ class Uri implements UriInterface
      *
      * @throws \InvalidArgumentException If the query or fragment is invalid.
      */
-    private function filterQueryAndFragment($str)
+    private function filterQueryAndFragment($str): string
     {
         if (!is_string($str)) {
             throw new \InvalidArgumentException('Query and fragment must be a string');
@@ -859,7 +859,7 @@ class Uri implements UriInterface
      *
      * @return string
      */
-    private function rawurlencodeMatchZero(array $match)
+    private function rawurlencodeMatchZero(array $match): string
     {
         return rawurlencode($match[0]);
     }
@@ -867,7 +867,7 @@ class Uri implements UriInterface
     /**
      * Validate state
      */
-    private function validateState()
+    private function validateState(): void
     {
         if ($this->host === '' && ($this->scheme === 'http' || $this->scheme === 'https')) {
             $this->host = self::HTTP_DEFAULT_HOST;

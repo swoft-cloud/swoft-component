@@ -91,7 +91,7 @@ class Response implements ResponseInterface
     /**
      * @param CoResponse $coResponse
      */
-    public function initialize(CoResponse $coResponse)
+    public function initialize(CoResponse $coResponse): void
     {
         $this->coResponse = $coResponse;
     }
@@ -118,7 +118,7 @@ class Response implements ResponseInterface
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public function send()
+    public function send(): void
     {
         // Prepare
         $response = $this->prepare();
@@ -233,7 +233,7 @@ class Response implements ResponseInterface
      *
      * @return array Attributes derived from the request.
      */
-    public function getAttributes()
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
