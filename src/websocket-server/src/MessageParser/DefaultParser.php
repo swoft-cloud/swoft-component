@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: inhere
  * Date: 2019-02-12
- * Time: 13:06
+ * Time: 20:13
  */
 
 namespace Swoft\WebSocket\Server\MessageParser;
@@ -11,30 +11,32 @@ namespace Swoft\WebSocket\Server\MessageParser;
 use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 
 /**
- * Class JsonParser
+ * Class DefaultParser
  * @package Swoft\WebSocket\Server\MessageParser
  */
-class JsonParser implements MessageParserInterface
+class DefaultParser implements MessageParserInterface
 {
     /**
-     * @param array $data
+     * Encode data to string.
+     * @param mixed $data
      * @return string
      */
     public function encode($data): string
     {
-        // return \json_encode($data);
-        return '{"cmd": "login", "data": "welcome"}';
+        return (string)$data;
     }
 
     /**
+     * Decode data to array.
      * @param string $data
      * @return array
      */
     public function decode(string $data): array
     {
         return [
-            'cmd'  => 'login',
-            'data' => 'hello',
+            // use default message command
+            'cmd' => '',
+            'data' => $data,
         ];
     }
 }

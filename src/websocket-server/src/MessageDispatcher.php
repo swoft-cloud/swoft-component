@@ -4,7 +4,7 @@ namespace Swoft\WebSocket\Server;
 
 use Swoft\App;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\WebSocket\Server\Exception\WsException;
+use Swoft\WebSocket\Server\Exception\WsServerException;
 use Swoole\WebSocket\Frame;
 
 /**
@@ -48,7 +48,7 @@ class MessageDispatcher
         ], 'debug');
 
         if (!$this->isCommand($command)) {
-            throw new WsException("command $command is not exists", -500);
+            throw new WsServerException("command $command is not exists", -500);
         }
 
         $handler = $this->handlers[$command];
@@ -77,7 +77,7 @@ class MessageDispatcher
             return;
         }
 
-        throw new WsException("invalid message command handler for '$command'", -500);
+        throw new WsServerException("invalid message command handler for '$command'", -500);
     }
 
     /**

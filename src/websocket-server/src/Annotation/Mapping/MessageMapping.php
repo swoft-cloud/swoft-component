@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-04
- * Time: 17:19
- */
 
 namespace Swoft\WebSocket\Server\Annotation\Mapping;
 
@@ -41,9 +35,9 @@ final class MessageMapping
     public function __construct(array $values)
     {
         if (isset($values['value'])) {
-            $this->path = (string)$values['value'];
-        } elseif (isset($values['path'])) {
-            $this->path = (string)$values['path'];
+            $this->command = (string)$values['value'];
+        } elseif (isset($values['command'])) {
+            $this->command = (string)$values['command'];
         }
     }
 

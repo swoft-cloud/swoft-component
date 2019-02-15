@@ -10,6 +10,8 @@ use Swoft\Co;
 use Swoft\Connection\Connections;
 use Swoft\Context\Context;
 use Swoft\Server\Swoole\MessageInterface;
+use Swoft\WebSocket\Server\Exception\WsServerException;
+use Swoft\WebSocket\Server\Router\Router;
 use Swoft\WebSocket\Server\WsContext;
 use Swoft\WebSocket\Server\WsEvent;
 
@@ -47,6 +49,25 @@ class MessageListener implements MessageInterface
 
         /** @see Dispatcher::message() */
         \bean('wsDispatcher')->message($server, $frame);
+
+        try {
+            $conn = Connections::mustGet();
+            // get request path
+            // $path = $conn->getMetaValue('path');
+            $path = $conn->getRequest()->getUri()->getPath();
+
+            /** @var Router $router */
+            $router = \Swoft::getBean('wsRouter');
+
+            if (!$module = $router->match($path)) {
+                // Should never happen
+                throw new WsServerException('module info has been lost of the ' . $path);
+            }
+
+            $dataParser = $module['messageParser'];
+        } catch (\Throwable $e) {
+
+        }
 
         // destroy context
         Context::destroy();

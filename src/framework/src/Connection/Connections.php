@@ -10,6 +10,7 @@ namespace Swoft\Connection;
 
 use Swoft\Co;
 use Swoft\WebSocket\Server\Connection;
+use Swoft\WebSocket\Server\Exception\WsServerException;
 
 /**
  * Class Connections
@@ -82,9 +83,9 @@ class Connections
      ****************************************************************************/
 
     /**
-     * Get connection
+     * Get connection by FD
      *
-     * @param int $fd
+     * @param int $fd If not specified, return the current corresponding connection
      * @return ConnectionInterface|Connection
      */
     public static function get(int $fd = -1): ?ConnectionInterface
@@ -92,6 +93,23 @@ class Connections
         $fd = $fd > -1 ? $fd : self::getBoundedFd();
 
         return self::$connections[$fd] ?? null;
+    }
+
+    /**
+     * Get connection by FD. if not found will throw exception.
+     *
+     * @param int $fd
+     * @return ConnectionInterface|Connection
+     */
+    public static function mustGet(int $fd = -1): ConnectionInterface
+    {
+        $fd = $fd > -1 ? $fd : self::getBoundedFd();
+
+        if (isset(self::$connections[$fd])) {
+            return self::$connections[$fd];
+        }
+
+        throw new WsServerException('connection information has been lost of the FD: ' . $fd);
     }
 
     /**

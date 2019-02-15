@@ -1,34 +1,30 @@
 <?php
 
-namespace Swoft\WebSocket\Server;
+namespace SwoftTest\WebSocket\Server\Fixture;
 
-use Swoft\WebSocket\Server\Contract\MessageParserInterface;
-use Swoft\WebSocket\Server\Contract\RequestHandlerInterface;
-use Swoft\WebSocket\Server\Router\MessageDispatcher;
+use Swoft\WebSocket\Server\Annotation\Mapping\WsModule;
+use Swoft\WebSocket\Server\Contract\WsModuleInterface;
+use Swoole\Http\Request;
+use Swoole\Http\Response;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
+use Swoft\WebSocket\Server\MessageParser\JsonParser;
+use Swoft\WebSocket\Server\Annotation\Mapping\OnClose;
+use Swoft\WebSocket\Server\Annotation\Mapping\OnHandShake;
+use Swoft\WebSocket\Server\Annotation\Mapping\OnOpen;
 
 /**
  * Class AbstractModule
  * @since 2.0
- * @package Swoft\WebSocket\Server
+ *
+ * @WsModule(path="/chat", messageParser=JsonParser::class)
  */
-abstract class AbstractModule implements RequestHandlerInterface
+class ChatModule implements WsModuleInterface
 {
     /**
      * @var array
      */
     protected $options = [];
-
-    /**
-     * @var MessageParserInterface
-     */
-    protected $parser;
-
-    /**
-     * @var MessageDispatcher
-     */
-    protected $dispatcher;
 
     /**
      * @var string
@@ -47,12 +43,53 @@ abstract class AbstractModule implements RequestHandlerInterface
 
     public function init(): void
     {
-        if (!$this->parser) {
-            $this->setParser(new JsonParser());
-        }
-
         $this->options    = $this->configure();
-        $this->dispatcher = new MessageDispatcher($this->registerCommands());
+        // $this->dispatcher = new MessageDispatcher($this->registerCommands());
+    }
+
+    /**
+     * 在这里你可以验证握手的请求信息
+     * - 必须返回含有两个元素的array
+     *  - 第一个元素的值来决定是否进行握手
+     *  - 第二个元素是response对象
+     * - 可以在response设置一些自定义header,body等信息
+     *
+     * @OnHandShake()
+     * @param Request  $request
+     * @param Response $response
+     * @return array
+     * [
+     *  self::HANDSHAKE_OK,
+     *  $response
+     * ]
+     */
+    public function checkHandshake(Request $request, Response $response): array
+    {
+        // TODO: Implement checkHandshake() method.
+    }
+
+    /**
+     * @OnOpen()
+     * @param Server  $server
+     * @param Request $request
+     * @param int     $fd
+     */
+    public function onOpen(Server $server, Request $request, int $fd): void
+    {
+        // TODO: Implement onOpen() method.
+    }
+
+    /**
+     * @OnClose()
+     * on connection closed
+     * - you can do something. eg. record log
+     * @param Server $server
+     * @param int    $fd
+     * @return mixed
+     */
+    public function onClose(Server $server, int $fd)
+    {
+        // TODO: Implement onClose() method.
     }
 
     /**
@@ -150,18 +187,6 @@ abstract class AbstractModule implements RequestHandlerInterface
     protected function onFormatError(Frame $frame)
     {
         \server()->push($frame->fd, 'your sent data format is invalid');
-    }
-
-    /**
-     * on connection closed
-     * - you can do something. eg. record log
-     * @param Server $server
-     * @param int    $fd
-     * @return mixed
-     */
-    public function onClose(Server $server, int $fd)
-    {
-        // TODO: Implement onClose() method.
     }
 
     /**

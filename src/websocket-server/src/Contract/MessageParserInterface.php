@@ -9,7 +9,17 @@ namespace Swoft\WebSocket\Server\Contract;
  */
 interface MessageParserInterface
 {
-    public function encode(): string;
+    /**
+     * Encode data to string.
+     * @param array|string|mixed $data
+     * @return string
+     */
+    public function encode($data): string;
 
-    public function decode(): array;
+    /**
+     * Decode data to array.
+     * @param string $data
+     * @return array
+     */
+    public function decode(string $data): array;
 }

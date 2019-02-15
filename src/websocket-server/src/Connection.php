@@ -106,6 +106,17 @@ class Connection implements ConnectionInterface
     }
 
     /**
+     * @param string $key
+     * @return mixed
+     */
+    public function getMetaValue(string $key)
+    {
+        $data = $this->get(self::METADATA_KEY, []);
+
+        return $data[$key] ?? null;
+    }
+
+    /**
      * @return ServerRequest
      */
     public function getRequest(): ServerRequest

@@ -10,29 +10,24 @@ namespace Swoft\WebSocket\Server\Annotation\Parser;
 
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
+use Swoft\Annotation\AnnotationException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\WebSocket\Server\Annotation\Mapping\WebSocket;
+use Swoft\WebSocket\Server\Annotation\Mapping\WsController;
 use Swoft\WebSocket\Server\Router\Router;
 
 /**
  * Class WebSocketParser
  * @since 2.0
- * @package Swoft\WebSocket\Server\Annotation\Parser
  *
- * @AnnotationParser(WebSocket::class)
+ * @AnnotationParser(WsController::class)
  */
-class WebSocketParser extends Parser
+class WsControllerParser extends Parser
 {
-    /**
-     * @var array
-     */
-    private static $routes = [];
-
     /**
      * Parse object
      *
-     * @param int       $type Class or Method or Property
-     * @param WebSocket $annotation Annotation object
+     * @param int          $type Class or Method or Property
+     * @param WsController $annotation Annotation object
      *
      * @return array
      * Return empty array is nothing to do!
@@ -41,18 +36,15 @@ class WebSocketParser extends Parser
      */
     public function parse(int $type, $annotation): array
     {
-        $path = $annotation->getPath();
+        if ($type !== self::TYPE_CLASS) {
+            throw new AnnotationException('`@WsController` must be defined on class!');
+        }
 
-        self::$routes[$path] = [
-            'path'    => $path,
-            'handler' => $this->className,
-        ];
+        $class = $this->className;
+        $path  = $annotation->getPrefix();
 
-        return [$this->className, $this->className, Bean::SINGLETON, ''];
-    }
+        WsModuleParser::bindController($annotation->getModule(), $class, $annotation->getPrefix());
 
-    public static function registerTo(Router $router): void
-    {
-
+        return [$class, $class, Bean::SINGLETON, ''];
     }
 }
