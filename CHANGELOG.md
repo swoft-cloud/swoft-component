@@ -1,9 +1,13 @@
 # CHANGE LOG
 
+> 日期时间都是大概的时间点
+
 ## 2019.02.15
 
 - 一些基础性的调整(@inhere)
-- 除了framework, bean 组件外，移除所有组件下的 `Helper/Functions.php` 自动加载。后面会移除这些文件(@inhere)
+- 除了framework, bean 组件外，移除所有组件下的 `Helper/Functions.php` 加载。后面会移除这些文件(@inhere)
+- 添加swoole部分核心事件的触发绑定
+- 添加一些重要的server事件的触发绑定
 
 ## 2019.02.13
 
@@ -49,3 +53,4 @@ event(@inhere):
 ## old ...
 
 - 重构核心，开发 2.0
+- 重新梳理流程
