@@ -31,26 +31,50 @@ websocket server(@inhere):
 - 新增更多自定注解，提供更灵活的使用方式
 - 开始支持message通信阶段的请求调度
 
-## 2019.02.05
+## 2019.02.02
+
+- 添加http server 响应数据解析器(@stelin)
+- 添加基础的db和pool组件结构(@stelin)
+
+## 2019.02.01
+
+- 添加新的http路由实现，基本逻辑不变，做了一些优化(@inhere)
+- 改造 console 组件，开始重构它的2.0 (@inhere)
+- 添加http server请求数据解析器(@stelin)
+
+## 2019.01.30
+
+- 添加新的http middleware实现(@stelin)
+
+## 2019.01.21
 
 - 添加组件的单元测试配置，支持针对某个组件运行测试(@inhere)
-
-http sever:
-
-- 添加新的路由实现，基本逻辑不变，做了一些优化(@inhere)
-
-console(@inhere):
-
-- 迁移 console 组件，开始重构它
-
-## 2019.01.20
 
 event(@inhere):
 
 - 迁出独立的事件库，调整以适配 2.0 结构
 - 新增 `Subscriber` 注解，支持在同一个类里面处理多个事件
 
+## 2019.01.25
+
+- 基础的上下文管理实现(@stelin)
+- 添加 http-server 组件包(@stelin)
+- 添加 http-message 组件包(@stelin)
+
+## 2019.01.22
+
+- 添加 AOP 核心组件包(@stelin)
+  - 重构AOP组件逻辑，基于AST语法分析实现
+
+## 2019.01.21
+
+- 添加 bean 核心组件包(@stelin)
+- 添加 config 核心组件包(@stelin)
+- 添加 annotation 核心组件包(@stelin)
+- 添加 framework 核心组件包(@stelin)
+- 新的组件加载逻辑实现(@stelin)
+
 ## old ...
 
-- 重构核心，开发 2.0
+- 重构核心，准备开发 2.0
 - 重新梳理流程
