@@ -5,6 +5,7 @@ namespace Swoft\Http\Server;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Context\ContextInterface;
 use Swoft\Concern\DataPropertyTrait;
+use Swoft\Http\Message\Response;
 use Swoft\Http\Message\ServerRequest;
 
 /**

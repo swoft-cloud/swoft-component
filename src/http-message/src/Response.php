@@ -2,8 +2,9 @@
 
 namespace Swoft\Http\Message;
 
-use Psr\Http\Message\ResponseInterface;
 use Swoft\Http\Concern\MessageTrait;
+use Swoft\Http\Message\Contract\ResponseInterface;
+use Swoole\Http\Response as CoResponse;
 
 /**
  * Class Response
@@ -16,72 +17,6 @@ class Response implements ResponseInterface
      * Message trait
      */
     use MessageTrait;
-
-    /**
-     * Map of standard HTTP status code/reason phrases
-     *
-     * @var array
-     */
-    private static $phrases = [
-        100 => 'Continue',
-        101 => 'Switching Protocols',
-        102 => 'Processing',
-        200 => 'OK',
-        201 => 'Created',
-        202 => 'Accepted',
-        203 => 'Non-Authoritative Information',
-        204 => 'No Content',
-        205 => 'Reset Content',
-        206 => 'Partial Content',
-        207 => 'Multi-status',
-        208 => 'Already Reported',
-        300 => 'Multiple Choices',
-        301 => 'Moved Permanently',
-        302 => 'Found',
-        303 => 'See Other',
-        304 => 'Not Modified',
-        305 => 'Use Proxy',
-        306 => 'Switch Proxy',
-        307 => 'Temporary Redirect',
-        400 => 'Bad Request',
-        401 => 'Unauthorized',
-        402 => 'Payment Required',
-        403 => 'Forbidden',
-        404 => 'Not Found',
-        405 => 'Method Not Allowed',
-        406 => 'Not Acceptable',
-        407 => 'Proxy Authentication Required',
-        408 => 'Request Time-out',
-        409 => 'Conflict',
-        410 => 'Gone',
-        411 => 'Length Required',
-        412 => 'Precondition Failed',
-        413 => 'Request Entity Too Large',
-        414 => 'Request-URI Too Large',
-        415 => 'Unsupported Media Type',
-        416 => 'Requested range not satisfiable',
-        417 => 'Expectation Failed',
-        418 => 'I\'m a teapot',
-        422 => 'Unprocessable Entity',
-        423 => 'Locked',
-        424 => 'Failed Dependency',
-        425 => 'Unordered Collection',
-        426 => 'Upgrade Required',
-        428 => 'Precondition Required',
-        429 => 'Too Many Requests',
-        431 => 'Request Header Fields Too Large',
-        451 => 'Unavailable For Legal Reasons',
-        500 => 'Internal Server Error',
-        501 => 'Not Implemented',
-        502 => 'Bad Gateway',
-        503 => 'Service Unavailable',
-        504 => 'Gateway Time-out',
-        505 => 'HTTP Version not supported',
-        506 => 'Variant Also Negotiates',
-        507 => 'Insufficient Storage',
-        508 => 'Loop Detected',
-        511 => 'Network Authentication Required',
-    ];
 
     /**
      * @var string
@@ -109,6 +44,184 @@ class Response implements ResponseInterface
      * @var mixed
      */
     protected $data;
+
+    // ----------
+
+    /**
+     * Exception
+     *
+     * @var \Throwable|null
+     */
+    protected $exception;
+
+    /**
+     * Coroutine response
+     *
+     * @var CoResponse
+     */
+    protected $coResponse;
+
+    /**
+     * Default format
+     *
+     * @var string
+     */
+    protected $format = self::FORMAT_JSON;
+
+    /**
+     * All formatters
+     *
+     * @var array
+     *
+     * @example
+     * [
+     *     Response::FORMAT_JSON => new ResponseFormatterInterface,
+     *     Response::FORMAT_XML => new ResponseFormatterInterface,
+     * ]
+     */
+    public $formatters = [];
+
+    /**
+     * Cookie
+     *
+     * @var array
+     */
+    protected $cookies = [];
+
+    /**
+     * @param CoResponse $coResponse
+     */
+    public function initialize(CoResponse $coResponse)
+    {
+        $this->coResponse = $coResponse;
+    }
+
+    /**
+     * Redirect to a URL
+     *
+     * @param string   $url
+     * @param null|int $status
+     *
+     * @return static
+     */
+    public function redirect($url, $status = 302): self
+    {
+        $response = $this;
+        $response = $response->withAddedHeader('Location', (string)$url)->withStatus($status);
+
+        return $response;
+    }
+
+    /**
+     * Send response
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function send()
+    {
+        // Prepare
+        $response = $this->prepare();
+
+        // Write Headers to co response
+        foreach ($response->getHeaders() as $key => $value) {
+            $this->coResponse->header($key, implode(';', $value));
+        }
+
+        // Set code
+        $this->coResponse->status($response->getStatusCode());
+
+        // Set body
+        $content = $response->getBody()->getContents();
+
+        $this->coResponse->end($content);
+    }
+
+    /**
+     * Prepare response
+     *
+     * @return Response
+     */
+    private function prepare(): Response
+    {
+        $formatter = $this->formatters[$this->format] ?? null;
+        if (!empty($formatter) && $formatter instanceof ResponseFormatterInterface) {
+            return $formatter->format($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Return new response instance with content
+     *
+     * @param $content
+     *
+     * @return static
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function withContent($content): Response
+    {
+        if ($this->stream) {
+            return $this;
+        }
+
+        /* @var Stream $stream */
+        $stream = \bean(Stream::class);
+        $stream->initialize($content);
+
+        $new = clone $this;
+
+        $new->stream = $stream;
+        return $new;
+    }
+
+    /**
+     * @return null|\Throwable
+     */
+    public function getException(): ?\Throwable
+    {
+        return $this->exception;
+    }
+
+    /**
+     * @param \Throwable $exception
+     *
+     * @return $this
+     */
+    public function setException(\Throwable $exception): self
+    {
+        $this->exception = $exception;
+        return $this;
+    }
+
+    /**
+     * @return CoResponse
+     */
+    public function getCoResponse(): CoResponse
+    {
+        return $this->coResponse;
+    }
+
+    /**
+     * @param CoResponse $coResponse
+     *
+     * @return $this
+     */
+    public function setCoResponse(CoResponse $coResponse): self
+    {
+        $this->coResponse = $coResponse;
+        return $this;
+    }
+
+    /**
+     * @param string $format
+     */
+    public function setFormat(string $format): void
+    {
+        $this->format = $format;
+    }
 
     /**
      * Retrieve attributes derived from the request.
@@ -222,8 +335,8 @@ class Response implements ResponseInterface
         $new             = clone $this;
         $new->statusCode = (int)$code;
 
-        if ($reasonPhrase == '' && isset(self::$phrases[$new->statusCode])) {
-            $reasonPhrase = self::$phrases[$new->statusCode];
+        if ($reasonPhrase === '' && isset(self::PHRASES[$new->statusCode])) {
+            $reasonPhrase = self::PHRASES[$new->statusCode];
         }
 
         $new->reasonPhrase = $reasonPhrase;
@@ -256,7 +369,7 @@ class Response implements ResponseInterface
      * @link http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
      * @return string Reason phrase; must return an empty string if none present.
      */
-    public function getReasonPhrase()
+    public function getReasonPhrase(): string
     {
         return $this->reasonPhrase;
     }

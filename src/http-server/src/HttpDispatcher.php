@@ -6,6 +6,7 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\Context;
 use Swoft\Dispatcher;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Http\Message\Response;
 use Swoft\Http\Message\ServerRequest;
 use Swoft\Http\Server\Middleware\DefaultMiddleware;
 use Swoft\Http\Server\Middleware\RequestMiddleware;
