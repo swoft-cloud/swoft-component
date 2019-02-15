@@ -16,11 +16,14 @@ class TcpServer extends Server
 {
     /**
      * Start server
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Server\Exception\ServerException
      */
     public function start(): void
     {
         $this->swooleServer = new \Co\Server($this->host, $this->port, $this->mode, $this->type);
+
         $this->startSwoole();
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Swoft\Tcp\Server\Event;
+namespace Swoft\Tcp\Server;
 
 /**
  * Class TcpServerEvent
