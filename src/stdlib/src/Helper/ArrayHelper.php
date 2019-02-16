@@ -3,6 +3,7 @@
 namespace Swoft\Stdlib\Helper;
 
 use Swoft\Stdlib\Arrayable;
+use Swoft\Stdlib\Collection;
 
 /**
  * Array helper
@@ -995,5 +996,32 @@ class ArrayHelper
     public static function isArrayable($value): bool
     {
         return is_array($value) || $value instanceof Arrayable;
+    }
+
+    /**
+     * Flatten a multi-dimensional array into a single level.
+     *
+     * @param  array $array
+     * @param  int   $depth
+     *
+     * @return array
+     */
+    public static function flatten(array $array, int $depth = INF)
+    {
+        $result = [];
+
+        foreach ($array as $item) {
+            $item = $item instanceof Collection ? $item->all() : $item;
+
+            if (!is_array($item)) {
+                $result[] = $item;
+            } elseif ($depth === 1) {
+                $result = array_merge($result, array_values($item));
+            } else {
+                $result = array_merge($result, static::flatten($item, $depth - 1));
+            }
+        }
+
+        return $result;
     }
 }

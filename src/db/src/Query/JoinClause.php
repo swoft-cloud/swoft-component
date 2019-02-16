@@ -4,6 +4,16 @@
 namespace Swoft\Db\Query;
 
 
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Db\Exception\QueryException;
+
+/**
+ * Class JoinClause
+ *
+ * @Bean(scope=Bean::PROTOTYPE)
+ *
+ * @since 2.0
+ */
 class JoinClause extends Builder
 {
     /**
@@ -30,22 +40,18 @@ class JoinClause extends Builder
     /**
      * Create a new join clause instance.
      *
-     * @param  Builder $parentQuery
-     * @param  string  $type
-     * @param  string  $table
-     *
-     * @return void
+     * @param Builder $parentQuery
+     * @param string  $type
+     * @param string  $table
      */
-    public function __construct(Builder $parentQuery, $type, $table)
+    public function initializeJoinClause(Builder $parentQuery, string $type, string $table)
     {
         $this->type        = $type;
         $this->table       = $table;
         $this->parentQuery = $parentQuery;
-
-        parent::__construct(
-            $parentQuery->getConnection(), $parentQuery->getGrammar(), $parentQuery->getProcessor()
-        );
+        parent::initialize($parentQuery->getConnection(), $parentQuery->getGrammar(), $parentQuery->getProcessor());
     }
+
 
     /**
      * Add an "on" clause to the join.
@@ -95,18 +101,20 @@ class JoinClause extends Builder
      * Get a new instance of the join clause builder.
      *
      * @return static
+     * @throws QueryException
      */
-    public function newQuery()
+    public function newQuery(): Builder
     {
-        return new static($this->parentQuery, $this->type, $this->table);
+        return \join_clause($this->parentQuery, $this->type, $this->table);
     }
 
     /**
      * Create a new query instance for sub-query.
      *
      * @return Builder
+     * @throws QueryException
      */
-    protected function forSubQuery()
+    protected function forSubQuery(): Builder
     {
         return $this->parentQuery->newQuery();
     }
