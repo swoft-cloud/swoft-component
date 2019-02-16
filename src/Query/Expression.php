@@ -3,7 +3,15 @@
 
 namespace Swoft\Db\Query;
 
+use Swoft\Bean\Annotation\Mapping\Bean;
 
+/**
+ * Class Expression
+ *
+ * @Bean(scope=Bean::PROTOTYPE)
+ *
+ * @since 2.0
+ */
 class Expression
 {
     /**
@@ -16,11 +24,9 @@ class Expression
     /**
      * Create a new raw query expression.
      *
-     * @param  mixed $value
-     *
-     * @return void
+     * @param $value
      */
-    public function __construct($value)
+    public function initialize($value)
     {
         $this->value = $value;
     }

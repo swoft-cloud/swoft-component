@@ -232,10 +232,11 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
      * Get a new query builder instance.
      *
      * @return Builder
+     * @throws QueryException
      */
     public function query()
     {
-        return new Builder($this, $this->getQueryGrammar(), $this->getPostProcessor());
+        return \builder($this, $this->getQueryGrammar(), $this->getPostProcessor());
     }
 
     /**
@@ -244,6 +245,8 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
      * @param string $table
      *
      * @return Builder
+     *
+     * @throws QueryException
      */
     public function table($table): Builder
     {
@@ -259,7 +262,7 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
      */
     public function raw($value): Expression
     {
-        return new Expression($value);
+        return \expression($value);
     }
 
     /**
