@@ -8,7 +8,7 @@ use Swoft\Http\Server\HttpContext;
 use Swoft\WebSocket\Server\Connection;
 
 /**
- * Class Context
+ * Class Context - request context manager
  *
  * @since 2.0
  */

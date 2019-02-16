@@ -15,6 +15,9 @@ interface CloseInterface
     /**
      * Close event
      *
+     * on connection closed
+     * - you can do something. eg. record log
+     *
      * @param CoServer $server
      * @param int      $fd
      * @param int      $reactorId

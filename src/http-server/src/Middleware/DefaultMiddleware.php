@@ -11,7 +11,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Http\Server\Formatter\AcceptResponseFormatter;
-use Swoft\Http\Server\Response;
+use Swoft\Http\Message\Response;
 
 /**
  * Class DefaultMiddleware

@@ -1,23 +1,16 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-04
- * Time: 13:48
- */
+<?php declare(strict_types=1);
 
 namespace Swoft\WebSocket\Server;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Connection\ConnectionInterface;
-use Swoft\Helper\DataPropertyTrait;
+use Swoft\Concern\DataPropertyTrait;
 use Swoft\Http\Message\ServerRequest;
 use Swoole\Http\Request;
 
 /**
  * Class Connection
- * @package Swoft\WebSocket\Server
  * @since 2.0
  * @Bean(scope=Bean::PROTOTYPE)
  */
@@ -103,6 +96,17 @@ class Connection implements ConnectionInterface
     public function getMetadata(): array
     {
         return $this->get(self::METADATA_KEY, []);
+    }
+
+    /**
+     * @param string $key
+     * @return mixed
+     */
+    public function getMetaValue(string $key)
+    {
+        $data = $this->get(self::METADATA_KEY, []);
+
+        return $data[$key] ?? null;
     }
 
     /**

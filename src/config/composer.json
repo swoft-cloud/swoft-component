@@ -18,10 +18,7 @@
     ],
     "psr-4": {
       "Swoft\\Config\\": "src/"
-    },
-    "files": [
-      "src/Helper/Functions.php"
-    ]
+    }
   },
   "require-dev": {
     "phpunit/phpunit": "^7.0"

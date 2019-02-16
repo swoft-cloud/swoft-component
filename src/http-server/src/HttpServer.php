@@ -1,7 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Http\Server;
-
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Server\Server;
@@ -15,8 +14,13 @@ use Swoft\Server\Server;
  */
 class HttpServer extends Server
 {
+    protected static $serverType = 'HTTP';
+
     /**
      * Start server
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Server\Exception\ServerException
      */
     public function start(): void
     {

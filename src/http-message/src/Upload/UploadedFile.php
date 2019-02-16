@@ -3,7 +3,7 @@
 
 namespace Swoft\Http\Message\Upload;
 
-
+use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 
 /**
@@ -33,7 +33,7 @@ class UploadedFile implements UploadedFileInterface
             ->setClientMediaType($clientMediaType);
         $this->isOk() && $this->setFile($tmpFile);
     }
-    
+
     /**
      * Retrieve a stream representing the uploaded file.
      *

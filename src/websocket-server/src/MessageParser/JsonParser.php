@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by PhpStorm.
  * User: inhere
@@ -16,12 +16,21 @@ use Swoft\WebSocket\Server\Contract\MessageParserInterface;
  */
 class JsonParser implements MessageParserInterface
 {
-    public function encode(): string
+    /**
+     * @param array $data
+     * @return string
+     */
+    public function encode($data): string
     {
+        // return \json_encode($data);
         return '{"cmd": "login", "data": "welcome"}';
     }
 
-    public function decode(): array
+    /**
+     * @param string $data
+     * @return array
+     */
+    public function decode(string $data): array
     {
         return [
             'cmd'  => 'login',

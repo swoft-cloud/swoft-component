@@ -16,10 +16,7 @@
     ],
     "psr-4": {
       "Swoft\\Log\\": "src/"
-    },
-    "files": [
-      "src/Helper/Functions.php"
-    ]
+    }
   },
   "require-dev": {
     "swoft/swoole-ide-helper": "dev-master",

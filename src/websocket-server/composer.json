@@ -15,10 +15,7 @@
   "autoload": {
     "psr-4": {
       "Swoft\\WebSocket\\Server\\": "src/"
-    },
-    "files": [
-      "src/Helper/Functions.php"
-    ]
+    }
   },
   "autoload-dev": {
     "psr-4": {

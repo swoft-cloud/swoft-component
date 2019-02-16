@@ -9,6 +9,22 @@ namespace Swoft\Server;
  */
 interface ServerInterface
 {
+    // swoole mode list
+    public const MODE_LIST = [
+        \SWOOLE_BASE    => 'Base',
+        \SWOOLE_PROCESS => 'Process',
+    ];
+
+    // swoole socket type list
+    public const TYPE_LIST = [
+        \SWOOLE_SOCK_TCP         => 'TCP',
+        \SWOOLE_SOCK_TCP6        => 'TCP6',
+        \SWOOLE_SOCK_UDP         => 'UDP',
+        \SWOOLE_SOCK_UDP6        => 'UDP6',
+        \SWOOLE_SOCK_UNIX_DGRAM  => 'UNIX DGRAM',
+        \SWOOLE_SOCK_UNIX_STREAM => 'UNIX STREAM',
+    ];
+
     /**
      * Start server
      *
