@@ -62,7 +62,7 @@ interface ConnectionInterface
      *
      * @return \Generator
      */
-    public function cursor($query, $bindings = [], $useReadPdo = true): \Generator;
+    public function cursor(string $query, array $bindings = [], bool $useReadPdo = true): \Generator;
 
     /**
      * Run an insert statement against the database.
@@ -72,7 +72,7 @@ interface ConnectionInterface
      *
      * @return bool
      */
-    public function insert($query, $bindings = []): bool;
+    public function insert(string $query, array $bindings = []): bool;
 
     /**
      * Run an update statement against the database.
@@ -82,7 +82,7 @@ interface ConnectionInterface
      *
      * @return int
      */
-    public function update($query, $bindings = []): int;
+    public function update(string $query, array $bindings = []): int;
 
     /**
      * Run a delete statement against the database.
@@ -92,7 +92,7 @@ interface ConnectionInterface
      *
      * @return int
      */
-    public function delete($query, $bindings = []): int;
+    public function delete(string $query, array $bindings = []): int;
 
     /**
      * Execute an SQL statement and return the boolean result.
@@ -102,7 +102,7 @@ interface ConnectionInterface
      *
      * @return bool
      */
-    public function statement($query, $bindings = []): bool;
+    public function statement(string $query, array $bindings = []): bool;
 
     /**
      * Run an SQL statement and get the number of rows affected.
@@ -112,7 +112,7 @@ interface ConnectionInterface
      *
      * @return int
      */
-    public function affectingStatement($query, $bindings = []): int;
+    public function affectingStatement(string $query, array $bindings = []): int;
 
     /**
      * Run a raw, unprepared query against the PDO connection.
@@ -121,7 +121,7 @@ interface ConnectionInterface
      *
      * @return bool
      */
-    public function unprepared($query): bool;
+    public function unprepared(string $query): bool;
 
     /**
      * Prepare the query bindings for execution.
@@ -142,7 +142,7 @@ interface ConnectionInterface
      *
      * @throws \Throwable
      */
-    public function transaction(\Closure $callback, $attempts = 1): \Throwable;
+    public function transaction(\Closure $callback, $attempts = 1);
 
     /**
      * Start a new database transaction.

@@ -100,6 +100,9 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
 
     /**
      * Create connection
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function create(): void
     {
@@ -148,6 +151,12 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
         $this->queryGrammar = $queryGrammar;
     }
 
+    /**
+     * Create pdo
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
     private function createPdo()
     {
         $writes = $this->database->getWrites();
@@ -156,6 +165,12 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
         $this->pdo = $this->database->getConnector()->connect($write);
     }
 
+    /**
+     * Create read pdo
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
     private function createReadPdo()
     {
         $reads = $this->database->getReads();
@@ -223,17 +238,40 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
         return new Builder($this, $this->getQueryGrammar(), $this->getPostProcessor());
     }
 
+    /**
+     * Begin a fluent query against a database table.
+     *
+     * @param string $table
+     *
+     * @return Builder
+     */
     public function table($table): Builder
     {
         return $this->query()->from($table);
     }
 
-
+    /**
+     * Get a new raw query expression.
+     *
+     * @param mixed $value
+     *
+     * @return Expression
+     */
     public function raw($value): Expression
     {
         return new Expression($value);
     }
 
+    /**
+     * Run a select statement and return a single result.
+     *
+     * @param string $query
+     * @param array  $bindings
+     * @param bool   $useReadPdo
+     *
+     * @return mixed
+     * @throws QueryException
+     */
     public function selectOne($query, $bindings = [], $useReadPdo = true)
     {
         $records = $this->select($query, $bindings, $useReadPdo);
@@ -268,39 +306,144 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
         });
     }
 
-    public function cursor($query, $bindings = [], $useReadPdo = true): \Generator
+    /**
+     * Run a select statement against the database and returns a generator.
+     *
+     * @param string $query
+     * @param array  $bindings
+     * @param bool   $useReadPdo
+     *
+     * @return \Generator
+     * @throws QueryException
+     */
+    public function cursor(string $query, array $bindings = [], bool $useReadPdo = true): \Generator
     {
-        // TODO: Implement cursor() method.
+        $statement = $this->run($query, $bindings, function ($query, $bindings) use ($useReadPdo) {
+            // First we will create a statement for the query. Then, we will set the fetch
+            // mode and prepare the bindings for the query. Once that's done we will be
+            // ready to execute the query against the database and return the cursor.
+            $statement = $this->getPdoForSelect($useReadPdo)->prepare($query);
+            $statement = $this->prepared($statement);
+
+            $this->bindValues(
+                $statement, $this->prepareBindings($bindings)
+            );
+
+            // Next, we'll execute the query against the database and return the statement
+            // so we can return the cursor. The cursor will use a PHP generator to give
+            // back one row at a time without using a bunch of memory to render them.
+            $statement->execute();
+
+            return $statement;
+        });
+
+        while ($record = $statement->fetch()) {
+            yield $record;
+        }
     }
 
-    public function insert($query, $bindings = []): bool
+    /**
+     * Run an insert statement against the database.
+     *
+     * @param string $query
+     * @param array  $bindings
+     *
+     * @return bool
+     * @throws QueryException
+     */
+    public function insert(string $query, array $bindings = []): bool
     {
-        // TODO: Implement insert() method.
+        return $this->statement($query, $bindings);
     }
 
-    public function update($query, $bindings = []): int
+    /**
+     * Run an update statement against the database.
+     *
+     * @param string $query
+     * @param array  $bindings
+     *
+     * @return int
+     * @throws QueryException
+     */
+    public function update(string $query, array $bindings = []): int
     {
-        // TODO: Implement update() method.
+        return $this->affectingStatement($query, $bindings);
     }
 
-    public function delete($query, $bindings = []): int
+    /**
+     * Run a delete statement against the database.
+     *
+     * @param string $query
+     * @param array  $bindings
+     *
+     * @return int
+     * @throws QueryException
+     */
+    public function delete(string $query, array $bindings = []): int
     {
-        // TODO: Implement delete() method.
+        return $this->affectingStatement($query, $bindings);
     }
 
-    public function statement($query, $bindings = []): bool
+    /**
+     * Execute an SQL statement and return the boolean result.
+     *
+     * @param string $query
+     * @param array  $bindings
+     *
+     * @return bool
+     * @throws QueryException
+     */
+    public function statement(string $query, array $bindings = []): bool
     {
-        // TODO: Implement statement() method.
+        return $this->run($query, $bindings, function ($query, $bindings) {
+            $statement = $this->getPdo()->prepare($query);
+
+            $this->bindValues($statement, $this->prepareBindings($bindings));
+
+            return $statement->execute();
+        });
     }
 
-    public function affectingStatement($query, $bindings = []): int
+    /**
+     * Run an SQL statement and get the number of rows affected.
+     *
+     * @param string $query
+     * @param array  $bindings
+     *
+     * @return int
+     * @throws QueryException
+     */
+    public function affectingStatement(string $query, array $bindings = []): int
     {
-        // TODO: Implement affectingStatement() method.
+        return $this->run($query, $bindings, function ($query, $bindings) {
+            // For update or delete statements, we want to get the number of rows affected
+            // by the statement and return that back to the developer. We'll first need
+            // to execute the statement and then we'll use PDO to fetch the affected.
+            $statement = $this->getPdo()->prepare($query);
+
+            $this->bindValues($statement, $this->prepareBindings($bindings));
+
+            $statement->execute();
+            $count = $statement->rowCount();
+
+            return $count;
+        });
     }
 
-    public function unprepared($query): bool
+    /**
+     * @param string $query
+     *
+     * @return bool
+     * @throws QueryException
+     */
+    public function unprepared(string $query): bool
     {
-        // TODO: Implement unprepared() method.
+        return $this->run($query, [], function ($query) {
+
+            $change = $this->getPdo()->exec($query);
+
+            return $change;
+        });
     }
 
     /**
@@ -321,41 +464,11 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
             if ($value instanceof \DateTimeInterface) {
                 $bindings[$key] = $value->format($grammar->getDateFormat());
             } elseif (is_bool($value)) {
-                $bindings[$key] = (int) $value;
+                $bindings[$key] = (int)$value;
             }
         }
 
         return $bindings;
-    }
-
-    public function transaction(\Closure $callback, $attempts = 1): \Throwable
-    {
-        // TODO: Implement transaction() method.
-    }
-
-    public function beginTransaction(): void
-    {
-        // TODO: Implement beginTransaction() method.
-    }
-
-    public function commit(): void
-    {
-        // TODO: Implement commit() method.
-    }
-
-    public function rollBack(): void
-    {
-        // TODO: Implement rollBack() method.
-    }
-
-    public function transactionLevel(): void
-    {
-        // TODO: Implement transactionLevel() method.
-    }
-
-    public function pretend(\Closure $callback): array
-    {
-        // TODO: Implement pretend() method.
     }
 
     /**
@@ -372,8 +485,6 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
     protected function run(string $query, array $bindings, \Closure $callback)
     {
         $this->reconnectIfMissingConnection();
-
-        $start = microtime(true);
 
         // Here we will run this query. If an exception occurs we'll determine if it was
         // caused by a connection that has been lost. If that is the cause, we'll try
@@ -448,6 +559,37 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
 
         return $statement;
     }
+
+    public function pretend(\Closure $callback): array
+    {
+        return [];
+    }
+
+    public function transaction(\Closure $callback, $attempts = 1)
+    {
+
+    }
+
+    public function beginTransaction(): void
+    {
+        // TODO: Implement beginTransaction() method.
+    }
+
+    public function commit(): void
+    {
+        // TODO: Implement commit() method.
+    }
+
+    public function rollBack(): void
+    {
+        // TODO: Implement rollBack() method.
+    }
+
+    public function transactionLevel(): void
+    {
+        // TODO: Implement transactionLevel() method.
+    }
+
 
     /**
      * Get the PDO connection to use for a select query.
