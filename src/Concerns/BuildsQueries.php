@@ -3,7 +3,11 @@
 
 namespace Swoft\Db\Concerns;
 
-
+/**
+ * Class BuildsQueries
+ *
+ * @since 2.0
+ */
 trait BuildsQueries
 {
     /**

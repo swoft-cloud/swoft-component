@@ -5,6 +5,7 @@ namespace Swoft\Db;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Db\Query\Grammar\MySqlGrammar;
+use Swoft\Db\Query\Grammar\Grammar;
 
 /**
  * Class MySqlConnection
@@ -21,11 +22,11 @@ class MySqlConnection extends Connection
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    protected function getDefaultQueryGrammar()
+    protected function getDefaultQueryGrammar(): Grammar
     {
         $grammar = \bean(MySqlGrammar::class);
-        if(!$grammar instanceof MySqlGrammar){
-            
+        if (!$grammar instanceof MySqlGrammar) {
+            throw new \InvalidArgumentException('%s class is not Grammar instance', get_class($grammar));
         }
         return $this->withTablePrefix($grammar);
     }
@@ -33,11 +34,11 @@ class MySqlConnection extends Connection
     /**
      * Set the table prefix and return the grammar.
      *
-     * @param MySqlGrammar $grammar
+     * @param Grammar $grammar
      *
-     * @return MySqlGrammar
+     * @return Grammar
      */
-    public function withTablePrefix(MySqlGrammar $grammar)
+    public function withTablePrefix(Grammar $grammar)
     {
         $grammar->setTablePrefix($this->database->getPrefix());
 
