@@ -12,6 +12,7 @@
     "description": "microservice framework base on swoole",
     "license": "Apache-2.0",
     "require": {
+        "ext-pdo": "*"
     },
     "autoload": {
         "psr-4": {
