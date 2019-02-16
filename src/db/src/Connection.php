@@ -5,6 +5,7 @@ namespace Swoft\Db;
 
 
 use Swoft\Connection\Pool\ConnectionInterface as PoolConnectionInterface;
+use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
 use Swoft\Db\Query\Grammar\Grammar;
@@ -17,6 +18,11 @@ use Swoft\Db\Query\Processor\Processor;
  */
 class Connection implements PoolConnectionInterface, ConnectionInterface
 {
+    /**
+     * Default fetch mode
+     */
+    const DEFAULT_FETCH_MODE = \PDO::FETCH_OBJ;
+
     /**
      * The active PDO connection.
      *
@@ -61,6 +67,11 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
     {
         $this->pool     = $pool;
         $this->database = $database;
+
+        // We need to initialize a query grammar and the query post processors
+        // which are both very important parts of the database abstractions
+        // so we initialize these to their default values while starting.
+        $this->useDefaultQueryGrammar();
     }
 
     /**
@@ -154,95 +165,346 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
         }
     }
 
-    public function table($table)
+    /**
+     * Set the query grammar to the default implementation.
+     *
+     * @return void
+     */
+    public function useDefaultQueryGrammar(): void
     {
-        // TODO: Implement table() method.
+        $this->queryGrammar = $this->getDefaultQueryGrammar();
     }
 
-    public function raw($value)
+    /**
+     * Get the default query grammar instance.
+     *
+     * @return Grammar
+     */
+    protected function getDefaultQueryGrammar(): Grammar
     {
-        // TODO: Implement raw() method.
+        return new Grammar();
+    }
+
+    /**
+     * Set the table prefix and return the grammar.
+     *
+     * @param Grammar $grammar
+     *
+     * @return Grammar
+     */
+    public function withTablePrefix(Grammar $grammar)
+    {
+        $grammar->setTablePrefix($this->database->getPrefix());
+
+        return $grammar;
+    }
+
+    /**
+     * Set the table prefix in use by the connection.
+     *
+     * @param  string $prefix
+     *
+     * @return static
+     */
+    public function setTablePrefix($prefix): self
+    {
+        $this->getQueryGrammar()->setTablePrefix($prefix);
+
+        return $this;
+    }
+
+    /**
+     * Get a new query builder instance.
+     *
+     * @return Builder
+     */
+    public function query()
+    {
+        return new Builder($this, $this->getQueryGrammar(), $this->getPostProcessor());
+    }
+
+    public function table($table): Builder
+    {
+        return $this->query()->from($table);
+    }
+
+
+    public function raw($value): Expression
+    {
+        return new Expression($value);
     }
 
     public function selectOne($query, $bindings = [], $useReadPdo = true)
     {
-        // TODO: Implement selectOne() method.
+        $records = $this->select($query, $bindings, $useReadPdo);
+
+        return array_shift($records);
     }
 
-    public function select($query, $bindings = [], $useReadPdo = true)
+    /**
+     * Run a select statement against the database.
+     *
+     * @param string $query
+     * @param array  $bindings
+     * @param bool   $useReadPdo
+     *
+     * @return array
+     * @throws QueryException
+     */
+    public function select(string $query, array $bindings = [], bool $useReadPdo = true): array
     {
-        // TODO: Implement select() method.
+        return $this->run($query, $bindings, function ($query, $bindings) use ($useReadPdo) {
+            // For select statements, we'll simply execute the query and return an array
+            // of the database result set. Each element in the array will be a single
+            // row from the database table, and will either be an array or objects.
+            $statement = $this->getPdoForSelect($useReadPdo)->prepare($query);
+            $statement = $this->prepared($statement);
+
+            $this->bindValues($statement, $this->prepareBindings($bindings));
+
+            $statement->execute();
+
+            return $statement->fetchAll();
+        });
     }
 
-    public function cursor($query, $bindings = [], $useReadPdo = true)
+    public function cursor($query, $bindings = [], $useReadPdo = true): \Generator
     {
         // TODO: Implement cursor() method.
     }
 
-    public function insert($query, $bindings = [])
+    public function insert($query, $bindings = []): bool
     {
         // TODO: Implement insert() method.
     }
 
-    public function update($query, $bindings = [])
+    public function update($query, $bindings = []): int
     {
         // TODO: Implement update() method.
     }
 
-    public function delete($query, $bindings = [])
+    public function delete($query, $bindings = []): int
     {
         // TODO: Implement delete() method.
     }
 
-    public function statement($query, $bindings = [])
+    public function statement($query, $bindings = []): bool
     {
         // TODO: Implement statement() method.
     }
 
-    public function affectingStatement($query, $bindings = [])
+    public function affectingStatement($query, $bindings = []): int
     {
         // TODO: Implement affectingStatement() method.
     }
 
-    public function unprepared($query)
+    public function unprepared($query): bool
     {
         // TODO: Implement unprepared() method.
     }
 
-    public function prepareBindings(array $bindings)
+    /**
+     * Prepare the query bindings for execution.
+     *
+     * @param array $bindings
+     *
+     * @return array
+     */
+    public function prepareBindings(array $bindings): array
     {
-        // TODO: Implement prepareBindings() method.
+        $grammar = $this->getQueryGrammar();
+
+        foreach ($bindings as $key => $value) {
+            // We need to transform all instances of DateTimeInterface into the actual
+            // date string. Each query grammar maintains its own date string format
+            // so we'll just ask the grammar for the format to get from the date.
+            if ($value instanceof \DateTimeInterface) {
+                $bindings[$key] = $value->format($grammar->getDateFormat());
+            } elseif (is_bool($value)) {
+                $bindings[$key] = (int) $value;
+            }
+        }
+
+        return $bindings;
     }
 
-    public function transaction(\Closure $callback, $attempts = 1)
+    public function transaction(\Closure $callback, $attempts = 1): \Throwable
     {
         // TODO: Implement transaction() method.
     }
 
-    public function beginTransaction()
+    public function beginTransaction(): void
     {
         // TODO: Implement beginTransaction() method.
     }
 
-    public function commit()
+    public function commit(): void
     {
         // TODO: Implement commit() method.
     }
 
-    public function rollBack()
+    public function rollBack(): void
     {
         // TODO: Implement rollBack() method.
     }
 
-    public function transactionLevel()
+    public function transactionLevel(): void
     {
         // TODO: Implement transactionLevel() method.
     }
 
-    public function pretend(\Closure $callback)
+    public function pretend(\Closure $callback): array
     {
         // TODO: Implement pretend() method.
     }
 
+    /**
+     * Run a SQL statement and log its execution context.
+     *
+     * @param  string   $query
+     * @param  array    $bindings
+     * @param  \Closure $callback
+     *
+     * @return mixed
+     *
+     * @throws QueryException
+     */
+    protected function run(string $query, array $bindings, \Closure $callback)
+    {
+        $this->reconnectIfMissingConnection();
 
+        $start = microtime(true);
+
+        // Here we will run this query. If an exception occurs we'll determine if it was
+        // caused by a connection that has been lost. If that is the cause, we'll try
+
+        // 错误释放连接、事物处理
+        $result = $this->runQueryCallback($query, $bindings, $callback);
+
+        // Once we have run the query we will calculate the time that it took to run and
+        // then log the query, bindings, and execution time so we will report them on
+        // the event that the developer needs them. We'll log time in milliseconds.
+
+        return $result;
+    }
+
+    /**
+     * Run a SQL statement.
+     *
+     * @param  string   $query
+     * @param  array    $bindings
+     * @param  \Closure $callback
+     *
+     * @return mixed
+     *
+     * @throws QueryException
+     */
+    protected function runQueryCallback(string $query, array $bindings, \Closure $callback)
+    {
+        // To execute the statement, we'll simply call the callback, which will actually
+        // run the SQL against the PDO connection. Then we can calculate the time it
+        // took to execute and log the query SQL, bindings and time in our memory.
+        try {
+            $result = $callback($query, $bindings);
+        }
+
+            // If an exception occurs when attempting to run a query, we'll format the error
+            // message to include the bindings with SQL, which will make this exception a
+            // lot more helpful to the developer instead of just the database's errors.
+        catch (\Throwable $e) {
+            throw new QueryException(
+                $query, $this->prepareBindings($bindings), $e
+            );
+        }
+
+        return $result;
+    }
+
+    /**
+     * Reconnect to the database if a PDO connection is missing.
+     *
+     * @return void
+     */
+    protected function reconnectIfMissingConnection()
+    {
+        if (is_null($this->pdo)) {
+            $this->reconnect();
+        }
+    }
+
+    /**
+     * Configure the PDO prepared statement.
+     *
+     * @param  \PDOStatement $statement
+     *
+     * @return \PDOStatement
+     */
+    protected function prepared(\PDOStatement $statement): \PDOStatement
+    {
+        $config    = $this->database->getConfig();
+        $fetchMode = $config['fetchMode'] ?? self::DEFAULT_FETCH_MODE;
+
+        $statement->setFetchMode($fetchMode);
+
+        return $statement;
+    }
+
+    /**
+     * Get the PDO connection to use for a select query.
+     *
+     * @param  bool $useReadPdo
+     *
+     * @return \PDO
+     */
+    protected function getPdoForSelect($useReadPdo = true)
+    {
+        return $useReadPdo ? $this->getReadPdo() : $this->getPdo();
+    }
+
+    /**
+     * Get the current PDO connection.
+     *
+     * @return \PDO
+     */
+    public function getPdo(): \PDO
+    {
+        return $this->pdo;
+    }
+
+    /**
+     * Get the current PDO connection used for reading.
+     *
+     * @return \PDO
+     */
+    public function getReadPdo(): \PDO
+    {
+        // transaction
+        if (true) {
+            return $this->getPdo();
+        }
+
+        if (empty($this->readPdo)) {
+            return $this->getPdo();
+        }
+
+        return $this->readPdo;
+    }
+
+    /**
+     * Bind values to their parameters in the given statement.
+     *
+     * @param  \PDOStatement $statement
+     * @param  array         $bindings
+     *
+     * @return void
+     */
+    public function bindValues(\PDOStatement $statement, array $bindings): void
+    {
+        foreach ($bindings as $key => $value) {
+            $statement->bindValue(
+                is_string($key) ? $key : $key + 1, $value,
+                is_int($value) ? \PDO::PARAM_INT : \PDO::PARAM_STR
+            );
+        }
+    }
 }
