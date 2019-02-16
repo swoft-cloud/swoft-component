@@ -4,7 +4,7 @@ namespace Swoft\WebSocket\Server;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Connection\ConnectionInterface;
+use Swoft\Session\SessionInterface;
 use Swoft\Concern\DataPropertyTrait;
 use Swoft\Http\Message\ServerRequest;
 use Swoole\Http\Request;
@@ -14,7 +14,7 @@ use Swoole\Http\Request;
  * @since 2.0
  * @Bean(scope=Bean::PROTOTYPE)
  */
-class Connection implements ConnectionInterface
+class Connection implements SessionInterface
 {
     use DataPropertyTrait;
 

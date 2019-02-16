@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Connection;
+namespace Swoft\Session;
 
 use Swoft\Co;
 use Swoft\Exception\ConnectionException;
 use Swoft\WebSocket\Server\Connection;
 
 /**
- * Class Connections
+ * Class Session - sessions manage
  * @since 2.0
  */
-class Connections
+class Session
 {
     /**
      * The map for coroutine id to fd
@@ -22,13 +22,13 @@ class Connections
     /**
      * Connection list
      *
-     * @var ConnectionInterface[]
+     * @var SessionInterface[]
      *
      * @example
      * [
-     *    'fd' => ConnectionInterface,
-     *    'fd2' => ConnectionInterface,
-     *    'fd3' => ConnectionInterface,
+     *    'fd'  => SessionInterface,
+     *    'fd2' => SessionInterface,
+     *    'fd3' => SessionInterface,
      * ]
      */
     private static $connections = [];
@@ -80,9 +80,9 @@ class Connections
      * Get connection by FD
      *
      * @param int $fd If not specified, return the current corresponding connection
-     * @return ConnectionInterface|Connection
+     * @return SessionInterface|Connection
      */
-    public static function get(int $fd = -1): ?ConnectionInterface
+    public static function get(int $fd = -1): ?SessionInterface
     {
         $fd = $fd > -1 ? $fd : self::getBoundedFd();
 
@@ -93,9 +93,9 @@ class Connections
      * Get connection by FD. if not found will throw exception.
      *
      * @param int $fd
-     * @return ConnectionInterface|Connection
+     * @return SessionInterface|Connection
      */
-    public static function mustGet(int $fd = -1): ConnectionInterface
+    public static function mustGet(int $fd = -1): SessionInterface
     {
         $fd = $fd > -1 ? $fd : self::getBoundedFd();
 
@@ -109,10 +109,10 @@ class Connections
     /**
      * Set connection
      *
-     * @param int                 $fd On websocket server, context bind by fd.
-     * @param ConnectionInterface $connection
+     * @param int              $fd On websocket server, context bind by fd.
+     * @param SessionInterface $connection
      */
-    public static function set(int $fd, ConnectionInterface $connection): void
+    public static function set(int $fd, SessionInterface $connection): void
     {
         self::$connections[$fd] = $connection;
     }
