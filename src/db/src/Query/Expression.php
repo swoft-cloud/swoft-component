@@ -4,6 +4,8 @@
 namespace Swoft\Db\Query;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Concern\Prototype;
+use Swoft\Bean\PrototypeInterface;
 
 /**
  * Class Expression
@@ -12,8 +14,10 @@ use Swoft\Bean\Annotation\Mapping\Bean;
  *
  * @since 2.0
  */
-class Expression
+class Expression implements PrototypeInterface
 {
+    use Prototype;
+
     /**
      * The value of the expression.
      *
@@ -22,13 +26,20 @@ class Expression
     protected $value;
 
     /**
-     * Create a new raw query expression.
+     * Create new expression
      *
-     * @param $value
+     * @param mixed ...$params
+     *
+     * @return Expression
+     * @throws \Swoft\Bean\Exception\PrototypeException
      */
-    public function initialize($value)
+    public static function new(...$params): self
     {
-        $this->value = $value;
+        list($value) = $params;
+        $self = self::__instance();
+
+        $self->value = $value;
+        return $self;
     }
 
     /**
