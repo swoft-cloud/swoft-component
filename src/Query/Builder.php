@@ -4,6 +4,9 @@
 namespace Swoft\Db\Query;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Concern\Prototype;
+use Swoft\Bean\Exception\PrototypeException;
+use Swoft\Bean\PrototypeInterface;
 use Swoft\Db\Concerns\BuildsQueries;
 use Swoft\Db\Connection;
 use Swoft\Db\Eloquent\Builder as EloquentBuilder;
@@ -22,9 +25,9 @@ use Swoft\Stdlib\Helper\Str;
  *
  * @since 2.0
  */
-class Builder
+class Builder implements PrototypeInterface
 {
-    use BuildsQueries;
+    use BuildsQueries, Prototype;
 
     /**
      * The database connection instance.
@@ -238,6 +241,32 @@ class Builder
     }
 
     /**
+     * New builder instance
+     *
+     * @param mixed ...$params
+     *
+     * @return Builder
+     * @throws PrototypeException
+     */
+    public static function new(...$params)
+    {
+        /**
+         * @var Connection $connection
+         * @var Grammar    $grammar
+         * @var Processor  $processor
+         */
+        list($connection, $grammar, $processor) = $params;
+
+        $self = self::__instance();
+
+        $self->connection = $connection;
+        $self->grammar    = $grammar ?: $connection->getQueryGrammar();
+        $self->processor  = $processor ?: $connection->getPostProcessor();
+
+        return $self;
+    }
+
+    /**
      * Create a new query builder instance.
      *
      * @param Connection     $connection
@@ -274,7 +303,7 @@ class Builder
      * @return static
      *
      * @throws \InvalidArgumentException
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function selectSub($query, string $as): self
     {
@@ -290,11 +319,11 @@ class Builder
      * @param array  $bindings
      *
      * @return Builder
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function selectRaw(string $expression, array $bindings = []): self
     {
-        $this->addSelect(\expression($expression));
+        $this->addSelect(Expression::new($expression));
 
         if ($bindings) {
             $this->addBinding($bindings, 'select');
@@ -312,7 +341,7 @@ class Builder
      * @return static
      *
      * @throws \InvalidArgumentException
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function fromSub($query, $as): self
     {
@@ -333,7 +362,7 @@ class Builder
      */
     public function fromRaw($expression, $bindings = []): self
     {
-        $this->from = \expression($expression);
+        $this->from = Expression::new($expression);
 
         $this->addBinding($bindings, 'from');
 
@@ -346,7 +375,7 @@ class Builder
      * @param  \Closure|static|string $query
      *
      * @return array
-     * @throws QueryException
+     * @throws PrototypeException
      */
     protected function createSub($query): array
     {
@@ -433,7 +462,7 @@ class Builder
      * @param  bool              $where
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function join(
         $table,
@@ -443,7 +472,7 @@ class Builder
         string $type = 'inner',
         bool $where = false
     ): self {
-        $join = \join_clause($this, $type, $table);
+        $join = JoinClause::new($this, $type, $table);
 
         // If the first "column" of the join is really a Closure instance the developer
         // is trying to build a join with a complex "on" clause containing more than
@@ -480,7 +509,7 @@ class Builder
      * @param  string          $type
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function joinWhere($table, $first, $operator, $second, $type = 'inner'): self
     {
@@ -501,7 +530,7 @@ class Builder
      * @return static|static
      *
      * @throws \InvalidArgumentException
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function joinSub(
         $query,
@@ -518,7 +547,7 @@ class Builder
 
         $this->addBinding($bindings, 'join');
 
-        return $this->join(expression($expression), $first, $operator, $second, $type, $where);
+        return $this->join(Expression::new($expression), $first, $operator, $second, $type, $where);
     }
 
     /**
@@ -530,7 +559,7 @@ class Builder
      * @param  string|null     $second
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function leftJoin($table, $first, $operator = null, $second = null): self
     {
@@ -546,7 +575,7 @@ class Builder
      * @param  string $second
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function leftJoinWhere($table, $first, $operator, $second): self
     {
@@ -563,7 +592,7 @@ class Builder
      * @param  string|null            $second
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      *
      */
     public function leftJoinSub($query, $as, $first, $operator = null, $second = null): self
@@ -580,7 +609,7 @@ class Builder
      * @param  string|null     $second
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function rightJoin($table, $first, $operator = null, $second = null): self
     {
@@ -596,7 +625,7 @@ class Builder
      * @param  string $second
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function rightJoinWhere($table, $first, $operator, $second): self
     {
@@ -613,7 +642,7 @@ class Builder
      * @param  string|null            $second
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function rightJoinSub($query, $as, $first, $operator = null, $second = null): self
     {
@@ -629,7 +658,7 @@ class Builder
      * @param  string|null          $second
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function crossJoin($table, $first = null, $operator = null, $second = null): self
     {
@@ -637,7 +666,7 @@ class Builder
             return $this->join($table, $first, $operator, $second, 'cross');
         }
 
-        $this->joins[] = \join_clause($this, 'cross', $table);
+        $this->joins[] = JoinClause::new($this, 'cross', $table);
 
         return $this;
     }
@@ -668,7 +697,7 @@ class Builder
      * @param  string                $boolean
      *
      * @return $this
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function where($column, $operator = null, $value = null, $boolean = 'and'): self
     {
@@ -718,7 +747,7 @@ class Builder
         // is a boolean. If it is, we'll add the raw boolean string as an actual
         // value to the query to ensure this is properly handled by the query.
         if (Str::contains($column, '->') && is_bool($value)) {
-            $value = \expression($value ? 'true' : 'false');
+            $value = Expression::new($value ? 'true' : 'false');
         }
 
         // Now that we are working with just a simple query we can put the elements
@@ -745,7 +774,7 @@ class Builder
      * @param  string $method
      *
      * @return $this
-     * @throws QueryException
+     * @throws PrototypeException
      */
     protected function addArrayOfWheres($column, $boolean, $method = 'where'): self
     {
@@ -819,7 +848,7 @@ class Builder
      * @param  mixed                 $value
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function orWhere($column, $operator = null, $value = null): self
     {
@@ -839,7 +868,7 @@ class Builder
      * @param  string|null  $boolean
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function whereColumn($first, $operator = null, $second = null, $boolean = 'and'): self
     {
@@ -877,7 +906,7 @@ class Builder
      * @param  string|null  $second
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function orWhereColumn($first, $operator = null, $second = null): self
     {
@@ -924,7 +953,7 @@ class Builder
      * @param  bool   $not
      *
      * @return $this
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function whereIn($column, $values, $boolean = 'and', $not = false): self
     {
@@ -974,7 +1003,7 @@ class Builder
      * @param  mixed  $values
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function orWhereIn($column, $values): self
     {
@@ -989,7 +1018,7 @@ class Builder
      * @param  string $boolean
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function whereNotIn($column, $values, $boolean = 'and'): self
     {
@@ -1003,7 +1032,7 @@ class Builder
      * @param  mixed  $values
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function orWhereNotIn($column, $values): self
     {
@@ -1019,7 +1048,7 @@ class Builder
      * @param  bool     $not
      *
      * @return $this
-     * @throws QueryException
+     * @throws PrototypeException
      */
     protected function whereInSub($column, \Closure $callback, $boolean, $not): self
     {
@@ -1449,7 +1478,7 @@ class Builder
      * @param  string   $boolean
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function whereNested(\Closure $callback, $boolean = 'and'): self
     {
@@ -1462,7 +1491,7 @@ class Builder
      * Create a new query instance for nested where condition.
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function forNestedWhere(): self
     {
@@ -1499,7 +1528,7 @@ class Builder
      * @param  string   $boolean
      *
      * @return $this
-     * @throws QueryException
+     * @throws PrototypeException
      */
     protected function whereSub($column, $operator, \Closure $callback, $boolean): self
     {
@@ -1527,7 +1556,7 @@ class Builder
      * @param  bool     $not
      *
      * @return $this
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function whereExists(\Closure $callback, $boolean = 'and', $not = false): self
     {
@@ -1548,7 +1577,7 @@ class Builder
      * @param  bool     $not
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function orWhereExists(\Closure $callback, $not = false): self
     {
@@ -1562,7 +1591,7 @@ class Builder
      * @param  string   $boolean
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function whereNotExists(\Closure $callback, $boolean = 'and'): self
     {
@@ -1575,7 +1604,7 @@ class Builder
      * @param  \Closure $callback
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function orWhereNotExists(\Closure $callback): self
     {
@@ -1756,7 +1785,7 @@ class Builder
      * @param  array  $parameters
      *
      * @return $this
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function dynamicWhere($method, $parameters): self
     {
@@ -1803,7 +1832,7 @@ class Builder
      * @param  int    $index
      *
      * @return void
-     * @throws QueryException
+     * @throws PrototypeException
      */
     protected function addDynamic($segment, $connector, $parameters, $index): void
     {
@@ -2107,7 +2136,7 @@ class Builder
      * @param  string   $column
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function forPageAfterId($perPage = 15, $lastId = 0, $column = 'id'): self
     {
@@ -2144,7 +2173,7 @@ class Builder
      * @param  bool            $all
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function union($query, $all = false): self
     {
@@ -2165,7 +2194,7 @@ class Builder
      * @param  static|\Closure $query
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function unionAll($query): self
     {
@@ -2227,7 +2256,7 @@ class Builder
      * @param  array $columns
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function find($id, $columns = ['*']): self
     {
@@ -2371,7 +2400,7 @@ class Builder
      * @param  string|null $alias
      *
      * @return bool
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function chunkById($count, callable $callback, $column = 'id', $alias = null): bool
     {
@@ -2810,6 +2839,7 @@ class Builder
      * @param  \Closure|static|string $query
      *
      * @return bool
+     * @throws PrototypeException
      * @throws QueryException
      */
     public function insertUsing(array $columns, $query)
@@ -2846,6 +2876,7 @@ class Builder
      * @param  array $values
      *
      * @return bool
+     * @throws PrototypeException
      * @throws QueryException
      */
     public function updateOrInsert(array $attributes, array $values = [])
@@ -2910,7 +2941,7 @@ class Builder
      *
      * @return int
      * @throws QueryException
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function delete($id = null)
     {
@@ -2945,18 +2976,18 @@ class Builder
      * Get a new instance of the query builder.
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function newQuery(): self
     {
-        return \builder($this->connection, $this->grammar, $this->processor);
+        return Builder::new($this->connection, $this->grammar, $this->processor);
     }
 
     /**
      * Create a new query instance for a sub-query.
      *
      * @return static
-     * @throws QueryException
+     * @throws PrototypeException
      */
     protected function forSubQuery(): self
     {

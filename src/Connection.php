@@ -4,6 +4,7 @@
 namespace Swoft\Db;
 
 
+use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Connection\Pool\ConnectionInterface as PoolConnectionInterface;
 use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Query\Builder;
@@ -232,11 +233,11 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
      * Get a new query builder instance.
      *
      * @return Builder
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function query()
     {
-        return \builder($this, $this->getQueryGrammar(), $this->getPostProcessor());
+        return Builder::new($this, $this->getQueryGrammar(), $this->getPostProcessor());
     }
 
     /**
@@ -262,7 +263,7 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
      */
     public function raw($value): Expression
     {
-        return \expression($value);
+        return Expression::new($value);
     }
 
     /**

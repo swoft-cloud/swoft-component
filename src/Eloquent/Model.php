@@ -3,124 +3,20 @@
 
 namespace Swoft\Db\Eloquent;
 
+use Swoft\Db\Concerns\HasAttributes;
+use Swoft\Db\Connection;
+use Swoft\Db\Pool;
+use Swoft\Db\Query\Builder as QueryBuilder;
+use Swoft\Stdlib\Helper\Str;
+
 /**
  * Class Model
  *
  * @since 2.0
  */
-abstract class Model
+abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerializable
 {
-    /**
-     * The connection name for the model.
-     *
-     * @var string
-     */
-    protected $connection;
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table;
-
-    /**
-     * The primary key for the model.
-     *
-     * @var string
-     */
-    protected $primaryKey = 'id';
-
-    /**
-     * The "type" of the auto-incrementing ID.
-     *
-     * @var string
-     */
-    protected $keyType = 'int';
-
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = true;
-
-    /**
-     * The relations to eager load on every query.
-     *
-     * @var array
-     */
-    protected $with = [];
-
-    /**
-     * The relationship counts that should be eager loaded on every query.
-     *
-     * @var array
-     */
-    protected $withCount = [];
-
-    /**
-     * The number of models to return for pagination.
-     *
-     * @var int
-     */
-    protected $perPage = 15;
-
-    /**
-     * Indicates if the model exists.
-     *
-     * @var bool
-     */
-    public $exists = false;
-
-    /**
-     * Indicates if the model was inserted during the current request lifecycle.
-     *
-     * @var bool
-     */
-    public $wasRecentlyCreated = false;
-
-    /**
-     * The connection resolver instance.
-     *
-     * @var \Illuminate\Database\ConnectionResolverInterface
-     */
-    protected static $resolver;
-
-    /**
-     * The event dispatcher instance.
-     *
-     * @var \Illuminate\Contracts\Events\Dispatcher
-     */
-    protected static $dispatcher;
-
-    /**
-     * The array of booted models.
-     *
-     * @var array
-     */
-    protected static $booted = [];
-
-    /**
-     * The array of trait initializers that will be called on each new instance.
-     *
-     * @var array
-     */
-    protected static $traitInitializers = [];
-
-    /**
-     * The array of global scopes on the model.
-     *
-     * @var array
-     */
-    protected static $globalScopes = [];
-
-    /**
-     * The list of models classes that should not be affected with touch.
-     *
-     * @var array
-     */
-    protected static $ignoreOnTouch = [];
+    use HasAttributes;
 
     /**
      * The name of the "created at" column.
@@ -137,158 +33,38 @@ abstract class Model
     const UPDATED_AT = 'updated_at';
 
     /**
+     * The number of models to return for pagination.
+     *
+     * @var int
+     */
+    protected $perPage = 15;
+
+    /**
+     * Indicates if the model exists.
+     *
+     * @var bool
+     */
+    public $exists = false;
+
+    /**
      * Create a new Eloquent model instance.
      *
-     * @param  array  $attributes
+     * @param  array $attributes
+     *
      * @return void
      */
     public function __construct(array $attributes = [])
     {
-        $this->bootIfNotBooted();
-
-        $this->initializeTraits();
-
         $this->syncOriginal();
 
         $this->fill($attributes);
     }
 
     /**
-     * Check if the model needs to be booted and if so, do it.
-     *
-     * @return void
-     */
-    protected function bootIfNotBooted()
-    {
-        if (! isset(static::$booted[static::class])) {
-            static::$booted[static::class] = true;
-
-            $this->fireModelEvent('booting', false);
-
-            static::boot();
-
-            $this->fireModelEvent('booted', false);
-        }
-    }
-
-    /**
-     * The "booting" method of the model.
-     *
-     * @return void
-     */
-    protected static function boot()
-    {
-        static::bootTraits();
-    }
-
-    /**
-     * Boot all of the bootable traits on the model.
-     *
-     * @return void
-     */
-    protected static function bootTraits()
-    {
-        $class = static::class;
-
-        $booted = [];
-
-        static::$traitInitializers[$class] = [];
-
-        foreach (class_uses_recursive($class) as $trait) {
-            $method = 'boot'.class_basename($trait);
-
-            if (method_exists($class, $method) && ! in_array($method, $booted)) {
-                forward_static_call([$class, $method]);
-
-                $booted[] = $method;
-            }
-
-            if (method_exists($class, $method = 'initialize'.class_basename($trait))) {
-                static::$traitInitializers[$class][] = $method;
-
-                static::$traitInitializers[$class] = array_unique(
-                    static::$traitInitializers[$class]
-                );
-            }
-        }
-    }
-
-    /**
-     * Initialize any initializable traits on the model.
-     *
-     * @return void
-     */
-    protected function initializeTraits()
-    {
-        foreach (static::$traitInitializers[static::class] as $method) {
-            $this->{$method}();
-        }
-    }
-
-    /**
-     * Clear the list of booted models so they will be re-booted.
-     *
-     * @return void
-     */
-    public static function clearBootedModels()
-    {
-        static::$booted = [];
-
-        static::$globalScopes = [];
-    }
-
-    /**
-     * Disables relationship model touching for the current class during given callback scope.
-     *
-     * @param  callable  $callback
-     * @return void
-     */
-    public static function withoutTouching(callable $callback)
-    {
-        static::withoutTouchingOn([static::class], $callback);
-    }
-
-    /**
-     * Disables relationship model touching for the given model classes during given callback scope.
-     *
-     * @param  array  $models
-     * @param  callable  $callback
-     * @return void
-     */
-    public static function withoutTouchingOn(array $models, callable $callback)
-    {
-        static::$ignoreOnTouch = array_values(array_merge(static::$ignoreOnTouch, $models));
-
-        try {
-            call_user_func($callback);
-        } finally {
-            static::$ignoreOnTouch = array_values(array_diff(static::$ignoreOnTouch, $models));
-        }
-    }
-
-    /**
-     * Determine if the given model is ignoring touches.
-     *
-     * @param  string|null  $class
-     * @return bool
-     */
-    public static function isIgnoringTouch($class = null)
-    {
-        $class = $class ?: static::class;
-
-        foreach (static::$ignoreOnTouch as $ignoredClass) {
-            if ($class === $ignoredClass || is_subclass_of($class, $ignoredClass)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Fill the model with an array of attributes.
      *
-     * @param  array  $attributes
+     * @param  array $attributes
+     *
      * @return $this
      *
      * @throws \Illuminate\Database\Eloquent\MassAssignmentException
@@ -319,7 +95,8 @@ abstract class Model
     /**
      * Fill the model with an array of attributes. Force mass assignment.
      *
-     * @param  array  $attributes
+     * @param  array $attributes
+     *
      * @return $this
      */
     public function forceFill(array $attributes)
@@ -332,7 +109,8 @@ abstract class Model
     /**
      * Qualify the given column name by the model's table.
      *
-     * @param  string  $column
+     * @param  string $column
+     *
      * @return string
      */
     public function qualifyColumn($column)
@@ -341,25 +119,27 @@ abstract class Model
             return $column;
         }
 
-        return $this->getTable().'.'.$column;
+        return $this->getTable() . '.' . $column;
     }
 
     /**
      * Remove the table name from a given key.
      *
-     * @param  string  $key
+     * @param  string $key
+     *
      * @return string
      */
     protected function removeTableFromKey($key)
     {
-        return Str::contains($key, '.') ? last(explode('.', $key)) : $key;
+        return Str::contains($key, '.') ? end(explode('.', $key)) : $key;
     }
 
     /**
      * Create a new instance of the given model.
      *
-     * @param  array  $attributes
+     * @param  array $attributes
      * @param  bool  $exists
+     *
      * @return static
      */
     public function newInstance($attributes = [], $exists = false)
@@ -367,7 +147,7 @@ abstract class Model
         // This method just provides a convenient way for us to generate fresh model
         // instances of this current model. It is particularly useful during the
         // hydration of new objects via the Eloquent query builder instances.
-        $model = new static((array) $attributes);
+        $model = new static((array)$attributes);
 
         $model->exists = $exists;
 
@@ -383,15 +163,16 @@ abstract class Model
     /**
      * Create a new model instance that is existing.
      *
-     * @param  array  $attributes
-     * @param  string|null  $connection
+     * @param  array       $attributes
+     * @param  string|null $connection
+     *
      * @return static
      */
     public function newFromBuilder($attributes = [], $connection = null)
     {
         $model = $this->newInstance([], true);
 
-        $model->setRawAttributes((array) $attributes, true);
+        $model->setRawAttributes((array)$attributes, true);
 
         $model->setConnection($connection ?: $this->getConnectionName());
 
@@ -403,7 +184,8 @@ abstract class Model
     /**
      * Begin querying the model on a given connection.
      *
-     * @param  string|null  $connection
+     * @param  string|null $connection
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public static function on($connection = null)
@@ -433,7 +215,8 @@ abstract class Model
     /**
      * Get all of the models from the database.
      *
-     * @param  array|mixed  $columns
+     * @param  array|mixed $columns
+     *
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
     public static function all($columns = ['*'])
@@ -446,7 +229,8 @@ abstract class Model
     /**
      * Begin querying a model with eager loading.
      *
-     * @param  array|string  $relations
+     * @param  array|string $relations
+     *
      * @return \Illuminate\Database\Eloquent\Builder|static
      */
     public static function with($relations)
@@ -459,7 +243,8 @@ abstract class Model
     /**
      * Eager load relations on the model.
      *
-     * @param  array|string  $relations
+     * @param  array|string $relations
+     *
      * @return $this
      */
     public function load($relations)
@@ -476,7 +261,8 @@ abstract class Model
     /**
      * Eager load relations on the model if they are not already eager loaded.
      *
-     * @param  array|string  $relations
+     * @param  array|string $relations
+     *
      * @return $this
      */
     public function loadMissing($relations)
@@ -491,9 +277,10 @@ abstract class Model
     /**
      * Increment a column's value by a given amount.
      *
-     * @param  string  $column
-     * @param  float|int  $amount
-     * @param  array  $extra
+     * @param  string    $column
+     * @param  float|int $amount
+     * @param  array     $extra
+     *
      * @return int
      */
     protected function increment($column, $amount = 1, array $extra = [])
@@ -504,9 +291,10 @@ abstract class Model
     /**
      * Decrement a column's value by a given amount.
      *
-     * @param  string  $column
-     * @param  float|int  $amount
-     * @param  array  $extra
+     * @param  string    $column
+     * @param  float|int $amount
+     * @param  array     $extra
+     *
      * @return int
      */
     protected function decrement($column, $amount = 1, array $extra = [])
@@ -517,17 +305,18 @@ abstract class Model
     /**
      * Run the increment or decrement method on the model.
      *
-     * @param  string  $column
-     * @param  float|int  $amount
-     * @param  array  $extra
-     * @param  string  $method
+     * @param  string    $column
+     * @param  float|int $amount
+     * @param  array     $extra
+     * @param  string    $method
+     *
      * @return int
      */
     protected function incrementOrDecrement($column, $amount, $extra, $method)
     {
         $query = $this->newModelQuery();
 
-        if (! $this->exists) {
+        if (!$this->exists) {
             return $query->{$method}($column, $amount, $extra);
         }
 
@@ -541,10 +330,11 @@ abstract class Model
     /**
      * Increment the underlying attribute value and sync with original.
      *
-     * @param  string  $column
-     * @param  float|int  $amount
-     * @param  array  $extra
-     * @param  string  $method
+     * @param  string    $column
+     * @param  float|int $amount
+     * @param  array     $extra
+     * @param  string    $method
+     *
      * @return void
      */
     protected function incrementOrDecrementAttributeValue($column, $amount, $extra, $method)
@@ -559,13 +349,14 @@ abstract class Model
     /**
      * Update the model in the database.
      *
-     * @param  array  $attributes
-     * @param  array  $options
+     * @param  array $attributes
+     * @param  array $options
+     *
      * @return bool
      */
     public function update(array $attributes = [], array $options = [])
     {
-        if (! $this->exists) {
+        if (!$this->exists) {
             return false;
         }
 
@@ -579,7 +370,7 @@ abstract class Model
      */
     public function push()
     {
-        if (! $this->save()) {
+        if (!$this->save()) {
             return false;
         }
 
@@ -591,7 +382,7 @@ abstract class Model
                 ? $models->all() : [$models];
 
             foreach (array_filter($models) as $model) {
-                if (! $model->push()) {
+                if (!$model->push()) {
                     return false;
                 }
             }
@@ -603,7 +394,8 @@ abstract class Model
     /**
      * Save the model to the database.
      *
-     * @param  array  $options
+     * @param  array $options
+     *
      * @return bool
      */
     public function save(array $options = [])
@@ -631,7 +423,7 @@ abstract class Model
         else {
             $saved = $this->performInsert($query);
 
-            if (! $this->getConnectionName() &&
+            if (!$this->getConnectionName() &&
                 $connection = $query->getConnection()) {
                 $this->setConnection($connection->getName());
             }
@@ -650,7 +442,8 @@ abstract class Model
     /**
      * Save the model to the database using transaction.
      *
-     * @param  array  $options
+     * @param  array $options
+     *
      * @return bool
      *
      * @throws \Throwable
@@ -665,7 +458,8 @@ abstract class Model
     /**
      * Perform any actions that are necessary after the model is saved.
      *
-     * @param  array  $options
+     * @param  array $options
+     *
      * @return void
      */
     protected function finishSave(array $options)
@@ -682,7 +476,8 @@ abstract class Model
     /**
      * Perform a model update operation.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  \Illuminate\Database\Eloquent\Builder $query
+     *
      * @return bool
      */
     protected function performUpdate(Builder $query)
@@ -720,7 +515,8 @@ abstract class Model
     /**
      * Set the keys for a save update query.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  \Illuminate\Database\Eloquent\Builder $query
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
     protected function setKeysForSaveQuery(Builder $query)
@@ -744,7 +540,8 @@ abstract class Model
     /**
      * Perform a model insert operation.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  \Illuminate\Database\Eloquent\Builder $query
+     *
      * @return bool
      */
     protected function performInsert(Builder $query)
@@ -795,8 +592,9 @@ abstract class Model
     /**
      * Insert the given attributes and set the ID on the model.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  array  $attributes
+     * @param  \Illuminate\Database\Eloquent\Builder $query
+     * @param  array                                 $attributes
+     *
      * @return void
      */
     protected function insertAndSetId(Builder $query, $attributes)
@@ -809,7 +607,8 @@ abstract class Model
     /**
      * Destroy the models for the given IDs.
      *
-     * @param  \Illuminate\Support\Collection|array|int  $ids
+     * @param  \Illuminate\Support\Collection|array|int $ids
+     *
      * @return int
      */
     public static function destroy($ids)
@@ -855,7 +654,7 @@ abstract class Model
         // If the model doesn't exist, there is nothing to delete so we'll just return
         // immediately and not do anything else. Otherwise, we will continue with a
         // deletion process on the model, firing the proper events, and so forth.
-        if (! $this->exists) {
+        if (!$this->exists) {
             return;
         }
 
@@ -915,23 +714,21 @@ abstract class Model
     /**
      * Get a new query builder for the model's table.
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function newQuery()
     {
-        return $this->registerGlobalScopes($this->newQueryWithoutScopes());
+        return $this->newModelQuery();
     }
 
     /**
      * Get a new query builder that doesn't have any global scopes or eager loading.
      *
-     * @return \Illuminate\Database\Eloquent\Builder|static
+     * @return Builder
      */
     public function newModelQuery()
     {
-        return $this->newEloquentBuilder(
-            $this->newBaseQueryBuilder()
-        )->setModel($this);
+        return $this->newEloquentBuilder($this->newBaseQueryBuilder())->setModel($this);
     }
 
     /**
@@ -947,7 +744,8 @@ abstract class Model
     /**
      * Register the global scopes for this builder instance.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param  \Illuminate\Database\Eloquent\Builder $builder
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function registerGlobalScopes($builder)
@@ -974,7 +772,8 @@ abstract class Model
     /**
      * Get a new query instance without a given scope.
      *
-     * @param  \Illuminate\Database\Eloquent\Scope|string  $scope
+     * @param  \Illuminate\Database\Eloquent\Scope|string $scope
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function newQueryWithoutScope($scope)
@@ -985,7 +784,8 @@ abstract class Model
     /**
      * Get a new query to restore one or more models by their queueable IDs.
      *
-     * @param  array|int  $ids
+     * @param  array|int $ids
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function newQueryForRestoration($ids)
@@ -998,8 +798,9 @@ abstract class Model
     /**
      * Create a new Eloquent query builder for the model.
      *
-     * @param  \Illuminate\Database\Query\Builder  $query
-     * @return \Illuminate\Database\Eloquent\Builder|static
+     * @param  QueryBuilder $query
+     *
+     * @return Builder
      */
     public function newEloquentBuilder($query)
     {
@@ -1009,21 +810,19 @@ abstract class Model
     /**
      * Get a new query builder instance for the connection.
      *
-     * @return \Illuminate\Database\Query\Builder
+     * @return QueryBuilder
      */
     protected function newBaseQueryBuilder()
     {
         $connection = $this->getConnection();
-
-        return new QueryBuilder(
-            $connection, $connection->getQueryGrammar(), $connection->getPostProcessor()
-        );
+        return new QueryBuilder($connection, $connection->getQueryGrammar(), $connection->getPostProcessor());
     }
 
     /**
      * Create a new Eloquent Collection instance.
      *
-     * @param  array  $models
+     * @param  array $models
+     *
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function newCollection(array $models = [])
@@ -1034,11 +833,12 @@ abstract class Model
     /**
      * Create a new pivot model instance.
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $parent
-     * @param  array  $attributes
-     * @param  string  $table
-     * @param  bool  $exists
-     * @param  string|null  $using
+     * @param  \Illuminate\Database\Eloquent\Model $parent
+     * @param  array                               $attributes
+     * @param  string                              $table
+     * @param  bool                                $exists
+     * @param  string|null                         $using
+     *
      * @return \Illuminate\Database\Eloquent\Relations\Pivot
      */
     public function newPivot(self $parent, array $attributes, $table, $exists, $using = null)
@@ -1060,7 +860,8 @@ abstract class Model
     /**
      * Convert the model instance to JSON.
      *
-     * @param  int  $options
+     * @param  int $options
+     *
      * @return string
      *
      * @throws \Illuminate\Database\Eloquent\JsonEncodingException
@@ -1089,12 +890,13 @@ abstract class Model
     /**
      * Reload a fresh model instance from the database.
      *
-     * @param  array|string  $with
+     * @param  array|string $with
+     *
      * @return static|null
      */
     public function fresh($with = [])
     {
-        if (! $this->exists) {
+        if (!$this->exists) {
             return;
         }
 
@@ -1111,7 +913,7 @@ abstract class Model
      */
     public function refresh()
     {
-        if (! $this->exists) {
+        if (!$this->exists) {
             return $this;
         }
 
@@ -1129,7 +931,8 @@ abstract class Model
     /**
      * Clone the model into a new, non-existing instance.
      *
-     * @param  array|null  $except
+     * @param  array|null $except
+     *
      * @return static
      */
     public function replicate(array $except = null)
@@ -1154,12 +957,13 @@ abstract class Model
     /**
      * Determine if two models have the same ID and belong to the same table.
      *
-     * @param  \Illuminate\Database\Eloquent\Model|null  $model
+     * @param  \Illuminate\Database\Eloquent\Model|null $model
+     *
      * @return bool
      */
     public function is($model)
     {
-        return ! is_null($model) &&
+        return !is_null($model) &&
             $this->getKey() === $model->getKey() &&
             $this->getTable() === $model->getTable() &&
             $this->getConnectionName() === $model->getConnectionName();
@@ -1168,22 +972,25 @@ abstract class Model
     /**
      * Determine if two models are not the same.
      *
-     * @param  \Illuminate\Database\Eloquent\Model|null  $model
+     * @param  \Illuminate\Database\Eloquent\Model|null $model
+     *
      * @return bool
      */
     public function isNot($model)
     {
-        return ! $this->is($model);
+        return !$this->is($model);
     }
 
     /**
      * Get the database connection for the model.
-     *
-     * @return \Illuminate\Database\Connection
      */
-    public function getConnection()
+    public function getConnection(): Connection
     {
-        return static::resolveConnection($this->getConnectionName());
+        $pool = bean('');
+        if (!$pool instanceof Pool) {
+
+        }
+        return $pool->getConnection();
     }
 
     /**
@@ -1199,7 +1006,8 @@ abstract class Model
     /**
      * Set the connection associated with the model.
      *
-     * @param  string  $name
+     * @param  string $name
+     *
      * @return $this
      */
     public function setConnection($name)
@@ -1212,7 +1020,8 @@ abstract class Model
     /**
      * Resolve a connection instance.
      *
-     * @param  string|null  $connection
+     * @param  string|null $connection
+     *
      * @return \Illuminate\Database\Connection
      */
     public static function resolveConnection($connection = null)
@@ -1233,7 +1042,8 @@ abstract class Model
     /**
      * Set the connection resolver instance.
      *
-     * @param  \Illuminate\Database\ConnectionResolverInterface  $resolver
+     * @param  \Illuminate\Database\ConnectionResolverInterface $resolver
+     *
      * @return void
      */
     public static function setConnectionResolver(Resolver $resolver)
@@ -1258,7 +1068,7 @@ abstract class Model
      */
     public function getTable()
     {
-        if (! isset($this->table)) {
+        if (!isset($this->table)) {
             return str_replace(
                 '\\', '', Str::snake(Str::plural(class_basename($this)))
             );
@@ -1270,7 +1080,8 @@ abstract class Model
     /**
      * Set the table associated with the model.
      *
-     * @param  string  $table
+     * @param  string $table
+     *
      * @return $this
      */
     public function setTable($table)
@@ -1293,7 +1104,8 @@ abstract class Model
     /**
      * Set the primary key for the model.
      *
-     * @param  string  $key
+     * @param  string $key
+     *
      * @return $this
      */
     public function setKeyName($key)
@@ -1326,7 +1138,8 @@ abstract class Model
     /**
      * Set the data type for the primary key.
      *
-     * @param  string  $type
+     * @param  string $type
+     *
      * @return $this
      */
     public function setKeyType($type)
@@ -1349,7 +1162,8 @@ abstract class Model
     /**
      * Set whether IDs are incrementing.
      *
-     * @param  bool  $value
+     * @param  bool $value
+     *
      * @return $this
      */
     public function setIncrementing($value)
@@ -1395,13 +1209,13 @@ abstract class Model
 
             if ($relation instanceof QueueableCollection) {
                 foreach ($relation->getQueueableRelations() as $collectionValue) {
-                    $relations[] = $key.'.'.$collectionValue;
+                    $relations[] = $key . '.' . $collectionValue;
                 }
             }
 
             if ($relation instanceof QueueableEntity) {
                 foreach ($relation->getQueueableRelations() as $entityKey => $entityValue) {
-                    $relations[] = $key.'.'.$entityValue;
+                    $relations[] = $key . '.' . $entityValue;
                 }
             }
         }
@@ -1442,7 +1256,8 @@ abstract class Model
     /**
      * Retrieve the model for a bound value.
      *
-     * @param  mixed  $value
+     * @param  mixed $value
+     *
      * @return \Illuminate\Database\Eloquent\Model|null
      */
     public function resolveRouteBinding($value)
@@ -1457,7 +1272,7 @@ abstract class Model
      */
     public function getForeignKey()
     {
-        return Str::snake(class_basename($this)).'_'.$this->getKeyName();
+        return Str::snake(class_basename($this)) . '_' . $this->getKeyName();
     }
 
     /**
@@ -1473,7 +1288,8 @@ abstract class Model
     /**
      * Set the number of models to return per page.
      *
-     * @param  int  $perPage
+     * @param  int $perPage
+     *
      * @return $this
      */
     public function setPerPage($perPage)
@@ -1486,7 +1302,8 @@ abstract class Model
     /**
      * Dynamically retrieve attributes on the model.
      *
-     * @param  string  $key
+     * @param  string $key
+     *
      * @return mixed
      */
     public function __get($key)
@@ -1497,8 +1314,9 @@ abstract class Model
     /**
      * Dynamically set attributes on the model.
      *
-     * @param  string  $key
+     * @param  string $key
      * @param  mixed  $value
+     *
      * @return void
      */
     public function __set($key, $value)
@@ -1509,18 +1327,20 @@ abstract class Model
     /**
      * Determine if the given attribute exists.
      *
-     * @param  mixed  $offset
+     * @param  mixed $offset
+     *
      * @return bool
      */
     public function offsetExists($offset)
     {
-        return ! is_null($this->getAttribute($offset));
+        return !is_null($this->getAttribute($offset));
     }
 
     /**
      * Get the value for a given offset.
      *
-     * @param  mixed  $offset
+     * @param  mixed $offset
+     *
      * @return mixed
      */
     public function offsetGet($offset)
@@ -1531,8 +1351,9 @@ abstract class Model
     /**
      * Set the value for a given offset.
      *
-     * @param  mixed  $offset
-     * @param  mixed  $value
+     * @param  mixed $offset
+     * @param  mixed $value
+     *
      * @return void
      */
     public function offsetSet($offset, $value)
@@ -1543,7 +1364,8 @@ abstract class Model
     /**
      * Unset the value for a given offset.
      *
-     * @param  mixed  $offset
+     * @param  mixed $offset
+     *
      * @return void
      */
     public function offsetUnset($offset)
@@ -1554,7 +1376,8 @@ abstract class Model
     /**
      * Determine if an attribute or relation exists on the model.
      *
-     * @param  string  $key
+     * @param  string $key
+     *
      * @return bool
      */
     public function __isset($key)
@@ -1565,7 +1388,8 @@ abstract class Model
     /**
      * Unset an attribute on the model.
      *
-     * @param  string  $key
+     * @param  string $key
+     *
      * @return void
      */
     public function __unset($key)
@@ -1576,8 +1400,9 @@ abstract class Model
     /**
      * Handle dynamic method calls into the model.
      *
-     * @param  string  $method
+     * @param  string $method
      * @param  array  $parameters
+     *
      * @return mixed
      */
     public function __call($method, $parameters)
@@ -1592,13 +1417,47 @@ abstract class Model
     /**
      * Handle dynamic static method calls into the method.
      *
-     * @param  string  $method
+     * @param  string $method
      * @param  array  $parameters
+     *
      * @return mixed
      */
     public static function __callStatic($method, $parameters)
     {
         return (new static)->$method(...$parameters);
+    }
+
+    /**
+     * Forward a method call to the given object.
+     *
+     * @param  mixed  $object
+     * @param  string $method
+     * @param  array  $parameters
+     *
+     * @return mixed
+     *
+     * @throws \BadMethodCallException
+     */
+    protected function forwardCallTo($object, $method, $parameters)
+    {
+        try {
+            return $object->{$method}(...$parameters);
+        } catch (\Error | \BadMethodCallException $e) {
+            $pattern = '~^Call to undefined method (?P<class>[^:]+)::(?P<method>[^\(]+)\(\)$~';
+
+            if (!preg_match($pattern, $e->getMessage(), $matches)) {
+                throw $e;
+            }
+
+            if ($matches['class'] != get_class($object) ||
+                $matches['method'] != $method) {
+                throw $e;
+            }
+
+            throw new \BadMethodCallException(sprintf(
+                'Call to undefined method %s::%s()', static::class, $method
+            ));
+        }
     }
 
     /**
@@ -1609,15 +1468,5 @@ abstract class Model
     public function __toString()
     {
         return $this->toJson();
-    }
-
-    /**
-     * When a model is being unserialized, check if it needs to be booted.
-     *
-     * @return void
-     */
-    public function __wakeup()
-    {
-        $this->bootIfNotBooted();
     }
 }
