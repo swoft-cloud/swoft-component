@@ -1,8 +1,11 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Db\Concerns;
+namespace Swoft\Db\Concern;
 
+
+use Swoft\Stdlib\Helper\Arr;
+use Swoft\Stdlib\Helper\Str;
 
 trait HasAttributes
 {
@@ -19,55 +22,6 @@ trait HasAttributes
      * @var array
      */
     protected $original = [];
-
-    /**
-     * The changed model attributes.
-     *
-     * @var array
-     */
-    protected $changes = [];
-
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [];
-
-    /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
-    protected $dates = [];
-
-    /**
-     * The storage format of the model's date columns.
-     *
-     * @var string
-     */
-    protected $dateFormat;
-
-    /**
-     * The accessors to append to the model's array form.
-     *
-     * @var array
-     */
-    protected $appends = [];
-
-    /**
-     * Indicates whether attributes are snake cased on arrays.
-     *
-     * @var bool
-     */
-    public static $snakeAttributes = true;
-
-    /**
-     * The cache of the mutated attributes for each class.
-     *
-     * @var array
-     */
-    protected static $mutatorCache = [];
 
     /**
      * Convert the model's attributes to an array.
@@ -104,26 +58,6 @@ trait HasAttributes
         return $attributes;
     }
 
-    /**
-     * Add the date attributes to the attributes array.
-     *
-     * @param  array  $attributes
-     * @return array
-     */
-    protected function addDateAttributesToArray(array $attributes)
-    {
-        foreach ($this->getDates() as $key) {
-            if (! isset($attributes[$key])) {
-                continue;
-            }
-
-            $attributes[$key] = $this->serializeDate(
-                $this->asDateTime($attributes[$key])
-            );
-        }
-
-        return $attributes;
-    }
 
     /**
      * Add the mutated attributes to the attributes array.
@@ -169,7 +103,7 @@ trait HasAttributes
 
             // Here we will cast the attribute. Then, if the cast is a date or datetime cast
             // then we will serialize the date for the array. This will convert the dates
-            // to strings based on the date format specified for these Eloquent models.
+            // to strings based on the date format specified for these EloquentException models.
             $attributes[$key] = $this->castAttribute(
                 $key, $attributes[$key]
             );
@@ -198,22 +132,6 @@ trait HasAttributes
     protected function getArrayableAttributes()
     {
         return $this->getArrayableItems($this->attributes);
-    }
-
-    /**
-     * Get all of the appendable values that are arrayable.
-     *
-     * @return array
-     */
-    protected function getArrayableAppends()
-    {
-        if (! count($this->appends)) {
-            return [];
-        }
-
-        return $this->getArrayableItems(
-            array_combine($this->appends, $this->appends)
-        );
     }
 
     /**
@@ -258,16 +176,6 @@ trait HasAttributes
         }
 
         return $attributes;
-    }
-
-    /**
-     * Get an attribute array of all arrayable relations.
-     *
-     * @return array
-     */
-    protected function getArrayableRelations()
-    {
-        return $this->getArrayableItems($this->relations);
     }
 
     /**
@@ -388,29 +296,6 @@ trait HasAttributes
         if (method_exists($this, $key)) {
             return $this->getRelationshipFromMethod($key);
         }
-    }
-
-    /**
-     * Get a relationship value from a method.
-     *
-     * @param  string  $method
-     * @return mixed
-     *
-     * @throws \LogicException
-     */
-    protected function getRelationshipFromMethod($method)
-    {
-        $relation = $this->$method();
-
-        if (! $relation instanceof Relation) {
-            throw new LogicException(sprintf(
-                '%s::%s must return a relationship instance.', static::class, $method
-            ));
-        }
-
-        return tap($relation->getResults(), function ($results) use ($method) {
-            $this->setRelation($method, $results);
-        });
     }
 
     /**
@@ -548,31 +433,6 @@ trait HasAttributes
      */
     public function setAttribute($key, $value)
     {
-        // First we will check for the presence of a mutator for the set operation
-        // which simply lets the developers tweak the attribute as it is set on
-        // the model, such as "json_encoding" an listing of data for storage.
-        if ($this->hasSetMutator($key)) {
-            return $this->setMutatedAttributeValue($key, $value);
-        }
-
-        // If an attribute is listed as a "date", we'll convert it from a DateTime
-        // instance into a form proper for storage on the database tables using
-        // the connection grammar's date format. We will auto set the values.
-        elseif ($value && $this->isDateAttribute($key)) {
-            $value = $this->fromDateTime($value);
-        }
-
-        if ($this->isJsonCastable($key) && ! is_null($value)) {
-            $value = $this->castAttributeAsJson($key, $value);
-        }
-
-        // If this attribute contains a JSON ->, we'll set the proper value in the
-        // attribute's underlying array. This takes care of properly nesting an
-        // attribute in the array's value in the case of deeply nested items.
-        if (Str::contains($key, '->')) {
-            return $this->fillJsonAttribute($key, $value);
-        }
-
         $this->attributes[$key] = $value;
 
         return $this;
@@ -584,7 +444,7 @@ trait HasAttributes
      * @param  string  $key
      * @return bool
      */
-    public function hasSetMutator($key)
+    public function hasSetter($key)
     {
         return method_exists($this, 'set'.Str::studly($key).'Attribute');
     }
@@ -1158,33 +1018,6 @@ trait HasAttributes
             && strcmp((string) $current, (string) $original) === 0;
     }
 
-    /**
-     * Append attributes to query when building a query.
-     *
-     * @param  array|string  $attributes
-     * @return $this
-     */
-    public function append($attributes)
-    {
-        $this->appends = array_unique(
-            array_merge($this->appends, is_string($attributes) ? func_get_args() : $attributes)
-        );
-
-        return $this;
-    }
-
-    /**
-     * Set the accessors to append to model arrays.
-     *
-     * @param  array  $appends
-     * @return $this
-     */
-    public function setAppends(array $appends)
-    {
-        $this->appends = $appends;
-
-        return $this;
-    }
 
     /**
      * Get the mutated attributes for a given instance.

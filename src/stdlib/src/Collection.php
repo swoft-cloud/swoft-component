@@ -2,14 +2,21 @@
 
 namespace Swoft\Stdlib;
 
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Concern\Prototype;
+use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Stdlib\Helper\ArrayHelper;
 
 /**
  * Class Collection
+ *
+ * @Bean(scope=Bean::PROTOTYPE)
+ *
+ * @since 2.0
  */
 class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggregate, Jsonable, \JsonSerializable
 {
-//    use Macroable;
+    use Prototype;
 
     /**
      * The items contained in the collection.
@@ -56,6 +63,19 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
     public function __construct($items = [])
     {
         $this->items = $this->getArrayableItems($items);
+    }
+
+    /**
+     * Create a new collection.
+     *
+     * @param array $items
+     *
+     * @throws PrototypeException
+     */
+    public static function new(array $items = [])
+    {
+        $self        = self::__instance();
+        $self->items = $items;
     }
 
     /**
