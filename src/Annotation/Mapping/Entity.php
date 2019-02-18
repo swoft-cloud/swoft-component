@@ -3,6 +3,8 @@
 
 namespace Swoft\Db\Annotation\Mapping;
 
+use Swoft\Db\Pool;
+
 /**
  * Class Entity
  *
@@ -10,7 +12,7 @@ namespace Swoft\Db\Annotation\Mapping;
  * @Target("CLASS")
  * @Attributes({
  *     @Attribute("table", type="string"),
- *     @Attribute("connection", type="string"),
+ *     @Attribute("pool", type="string"),
  * })
  *
  * @since 2.0
@@ -29,7 +31,7 @@ class Entity
      *
      * @var string
      */
-    private $pool = '';
+    private $pool = Pool::DEFAULT_POOL;
 
     /**
      * Entity constructor.

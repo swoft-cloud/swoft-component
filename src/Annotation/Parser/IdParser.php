@@ -6,19 +6,19 @@ namespace Swoft\Db\Annotation\Parser;
 
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
-use Swoft\Db\Annotation\Mapping\Entity;
+use Swoft\Db\Annotation\Mapping\Id;
 
 /**
- * Class EntityParser
+ * Class IdParser
  *
- * @AnnotationParser(Entity::class)
+ * @AnnotationParser(Id::class)
  * @since 2.0
  */
-class EntityParser extends Parser
+class IdParser extends Parser
 {
     /**
-     * @param int    $type
-     * @param Entity $annotationObject
+     * @param int $type
+     * @param Id  $annotationObject
      *
      * @return array
      */

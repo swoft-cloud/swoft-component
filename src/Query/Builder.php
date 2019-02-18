@@ -7,7 +7,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\Prototype;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Bean\PrototypeInterface;
-use Swoft\Db\Concerns\BuildsQueries;
+use Swoft\Db\Concern\BuildsQueries;
 use Swoft\Db\Connection;
 use Swoft\Db\Eloquent\Builder as EloquentBuilder;
 use Swoft\Db\Exception\QueryException;
@@ -2090,7 +2090,7 @@ class Builder implements PrototypeInterface
      *
      * @param  int $value
      *
-     * @return static
+     * @return static|Builder
      */
     public function take($value): self
     {

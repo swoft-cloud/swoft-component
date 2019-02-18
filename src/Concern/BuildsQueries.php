@@ -1,7 +1,9 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Db\Concerns;
+namespace Swoft\Db\Concern;
+
+use Swoft\Db\Eloquent\Model;
 
 /**
  * Class BuildsQueries
@@ -72,7 +74,7 @@ trait BuildsQueries
      * Execute the query and get the first result.
      *
      * @param  array  $columns
-     * @return \Illuminate\Database\Eloquent\Model|object|static|null
+     * @return Model|object|static|null
      */
     public function first($columns = ['*'])
     {

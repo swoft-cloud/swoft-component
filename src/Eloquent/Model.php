@@ -3,20 +3,30 @@
 
 namespace Swoft\Db\Eloquent;
 
-use Swoft\Db\Concerns\HasAttributes;
+use Swoft\Bean\Exception\PrototypeException;
+use Swoft\Db\Concern\HasAttributes;
+use Swoft\Db\Concern\HidesAttributes;
 use Swoft\Db\Connection;
-use Swoft\Db\Pool;
+use Swoft\Db\DB;
+use Swoft\Db\EntityRegister;
+use Swoft\Db\Exception\EloquentException;
+use Swoft\Db\Exception\EntityException;
+use Swoft\Db\Exception\PoolException;
+use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Query\Builder as QueryBuilder;
+use Swoft\Stdlib\Arrayable;
+use Swoft\Stdlib\Helper\JsonHelper;
 use Swoft\Stdlib\Helper\Str;
+use Swoft\Stdlib\Jsonable;
 
 /**
  * Class Model
  *
  * @since 2.0
  */
-abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerializable
+abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializable
 {
-    use HasAttributes;
+    use HidesAttributes, HasAttributes;
 
     /**
      * The name of the "created at" column.
@@ -47,7 +57,7 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
     public $exists = false;
 
     /**
-     * Create a new Eloquent model instance.
+     * Create a new EloquentException model instance.
      *
      * @param  array $attributes
      *
@@ -60,50 +70,45 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
         $this->fill($attributes);
     }
 
+
+    /**
+     * Create a new model
+     *
+     * @param array $attributes
+     *
+     * @return static
+     * @throws EloquentException
+     */
+    public static function new(array $attributes = []): self
+    {
+        try {
+            /* @var static $self */
+            $self = bean(static::class);
+        } catch (\Throwable $e) {
+            throw new EloquentException($e->getMessage());
+        }
+
+        $self->syncOriginal();
+        $self->fill($attributes);
+        $self->exists = true;
+
+        return $self;
+    }
+
     /**
      * Fill the model with an array of attributes.
      *
      * @param  array $attributes
      *
-     * @return $this
-     *
-     * @throws \Illuminate\Database\Eloquent\MassAssignmentException
+     * @return static
      */
-    public function fill(array $attributes)
+    public function fill(array $attributes): self
     {
-        $totallyGuarded = $this->totallyGuarded();
-
-        foreach ($this->fillableFromArray($attributes) as $key => $value) {
-            $key = $this->removeTableFromKey($key);
-
-            // The developers may choose to place some attributes in the "fillable" array
-            // which means only those attributes may be set through mass assignment to
-            // the model, and all others will just get ignored for security reasons.
-            if ($this->isFillable($key)) {
-                $this->setAttribute($key, $value);
-            } elseif ($totallyGuarded) {
-                throw new MassAssignmentException(sprintf(
-                    'Add [%s] to fillable property to allow mass assignment on [%s].',
-                    $key, get_class($this)
-                ));
-            }
+        foreach ($attributes as $key => $value) {
+            $this->setAttribute($key, $value);
         }
 
         return $this;
-    }
-
-    /**
-     * Fill the model with an array of attributes. Force mass assignment.
-     *
-     * @param  array $attributes
-     *
-     * @return $this
-     */
-    public function forceFill(array $attributes)
-    {
-        return static::unguarded(function () use ($attributes) {
-            return $this->fill($attributes);
-        });
     }
 
     /**
@@ -112,8 +117,9 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
      * @param  string $column
      *
      * @return string
+     * @throws EntityException
      */
-    public function qualifyColumn($column)
+    public function qualifyColumn(string $column): string
     {
         if (Str::contains($column, '.')) {
             return $column;
@@ -123,39 +129,22 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
     }
 
     /**
-     * Remove the table name from a given key.
-     *
-     * @param  string $key
-     *
-     * @return string
-     */
-    protected function removeTableFromKey($key)
-    {
-        return Str::contains($key, '.') ? end(explode('.', $key)) : $key;
-    }
-
-    /**
      * Create a new instance of the given model.
      *
      * @param  array $attributes
      * @param  bool  $exists
      *
      * @return static
+     * @throws EloquentException
      */
-    public function newInstance($attributes = [], $exists = false)
+    public function newInstance(array $attributes = [], bool $exists = false): self
     {
         // This method just provides a convenient way for us to generate fresh model
         // instances of this current model. It is particularly useful during the
-        // hydration of new objects via the Eloquent query builder instances.
-        $model = new static((array)$attributes);
+        // hydration of new objects via the EloquentException query builder instances.
+        $model = static::new($attributes);
 
         $model->exists = $exists;
-
-        $model->setConnection(
-            $this->getConnectionName()
-        );
-
-        $model->setTable($this->getTable());
 
         return $model;
     }
@@ -163,115 +152,31 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
     /**
      * Create a new model instance that is existing.
      *
-     * @param  array       $attributes
-     * @param  string|null $connection
+     * @param  array $attributes
      *
      * @return static
+     * @throws
      */
-    public function newFromBuilder($attributes = [], $connection = null)
+    public function newFromBuilder($attributes = [])
     {
         $model = $this->newInstance([], true);
 
         $model->setRawAttributes((array)$attributes, true);
-
-        $model->setConnection($connection ?: $this->getConnectionName());
-
-        $model->fireModelEvent('retrieved', false);
-
         return $model;
-    }
-
-    /**
-     * Begin querying the model on a given connection.
-     *
-     * @param  string|null $connection
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public static function on($connection = null)
-    {
-        // First we will just create a fresh instance of this model, and then we can set the
-        // connection on the model so that it is used for the queries we execute, as well
-        // as being set on every relation we retrieve without a custom connection name.
-        $instance = new static;
-
-        $instance->setConnection($connection);
-
-        return $instance->newQuery();
-    }
-
-    /**
-     * Begin querying the model on the write connection.
-     *
-     * @return \Illuminate\Database\Query\Builder
-     */
-    public static function onWriteConnection()
-    {
-        $instance = new static;
-
-        return $instance->newQuery()->useWritePdo();
     }
 
     /**
      * Get all of the models from the database.
      *
-     * @param  array|mixed $columns
+     * @param  array $columns
      *
-     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     * @return Collection
+     * @throws PrototypeException
+     * @throws EloquentException
      */
-    public static function all($columns = ['*'])
+    public static function all(array $columns = ['*']): Collection
     {
-        return (new static)->newQuery()->get(
-            is_array($columns) ? $columns : func_get_args()
-        );
-    }
-
-    /**
-     * Begin querying a model with eager loading.
-     *
-     * @param  array|string $relations
-     *
-     * @return \Illuminate\Database\Eloquent\Builder|static
-     */
-    public static function with($relations)
-    {
-        return (new static)->newQuery()->with(
-            is_string($relations) ? func_get_args() : $relations
-        );
-    }
-
-    /**
-     * Eager load relations on the model.
-     *
-     * @param  array|string $relations
-     *
-     * @return $this
-     */
-    public function load($relations)
-    {
-        $query = $this->newQueryWithoutRelationships()->with(
-            is_string($relations) ? func_get_args() : $relations
-        );
-
-        $query->eagerLoadRelations([$this]);
-
-        return $this;
-    }
-
-    /**
-     * Eager load relations on the model if they are not already eager loaded.
-     *
-     * @param  array|string $relations
-     *
-     * @return $this
-     */
-    public function loadMissing($relations)
-    {
-        $relations = is_string($relations) ? func_get_args() : $relations;
-
-        $this->newCollection([$this])->loadMissing($relations);
-
-        return $this;
+        return static::new()->newQuery()->get($columns);
     }
 
     /**
@@ -282,8 +187,11 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
      * @param  array     $extra
      *
      * @return int
+     * @throws EntityException
+     * @throws PoolException
+     * @throws PrototypeException
      */
-    protected function increment($column, $amount = 1, array $extra = [])
+    protected function increment(string $column, $amount = 1, array $extra = [])
     {
         return $this->incrementOrDecrement($column, $amount, $extra, 'increment');
     }
@@ -296,8 +204,11 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
      * @param  array     $extra
      *
      * @return int
+     * @throws EntityException
+     * @throws PoolException
+     * @throws PrototypeException
      */
-    protected function decrement($column, $amount = 1, array $extra = [])
+    protected function decrement(string $column, $amount = 1, array $extra = [])
     {
         return $this->incrementOrDecrement($column, $amount, $extra, 'decrement');
     }
@@ -311,8 +222,11 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
      * @param  string    $method
      *
      * @return int
+     * @throws EntityException
+     * @throws PoolException
+     * @throws PrototypeException
      */
-    protected function incrementOrDecrement($column, $amount, $extra, $method)
+    protected function incrementOrDecrement(string $column, $amount, array $extra, string $method)
     {
         $query = $this->newModelQuery();
 
@@ -337,7 +251,7 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
      *
      * @return void
      */
-    protected function incrementOrDecrementAttributeValue($column, $amount, $extra, $method)
+    protected function incrementOrDecrementAttributeValue(string $column, $amount, $extra, $method)
     {
         $this->{$column} = $this->{$column} + ($method === 'increment' ? $amount : $amount * -1);
 
@@ -364,39 +278,15 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
     }
 
     /**
-     * Save the model and all of its relationships.
-     *
-     * @return bool
-     */
-    public function push()
-    {
-        if (!$this->save()) {
-            return false;
-        }
-
-        // To sync all of the relationships to the database, we will simply spin through
-        // the relationships and save each model via this "push" method, which allows
-        // us to recurse into all of these nested relations for the model instance.
-        foreach ($this->relations as $models) {
-            $models = $models instanceof Collection
-                ? $models->all() : [$models];
-
-            foreach (array_filter($models) as $model) {
-                if (!$model->push()) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * Save the model to the database.
      *
      * @param  array $options
      *
      * @return bool
+     * @throws EntityException
+     * @throws PoolException
+     * @throws PrototypeException
+     * @throws QueryException
      */
     public function save(array $options = [])
     {
@@ -405,9 +295,8 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
         // If the "saving" event returns false we'll bail out of the save and return
         // false, indicating that the save failed. This provides a chance for any
         // listeners to cancel save operations if validations fail or whatever.
-        if ($this->fireModelEvent('saving') === false) {
-            return false;
-        }
+
+        // fire saving
 
         // If the model already exists in the database we can just update our record
         // that is already in this database using the current IDs in this "where"
@@ -422,11 +311,6 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
         // which is typically an auto-increment value managed by the database.
         else {
             $saved = $this->performInsert($query);
-
-            if (!$this->getConnectionName() &&
-                $connection = $query->getConnection()) {
-                $this->setConnection($connection->getName());
-            }
         }
 
         // If the model is successfully saved, we need to do a few more things once
@@ -464,11 +348,7 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
      */
     protected function finishSave(array $options)
     {
-        $this->fireModelEvent('saved', false);
-
-        if ($this->isDirty() && ($options['touch'] ?? true)) {
-            $this->touchOwners();
-        }
+        // fire saved
 
         $this->syncOriginal();
     }
@@ -476,18 +356,13 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
     /**
      * Perform a model update operation.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder $query
+     * @param  Builder $query
      *
      * @return bool
      */
     protected function performUpdate(Builder $query)
     {
-        // If the updating event returns false, we will cancel the update operation so
-        // developers can hook Validation systems into their models and cancel this
-        // operation if the model does not pass validation. Otherwise, we update.
-        if ($this->fireModelEvent('updating') === false) {
-            return false;
-        }
+        // fire updating
 
         // First we need to create a fresh query instance and touch the creation and
         // update timestamp on the model which are maintained by us for developer
@@ -506,7 +381,7 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
 
             $this->syncChanges();
 
-            $this->fireModelEvent('updated', false);
+            // fire updated
         }
 
         return true;
@@ -515,9 +390,9 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
     /**
      * Set the keys for a save update query.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder $query
+     * @param  Builder $query
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     protected function setKeysForSaveQuery(Builder $query)
     {
@@ -540,15 +415,14 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
     /**
      * Perform a model insert operation.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder $query
+     * @param  Builder $query
      *
      * @return bool
+     * @throws QueryException
      */
     protected function performInsert(Builder $query)
     {
-        if ($this->fireModelEvent('creating') === false) {
-            return false;
-        }
+        // fire creating
 
         // First we'll need to create a fresh query instance and touch the creation and
         // update timestamps on this model, which are maintained by us for developer
@@ -584,18 +458,18 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
 
         $this->wasRecentlyCreated = true;
 
-        $this->fireModelEvent('created', false);
-
+        // fire created
         return true;
     }
 
     /**
      * Insert the given attributes and set the ID on the model.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder $query
-     * @param  array                                 $attributes
+     * @param  Builder $query
+     * @param  array   $attributes
      *
      * @return void
+     * @throws QueryException
      */
     protected function insertAndSetId(Builder $query, $attributes)
     {
@@ -605,74 +479,36 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
     }
 
     /**
-     * Destroy the models for the given IDs.
-     *
-     * @param  \Illuminate\Support\Collection|array|int $ids
-     *
-     * @return int
-     */
-    public static function destroy($ids)
-    {
-        // We'll initialize a count here so we will return the total number of deletes
-        // for the operation. The developers can then check this number as a boolean
-        // type value or get this total count of records deleted for logging, etc.
-        $count = 0;
-
-        if ($ids instanceof BaseCollection) {
-            $ids = $ids->all();
-        }
-
-        $ids = is_array($ids) ? $ids : func_get_args();
-
-        // We will actually pull the models from the database table and call delete on
-        // each of them individually so that their events get fired properly with a
-        // correct set of attributes in case the developers wants to check these.
-        $key = ($instance = new static)->getKeyName();
-
-        foreach ($instance->whereIn($key, $ids)->get() as $model) {
-            if ($model->delete()) {
-                $count++;
-            }
-        }
-
-        return $count;
-    }
-
-    /**
      * Delete the model from the database.
      *
-     * @return bool|null
-     *
-     * @throws \Exception
+     * @return bool
+     * @throws EloquentException
+     * @throws EntityException
+     * @throws PoolException
+     * @throws PrototypeException
      */
-    public function delete()
+    public function delete(): bool
     {
         if (is_null($this->getKeyName())) {
-            throw new Exception('No primary key defined on model.');
+            throw new EloquentException('No primary key defined on model.');
         }
 
         // If the model doesn't exist, there is nothing to delete so we'll just return
         // immediately and not do anything else. Otherwise, we will continue with a
         // deletion process on the model, firing the proper events, and so forth.
         if (!$this->exists) {
-            return;
-        }
-
-        if ($this->fireModelEvent('deleting') === false) {
             return false;
         }
 
-        // Here, we'll touch the owning models, verifying these timestamps get updated
-        // for the models. This will allow any caching to get broken on the parents
-        // by the timestamp. Then we will go ahead and delete the model instance.
-        $this->touchOwners();
+        // fire deleting
 
         $this->performDeleteOnModel();
 
         // Once the model has been deleted, we will fire off the deleted event so that
         // the developers may hook into post-delete operations. We will then return
         // a boolean true as the delete is presumably successful on the database.
-        $this->fireModelEvent('deleted', false);
+
+        // fire deleted
 
         return true;
     }
@@ -682,7 +518,11 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
      *
      * This method protects developers from running forceDelete when trait is missing.
      *
-     * @return bool|null
+     * @return bool
+     * @throws EloquentException
+     * @throws EntityException
+     * @throws PoolException
+     * @throws PrototypeException
      */
     public function forceDelete()
     {
@@ -693,6 +533,9 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
      * Perform the actual delete query on this model instance.
      *
      * @return void
+     * @throws EntityException
+     * @throws PoolException
+     * @throws PrototypeException
      */
     protected function performDeleteOnModel()
     {
@@ -704,17 +547,25 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
     /**
      * Begin querying the model.
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
+     * @throws EloquentException
+     * @throws EntityException
+     * @throws PoolException
+     * @throws PrototypeException
      */
     public static function query()
     {
-        return (new static)->newQuery();
+        return static::new()->newQuery();
     }
 
     /**
      * Get a new query builder for the model's table.
      *
      * @return Builder
+     * @return Builder
+     * @throws EntityException
+     * @throws PoolException
+     * @throws PrototypeException
      */
     public function newQuery()
     {
@@ -725,6 +576,9 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
      * Get a new query builder that doesn't have any global scopes or eager loading.
      *
      * @return Builder
+     * @throws EntityException
+     * @throws PoolException
+     * @throws PrototypeException
      */
     public function newModelQuery()
     {
@@ -732,71 +586,7 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
     }
 
     /**
-     * Get a new query builder with no relationships loaded.
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function newQueryWithoutRelationships()
-    {
-        return $this->registerGlobalScopes($this->newModelQuery());
-    }
-
-    /**
-     * Register the global scopes for this builder instance.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder $builder
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function registerGlobalScopes($builder)
-    {
-        foreach ($this->getGlobalScopes() as $identifier => $scope) {
-            $builder->withGlobalScope($identifier, $scope);
-        }
-
-        return $builder;
-    }
-
-    /**
-     * Get a new query builder that doesn't have any global scopes.
-     *
-     * @return \Illuminate\Database\Eloquent\Builder|static
-     */
-    public function newQueryWithoutScopes()
-    {
-        return $this->newModelQuery()
-            ->with($this->with)
-            ->withCount($this->withCount);
-    }
-
-    /**
-     * Get a new query instance without a given scope.
-     *
-     * @param  \Illuminate\Database\Eloquent\Scope|string $scope
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function newQueryWithoutScope($scope)
-    {
-        return $this->newQuery()->withoutGlobalScope($scope);
-    }
-
-    /**
-     * Get a new query to restore one or more models by their queueable IDs.
-     *
-     * @param  array|int $ids
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function newQueryForRestoration($ids)
-    {
-        return is_array($ids)
-            ? $this->newQueryWithoutScopes()->whereIn($this->getQualifiedKeyName(), $ids)
-            : $this->newQueryWithoutScopes()->whereKey($ids);
-    }
-
-    /**
-     * Create a new Eloquent query builder for the model.
+     * Create a new EloquentException query builder for the model.
      *
      * @param  QueryBuilder $query
      *
@@ -811,40 +601,27 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
      * Get a new query builder instance for the connection.
      *
      * @return QueryBuilder
+     * @throws EntityException
+     * @throws PoolException
+     * @throws PrototypeException
      */
     protected function newBaseQueryBuilder()
     {
         $connection = $this->getConnection();
-        return new QueryBuilder($connection, $connection->getQueryGrammar(), $connection->getPostProcessor());
+        return QueryBuilder::new($connection, $connection->getQueryGrammar(), $connection->getPostProcessor());
     }
 
     /**
-     * Create a new Eloquent Collection instance.
+     * Create a new EloquentException Collection instance.
      *
      * @param  array $models
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return Collection
+     * @throws PrototypeException
      */
     public function newCollection(array $models = [])
     {
-        return new Collection($models);
-    }
-
-    /**
-     * Create a new pivot model instance.
-     *
-     * @param  \Illuminate\Database\Eloquent\Model $parent
-     * @param  array                               $attributes
-     * @param  string                              $table
-     * @param  bool                                $exists
-     * @param  string|null                         $using
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\Pivot
-     */
-    public function newPivot(self $parent, array $attributes, $table, $exists, $using = null)
-    {
-        return $using ? $using::fromRawAttributes($parent, $attributes, $table, $exists)
-            : Pivot::fromAttributes($parent, $attributes, $table, $exists);
+        return Collection::new($models);
     }
 
     /**
@@ -863,18 +640,10 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
      * @param  int $options
      *
      * @return string
-     *
-     * @throws \Illuminate\Database\Eloquent\JsonEncodingException
      */
     public function toJson($options = 0)
     {
-        $json = json_encode($this->jsonSerialize(), $options);
-
-        if (JSON_ERROR_NONE !== json_last_error()) {
-            throw JsonEncodingException::forModel($this, json_last_error_msg());
-        }
-
-        return $json;
+        return JsonHelper::encode($this->jsonSerialize(), $options);
     }
 
     /**
@@ -890,18 +659,18 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
     /**
      * Reload a fresh model instance from the database.
      *
-     * @param  array|string $with
-     *
-     * @return static|null
+     * @return static
+     * @throws EntityException
+     * @throws PoolException
+     * @throws PrototypeException
      */
-    public function fresh($with = [])
+    public function fresh()
     {
         if (!$this->exists) {
-            return;
+            return $this;
         }
 
-        return static::newQueryWithoutScopes()
-            ->with(is_string($with) ? func_get_args() : $with)
+        return $this->newModelQuery()
             ->where($this->getKeyName(), $this->getKey())
             ->first();
     }
@@ -910,6 +679,9 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
      * Reload the current model instance with fresh attributes from the database.
      *
      * @return $this
+     * @throws EntityException
+     * @throws PoolException
+     * @throws PrototypeException
      */
     public function refresh()
     {
@@ -918,10 +690,8 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
         }
 
         $this->setRawAttributes(
-            static::newQueryWithoutScopes()->findOrFail($this->getKey())->attributes
+            $this->newModelQuery()->findOrFail($this->getKey())->attributes
         );
-
-        $this->load(collect($this->relations)->except('pivot')->keys()->toArray());
 
         $this->syncOriginal();
 
@@ -934,161 +704,69 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
      * @param  array|null $except
      *
      * @return static
+     * @throws EloquentException
      */
     public function replicate(array $except = null)
     {
-        $defaults = [
-            $this->getKeyName(),
-            $this->getCreatedAtColumn(),
-            $this->getUpdatedAtColumn(),
-        ];
 
-        $attributes = Arr::except(
-            $this->attributes, $except ? array_unique(array_merge($except, $defaults)) : $defaults
-        );
+        $attributes = $this->attributes;
 
-        return tap(new static, function ($instance) use ($attributes) {
-            $instance->setRawAttributes($attributes);
+        $instance = static::new();
+        $instance->setRawAttributes($attributes);
 
-            $instance->setRelations($this->relations);
-        });
+        return $instance;
     }
 
     /**
      * Determine if two models have the same ID and belong to the same table.
      *
-     * @param  \Illuminate\Database\Eloquent\Model|null $model
+     * @param  Model $model
      *
      * @return bool
+     * @throws EntityException
      */
-    public function is($model)
+    public function is(Model $model):bool
     {
         return !is_null($model) &&
             $this->getKey() === $model->getKey() &&
-            $this->getTable() === $model->getTable() &&
-            $this->getConnectionName() === $model->getConnectionName();
+            $this->getTable() === $model->getTable();
     }
 
     /**
      * Determine if two models are not the same.
      *
-     * @param  \Illuminate\Database\Eloquent\Model|null $model
+     * @param  Model $model
      *
      * @return bool
+     * @throws EntityException
      */
-    public function isNot($model)
+    public function isNot(Model$model):bool
     {
         return !$this->is($model);
     }
 
     /**
      * Get the database connection for the model.
+     *
+     * @throws EntityException
+     * @throws PoolException
      */
     public function getConnection(): Connection
     {
-        $pool = bean('');
-        if (!$pool instanceof Pool) {
+        $pool = EntityRegister::getPool(static::class);
 
-        }
-        return $pool->getConnection();
-    }
-
-    /**
-     * Get the current connection name for the model.
-     *
-     * @return string
-     */
-    public function getConnectionName()
-    {
-        return $this->connection;
-    }
-
-    /**
-     * Set the connection associated with the model.
-     *
-     * @param  string $name
-     *
-     * @return $this
-     */
-    public function setConnection($name)
-    {
-        $this->connection = $name;
-
-        return $this;
-    }
-
-    /**
-     * Resolve a connection instance.
-     *
-     * @param  string|null $connection
-     *
-     * @return \Illuminate\Database\Connection
-     */
-    public static function resolveConnection($connection = null)
-    {
-        return static::$resolver->connection($connection);
-    }
-
-    /**
-     * Get the connection resolver instance.
-     *
-     * @return \Illuminate\Database\ConnectionResolverInterface
-     */
-    public static function getConnectionResolver()
-    {
-        return static::$resolver;
-    }
-
-    /**
-     * Set the connection resolver instance.
-     *
-     * @param  \Illuminate\Database\ConnectionResolverInterface $resolver
-     *
-     * @return void
-     */
-    public static function setConnectionResolver(Resolver $resolver)
-    {
-        static::$resolver = $resolver;
-    }
-
-    /**
-     * Unset the connection resolver for models.
-     *
-     * @return void
-     */
-    public static function unsetConnectionResolver()
-    {
-        static::$resolver = null;
+        return DB::pool($pool);
     }
 
     /**
      * Get the table associated with the model.
      *
      * @return string
+     * @throws EntityException
      */
     public function getTable()
     {
-        if (!isset($this->table)) {
-            return str_replace(
-                '\\', '', Str::snake(Str::plural(class_basename($this)))
-            );
-        }
-
-        return $this->table;
-    }
-
-    /**
-     * Set the table associated with the model.
-     *
-     * @param  string $table
-     *
-     * @return $this
-     */
-    public function setTable($table)
-    {
-        $this->table = $table;
-
-        return $this;
+        return EntityRegister::getTable(static::class);
     }
 
     /**
@@ -1119,6 +797,7 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
      * Get the table qualified key name.
      *
      * @return string
+     * @throws EntityException
      */
     public function getQualifiedKeyName()
     {
@@ -1184,56 +863,6 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
     }
 
     /**
-     * Get the queueable identity for the entity.
-     *
-     * @return mixed
-     */
-    public function getQueueableId()
-    {
-        return $this->getKey();
-    }
-
-    /**
-     * Get the queueable relationships for the entity.
-     *
-     * @return array
-     */
-    public function getQueueableRelations()
-    {
-        $relations = [];
-
-        foreach ($this->getRelations() as $key => $relation) {
-            if (method_exists($this, $key)) {
-                $relations[] = $key;
-            }
-
-            if ($relation instanceof QueueableCollection) {
-                foreach ($relation->getQueueableRelations() as $collectionValue) {
-                    $relations[] = $key . '.' . $collectionValue;
-                }
-            }
-
-            if ($relation instanceof QueueableEntity) {
-                foreach ($relation->getQueueableRelations() as $entityKey => $entityValue) {
-                    $relations[] = $key . '.' . $entityValue;
-                }
-            }
-        }
-
-        return array_unique($relations);
-    }
-
-    /**
-     * Get the queueable connection for the entity.
-     *
-     * @return mixed
-     */
-    public function getQueueableConnection()
-    {
-        return $this->getConnectionName();
-    }
-
-    /**
      * Get the value of the model's route key.
      *
      * @return mixed
@@ -1251,28 +880,6 @@ abstract class Model implements \ArrayAccess, \Arrayable, \Jsonable, \JsonSerial
     public function getRouteKeyName()
     {
         return $this->getKeyName();
-    }
-
-    /**
-     * Retrieve the model for a bound value.
-     *
-     * @param  mixed $value
-     *
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    public function resolveRouteBinding($value)
-    {
-        return $this->where($this->getRouteKeyName(), $value)->first();
-    }
-
-    /**
-     * Get the default foreign key name for the model.
-     *
-     * @return string
-     */
-    public function getForeignKey()
-    {
-        return Str::snake(class_basename($this)) . '_' . $this->getKeyName();
     }
 
     /**
