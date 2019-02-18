@@ -2,6 +2,26 @@
 
 > 日期时间都是大概的时间点
 
+## 2019.02.17
+
+db(@stelin)
+
+- 修改Model 删除无用代码
+
+## 2019.02.17
+
+bean(@stelin)
+
+- 新增trait Prototype/PrototypeInterface
+- 统一使用prototype bean对象，Xxx::new()
+
+## 2019.02.16
+
+db(@stelin)
+
+- 修改QueryBuidler
+- 修改connection
+
 ## 2019.02.15
 
 - 一些基础性的调整(@inhere)
