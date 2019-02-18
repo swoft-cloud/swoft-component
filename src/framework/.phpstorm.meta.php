@@ -5,6 +5,8 @@ namespace PHPSTORM_META {
 
     // This is a saner and self-documented format for PhpStorm 2016.2 and later
     // Try QuickDoc on these "magic" functions, or even Go to definition!
+    use Swoft\Console\Output\Output;
+
     override(\Swoft::getBean(0),
         map([
             'config'         => \Swoft\Config\Config::class,
@@ -15,8 +17,10 @@ namespace PHPSTORM_META {
             // ws server
             'wsRouter'       => \Swoft\WebSocket\Server\Router\Router::class,
             'wsDispatcher'   => \Swoft\WebSocket\Server\Dispatcher::class,
-            // default
-            ''               => '@'
+            // console
+            'input'          => \Swoft\Console\Input\Input::class,
+            'output'         => Output::class,
+            Output::class    => Output::class,
         ])
     );
 
@@ -31,6 +35,10 @@ namespace PHPSTORM_META {
             // ws server
             'wsRouter'       => \Swoft\WebSocket\Server\Router\Router::class,
             'wsDispatcher'   => \Swoft\WebSocket\Server\Dispatcher::class,
+            // console
+            'input'          => \Swoft\Console\Input\Input::class,
+            'output'         => Output::class,
+            Output::class    => Output::class,
         ])
     );
 }

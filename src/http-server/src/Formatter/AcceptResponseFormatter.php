@@ -35,13 +35,13 @@ class AcceptResponseFormatter implements ResponseFormatterInterface
      */
     public function format(Response $response): Response
     {
-        $request    = context()->getRequest();
-        $accepts    = $request->getHeader('accept');
-        $acceptType = \current($accepts);
+        $format  = '';
+        $request = \context()->getRequest();
+        $accepts = $request->getHeader('accept');
 
-        $format = '';
+        $acceptType = \current($accepts);
         foreach ($this->formats as $contentType => $formatType) {
-            if (strpos($acceptType, $contentType) === 0) {
+            if (\strpos($acceptType, $contentType) === 0) {
                 $format = $formatType;
                 break;
             }

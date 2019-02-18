@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Http\Concern;
+namespace Swoft\Http\Message\Concern;
 
 use Psr\Http\Message\StreamInterface;
 use Swoft\Http\Message\Stream\Stream;

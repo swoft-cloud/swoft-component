@@ -23,12 +23,12 @@ class EnvProcessor extends Processor
         }
 
         $env  = $this->application->getEnv();
-        $path = BASE_PATH . DIRECTORY_SEPARATOR;
+        $path = \BASE_PATH . DIRECTORY_SEPARATOR;
 
-        if (!file_exists($path)) {
+        if (!\file_exists($path . $env)) {
             return true;
         }
-        
+
         // Load env
         $dotenv = new Dotenv($path, $env);
         $dotenv->load();

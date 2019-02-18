@@ -8,6 +8,9 @@ namespace Swoft\Http\Message;
  */
 final class ContentType
 {
+    public const KEY = 'Content-Type';
+
+    // Commonly used content types
     public const HTML = 'text/html';
     public const TEXT = 'text/plain';
     public const JSON = 'application/json';

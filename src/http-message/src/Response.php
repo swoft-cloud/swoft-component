@@ -2,7 +2,7 @@
 
 namespace Swoft\Http\Message;
 
-use Swoft\Http\Concern\MessageTrait;
+use Swoft\Http\Message\Concern\MessageTrait;
 use Swoft\Http\Message\Contract\ResponseInterface;
 use Swoole\Http\Response as CoResponse;
 
