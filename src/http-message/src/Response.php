@@ -2,6 +2,7 @@
 
 namespace Swoft\Http\Message;
 
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Message\Concern\MessageTrait;
 use Swoft\Http\Message\Contract\ResponseInterface;
 use Swoole\Http\Response as CoResponse;
@@ -10,6 +11,7 @@ use Swoole\Http\Response as CoResponse;
  * Class Response
  *
  * @since 2.0
+ * @Bean("httpResponse")
  */
 class Response implements ResponseInterface
 {
