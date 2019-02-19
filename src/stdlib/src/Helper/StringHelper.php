@@ -176,6 +176,11 @@ class StringHelper
         return mb_strlen($value);
     }
 
+    public static function len(string $value): int
+    {
+        return \mb_strlen($value);
+    }
+
     /**
      * Limit the number of characters in a string.
      *

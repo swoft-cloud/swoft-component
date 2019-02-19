@@ -7,7 +7,7 @@ namespace Swoft\Stdlib\Helper;
  *
  * @since 2.0
  */
-class SystemHelper
+class SystemHelper extends EnvHelper
 {
     /**
      * Set cli process title
@@ -67,5 +67,205 @@ class SystemHelper
         $code = \proc_close($process);
 
         return [$code, $output, $error];
+    }
+
+
+    /**
+     * Method to execute a command in the sys
+     * Uses :
+     * 1. system
+     * 2. passthru
+     * 3. exec
+     * 4. shell_exec
+     * @param string      $command
+     * @param bool        $returnStatus
+     * @param string|null $cwd
+     * @return array|string
+     */
+    public static function execute(string $command, bool $returnStatus = true, string $cwd = null)
+    {
+        $exitStatus = 1;
+
+        if ($cwd) {
+            \chdir($cwd);
+        }
+
+        // system
+        if (\function_exists('system')) {
+            \ob_start();
+            \system($command, $exitStatus);
+            $output = \ob_get_contents();
+            \ob_end_clean();
+
+            // passthru
+        } elseif (\function_exists('passthru')) {
+            \ob_start();
+            \passthru($command, $exitStatus);
+            $output = \ob_get_contents();
+            \ob_end_clean();
+            //exec
+        } elseif (\function_exists('exec')) {
+            \exec($command, $output, $exitStatus);
+            $output = \implode("\n", $output);
+
+            //shell_exec
+        } elseif (\function_exists('shell_exec')) {
+            $output = \shell_exec($command);
+        } else {
+            $output = 'Command execution not possible on this system';
+            $exitStatus = 0;
+        }
+
+        if ($returnStatus) {
+            return [
+                'output' => \trim($output),
+                'status' => $exitStatus
+            ];
+        }
+
+        return \trim($output);
+    }
+
+    /**
+     * run a command in background
+     * @param string $cmd
+     */
+    public static function bgExec(string $cmd): void
+    {
+        self::execInBackground($cmd);
+    }
+
+    /**
+     * run a command in background
+     * @param string $cmd
+     */
+    public static function execInBackground(string $cmd): void
+    {
+        if (self::isWindows()) {
+            \pclose(\popen('start /B ' . $cmd, 'r'));
+        } else {
+            \exec($cmd . ' > /dev/null &');
+        }
+    }
+
+    /**
+     * Get unix user of current process.
+     * @return array
+     */
+    public static function getCurrentUser(): array
+    {
+        return \posix_getpwuid(\posix_getuid());
+    }
+
+    /**
+     * @return string
+     */
+    public static function tempDir(): string
+    {
+        return self::getTempDir();
+    }
+
+    /**
+     * @return string
+     */
+    public static function getTempDir(): string
+    {
+        // @codeCoverageIgnoreStart
+        if (\function_exists('sys_get_temp_dir')) {
+            $tmp = \sys_get_temp_dir();
+        } elseif (!empty($_SERVER['TMP'])) {
+            $tmp = $_SERVER['TMP'];
+        } elseif (!empty($_SERVER['TEMP'])) {
+            $tmp = $_SERVER['TEMP'];
+        } elseif (!empty($_SERVER['TMPDIR'])) {
+            $tmp = $_SERVER['TMPDIR'];
+        } else {
+            $tmp = \getcwd();
+        }
+        // @codeCoverageIgnoreEnd
+
+        return $tmp;
+    }
+
+    /**
+     * get bash is available
+     * @return bool
+     */
+    public static function shIsAvailable(): bool
+    {
+        // $checkCmd = "/usr/bin/env bash -c 'echo OK'";
+        // $shell = 'echo $0';
+        $checkCmd = "sh -c 'echo OK'";
+
+        return self::execute($checkCmd, false) === 'OK';
+    }
+
+    /**
+     * get bash is available
+     * @return bool
+     */
+    public static function bashIsAvailable(): bool
+    {
+        // $checkCmd = "/usr/bin/env bash -c 'echo OK'";
+        // $shell = 'echo $0';
+        $checkCmd = "bash -c 'echo OK'";
+
+        return self::execute($checkCmd, false) === 'OK';
+    }
+
+    /**
+     * get screen size of the terminal
+     *
+     * ```php
+     * list($width, $height) = Sys::getScreenSize();
+     * ```
+     * @from Yii2
+     * @param boolean $refresh whether to force checking and not re-use cached size value.
+     * This is useful to detect changing window size while the application is running but may
+     * not get up to date values on every terminal.
+     * @return array|boolean An array of ($width, $height) or false when it was not able to determine size.
+     */
+    public static function getScreenSize(bool $refresh = false)
+    {
+        static $size;
+        if ($size !== null && !$refresh) {
+            return $size;
+        }
+
+        if (self::shIsAvailable()) {
+            // try stty if available
+            $stty = [];
+
+            if (
+                \exec('stty -a 2>&1', $stty) &&
+                \preg_match('/rows\s+(\d+);\s*columns\s+(\d+);/mi', implode(' ', $stty), $matches)
+            ) {
+                return ($size = [$matches[2], $matches[1]]);
+            }
+
+            // fallback to tput, which may not be updated on terminal resize
+            if (($width = (int)exec('tput cols 2>&1')) > 0 && ($height = (int)exec('tput lines 2>&1')) > 0) {
+                return ($size = [$width, $height]);
+            }
+
+            // fallback to ENV variables, which may not be updated on terminal resize
+            if (($width = (int)getenv('COLUMNS')) > 0 && ($height = (int)getenv('LINES')) > 0) {
+                return ($size = [$width, $height]);
+            }
+        }
+
+        if (self::isWindows()) {
+            $output = [];
+            \exec('mode con', $output);
+
+            if (isset($output[1]) && strpos($output[1], 'CON') !== false) {
+                return ($size = [
+                    (int)\preg_replace('~\D~', '', $output[3]),
+                    (int)\preg_replace('~\D~', '', $output[4])
+                ]);
+            }
+        }
+
+        return ($size = false);
     }
 }
