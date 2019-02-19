@@ -29,6 +29,14 @@ interface ContextInterface
     public function set(string $key, $value): void;
 
     /**
+     * Set multi value to context
+     *
+     * @param array $map
+     * [key => value]
+     */
+    public function setMulti(array $map): void;
+
+    /**
      * Clear resource
      */
     public function clear(): void;

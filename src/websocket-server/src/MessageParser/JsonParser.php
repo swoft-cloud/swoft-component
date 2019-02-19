@@ -12,7 +12,7 @@ use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 
 /**
  * Class JsonParser
- * @package Swoft\WebSocket\Server\MessageParser
+ * @since 2.0
  */
 class JsonParser implements MessageParserInterface
 {

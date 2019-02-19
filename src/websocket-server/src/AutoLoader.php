@@ -23,7 +23,7 @@ class AutoLoader extends SwoftComponent
      */
     public function enable(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -61,7 +61,8 @@ class AutoLoader extends SwoftComponent
     {
         return [
             'wsServer'     => [
-                'on' => [
+                // 'class' => WebSocketServer::class,
+                'on'    => [
                     // http
                     // SwooleEvent::REQUEST   => \bean(RequestListener::class),
                     // websocket

@@ -7,7 +7,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\WebSocket\Server\Contract\ModuleInterface;
-use Swoft\WebSocket\Server\Exception\ContextLostException;
+use Swoft\WebSocket\Server\Exception\WsContextException;
 use Swoft\WebSocket\Server\Exception\WsServerException;
 use Swoft\WebSocket\Server\Exception\WsRouteException;
 use Swoole\WebSocket\Frame;
@@ -90,7 +90,7 @@ class Dispatcher
      * @param Frame  $frame
      * @throws \InvalidArgumentException
      * @throws \Swoft\WebSocket\Server\Exception\WsRouteException
-     * @throws \Swoft\WebSocket\Server\Exception\ContextLostException
+     * @throws \Swoft\WebSocket\Server\Exception\WsContextException
      */
     public function message(Server $server, Frame $frame)
     {
@@ -98,7 +98,7 @@ class Dispatcher
 
         try {
             if (!$path = WebSocketContext::getMeta('path', $fd)) {
-                throw new ContextLostException("The connection info has lost of the fd#$fd, on message");
+                throw new WsContextException("The connection info has lost of the fd#$fd, on message");
             }
 
             $className = $this->getHandler($path)[0];
@@ -128,13 +128,13 @@ class Dispatcher
      * @param int    $fd
      * @throws \InvalidArgumentException
      * @throws \Swoft\WebSocket\Server\Exception\WsRouteException
-     * @throws \Swoft\WebSocket\Server\Exception\ContextLostException
+     * @throws \Swoft\WebSocket\Server\Exception\WsContextException
      */
     public function close(Server $server, int $fd): void
     {
         try {
             if (!$path = WebSocketContext::getMeta('path', $fd)) {
-                throw new ContextLostException(
+                throw new WsContextException(
                     "The connection info has lost of the fd#$fd, on connection closed"
                 );
             }

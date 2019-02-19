@@ -2,7 +2,9 @@
 
 namespace Swoft\Http\Server\Formatter;
 
+use Psr\Http\Message\ResponseInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Http\Message\ContentType;
 use Swoft\Http\Message\Contract\ResponseFormatterInterface;
 use Swoft\Http\Message\Response;
 
@@ -16,12 +18,7 @@ use Swoft\Http\Message\Response;
 class HtmlResponseFormatter implements ResponseFormatterInterface
 {
     /**
-     * content type
-     */
-    public const CONTENT_TYPE = 'text/html';
-
-    /**
-     * @param Response $response
+     * @param Response|ResponseInterface $response
      *
      * @return Response
      * @throws \ReflectionException
@@ -31,7 +28,7 @@ class HtmlResponseFormatter implements ResponseFormatterInterface
     {
         $response = $response
             ->withoutHeader('Content-Type')
-            ->withAddedHeader('Content-Type', self::CONTENT_TYPE);
+            ->withAddedHeader('Content-Type', ContentType::TEXT);
 
         $data = $response->getData();
         if ($data !== null) {

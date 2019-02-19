@@ -11,7 +11,7 @@ namespace Swoft\WebSocket\Server\Swoole;
 
 use Co\Server as CoServer;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Connection\Connections;
+use Swoft\Session\Session;
 use Swoft\Server\Swoole\CloseInterface;
 use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\WsEvent;
@@ -52,7 +52,7 @@ class CloseListener implements CloseInterface
             'debug');
 
         /** @var Connection $conn */
-        $conn = Connections::get();
+        $conn = Session::get();
 
         if (!$meta = $conn->getMetadata()) {
             \server()->log("onClose: Client #{$fd} connection meta info has been lost");
@@ -71,8 +71,8 @@ class CloseListener implements CloseInterface
         \Swoft::trigger(WsEvent::ON_CLOSE, $fd, $server);
 
         // unbind fd
-        Connections::unbindFd();
+        Session::unbindFd();
         // remove connection
-        Connections::destroy($fd);
+        Session::destroy($fd);
     }
 }

@@ -11,10 +11,10 @@ namespace Swoft\WebSocket\Server\MessageParser;
 use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 
 /**
- * Class DefaultParser
- * @package Swoft\WebSocket\Server\MessageParser
+ * Class TextParser
+ * @since 2.0
  */
-class DefaultParser implements MessageParserInterface
+class TextParser implements MessageParserInterface
 {
     /**
      * Encode data to string.
