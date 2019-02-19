@@ -3,7 +3,6 @@
 
 namespace Swoft\Db;
 
-use mysql_xdevapi\Exception;
 use Swoft\Db\Exception\EntityException;
 
 /**
@@ -23,7 +22,10 @@ class EntityRegister
      *     'entityClassName' => [
      *         'table' => 'table',
      *         'pool' => 'pool',
-     *         'id' => 'attrName'
+     *         'id' => [
+     *             'attr' => 'attrName',
+     *             'incrementing' => true
+     *         ]
      *     ]
      * ]
      */
@@ -76,16 +78,18 @@ class EntityRegister
      *
      * @param string $className
      * @param string $attrName
+     * @param bool incrementing
      *
      * @throws EntityException
      */
-    public static function registerId(string $className, string $attrName): void
+    public static function registerId(string $className, string $attrName, bool $incrementing): void
     {
         if (!isset(self::$entity[$className])) {
             throw new EntityException(sprintf('%s must be `@Entity` to use `@Id`', $className));
         }
 
-        self::$entity[$className]['id'] = $attrName;
+        self::$entity[$className]['id']['attr']         = $attrName;
+        self::$entity[$className]['id']['incrementing'] = $incrementing;
     }
 
     /**
@@ -173,7 +177,7 @@ class EntityRegister
      */
     public static function getId(string $className): string
     {
-        $idAttrName = self::$entity[$className]['id'] ?? '';
+        $idAttrName = self::$entity[$className]['id']['attr'] ?? '';
         if (empty($idAttrName)) {
             throw new EntityException(sprintf('The `@Id` of `%s` entity is not defined', $className));
         }
@@ -186,5 +190,17 @@ class EntityRegister
         }
 
         return $idColumn;
+    }
+
+    /**
+     * Get id is incrementing
+     *
+     * @param string $className
+     *
+     * @return bool
+     */
+    public static function getIdIncrementing(string $className): bool
+    {
+        return self::$entity[$className]['id']['incrementing'] ?? true;
     }
 }
