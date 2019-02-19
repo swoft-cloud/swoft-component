@@ -57,7 +57,7 @@
       "Swoft\\Server\\": "src/server/src/",
       "Swoft\\Stdlib\\": "src/stdlib/src/",
       "Swoft\\Tcp\\Server\\": "src/tcp-server/src/",
-      "Swoft\\Websocket\\Server\\": "src/websocket-server/src/",
+      "Swoft\\WebSocket\\Server\\": "src/websocket-server/src/",
       "Swoft\\Connection\\Pool\\": "src/connection-pool/src/",
       "Swoft\\Db\\": "src/db/src/"
     },

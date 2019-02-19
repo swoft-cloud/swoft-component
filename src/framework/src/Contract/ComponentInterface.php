@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-02
- * Time: 17:31
- */
 
 namespace Swoft\Contract;
 
