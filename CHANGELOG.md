@@ -2,11 +2,29 @@
 
 > 日期时间都是大概的时间点
 
-## 2019.02.10
+## 2019.02.17
 
-framework:
+db(@stelin)
 
-- 调整重命名connection级别的上下文管理基础定义类为session(@inhere)
+- 修改Model 删除无用代码
+
+## 2019.02.17
+
+bean(@stelin)
+
+- 新增trait Prototype/PrototypeInterface
+- 统一使用prototype bean对象，Xxx::new()
+
+## 2019.02.16
+
+db(@stelin)
+
+- 修改QueryBuidler
+- 修改connection
+
+framework(@inhere):
+
+- 调整重命名connection级别的上下文管理基础定义类为session
   - 可以管理 TCP,WS 连接生命周期内的上下文数据
   - 可以管理(类似于浏览器中)一个用户认证后的会话生命周期内的数据管理(HTTP-SESSION)
   - 基于一个唯一ID(比如FD，session_id)隔离和管理数据，是可以夸请求的
