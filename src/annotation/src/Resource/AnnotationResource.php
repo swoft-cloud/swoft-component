@@ -46,7 +46,7 @@ class AnnotationResource extends Resource
     }
 
     /**
-     * Load annoation resource
+     * Load annotation resource
      *
      * @throws \Doctrine\Common\Annotations\AnnotationException
      * @throws \ReflectionException

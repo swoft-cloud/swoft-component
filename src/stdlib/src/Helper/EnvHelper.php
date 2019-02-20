@@ -3,7 +3,7 @@ namespace Swoft\Stdlib\Helper;
 
 /**
  * Env helper
- * 
+ *
  * @since 2.0
  */
 class EnvHelper
@@ -24,6 +24,16 @@ class EnvHelper
      * @return bool
      */
     public static function isWin(): bool
+    {
+        return \stripos(\PHP_OS, 'WIN') === 0;
+    }
+
+    /**
+     * is windows OS
+     *
+     * @return bool
+     */
+    public static function isWindows(): bool
     {
         return \stripos(\PHP_OS, 'WIN') === 0;
     }

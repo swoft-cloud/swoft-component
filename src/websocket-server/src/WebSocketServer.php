@@ -63,7 +63,7 @@ class WebSocketServer extends Server
      * @param bool   $finish
      * @return bool
      */
-    public function push(string $fd, string $data, int $opcode = \WEBSOCKET_OPCODE_TEXT, bool $finish = true): bool
+    public function push(int $fd, string $data, int $opcode = \WEBSOCKET_OPCODE_TEXT, bool $finish = true): bool
     {
         // if (!$this->swooleServer->exist($fd)) {
         if (!$this->swooleServer->isEstablished($fd)) {

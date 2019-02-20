@@ -23,7 +23,7 @@ class AutoLoader extends SwoftComponent
      */
     public function enable(): bool
     {
-        return true;
+        return false;
     }
 
     /**

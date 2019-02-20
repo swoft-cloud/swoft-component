@@ -16,7 +16,7 @@ class DirectoryHelper
      * @param integer $mode
      * @return void
      */
-    public static function make(string $dir, int $mode = 0755)
+    public static function make(string $dir, int $mode = 0755): void
     {
         if (!\file_exists($dir) && !\mkdir($dir, $mode, true) && !\is_dir($dir)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
@@ -26,6 +26,10 @@ class DirectoryHelper
     /**
      * Directory iterator
      *
+     * @param string $path
+     * @param int    $iteratorFlags
+     * @param int    $mode
+     * @param int    $flags
      * @return \RecursiveIteratorIterator
      */
     public static function iterator(
@@ -35,7 +39,7 @@ class DirectoryHelper
         int $flags = 0
     ): \RecursiveIteratorIterator {
         if (empty($path) || !file_exists($path)) {
-            throw new \InvalidArgumentException('File path is not exist!');
+            throw new \InvalidArgumentException('File path is not exist! Path: ' . $path);
         }
         $directoryIterator = new \RecursiveDirectoryIterator($path);
         $iterator          = new \RecursiveIteratorIterator($directoryIterator, $mode, $flags);
@@ -45,7 +49,7 @@ class DirectoryHelper
 
 
     /**
-     * Directory iterator but support filter.
+     * Directory iterator but support filter files.
      * @param string $srcDir
      * @param callable $filter
      * eg: only find php file
@@ -76,7 +80,7 @@ class DirectoryHelper
     ): \RecursiveIteratorIterator
     {
         if (!$srcDir || !\file_exists($srcDir)) {
-            throw new \InvalidArgumentException('Please provide a exists source directory.');
+            throw new \InvalidArgumentException('Please provide a exists source directory. Path:' . $srcDir);
         }
 
         $directory = new \RecursiveDirectoryIterator($srcDir, $flags);
@@ -84,5 +88,4 @@ class DirectoryHelper
 
         return new \RecursiveIteratorIterator($filterIterator);
     }
-
 }
