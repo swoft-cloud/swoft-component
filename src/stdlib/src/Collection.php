@@ -5,6 +5,7 @@ namespace Swoft\Stdlib;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\Prototype;
 use Swoft\Bean\Exception\PrototypeException;
+use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\ArrayHelper;
 
 /**
@@ -1984,7 +1985,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
     /**
      * Get a base Support collection instance from this collection.
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public function toBase()
     {
