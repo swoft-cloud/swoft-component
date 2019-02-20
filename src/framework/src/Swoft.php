@@ -62,7 +62,6 @@ class Swoft
         // Delete alias
         if (!$path) {
             unset(self::$aliases[$alias]);
-
             return;
         }
 

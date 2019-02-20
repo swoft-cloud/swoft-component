@@ -30,10 +30,19 @@ db(@stelin)
 - 修改QueryBuidler
 - 修改connection
 
+framework(@inhere):
+
+- 调整重命名connection级别的上下文管理基础定义类为session
+  - 可以管理 TCP,WS 连接生命周期内的上下文数据
+  - 可以管理(类似于浏览器中)一个用户认证后的会话生命周期内的数据管理(HTTP-SESSION)
+  - 基于一个唯一ID(比如FD，session_id)隔离和管理数据，是可以夸请求的
+
 ## 2019.02.15
 
 - 一些基础性的调整(@inhere)
-- 除了framework, bean 组件外，移除所有组件下的 `Helper/Functions.php` 加载。后面会移除这些文件(@inhere)
+- 除了基础的 bean() config() 等几个方法外，移除其他的全局辅助方法(@inhere)
+  - 除了framework, bean 组件外，移除所有组件下的 `Helper/Functions.php` 加载
+  - 后面会移除这些文件，即后面将不能使用 request() 这样的方法
 - 添加swoole部分核心事件的触发绑定
 - 添加一些重要的server事件的触发绑定
 

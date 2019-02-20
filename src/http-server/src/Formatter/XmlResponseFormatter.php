@@ -5,6 +5,9 @@ namespace Swoft\Http\Server\Formatter;
 
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Http\Message\ContentType;
+use Swoft\Http\Message\Contract\ResponseFormatterInterface;
+use Swoft\Http\Message\Contract\ResponseInterface;
 use Swoft\Http\Message\Response;
 use Swoft\Stdlib\Helper\XmlHelper;
 
@@ -18,12 +21,7 @@ use Swoft\Stdlib\Helper\XmlHelper;
 class XmlResponseFormatter implements ResponseFormatterInterface
 {
     /**
-     * Content type
-     */
-    const CONTENT_TYPE = 'application/xml';
-
-    /**
-     * @param Response $response
+     * @param Response|ResponseInterface $response
      *
      * @return Response
      * @throws \ReflectionException
@@ -32,7 +30,7 @@ class XmlResponseFormatter implements ResponseFormatterInterface
     public function format(Response $response): Response
     {
         $response = $response->withoutHeader('Content-Type')
-            ->withAddedHeader('Content-Type', self::CONTENT_TYPE);
+            ->withAddedHeader('Content-Type', ContentType::XML);
 
         $data = $response->getData();
 

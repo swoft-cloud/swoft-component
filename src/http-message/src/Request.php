@@ -1,11 +1,10 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Http\Message;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
-use Swoft\Http\Concern\MessageTrait;
+use Swoft\Http\Message\Concern\MessageTrait;
 
 /**
  * Class Request

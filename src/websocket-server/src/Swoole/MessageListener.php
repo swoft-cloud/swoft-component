@@ -2,12 +2,11 @@
 
 namespace Swoft\WebSocket\Server\Swoole;
 
-
 use Co\Websocket\Frame;
 use Co\Websocket\Server;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Co;
-use Swoft\Connection\Connections;
+use Swoft\Session\Session;
 use Swoft\Context\Context;
 use Swoft\Server\Swoole\MessageInterface;
 use Swoft\WebSocket\Server\Exception\WsServerException;
@@ -41,7 +40,7 @@ class MessageListener implements MessageInterface
         // storage context
         Context::set($ctx);
         // init fd and coId mapping
-        Connections::bindFd($fd);
+        Session::bindFd($fd);
 
         \Swoft::trigger(WsEvent::ON_MESSAGE, null, $server, $frame);
 
@@ -51,7 +50,7 @@ class MessageListener implements MessageInterface
         \bean('wsDispatcher')->message($server, $frame);
 
         try {
-            $conn = Connections::mustGet();
+            $conn = Session::mustGet();
             // get request path
             // $path = $conn->getMetaValue('path');
             $path = $conn->getRequest()->getUri()->getPath();
@@ -72,6 +71,6 @@ class MessageListener implements MessageInterface
         // destroy context
         Context::destroy();
         // delete coId from fd mapping
-        Connections::unbindFd();
+        Session::unbindFd();
     }
 }

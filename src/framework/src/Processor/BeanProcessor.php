@@ -5,7 +5,7 @@ namespace Swoft\Processor;
 use Swoft\Annotation\AnnotationRegister;
 use Swoft\Bean\BeanFactory;
 use Swoft\BeanHandler;
-use Swoft\DefinitionInterface;
+use Swoft\Contract\DefinitionInterface;
 use Swoft\Stdlib\Helper\ArrayHelper;
 
 /**
@@ -15,6 +15,10 @@ class BeanProcessor extends Processor
 {
     /**
      * Handle bean
+     *
+     * @return bool
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function handle(): bool
     {

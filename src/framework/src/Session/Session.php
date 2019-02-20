@@ -1,22 +1,16 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-12
- * Time: 13:11
- */
+<?php declare(strict_types=1);
 
-namespace Swoft\Connection;
+namespace Swoft\Session;
 
 use Swoft\Co;
+use Swoft\Exception\ConnectionException;
 use Swoft\WebSocket\Server\Connection;
-use Swoft\WebSocket\Server\Exception\WsServerException;
 
 /**
- * Class Connections
- * @package Swoft\Connection
+ * Class Session - sessions manage
+ * @since 2.0
  */
-class Connections
+class Session
 {
     /**
      * The map for coroutine id to fd
@@ -28,13 +22,13 @@ class Connections
     /**
      * Connection list
      *
-     * @var ConnectionInterface[]
+     * @var SessionInterface[]
      *
      * @example
      * [
-     *    'fd' => ConnectionInterface,
-     *    'fd2' => ConnectionInterface,
-     *    'fd3' => ConnectionInterface,
+     *    'fd'  => SessionInterface,
+     *    'fd2' => SessionInterface,
+     *    'fd3' => SessionInterface,
      * ]
      */
     private static $connections = [];
@@ -86,9 +80,9 @@ class Connections
      * Get connection by FD
      *
      * @param int $fd If not specified, return the current corresponding connection
-     * @return ConnectionInterface|Connection
+     * @return SessionInterface|Connection
      */
-    public static function get(int $fd = -1): ?ConnectionInterface
+    public static function get(int $fd = -1): ?SessionInterface
     {
         $fd = $fd > -1 ? $fd : self::getBoundedFd();
 
@@ -99,9 +93,9 @@ class Connections
      * Get connection by FD. if not found will throw exception.
      *
      * @param int $fd
-     * @return ConnectionInterface|Connection
+     * @return SessionInterface|Connection
      */
-    public static function mustGet(int $fd = -1): ConnectionInterface
+    public static function mustGet(int $fd = -1): SessionInterface
     {
         $fd = $fd > -1 ? $fd : self::getBoundedFd();
 
@@ -109,16 +103,16 @@ class Connections
             return self::$connections[$fd];
         }
 
-        throw new WsServerException('connection information has been lost of the FD: ' . $fd);
+        throw new ConnectionException('connection information has been lost of the FD: ' . $fd);
     }
 
     /**
      * Set connection
      *
-     * @param int                 $fd On websocket server, context bind by fd.
-     * @param ConnectionInterface $connection
+     * @param int              $fd On websocket server, context bind by fd.
+     * @param SessionInterface $connection
      */
-    public static function set(int $fd, ConnectionInterface $connection): void
+    public static function set(int $fd, SessionInterface $connection): void
     {
         self::$connections[$fd] = $connection;
     }
@@ -132,9 +126,8 @@ class Connections
         $fd = $fd > -1 ? $fd : self::getBoundedFd();
 
         if (isset(self::$connections[$fd])) {
-            $conn = self::$connections[$fd];
-            $conn->clear();
-
+            // clear self data.
+            self::$connections[$fd]->clear();
             unset(self::$connections[$fd], $conn);
         }
     }

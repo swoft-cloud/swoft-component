@@ -2,7 +2,10 @@
 
 namespace Swoft\Http\Server\Formatter;
 
+use Psr\Http\Message\ResponseInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Http\Message\ContentType;
+use Swoft\Http\Message\Contract\ResponseFormatterInterface;
 use Swoft\Http\Message\Response;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\JsonHelper;
@@ -17,12 +20,7 @@ use Swoft\Stdlib\Helper\JsonHelper;
 class JsonResponseFormatter implements ResponseFormatterInterface
 {
     /**
-     * Content type
-     */
-    public const CONTENT_TYPE = 'application/json';
-
-    /**
-     * @param Response $response
+     * @param Response|ResponseInterface $response
      *
      * @return Response
      * @throws \ReflectionException
@@ -32,7 +30,7 @@ class JsonResponseFormatter implements ResponseFormatterInterface
     {
         $response = $response
             ->withoutHeader('Content-Type')
-            ->withAddedHeader('Content-Type', self::CONTENT_TYPE);
+            ->withAddedHeader('Content-Type', ContentType::JSON);
 
         $data = $response->getData();
 

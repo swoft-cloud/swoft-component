@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Context;
 
 use Swoft\Co;
+use Swoft\Exception\ContextException;
 use Swoft\Http\Server\HttpContext;
-use Swoft\WebSocket\Server\Connection;
+use Swoft\WebSocket\Server\WsContext;
 
 /**
  * Class Context - request context manager
@@ -31,13 +31,29 @@ class Context
     /**
      * Get context
      *
-     * @return ContextInterface|HttpContext|Connection
+     * @return ContextInterface|HttpContext|WsContext
      */
     public static function get(): ?ContextInterface
     {
         $tid = Co::tid();
 
         return self::$context[$tid] ?? null;
+    }
+
+    /**
+     * Get context by coID, if not found will throw exception.
+     *
+     * @return ContextInterface|HttpContext|WsContext
+     */
+    public static function mustGet(): ContextInterface
+    {
+        $tid = Co::tid();
+
+        if (isset(self::$context[$tid])) {
+            return self::$context[$tid];
+        }
+
+        throw new ContextException('context information has been lost of the coID: ' . $tid);
     }
 
     /**
@@ -60,10 +76,9 @@ class Context
         $tid = Co::tid();
 
         if (isset(self::$context[$tid])) {
-            $ctx = self::$context[$tid];
-            $ctx->clear();
-
-            unset(self::$context[$tid], $ctx);
+            // clear self data.
+            self::$context[$tid]->clear();
+            unset(self::$context[$tid]);
         }
     }
 }

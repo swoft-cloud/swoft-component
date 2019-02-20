@@ -42,4 +42,15 @@ trait DataPropertyTrait
     {
         return ArrayHelper::get($this->data, $key, $default);
     }
+
+    /**
+     * Set multi value to context
+     *
+     * @param array $map
+     * [key => value]
+     */
+    public function setMulti(array $map): void
+    {
+        $this->data = \array_merge($this->data, $map);
+    }
 }

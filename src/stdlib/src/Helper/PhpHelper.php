@@ -52,4 +52,46 @@ class PhpHelper
     {
         return self::call($cb, ...$args);
     }
+
+
+    /**
+     * dump vars
+     * @param array ...$args
+     * @return string
+     */
+    public static function dumpVars(...$args): string
+    {
+        \ob_start();
+        \var_dump(...$args);
+        $string = \ob_get_clean();
+
+        return \preg_replace("/=>\n\s+/", '=> ', $string);
+    }
+
+    /**
+     * print vars
+     * @param array ...$args
+     * @return string
+     */
+    public static function printVars(...$args): string
+    {
+        $string = '';
+
+        foreach ($args as $arg) {
+            $string .= print_r($arg, 1) . \PHP_EOL;
+        }
+
+        return \preg_replace("/Array\n\s+\(/", 'Array (', $string);
+    }
+
+    /**
+     * @param mixed $var
+     * @return string
+     */
+    public static function exportVar($var): string
+    {
+        $string = \var_export($var, true);
+
+        return \preg_replace('/=>\s+\n\s+array \(/', '=> array (', $string);
+    }
 }

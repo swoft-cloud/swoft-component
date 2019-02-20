@@ -1,17 +1,11 @@
 <?php declare(strict_types=1);
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-04
- * Time: 13:01
- */
 
 namespace Swoft\WebSocket\Server\Swoole;
 
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Co;
-use Swoft\Connection\Connections;
+use Swoft\Session\Session;
 use Swoft\Http\Message\Request as Psr7Request;
 use Swoft\Server\Swoole\HandShakeInterface;
 use Swoft\WebSocket\Server\Connection;
@@ -52,7 +46,7 @@ class HandShakeListener implements HandShakeInterface
         }
 
         // bind fd
-        Connections::bindFd($fd);
+        Session::bindFd($fd);
 
         // Initialize psr7 Request and Response and metadata
         $cid = Co::tid();
@@ -67,7 +61,7 @@ class HandShakeListener implements HandShakeInterface
         $psr7Res = new \Swoft\Http\Message\Response($response);
 
         // bind connection
-        Connections::set($fd, $conn);
+        Session::set($fd, $conn);
 
         \Swoft::trigger(WsEvent::ON_HANDSHAKE, $fd, $request, $response);
 
@@ -84,7 +78,7 @@ class HandShakeListener implements HandShakeInterface
             \server()->log("Client #$fd handshake check failed, request path {$meta['path']}");
             $psr7Res->send();
 
-            Connections::unbindFd();
+            Session::unbindFd();
             // NOTICE: Rejecting a handshake still triggers a close event.
             return false;
         }
@@ -116,7 +110,7 @@ class HandShakeListener implements HandShakeInterface
         });
 
         // unbind fd
-        Connections::unbindFd();
+        Session::unbindFd();
         return true;
     }
 
