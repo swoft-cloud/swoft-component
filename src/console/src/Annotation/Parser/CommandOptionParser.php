@@ -18,7 +18,7 @@ class CommandOptionParser extends Parser
     /**
      * Parse object
      *
-     * @param int            $type Class or Method or Property
+     * @param int           $type Class or Method or Property
      * @param CommandOption $annotation Annotation object
      *
      * @return array
@@ -33,11 +33,14 @@ class CommandOptionParser extends Parser
         }
 
         // add route info for controller action
-        CommandParser::bindOption($this->className, [
-            'command' => $annotation->getName(),
+        CommandParser::bindOption($this->className, $this->methodName, $annotation->getName(), [
             'method'  => $this->methodName,
-            'alias'   => $annotation->getAlias(),
+            'name'    => $annotation->getName(),
+            'short'   => $annotation->getShort(),
             'desc'    => $annotation->getDesc(),
+            'mode'    => $annotation->getMode(),
+            'type'    => $annotation->getType(),
+            'default' => $annotation->getDefault(),
         ]);
 
         return [];

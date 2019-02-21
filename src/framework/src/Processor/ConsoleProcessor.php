@@ -16,7 +16,6 @@ class ConsoleProcessor extends Processor
      * @return bool
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Server\Exception\ServerException
      */
     public function handle(): bool
     {
@@ -31,8 +30,8 @@ class ConsoleProcessor extends Processor
         CommandParser::registerTo($router);
 
         /* @var HttpServer $httpServer */
-        $httpServer = bean('httpServer');
-        $httpServer->start();
+        // $httpServer = bean('httpServer');
+        // $httpServer->start();
 
         return $this->application->afterConsole();
     }

@@ -48,15 +48,38 @@ class Router //implements HandlerMappingInterface
     private $delimiter = ':';
 
     /**
+     * Use for render help info panel
+     *
+     * @var int
+     */
+    private $keyWidth = 12;
+
+    /**
      * @var array
      * [
-     *  route => [
+     *  // route ID => route info.
+     *  'group:cmd' => [
      *      'handler' => [command class, method],
      *      'options' => [],
      *  ]
      * ]
      */
     private $routes = [];
+
+    /**
+     * Will record the relationship data of group and commands
+     *
+     * @var array
+     * [
+     *  group1 => [
+     *      desc => 'description',
+     *      names => [cmd1, cmd2],
+     *      aliases => [],
+     *  ],
+     *  ...
+     * ]
+     */
+    private $groups = [];
 
     /**
      * @var array [alias => real name]
@@ -76,34 +99,16 @@ class Router //implements HandlerMappingInterface
      */
     public function map(string $group, string $command, $handler, array $options = []): void
     {
-        $route = $this->buildRoute($group, $command);
+        $cmdID = $this->buildCommandID($group, $command);
 
-        if ($alias = $options['alias'] ?? '') {
-            $this->setCommandAlias($command, $alias);
+        if ($aliases = $options['aliases'] ?? []) {
+            $this->setCommandAliases($command, $aliases);
         }
 
-        $this->routes[$route] = [
+        $this->routes[$cmdID] = [
             'handler' => $handler,
             'options' => $options,
         ];
-    }
-
-    /**
-     * @param string $group
-     * @param string $alias
-     */
-    public function setGroupAlias(string $group, string $alias): void
-    {
-        $this->groupAliases[$alias] = $group;
-    }
-
-    /**
-     * @param string $command
-     * @param string $alias
-     */
-    public function setCommandAlias(string $command, string $alias): void
-    {
-        $this->commandAliases[$alias] = $command;
     }
 
     /**
@@ -115,10 +120,10 @@ class Router //implements HandlerMappingInterface
     public function match(...$params): array
     {
         [$group, $command] = $this->getGroupAndCommand($params[0]);
-        // build
-        $route = $this->buildRoute($group, $command);
+        // build command ID
+        $commandID = $this->buildCommandID($group, $command);
 
-        return $this->routes[$route] ?? [];
+        return $this->routes[$commandID] ?? [];
     }
 
     /**
@@ -144,11 +149,32 @@ class Router //implements HandlerMappingInterface
             return [];
         }
 
-        if (empty($command)) {
-            $command = $this->defaultCommand;
-        }
+        return [$group, $command ?: $this->defaultCommand];
+    }
 
-        return [$group, $command];
+    /**
+     * @param callable $cmdFunc
+     * @param callable $grpFunc
+     */
+    public function sortedEach(callable $cmdFunc, callable $grpFunc): void
+    {
+        $groups = $this->groups;
+        \ksort($groups);
+
+        foreach ($groups as $group => $info) {
+            $names = $info['names'];
+            \ksort($names);
+            unset($info['names']);
+
+            // call group handle func
+            $grpFunc($group, $info);
+
+            foreach ($names as $name) {
+                $id = $this->buildCommandID($group, $name);
+                // call command handle func
+                $cmdFunc($id, $this->routes[$id]);
+            }
+        }
     }
 
     /**
@@ -179,17 +205,62 @@ class Router //implements HandlerMappingInterface
     }
 
     /**
+     * command ID = group + : + command
      * @param string $group
      * @param string $command
      * @return string
      */
-    public function buildRoute(string $group, string $command): string
+    public function buildCommandID(string $group, string $command): string
     {
         if ($group) {
             return \sprintf('%s%s%s', $group, $this->delimiter, $command);
         }
 
         return $command;
+    }
+
+    /**
+     * @param string $group
+     * @param array  $aliases
+     */
+    public function setGroupAliases(string $group, array $aliases): void
+    {
+        foreach ($aliases as $alias) {
+            $this->setGroupAlias($group, $alias);
+        }
+    }
+
+    /**
+     * @param string $group
+     * @param string $alias
+     */
+    public function setGroupAlias(string $group, string $alias): void
+    {
+        if ($group && $alias) {
+            $this->groupAliases[$alias] = $group;
+        }
+    }
+
+    /**
+     * @param string $command
+     * @param array  $aliases
+     */
+    public function setCommandAliases(string $command, array $aliases): void
+    {
+        foreach ($aliases as $alias) {
+            $this->setCommandAlias($command, $alias);
+        }
+    }
+
+    /**
+     * @param string $command
+     * @param string $alias
+     */
+    public function setCommandAlias(string $command, string $alias): void
+    {
+        if ($command && $alias) {
+            $this->commandAliases[$alias] = $command;
+        }
     }
 
     /**
@@ -230,5 +301,37 @@ class Router //implements HandlerMappingInterface
     public function getRoutes(): array
     {
         return $this->routes;
+    }
+
+    /**
+     * @return array
+     */
+    public function getGroups(): array
+    {
+        return $this->groups;
+    }
+
+    /**
+     * @param array $groups
+     */
+    public function setGroups(array $groups): void
+    {
+        $this->groups = $groups;
+    }
+
+    /**
+     * @return int
+     */
+    public function getKeyWidth(): int
+    {
+        return $this->keyWidth;
+    }
+
+    /**
+     * @param int $keyWidth
+     */
+    public function setKeyWidth(int $keyWidth): void
+    {
+        $this->keyWidth = $keyWidth;
     }
 }
