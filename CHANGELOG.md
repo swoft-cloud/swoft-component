@@ -2,6 +2,14 @@
 
 > 日期时间都是大概的时间点
 
+## 2019.02.20
+
+db(@stelin)
+
+- 整理Model
+- 整理Builder
+- 整理HasAttributes
+
 ## 2019.02.17
 
 db(@stelin)

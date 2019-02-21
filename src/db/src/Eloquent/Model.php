@@ -23,24 +23,12 @@ use Swoft\Stdlib\Jsonable;
  * Class Model
  *
  * @since 2.0
+ *
+ * @mixin Builder
  */
 abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializable
 {
     use HidesAttributes, HasAttributes;
-
-    /**
-     * The name of the "created at" column.
-     *
-     * @var string
-     */
-    const CREATED_AT = 'created_at';
-
-    /**
-     * The name of the "updated at" column.
-     *
-     * @var string
-     */
-    const UPDATED_AT = 'updated_at';
 
     /**
      * The number of models to return for pagination.
@@ -168,11 +156,13 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
     /**
      * Get all of the models from the database.
      *
-     * @param  array $columns
+     * @param array $columns
      *
      * @return Collection
-     * @throws PrototypeException
      * @throws EloquentException
+     * @throws EntityException
+     * @throws PoolException
+     * @throws PrototypeException
      */
     public static function all(array $columns = ['*']): Collection
     {
@@ -255,7 +245,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
     {
         $this->{$column} = $this->{$column} + ($method === 'increment' ? $amount : $amount * -1);
 
-        $this->forceFill($extra);
+        $this->fill($extra);
 
         $this->syncOriginalAttribute($column);
     }
@@ -263,24 +253,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
     /**
      * Update the model in the database.
      *
-     * @param  array $attributes
-     * @param  array $options
-     *
-     * @return bool
-     */
-    public function update(array $attributes = [], array $options = [])
-    {
-        if (!$this->exists) {
-            return false;
-        }
-
-        return $this->fill($attributes)->save($options);
-    }
-
-    /**
-     * Save the model to the database.
-     *
-     * @param  array $options
+     * @param array $attributes
      *
      * @return bool
      * @throws EntityException
@@ -288,7 +261,25 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      * @throws PrototypeException
      * @throws QueryException
      */
-    public function save(array $options = [])
+    public function update(array $attributes = [])
+    {
+        if (!$this->exists) {
+            return false;
+        }
+
+        return $this->fill($attributes)->save();
+    }
+
+    /**
+     * Save the model to the database.
+     *
+     * @return bool
+     * @throws EntityException
+     * @throws PoolException
+     * @throws PrototypeException
+     * @throws QueryException
+     */
+    public function save()
     {
         $query = $this->newModelQuery();
 
@@ -317,7 +308,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
         // that is done. We will call the "saved" method here to run any actions
         // we need to happen after a model gets successfully saved right here.
         if ($saved) {
-            $this->finishSave($options);
+            $this->finishSave();
         }
 
         return $saved;
@@ -335,18 +326,16 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
     public function saveOrFail(array $options = [])
     {
         return $this->getConnection()->transaction(function () use ($options) {
-            return $this->save($options);
+            return $this->save();
         });
     }
 
     /**
      * Perform any actions that are necessary after the model is saved.
      *
-     * @param  array $options
-     *
      * @return void
      */
-    protected function finishSave(array $options)
+    protected function finishSave()
     {
         // fire saved
 
@@ -359,17 +348,11 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      * @param  Builder $query
      *
      * @return bool
+     * @throws EntityException
      */
     protected function performUpdate(Builder $query)
     {
         // fire updating
-
-        // First we need to create a fresh query instance and touch the creation and
-        // update timestamp on the model which are maintained by us for developer
-        // convenience. Then we will just continue saving the model instances.
-        if ($this->usesTimestamps()) {
-            $this->updateTimestamps();
-        }
 
         // Once we have run the update operation, we will fire the "updated" event for
         // this model instance. This will allow developers to hook into these after
@@ -393,6 +376,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      * @param  Builder $query
      *
      * @return Builder
+     * @throws EntityException
      */
     protected function setKeysForSaveQuery(Builder $query)
     {
@@ -405,6 +389,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      * Get the primary key value for a save query.
      *
      * @return mixed
+     * @throws EntityException
      */
     protected function getKeyForSaveQuery()
     {
@@ -419,17 +404,11 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return bool
      * @throws QueryException
+     * @throws EntityException
      */
     protected function performInsert(Builder $query)
     {
         // fire creating
-
-        // First we'll need to create a fresh query instance and touch the creation and
-        // update timestamps on this model, which are maintained by us for developer
-        // convenience. After, we will just continue saving these model instances.
-        if ($this->usesTimestamps()) {
-            $this->updateTimestamps();
-        }
 
         // If the model has an incrementing key, we can use the "insertGetId" method on
         // the query builder, which will give us back the final inserted ID for this
@@ -456,8 +435,6 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
         // during the event. This will allow them to do so and run an update here.
         $this->exists = true;
 
-        $this->wasRecentlyCreated = true;
-
         // fire created
         return true;
     }
@@ -470,6 +447,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return void
      * @throws QueryException
+     * @throws EntityException
      */
     protected function insertAndSetId(Builder $query, $attributes)
     {
@@ -699,25 +677,6 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
     }
 
     /**
-     * Clone the model into a new, non-existing instance.
-     *
-     * @param  array|null $except
-     *
-     * @return static
-     * @throws EloquentException
-     */
-    public function replicate(array $except = null)
-    {
-
-        $attributes = $this->attributes;
-
-        $instance = static::new();
-        $instance->setRawAttributes($attributes);
-
-        return $instance;
-    }
-
-    /**
      * Determine if two models have the same ID and belong to the same table.
      *
      * @param  Model $model
@@ -725,7 +684,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      * @return bool
      * @throws EntityException
      */
-    public function is(Model $model):bool
+    public function is(Model $model): bool
     {
         return !is_null($model) &&
             $this->getKey() === $model->getKey() &&
@@ -740,7 +699,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      * @return bool
      * @throws EntityException
      */
-    public function isNot(Model$model):bool
+    public function isNot(Model $model): bool
     {
         return !$this->is($model);
     }
@@ -773,24 +732,11 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      * Get the primary key for the model.
      *
      * @return string
+     * @throws EntityException
      */
     public function getKeyName()
     {
-        return $this->primaryKey;
-    }
-
-    /**
-     * Set the primary key for the model.
-     *
-     * @param  string $key
-     *
-     * @return $this
-     */
-    public function setKeyName($key)
-    {
-        $this->primaryKey = $key;
-
-        return $this;
+        return EntityRegister::getId(static::class);
     }
 
     /**
@@ -805,57 +751,20 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
     }
 
     /**
-     * Get the auto-incrementing key type.
-     *
-     * @return string
-     */
-    public function getKeyType()
-    {
-        return $this->keyType;
-    }
-
-    /**
-     * Set the data type for the primary key.
-     *
-     * @param  string $type
-     *
-     * @return $this
-     */
-    public function setKeyType($type)
-    {
-        $this->keyType = $type;
-
-        return $this;
-    }
-
-    /**
      * Get the value indicating whether the IDs are incrementing.
      *
      * @return bool
      */
     public function getIncrementing()
     {
-        return $this->incrementing;
-    }
-
-    /**
-     * Set whether IDs are incrementing.
-     *
-     * @param  bool $value
-     *
-     * @return $this
-     */
-    public function setIncrementing($value)
-    {
-        $this->incrementing = $value;
-
-        return $this;
+        return EntityRegister::getIdIncrementing(static::class);
     }
 
     /**
      * Get the value of the model's primary key.
      *
      * @return mixed
+     * @throws EntityException
      */
     public function getKey()
     {
@@ -863,19 +772,10 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
     }
 
     /**
-     * Get the value of the model's route key.
-     *
-     * @return mixed
-     */
-    public function getRouteKey()
-    {
-        return $this->getAttribute($this->getRouteKeyName());
-    }
-
-    /**
      * Get the route key for the model.
      *
      * @return string
+     * @throws EntityException
      */
     public function getRouteKeyName()
     {
@@ -977,7 +877,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      */
     public function offsetUnset($offset)
     {
-        unset($this->attributes[$offset], $this->relations[$offset]);
+        unset($this->attributes[$offset]);
     }
 
     /**
@@ -1007,10 +907,13 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
     /**
      * Handle dynamic method calls into the model.
      *
-     * @param  string $method
-     * @param  array  $parameters
+     * @param $method
+     * @param $parameters
      *
      * @return mixed
+     * @throws EntityException
+     * @throws PoolException
+     * @throws PrototypeException
      */
     public function __call($method, $parameters)
     {
@@ -1049,7 +952,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
     {
         try {
             return $object->{$method}(...$parameters);
-        } catch (\Error | \BadMethodCallException $e) {
+        } catch (\Exception | \BadMethodCallException $e) {
             $pattern = '~^Call to undefined method (?P<class>[^:]+)::(?P<method>[^\(]+)\(\)$~';
 
             if (!preg_match($pattern, $e->getMessage(), $matches)) {

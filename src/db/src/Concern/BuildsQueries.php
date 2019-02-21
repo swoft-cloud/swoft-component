@@ -4,6 +4,7 @@
 namespace Swoft\Db\Concern;
 
 use Swoft\Db\Eloquent\Model;
+use Swoft\Db\Query\Builder;
 
 /**
  * Class BuildsQueries
@@ -15,8 +16,9 @@ trait BuildsQueries
     /**
      * Chunk the results of the query.
      *
-     * @param  int  $count
-     * @param  callable  $callback
+     * @param  int      $count
+     * @param  callable $callback
+     *
      * @return bool
      */
     public function chunk($count, callable $callback)
@@ -55,8 +57,9 @@ trait BuildsQueries
     /**
      * Execute a callback over each item while chunking.
      *
-     * @param  callable  $callback
-     * @param  int  $count
+     * @param  callable $callback
+     * @param  int      $count
+     *
      * @return bool
      */
     public function each(callable $callback, $count = 1000)
@@ -73,7 +76,8 @@ trait BuildsQueries
     /**
      * Execute the query and get the first result.
      *
-     * @param  array  $columns
+     * @param  array $columns
+     *
      * @return Model|object|static|null
      */
     public function first($columns = ['*'])
@@ -84,9 +88,10 @@ trait BuildsQueries
     /**
      * Apply the callback's query changes if the given "value" is true.
      *
-     * @param  mixed  $value
-     * @param  callable  $callback
-     * @param  callable  $default
+     * @param  mixed    $value
+     * @param  callable $callback
+     * @param  callable $default
+     *
      * @return mixed|$this
      */
     public function when($value, $callback, $default = null)
@@ -103,8 +108,9 @@ trait BuildsQueries
     /**
      * Pass the query to a given callback.
      *
-     * @param  \Closure  $callback
-     * @return \Illuminate\Database\Query\Builder
+     * @param  \Closure $callback
+     *
+     * @return Builder
      */
     public function tap($callback)
     {
@@ -114,52 +120,20 @@ trait BuildsQueries
     /**
      * Apply the callback's query changes if the given "value" is false.
      *
-     * @param  mixed  $value
-     * @param  callable  $callback
-     * @param  callable  $default
+     * @param  mixed    $value
+     * @param  callable $callback
+     * @param  callable $default
+     *
      * @return mixed|$this
      */
     public function unless($value, $callback, $default = null)
     {
-        if (! $value) {
+        if (!$value) {
             return $callback($this, $value) ?: $this;
         } elseif ($default) {
             return $default($this, $value) ?: $this;
         }
 
         return $this;
-    }
-
-    /**
-     * Create a new length-aware paginator instance.
-     *
-     * @param  \Illuminate\Support\Collection  $items
-     * @param  int  $total
-     * @param  int  $perPage
-     * @param  int  $currentPage
-     * @param  array  $options
-     * @return \Illuminate\Pagination\LengthAwarePaginator
-     */
-    protected function paginator($items, $total, $perPage, $currentPage, $options)
-    {
-        return Container::getInstance()->makeWith(LengthAwarePaginator::class, compact(
-            'items', 'total', 'perPage', 'currentPage', 'options'
-        ));
-    }
-
-    /**
-     * Create a new simple paginator instance.
-     *
-     * @param  \Illuminate\Support\Collection  $items
-     * @param  int $perPage
-     * @param  int $currentPage
-     * @param  array  $options
-     * @return \Illuminate\Pagination\Paginator
-     */
-    protected function simplePaginator($items, $perPage, $currentPage, $options)
-    {
-        return Container::getInstance()->makeWith(Paginator::class, compact(
-            'items', 'perPage', 'currentPage', 'options'
-        ));
     }
 }
