@@ -95,7 +95,7 @@ class StringHelper
      *
      * @return bool
      */
-    public static function contains($haystack, $needles)
+    public static function contains($haystack, $needles): bool
     {
         foreach ((array)$needles as $needle) {
             if ($needle != '' && strpos($haystack, $needle) !== false) {
@@ -114,7 +114,7 @@ class StringHelper
      *
      * @return bool
      */
-    public static function endsWith($haystack, $needles)
+    public static function endsWith($haystack, $needles): bool
     {
         foreach ((array)$needles as $needle) {
             if ((string)$needle === substr($haystack, -strlen($needle))) {
@@ -133,7 +133,7 @@ class StringHelper
      *
      * @return string
      */
-    public static function finish($value, $cap)
+    public static function finish($value, $cap): string
     {
         $quoted = preg_quote($cap, '/');
 
@@ -148,7 +148,7 @@ class StringHelper
      *
      * @return bool
      */
-    public static function is($pattern, $value)
+    public static function is($pattern, $value): bool
     {
         if ($pattern == $value) {
             return true;
@@ -171,7 +171,7 @@ class StringHelper
      *
      * @return int
      */
-    public static function length($value)
+    public static function length($value): int
     {
         return mb_strlen($value);
     }
@@ -190,7 +190,7 @@ class StringHelper
      *
      * @return string
      */
-    public static function limit($value, $limit = 100, $end = '...')
+    public static function limit($value, $limit = 100, $end = '...'): string
     {
         if (mb_strwidth($value, 'UTF-8') <= $limit) {
             return $value;
@@ -206,7 +206,7 @@ class StringHelper
      *
      * @return string
      */
-    public static function lower($value)
+    public static function lower($value): string
     {
         return mb_strtolower($value, 'UTF-8');
     }
@@ -220,7 +220,7 @@ class StringHelper
      *
      * @return string
      */
-    public static function words($value, $words = 100, $end = '...')
+    public static function words($value, $words = 100, $end = '...'): string
     {
         preg_match('/^\s*+(?:\S++\s*+){1,' . $words . '}/u', $value, $matches);
 
@@ -239,7 +239,7 @@ class StringHelper
      *
      * @return array
      */
-    public static function parseCallback($callback, $default)
+    public static function parseCallback($callback, $default): array
     {
         return static::contains($callback, '@') ? explode('@', $callback, 2) : [$callback, $default];
     }
@@ -252,7 +252,7 @@ class StringHelper
      * @return string
      * @throws \RuntimeException
      */
-    public static function random($length = 16)
+    public static function random($length = 16): string
     {
         $string = '';
 
@@ -276,7 +276,7 @@ class StringHelper
      * @throws \RuntimeException
      * @deprecated since version 5.2. Use random_bytes instead.
      */
-    public static function randomBytes($length = 16)
+    public static function randomBytes($length = 16): string
     {
         if (PHP_MAJOR_VERSION >= 7 || defined('RANDOM_COMPAT_READ_BUFFER')) {
             $bytes = random_bytes($length);
@@ -301,7 +301,7 @@ class StringHelper
      *
      * @return string
      */
-    public static function quickRandom($length = 16)
+    public static function quickRandom($length = 16): string
     {
         $pool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -319,7 +319,7 @@ class StringHelper
      * @return bool
      * @deprecated since version 5.2. Use hash_equals instead.
      */
-    public static function equals($knownString, $userInput)
+    public static function equals($knownString, $userInput): bool
     {
         return hash_equals($knownString, $userInput);
     }
@@ -333,7 +333,7 @@ class StringHelper
      *
      * @return string
      */
-    public static function replaceFirst($search, $replace, $subject)
+    public static function replaceFirst($search, $replace, $subject): string
     {
         $position = strpos($subject, $search);
 
@@ -353,7 +353,7 @@ class StringHelper
      *
      * @return string
      */
-    public static function replaceLast($search, $replace, $subject)
+    public static function replaceLast($search, $replace, $subject): string
     {
         $position = strrpos($subject, $search);
 
@@ -371,7 +371,7 @@ class StringHelper
      *
      * @return string
      */
-    public static function upper($value)
+    public static function upper($value): string
     {
         return mb_strtoupper($value, 'UTF-8');
     }
@@ -383,7 +383,7 @@ class StringHelper
      *
      * @return string
      */
-    public static function title($value)
+    public static function title($value): string
     {
         return mb_convert_case($value, MB_CASE_TITLE, 'UTF-8');
     }
@@ -396,7 +396,7 @@ class StringHelper
      *
      * @return string
      */
-    public static function slug($title, $separator = '-')
+    public static function slug($title, $separator = '-'): string
     {
         $title = static::ascii($title);
 
@@ -422,7 +422,7 @@ class StringHelper
      *
      * @return string
      */
-    public static function snake($value, $delimiter = '_')
+    public static function snake($value, $delimiter = '_'): string
     {
         $key = $value . $delimiter;
 
@@ -447,7 +447,7 @@ class StringHelper
      *
      * @return bool
      */
-    public static function startsWith($haystack, $needles)
+    public static function startsWith($haystack, $needles): bool
     {
         foreach ((array)$needles as $needle) {
             if ($needle != '' && strpos($haystack, $needle) === 0) {
@@ -465,7 +465,7 @@ class StringHelper
      *
      * @return string
      */
-    public static function studly($value)
+    public static function studly($value): string
     {
         $key = $value;
 
@@ -487,7 +487,7 @@ class StringHelper
      *
      * @return string
      */
-    public static function substr($string, $start, $length = null)
+    public static function substr(string $string, $start, $length = null): string
     {
         return mb_substr($string, $start, $length, 'UTF-8');
     }
@@ -499,12 +499,12 @@ class StringHelper
      *
      * @return string
      */
-    public static function ucfirst($string)
+    public static function ucfirst(string $string): string
     {
         return static::upper(static::substr($string, 0, 1)) . static::substr($string, 1);
     }
 
-    public static function trim($str, $prefix = '', $suffix = '')
+    public static function trim($str, $prefix = '', $suffix = ''): void
     {
     }
 
@@ -552,7 +552,7 @@ class StringHelper
      *
      * @return  string
      */
-    public static function randomString($type = 'alnum', $length = 8)
+    public static function randomString($type = 'alnum', $length = 8): string
     {
         $utf8 = false;
 
@@ -593,17 +593,17 @@ class StringHelper
         $str = '';
         for ($i = 0; $i < $length; $i++) {
             // Select a random character from the pool and add it to the string
-            $str .= $pool[mt_rand(0, $max)];
+            $str .= $pool[random_int(0, $max)];
         }
 
         // Make sure alnum strings contain at least one letter and one digit
         if ($type === 'alnum' and $length > 1) {
             if (ctype_alpha($str)) {
                 // Add a random digit
-                $str[mt_rand(0, $length - 1)] = chr(mt_rand(48, 57));
+                $str[random_int(0, $length - 1)] = chr(random_int(48, 57));
             } elseif (ctype_digit($str)) {
                 // Add a random letter
-                $str[mt_rand(0, $length - 1)] = chr(mt_rand(65, 90));
+                $str[random_int(0, $length - 1)] = chr(random_int(65, 90));
             }
         }
 
@@ -620,7 +620,7 @@ class StringHelper
     }
 
     /**
-     * Get class name without suffix
+     * Get class name without suffix. eg: HomeController -> home
      *
      * @param string $class full class name, with namespace.
      * @param string $suffix class suffix
@@ -630,8 +630,13 @@ class StringHelper
     public static function getClassName(string $class, string $suffix): string
     {
         // \\(\w+)Helper$
-        $regex = '/\\\(\w+)' . $suffix . '$/';
-        $ok    = \preg_match($regex, $class, $match);
+        if (\strpos($class, $suffix) > 0) {
+            $regex = '/\\\(\w+)' . $suffix . '$/';
+            $ok    = \preg_match($regex, $class, $match);
+        } else {
+            $ok    = true;
+            $match = [1 => $class];
+        }
 
         return $ok ? \lcfirst($match[1]) : '';
     }
