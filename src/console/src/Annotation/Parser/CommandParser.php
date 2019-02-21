@@ -9,13 +9,12 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Helper\CommandHelper;
 use Swoft\Console\Router\Router;
-
+use Swoft\Stdlib\Helper\Str;
 
 /**
  * Class CommandParser
  *
  * @since 2.0
- * @package Swoft\Console\Bean\Parser
  *
  * @AnnotationParser(Command::class)
  */
@@ -23,6 +22,12 @@ class CommandParser extends Parser
 {
     /**
      * @var array
+     * [
+     *  class => [
+     *
+     *      commands => []
+     *  ]
+     * ]
      */
     private static $commands = [];
 
@@ -43,22 +48,43 @@ class CommandParser extends Parser
             throw new AnnotationException('`@Command` must be defined on class!');
         }
 
-        // add route for command controller
-        self::$commands[$this->className] = [
-            'group'     => $annotation->getName(),
+        $class = $this->className;
+
+        // add route for the command controller
+        self::$commands[$class] = [
+            'group'     => $annotation->getName() ?: Str::getClassName($class, 'Command'),
+            'desc'      => $annotation->getDesc(),
             'alias'     => $annotation->getAlias(),
             'enabled'   => $annotation->isEnabled(),
             'coroutine' => $annotation->isCoroutine(),
         ];
 
-        return [$this->className, $this->className, Bean::SINGLETON, ''];
+        return [$class, $class, Bean::SINGLETON, ''];
     }
 
     /**
      * @param string $class
      * @param array  $info
      */
-    public static function addRoute(string $class, array $info): void
+    public static function addRoute(string $class, string $method, array $info): void
+    {
+        self::$commands[$class]['commands'][$method] = $info;
+    }
+
+    /**
+     * @param string $class
+     * @param array  $info
+     */
+    public static function bindArgument(string $class, array $info): void
+    {
+        self::$commands[$class]['routes'][] = $info;
+    }
+
+    /**
+     * @param string $class
+     * @param array  $info
+     */
+    public static function bindOption(string $class, array $info): void
     {
         self::$commands[$class]['routes'][] = $info;
     }

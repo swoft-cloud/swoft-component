@@ -10,7 +10,6 @@ use Swoft\Console\Annotation\Mapping\CommandMapping;
 /**
  * Class CommandMappingParser
  * @since 2.0
- * @package Swoft\Console\Bean\Parser
  *
  * @AnnotationParser(CommandMapping::class)
  */
@@ -34,10 +33,11 @@ class CommandMappingParser extends Parser
         }
 
         // add route info for controller action
-        CommandParser::addRoute($this->className, [
+        CommandParser::addRoute($this->className, $this->methodName, [
             'command' => $annotation->getName(),
             'method'  => $this->methodName,
             'alias'   => $annotation->getAlias(),
+            'desc'    => $annotation->getDesc(),
         ]);
 
         return [];

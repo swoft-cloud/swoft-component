@@ -5,21 +5,21 @@ namespace Swoft\Console\Bean\Parser;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\AnnotationException;
-use Swoft\Console\Annotation\Mapping\CommandOption;
+use Swoft\Console\Annotation\Mapping\CommandArgument;
 
 /**
- * Class CommandMappingParser
+ * Class CommandArgumentParser
  * @since 2.0
  *
- * @AnnotationParser(CommandOption::class)
+ * @AnnotationParser(CommandArgument::class)
  */
-class CommandOptionParser extends Parser
+class CommandArgumentParser extends Parser
 {
     /**
      * Parse object
      *
-     * @param int            $type Class or Method or Property
-     * @param CommandOption $annotation Annotation object
+     * @param int             $type Class or Method or Property
+     * @param CommandArgument $annotation Annotation object
      *
      * @return array
      * Return empty array is nothing to do!
@@ -29,11 +29,11 @@ class CommandOptionParser extends Parser
     public function parse(int $type, $annotation): array
     {
         if ($type === self::TYPE_PROPERTY) {
-            throw new AnnotationException('`@CommandOption` must be defined on class or method!');
+            throw new AnnotationException('`@CommandArgument` must be defined on class or method!');
         }
 
         // add route info for controller action
-        CommandParser::addRoute($this->className, [
+        CommandParser::bindArgument($this->className, [
             'command' => $annotation->getName(),
             'method'  => $this->methodName,
             'alias'   => $annotation->getAlias(),

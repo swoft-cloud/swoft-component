@@ -9,7 +9,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
  * @since 2.0
  * @package Swoft\Console\Router
  *
- * @Bean("consoleRouter")
+ * @Bean("cliRouter")
  */
 class Router //implements HandlerMappingInterface
 {

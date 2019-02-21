@@ -16,7 +16,7 @@ use function input;
  * @since 2.0
  * @package Swoft\Console
  *
- * @Bean("consoleApp")
+ * @Bean("cliApp")
  */
 class Application implements ConsoleInterface
 {
