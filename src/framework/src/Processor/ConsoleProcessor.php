@@ -2,7 +2,8 @@
 
 namespace Swoft\Processor;
 
-use App\Aspect\TestLog;
+use Swoft\Console\Bean\Parser\CommandParser;
+use Swoft\Console\Router\Router;
 use Swoft\Http\Server\HttpServer;
 
 /**
@@ -12,24 +13,27 @@ class ConsoleProcessor extends Processor
 {
     /**
      * Handle console
+     * @return bool
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Server\Exception\ServerException
      */
     public function handle(): bool
     {
-        if (!$this->application->beforeConfig()) {
+        if (!$this->application->beforeConsole()) {
             return false;
         }
 
-        echo 'console' . PHP_EOL;
-        echo '---------------------' . PHP_EOL;
+        /** @var Router $router */
+        $router = \bean('cliRouter');
 
-        /** @var TestLog $testLog */
-        $testLog = bean('testLog');
-        echo $testLog->log() . PHP_EOL;
+        // register command routes
+        CommandParser::registerTo($router);
 
         /* @var HttpServer $httpServer */
         $httpServer = bean('httpServer');
         $httpServer->start();
 
-        return $this->application->afterConfig();
+        return $this->application->afterConsole();
     }
 }

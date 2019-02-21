@@ -22,6 +22,7 @@
     "psr/container": "^1.0",
     "vlucas/phpdotenv": "^2.5",
     "symfony/yaml": "^4.2",
+    "toolkit/cli-utils": "^1.0",
     "nikic/php-parser": "~4.2"
   },
   "require-dev": {

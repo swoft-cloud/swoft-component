@@ -5,40 +5,44 @@ namespace PHPSTORM_META {
 
     // This is a saner and self-documented format for PhpStorm 2016.2 and later
     // Try QuickDoc on these "magic" functions, or even Go to definition!
+    use Swoft\Config\Config;
+    use Swoft\Console\Input\Input;
     use Swoft\Console\Output\Output;
+    use Swoft\Event\Manager\EventManager;
+    use Swoft\Http\Server\HttpDispatcher;
 
     override(\Swoft::getBean(0),
         map([
-            'config'         => \Swoft\Config\Config::class,
-            'eventManager'   => \Swoft\Event\Manager\EventManager::class,
+            'config'         => Config::class,
+            'eventManager'   => EventManager::class,
             // http server
             'httpRouter'     => \Swoft\Http\Server\Router\Router::class,
-            'httpDispatcher' => \Swoft\Http\Server\HttpDispatcher::class,
+            'httpDispatcher' => HttpDispatcher::class,
             // ws server
             'wsRouter'       => \Swoft\WebSocket\Server\Router\Router::class,
             'wsDispatcher'   => \Swoft\WebSocket\Server\Dispatcher::class,
             // console
-            'input'          => \Swoft\Console\Input\Input::class,
+            'cliRouter'      => \Swoft\Console\Router\Router::class,
+            'input'          => Input::class,
             'output'         => Output::class,
-            Output::class    => Output::class,
         ])
     );
 
     // for bean function
     override(\bean(0),
         map([
-            'config'         => \Swoft\Config\Config::class,
-            'eventManager'   => \Swoft\Event\Manager\EventManager::class,
+            'config'         => Config::class,
+            'eventManager'   => EventManager::class,
             // http server
             'httpRouter'     => \Swoft\Http\Server\Router\Router::class,
-            'httpDispatcher' => \Swoft\Http\Server\HttpDispatcher::class,
+            'httpDispatcher' => HttpDispatcher::class,
             // ws server
             'wsRouter'       => \Swoft\WebSocket\Server\Router\Router::class,
             'wsDispatcher'   => \Swoft\WebSocket\Server\Dispatcher::class,
             // console
-            'input'          => \Swoft\Console\Input\Input::class,
+            'cliRouter'      => \Swoft\Console\Router\Router::class,
+            'input'          => Input::class,
             'output'         => Output::class,
-            Output::class    => Output::class,
         ])
     );
 }

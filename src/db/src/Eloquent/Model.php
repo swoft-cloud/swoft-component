@@ -607,7 +607,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return array_merge($this->attributesToArray(), $this->relationsToArray());
     }
@@ -619,7 +619,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return string
      */
-    public function toJson($options = 0)
+    public function toJson(int $options = 0): string
     {
         return JsonHelper::encode($this->jsonSerialize(), $options);
     }
