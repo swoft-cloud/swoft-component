@@ -6,7 +6,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Console\Bean\Collector\CommandCollector;
 use Swoft\Console\Contract\ConsoleInterface;
 use Swoft\Console\Helper\DocBlockHelper;
-use Swoft\Console\Router\Dispatcher;
+use Swoft\Console\Dispatcher;
 use Swoft\Console\Router\Router;
 use Swoft\Stdlib\Helper\StringHelper;
 use function input;
@@ -39,7 +39,7 @@ class Application implements ConsoleInterface
             $this->doRun();
         } catch (\Throwable $e) {
             \output()->writeln(sprintf('<error>%s</error>', $e->getMessage()));
-            \output()->writeln(sprintf("Trace:\n%s", $e->getTraceAsString()), true, true);
+            \output()->writeln(sprintf("Trace:\n%s", $e->getTraceAsString()), true);
         }
     }
 

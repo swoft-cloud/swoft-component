@@ -7,7 +7,8 @@
 console(@inhere):
 
 - 加入console到组件仓库
-- console组件新增注解 
+- 重构console应用的路由信息搜集和命令匹配
+- console组件新增注解
   - 参数 `CommandArgument` 
   - 选项 `CommandOption`
   - 示例参考 `console/test/Fixture`

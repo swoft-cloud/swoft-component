@@ -153,10 +153,10 @@ class Router //implements HandlerMappingInterface
     }
 
     /**
-     * @param callable $cmdFunc
      * @param callable $grpFunc
+     * @param callable $cmdFunc
      */
-    public function sortedEach(callable $cmdFunc, callable $grpFunc): void
+    public function sortedEach(callable $grpFunc, callable $cmdFunc): void
     {
         $groups = $this->groups;
         \ksort($groups);
