@@ -110,10 +110,10 @@ class Uri implements UriInterface
     /**
      * @param string $uri URI to parse
      */
-    public function __construct($uri = '')
+    public function __construct(string $uri = '')
     {
         // weak type check to also accept null until we can add scalar type hints
-        if ($uri == '') {
+        if ($uri === '') {
             return;
         }
 
@@ -130,7 +130,7 @@ class Uri implements UriInterface
     public function initialize($uri = ''): void
     {
         // weak type check to also accept null until we can add scalar type hints
-        if ($uri == '') {
+        if ($uri === '') {
             return;
         }
 

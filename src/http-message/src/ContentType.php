@@ -15,4 +15,14 @@ final class ContentType
     public const TEXT = 'text/plain';
     public const JSON = 'application/json';
     public const XML  = 'application/xml';
+    public const FORM = 'application/x-www-form-urlencoded';
+
+    // Content types mapping
+    public const TYPES = [
+        'xml'  => self::XML,
+        'html' => self::HTML,
+        'text' => self::TEXT,
+        'json' => self::JSON,
+        'form' => self::FORM,
+    ];
 }

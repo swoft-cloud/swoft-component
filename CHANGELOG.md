@@ -2,6 +2,17 @@
 
 > 日期时间都是大概的时间点
 
+## 2019.02.21
+
+console(@inhere):
+
+- 加入console到组件仓库
+- 重构console应用的路由信息搜集和命令匹配
+- console组件新增注解
+  - 参数 `CommandArgument` 
+  - 选项 `CommandOption`
+  - 示例参考 `console/test/Fixture`
+
 ## 2019.02.20
 
 db(@stelin)
@@ -27,7 +38,7 @@ bean(@stelin)
 
 db(@stelin)
 
-- 修改QueryBuidler
+- 修改QueryBuilder
 - 修改connection
 
 framework(@inhere):
@@ -43,8 +54,8 @@ framework(@inhere):
 - 除了基础的 bean() config() 等几个方法外，移除其他的全局辅助方法(@inhere)
   - 除了framework, bean 组件外，移除所有组件下的 `Helper/Functions.php` 加载
   - 后面会移除这些文件，即后面将不能使用 request() 这样的方法
-- 添加swoole部分核心事件的触发绑定
-- 添加一些重要的server事件的触发绑定
+- 添加swoole部分核心事件的触发绑定(@inhere)
+- 添加一些重要的server事件的触发绑定(@inhere)
 
 ## 2019.02.13
 

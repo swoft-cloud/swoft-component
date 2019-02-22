@@ -59,7 +59,7 @@ abstract class AbstractFlag
             $this->name = (string)$values['name'];
         }
 
-        if (isset($values['desc'])) {
+        if (!empty($values['desc'])) {
             $this->desc = (string)$values['desc'];
         }
 

@@ -59,10 +59,10 @@ class Request implements RequestInterface
         }
 
         $target = $this->uri->getPath();
-        if ($target == '') {
+        if ($target === '') {
             $target = '/';
         }
-        if ($this->uri->getQuery() != '') {
+        if ($this->uri->getQuery() !== '') {
             $target .= '?' . $this->uri->getQuery();
         }
 
@@ -126,7 +126,7 @@ class Request implements RequestInterface
         $method  = strtoupper($method);
         $methods = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'HEAD'];
 
-        if (!in_array($method, $methods)) {
+        if (!in_array($method, $methods, true)) {
             throw new \InvalidArgumentException('Invalid Method');
         }
         $new         = clone $this;
@@ -199,7 +199,7 @@ class Request implements RequestInterface
      */
     public function isGet(): bool
     {
-        return $this->method == 'GET';
+        return $this->method === 'GET';
     }
 
     /**

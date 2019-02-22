@@ -23,7 +23,7 @@ class ArrayHelper
      *
      * @return array the array representation of the object
      */
-    public static function toArray($object, $properties = [], $recursive = true)
+    public static function toArray($object, $properties = [], $recursive = true): array
     {
         if (\is_array($object)) {
             if ($recursive) {
@@ -85,7 +85,7 @@ class ArrayHelper
      *
      * @return array the merged array (the original arrays are not changed.)
      */
-    public static function merge($a, $b)
+    public static function merge($a, $b): array
     {
         $args = \func_get_args();
         $res  = array_shift($args);
@@ -224,7 +224,7 @@ class ArrayHelper
      *
      * @return void
      */
-    public static function forget(&$array, $keys)
+    public static function forget(&$array, $keys): void
     {
         $original = &$array;
 
@@ -380,7 +380,7 @@ class ArrayHelper
      *
      * @return array the indexed and/or grouped array
      */
-    public static function index($array, $key, $groups = [])
+    public static function index($array, $key, $groups = []): array
     {
         $result = [];
         $groups = (array)$groups;
@@ -442,7 +442,7 @@ class ArrayHelper
      *
      * @return array the list of column values
      */
-    public static function getColumn($array, $name, $keepKeys = true)
+    public static function getColumn($array, $name, $keepKeys = true): array
     {
         $result = [];
         if ($keepKeys) {
@@ -500,7 +500,7 @@ class ArrayHelper
      *
      * @return array
      */
-    public static function map($array, $from, $to, $group = null)
+    public static function map($array, $from, $to, $group = null): array
     {
         $result = [];
         foreach ($array as $element) {
@@ -527,7 +527,7 @@ class ArrayHelper
      *
      * @return boolean whether the array contains the specified key
      */
-    public static function keyExists($key, $array, $caseSensitive = true)
+    public static function keyExists($key, $array, $caseSensitive = true): ?bool
     {
         if ($caseSensitive) {
             return array_key_exists($key, $array);
@@ -560,7 +560,7 @@ class ArrayHelper
      * @throws \InvalidArgumentException if the $direction or $sortFlag parameters do not have
      * correct number of elements as that of $key.
      */
-    public static function multisort(&$array, $key, $direction = SORT_ASC, $sortFlag = SORT_REGULAR)
+    public static function multisort(&$array, $key, $direction = SORT_ASC, $sortFlag = SORT_REGULAR): void
     {
         $keys = \is_array($key) ? $key : [$key];
         if (empty($keys) || empty($array)) {
@@ -609,7 +609,7 @@ class ArrayHelper
      *
      * @return boolean whether the array is associative
      */
-    public static function isAssociative($array, $allStrings = true)
+    public static function isAssociative($array, $allStrings = true): ?bool
     {
         if (!\is_array($array) || empty($array)) {
             return false;
@@ -648,7 +648,7 @@ class ArrayHelper
      *
      * @return boolean whether the array is associative
      */
-    public static function isIndexed($array, $consecutive = false)
+    public static function isIndexed($array, $consecutive = false): ?bool
     {
         if (!\is_array($array)) {
             return false;
@@ -713,7 +713,7 @@ class ArrayHelper
      * @return boolean whether $var is array-like
      * @see   http://php.net/manual/en/function.is_array.php
      */
-    public static function isTraversable($var)
+    public static function isTraversable($var): bool
     {
         return \is_array($var) || $var instanceof \Traversable;
     }
@@ -731,7 +731,7 @@ class ArrayHelper
      * @throws \InvalidArgumentException if `$haystack` or `$needles` is neither traversable nor an array.
      * @return boolean `true` if `$needles` is a subset of `$haystack`, `false` otherwise.
      */
-    public static function isSubset($needles, $haystack, $strict = false)
+    public static function isSubset($needles, $haystack, $strict = false): ?bool
     {
         if (\is_array($needles) || $needles instanceof \Traversable) {
             foreach ($needles as $needle) {
@@ -790,7 +790,7 @@ class ArrayHelper
      *
      * @return array Filtered array
      */
-    public static function filter($array, $filters)
+    public static function filter($array, $filters): array
     {
         $result        = [];
         $forbiddenVars = [];
@@ -825,7 +825,7 @@ class ArrayHelper
         }
 
         foreach ($forbiddenVars as $var) {
-            list($globalKey, $localKey) = $var;
+            [$globalKey, $localKey] = $var;
             if (array_key_exists($globalKey, $result)) {
                 unset($result[$globalKey][$localKey]);
             }
@@ -841,7 +841,7 @@ class ArrayHelper
      *
      * @return bool
      */
-    public static function accessible($value)
+    public static function accessible($value): bool
     {
         return \is_array($value) || $value instanceof \ArrayAccess;
     }
@@ -854,7 +854,7 @@ class ArrayHelper
      *
      * @return bool
      */
-    public static function exists($array, $key)
+    public static function exists($array, $key): bool
     {
         if (\is_array($array)) {
             return array_key_exists($key, $array);
@@ -901,7 +901,7 @@ class ArrayHelper
      *
      * @return bool
      */
-    public static function has($array, $key)
+    public static function has($array, $key): bool
     {
         if (empty($array) || null === $key) {
             return false;
@@ -933,7 +933,7 @@ class ArrayHelper
      *
      * @return array
      */
-    public static function set(&$array, $key, $value)
+    public static function set(&$array, $key, $value): array
     {
         if (null === $key) {
             return $array = $value;
@@ -966,7 +966,7 @@ class ArrayHelper
      * @param int   $index
      * @param array $insert
      */
-    public static function insert(array &$array, int $index, ...$insert)
+    public static function insert(array &$array, int $index, ...$insert): void
     {
         $firstArray = array_splice($array, 0, $index);
         $array      = array_merge($firstArray, $insert, $array);
@@ -979,9 +979,9 @@ class ArrayHelper
      *
      * @return array
      */
-    public static function wrap($value)
+    public static function wrap($value): array
     {
-        if (is_null($value)) {
+        if ($value === null) {
             return [];
         }
 
@@ -1006,7 +1006,7 @@ class ArrayHelper
      *
      * @return array
      */
-    public static function flatten(array $array, int $depth = INF)
+    public static function flatten(array $array, int $depth = INF): array
     {
         $result = [];
 

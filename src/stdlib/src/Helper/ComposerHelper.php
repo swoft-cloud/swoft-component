@@ -22,9 +22,11 @@ class ComposerHelper
         $autoloadFunctions = \spl_autoload_functions();
 
         foreach ($autoloadFunctions as $autoloader) {
-            if (\is_array($autoloader) && isset($autoloader[0]) && \is_object($autoloader[0])) {
-                if ($autoloader[0] instanceof ClassLoader) {
-                    return $autoloader[0];
+            if (\is_array($autoloader) && isset($autoloader[0])) {
+                $composerLoader = $autoloader[0];
+
+                if (\is_object($composerLoader) && $composerLoader instanceof ClassLoader) {
+                    return $composerLoader;
                 }
             }
         }
