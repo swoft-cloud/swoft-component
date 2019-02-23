@@ -48,6 +48,9 @@
     "swoft/test": "self.version"
   },
   "autoload": {
+    "classmap": [
+      "src/framework/src/Swoft.php"
+    ],
     "psr-4": {
       "Swoft\\Annotation\\": "src/annotation/src/",
       "Swoft\\Aop\\": "src/aop/src/",

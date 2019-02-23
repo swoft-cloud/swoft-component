@@ -25,12 +25,7 @@ class Swoft
      *
      * @var array
      */
-    private static $aliases = [
-        '@app'     => \APP_PATH,
-        '@base'    => \BASE_PATH,
-        '@config'  => \CONFIG_PATH,
-        '@runtime' => \RUNTIME_PATH
-    ];
+    private static $aliases = [];
 
     /**
      * Register multi aliases
@@ -174,9 +169,11 @@ class Swoft
 
     /**
      * trigger an swoft application event
+     *
      * @param string|EventInterface $event eg: 'app.start' 'app.stop'
      * @param array                 $params
      * @param null|mixed            $target
+     *
      * @return mixed|EventInterface
      * @throws ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException

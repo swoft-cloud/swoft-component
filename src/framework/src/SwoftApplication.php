@@ -11,6 +11,7 @@ use Swoft\Processor\EnvProcessor;
 use Swoft\Processor\EventProcessor;
 use Swoft\Processor\Processor;
 use Swoft\Processor\ProcessorInterface;
+use Swoft\Stdlib\Helper\ComposerHelper;
 
 /**
  * Swoft application
@@ -72,6 +73,9 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
         $this->processor = new ApplicationProcessor($this);
         $this->processor->addFirstProcessor(...$processors);
+
+        // Set system alias
+        $this->setSystemAlias();
 
         $this->init();
     }
@@ -199,5 +203,51 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     public function getBeanFile(): string
     {
         return $this->beanFile;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBasePath(): string
+    {
+        $basePath = ComposerHelper::getClassLoader()->findFile(static::class);
+        $basePath = dirname($basePath, 2);
+
+        return $basePath;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAppPath(): string
+    {
+        return '@base/app';
+    }
+
+    /**
+     * @return string
+     */
+    public function getRuntimePath(): string
+    {
+        return '@base/runtime';
+    }
+
+    /**
+     * @return string
+     */
+    public function getConfigPath(): string
+    {
+        return '@base/config';
+    }
+
+    /**
+     * Set base path
+     */
+    private function setSystemAlias(): void
+    {
+        \Swoft::setAlias('@base', $this->getBasePath());
+        \Swoft::setAlias('@app', $this->getAppPath());
+        \Swoft::setAlias('@config', $this->getConfigPath());
+        \Swoft::setAlias('@runtime', $this->getRuntimePath());
     }
 }

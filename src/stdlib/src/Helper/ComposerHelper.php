@@ -12,6 +12,11 @@ use Composer\Autoload\ClassLoader;
 class ComposerHelper
 {
     /**
+     * @var ClassLoader
+     */
+    private static $composerLoader;
+
+    /**
      * Get composer class loader
      *
      * @return ClassLoader
@@ -19,6 +24,10 @@ class ComposerHelper
      */
     public static function getClassLoader(): ClassLoader
     {
+        if (!empty(self::$composerLoader)) {
+            return self::$composerLoader;
+        }
+
         $autoloadFunctions = \spl_autoload_functions();
 
         foreach ($autoloadFunctions as $autoloader) {
@@ -26,7 +35,8 @@ class ComposerHelper
                 $composerLoader = $autoloader[0];
 
                 if (\is_object($composerLoader) && $composerLoader instanceof ClassLoader) {
-                    return $composerLoader;
+                    self::$composerLoader = $composerLoader;
+                    return self::$composerLoader;
                 }
             }
         }
@@ -36,6 +46,7 @@ class ComposerHelper
 
     /**
      * @param string $file
+     *
      * @return array
      */
     public static function parseLockFile(string $file): array
@@ -49,7 +60,7 @@ class ComposerHelper
         }
 
         /** @var array[] $data */
-        $data = \json_decode($json, true);
+        $data       = \json_decode($json, true);
         $components = [];
 
         if (!$data || !isset($data['packages'])) {
@@ -62,13 +73,13 @@ class ComposerHelper
             }
 
             $components[] = [
-                'name' => $package['name'],
-                'version' => $package['version'],
-                'source' => $package['source'],
-                'require' => $package['require'] ?? [],
+                'name'        => $package['name'],
+                'version'     => $package['version'],
+                'source'      => $package['source'],
+                'require'     => $package['require'] ?? [],
                 'description' => $package['description'],
-                'keywords' => $package['keywords'],
-                'time' => $package['time'],
+                'keywords'    => $package['keywords'],
+                'time'        => $package['time'],
             ];
         }
 
