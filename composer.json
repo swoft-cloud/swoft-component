@@ -80,6 +80,7 @@
       "SwoftTest\\Cache\\": "src/cache/test/",
       "SwoftTest\\Console\\": "src/console/test/",
       "SwoftTest\\Db\\": "src/db/test",
+      "SwoftTest\\Test\\": "src/test/test",
       "SwoftTest\\Event\\": "src/event/test/",
       "SwoftTest\\ErrorHandler\\": "src/error-handler/test/",
       "SwoftTest\\": "src/framework/test/",

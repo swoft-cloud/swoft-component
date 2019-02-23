@@ -17,6 +17,6 @@ class StringHelperTest extends TestCase
         $this->assertSame('user', $name);
 
         $name = Str::getClassName('App\Http\Controller\UserController', '');
-        $this->assertSame('userController', $name);
+        $this->assertSame('App\Http\Controller\UserController', $name);
     }
 }

@@ -547,7 +547,7 @@ class StringHelper
      *     // Output:
      *     XCDDVXV7FUSYAVXFFKSL
      *
-     * @param   string  $type A type of pool, or a string of characters to use as the pool
+     * @param   string  $type   A type of pool, or a string of characters to use as the pool
      * @param   integer $length Length of string to return
      *
      * @return  string
@@ -612,6 +612,7 @@ class StringHelper
 
     /**
      * @param string $str
+     *
      * @return bool
      */
     public static function isAscii($str): bool
@@ -622,13 +623,17 @@ class StringHelper
     /**
      * Get class name without suffix. eg: HomeController -> home
      *
-     * @param string $class full class name, with namespace.
+     * @param string $class  full class name, with namespace.
      * @param string $suffix class suffix
      *
      * @return string
      */
     public static function getClassName(string $class, string $suffix): string
     {
+        if (empty($suffix)) {
+            return $class;
+        }
+
         // \\(\w+)Helper$
         if (\strpos($class, $suffix) > 0) {
             $regex = '/\\\(\w+)' . $suffix . '$/';

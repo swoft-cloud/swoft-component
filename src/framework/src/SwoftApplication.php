@@ -157,7 +157,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     /**
      * @return ProcessorInterface[]
      */
-    private function processors(): array
+    protected function processors(): array
     {
         return [
             new EnvProcessor($this),
