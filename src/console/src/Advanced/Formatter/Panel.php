@@ -8,13 +8,13 @@
 
 namespace Swoft\Console\Formatter;
 
-use Inhere\Console\Util\FormatUtil;
-use Inhere\Console\Util\Show;
+use Swoft\Console\Helper\FormatUtil;
+use Swoft\Console\Helper\Show;
 use Toolkit\StrUtil\StrBuffer;
 
 /**
  * Class Panel
- * - method version please {@see \Inhere\Console\Util\Show::panel()}
+ * - method version please {@see \Swoft\Console\Helper\Show::panel()}
  * @package Swoft\Console\Formatter
  */
 class Panel extends Formatter

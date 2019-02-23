@@ -8,7 +8,7 @@
 
 namespace Swoft\Console\Formatter;
 
-use Inhere\Console\Util\Show;
+use Swoft\Console\Helper\Show;
 use Toolkit\Cli\ColorTag;
 use Toolkit\StrUtil\StrBuffer;
 
