@@ -20,7 +20,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "SwoftTest\\Event\\": "test/"
+      "SwoftTest\\Event\\": "test/case/"
     }
   },
   "require-dev": {
@@ -30,10 +30,6 @@
     {
       "type": "composer",
       "url": "https://packagist.laravel-china.org"
-    },
-    {
-      "type": "git",
-      "url": "git@github.com:swoft-cloud/swoft-stdlib.git"
     }
   ],
   "scripts": {

@@ -20,11 +20,11 @@
     }
   },
   "require-dev": {
-    "phpunit/phpunit": "^7.0"
+    "phpunit/phpunit": "^7.5"
   },
   "autoload-dev": {
     "psr-4": {
-      "Swoft\\Aop\\Test\\": "test/"
+      "SwoftTest\\Aop\\": "test/case/"
     }
   },
   "repositories": {
