@@ -2,6 +2,7 @@
 
 namespace Swoft\Processor;
 
+use Swoft\SwoftApplication;
 use Swoft\SwoftInterface;
 
 /**
@@ -12,7 +13,7 @@ abstract class Processor implements ProcessorInterface
     /**
      * Swoft application
      *
-     * @var SwoftInterface
+     * @var SwoftInterface|SwoftApplication
      */
     protected $application;
 

@@ -22,6 +22,7 @@ namespace PHPSTORM_META {
             'wsRouter'       => \Swoft\WebSocket\Server\Router\Router::class,
             'wsDispatcher'   => \Swoft\WebSocket\Server\Dispatcher::class,
             // console
+            'cliApp'         => \Swoft\Console\Application::class,
             'cliRouter'      => \Swoft\Console\Router\Router::class,
             'input'          => Input::class,
             'output'         => Output::class,
@@ -40,6 +41,7 @@ namespace PHPSTORM_META {
             'wsRouter'       => \Swoft\WebSocket\Server\Router\Router::class,
             'wsDispatcher'   => \Swoft\WebSocket\Server\Dispatcher::class,
             // console
+            'cliApp'         => \Swoft\Console\Application::class,
             'cliRouter'      => \Swoft\Console\Router\Router::class,
             'input'          => Input::class,
             'output'         => Output::class,
