@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2018-12-13
- * Time: 23:53
- */
 
 namespace SwoftTest\Http\Server\Helper;
 

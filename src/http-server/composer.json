@@ -6,21 +6,18 @@
     "swoole",
     "swoft"
   ],
-  "description": "microservice framework base on swoole",
+  "description": "micro-service framework base on swoole",
   "license": "Apache-2.0",
   "require": {
   },
   "autoload": {
     "psr-4": {
       "Swoft\\Http\\Server\\": "src/"
-    },
-    "files": [
-      "src/Helper/Functions.php"
-    ]
+    }
   },
   "autoload-dev": {
     "psr-4": {
-      "SwoftTest\\Http\\Server\\": "test/"
+      "SwoftTest\\Http\\Server\\": "test/case/"
     }
   },
   "repositories": [

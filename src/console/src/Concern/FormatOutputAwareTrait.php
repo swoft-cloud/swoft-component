@@ -8,7 +8,7 @@ use Swoft\Stdlib\Helper\PhpHelper;
 
 /**
  * Class FormatOutputAwareTrait
- * @package Inhere\Console\Traits
+ * @package Swoft\Console\Traits
  *
  * @method int info($messages, $quit = false)
  * @method int note($messages, $quit = false)

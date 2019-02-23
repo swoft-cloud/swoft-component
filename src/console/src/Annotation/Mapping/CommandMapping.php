@@ -42,6 +42,20 @@ final class CommandMapping
     private $desc = 'no description message';
 
     /**
+     * Custom usage help information
+     *
+     * @var string
+     */
+    private $usage = '{fullCommand} [arguments ...] [options ...]';
+
+    /**
+     * Command example help information
+     *
+     * @var string
+     */
+    private $example = '';
+
+    /**
      * Mapping constructor.
      *
      * @param array $values
@@ -60,6 +74,14 @@ final class CommandMapping
 
         if (isset($values['desc'])) {
             $this->desc = (string)$values['desc'];
+        }
+
+        if (isset($values['usage'])) {
+            $this->usage = (string)$values['usage'];
+        }
+
+        if (isset($values['example'])) {
+            $this->example = (string)$values['example'];
         }
     }
 
@@ -93,5 +115,21 @@ final class CommandMapping
     public function getDesc(): string
     {
         return $this->desc;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUsage(): string
+    {
+        return $this->usage;
+    }
+
+    /**
+     * @return string
+     */
+    public function getExample(): string
+    {
+        return $this->example;
     }
 }

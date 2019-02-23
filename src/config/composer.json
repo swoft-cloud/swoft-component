@@ -6,10 +6,10 @@
     "swoole",
     "swoft"
   ],
-  "description": "microservice framework base on swoole",
+  "description": "micro-service framework base on swoole",
   "license": "Apache-2.0",
   "require": {
-    "php": ">=7.1",
+    "php": ">7.1",
     "vlucas/phpdotenv": "^2.5",
     "symfony/yaml": "^4.2"
   },
@@ -21,11 +21,11 @@
     }
   },
   "require-dev": {
-    "phpunit/phpunit": "^7.0"
+    "phpunit/phpunit": "^7.5"
   },
   "autoload-dev": {
     "psr-4": {
-      "Swoft\\Config\\Test\\": "test/"
+      "SwoftTest\\Config\\": "test/case/"
     }
   },
   "repositories": {

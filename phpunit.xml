@@ -13,76 +13,76 @@
          stopOnFailure="false">
     <testsuites>
         <testsuite name="aop">
-            <directory suffix="Test.php">src/aop/test</directory>
+            <directory suffix="Test.php">src/aop/test/case</directory>
         </testsuite>
         <testsuite name="auth">
-            <directory suffix="Test.php">src/auth/test</directory>
+            <directory suffix="Test.php">src/auth/test/case</directory>
         </testsuite>
         <testsuite name="bean">
-            <directory suffix="Test.php">src/bean/test</directory>
+            <directory suffix="Test.php">src/bean/test/case</directory>
         </testsuite>
         <testsuite name="cache">
-            <directory suffix="Test.php">src/cache/test</directory>
+            <directory suffix="Test.php">src/cache/test/case</directory>
         </testsuite>
         <testsuite name="console">
-            <directory suffix="Test.php">src/console/test</directory>
+            <directory suffix="Test.php">src/console/test/case</directory>
         </testsuite>
         <testsuite name="db">
-            <directory suffix="Test.php">src/db/test</directory>
+            <directory suffix="Test.php">src/db/test/case</directory>
         </testsuite>
         <testsuite name="defer">
-            <directory suffix="Test.php">src/defer/test</directory>
+            <directory suffix="Test.php">src/defer/test/case</directory>
         </testsuite>
         <testsuite name="devtool">
-            <directory suffix="Test.php">src/devtool/test</directory>
+            <directory suffix="Test.php">src/devtool/test/case</directory>
         </testsuite>
         <testsuite name="handler">
-            <directory suffix="Test.php">src/error-handler/test</directory>
+            <directory suffix="Test.php">src/error-handler/test/case</directory>
         </testsuite>
         <testsuite name="framework">
-            <directory suffix="Test.php">src/framework/test</directory>
+            <directory suffix="Test.php">src/framework/test/case</directory>
         </testsuite>
         <testsuite name="event">
-            <directory suffix="Test.php">src/event/test</directory>
+            <directory suffix="Test.php">src/event/test/case</directory>
         </testsuite>
         <testsuite name="http-server">
-            <directory suffix="Test.php">src/http-server/test</directory>
+            <directory suffix="Test.php">src/http-server/test/case</directory>
         </testsuite>
         <testsuite name="server">
-            <directory suffix="Test.php">src/server/test</directory>
+            <directory suffix="Test.php">src/server/test/case</directory>
         </testsuite>
         <testsuite name="memory">
-            <directory suffix="Test.php">src/memory/test</directory>
+            <directory suffix="Test.php">src/memory/test/case</directory>
         </testsuite>
         <testsuite name="process">
-            <directory suffix="Test.php">src/process/test</directory>
+            <directory suffix="Test.php">src/process/test/case</directory>
         </testsuite>
         <testsuite name="redis">
-            <directory suffix="Test.php">src/redis/test</directory>
+            <directory suffix="Test.php">src/redis/test/case</directory>
         </testsuite>
         <testsuite name="rpc">
-            <directory suffix="Test.php">src/rpc/test</directory>
+            <directory suffix="Test.php">src/rpc/test/case</directory>
         </testsuite>
         <testsuite name="rpc-client">
-            <directory suffix="Test.php">src/rpc-client/test</directory>
+            <directory suffix="Test.php">src/rpc-client/test/case</directory>
         </testsuite>
         <testsuite name="rpc-server">
-            <directory suffix="Test.php">src/rpc-server/test</directory>
+            <directory suffix="Test.php">src/rpc-server/test/case</directory>
         </testsuite>
         <testsuite name="sg">
-            <directory suffix="Test.php">src/service-governance/test</directory>
+            <directory suffix="Test.php">src/service-governance/test/case</directory>
         </testsuite>
         <testsuite name="task">
-            <directory suffix="Test.php">src/task/test</directory>
+            <directory suffix="Test.php">src/task/test/case</directory>
         </testsuite>
         <testsuite name="trace">
-            <directory suffix="Test.php">src/trace/test</directory>
+            <directory suffix="Test.php">src/trace/test/case</directory>
         </testsuite>
         <testsuite name="ws-server">
-            <directory suffix="Test.php">src/websocket-server/test</directory>
+            <directory suffix="Test.php">src/websocket-server/test/case</directory>
         </testsuite>
         <testsuite name="stdlib">
-            <directory suffix="Test.php">src/stdlib/test</directory>
+            <directory suffix="Test.php">src/stdlib/test/case</directory>
         </testsuite>
         <testsuite name="test">
             <directory suffix="Test.php">src/test/test</directory>
