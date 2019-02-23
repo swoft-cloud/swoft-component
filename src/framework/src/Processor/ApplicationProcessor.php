@@ -19,8 +19,16 @@ class ApplicationProcessor extends Processor
      */
     public function handle(): bool
     {
+        $disabled = $this->application->getDisabledProcessors();
 
         foreach ($this->processors as $processor) {
+            $class = \get_class($processor);
+
+            // If is disabled, skip handle.
+            if (isset($disabled[$class])) {
+                continue;
+            }
+
             $processor->handle();
         }
 
@@ -30,8 +38,7 @@ class ApplicationProcessor extends Processor
     /**
      * Add first processor
      *
-     * @param Processor[] $processors
-     *
+     * @param Processor[] $processor
      * @return bool
      */
     public function addFirstProcessor(Processor ...$processor): bool
@@ -44,7 +51,7 @@ class ApplicationProcessor extends Processor
     /**
      * Add last processor
      *
-     * @param Processor[] $processors
+     * @param Processor[] $processor
      *
      * @return bool
      */

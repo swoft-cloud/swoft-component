@@ -22,6 +22,7 @@ class AnnotationProcessor extends Processor
             return false;
         }
 
+        // Parse AutoLoader classes config, collect annotations.
         AnnotationRegister::load();
 
         return $this->application->afterAnnotation();

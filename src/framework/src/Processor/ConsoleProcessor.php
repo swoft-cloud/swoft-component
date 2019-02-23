@@ -8,6 +8,7 @@ use Swoft\Http\Server\HttpServer;
 
 /**
  * Console processor
+ * @since 2.0
  */
 class ConsoleProcessor extends Processor
 {

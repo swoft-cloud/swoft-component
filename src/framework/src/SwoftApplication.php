@@ -18,6 +18,11 @@ use Swoft\Processor\ProcessorInterface;
 class SwoftApplication implements SwoftInterface, ApplicationInterface
 {
     /**
+     * Swoft trait
+     */
+    use SwoftTrait;
+
+    /**
      * Env file
      *
      * @var string
@@ -34,12 +39,27 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
      *
      * @var string
      */
-    protected $beanFile = '@app/bean.php';
+    private $beanFile = '@app/bean.php';
 
     /**
-     * Swoft trait
+     * Can disable processor class before handle.
+     * eg. [
+     *  Swoft\Processor\ConsoleProcessor::class => 1,
+     * ]
+     *
+     * @var array
      */
-    use SwoftTrait;
+    private $disabledProcessors = [];
+
+    /**
+     * Can disable AutoLoader class before handle.
+     * eg. [
+     *  Swoft\Console\AutoLoader::class  => 1,
+     * ]
+     *
+     * @var array
+     */
+    private $disabledAutoLoaders = [];
 
     /**
      * Application constructor.
@@ -50,6 +70,33 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
         $this->processor = new ApplicationProcessor($this);
         $this->processor->addFirstProcessor(...$processors);
+
+        $this->init();
+    }
+
+    protected function init()
+    {
+        // do something ...
+    }
+
+    /**
+     * @param string ...$classes
+     */
+    public function disableAutoLoader(string ...$classes)
+    {
+        foreach ($classes as $class) {
+            $this->disabledAutoLoaders[$class] = 1;
+        }
+    }
+
+    /**
+     * @param string ...$classes
+     */
+    public function disableProcessor(string ...$classes)
+    {
+        foreach ($classes as $class) {
+            $this->disabledProcessors[$class] = 1;
+        }
     }
 
     /**
@@ -105,14 +152,6 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     }
 
     /**
-     * @return string
-     */
-    public function getBeanFile(): string
-    {
-        return $this->beanFile;
-    }
-
-    /**
      * @return ProcessorInterface[]
      */
     private function processors(): array
@@ -125,5 +164,37 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
             new EventProcessor($this),
             new ConsoleProcessor($this),
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getDisabledProcessors(): array
+    {
+        return $this->disabledProcessors;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDisabledAutoLoaders(): array
+    {
+        return $this->disabledAutoLoaders;
+    }
+
+    /**
+     * @param string $beanFile
+     */
+    public function setBeanFile(string $beanFile): void
+    {
+        $this->beanFile = $beanFile;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBeanFile(): string
+    {
+        return $this->beanFile;
     }
 }

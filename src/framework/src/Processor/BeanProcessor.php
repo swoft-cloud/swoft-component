@@ -5,6 +5,7 @@ namespace Swoft\Processor;
 use Swoft\Annotation\AnnotationRegister;
 use Swoft\Bean\BeanFactory;
 use Swoft\BeanHandler;
+use Swoft\Contract\ComponentInterface;
 use Swoft\Contract\DefinitionInterface;
 use Swoft\Stdlib\Helper\ArrayHelper;
 
@@ -50,17 +51,34 @@ class BeanProcessor extends Processor
         // Core beans
         $definitions = [];
         $autoLoaders = AnnotationRegister::getAutoLoaders();
+        // get disabled loaders by application
+        $disabledLoaders = $this->application->getDisabledAutoLoaders();
+
         foreach ($autoLoaders as $autoLoader) {
-            if ($autoLoader instanceof DefinitionInterface) {
-                $definitions = ArrayHelper::merge($definitions, $autoLoader->coreBean());
+            if (!$autoLoader instanceof DefinitionInterface) {
+                continue;
             }
+
+            $loaderClass = \get_class($autoLoader);
+
+            // If the component is disabled by user.
+            if (isset($disabledLoaders[$loaderClass])) {
+                continue;
+            }
+
+            // If the component is not enabled.
+            if ($autoLoader instanceof ComponentInterface && !$autoLoader->enable()) {
+                continue;
+            }
+
+            $definitions = ArrayHelper::merge($definitions, $autoLoader->coreBean());
         }
 
         // Bean definitions
         $beanFile = $this->application->getBeanFile();
-        $beanFile = alias($beanFile);
+        $beanFile = \alias($beanFile);
 
-        if (!file_exists($beanFile)) {
+        if (!\file_exists($beanFile)) {
             throw new \InvalidArgumentException(sprintf('The file of %s is not exist!', $beanFile));
         }
 
