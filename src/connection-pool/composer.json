@@ -19,6 +19,7 @@
   },
   "autoload-dev": {
     "psr-4": {
+      "SwoftTest\\Connection\\Pool\\": "test/case/"
     }
   },
   "repositories": {
