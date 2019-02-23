@@ -4,7 +4,9 @@
 namespace Swoft\Db;
 
 
-class AutoLoader
+use Swoft\SwoftComponent;
+
+class AutoLoader extends SwoftComponent
 {
     /**
      * @return array
@@ -25,5 +27,21 @@ class AutoLoader
                 'db'    => bean('db')
             ]
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getPrefixDirs(): array
+    {
+        return [];
+    }
+
+    /**
+     * @return array
+     */
+    public function metadata(): array
+    {
+        return [];
     }
 }
