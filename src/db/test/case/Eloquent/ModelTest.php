@@ -4,12 +4,12 @@
 namespace SwoftTest\Db\Eloquent;
 
 
-use PHPUnit\Framework\TestCase;
+use SwoftTest\Db\DbTestCase;
 
-class ModelTest extends TestCase
+class ModelTest extends DbTestCase
 {
     public function testMethod()
     {
-        
+        $this->assertTrue(true);
     }
 }
