@@ -17,7 +17,7 @@ interface SwoftInterface
      *
      * @return string
      */
-    public function getEnv(): string;
+    public function getEnvFile(): string;
 
     /**
      * Before run

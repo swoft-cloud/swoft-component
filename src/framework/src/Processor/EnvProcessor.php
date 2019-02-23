@@ -22,8 +22,9 @@ class EnvProcessor extends Processor
             return false;
         }
 
-        $env  = $this->application->getEnv();
-        $path = \BASE_PATH . DIRECTORY_SEPARATOR;
+        $envFile = $this->application->getEnvFile();
+        $path    = dirname($envFile);
+        $env     = basename($envFile);
 
         if (!\file_exists($path . $env)) {
             return true;

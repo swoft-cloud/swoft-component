@@ -24,23 +24,51 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     use SwoftTrait;
 
     /**
+     * Base path
+     *
+     * @var string
+     */
+    protected $basePath = '';
+
+    /**
+     * Application path
+     *
+     * @var string
+     */
+    protected $appPath = '@base/app';
+
+    /**
+     * Runtime path
+     *
+     * @var string
+     */
+    protected $runtimePath = '@base/runtime';
+
+    /**
+     * Config path
+     *
+     * @var string
+     */
+    protected $configPath = '@base/config';
+
+    /**
      * Env file
      *
      * @var string
      */
-    protected $env = '.env';
-
-    /**
-     * @var ApplicationProcessor
-     */
-    protected $processor;
+    protected $envFile = '@base/.env';
 
     /**
      * Default bean file
      *
      * @var string
      */
-    private $beanFile = '@app/bean.php';
+    protected $beanFile = '@app/bean.php';
+
+    /**
+     * @var ApplicationProcessor
+     */
+    protected $processor;
 
     /**
      * Can disable processor class before handle.
@@ -51,7 +79,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
      *
      * @var array
      */
-    private $disabledProcessors = [];
+    protected $disabledProcessors = [];
 
     /**
      * Can disable AutoLoader class before handle.
@@ -62,7 +90,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
      *
      * @var array
      */
-    private $disabledAutoLoaders = [];
+    protected $disabledAutoLoaders = [];
 
     /**
      * Application constructor.
@@ -221,7 +249,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
      */
     public function getAppPath(): string
     {
-        return '@base/app';
+        return $this->appPath;
     }
 
     /**
@@ -229,7 +257,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
      */
     public function getRuntimePath(): string
     {
-        return '@base/runtime';
+        return $this->runtimePath;
     }
 
     /**
@@ -237,7 +265,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
      */
     public function getConfigPath(): string
     {
-        return '@base/config';
+        return $this->configPath;
     }
 
     /**
