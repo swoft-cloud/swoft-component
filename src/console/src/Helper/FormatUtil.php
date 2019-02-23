@@ -66,11 +66,12 @@ final class FormatUtil
      *     amet.
      * ```
      *
+     * from yii2
+     *
      * @param string  $text the text to be wrapped
      * @param integer $indent number of spaces to use for indentation.
      * @param integer $width
      * @return string the wrapped text.
-     * @from yii2
      */
     public static function wrapText($text, $indent = 0, $width = 0): string
     {
