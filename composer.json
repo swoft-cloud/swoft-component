@@ -7,12 +7,12 @@
     "swoole",
     "swoft-component"
   ],
-  "description": "microservice framework base on swoole",
+  "description": "micro-service framework base on swoole",
   "license": "Apache-2.0",
   "require": {
     "php": ">7.1.0",
-    "ext-json": "*",
     "ext-pdo": "*",
+    "ext-json": "*",
     "ext-mbstring": "*",
     "psr/http-message": "^1.0",
     "psr/http-server-handler": "^1.0",
@@ -22,6 +22,7 @@
     "psr/container": "^1.0",
     "vlucas/phpdotenv": "^2.5",
     "symfony/yaml": "^4.2",
+    "toolkit/cli-utils": "^1.0",
     "nikic/php-parser": "~4.2"
   },
   "require-dev": {
@@ -76,11 +77,8 @@
       "SwoftTest\\Bean\\": "src/bean/test/",
       "SwoftTest\\Cache\\": "src/cache/test/",
       "SwoftTest\\Console\\": "src/console/test/",
-      "SwoftTest\\DataParser\\": "src/data-parser/test/",
       "SwoftTest\\Db\\": "src/db/test",
-      "SwoftTest\\Defer\\": "src/defer/test/",
       "SwoftTest\\Event\\": "src/event/test/",
-      "SwoftTest\\Devtool\\": "src/devtool/test/",
       "SwoftTest\\ErrorHandler\\": "src/error-handler/test/",
       "SwoftTest\\": "src/framework/test/",
       "SwoftTest\\Http\\Server\\": "src/http-server/test",

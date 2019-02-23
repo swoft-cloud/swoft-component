@@ -43,13 +43,13 @@ class AutoLoader extends SwoftComponent
     public function coreBean(): array
     {
         return [
-            'consoleApp'        => [
+            'cliApp'        => [
                 'class' => Application::class,
             ],
-            'consoleRouter'     => [
+            'cliRouter'     => [
                 'class' => Router::class,
             ],
-            'consoleDispatcher' => [
+            'cliDispatcher' => [
                 'class' => Dispatcher::class,
             ],
         ];

@@ -77,7 +77,7 @@ final class Command
             $this->alias = (string)$values['alias'];
         }
 
-        if (isset($values['desc'])) {
+        if (!empty($values['desc'])) {
             $this->desc = (string)$values['desc'];
         }
 
@@ -99,6 +99,22 @@ final class Command
     }
 
     /**
+     * @return string
+     */
+    public function getDesc(): string
+    {
+        return $this->desc;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAlias(): string
+    {
+        return $this->alias;
+    }
+
+    /**
      * @return bool
      */
     public function isCoroutine(): bool
@@ -115,26 +131,10 @@ final class Command
     }
 
     /**
-     * @return string
-     */
-    public function getAlias(): string
-    {
-        return $this->alias;
-    }
-
-    /**
      * @return string[]
      */
     public function getAliases(): array
     {
         return Str::explode($this->alias);
-    }
-
-    /**
-     * @return string
-     */
-    public function getDesc(): string
-    {
-        return $this->desc;
     }
 }

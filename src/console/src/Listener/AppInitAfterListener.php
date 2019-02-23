@@ -9,6 +9,7 @@
 namespace Swoft\Console\Listener;
 
 use Swoft\Console\Bean\Parser\CommandParser;
+use Swoft\Console\Console;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
@@ -25,16 +26,11 @@ class AppInitAfterListener implements EventHandlerInterface
 {
     /**
      * @param EventInterface $event
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function handle(EventInterface $event): void
     {
         // - register console routes
 
-        /** @var Router $router */
-        $router = \bean('consoleRouter');
-
-        CommandParser::registerTo($router);
+        Console::log('application init complete');
     }
 }
