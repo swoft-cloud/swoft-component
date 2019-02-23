@@ -1,16 +1,17 @@
 <?php
 
-namespace Swoft\Console\Formatter;
+namespace Swoft\Console\Advanced\Formatter;
 
+use Swoft\Console\Advanced\MessageFormatter;
+use Swoft\Console\Console;
 use Swoft\Console\Helper\Helper;
-use Swoft\Console\Helper\Show;
 use Toolkit\Cli\ColorTag;
 
 /**
  * Class Padding
- * @package Swoft\Console\Formatter
+ * @package Swoft\Console\Advanced\Formatter
  */
-class Padding extends Formatter
+class Padding extends MessageFormatter
 {
     /**
      * ```php
@@ -47,6 +48,6 @@ class Padding extends Formatter
             $string .= $opts['indent'] . \str_pad($label, $paddingLen, $opts['char']) . " $value\n";
         }
 
-        Show::write(\trim($string));
+        Console::write(\trim($string));
     }
 }

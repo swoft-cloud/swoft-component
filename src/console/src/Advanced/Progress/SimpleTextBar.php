@@ -1,13 +1,14 @@
 <?php
 
-namespace Swoft\Console\Progress;
+namespace Swoft\Console\Advanced\Progress;
 
+use Swoft\Console\Advanced\NotifyMessage;
 use Swoft\Console\Console;
 use Toolkit\Cli\Cli;
 
 /**
  * Class SimpleTextBar
- * @package Swoft\Console\Progress
+ * @package Swoft\Console\Advanced\Progress
  */
 class SimpleTextBar extends NotifyMessage
 {

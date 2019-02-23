@@ -1,15 +1,16 @@
 <?php
 
-namespace Swoft\Console\Formatter;
+namespace Swoft\Console\Advanced\Formatter;
 
+use Swoft\Console\Advanced\MessageFormatter;
 use Swoft\Console\Helper\Show;
-use Toolkit\StrUtil\Str;
+use Swoft\Stdlib\Helper\Str;
 
 /**
  * Class Title
- * @package Swoft\Console\Formatter
+ * @package Swoft\Console\Advanced\Formatter
  */
-class Title extends Formatter
+class Title extends MessageFormatter
 {
     /**
      * @param string $title The title text

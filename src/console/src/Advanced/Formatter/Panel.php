@@ -6,18 +6,19 @@
  * Time: 21:48
  */
 
-namespace Swoft\Console\Formatter;
+namespace Swoft\Console\Advanced\Formatter;
 
+use Swoft\Console\Advanced\MessageFormatter;
 use Swoft\Console\Helper\FormatUtil;
 use Swoft\Console\Helper\Show;
-use Toolkit\StrUtil\StrBuffer;
+use Swoft\Stdlib\StrBuffer;
 
 /**
  * Class Panel
  * - method version please {@see \Swoft\Console\Helper\Show::panel()}
- * @package Swoft\Console\Formatter
+ * @package Swoft\Console\Advanced\Formatter
  */
-class Panel extends Formatter
+class Panel extends MessageFormatter
 {
     /** @var string */
     public $title = '';

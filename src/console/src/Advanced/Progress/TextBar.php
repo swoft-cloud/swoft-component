@@ -1,18 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2017-12-21
- * Time: 13:34
- */
 
-namespace Swoft\Console\Progress;
+namespace Swoft\Console\Advanced\Progress;
+
+use Swoft\Console\Advanced\NotifyMessage;
 
 /**
  * Class Text
- * @package Swoft\Console\Progress
+ * @package Swoft\Console\Advanced\Progress
  */
-class TextBar
+class TextBar extends NotifyMessage
 {
 
 }

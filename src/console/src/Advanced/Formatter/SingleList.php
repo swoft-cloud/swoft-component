@@ -1,16 +1,17 @@
 <?php
 
-namespace Swoft\Console\Formatter;
+namespace Swoft\Console\Advanced\Formatter;
 
+use Swoft\Console\Advanced\MessageFormatter;
 use Swoft\Console\Helper\FormatUtil;
 use Swoft\Console\Helper\Show;
 use Toolkit\Cli\ColorTag;
 
 /**
  * Class SingleList - Format and render a single list
- * @package Swoft\Console\Formatter
+ * @package Swoft\Console\Advanced\Formatter
  */
-class SingleList extends Formatter
+class SingleList extends MessageFormatter
 {
     /**
      * Format and render a single list

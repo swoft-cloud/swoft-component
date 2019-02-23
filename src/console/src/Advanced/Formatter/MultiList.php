@@ -1,14 +1,15 @@
 <?php
 
-namespace Swoft\Console\Formatter;
+namespace Swoft\Console\Advanced\Formatter;
 
-use Swoft\Console\Helper\Show;
+use Swoft\Console\Advanced\MessageFormatter;
+use Swoft\Console\Console;
 
 /**
  * Class MultiList
- * @package Swoft\Console\Formatter
+ * @package Swoft\Console\Advanced\Formatter
  */
-class MultiList extends Formatter
+class MultiList extends MessageFormatter
 {
     /**
      * Format and render multi list
@@ -49,6 +50,6 @@ class MultiList extends Formatter
             $stringList[] = SingleList::show($list, $title, $opts);
         }
 
-        Show::write(\implode("\n", $stringList), $lastNewline);
+        Console::write(\implode("\n", $stringList), $lastNewline);
     }
 }

@@ -1,16 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2017-12-21
- * Time: 13:31
- */
 
-namespace Swoft\Console\Progress;
+namespace Swoft\Console\Advanced\Progress;
+
+use Swoft\Console\Advanced\NotifyMessage;
 
 /**
  * Class Pending
- * @package Swoft\Console\Progress
+ * @package Swoft\Console\Advanced\Progress
  */
 class Pending extends NotifyMessage
 {

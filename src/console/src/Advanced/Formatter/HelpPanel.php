@@ -1,22 +1,17 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Inhere
- * Date: 2017/12/22 0022
- * Time: 21:45
- */
 
-namespace Swoft\Console\Formatter;
+namespace Swoft\Console\Advanced\Formatter;
 
+use Swoft\Console\Advanced\MessageFormatter;
 use Swoft\Console\Helper\FormatUtil;
 use Swoft\Console\Helper\Show;
 
 /**
  * Class HelpPanel
  * - method version please {@see \Swoft\Console\Helper\Show::helpPanel()}
- * @package Swoft\Console\Formatter
+ * @package Swoft\Console\Advanced\Formatter
  */
-class HelpPanel extends Formatter
+class HelpPanel extends MessageFormatter
 {
     /**
      * help panel keys

@@ -1,10 +1,10 @@
 <?php
 
-namespace Swoft\Console\Interact;
+namespace Swoft\Console\Advanced;
 
 /**
  * Class InteractMessage
- * @package Swoft\Console\Interact
+ * @package Swoft\Console\Advanced
  */
 class InteractMessage
 {

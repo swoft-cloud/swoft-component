@@ -6,13 +6,15 @@
  * Time: 下午1:06
  */
 
-namespace Swoft\Console\Formatter;
+namespace Swoft\Console\Advanced\Formatter;
+
+use Swoft\Console\Advanced\MessageFormatter;
 
 /**
  * Class Block
- * @package Swoft\Console\Formatter
+ * @package Swoft\Console\Advanced\Formatter
  */
-class Block extends Formatter
+class Block extends MessageFormatter
 {
 
 }

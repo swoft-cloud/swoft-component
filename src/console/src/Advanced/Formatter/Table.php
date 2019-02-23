@@ -1,22 +1,17 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Inhere
- * Date: 2017/12/22 0022
- * Time: 21:43
- */
 
-namespace Swoft\Console\Formatter;
+namespace Swoft\Console\Advanced\Formatter;
 
+use Swoft\Console\Advanced\MessageFormatter;
 use Swoft\Console\Helper\Show;
 use Toolkit\Cli\ColorTag;
-use Toolkit\StrUtil\StrBuffer;
+use Swoft\Stdlib\StrBuffer;
 
 /**
  * Class Table - Tabular data display
- * @package Swoft\Console\Formatter
+ * @package Swoft\Console\Advanced\Formatter
  */
-class Table extends Formatter
+class Table extends MessageFormatter
 {
     /** @var array */
     public $data = [];

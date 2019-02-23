@@ -6,16 +6,16 @@
  * Time: 21:44
  */
 
-namespace Swoft\Console\Formatter;
+namespace Swoft\Console\Advanced;
 
 use Swoft\Console\Helper\Show;
-use Toolkit\PhpUtil\PhpHelper;
+use Swoft\Stdlib\Helper\ObjectHelper;
 
 /**
- * Class Formatter - message formatter
- * @package Swoft\Console\Formatter
+ * Class MessageFormatter - message formatter
+ * @package Swoft\Console\Advanced
  */
-abstract class Formatter implements FormatterInterface
+abstract class MessageFormatter implements FormatterInterface
 {
     // content align
     public const ALIGN_LEFT   = 'left';
@@ -29,9 +29,9 @@ abstract class Formatter implements FormatterInterface
 
     /**
      * @param array $config
-     * @return Formatter
+     * @return MessageFormatter
      */
-    public static function create(array $config = []): Formatter
+    public static function create(array $config = []): self
     {
         return new static($config);
     }
@@ -42,7 +42,7 @@ abstract class Formatter implements FormatterInterface
      */
     public function __construct(array $config = [])
     {
-        PhpHelper::initObject($this, $config);
+        ObjectHelper::init($this, $config);
 
         $this->config = $config;
     }

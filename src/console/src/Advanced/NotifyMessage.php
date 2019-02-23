@@ -1,9 +1,9 @@
 <?php
 
-namespace Swoft\Console\Progress;
+namespace Swoft\Console\Advanced;
 
 /**
- * Class NotifyMessage - like progress, spinner ....
+ * Class NotifyMessage - Notifier like progress, spinner ....
  * @since 2.0
  * @link https://github.com/wp-cli/php-cli-tools/tree/master/lib/cli
  */

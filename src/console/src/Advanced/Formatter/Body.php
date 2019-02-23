@@ -6,11 +6,11 @@
  * Time: 上午11:57
  */
 
-namespace Swoft\Console\Formatter;
+namespace Swoft\Console\Advanced\Formatter;
 
 /**
  * Class Body
- * @package Swoft\Console\Formatter
+ * @package Swoft\Console\Advanced\Formatter
  */
 class Body
 {

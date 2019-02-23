@@ -1,15 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2017-12-18
- * Time: 19:34
- */
 
-namespace Inhere\Console\Util;
+namespace Swoft\Console\Helper;
 
+use Swoft\Stdlib\Helper\Arr;
 use Toolkit\Cli\ColorTag;
-use Toolkit\Sys\Sys;
+use Swoft\Stdlib\Helper\Sys;
 
 /**
  * Class FormatUtil
@@ -224,7 +219,7 @@ final class FormatUtil
         ], $opts);
 
         if (!\is_numeric($opts['keyMaxWidth'])) {
-            $opts['keyMaxWidth'] = Helper::getKeyMaxWidth($data);
+            $opts['keyMaxWidth'] = Arr::getKeyMaxWidth($data);
         }
 
         // compare

@@ -1,22 +1,17 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2018-01-02
- * Time: 11:38
- */
 
-namespace Swoft\Console\Formatter;
+namespace Swoft\Console\Advanced\Formatter;
 
+use Swoft\Console\Advanced\MessageFormatter;
 use Swoft\Console\Helper\FormatUtil;
 use Swoft\Console\Helper\Show;
 use Toolkit\Cli\Cli;
 
 /**
  * Class Tree
- * @package Swoft\Console\Formatter
+ * @package Swoft\Console\Advanced\Formatter
  */
-class Tree extends Formatter
+class Tree extends MessageFormatter
 {
     /** @var int */
     private $counter = 0;

@@ -1,16 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-01-01
- * Time: 13:41
- */
 
-namespace Swoft\Console\Formatter;
+namespace Swoft\Console\Advanced;
 
 /**
  * Interface FormatterInterface
- * @package Swoft\Console\Formatter
+ * @package Swoft\Console\Advanced
  */
 interface FormatterInterface
 {

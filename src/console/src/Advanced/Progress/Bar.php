@@ -6,11 +6,11 @@
  * Time: 13:34
  */
 
-namespace Swoft\Console\Progress;
+namespace Swoft\Console\Advanced\Progress;
 
 /**
  * Class Bar
- * @package Swoft\Console\Progress
+ * @package Swoft\Console\Advanced\Progress
  */
 class Bar extends TextBar
 {
