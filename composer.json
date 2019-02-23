@@ -44,7 +44,8 @@
     "swoft/tcp-server": "self.version",
     "swoft/websocket-server": "self.version",
     "swoft/connection-pool": "self.version",
-    "swoft/db": "self.version"
+    "swoft/db": "self.version",
+    "swoft/test": "self.version"
   },
   "autoload": {
     "psr-4": {
@@ -63,6 +64,7 @@
       "Swoft\\WebSocket\\Server\\": "src/websocket-server/src/",
       "Swoft\\Connection\\Pool\\": "src/connection-pool/src/",
       "Swoft\\Db\\": "src/db/src/",
+      "Swoft\\Test\\": "src/test/src/",
       "Swoft\\": "src/framework/src/"
     },
     "files": [
