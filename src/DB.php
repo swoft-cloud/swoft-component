@@ -3,8 +3,8 @@
 
 namespace Swoft\Db;
 
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Exception\PoolException;
+use Swoft\Db\Query\Builder;
 
 /**
  * Class Db
@@ -14,6 +14,14 @@ use Swoft\Db\Exception\PoolException;
  */
 class DB
 {
+    /**
+     * @var array
+     */
+    private static $passthru = [
+        'table',
+        'insert',
+    ];
+
     /**
      * @param string $name
      *
@@ -32,5 +40,19 @@ class DB
         } catch (\Throwable $e) {
             throw new PoolException(sprintf('Pool error is %s', $e->getMessage()));
         }
+    }
+
+
+    public static function __callStatic($name, $arguments)
+    {
+        if (!in_array($name, self::$passthru)) {
+
+        }
+
+        $connection = self::pool();
+
+        return $connection->$name(...$arguments);
+
+        // TODO: Implement __callStatic() method.
     }
 }
