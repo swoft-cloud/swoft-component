@@ -3,10 +3,10 @@
 namespace Swoft\Console\Helper;
 
 /**
- * Class AutoCompleteDumper
+ * Class AutoCompDumper Auto complete dumper
  * @since 2.0
  */
-class AutoCompleteDumper
+class AutoCompDumper
 {
 
 }

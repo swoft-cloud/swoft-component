@@ -6,16 +6,14 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Console\Bean\Collector\CommandCollector;
 use Swoft\Console\Contract\ConsoleInterface;
 use Swoft\Console\Helper\DocBlockHelper;
-use Swoft\Console\Dispatcher;
 use Swoft\Console\Router\Router;
 use Swoft\Stdlib\Helper\StringHelper;
 use function input;
 
 /**
  * Class Application
- * @since 2.0
- * @package Swoft\Console
  *
+ * @since 2.0
  * @Bean("cliApp")
  */
 class Application implements ConsoleInterface
@@ -38,8 +36,13 @@ class Application implements ConsoleInterface
         try {
             $this->doRun();
         } catch (\Throwable $e) {
-            \output()->writeln(sprintf('<error>%s</error>', $e->getMessage()));
-            \output()->writeln(sprintf("Trace:\n%s", $e->getTraceAsString()), true);
+            \output()->writef(
+                "<error>%s</error>\nAt %s line <cyan>%d</cyan>",
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine()
+            );
+            \output()->writef("Trace:\n%s", $e->getTraceAsString());
         }
     }
 
@@ -74,10 +77,11 @@ class Application implements ConsoleInterface
         }
 
         /* @var Router $router */
-        $router = \Swoft::getBean('consoleRouter');
+        $router = \Swoft::getBean('cliRouter');
 
+        // command not found
         if (!$result = $router->match($command)) {
-            \output()->colored("The entered command does not exist! command = $command", 'error');
+            \output()->colored("The entered command '$command' does not exist!", 'error');
             $this->showCommandList(false);
             return;
         }
@@ -92,7 +96,7 @@ class Application implements ConsoleInterface
         }
 
         // show help
-        if (input()->getSameOpt(['h', 'help'])) {
+        if (\input()->getSameOpt(['h', 'help'])) {
             $this->showCommandHelp($className, $method);
             return;
         }
@@ -111,7 +115,7 @@ class Application implements ConsoleInterface
     private function indexCommand(string $className): void
     {
         /* @var Router $router */
-        $router = \Swoft::getBean('consoleRouter');
+        $router = \Swoft::getBean('cliRouter');
 
         $collector = CommandCollector::getCollector();
         $routes    = $collector[$className]['routes'] ?? [];

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft;
 
@@ -43,7 +43,8 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
     /**
      * Can disable processor class before handle.
-     * eg. [
+     * eg.
+     * [
      *  Swoft\Processor\ConsoleProcessor::class => 1,
      * ]
      *
@@ -53,7 +54,8 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
     /**
      * Can disable AutoLoader class before handle.
-     * eg. [
+     * eg.
+     * [
      *  Swoft\Console\AutoLoader::class  => 1,
      * ]
      *
@@ -77,6 +79,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     protected function init()
     {
         // do something ...
+        // $this->disableProcessor(ConsoleProcessor::class, EnvProcessor::class);
     }
 
     /**

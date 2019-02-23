@@ -3,7 +3,7 @@
 namespace Swoft\Console\Concern;
 
 use Swoft\Console\Style\Style;
-use Inhere\Console\Util\Show;
+use Swoft\Console\Helper\Show;
 use Swoft\Stdlib\Helper\PhpHelper;
 
 /**
@@ -52,6 +52,15 @@ trait FormatOutputAwareTrait
             'flush'  => true,
             'stream' => $this->outputStream,
         ], $opts));
+    }
+
+    /**
+     * @inheritdoc
+     * @see Show::writef()
+     */
+    public function writef(string $format, ...$args): int
+    {
+        return Show::writef($format, ...$args);
     }
 
     /**
