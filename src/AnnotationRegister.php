@@ -67,15 +67,15 @@ class AnnotationRegister
      *
      * @example
      * [
-     *     'namespace' => new AutotLoder(),
-     *     'namespace' => new AutotLoder(),
-     *     'namespace' => new AutotLoder(),
+     *     'namespace' => new AutoLoader(),
+     *     'namespace' => new AutoLoader(),
+     *     'namespace' => new AutoLoader(),
      * ]
      */
     private static $autoLoaders = [];
 
     /**
-     * Load annoation class
+     * Load annotation class
      *
      * @throws \Exception
      */
