@@ -1,16 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2017-10-24
- * Time: 9:17
- */
 
-namespace Toolkit\StrUtil;
+namespace Swoft\Stdlib;
 
 /**
  * Class StrBuffer
- * @package Toolkit\StrUtil
+ * @package Swoft\Stdlib
  */
 final class StrBuffer
 {
@@ -49,11 +43,15 @@ final class StrBuffer
     }
 
     /**
-     * clear
+     * clear data
      */
-    public function clear(): void
+    public function clear(): string
     {
+        $string = $this->body;
+        // clear
         $this->body = '';
+
+        return $string;
     }
 
     /**

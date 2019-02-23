@@ -1024,4 +1024,56 @@ class ArrayHelper
 
         return $result;
     }
+
+    /**
+     * find similar text from an array|Iterator
+     * @param string          $need
+     * @param \Iterator|array $iterator
+     * @param int             $similarPercent
+     * @return array
+     */
+    public static function findSimilar(string $need, $iterator, int $similarPercent = 45): array
+    {
+        if (!$need) {
+            return [];
+        }
+
+        // find similar command names by similar_text()
+        $similar = [];
+
+        foreach ($iterator as $name) {
+            \similar_text($need, $name, $percent);
+
+            if ($similarPercent <= (int)$percent) {
+                $similar[] = $name;
+            }
+        }
+
+        return $similar;
+    }
+
+    /**
+     * get key Max Width
+     * @param  array $data
+     * [
+     *     'key1'      => 'value1',
+     *     'key2-test' => 'value2',
+     * ]
+     * @param bool   $expectInt
+     * @return int
+     */
+    public static function getKeyMaxWidth(array $data, bool $expectInt = false): int
+    {
+        $keyMaxWidth = 0;
+
+        foreach ($data as $key => $value) {
+            // key is not a integer
+            if (!$expectInt || !\is_numeric($key)) {
+                $width = \mb_strlen($key, 'UTF-8');
+                $keyMaxWidth = $width > $keyMaxWidth ? $width : $keyMaxWidth;
+            }
+        }
+
+        return $keyMaxWidth;
+    }
 }

@@ -182,6 +182,28 @@ class StringHelper
     }
 
     /**
+     * @param string $string
+     * @param int    $padLen
+     * @param string $padStr
+     * @param int    $padType
+     * @return string
+     */
+    public static function pad(string $string, int $padLen, string $padStr = ' ', int $padType = \STR_PAD_RIGHT): string
+    {
+        return $padLen > 0 ? \str_pad($string, $padLen, $padStr, $padType) : $string;
+    }
+
+    public static function padLeft(string $string, int $padLen, string $padStr = ' '): string
+    {
+        return $padLen > 0 ? \str_pad($string, $padLen, $padStr, \STR_PAD_LEFT) : $string;
+    }
+
+    public static function padRight(string $string, int $padLen, string $padStr = ' '): string
+    {
+        return $padLen > 0 ? \str_pad($string, $padLen, $padStr) : $string;
+    }
+
+    /**
      * Limit the number of characters in a string.
      *
      * @param  string $value
@@ -232,7 +254,7 @@ class StringHelper
     }
 
     /**
-     * Parse a Class@method style callback into class and method.
+     * Parse a `Class@method` style callback into class and method.
      *
      * @param  string $callback
      * @param  string $default
@@ -273,7 +295,7 @@ class StringHelper
      * @param  int $length
      *
      * @return string
-     * @throws \RuntimeException
+     * @throws \Exception
      * @deprecated since version 5.2. Use random_bytes instead.
      */
     public static function randomBytes($length = 16): string
