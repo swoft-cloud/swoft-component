@@ -16,9 +16,9 @@ trait SwoftTrait
      *
      * @return string
      */
-    public function getEnv(): string
+    public function getEnvFile(): string
     {
-        return $this->env;
+        return $this->envFile;
     }
 
     /**

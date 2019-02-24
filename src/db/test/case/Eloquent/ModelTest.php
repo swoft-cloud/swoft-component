@@ -4,12 +4,14 @@
 namespace SwoftTest\Db\Eloquent;
 
 
-use SwoftTest\Db\DbTestCase;
+use Swoft\Bean\BeanFactory;
+use SwoftTest\Db\TestCase;
 
-class ModelTest extends DbTestCase
+class ModelTest extends TestCase
 {
     public function testMethod()
     {
+        var_dump(BeanFactory::getBean('config'));
         $this->assertTrue(true);
     }
 }

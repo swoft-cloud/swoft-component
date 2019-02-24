@@ -51,6 +51,7 @@ class BeanProcessor extends Processor
         // Core beans
         $definitions = [];
         $autoLoaders = AnnotationRegister::getAutoLoaders();
+
         // get disabled loaders by application
         $disabledLoaders = $this->application->getDisabledAutoLoaders();
 

@@ -9,7 +9,7 @@ use Swoole\Coroutine;
 
 /**
  * Class Co
- * @since 2.0
+ * @since   2.0
  * @package Swoft
  */
 class Co
@@ -60,11 +60,14 @@ class Co
 
         // return coroutine ID for created.
         return \go(function () use ($callable, $tid) {
+            try {
+                $id = Coroutine::getCid();
 
-            $id = Coroutine::getCid();
-
-            self::$mapping[$id] = $tid;
-            PhpHelper::call($callable);
+                self::$mapping[$id] = $tid;
+                PhpHelper::call($callable);
+            } catch (\Throwable $e) {
+                var_dump($e);
+            }
         });
     }
 }

@@ -6,6 +6,8 @@ namespace Swoft\Http\Message\Stream;
 
 use Psr\Http\Message\StreamInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Concern\Prototype;
+use Swoft\Bean\Exception\PrototypeException;
 
 /**
  * Class Stream
@@ -16,6 +18,8 @@ use Swoft\Bean\Annotation\Mapping\Bean;
  */
 class Stream implements StreamInterface
 {
+    use Prototype;
+
     /**
      * @var string
      */
@@ -27,23 +31,21 @@ class Stream implements StreamInterface
     protected $size;
 
     /**
-     * stream constructor.
+     * Create stream replace of constructor.
      *
      * @param string $contents
+     *
+     * @return Stream
+     * @throws PrototypeException
      */
-    public function __construct(string $contents = '')
+    public static function new(string $contents): self
     {
-        $this->contents = $contents;
-        $this->size     = strlen($this->contents);
-    }
+        $instance = self::__instance();
 
-    /**
-     * @param string $contents
-     */
-    public function initialize(string $contents): void
-    {
-        $this->contents = $contents;
-        $this->size     = strlen($this->contents);
+        $instance->contents = $contents;
+        $instance->size     = strlen($instance->contents);
+
+        return $instance;
     }
 
     /**
