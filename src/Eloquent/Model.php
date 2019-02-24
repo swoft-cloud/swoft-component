@@ -23,8 +23,6 @@ use Swoft\Stdlib\Jsonable;
  * Class Model
  *
  * @since 2.0
- *
- * @mixin Builder
  */
 abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializable
 {
