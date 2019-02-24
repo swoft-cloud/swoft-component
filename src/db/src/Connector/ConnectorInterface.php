@@ -4,8 +4,6 @@
 namespace Swoft\Db\Connector;
 
 
-use Swoft\Db\Database;
-
 /**
  * Class ConnectorInterface
  *
@@ -16,9 +14,9 @@ interface ConnectorInterface
     /**
      * Establish a database connection.
      *
-     * @param  Database $db
+     * @param  array $config
      *
      * @return \PDO
      */
-    public function connect(Database $db): \PDO;
+    public function connect(array $config): \PDO;
 }

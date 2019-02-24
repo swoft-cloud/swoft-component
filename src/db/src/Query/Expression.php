@@ -30,10 +30,10 @@ class Expression implements PrototypeInterface
      *
      * @param mixed ...$params
      *
-     * @return Expression
+     * @return static
      * @throws \Swoft\Bean\Exception\PrototypeException
      */
-    public static function new(...$params): self
+    public static function new(...$params)
     {
         list($value) = $params;
         $self = self::__instance();

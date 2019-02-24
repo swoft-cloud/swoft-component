@@ -247,7 +247,7 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
      *
      * @return Builder
      *
-     * @throws QueryException
+     * @throws PrototypeException
      */
     public function table($table): Builder
     {
@@ -260,6 +260,7 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
      * @param mixed $value
      *
      * @return Expression
+     * @throws PrototypeException
      */
     public function raw($value): Expression
     {

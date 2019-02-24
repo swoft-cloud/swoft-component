@@ -18,7 +18,7 @@ trait Prototype
      * @return static
      * @throws PrototypeException
      */
-    private static function __instance(): self
+    protected static function __instance()
     {
         try {
             $prototype = bean(static::class);

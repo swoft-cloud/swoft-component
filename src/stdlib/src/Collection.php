@@ -71,12 +71,15 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
      *
      * @param array $items
      *
+     * @return static
      * @throws PrototypeException
      */
-    public static function new(array $items = [])
+    public static function new(array $items = []): self
     {
         $self        = self::__instance();
         $self->items = $items;
+
+        return $self;
     }
 
     /**

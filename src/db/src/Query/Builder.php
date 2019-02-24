@@ -2747,6 +2747,7 @@ class Builder implements PrototypeInterface
      *
      * @return bool
      * @throws QueryException
+     * @throws PrototypeException
      */
     public function insert(array $values)
     {
@@ -2789,6 +2790,7 @@ class Builder implements PrototypeInterface
      *
      * @return string
      * @throws QueryException
+     * @throws PrototypeException
      */
     public function insertGetId(array $values, $sequence = null): string
     {
@@ -2826,6 +2828,7 @@ class Builder implements PrototypeInterface
      *
      * @return int
      * @throws QueryException
+     * @throws PrototypeException
      */
     public function update(array $values)
     {
@@ -2864,6 +2867,7 @@ class Builder implements PrototypeInterface
      *
      * @return int
      * @throws QueryException
+     * @throws PrototypeException
      */
     public function increment($column, $amount = 1, array $extra = [])
     {
@@ -2887,6 +2891,7 @@ class Builder implements PrototypeInterface
      *
      * @return int
      * @throws QueryException
+     * @throws PrototypeException
      */
     public function decrement($column, $amount = 1, array $extra = [])
     {
@@ -2967,6 +2972,7 @@ class Builder implements PrototypeInterface
      * @param  mixed $value
      *
      * @return Expression
+     * @throws PrototypeException
      */
     public function raw($value)
     {

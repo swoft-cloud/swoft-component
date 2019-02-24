@@ -217,6 +217,20 @@ class ArrayHelper
     }
 
     /**
+     * Get all of the given array except for a specified array of keys.
+     *
+     * @param  array  $array
+     * @param  array|string  $keys
+     * @return array
+     */
+    public static function except($array, $keys)
+    {
+        static::forget($array, $keys);
+
+        return $array;
+    }
+
+    /**
      * Remove one or many array items from a given array using "dot" notation.
      *
      * @param  array        $array
