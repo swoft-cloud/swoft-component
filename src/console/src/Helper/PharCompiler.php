@@ -1,4 +1,5 @@
 <?php
+
 namespace Swoft\Console\Helper;
 
 use Seld\PharUtils\Timestamps;
@@ -15,13 +16,13 @@ class PharCompiler
     private static $supportedSignatureTypes = [
         \Phar::SHA512 => 1,
         \Phar::SHA256 => 1,
-        \Phar::SHA1 => 1
+        \Phar::SHA1   => 1
     ];
 
     /** @var resource */
     private $key;
 
-    /** @var  */
+    /** @var */
     private $signatureType;
 
     /**
@@ -105,7 +106,7 @@ class PharCompiler
      * @var \Closure[] Some events. if you want to get some info on packing.
      */
     private $events = [
-        'add' => 0,
+        'add'   => 0,
         'error' => 0,
     ];
 
@@ -145,10 +146,10 @@ class PharCompiler
     private $fileFilter;
 
     /**
-     * @param string $pharFile
-     * @param string $extractTo
+     * @param string            $pharFile
+     * @param string            $extractTo
      * @param string|array|null $files Only fetch the listed files
-     * @param bool $overwrite
+     * @param bool              $overwrite
      * @return bool
      * @throws \BadMethodCallException
      * @throws \RuntimeException
@@ -296,7 +297,7 @@ class PharCompiler
     /**
      * Compiles composer into a single phar file
      * @param  string $pharFile The full path to the file to create
-     * @param bool $refresh
+     * @param bool    $refresh
      * @return string
      * @throws \UnexpectedValueException
      * @throws \BadMethodCallException
@@ -391,7 +392,7 @@ class PharCompiler
     public function findChangedByGit()
     {
         // -u expand dir's files
-        list(, $output, ) = Sys::run('git status -s -u', $this->basePath);
+        list(, $output,) = Sys::run('git status -s -u', $this->basePath);
 
         // 'D some.file'    deleted
         // ' M some.file'   modified
@@ -409,7 +410,7 @@ class PharCompiler
                 yield substr($file, 2);
 
                 // new files
-            } elseif (strpos($file,'?? ') === 0) {
+            } elseif (strpos($file, '?? ') === 0) {
                 yield substr($file, 3);
             }
         }
@@ -431,7 +432,7 @@ class PharCompiler
 
     /**
      * Add a file to the Phar.
-     * @param \Phar $phar
+     * @param \Phar        $phar
      * @param \SplFileInfo $file
      */
     private function packFile(\Phar $phar, \SplFileInfo $file)
@@ -444,8 +445,8 @@ class PharCompiler
         }
 
         $this->counter++;
-        $path = $this->getRelativeFilePath($file);
-        $strip = $this->stripComments;
+        $path    = $this->getRelativeFilePath($file);
+        $strip   = $this->stripComments;
         $content = file_get_contents($file);
 
         // clear php file comments
@@ -484,7 +485,7 @@ class PharCompiler
     {
         if ($this->cliIndex) {
             $this->counter++;
-            $path = $this->basePath . '/' . $this->cliIndex;
+            $path    = $this->basePath . '/' . $this->cliIndex;
             $content = preg_replace('{^#!/usr/bin/env php\s*}', '', file_get_contents($path));
 
             if ($cb = $this->events['add']) {
@@ -496,7 +497,7 @@ class PharCompiler
 
         if ($this->webIndex) {
             $this->counter++;
-            $path = $this->basePath . '/' . $this->webIndex;
+            $path    = $this->basePath . '/' . $this->webIndex;
             $content = file_get_contents($path);
 
             if ($cb = $this->events['add']) {
@@ -522,9 +523,9 @@ class PharCompiler
     private function createStub(): string
     {
         // var_dump($this);die;
-        $date = date('Y-m-d H:i');
+        $date     = date('Y-m-d H:i');
         $pharName = $this->pharName;
-        $stub = <<<EOF
+        $stub     = <<<EOF
 <?php
 /**
  * @date $date
@@ -538,7 +539,7 @@ EOF;
         // add shebang
         if ($shebang = $this->shebang) {
             $shebang = \is_string($shebang) ? $shebang : '#!/usr/bin/env php';
-            $stub = "$shebang\n$stub";
+            $stub    = "$shebang\n$stub";
         }
 
         if ($this->cliIndex && $this->webIndex) {
@@ -621,7 +622,7 @@ EOF;
                 $whitespace = preg_replace('{(?:\r\n|\r|\n)}', "\n", $whitespace);
                 // trim leading spaces
                 $whitespace = preg_replace('{\n +}', "\n", $whitespace);
-                $output .= $whitespace;
+                $output     .= $whitespace;
             } else {
                 $output .= $token[1];
             }
@@ -668,7 +669,7 @@ EOF;
             $this->version = trim($ret);
         } else {
             list($code, $ret,) = Sys::run('git branch', $basePath);
-            $this->branchAliasVersion = $code === 0 ? trim($ret, '* '): 'UNKNOWN';
+            $this->branchAliasVersion = $code === 0 ? trim($ret, '* ') : 'UNKNOWN';
         }
     }
 
@@ -678,10 +679,10 @@ EOF;
      */
     private function getRelativeFilePath($file): string
     {
-        $realPath = $file->getRealPath();
+        $realPath   = $file->getRealPath();
         $pathPrefix = $this->basePath . DIRECTORY_SEPARATOR;
 
-        $pos = strpos($realPath, $pathPrefix);
+        $pos          = strpos($realPath, $pathPrefix);
         $relativePath = $pos !== false ? substr_replace($realPath, '', $pos, \strlen($pathPrefix)) : $realPath;
 
         return str_replace('\\', '/', $relativePath);
@@ -699,7 +700,7 @@ EOF;
 
     /**
      * add event handler
-     * @param string $event
+     * @param string   $event
      * @param \Closure $closure
      */
     public function on(string $event, \Closure $closure)

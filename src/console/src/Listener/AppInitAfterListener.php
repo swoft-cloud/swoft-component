@@ -8,12 +8,10 @@
 
 namespace Swoft\Console\Listener;
 
-use Swoft\Console\Bean\Parser\CommandParser;
 use Swoft\Console\Console;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
-use Swoft\Console\Router\Router;
 use Swoft\SwoftEvent;
 
 /**

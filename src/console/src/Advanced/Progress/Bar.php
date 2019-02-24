@@ -1,10 +1,4 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2017-12-21
- * Time: 13:34
- */
+<?php declare(strict_types=1);
 
 namespace Swoft\Console\Advanced\Progress;
 

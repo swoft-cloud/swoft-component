@@ -12,7 +12,7 @@ namespace Swoft\Console\Helper;
  * Class DocBlockHelper
  * @package Swoft\Console\Helper
  */
-class DocBlockHelper
+class DocBlock
 {
     /**
      * 以下三个方法来自 yii2 console/Controller.php 做了一些调整

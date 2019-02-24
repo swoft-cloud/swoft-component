@@ -12,7 +12,7 @@ class ConfigProcessor extends Processor
      */
     public function handle(): bool
     {
-        if (!$this->application->beforeBean()) {
+        if (!$this->application->beforeConsole()) {
             return false;
         }
 

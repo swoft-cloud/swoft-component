@@ -2,7 +2,7 @@
 
 namespace Swoft\Console\Contract;
 
-use Swoft\ApplicationInterface;
+use Swoft\Contract\ApplicationInterface;
 
 /**
  * Interface ConsoleInterface

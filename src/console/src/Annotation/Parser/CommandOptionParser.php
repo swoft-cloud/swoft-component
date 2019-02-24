@@ -8,7 +8,7 @@ use Swoft\Annotation\AnnotationException;
 use Swoft\Console\Annotation\Mapping\CommandOption;
 
 /**
- * Class CommandMappingParser
+ * Class CommandOptionParser
  * @since 2.0
  *
  * @AnnotationParser(CommandOption::class)

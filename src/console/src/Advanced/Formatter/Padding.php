@@ -1,10 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Console\Advanced\Formatter;
 
 use Swoft\Console\Advanced\MessageFormatter;
 use Swoft\Console\Console;
-use Swoft\Console\Helper\Helper;
+use Swoft\Stdlib\Helper\Arr;
 use Toolkit\Cli\ColorTag;
 
 /**
@@ -40,7 +40,7 @@ class Padding extends MessageFormatter
             'valueStyle' => 'info',
         ], $opts);
 
-        $keyMaxLen  = Helper::getKeyMaxWidth($data);
+        $keyMaxLen  = Arr::getKeyMaxWidth($data);
         $paddingLen = $keyMaxLen > $opts['padding'] ? $keyMaxLen : $opts['padding'];
 
         foreach ($data as $label => $value) {

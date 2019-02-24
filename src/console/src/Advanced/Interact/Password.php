@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Console\Advanced\Interact;
 
@@ -31,7 +31,7 @@ class Password extends InteractMessage
         // linux, unix, git-bash
         if (Sys::shIsAvailable()) {
             // COMMAND: sh -c 'read -p "Enter Password:" -s user_input && echo $user_input'
-            $command = \sprintf('sh -c "read -p \'%s\' -s user_input && echo $user_input"', $prompt);
+            $command  = \sprintf('sh -c "read -p \'%s\' -s user_input && echo $user_input"', $prompt);
             $password = Sys::execute($command, false);
 
             print "\n";
@@ -44,7 +44,7 @@ class Password extends InteractMessage
 
             \file_put_contents($vbFile, \sprintf('wscript.echo(InputBox("%s", "", "password here"))', $prompt));
 
-            $command = 'cscript //nologo ' . \escapeshellarg($vbFile);
+            $command  = 'cscript //nologo ' . \escapeshellarg($vbFile);
             $password = \rtrim(\shell_exec($command));
             \unlink($vbFile);
 

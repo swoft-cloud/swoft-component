@@ -15,7 +15,8 @@ use Swoft\Stdlib\Helper\Str;
  * @Target({"CLASS", "METHOD"})
  * @Attributes(
  *     @Attribute("name", type="string"),
- *     @Attribute("desc", type="string")
+ *     @Attribute("desc", type="string"),
+ *     @Attribute("short", type="string")
  * )
  */
 final class CommandOption extends AbstractFlag
@@ -35,6 +36,7 @@ final class CommandOption extends AbstractFlag
     {
         return $this->short;
     }
+
     /**
      * get shorts
      * @return string[]
