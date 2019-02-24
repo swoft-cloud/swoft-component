@@ -11,6 +11,7 @@ use Swoft\Processor\EnvProcessor;
 use Swoft\Processor\EventProcessor;
 use Swoft\Processor\Processor;
 use Swoft\Processor\ProcessorInterface;
+use Swoft\Contract\ApplicationInterface;
 
 /**
  * Swoft application

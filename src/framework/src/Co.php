@@ -52,13 +52,14 @@ class Co
      * Create coroutine
      *
      * @param callable $callable
+     * @return int If success, return coID
      */
-    public static function create(callable $callable): void
+    public static function create(callable $callable): int
     {
         $tid = self::tid();
 
         // return coroutine ID for created.
-        \go(function () use ($callable, $tid) {
+        return \go(function () use ($callable, $tid) {
 
             $id = Coroutine::getCid();
 

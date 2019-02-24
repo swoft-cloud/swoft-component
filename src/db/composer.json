@@ -9,7 +9,7 @@
         "orm",
         "active record"
     ],
-    "description": "microservice framework base on swoole",
+    "description": "micro-service framework base on swoole",
     "license": "Apache-2.0",
     "require": {
     },
