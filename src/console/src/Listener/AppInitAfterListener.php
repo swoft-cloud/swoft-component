@@ -29,6 +29,6 @@ class AppInitAfterListener implements EventHandlerInterface
     {
         // - register console routes
 
-        Console::log('application init complete');
+//        Console::log('application init complete');
     }
 }

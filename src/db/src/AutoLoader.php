@@ -18,13 +18,13 @@ class AutoLoader extends SwoftComponent
         return [
             'db'      => [
                 'class'    => Database::class,
-                'dsn'      => '',
-                'username' => '',
+                'dsn'      => 'mysql:dbname=testdb;host=127.0.0.1',
+                'username' => 'root',
                 'password' => '',
             ],
             'db.pool' => [
-                'class' => Pool::class,
-                'db'    => bean('db')
+                'class'    => Pool::class,
+                'database' => \bean('db')
             ]
         ];
     }
@@ -34,7 +34,9 @@ class AutoLoader extends SwoftComponent
      */
     public function getPrefixDirs(): array
     {
-        return [];
+        return [
+            __NAMESPACE__ => __DIR__,
+        ];
     }
 
     /**

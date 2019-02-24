@@ -272,6 +272,54 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     }
 
     /**
+     * @param string $envFile
+     */
+    public function setEnvFile(string $envFile): void
+    {
+        $this->envFile = $envFile;
+    }
+
+    /**
+     * @param string $appPath
+     */
+    public function setAppPath(string $appPath): void
+    {
+        $this->appPath = $appPath;
+
+        \Swoft::setAlias('@app', $appPath);
+    }
+
+    /**
+     * @param string $configPath
+     */
+    public function setConfigPath(string $configPath): void
+    {
+        $this->configPath = $configPath;
+
+        \Swoft::setAlias('@config', $configPath);
+    }
+
+    /**
+     * @param string $basePath
+     */
+    public function setBasePath(string $basePath): void
+    {
+        $this->basePath = $basePath;
+
+        \Swoft::setAlias('@base', $basePath);
+    }
+
+    /**
+     * @param string $runtimePath
+     */
+    public function setRuntimePath(string $runtimePath): void
+    {
+        $this->runtimePath = $runtimePath;
+
+        \Swoft::setAlias('@config', $runtimePath);
+    }
+
+    /**
      * Set base path
      */
     private function setSystemAlias(): void

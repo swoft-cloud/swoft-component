@@ -1,6 +1,6 @@
 <?php
 
-namespace Swoft\Console\Bean\Parser;
+namespace Swoft\Console\Annotation\Parser;
 
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;

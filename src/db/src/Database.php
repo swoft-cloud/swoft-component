@@ -241,7 +241,7 @@ class Database
     public function defaultConnections()
     {
         return [
-            self::MYSQL => bean(MySqlConnection::class)
+            self::MYSQL => \bean(MySqlConnection::class)
         ];
     }
 

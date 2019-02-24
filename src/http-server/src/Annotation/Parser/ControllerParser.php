@@ -6,7 +6,7 @@ use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Server\Annotation\Mapping\Controller;
-use Swoft\Http\Server\HttpServerException;
+use Swoft\Http\Server\Exception\HttpServerException;
 use Swoft\Http\Server\Router\RoutesCollector;
 
 /**

@@ -31,7 +31,7 @@ class DB
     public static function pool(string $name = Pool::DEFAULT_POOL): Connection
     {
         try {
-            $pool = bean($name);
+            $pool = \bean($name);
             if (!$pool instanceof Pool) {
                 throw new PoolException(sprintf('%s is not instance of pool', $name));
             }

@@ -200,7 +200,7 @@ class AspectHandler
             $aspectArgs[] = null;
         }
 
-        $aspect = bean($aspectClass);
+        $aspect = \bean($aspectClass);
         return $aspect->$aspectMethod(...$aspectArgs);
     }
 
