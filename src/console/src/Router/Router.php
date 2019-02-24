@@ -177,8 +177,8 @@ class Router implements RouterInterface
     }
 
     /**
-     * @param callable $grpFunc
-     * @param callable $cmdFunc
+     * @param callable $grpFunc function(string $group, array $info)
+     * @param callable $cmdFunc function(string $id, array $info)
      */
     public function sortedEach(callable $grpFunc, callable $cmdFunc): void
     {

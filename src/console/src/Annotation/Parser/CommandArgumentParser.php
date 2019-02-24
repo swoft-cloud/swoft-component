@@ -33,7 +33,7 @@ class CommandArgumentParser extends Parser
         }
 
         // add route info for controller action
-        CommandParser::bindArgument($this->className, $this->methodName, [
+        CommandParser::bindArgument($this->className, $this->methodName, $annotation->getName(), [
             'method'  => $this->methodName,
             'name'    => $annotation->getName(),
             'desc'    => $annotation->getDesc(),

@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Swoft;
-
+namespace Swoft\Contract;
 
 use Swoft\Processor\Processor;
 
 /**
  * Swoft interface
+ * @since 2.0
  */
 interface SwoftInterface
 {

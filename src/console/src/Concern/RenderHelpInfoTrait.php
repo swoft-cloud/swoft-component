@@ -12,6 +12,9 @@ use Swoft\Console\Router\Router;
  */
 trait RenderHelpInfoTrait
 {
+    /**
+     * Display application version
+     */
     protected function showVersionInfo(): void
     {
         /** @var Output $output */
@@ -40,7 +43,21 @@ trait RenderHelpInfoTrait
     protected function showApplicationHelp(bool $showLogo = true): void
     {
         /* @var Router $router */
-        $router   = \Swoft::getBean('cliRouter');
+        $router = \Swoft::getBean('cliRouter');
+
+        $grpHandler = function (string $group, array $info) {
+            \var_dump($group);
+        };
+
+        $cmdHandler = function (string $cmdId, array $info) {
+            \var_dump($cmdId);
+        };
+
+        $router->sortedEach($grpHandler, $cmdHandler);
+
+        \var_dump(__LINE__, __METHOD__);
+        die;
+
         $commands = $this->parserCmdAndDesc();
 
         $commandList              = [];

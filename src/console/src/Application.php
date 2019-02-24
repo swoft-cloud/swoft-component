@@ -258,7 +258,8 @@ class Application implements ConsoleInterface
      */
     private function beforeExecute(string $class, string $command): void
     {
-        \Swoft::trigger(ConsoleEvent::BEFORE_EXECUTE, $command);
+        // TODO ... event params
+        \Swoft::trigger(ConsoleEvent::BEFORE_EXECUTE, $command, $class);
     }
 
     /**
@@ -270,6 +271,7 @@ class Application implements ConsoleInterface
      */
     private function afterExecute(string $command): void
     {
+        // TODO ... event params
         \Swoft::trigger(ConsoleEvent::AFTER_EXECUTE, $command);
     }
 
