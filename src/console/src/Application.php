@@ -3,12 +3,17 @@
 namespace Swoft\Console;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Console\Bean\Collector\CommandCollector;
+use Swoft\Co;
+use Swoft\Console\Concern\RenderHelpInfoTrait;
 use Swoft\Console\Contract\ConsoleInterface;
-use Swoft\Console\Helper\DocBlockHelper;
+use Swoft\Console\Input\Input;
+use Swoft\Console\Output\Output;
 use Swoft\Console\Router\Router;
-use Swoft\Stdlib\Helper\StringHelper;
+use Swoft\Stdlib\Helper\Arr;
+use Swoft\Stdlib\Helper\PhpHelper;
+use Swoole\Event;
 use function input;
+use function output;
 
 /**
  * Class Application
@@ -18,8 +23,35 @@ use function input;
  */
 class Application implements ConsoleInterface
 {
-    // name -> {name}
-    protected const COMMENTS_VAR = '{%s}'; // '{$%s}';
+    use RenderHelpInfoTrait;
+
+    // {$%s} name -> {name}
+    protected const HELP_VAR_LEFT  = '{';
+    protected const HELP_VAR_RIGHT = '}';
+
+    /** @var array */
+    private static $globalOptions = [
+        '--debug'       => 'Setting the application runtime debug level(0 - 4)',
+        // '--profile'     => 'Display timing and memory usage information',
+        '--no-color'    => 'Disable color/ANSI for message output',
+        '-h, --help'    => 'Display this help message',
+        '-V, --version' => 'Show application version information',
+    ];
+
+    /**
+     * @var Input
+     */
+    protected $input;
+
+    /**
+     * @var Output
+     */
+    protected $output;
+
+    /**
+     * @var array
+     */
+    private $commentsVars = [];
 
     /**
      * Class constructor.
@@ -28,26 +60,18 @@ class Application implements ConsoleInterface
     {
     }
 
-    /**
-     * @return void
-     */
-    public function run(): void
+    protected function prepare(): void
     {
-        try {
-            $this->doRun();
-        } catch (\Throwable $e) {
-            \output()->writef(
-                "<error>%s</error>\nAt %s line <cyan>%d</cyan>",
-                $e->getMessage(),
-                $e->getFile(),
-                $e->getLine()
-            );
-            \output()->writef("Trace:\n%s", $e->getTraceAsString());
-        }
+        $this->input  = input();
+        $this->output = output();
+
+        $this->commentsVars = $this->commentsVars();
     }
 
     /**
-     * 为命令注解提供可解析解析变量. 可以在命令的注释中使用
+     * Provides parsable parsing variables for command annotations.
+     * Can be used in comments in commands.
+     *
      * @return array
      */
     public function commentsVars(): array
@@ -56,251 +80,197 @@ class Application implements ConsoleInterface
         return [
             // 'name' => self::getName(),
             // 'group' => self::getName(),
-            'workDir'     => \input()->getPwd(),
-            'script'      => \input()->getScript(), // bin/app
-            'command'     => \input()->getCommand(), // demo OR home:test
-            'fullCommand' => \input()->getFullCommand(),
+            'workDir'     => input()->getPwd(),
+            'script'      => input()->getScript(), // bin/app
+            'command'     => input()->getCommand(), // demo OR home:test
+            'fullCommand' => input()->getFullCommand(),
         ];
     }
 
     /**
      * @return void
-     * @throws \InvalidArgumentException
+     */
+    public function run(): void
+    {
+        try {
+            $this->prepare();
+
+            // get input command
+            $inputCommand = $this->input->getCommand();
+
+            if (!$inputCommand) {
+                $this->filterSpecialOption();
+            } else {
+                $this->doRun($inputCommand);
+            }
+        } catch (\Throwable $e) {
+            $this->output->writef(
+                "<error>%s</error>\nAt %s line <cyan>%d</cyan>",
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine()
+            );
+            $this->output->writef("Trace:\n%s", $e->getTraceAsString());
+        }
+    }
+
+    /**
+     * @param string $inputCmd
+     * @return void
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public function doRun(): void
+    public function doRun(string $inputCmd): void
     {
-        if (!$command = \input()->getCommand()) {
-            $this->baseCommand();
-            return;
-        }
-
+        $output = $this->output;
         /* @var Router $router */
         $router = \Swoft::getBean('cliRouter');
+        $result = $router->match($inputCmd);
 
-        // command not found
-        if (!$result = $router->match($command)) {
-            \output()->colored("The entered command '$command' does not exist!", 'error');
-            $this->showCommandList(false);
+        // Command not found
+        if ($result[0] === Router::NOT_FOUND) {
+            $names = $router->getAllNames();
+            $output->liteError("The entered command '{$inputCmd}' is not exists!");
+
+            // find similar command names by similar_text()
+            if ($similar = Arr::findSimilar($inputCmd, $names)) {
+                $output->writef("\nMaybe what you mean is:\n    <info>%s</info>", \implode(', ', $similar));
+            } else {
+                $this->showApplicationHelp(false);
+            }
             return;
         }
 
-        $handler = $result['handler'];
-        // parse
-        [$className, $method] = $result['handler'];
+        $info = $result[1];
 
-        if ($router->isDefault($method)) {
-            $this->indexCommand($className);
+        // Only input a group name, display help for the group
+        if ($result[0] === Router::ONLY_GROUP) {
+            $groupInfo = $router->getGroupInfo($info['group']);
+            $this->showGroupHelp($groupInfo);
             return;
         }
 
-        // show help
+        // Display help for a command
         if (\input()->getSameOpt(['h', 'help'])) {
+            [$className, $method] = $info['handler'];
             $this->showCommandHelp($className, $method);
             return;
         }
 
-        /* @var Dispatcher $dispatcher */
-        $dispatcher = \Swoft::getBean(Dispatcher::class);
-        $dispatcher->dispatch($handler);
+        $this->dispatch($info);
     }
 
     /**
-     * @param string $className
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @return void
-     */
-    private function indexCommand(string $className): void
-    {
-        /* @var Router $router */
-        $router = \Swoft::getBean('cliRouter');
-
-        $collector = CommandCollector::getCollector();
-        $routes    = $collector[$className]['routes'] ?? [];
-
-        $reflectionClass = new \ReflectionClass($className);
-        $classDocument   = $reflectionClass->getDocComment();
-        $classDocAry     = DocBlockHelper::getTags($classDocument);
-        $classDesc       = $classDocAry['Description'];
-
-        $methodCommands = [];
-
-        foreach ($routes as $route) {
-            $mappedName = $route['mappedName'];
-            $methodName = $route['methodName'];
-            $mappedName = empty($mappedName) ? $methodName : $mappedName;
-
-            if ($methodName === 'init') {
-                continue;
-            }
-
-            if ($router->isDefaultCommand($methodName)) {
-                continue;
-            }
-            $reflectionMethod            = $reflectionClass->getMethod($methodName);
-            $methodDocument              = $reflectionMethod->getDocComment();
-            $methodDocAry                = DocBlockHelper::getTags($methodDocument);
-            $methodCommands[$mappedName] = $methodDocAry['Description'];
-        }
-
-        // 命令显示结构
-        $commandList = [
-            'Description:' => [$classDesc],
-            'Usage:'       => [\input()->getCommand() . ':{command} [arguments] [options]'],
-            'Commands:'    => $methodCommands,
-            'Options:'     => [
-                '-h, --help' => 'Show help of the command group or specified command action',
-            ],
-        ];
-
-        \output()->writeList($commandList);
-    }
-
-    /**
-     * the help of group
-     *
-     * @param string $controllerClass
-     * @param string $commandMethod
-     * @throws \ReflectionException
-     */
-    private function showCommandHelp(string $controllerClass, string $commandMethod): void
-    {
-        // 反射获取方法描述
-        $reflectionClass  = new \ReflectionClass($controllerClass);
-        $reflectionMethod = $reflectionClass->getMethod($commandMethod);
-        $document         = $reflectionMethod->getDocComment();
-        $document         = $this->parseCommentsVars($document, $this->commentsVars());
-        $docs             = DocBlockHelper::getTags($document);
-
-        $commands = [];
-
-        // 描述
-        if (isset($docs['Description'])) {
-            $commands['Description:'] = explode("\n", $docs['Description']);
-        }
-
-        // 使用
-        if (isset($docs['Usage'])) {
-            $commands['Usage:'] = $docs['Usage'];
-        }
-
-        // 参数
-        if (isset($docs['Arguments'])) {
-            // $arguments = $this->parserKeyAndDesc($docs['Arguments']);
-            $commands['Arguments:'] = $docs['Arguments'];
-        }
-
-        // 选项
-        if (isset($docs['Options'])) {
-            // $options = $this->parserKeyAndDesc($docs['Options']);
-            $commands['Options:'] = $docs['Options'];
-        }
-
-        // 实例
-        if (isset($docs['Example'])) {
-            $commands['Example:'] = [$docs['Example']];
-        }
-
-        \output()->writeList($commands);
-    }
-
-    /**
-     * show all commands for the console app
-     *
-     * @param bool $showLogo
-     * @throws \ReflectionException
-     */
-    public function showCommandList(bool $showLogo = true): void
-    {
-        $commands = $this->parserCmdAndDesc();
-
-        $commandList              = [];
-        $script                   = \input()->getFullScript();
-        $commandList['Usage:']    = ["php $script {command} [arguments] [options]"];
-        $commandList['Commands:'] = $commands;
-        $commandList['Options:']  = [
-            '-h, --help'    => 'Display help information',
-            '-v, --version' => 'Display version information',
-        ];
-
-        // show logo
-        if ($showLogo) {
-            \output()->writeln(\Swoft::FONT_LOGO);
-        }
-
-        // output list
-        \output()->writeList($commandList, 'comment', 'info');
-    }
-
-    /**
-     * version
-     */
-    private function showVersion(): void
-    {
-        // 当前版本信息
-        $swoftVersion  = \Swoft::VERSION;
-        $phpVersion    = \PHP_VERSION;
-        $swooleVersion = \SWOOLE_VERSION;
-
-        // 显示面板
-        \output()->writeLogo();
-        \output()->writeln(
-            "swoft: <info>$swoftVersion</info>, php: <info>$phpVersion</info>, swoole: <info>$swooleVersion</info>\n",
-            true
-        );
-    }
-
-    /**
-     * the command list
-     *
-     * @return array
-     * @throws \ReflectionException
-     */
-    private function parserCmdAndDesc(): array
-    {
-        $commands  = [];
-        $collector = CommandCollector::getCollector();
-
-        /* @var \Swoft\Console\Router\HandlerMapping $route */
-        $route = App::getBean('commandRoute');
-
-        foreach ($collector as $className => $command) {
-            if (!$command['enabled']) {
-                continue;
-            }
-
-            $rc         = new \ReflectionClass($className);
-            $docComment = $rc->getDocComment();
-            $docAry     = DocBlockHelper::getTags($docComment);
-
-            $prefix            = $command['name'];
-            $prefix            = $route->getPrefix($prefix, $className);
-            $commands[$prefix] = StringHelper::ucfirst($docAry['Description']);
-        }
-
-        // sort commands
-        ksort($commands);
-
-        return $commands;
-    }
-
-    /**
+     * Filter special option. eg: -h, --help, --version
      * @return void
      * @throws \ReflectionException
      */
-    private function baseCommand()
+    private function filterSpecialOption(): void
     {
-        // 版本命令解析
-        if (input()->hasOpt('v') || input()->hasOpt('version')) {
-            $this->showVersion();
-
+        // Version option resolution
+        if (input()->hasOpt('V') || input()->hasOpt('version')) {
+            $this->showVersionInfo();
             return;
         }
 
-        // 显示命令列表
-        $this->showCommandList();
+        // Display application help, command list
+        $this->showApplicationHelp();
+    }
+
+    /**
+     * @param array $route
+     * @return void
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function dispatch(array $route): void
+    {
+        [$className, $method] = $route['handler'];
+
+        // bind method params
+        $bindParams = $this->getBindParams($className, $method);
+        $beanObject = \Swoft::getBean($className);
+
+        // blocking running
+        if (!$route['coroutine']) {
+            $this->beforeExecute(\get_parent_class($beanObject), $method);
+            PhpHelper::call([$beanObject, $method], $bindParams);
+            $this->afterExecute($method);
+            return;
+        }
+
+        // coroutine running
+        Co::create(function () use ($beanObject, $method, $bindParams) {
+            $this->beforeExecute(\get_parent_class($beanObject), $method);
+            PhpHelper::call([$beanObject, $method], $bindParams);
+            $this->afterExecute($method);
+        });
+        Event::wait();
+    }
+
+    /**
+     * Get bounded params
+     *
+     * @param string $className
+     * @param string $methodName
+     * @return array
+     * @throws \ReflectionException
+     */
+    private function getBindParams(string $className, string $methodName): array
+    {
+        /** @var \ReflectionClass $reflectClass */
+        $reflectClass  = \Swoft::getReflection($className);
+        $reflectMethod = $reflectClass->getMethod($methodName);
+        $reflectParams = $reflectMethod->getParameters();
+
+        // binding params
+        $bindParams = [];
+        foreach ($reflectParams as $key => $reflectParam) {
+            $reflectType = $reflectParam->getType();
+
+            // undefined type of the param
+            if ($reflectType === null) {
+                $bindParams[$key] = null;
+                continue;
+            }
+
+            // defined type of the param
+            $type = $reflectType->getName();
+            if ($type === Output::class) {
+                $bindParams[$key] = \output();
+            } elseif ($type === Input::class) {
+                $bindParams[$key] = \input();
+            } else {
+                $bindParams[$key] = null;
+            }
+        }
+
+        return $bindParams;
+    }
+
+    /**
+     * Before execute command
+     *
+     * @param string $class
+     * @param string $command
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    private function beforeExecute(string $class, string $command): void
+    {
+        \Swoft::trigger(ConsoleEvent::BEFORE_EXECUTE, $command);
+    }
+
+    /**
+     * After execute command
+     *
+     * @param string $command
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    private function afterExecute(string $command): void
+    {
+        \Swoft::trigger(ConsoleEvent::AFTER_EXECUTE, $command);
     }
 
     /**
@@ -312,17 +282,18 @@ class Application implements ConsoleInterface
     protected function parseCommentsVars(string $str, array $vars): string
     {
         // not use vars
-        if (false === strpos($str, '{')) {
+        if (false === \strpos($str, self::HELP_VAR_LEFT)) {
             return $str;
         }
 
         $map = [];
 
         foreach ($vars as $key => $value) {
-            $key       = sprintf(self::COMMENTS_VAR, $key);
+            $key = self::HELP_VAR_LEFT . $key . self::HELP_VAR_RIGHT;
+            // save
             $map[$key] = $value;
         }
 
-        return $map ? strtr($str, $map) : $str;
+        return $map ? \strtr($str, $map) : $str;
     }
 }

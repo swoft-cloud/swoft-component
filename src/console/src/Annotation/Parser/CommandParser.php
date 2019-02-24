@@ -154,6 +154,7 @@ class CommandParser extends Parser
             $groups[$group] = [
                 'names'   => $names,
                 'desc'    => $mapping['desc'],
+                'class'   => $class,
                 'aliases' => $mapping['aliases'],
             ];
         }

@@ -313,8 +313,8 @@ class Console
         }
 
         $opts = \array_merge([
-            'length' => 1024,
-            'stream' => \STDIN,
+            'length'    => 1024,
+            'stream'    => \STDIN,
             'allowTags' => null,
         ], $opts);
 

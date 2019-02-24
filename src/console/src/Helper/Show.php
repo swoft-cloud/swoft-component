@@ -2,7 +2,6 @@
 
 namespace Swoft\Console\Helper;
 
-use Swoft\Console\Console;
 use Swoft\Console\Advanced\Formatter\HelpPanel;
 use Swoft\Console\Advanced\Formatter\MultiList;
 use Swoft\Console\Advanced\Formatter\Padding;
@@ -16,6 +15,7 @@ use Swoft\Console\Advanced\Progress\CounterText;
 use Swoft\Console\Advanced\Progress\DynamicText;
 use Swoft\Console\Advanced\Progress\SimpleBar;
 use Swoft\Console\Advanced\Progress\SimpleTextBar;
+use Swoft\Console\Console;
 use Swoft\Console\Style\Style;
 use Swoft\Stdlib\Helper\Str;
 use Swoft\Stdlib\Helper\Sys;

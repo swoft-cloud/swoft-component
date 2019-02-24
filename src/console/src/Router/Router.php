@@ -3,19 +3,17 @@
 namespace Swoft\Console\Router;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Console\Contract\RouterInterface;
 
 /**
  * Class Router
- * @since 2.0
- * @package Swoft\Console\Router
  *
+ * @since 2.0
  * @Bean("cliRouter")
  */
-class Router //implements HandlerMappingInterface
+class Router implements RouterInterface
 {
-    /**
-     * default commands
-     */
+    // Default commands
     public const DEFAULT_METHODS = [
         'start',
         'reload',
@@ -29,13 +27,13 @@ class Router //implements HandlerMappingInterface
     private $suffix = 'Command';
 
     /**
-     * the default group of command
+     * The default group of command
      * @var string
      */
-    private $defaultGroup = 'server';
+    private $defaultGroup = 'http';
 
     /**
-     * the default command
+     * The default command
      * @var string
      */
     private $defaultCommand = 'index';
@@ -59,8 +57,12 @@ class Router //implements HandlerMappingInterface
      * [
      *  // route ID => route info.
      *  'group:cmd' => [
-     *      'handler' => [command class, method],
-     *      'options' => [],
+     *      'handler' => [group class, command method],
+     *      'options' => [
+     *          'aliases'   => [],
+     *          'options'   => [],
+     *          'arguments' => [],
+     *      ],
      *  ]
      * ]
      */
@@ -73,6 +75,7 @@ class Router //implements HandlerMappingInterface
      * [
      *  group1 => [
      *      desc => 'description',
+     *      class => Group class,
      *      names => [cmd1, cmd2],
      *      aliases => [],
      *  ],
@@ -112,44 +115,65 @@ class Router //implements HandlerMappingInterface
     }
 
     /**
-     * Match route
+     * Match route by input command
      *
      * @param array $params [$route]
      * @return array
+     * [
+     *  status, info(array)
+     * ]
      */
     public function match(...$params): array
     {
-        [$group, $command] = $this->getGroupAndCommand($params[0]);
+        $delimiter = $this->delimiter;
+        $inputCmd  = \trim($params[0], "$delimiter ");
+
+        if (\in_array($inputCmd, self::DEFAULT_METHODS, true)) {
+            $group   = $this->defaultGroup;
+            $command = $this->resolveGroupAlias($inputCmd);
+
+            // only a group name
+        } elseif (\strpos($inputCmd, $delimiter) === false) {
+            return [
+                self::ONLY_GROUP,
+                [
+                    'group' => $this->resolveGroupAlias($inputCmd),
+                ]
+            ];
+        } else {
+            $nameList = \explode($delimiter, $inputCmd, 2);
+
+            if (\count($nameList) === 2) {
+                [$group, $command] = $nameList;
+                // resolve command alias
+                $command = $this->resolveCommandAlias($command);
+            } else {
+                $command = '';
+                // $command = $this->defaultCommand;
+                $group = $nameList[0];
+            }
+        }
+
+        // return [$group, $command ?: $this->defaultCommand];
+        $group = $this->resolveGroupAlias($group);
         // build command ID
         $commandID = $this->buildCommandID($group, $command);
 
-        return $this->routes[$commandID] ?? [];
-    }
-
-    /**
-     * @param string $cmd
-     * @return array
-     */
-    private function getGroupAndCommand(string $cmd): array
-    {
-        if (\in_array($cmd, self::DEFAULT_METHODS, true)) {
-            return [$this->defaultGroup, $cmd];
+        if (isset($this->routes[$commandID])) {
+            $info = $this->routes[$commandID];
+            return [self::FOUND, $info];
         }
 
-        $delimiter  = $this->delimiter;
-        $commandAry = \explode($delimiter, \trim($cmd, "$delimiter "), 2);
-        if (\count($commandAry) === 2) {
-            [$group, $command] = $commandAry;
-        } else {
-            [$group] = $commandAry;
-            $command = '';
+        if (isset($this->groups[$group])) {
+            return [
+                self::ONLY_GROUP,
+                [
+                    'group' => $group,
+                ]
+            ];
         }
 
-        if (empty($group)) {
-            return [];
-        }
-
-        return [$group, $command ?: $this->defaultCommand];
+        return [self::NOT_FOUND];
     }
 
     /**
@@ -205,6 +229,15 @@ class Router //implements HandlerMappingInterface
     }
 
     /**
+     * @param string $name
+     * @return bool
+     */
+    public function isGroup(string $name): bool
+    {
+        return isset($this->groups[$name]);
+    }
+
+    /**
      * command ID = group + : + command
      * @param string $group
      * @param string $command
@@ -217,6 +250,24 @@ class Router //implements HandlerMappingInterface
         }
 
         return $command;
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     */
+    public function resolveGroupAlias(string $name): string
+    {
+        return $this->groupAliases[$name] ?? $name;
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     */
+    public function resolveCommandAlias(string $name): string
+    {
+        return $this->commandAliases[$name] ?? $name;
     }
 
     /**
@@ -261,6 +312,15 @@ class Router //implements HandlerMappingInterface
         if ($command && $alias) {
             $this->commandAliases[$alias] = $command;
         }
+    }
+
+    /**
+     * Get all name for search
+     * @return array
+     */
+    public function getAllNames(): array
+    {
+        return \array_merge(\array_keys($this->getGroupAliases()), \array_keys($this->groups));
     }
 
     /**
@@ -309,6 +369,15 @@ class Router //implements HandlerMappingInterface
     public function getGroups(): array
     {
         return $this->groups;
+    }
+
+    /**
+     * @param string $name
+     * @return array
+     */
+    public function getGroupInfo(string $name): array
+    {
+        return $this->groups[$name] ?? [];
     }
 
     /**

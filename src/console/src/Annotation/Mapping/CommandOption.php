@@ -35,6 +35,7 @@ final class CommandOption extends AbstractFlag
     {
         return $this->short;
     }
+
     /**
      * get shorts
      * @return string[]

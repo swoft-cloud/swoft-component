@@ -9,9 +9,8 @@ use Swoft\SwoftComponent;
 /**
  * class AutoLoader
  * @since 2.0
- * @package Swoft\Console
  */
-class AutoLoader extends SwoftComponent
+final class AutoLoader extends SwoftComponent
 {
     /**
      * Get namespace and dirs
@@ -43,15 +42,15 @@ class AutoLoader extends SwoftComponent
     public function coreBean(): array
     {
         return [
-            'cliApp'        => [
+            'cliApp'    => [
                 'class' => Application::class,
             ],
-            'cliRouter'     => [
+            'cliRouter' => [
                 'class' => Router::class,
             ],
-            'cliDispatcher' => [
-                'class' => Dispatcher::class,
-            ],
+            // 'cliDispatcher' => [
+            //     'class' => Dispatcher::class,
+            // ],
         ];
     }
 }

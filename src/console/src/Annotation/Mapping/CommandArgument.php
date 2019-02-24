@@ -2,9 +2,9 @@
 
 namespace Swoft\Console\Annotation\Mapping;
 
-use Doctrine\Common\Annotations\Annotation\Target;
 use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;
+use Doctrine\Common\Annotations\Annotation\Target;
 use Swoft\Console\Input\AbstractFlag;
 
 /**

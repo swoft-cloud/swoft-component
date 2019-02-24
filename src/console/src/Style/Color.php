@@ -98,10 +98,10 @@ class Color
      */
     public static function makeByString($string)
     {
-        $fg = $bg = '';
-        $extra = false;
+        $fg      = $bg = '';
+        $extra   = false;
         $options = [];
-        $parts = \explode(';', \str_replace(' ', '', $string));
+        $parts   = \explode(';', \str_replace(' ', '', $string));
 
         foreach ($parts as $part) {
             $subParts = \explode('=', $part);

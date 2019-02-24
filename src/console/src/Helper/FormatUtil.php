@@ -3,8 +3,8 @@
 namespace Swoft\Console\Helper;
 
 use Swoft\Stdlib\Helper\Arr;
-use Toolkit\Cli\ColorTag;
 use Swoft\Stdlib\Helper\Sys;
+use Toolkit\Cli\ColorTag;
 
 /**
  * Class FormatUtil
@@ -41,8 +41,8 @@ final class FormatUtil
             return $string;
         }
 
-        $new = '';
-        $list = \explode("\n", $string);
+        $new       = '';
+        $list      = \explode("\n", $string);
         $indentStr = \str_repeat($indentChar ?: ' ', $indent);
 
         foreach ($list as $value) {
@@ -89,7 +89,7 @@ final class FormatUtil
             $width = $size[0];
         }
 
-        $pad = \str_repeat(' ', $indent);
+        $pad   = \str_repeat(' ', $indent);
         $lines = \explode("\n", \wordwrap($text, $width - $indent, "\n", true));
         $first = true;
 
@@ -232,10 +232,10 @@ final class FormatUtil
 
         foreach ($data as $key => $value) {
             $hasKey = !\is_int($key);
-            $text .= $opts['leftChar'];
+            $text   .= $opts['leftChar'];
 
             if ($hasKey && $opts['keyMaxWidth']) {
-                $key = \str_pad($key, $opts['keyMaxWidth'], ' ');
+                $key  = \str_pad($key, $opts['keyMaxWidth'], ' ');
                 $text .= ColorTag::wrap($key, $keyStyle) . $opts['sepChar'];
             }
 
@@ -262,7 +262,7 @@ final class FormatUtil
             }
 
             $value = $hasKey && $opts['ucFirst'] ? \ucfirst($value) : $value;
-            $text .= ColorTag::wrap($value, $opts['valStyle']) . "\n";
+            $text  .= ColorTag::wrap($value, $opts['valStyle']) . "\n";
         }
 
         return $text;

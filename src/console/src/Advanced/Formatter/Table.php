@@ -1,11 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Console\Advanced\Formatter;
 
 use Swoft\Console\Advanced\MessageFormatter;
 use Swoft\Console\Helper\Show;
-use Toolkit\Cli\ColorTag;
 use Swoft\Stdlib\StrBuffer;
+use Toolkit\Cli\ColorTag;
 
 /**
  * Class Table - Tabular data display
