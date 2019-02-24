@@ -127,6 +127,7 @@ class Database
             'charset'  => $this->charset,
             'prefix'   => $this->prefix,
             'options'  => $this->options,
+            'config'   => $this->config,
         ];
 
         $config = array_merge($config, $this->options);
@@ -156,6 +157,7 @@ class Database
             'charset'  => $this->charset,
             'prefix'   => $this->prefix,
             'options'  => $this->options,
+            'config'   => $this->config,
         ];
 
         $config = array_merge($config, $this->options);
@@ -206,7 +208,7 @@ class Database
 
         }
 
-        return Connection;
+        return $connection;
     }
 
     /**

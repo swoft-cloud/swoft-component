@@ -5,7 +5,6 @@ namespace Swoft\Db\Connector;
 
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Db\Database;
 
 /**
  * Class MySqlConnector
@@ -18,18 +17,17 @@ class MySqlConnector extends AbstractConnector
     /**
      * Establish a database connection.
      *
-     * @param Database $db
+     * @param array $config
      *
      * @return \PDO
      * @throws \Exception
      */
-    public function connect(Database $db): \PDO
+    public function connect(array $config): \PDO
     {
-        $dsn      = $db->getDsn();
-        $username = $db->getUsername();
-        $password = $db->getPassword();
-        $options  = $db->getOptions();
-        $options  = $this->getOptions($options);
+        $dsn      = $config['dsn'];
+        $username = $config['username'];
+        $password = $config['password'];
+        $options  = $config['options'];
 
         // We need to grab the PDO options that should be used while making the brand
         // new connection instance. The PDO options control various aspects of the
@@ -40,14 +38,14 @@ class MySqlConnector extends AbstractConnector
             $connection->exec("use `{$config['database']}`;");
         }
 
-        $this->configureEncoding($connection, $db);
+        $this->configureEncoding($connection, $config);
 
         // Next, we will check to see if a timezone has been specified in this config
         // and if it has we will issue a statement to modify the timezone with the
         // database. Setting this DB timezone is an optional configuration item.
-        $this->configureTimezone($connection, $db);
+        $this->configureTimezone($connection, $config);
 
-        $this->setModes($connection, $db);
+        $this->setModes($connection, $config);
 
         return $connection;
     }
@@ -55,13 +53,13 @@ class MySqlConnector extends AbstractConnector
     /**
      * Set the connection character set and collation.
      *
-     * @param \PDO     $connection
-     * @param Database $db
+     * @param \PDO  $connection
+     * @param array $config
      */
-    protected function configureEncoding(\PDO $connection, Database $db): void
+    protected function configureEncoding(\PDO $connection, array $config): void
     {
-        $config  = $db->getConfig();
-        $charset = $db->getCharset();
+        $charset = $config['charset'];
+        $config  = $config['config'];
         if (empty($charset)) {
             return;
         }
@@ -75,14 +73,14 @@ class MySqlConnector extends AbstractConnector
     /**
      * Set the timezone on the connection.
      *
-     * @param  \PDO     $connection
-     * @param  Database $db
+     * @param  \PDO  $connection
+     * @param  array $config
      *
      * @return void
      */
-    protected function configureTimezone($connection, Database $db): void
+    protected function configureTimezone($connection, array $config): void
     {
-        $config   = $db->getConfig();
+        $config   = $config['config'];
         $timezone = $config['timezone'] ?? '';
         if (!empty($timezone)) {
             $connection->prepare(sprintf('set time_zone="%s"', $timezone), $timezone)->execute();
@@ -116,15 +114,15 @@ class MySqlConnector extends AbstractConnector
     /**
      * Set the modes for the connection.
      *
-     * @param  \PDO     $connection
-     * @param  Database $db
+     * @param  \PDO  $connection
+     * @param  array $config
      *
      * @return void
      */
-    protected function setModes(\PDO $connection, Database $db): void
+    protected function setModes(\PDO $connection, array $config): void
     {
-        $config = $db->getConfig();
         $modes  = $config['modes'] ?? [];
+        $config = $config['config'];
         if (!empty($modes)) {
             $modes = implode(',', $modes);
             $connection->prepare(sprintf('set session sql_mode="%s"', $modes))->execute();

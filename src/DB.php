@@ -38,7 +38,9 @@ class DB
 
             return $pool->getConnection();
         } catch (\Throwable $e) {
-            throw new PoolException(sprintf('Pool error is %s', $e->getMessage()));
+            throw new PoolException(
+                sprintf('Pool error is %s file=%s line=%d', $e->getMessage(), $e->getFile(), $e->getLine())
+            );
         }
     }
 
