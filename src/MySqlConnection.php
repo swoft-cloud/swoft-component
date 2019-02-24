@@ -11,6 +11,7 @@ use Swoft\Db\Query\Grammar\Grammar;
  * Class MySqlConnection
  *
  * @Bean(scope=Bean::PROTOTYPE)
+ *
  * @since 2.0
  */
 class MySqlConnection extends Connection

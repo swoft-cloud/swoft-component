@@ -222,25 +222,6 @@ class Builder implements PrototypeInterface
     public $useWritePdo = false;
 
     /**
-     * Create a new query builder instance.
-     *
-     * @param  Connection $connection
-     * @param  Grammar    $grammar
-     * @param  Processor  $processor
-     *
-     * @return void
-     */
-    public function __construct(
-        Connection $connection,
-        Grammar $grammar = null,
-        Processor $processor = null
-    ) {
-        $this->connection = $connection;
-        $this->grammar    = $grammar ?: $connection->getQueryGrammar();
-        $this->processor  = $processor ?: $connection->getPostProcessor();
-    }
-
-    /**
      * New builder instance
      *
      * @param mixed ...$params
@@ -251,9 +232,9 @@ class Builder implements PrototypeInterface
     public static function new(...$params)
     {
         /**
-         * @var Connection $connection
-         * @var Grammar    $grammar
-         * @var Processor  $processor
+         * @var Connection     $connection
+         * @var Grammar|null   $grammar
+         * @var Processor|null $processor
          */
         list($connection, $grammar, $processor) = $params;
 
@@ -264,20 +245,6 @@ class Builder implements PrototypeInterface
         $self->processor  = $processor ?: $connection->getPostProcessor();
 
         return $self;
-    }
-
-    /**
-     * Create a new query builder instance.
-     *
-     * @param Connection     $connection
-     * @param Grammar|null   $grammar
-     * @param Processor|null $processor
-     */
-    public function initialize(Connection $connection, Grammar $grammar = null, Processor $processor = null)
-    {
-        $this->connection = $connection;
-        $this->grammar    = $grammar ?: $connection->getQueryGrammar();
-        $this->processor  = $processor ?: $connection->getPostProcessor();
     }
 
     /**

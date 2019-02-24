@@ -17,8 +17,6 @@ use Swoft\Stdlib\Helper\Arr;
 /**
  * Class Builder
  *
- * @mixin \Swoft\Db\Query\Builder
- *
  * @since 2.0
  */
 class Builder
