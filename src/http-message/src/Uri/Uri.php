@@ -6,6 +6,7 @@ namespace Swoft\Http\Message\Uri;
 
 use Psr\Http\Message\UriInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Concern\Prototype;
 
 /**
  * Class Uri
@@ -16,6 +17,8 @@ use Swoft\Bean\Annotation\Mapping\Bean;
  */
 class Uri implements UriInterface
 {
+    use Prototype;
+
     /**
      * Absolute http and https URIs require a host per RFC 7230 Section 2.7
      * but in generic URIs the host can be empty. So for http(s) URIs
@@ -108,37 +111,29 @@ class Uri implements UriInterface
     private $fragment = '';
 
     /**
-     * @param string $uri URI to parse
-     */
-    public function __construct(string $uri = '')
-    {
-        // weak type check to also accept null until we can add scalar type hints
-        if ($uri === '') {
-            return;
-        }
-
-        $parts = parse_url($uri);
-        if ($parts === false) {
-            throw new \InvalidArgumentException("Unable to parse URI: $uri");
-        }
-        $this->applyParts($parts);
-    }
-
-    /**
+     * Create Url replace for constructor
+     *
      * @param string $uri
+     *
+     * @return Uri
+     * @throws \Swoft\Bean\Exception\PrototypeException
      */
-    public function initialize($uri = ''): void
+    public static function new(string $uri = ''): self
     {
+        $instance = self::__instance();
+
         // weak type check to also accept null until we can add scalar type hints
         if ($uri === '') {
-            return;
+            return $instance;
         }
 
         $parts = parse_url($uri);
         if ($parts === false) {
             throw new \InvalidArgumentException("Unable to parse URI: $uri");
         }
-        $this->applyParts($parts);
+        $instance->applyParts($parts);
+
+        return $instance;
     }
 
     /**

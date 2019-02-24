@@ -3,18 +3,24 @@
 namespace Swoft\Http\Message;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Concern\Prototype;
+use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Http\Message\Concern\MessageTrait;
+use Swoft\Http\Message\Contract\ResponseFormatterInterface;
 use Swoft\Http\Message\Contract\ResponseInterface;
+use Swoft\Http\Message\Stream\Stream;
 use Swoole\Http\Response as CoResponse;
 
 /**
  * Class Response
  *
  * @since 2.0
- * @Bean("httpResponse")
+ * @Bean(name="httpResponse", scope=Bean::PROTOTYPE)
  */
 class Response implements ResponseInterface
 {
+    use Prototype;
+
     /**
      * Message trait
      */
@@ -46,8 +52,6 @@ class Response implements ResponseInterface
      * @var mixed
      */
     protected $data;
-
-    // ----------
 
     /**
      * Exception
@@ -91,11 +95,19 @@ class Response implements ResponseInterface
     protected $cookies = [];
 
     /**
+     * Create response replace of constructor
+     *
      * @param CoResponse $coResponse
+     *
+     * @return static|Response
+     * @throws PrototypeException
      */
-    public function initialize(CoResponse $coResponse): void
+    public static function new(CoResponse $coResponse): self
     {
-        $this->coResponse = $coResponse;
+        $instance             = self::__instance();
+        $instance->coResponse = $coResponse;
+
+        return $instance;
     }
 
     /**
@@ -160,8 +172,7 @@ class Response implements ResponseInterface
      * @param $content
      *
      * @return static
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws PrototypeException
      */
     public function withContent($content): Response
     {
@@ -169,13 +180,9 @@ class Response implements ResponseInterface
             return $this;
         }
 
-        /* @var Stream $stream */
-        $stream = \bean(Stream::class);
-        $stream->initialize($content);
-
         $new = clone $this;
 
-        $new->stream = $stream;
+        $new->stream = Stream::new($content);
         return $new;
     }
 

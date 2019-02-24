@@ -3,13 +3,15 @@
 namespace Swoft\Http\Message;
 
 use Psr\Http\Message\UploadedFileInterface;
-use Swoft\Http\Message\Contract\ServerRequestInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Concern\Prototype;
+use Swoft\Bean\Exception\PrototypeException;
+use Swoft\Http\Message\Concern\InteractsWithInput;
+use Swoft\Http\Message\Contract\RequestParserInterface;
+use Swoft\Http\Message\Contract\ServerRequestInterface;
 use Swoft\Http\Message\Stream\Stream;
 use Swoft\Http\Message\Upload\UploadedFile;
 use Swoft\Http\Message\Uri\Uri;
-use Swoft\Http\Message\Concern\InteractsWithInput;
-use Swoft\Http\Message\Contract\RequestParserInterface;
 use Swoole\Http\Request as CoRequest;
 
 /**
@@ -20,6 +22,8 @@ use Swoole\Http\Request as CoRequest;
  */
 class ServerRequest extends Request implements ServerRequestInterface
 {
+    use Prototype;
+
     /**
      * Interacts input
      */
@@ -92,10 +96,17 @@ class ServerRequest extends Request implements ServerRequestInterface
     /**
      * @param CoRequest $coRequest
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @return static
+     * @throws PrototypeException
      */
-    public function initialize(CoRequest $coRequest): void
+
+    /**
+     * @param CoRequest $coRequest
+     *
+     * @return ServerRequest
+     * @throws PrototypeException
+     */
+    public static function new(CoRequest $coRequest): self
     {
         $server  = $coRequest->server;
         $method  = $server['request_method'] ?? 'GET';
@@ -103,38 +114,38 @@ class ServerRequest extends Request implements ServerRequestInterface
         $content = $coRequest->rawcontent();
         $content = $content === false ? '' : $content;
 
-        /* @var Stream $stream */
-        $stream = \bean(Stream::class);
-        $stream->initialize($content);
+        $instace = self::__instance();
 
         // Set headers
-        $this->setHeaders($headers);
+        $instace->setHeaders($headers);
 
         // Protocol
         if (isset($server['server_protocol'])) {
-            $this->protocol = str_replace('HTTP/', '', $server['server_protocol']);
+            $instace->protocol = str_replace('HTTP/', '', $server['server_protocol']);
         }
 
         // Parse body
         $parsedBody = $coRequest->post ?? [];
-        if (empty($parsedBody) && !$this->isGet()) {
-            $parsedBody = $this->parseBody($content);
+        if (empty($parsedBody) && !$instace->isGet()) {
+            $parsedBody = $instace->parseBody($content);
         }
 
-        $this->method        = strtoupper($method);
-        $this->uri           = $this->getUriByCoRequest($coRequest);
-        $this->stream        = $stream;
-        $this->cookieParams  = ($coRequest->cookie ?? []);
-        $this->queryParams   = ($coRequest->get ?? []);
-        $this->serverParams  = ($server ?? []);
-        $this->uploadedFiles = self::normalizeFiles($coRequest->files ?? []);
-        $this->coRequest     = $coRequest;
-        $this->parsedBody    = $parsedBody;
+        $instace->method        = strtoupper($method);
+        $instace->uri           = $instace->getUriByCoRequest($coRequest);
+        $instace->stream        = Stream::new($content);
+        $instace->cookieParams  = ($coRequest->cookie ?? []);
+        $instace->queryParams   = ($coRequest->get ?? []);
+        $instace->serverParams  = ($server ?? []);
+        $instace->uploadedFiles = self::normalizeFiles($coRequest->files ?? []);
+        $instace->coRequest     = $coRequest;
+        $instace->parsedBody    = $parsedBody;
 
         // Update uri by host
-        if (!$this->hasHeader('Host')) {
-            $this->updateHostByUri();
+        if (!$instace->hasHeader('Host')) {
+            $instace->updateHostByUri();
         }
+
+        return $instace;
     }
 
     /**
@@ -618,16 +629,14 @@ class ServerRequest extends Request implements ServerRequestInterface
      * @param CoRequest $coRequest
      *
      * @return Uri
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws PrototypeException
      */
     private function getUriByCoRequest(CoRequest $coRequest): Uri
     {
         $server = $coRequest->server;
         $header = $coRequest->header;
 
-        /* @var Uri $uri */
-        $uri = bean(Uri::class);
+        $uri = Uri::new();
         $uri = $uri->withScheme(!empty($server['https']) && $server['https'] !== 'off' ? 'https' : 'http');
 
         $hasPort = false;

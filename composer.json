@@ -70,6 +70,7 @@
     "files": [
       "src/console/src/Helper/Functions.php",
       "src/framework/src/Swoft.php",
+      "src/bean/src/Helper/Functions.php",
       "src/framework/src/Helper/Functions.php"
     ]
   },

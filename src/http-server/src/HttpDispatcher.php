@@ -112,8 +112,8 @@ class HttpDispatcher extends Dispatcher
     {
         /* @var Response $response */
         list($response) = $params;
-
         $response->send();
+
         Context::destroy();
     }
 
