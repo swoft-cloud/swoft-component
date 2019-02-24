@@ -4,24 +4,27 @@
 namespace SwoftTest\Db;
 
 
-use PHPUnit\Framework\TestCase;
 use Swoft\Test\TestApplication;
 
 /**
- * Class DbTestCase
+ * Class TestCase
  *
  * @since 2.0
  */
-class DbTestCase extends TestCase
+class TestCase extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var TestApplication
      */
     protected $application;
 
+    /**
+     * Set up
+     */
     public function setUp()
     {
         $this->application = new TestApplication();
-        $this->application->setBeanFile();
+        $this->application->setBeanFile(__DIR__ . '/bean.php');
+        $this->application->run();
     }
 }
