@@ -54,4 +54,9 @@ class AutoLoader extends SwoftComponent
             ],
         ];
     }
+
+    public function enable(): bool
+    {
+        return false;
+    }
 }

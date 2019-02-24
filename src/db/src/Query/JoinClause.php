@@ -17,7 +17,7 @@ use Swoft\Db\Exception\QueryException;
  *
  * @since 2.0
  */
-class JoinClause extends Builder implements PrototypeInterface
+class JoinClause extends Builder
 {
     use Prototype;
 
@@ -41,28 +41,6 @@ class JoinClause extends Builder implements PrototypeInterface
      * @var Builder
      */
     private $parentQuery;
-
-    /**
-     * Create a new join clause instance.
-     *
-     * @param Builder $parentQuery
-     * @param string  $type
-     * @param string  $table
-     */
-    public function initializeJoinClause(Builder $parentQuery, string $type, string $table)
-    {
-        $this->type        = $type;
-        $this->table       = $table;
-        $this->parentQuery = $parentQuery;
-
-        $connection = $parentQuery->getConnection();
-        $grammar    = $parentQuery->getGrammar();
-        $processor  = $parentQuery->getProcessor();
-
-        $this->connection = $connection;
-        $this->grammar    = $grammar ?: $connection->getQueryGrammar();
-        $this->processor  = $processor ?: $connection->getPostProcessor();
-    }
 
     /**
      * @param mixed ...$params

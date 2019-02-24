@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Http\Server;
+namespace Swoft\Http\Server\Exception;
 
 /**
  * Class HttpServerException

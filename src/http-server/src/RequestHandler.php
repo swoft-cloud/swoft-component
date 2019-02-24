@@ -9,6 +9,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Server\Middleware\MiddlewareInterface;
+use Swoft\Http\Server\Exception\HttpServerException;
 
 /**
  * Class RequestHandler
