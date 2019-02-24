@@ -7,6 +7,7 @@ use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\AnnotationException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Console\Annotation\Mapping\Command;
+use Swoft\Console\Helper\DocBlock;
 use Swoft\Console\Router\Router;
 use Swoft\Stdlib\Helper\Str;
 
@@ -110,50 +111,62 @@ class CommandParser extends Parser
 
     /**
      * @param Router $router
+     * @throws \ReflectionException
      */
     public static function registerTo(Router $router): void
     {
         $maxLen = 12;
         $groups = [];
+        $defCmd = $router->getDefaultCommand();
 
         foreach (self::$commands as $class => $mapping) {
-            // record command names
             $names = [];
             $group = $mapping['group'];
-            $idLen = \strlen($group);
             // set group name aliases
             $router->setGroupAliases($group, $mapping['aliases']);
 
+            /** @var \ReflectionClass $refObject */
+            // $refObject = \Swoft::getReflection($class);
+// \var_dump($refObject);die;
             foreach ($mapping['commands'] as $method => $route) {
                 // $method = $route['method'];
                 $command = $route['command'];
-                $idLen   += \strlen($command);
+                $idLen   = \strlen($group . $command);
 
                 if ($idLen > $maxLen) {
                     $maxLen = $idLen;
                 }
 
+                if (!$cmdDesc = $route['desc']) {
+                    // $refMethod = $refObject->getMethod($method);
+                    // $cmdDesc   = DocBlock::firstLine($refMethod->getDocComment());
+                }
+
                 $router->map($group, $command, [$class, $method], [
+                    'desc'      => $cmdDesc,
                     // 'alias'   => $route['aliases'],
                     'aliases'   => $route['aliases'],
                     'enabled'   => $mapping['enabled'],
                     'coroutine' => $mapping['coroutine'],
                     // arguments
-                    'arguments' => $route['arguments'],
+                    'arguments' => $route['arguments'] ?? [],
                     // options
-                    'options'   => $route['options'],
+                    'options'   => $route['options'] ?? [],
                 ]);
 
                 $names[] = $command;
             }
 
             // always register default command.
-            $defCmd = $router->getDefaultCommand();
             $router->map($group, $defCmd, [$class, $defCmd]);
+
+            if (!$groupDesc = $mapping['desc']) {
+                // $groupDesc = DocBlock::firstLine($refObject->getDocComment());
+            }
 
             $groups[$group] = [
                 'names'   => $names,
-                'desc'    => $mapping['desc'],
+                'desc'    => $groupDesc,
                 'class'   => $class,
                 'aliases' => $mapping['aliases'],
             ];

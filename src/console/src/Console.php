@@ -38,13 +38,11 @@ class Console
         'error'   => 'error',
     ];
 
-    /**
-     * @var Application
-     */
+    /** @var Application */
     private static $app;
 
     /** @var string */
-    private static $buffer;
+    private static $buffer = '';
 
     /** @var bool */
     private static $buffering = false;
@@ -177,7 +175,7 @@ class Console
      * @param bool         $nl
      * @param bool|int     $quit
      */
-    public static function stdout($text, $nl = true, $quit = false): void
+    public static function stdout($text, bool $nl = true, $quit = false): void
     {
         self::write($text, $nl, $quit);
     }
@@ -188,11 +186,25 @@ class Console
      * @param bool         $nl
      * @param bool|int     $quit
      */
-    public static function stderr($text, $nl = true, $quit = -200): void
+    public static function stderr($text, bool $nl = true, $quit = -2): void
     {
         self::write($text, $nl, $quit, [
             'stream' => \STDERR,
         ]);
+    }
+
+    /**
+     * @param string $message
+     * @param string $style
+     * @param bool   $nl
+     * @param array  $opts
+     * @return int
+     */
+    public static function colored(string $message, string $style = 'info', bool $nl = true, array $opts = []): int
+    {
+        $quit = isset($opts['quit']) ? (bool)$opts['quit'] : false;
+
+        return self::write(ColorTag::wrap($message, $style), $nl, $quit, $opts);
     }
 
     /**
@@ -382,43 +394,37 @@ class Console
     }
 
     /**
-     * start buffering
-     */
-    public static function clearBuffer(): void
-    {
-        self::$buffer = null;
-    }
-
-    /**
-     * stop buffering
-     * @see Show::write()
+     * Stop buffering, will return buffer string and clear old buffer.
+     * @see Console::write()
      * @param bool  $flush Whether flush buffer to output stream
      * @param bool  $nl Default is False, because the last write() have been added "\n"
      * @param bool  $quit
      * @param array $opts
-     * @return null|string If flush = False, will return all buffer text.
+     * @return string If flush = False, will return all buffer text.
      */
-    public static function stopBuffer($flush = true, $nl = false, $quit = false, array $opts = []): ?string
-    {
+    public static function stopBuffer(
+        bool $flush = true,
+        bool $nl = false,
+        bool $quit = false,
+        array $opts = []
+    ): string {
         self::$buffering = false;
 
         if ($flush && self::$buffer) {
             // all text have been rendered by Style::render() in every write();
             $opts['color'] = false;
-
             // flush to stream
             self::write(self::$buffer, $nl, $quit, $opts);
-
             // clear buffer
-            self::$buffer = null;
+            self::$buffer = '';
         }
 
         return self::$buffer;
     }
 
     /**
-     * stop buffering and flush buffer text
-     * @see Show::write()
+     * Stop buffering and flush buffer text
+     * @see Console::write()
      * @param bool  $nl
      * @param bool  $quit
      * @param array $opts
@@ -426,5 +432,13 @@ class Console
     public static function flushBuffer($nl = false, $quit = false, array $opts = []): void
     {
         self::stopBuffer(true, $nl, $quit, $opts);
+    }
+
+    /**
+     * clear buffering
+     */
+    public static function clearBuffer(): void
+    {
+        self::$buffer = '';
     }
 }

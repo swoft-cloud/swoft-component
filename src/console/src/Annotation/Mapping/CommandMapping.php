@@ -39,7 +39,7 @@ final class CommandMapping
      *
      * @var string
      */
-    private $desc = 'no description message';
+    private $desc = '';
 
     /**
      * Custom usage help information

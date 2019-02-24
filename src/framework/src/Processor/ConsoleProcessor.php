@@ -3,7 +3,7 @@
 namespace Swoft\Processor;
 
 use Swoft\Console\Application;
-use Swoft\Console\Bean\Parser\CommandParser;
+use Swoft\Console\Annotation\Parser\CommandParser;
 use Swoft\Console\Router\Router;
 use Swoft\Http\Server\HttpServer;
 

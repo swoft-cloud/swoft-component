@@ -20,7 +20,6 @@ use Swoft\Console\Style\Style;
 use Swoft\Stdlib\Helper\Str;
 use Swoft\Stdlib\Helper\Sys;
 use Toolkit\Cli\Cli;
-use Toolkit\Cli\ColorTag;
 
 /**
  * Class Show - render and display formatted message text
@@ -293,7 +292,6 @@ class Show
     {
         MultiList::show($data, $opts);
     }
-
 
     /**
      * Render console help message
@@ -666,21 +664,15 @@ class Show
     }
 
     /**
-     * @param string|array $message
-     * @param string       $style
-     * @param bool         $nl
-     * @param array        $opts
+     * @param string $message
+     * @param string $style
+     * @param bool   $nl
+     * @param array  $opts
      * @return int
      */
-    public static function colored($message, string $style = 'info', $nl = true, array $opts = []): int
+    public static function colored(string $message, string $style = 'info', bool $nl = true, array $opts = []): int
     {
-        $quit = isset($opts['quit']) ? (bool)$opts['quit'] : false;
-
-        if (\is_array($message)) {
-            $message = \implode($nl ? \PHP_EOL : '', $message);
-        }
-
-        return self::write(ColorTag::wrap($message, $style), $nl, $quit, $opts);
+        return Console::colored($message, $style, $nl, $opts);
     }
 
     /**

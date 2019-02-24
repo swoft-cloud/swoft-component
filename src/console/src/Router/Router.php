@@ -57,8 +57,8 @@ class Router implements RouterInterface
      * [
      *  // route ID => route info.
      *  'group:cmd' => [
-     *      'handler' => [group class, command method],
-     *      'options' => [
+     *      'handler'  => [group class, command method],
+     *      'metadata' => [
      *          'aliases'   => [],
      *          'options'   => [],
      *          'arguments' => [],
@@ -108,10 +108,9 @@ class Router implements RouterInterface
             $this->setCommandAliases($command, $aliases);
         }
 
-        $this->routes[$cmdID] = [
-            'handler' => $handler,
-            'options' => $options,
-        ];
+        $options['handler'] = $handler;
+
+        $this->routes[$cmdID] = $options;
     }
 
     /**

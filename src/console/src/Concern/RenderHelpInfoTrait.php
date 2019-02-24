@@ -2,9 +2,12 @@
 
 namespace Swoft\Console\Concern;
 
+use Swoft\Console\Console;
+use Swoft\Console\Helper\FormatUtil;
 use Swoft\Console\Helper\Show;
 use Swoft\Console\Output\Output;
 use Swoft\Console\Router\Router;
+use Swoft\Stdlib\Helper\Str;
 
 /**
  * Trait RenderHelpInfoTrait
@@ -39,44 +42,54 @@ trait RenderHelpInfoTrait
      *
      * @param bool $showLogo
      * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function showApplicationHelp(bool $showLogo = true): void
     {
+        // show logo
+        if ($showLogo) {
+            Console::colored(\Swoft::FONT_LOGO, 'cyan');
+        }
+
+        $script = \input()->getScriptName();
+        // built in options
+        $internalOptions = FormatUtil::alignOptions(self::$globalOptions);
+
+        // output list
+        // \output()->writeList($commandList, 'comment', 'info');
+        Show::mList([
+            'Usage:'   => "$script <info>{command}</info> [arg0 arg1 arg2 ...] [--opt -v -h ...]",
+            'Options:' => $internalOptions,
+        ]);
+
         /* @var Router $router */
         $router = \Swoft::getBean('cliRouter');
+        $keyWidth = $router->getKeyWidth();
 
-        $grpHandler = function (string $group, array $info) {
-            \var_dump($group);
+        Console::startBuffer();
+        Console::writeln('<comment>Available Commands:</comment>');
+
+        $grpHandler = function (string $group, array $info) use ($keyWidth) {
+            Console::writef(
+                '  <info>%s</info>',
+                Str::padRight($group, $keyWidth),
+                $info['desc'] ?: 'No description message'
+            );
         };
 
-        $cmdHandler = function (string $cmdId, array $info) {
-            \var_dump($cmdId);
+        $cmdHandler = function (string $cmdId, array $info) use ($keyWidth) {
+            // \var_dump($info);die;
+            Console::writef(
+                '  <info>%s</info> %s',
+                Str::padRight($cmdId, $keyWidth),
+                $info['desc'] ?: 'No description message'
+            );
         };
 
         $router->sortedEach($grpHandler, $cmdHandler);
 
-        \var_dump(__LINE__, __METHOD__);
-        die;
-
-        $commands = $this->parserCmdAndDesc();
-
-        $commandList              = [];
-        $script                   = \input()->getFullScript();
-        $commandList['Usage:']    = ["php $script {command} [arguments] [options]"];
-        $commandList['Commands:'] = $commands;
-        $commandList['Options:']  = [
-            '-h, --help'    => 'Display help information',
-            '-v, --version' => 'Display version information',
-        ];
-
-        // show logo
-        if ($showLogo) {
-            \output()->writeln(\Swoft::FONT_LOGO);
-        }
-
-        // output list
-        // \output()->writeList($commandList, 'comment', 'info');
-        Show::mList($commandList, []);
+        Console::write("\nMore command information, please use: <cyan>$script {command} -h</cyan>");
+        Console::flushBuffer();
     }
 
     /**

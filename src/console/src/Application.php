@@ -164,6 +164,7 @@ class Application implements ConsoleInterface
      * Filter special option. eg: -h, --help, --version
      * @return void
      * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     private function filterSpecialOption(): void
     {
@@ -174,7 +175,7 @@ class Application implements ConsoleInterface
         }
 
         // Display application help, command list
-        $this->showApplicationHelp();
+        $this->showApplicationHelp(false);
     }
 
     /**
@@ -205,6 +206,7 @@ class Application implements ConsoleInterface
             PhpHelper::call([$beanObject, $method], $bindParams);
             $this->afterExecute($method);
         });
+
         Event::wait();
     }
 

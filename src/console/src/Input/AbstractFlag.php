@@ -22,7 +22,7 @@ abstract class AbstractFlag
      *
      * @var string
      */
-    private $desc = 'no description message';
+    private $desc = '';
 
     /**
      * The option mode value.
@@ -33,7 +33,7 @@ abstract class AbstractFlag
     private $mode = 0;
 
     /**
-     * The option value data type. (eg: 'string', 'array', 'mixed')
+     * The option value data type. (eg: 'string', 'array', 'mixed', 'value')
      *
      * @var string
      */
