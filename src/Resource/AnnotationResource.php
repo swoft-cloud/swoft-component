@@ -107,7 +107,8 @@ class AnnotationResource extends Resource
 
                 $className = sprintf('%s%s', $ns, $classPathName);
 
-                if (!class_exists($className)) {
+                // Fix repeated autoloaded, such as `Swoft/Swoft`
+                if ($className == 'Swoft\Swoft' || !class_exists($className)) {
                     continue;
                 }
 
