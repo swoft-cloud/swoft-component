@@ -29,9 +29,9 @@ class Input extends AbstractInput
             $args = (array)$_SERVER['argv'];
         }
 
-        $this->pwd = $this->getPwd();
-        $this->tokens = $args;
-        $this->script = \array_shift($args);
+        $this->pwd        = $this->getPwd();
+        $this->tokens     = $args;
+        $this->script     = \array_shift($args);
         $this->fullScript = \implode(' ', $args);
 
         if ($parsing) {

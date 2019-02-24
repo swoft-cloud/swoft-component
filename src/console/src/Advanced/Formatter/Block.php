@@ -1,10 +1,4 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2018/5/4
- * Time: 下午1:06
- */
+<?php declare(strict_types=1);
 
 namespace Swoft\Console\Advanced\Formatter;
 

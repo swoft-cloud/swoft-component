@@ -1,14 +1,9 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: Inhere
- * Date: 2017/12/22 0022
- * Time: 21:44
- */
+<?php declare(strict_types=1);
 
 namespace Swoft\Console\Advanced;
 
-use Swoft\Console\Helper\Show;
+use Swoft\Console\Console;
+use Swoft\Console\Contract\FormatterInterface;
 use Swoft\Stdlib\Helper\ObjectHelper;
 
 /**
@@ -80,7 +75,7 @@ abstract class MessageFormatter implements FormatterInterface
      */
     public function display(): int
     {
-        return Show::write($this->toString());
+        return Console::write($this->toString());
     }
 
     /**

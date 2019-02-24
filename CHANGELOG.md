@@ -20,7 +20,7 @@ console(@inhere):
 - console组件新增注解
   - 参数 `CommandArgument` 
   - 选项 `CommandOption`
-  - 示例参考 `console/test/Fixture`
+  - 示例参考 `console/test/case/Fixture`
 
 ## 2019.02.20
 
@@ -73,7 +73,7 @@ websocket server(@inhere):
 - 重构相关逻辑，细分连接上下文和message通信上下文，更清晰的绑定和销毁
 - websocket 按请求的path分模块
 - 不同模块可以绑定不同的处理控制器，用以处理message通信请求
-- 示例结构参考 `websocket-server/test/Fixture` 目录
+- 示例结构参考 `websocket-server/test/case/Fixture` 目录
 - 重构server里的消息发送辅助方法(`send` `sendToAll` ...)
 - 新增一些辅助方法可以方便的迭代连接(`each` `pageEach`)，已自动去除无效连接
 

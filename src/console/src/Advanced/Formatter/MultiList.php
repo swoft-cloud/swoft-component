@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Console\Advanced\Formatter;
 
@@ -32,7 +32,7 @@ class MultiList extends MessageFormatter
      */
     public static function show(array $data, array $opts = []): void
     {
-        $stringList = [];
+        $stringList  = [];
         $ignoreEmpty = $opts['ignoreEmpty'] ?? true;
         $lastNewline = true;
 

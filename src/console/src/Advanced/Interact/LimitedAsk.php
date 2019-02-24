@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Console\Advanced\Interact;
 
@@ -84,7 +84,7 @@ class LimitedAsk extends InteractMessage
             }
 
             // If setting verify callback
-            if ($validator && true === $validator($answer) ) {
+            if ($validator && true === $validator($answer)) {
                 break;
             }
 

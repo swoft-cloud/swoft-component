@@ -1,10 +1,4 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: Inhere
- * Date: 2017/12/22 0022
- * Time: 21:48
- */
+<?php declare(strict_types=1);
 
 namespace Swoft\Console\Advanced\Formatter;
 
@@ -15,7 +9,6 @@ use Swoft\Stdlib\StrBuffer;
 
 /**
  * Class Panel
- * - method version please {@see \Swoft\Console\Helper\Show::panel()}
  * @package Swoft\Console\Advanced\Formatter
  */
 class Panel extends MessageFormatter
@@ -187,8 +180,8 @@ EOF;
         }
 
         $buffer = new StrBuffer();
-        $data  = \is_array($this->data) ? \array_filter($this->data) : [\trim($this->data)];
-        $title = \trim($this->title);
+        $data   = \is_array($this->data) ? \array_filter($this->data) : [\trim($this->data)];
+        $title  = \trim($this->title);
 
         $panelData  = []; // [ 'label' => 'value' ]
         $borderChar = $this->borderXChar;

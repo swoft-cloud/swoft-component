@@ -1,10 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Console\Advanced\Formatter;
 
 use Swoft\Console\Advanced\MessageFormatter;
+use Swoft\Console\Console;
 use Swoft\Console\Helper\FormatUtil;
-use Swoft\Console\Helper\Show;
 use Toolkit\Cli\ColorTag;
 
 /**
@@ -56,6 +56,6 @@ class SingleList extends MessageFormatter
             return $string;
         }
 
-        return Show::write($string, $opts['lastNewline']);
+        return Console::write($string, $opts['lastNewline']);
     }
 }

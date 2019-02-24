@@ -1,9 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Console\Concern;
 
-use Swoft\Console\Style\Style;
 use Swoft\Console\Helper\Show;
+use Swoft\Console\Style\Style;
 use Swoft\Stdlib\Helper\PhpHelper;
 
 /**
@@ -211,8 +211,8 @@ trait FormatOutputAwareTrait
         $map = Show::getBlockMethods(false);
 
         if (isset($map[$method])) {
-            $msg = $args[0];
-            $quit = $args[1] ?? false;
+            $msg   = $args[0];
+            $quit  = $args[1] ?? false;
             $style = $map[$method];
 
             if (0 === \strpos($method, 'lite')) {

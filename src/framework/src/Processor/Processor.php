@@ -2,8 +2,8 @@
 
 namespace Swoft\Processor;
 
+use Swoft\Contract\SwoftInterface;
 use Swoft\SwoftApplication;
-use Swoft\SwoftInterface;
 
 /**
  * Abstract processor

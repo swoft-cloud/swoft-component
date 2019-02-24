@@ -14,9 +14,6 @@ namespace Swoft\Http\Server\Router;
  */
 interface RouterInterface extends \IteratorAggregate, \Countable, \Swoft\Contract\RouterInterface
 {
-    /** match result status list */
-    public const FOUND              = 1;
-    public const NOT_FOUND          = 2;
     public const METHOD_NOT_ALLOWED = 3;
 
     public const FAV_ICON      = '/favicon.ico';

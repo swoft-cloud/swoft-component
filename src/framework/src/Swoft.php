@@ -1,5 +1,6 @@
 <?php
 
+use Swoft\Bean\Container;
 use Swoft\Event\EventInterface;
 use Swoft\Event\Manager\EventManager;
 
@@ -74,7 +75,7 @@ class Swoft
             return;
         }
 
-        list($root) = explode('/', $path);
+        [$root] = explode('/', $path);
         if (!isset(self::$aliases[$root])) {
             throw new \InvalidArgumentException('The set root alias does not exist，alias=' . $root);
         }
@@ -86,7 +87,7 @@ class Swoft
     }
 
     /**
-     * Get alias
+     * Get alias real name
      *
      * @param string $alias
      *
@@ -146,11 +147,11 @@ class Swoft
      */
     public static function hasBean(string $name): bool
     {
-        return \Swoft\Bean\Container::getInstance()->has($name);
+        return Container::getInstance()->has($name);
     }
 
     /**
-     * Get object by name
+     * Get bean object by name
      *
      * @param string $name Bean name Or alias Or class name
      *
@@ -160,12 +161,24 @@ class Swoft
      */
     public static function getBean(string $name)
     {
-        return \Swoft\Bean\Container::getInstance()->get($name);
+        return Container::getInstance()->get($name);
     }
 
     /*******************************************************************************
-     * event short methods
+     * Some short methods
      ******************************************************************************/
+
+    /**
+     * Get an ReflectionClass object by input class.
+     *
+     * @param string $class
+     * @return array
+     * @throws ReflectionException
+     */
+    public static function getReflection(string $class): array
+    {
+        return Container::getInstance()->getReflection($class);
+    }
 
     /**
      * trigger an swoft application event
@@ -181,6 +194,6 @@ class Swoft
     public static function trigger($event, $target = null, ...$params)
     {
         /** @see EventManager::trigger() */
-        return \bean('eventManager')->trigger($event, $target, $params);
+        return Container::getInstance()->get('eventManager')->trigger($event, $target, $params);
     }
 }

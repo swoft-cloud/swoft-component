@@ -87,17 +87,30 @@ class AnnotationResource extends Resource
      */
     private function loadAnnoation(LoaderInterface $loader): void
     {
+        $excludeFiles = [
+            'Swoft.php' => 1,
+        ];
         $nsPaths = $loader->getPrefixDirs();
         foreach ($nsPaths as $ns => $path) {
             $iterator = DirectoryHelper::iterator($path);
 
             /* @var \SplFileInfo $splFileInfo */
             foreach ($iterator as $splFileInfo) {
-                $fileName  = $splFileInfo->getFilename();
-                $extension = $splFileInfo->getExtension();
                 $pathName  = $splFileInfo->getPathname();
 
-                if (is_dir($pathName) || $fileName[0] == '.' || $extension != $this->loaderClassSuffix) {
+                if (\is_dir($pathName)) {
+                    continue;
+                }
+
+                $fileName  = $splFileInfo->getFilename();
+                $extension = $splFileInfo->getExtension();
+
+                if ($this->loaderClassSuffix !== $extension || \strpos($fileName, '.') === 0) {
+                    continue;
+                }
+
+                // is exclude file
+                if (isset($excludeFiles[$fileName])) {
                     continue;
                 }
 
@@ -107,8 +120,8 @@ class AnnotationResource extends Resource
 
                 $className = sprintf('%s%s', $ns, $classPathName);
 
-                // Fix repeated autoloaded, such as `Swoft/Swoft`
-                if ($className == 'Swoft\Swoft' || !class_exists($className)) {
+                // Fix repeated autoloaded, such as `Swoft`
+                if (!\class_exists($className)) {
                     continue;
                 }
 
