@@ -48,7 +48,7 @@ final class Command
      *
      * @var string
      */
-    private $desc = 'no description message';
+    private $desc = '';
 
     /**
      * @var bool

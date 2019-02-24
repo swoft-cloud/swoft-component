@@ -35,9 +35,9 @@ interface ServerInterface
     /**
      * Stop server
      *
-     * @return void
+     * @return bool
      */
-    public function stop(): void;
+    public function stop(): bool;
 
     /**
      * Stop server

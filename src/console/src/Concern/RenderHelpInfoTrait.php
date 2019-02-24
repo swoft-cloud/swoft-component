@@ -101,6 +101,7 @@ trait RenderHelpInfoTrait
      */
     protected function showGroupHelp(array $groupInfo): void
     {
+        \var_dump($groupInfo);die;
         /* @var Router $router */
         $router = \Swoft::getBean('cliRouter');
 

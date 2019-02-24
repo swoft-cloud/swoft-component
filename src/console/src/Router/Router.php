@@ -186,7 +186,7 @@ class Router implements RouterInterface
 
         foreach ($groups as $group => $info) {
             $names = $info['names'];
-            \ksort($names);
+            \sort($names);
             unset($info['names']);
 
             // call group handle func

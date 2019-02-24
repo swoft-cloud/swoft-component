@@ -17,9 +17,11 @@ namespace PHPSTORM_META {
             'eventManager'   => EventManager::class,
             // http server
             'httpRouter'     => \Swoft\Http\Server\Router\Router::class,
+            'httpServer'     => \Swoft\Http\Server\HttpServer::class,
             'httpDispatcher' => HttpDispatcher::class,
             // ws server
             'wsRouter'       => \Swoft\WebSocket\Server\Router\Router::class,
+            'wsServer'       => \Swoft\WebSocket\Server\WebSocketServer::class,
             'wsDispatcher'   => \Swoft\WebSocket\Server\Dispatcher::class,
             // console
             'cliApp'         => \Swoft\Console\Application::class,
@@ -36,9 +38,11 @@ namespace PHPSTORM_META {
             'eventManager'   => EventManager::class,
             // http server
             'httpRouter'     => \Swoft\Http\Server\Router\Router::class,
+            'httpServer'     => \Swoft\Http\Server\HttpServer::class,
             'httpDispatcher' => HttpDispatcher::class,
             // ws server
             'wsRouter'       => \Swoft\WebSocket\Server\Router\Router::class,
+            'wsServer'       => \Swoft\WebSocket\Server\WebSocketServer::class,
             'wsDispatcher'   => \Swoft\WebSocket\Server\Dispatcher::class,
             // console
             'cliApp'         => \Swoft\Console\Application::class,

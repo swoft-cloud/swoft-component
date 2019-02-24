@@ -4,8 +4,10 @@ namespace Swoft\Server;
 
 use Co\Server as CoServer;
 use Swoft\Server\Exception\ServerException;
+use Swoft\Server\Helper\ServerHelper;
 use Swoft\Server\Swoole\SwooleEvent;
 use Swoft\Stdlib\Helper\Sys;
+use Swoole\Process;
 
 /**
  * Class Server
@@ -57,7 +59,7 @@ abstract class Server implements ServerInterface
     protected $type = \SWOOLE_SOCK_TCP;
 
     /**
-     * Server setting for swoole settings
+     * Server setting for swoole. (swooleServer->settings)
      *
      * @var array
      */
@@ -76,6 +78,16 @@ abstract class Server implements ServerInterface
      * @var string
      */
     protected $pidName = 'swoft';
+
+    /**
+     * Record started server master/manager PIDs
+     *
+     * @var array
+     */
+    protected $pidMap = [
+        'master'  => 0,
+        'manager' => 0,
+    ];
 
     /**
      * Server event for swoole event
@@ -130,14 +142,6 @@ abstract class Server implements ServerInterface
     public function getServerType(): string
     {
         return static::$serverType;
-    }
-
-    /**
-     * @return \Co\Http\Server|CoServer|\Co\Websocket\Server
-     */
-    public function getSwooleServer()
-    {
-        return $this->swooleServer;
     }
 
     /**
@@ -390,15 +394,68 @@ abstract class Server implements ServerInterface
         // TODO: Implement restart() method.
     }
 
-    public function stop(): void
+    /**
+     * @param bool $onlyTaskWorker
+     */
+    public function reload(bool $onlyTaskWorker = false): void
     {
-        // TODO: Implement stop() method.
+        if (!$masterPid = $this->getPidFromFile(true)) {
+            Show::error("The swoole server({$this->name}) is not running.", true);
+            return;
+        }
+
+        // SIGUSR1(10): 向管理进程发送信号，将平稳地重启所有worker进程; 也可在PHP代码中调用`$server->reload()`完成此操作
+        $signal = 10;
+
+        if ($onlyTaskWorker) {
+            // $sig = SIGUSR2;
+            $signal = 12;
+        }
+
+        if (!ServerHelper::sendSignal($masterPid, $signal)) {
+            Show::error("The swoole server({$this->name}) worker process reload fail!", -1);
+        }
+
+        Show::success("The swoole server({$this->name}) worker process reload success.", 0);
+    }
+
+    public function stop(): bool
+    {
+        if (($pid = $this->pidMap['master']) < 1) {
+            return false;
+        }
+
+        // SIGTERM = 15
+        if (ServerHelper::killAndWait($pid, 15, 'Swoft')) {
+            return ServerHelper::removePidFile($this->pidFile);
+        }
+
+        return false;
+    }
+
+    public function shutdown(): void
+    {
+        $this->swooleServer->shutdown();
+    }
+
+    /**
+     * Stop the worker process and immediately trigger the onWorkerStop callback function
+     * @param int $workerId
+     * @return bool
+     */
+    public function stopWorker(int $workerId = -1): bool
+    {
+        if ($workerId > -1 && $this->swooleServer) {
+            return $this->swooleServer->stop($workerId);
+        }
+
+        return false;
     }
 
     /**
      * print log message to terminal
      * @param string $msg
-     * @param array $data
+     * @param array  $data
      * @param string $type
      */
     public function log(string $msg, array $data = [], string $type = 'info'): void
@@ -411,6 +468,63 @@ abstract class Server implements ServerInterface
             // TODO ...
             // ConsoleUtil::log($msg, $data, $type);
         }
+    }
+
+    /**
+     * Check if the server is running
+     *
+     * @return bool
+     */
+    public function isRunning(): bool
+    {
+        $pidFile = $this->pidFile;
+
+        // Is pid file exist ?
+        if (\file_exists($pidFile)) {
+            // Get pid file content and parse the content
+            $pidFile = \file_get_contents($pidFile);
+            // parse and record PIDs
+            [$masterPID, $managerPID] = \explode(',', $pidFile);
+            $this->pidMap['master']  = (int)$masterPID;
+            $this->pidMap['manager'] = (int)$managerPID;
+
+            return $managerPID > 0 && Process::kill($managerPID, 0);
+        }
+
+        return false;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPidMap(): array
+    {
+        return $this->pidMap;
+    }
+
+    /**
+     * @param string $name
+     * @return int
+     */
+    public function getPid(string $name = 'master'): int
+    {
+        return $this->pidMap[$name] ?? 0;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPidFile(): string
+    {
+        return $this->pidFile;
+    }
+
+    /**
+     * @return \Co\Http\Server|CoServer|\Co\Websocket\Server
+     */
+    public function getSwooleServer()
+    {
+        return $this->swooleServer;
     }
 
     /**

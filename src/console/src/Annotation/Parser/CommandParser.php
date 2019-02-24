@@ -118,6 +118,8 @@ class CommandParser extends Parser
         $maxLen = 12;
         $groups = [];
         $defCmd = $router->getDefaultCommand();
+        // default description
+        $defDesc = 'No description message';
 
         foreach (self::$commands as $class => $mapping) {
             $names = [];
@@ -127,7 +129,8 @@ class CommandParser extends Parser
 
             /** @var \ReflectionClass $refObject */
             // $refObject = \Swoft::getReflection($class);
-// \var_dump($refObject);die;
+            $refObject = new \ReflectionClass($class);
+
             foreach ($mapping['commands'] as $method => $route) {
                 // $method = $route['method'];
                 $command = $route['command'];
@@ -138,20 +141,20 @@ class CommandParser extends Parser
                 }
 
                 if (!$cmdDesc = $route['desc']) {
-                    // $refMethod = $refObject->getMethod($method);
-                    // $cmdDesc   = DocBlock::firstLine($refMethod->getDocComment());
+                    $refMethod = $refObject->getMethod($method);
+                    $cmdDesc   = DocBlock::firstLine($refMethod->getDocComment());
                 }
 
                 $router->map($group, $command, [$class, $method], [
-                    'desc'      => $cmdDesc,
+                    'desc'      => $cmdDesc ? \ucfirst($cmdDesc) : $defDesc,
                     // 'alias'   => $route['aliases'],
                     'aliases'   => $route['aliases'],
                     'enabled'   => $mapping['enabled'],
                     'coroutine' => $mapping['coroutine'],
-                    // arguments
-                    'arguments' => $route['arguments'] ?? [],
                     // options
                     'options'   => $route['options'] ?? [],
+                    // arguments
+                    'arguments' => $route['arguments'] ?? [],
                 ]);
 
                 $names[] = $command;
@@ -161,12 +164,12 @@ class CommandParser extends Parser
             $router->map($group, $defCmd, [$class, $defCmd]);
 
             if (!$groupDesc = $mapping['desc']) {
-                // $groupDesc = DocBlock::firstLine($refObject->getDocComment());
+                $groupDesc = DocBlock::firstLine($refObject->getDocComment());
             }
 
             $groups[$group] = [
                 'names'   => $names,
-                'desc'    => $groupDesc,
+                'desc'    => $groupDesc ? \ucfirst($groupDesc) : $defDesc,
                 'class'   => $class,
                 'aliases' => $mapping['aliases'],
             ];
