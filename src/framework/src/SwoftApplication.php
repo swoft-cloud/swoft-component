@@ -273,9 +273,11 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
      */
     private function setSystemAlias(): void
     {
-        \Swoft::setAlias('@base', $this->getBasePath());
-        \Swoft::setAlias('@app', $this->getAppPath());
-        \Swoft::setAlias('@config', $this->getConfigPath());
-        \Swoft::setAlias('@runtime', $this->getRuntimePath());
+//        \Swoft::setAlias('@base', $this->getBasePath());
+//        \Swoft::setAlias('@app', $this->getAppPath());
+//        \Swoft::setAlias('@config', $this->getConfigPath());
+//        \Swoft::setAlias('@runtime', $this->getRuntimePath());
+
+        var_dump(ComposerHelper::getClassLoader()->findFile(\Swoft::class));
     }
 }
