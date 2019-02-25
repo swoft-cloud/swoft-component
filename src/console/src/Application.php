@@ -10,6 +10,7 @@ use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
 use Swoft\Console\Router\Router;
 use Swoft\Stdlib\Helper\Arr;
+use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoole\Event;
 use function input;
@@ -49,23 +50,32 @@ class Application implements ConsoleInterface
     protected $output;
 
     /**
+     * @var string
+     */
+    private $name = 'My Application';
+
+    /**
+     * @var string
+     */
+    private $version = '0.0.1';
+
+    /**
+     * @var string
+     */
+    private $description = 'Console application description';
+
+    /**
      * @var array
      */
     private $commentsVars = [];
 
     /**
      * Class constructor.
+     * @param array $options
      */
-    public function __construct()
+    public function __construct(array $options = [])
     {
-    }
-
-    protected function prepare(): void
-    {
-        $this->input  = input();
-        $this->output = output();
-
-        $this->commentsVars = $this->commentsVars();
+        ObjectHelper::init($this, $options);
     }
 
     /**
@@ -78,13 +88,23 @@ class Application implements ConsoleInterface
     {
         // e.g: `more info see {name}:index`
         return [
-            // 'name' => self::getName(),
+            'name'        => $this->getName(),
+            'description' => $this->getDescription(),
             // 'group' => self::getName(),
             'workDir'     => input()->getPwd(),
             'script'      => input()->getScript(), // bin/app
             'command'     => input()->getCommand(), // demo OR home:test
             'fullCommand' => input()->getFullCommand(),
         ];
+    }
+
+    protected function prepare(): void
+    {
+        $this->input  = input();
+        $this->output = output();
+
+        // load builtin comments vars
+        $this->setCommentsVars($this->commentsVars());
     }
 
     /**
@@ -151,11 +171,11 @@ class Application implements ConsoleInterface
 
         // Display help for a command
         if ($this->input->getSameOpt(['h', 'help'])) {
-            [$className, $method] = $info['handler'];
-            $this->showCommandHelp($className, $method);
+            $this->showCommandHelp($info);
             return;
         }
 
+        // Call command handler
         $this->dispatch($info);
     }
 
@@ -210,23 +230,30 @@ class Application implements ConsoleInterface
     }
 
     /**
-     * Get bounded params
+     * Get method bounded params
      *
-     * @param string $className
-     * @param string $methodName
+     * @param string $class
+     * @param string $method
      * @return array
      * @throws \ReflectionException
      */
-    private function getBindParams(string $className, string $methodName): array
+    private function getBindParams(string $class, string $method): array
     {
-        /** @var \ReflectionClass $reflectClass */
-        $reflectClass  = \Swoft::getReflection($className);
-        $reflectMethod = $reflectClass->getMethod($methodName);
-        $reflectParams = $reflectMethod->getParameters();
+        $classInfo = \Swoft::getReflection($class);
+
+        if (!isset($classInfo['methods'][$method])) {
+            return [];
+        }
 
         // binding params
-        $bindParams = [];
-        foreach ($reflectParams as $key => $reflectParam) {
+        $bindParams   = [];
+        $methodParams = $classInfo['methods'][$method]['params'];
+
+        /**
+         * @var string               $key
+         * @var \ReflectionParameter $reflectParam
+         */
+        foreach ($methodParams as $key => $reflectParam) {
             $reflectType = $reflectParam->getType();
 
             // undefined type of the param
@@ -277,7 +304,7 @@ class Application implements ConsoleInterface
     }
 
     /**
-     * 替换注释中的变量为对应的值
+     * Replace the variable in the comment with the corresponding value
      * @param string $str
      * @param array  $vars
      * @return string
@@ -298,5 +325,71 @@ class Application implements ConsoleInterface
         }
 
         return $map ? \strtr($str, $map) : $str;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCommentsVars(): array
+    {
+        return $this->commentsVars;
+    }
+
+    /**
+     * @param array $vars
+     */
+    public function setCommentsVars(array $vars): void
+    {
+        if ($vars) {
+            $this->commentsVars = \array_merge($this->commentsVars, $vars);
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name): void
+    {
+        $this->name = \trim($name);
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersion(): string
+    {
+        return $this->version;
+    }
+
+    /**
+     * @param string $version
+     */
+    public function setVersion(string $version): void
+    {
+        $this->version = $version;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description ? \ucfirst($this->description) : '';
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription(string $description): void
+    {
+        $this->description = \trim($description);
     }
 }

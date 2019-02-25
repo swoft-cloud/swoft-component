@@ -42,7 +42,7 @@ abstract class Server implements ServerInterface
      *
      * @var int
      */
-    protected $port = 88;
+    protected $port = 9088;
 
     /**
      * Default mode
@@ -59,11 +59,13 @@ abstract class Server implements ServerInterface
     protected $type = \SWOOLE_SOCK_TCP;
 
     /**
-     * Server setting for swoole. (swooleServer->settings)
+     * Server setting for swoole. (@see swooleServer->setting)
      *
      * @var array
      */
-    protected $setting = [];
+    protected $setting = [
+        'worker_num' => 1,
+    ];
 
     /**
      * Pid file
@@ -155,16 +157,24 @@ abstract class Server implements ServerInterface
      */
     protected function onStart(CoServer $server): void
     {
-        $pidFile = \alias($this->pidFile);
-        $pidStr  = sprintf('%s,%s', $server->master_pid, $server->manager_pid);
-        $title   = sprintf('%s master process (%s)', $this->pidName, $this->scriptFile);
+        $masterPid  = $server->master_pid;
+        $managerPid = $server->manager_pid;
 
-        \file_put_contents($pidFile, $pidStr);
+        // save to property
+        $this->pidMap = [
+            'master'  => $masterPid,
+            'manager' => $managerPid,
+        ];
+
+        $pidStr = \sprintf('%s,%s', $masterPid, $managerPid);
+        $title  = \sprintf('%s master process (%s)', $this->pidName, $this->scriptFile);
+
+        \file_put_contents(\alias($this->pidFile), $pidStr);
 
         // set process title
         Sys::setProcessTitle($title);
 
-        \Swoft::trigger(SwooleEvent::START, null, $server);
+        \Swoft::trigger(SwooleEvent::START, $server->master_pid, $server);
     }
 
     /**
@@ -176,9 +186,9 @@ abstract class Server implements ServerInterface
      */
     protected function onManagerStart(CoServer $server): void
     {
-        Sys::setProcessTitle(sprintf('%s manager process', $this->pidName));
+        Sys::setProcessTitle(\sprintf('%s manager process', $this->pidName));
 
-        \Swoft::trigger(SwooleEvent::MANAGER_START, null, $server);
+        \Swoft::trigger(SwooleEvent::MANAGER_START, $server->manager_pid, $server);
     }
 
     /**
@@ -355,6 +365,14 @@ abstract class Server implements ServerInterface
     public function getSetting(): array
     {
         return $this->setting;
+    }
+
+    /**
+     * @param array $setting
+     */
+    public function setSetting(array $setting): void
+    {
+        $this->setting = \array_merge($this->setting, $setting);
     }
 
     /**

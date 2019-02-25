@@ -15,13 +15,10 @@ class TestHandler implements EventHandlerInterface
 {
     /**
      * @param EventInterface $event
-     * @return mixed
      */
-    public function handle(EventInterface $event)
+    public function handle(EventInterface $event): void
     {
         $pos = __METHOD__;
         echo "handle the event '{$event->getName()}' on the: $pos\n";
-
-        return true;
     }
 }

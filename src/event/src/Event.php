@@ -168,13 +168,13 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
     }
 
     /**
-     * @param string $name
+     * @param int|string $key
      * @param mixed  $default
      * @return mixed
      */
-    public function getParam($name, $default = null)
+    public function getParam($key, $default = null)
     {
-        return $this->params[$name] ?? $default;
+        return $this->params[$key] ?? $default;
     }
 
     /**

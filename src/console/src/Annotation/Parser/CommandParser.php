@@ -117,7 +117,7 @@ class CommandParser extends Parser
     {
         $maxLen = 12;
         $groups = [];
-        $defCmd = $router->getDefaultCommand();
+        // $defCmd = $router->getDefaultCommand();
         // default description
         $defDesc = 'No description message';
 
@@ -159,7 +159,7 @@ class CommandParser extends Parser
             }
 
             // always register default command.
-            $router->map($group, $defCmd, [$class, $defCmd]);
+            // $router->map($group, $defCmd, [$class, $defCmd]);
 
             $groupDesc = $mapping['desc'];
             if (!$groupDesc && !empty($refInfo['comments'])) {

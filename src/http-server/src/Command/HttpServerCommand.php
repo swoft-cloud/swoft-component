@@ -11,7 +11,7 @@ use Swoft\Http\Server\HttpServer;
 /**
  * provide some commands to manage the HTTP Server
  *
- * @Command("http", alias="httpserver, httpServer, http-server", coroutine=false)
+ * @Command("http", alias="httpserver,httpServer,http-server", coroutine=false)
  */
 class HttpServerCommand
 {
@@ -56,20 +56,28 @@ class HttpServerCommand
         // $tcpStatus = $server->getTcpSetting();
         $tcpStatus = [];
         $tcpEnable = $serverStatus['tcpable'] ?? false;
-        $tcpHost = $tcpStatus['host'] ?? 'unknown';
-        $tcpPort = $tcpStatus['port'] ?? 'unknown';
-        $tcpType = $tcpStatus['type'] ?? 'unknown';
+        $tcpHost   = $tcpStatus['host'] ?? 'unknown';
+        $tcpPort   = $tcpStatus['port'] ?? 'unknown';
+        $tcpType   = $tcpStatus['type'] ?? 'unknown';
         $tcpEnable = $tcpEnable ? '<info>Enabled</info>' : '<warning>Disabled</warning>';
         // 信息面板
-        $lines = [
-            '                         Server Information                      ',
-            '********************************************************************',
-            "* HTTP | host: <note>$mainHost</note>, port: <note>$mainPort</note>, type: <note>$typeName</note>, worker: <note>$workerNum</note>, mode: <note>$modeName</note>",
-            "* TCP  | host: <note>$tcpHost</note>, port: <note>$tcpPort</note>, type: <note>$tcpType</note>, worker: <note>$workerNum</note> ($tcpEnable)",
-            '********************************************************************',
-        ];
+        // $lines = [
+        //     '                         Server Information                      ',
+        //     '********************************************************************',
+        //     "* HTTP | host: <note>$mainHost</note>, port: <note>$mainPort</note>, type: <note>ç</note>, worker: <note>$workerNum</note>, mode: <note>$modeName</note>",
+        //     "* TCP  | host: <note>$tcpHost</note>, port: <note>$tcpPort</note>, type: <note>$tcpType</note>, worker: <note>$workerNum</note> ($tcpEnable)",
+        //     '********************************************************************',
+        // ];
 
-        \output()->writeln(implode("\n", $lines));
+        // \output()->writeln(implode("\n", $lines));
+        Show::panel([
+            'HTTP' => [
+                'listen' => $mainHost . ':' . $mainPort,
+                'type'   => $typeName,
+                'mode'   => $modeName,
+                'worker' => $workerNum,
+            ],
+        ]);
 
         // Start the server
         $server->start();

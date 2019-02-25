@@ -94,7 +94,8 @@ EOF;
         foreach ($data as $label => $value) {
             // label exists
             if (!\is_numeric($label)) {
-                $width         = \mb_strlen($label, 'UTF-8');
+                $width = \mb_strlen($label, 'UTF-8');
+                // save max value
                 $labelMaxWidth = $width > $labelMaxWidth ? $width : $labelMaxWidth;
             }
 
@@ -138,7 +139,8 @@ EOF;
             $title       = \ucwords($title);
             $titleLength = \mb_strlen($title, 'UTF-8');
             $panelWidth  = $panelWidth > $titleLength ? $panelWidth : $titleLength;
-            $indentSpace = \str_pad(' ', \ceil($panelWidth / 2) - \ceil($titleLength / 2) + 2 * 2, ' ');
+            $lenValue = (int)(\ceil($panelWidth / 2) - \ceil($titleLength / 2));
+            $indentSpace = \str_pad(' ',  $lenValue + 2 * 2, ' ');
             Show::write("  {$indentSpace}<bold>{$title}</bold>");
         }
 

@@ -39,7 +39,7 @@ final class CommandOption extends AbstractFlag
         parent::__construct($values);
 
         if (!empty($values['short'])) {
-            $this->short = \trim((string)$values['short']);
+            $this->short = \trim((string)$values['short'], '- ');
         }
     }
 
