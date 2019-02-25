@@ -133,12 +133,13 @@ class Router implements RouterInterface
 
             // only a group name
         } elseif (\strpos($inputCmd, $delimiter) === false) {
-            return [
-                self::ONLY_GROUP,
-                [
-                    'group' => $this->resolveGroupAlias($inputCmd),
-                ]
-            ];
+            $group = $this->resolveGroupAlias($inputCmd);
+
+            if (isset($this->groups[$group])) {
+                return [self::ONLY_GROUP, ['group' => $group]];
+            }
+
+            return [self::NOT_FOUND];
         } else {
             $nameList = \explode($delimiter, $inputCmd, 2);
 
@@ -164,12 +165,7 @@ class Router implements RouterInterface
         }
 
         if (isset($this->groups[$group])) {
-            return [
-                self::ONLY_GROUP,
-                [
-                    'group' => $group,
-                ]
-            ];
+            return [self::ONLY_GROUP, ['group' => $group]];
         }
 
         return [self::NOT_FOUND];
@@ -198,6 +194,15 @@ class Router implements RouterInterface
                 $cmdFunc($id, $this->routes[$id]);
             }
         }
+    }
+
+    /**
+     * @param string $cmdID It is equals to 'group:command'
+     * @return array
+     */
+    public function getRouteByID(string $cmdID): array
+    {
+        return $this->routes[$cmdID] ?? [];
     }
 
     /**

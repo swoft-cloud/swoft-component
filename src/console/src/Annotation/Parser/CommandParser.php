@@ -60,7 +60,7 @@ class CommandParser extends Parser
         self::$commands[$class] = [
             'group'     => $annotation->getName() ?: Str::getClassName($class, 'Command'),
             'desc'      => $annotation->getDesc(),
-            // 'alias'     => $annotation->getAlias(),
+            'alias'     => $annotation->getAlias(),
             'aliases'   => $annotation->getAliases(),
             'enabled'   => $annotation->isEnabled(),
             'coroutine' => $annotation->isCoroutine(),
@@ -127,9 +127,7 @@ class CommandParser extends Parser
             // set group name aliases
             $router->setGroupAliases($group, $mapping['aliases']);
 
-            /** @var \ReflectionClass $refObject */
-            // $refObject = \Swoft::getReflection($class);
-            $refObject = new \ReflectionClass($class);
+            $refInfo = \Swoft::getReflection($class);
 
             foreach ($mapping['commands'] as $method => $route) {
                 // $method = $route['method'];
@@ -139,15 +137,15 @@ class CommandParser extends Parser
                 if ($idLen > $maxLen) {
                     $maxLen = $idLen;
                 }
+                $cmdDesc = $route['desc'];
 
-                if (!$cmdDesc = $route['desc']) {
-                    $refMethod = $refObject->getMethod($method);
-                    $cmdDesc   = DocBlock::firstLine($refMethod->getDocComment());
+                if (!$cmdDesc && !empty($refInfo['methods'][$method]['comments'])) {
+                    $cmdDesc = DocBlock::firstLine($refInfo['methods'][$method]['comments']);
                 }
 
                 $router->map($group, $command, [$class, $method], [
                     'desc'      => $cmdDesc ? \ucfirst($cmdDesc) : $defDesc,
-                    // 'alias'   => $route['aliases'],
+                    'alias'     => $route['alias'],
                     'aliases'   => $route['aliases'],
                     'enabled'   => $mapping['enabled'],
                     'coroutine' => $mapping['coroutine'],
@@ -163,14 +161,16 @@ class CommandParser extends Parser
             // always register default command.
             $router->map($group, $defCmd, [$class, $defCmd]);
 
-            if (!$groupDesc = $mapping['desc']) {
-                $groupDesc = DocBlock::firstLine($refObject->getDocComment());
+            $groupDesc = $mapping['desc'];
+            if (!$groupDesc && !empty($refInfo['comments'])) {
+                $groupDesc = DocBlock::firstLine($refInfo['comments']);
             }
 
             $groups[$group] = [
                 'names'   => $names,
                 'desc'    => $groupDesc ? \ucfirst($groupDesc) : $defDesc,
                 'class'   => $class,
+                'alias'   => $mapping['alias'],
                 'aliases' => $mapping['aliases'],
             ];
         }

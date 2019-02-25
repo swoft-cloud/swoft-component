@@ -30,6 +30,20 @@ final class CommandOption extends AbstractFlag
     private $short = '';
 
     /**
+     * Class constructor.
+     *
+     * @param array $values
+     */
+    public function __construct(array $values)
+    {
+        parent::__construct($values);
+
+        if (!empty($values['short'])) {
+            $this->short = \trim((string)$values['short']);
+        }
+    }
+
+    /**
      * @return string
      */
     public function getShort(): string
@@ -38,11 +52,12 @@ final class CommandOption extends AbstractFlag
     }
 
     /**
-     * get shorts
+     * Get shorts array
+     *
      * @return string[]
      */
     public function getShorts(): array
     {
-        return Str::explode($this->short);
+        return $this->short ? Str::explode($this->short) : [];
     }
 }

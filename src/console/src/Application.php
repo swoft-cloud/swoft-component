@@ -145,13 +145,12 @@ class Application implements ConsoleInterface
 
         // Only input a group name, display help for the group
         if ($result[0] === Router::ONLY_GROUP) {
-            $groupInfo = $router->getGroupInfo($info['group']);
-            $this->showGroupHelp($groupInfo);
+            $this->showGroupHelp($info['group']);
             return;
         }
 
         // Display help for a command
-        if (\input()->getSameOpt(['h', 'help'])) {
+        if ($this->input->getSameOpt(['h', 'help'])) {
             [$className, $method] = $info['handler'];
             $this->showCommandHelp($className, $method);
             return;
@@ -169,7 +168,7 @@ class Application implements ConsoleInterface
     private function filterSpecialOption(): void
     {
         // Version option resolution
-        if (input()->hasOpt('V') || input()->hasOpt('version')) {
+        if ($this->input->getSameOpt(['V', 'version'], false)) {
             $this->showVersionInfo();
             return;
         }

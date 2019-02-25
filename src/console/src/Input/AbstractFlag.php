@@ -60,7 +60,7 @@ abstract class AbstractFlag
         }
 
         if (!empty($values['desc'])) {
-            $this->desc = (string)$values['desc'];
+            $this->desc = \trim((string)$values['desc']);
         }
 
         if (isset($values['mode'])) {

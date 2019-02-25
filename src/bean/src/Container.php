@@ -21,17 +21,17 @@ class Container implements ContainerInterface
     /**
      * Init method after create bean
      */
-    const INIT_MEHTOD = 'init';
+    public const INIT_METHOD = 'init';
 
     /**
-     * Destory method before destory bean
+     * Destroy method before destroy bean
      */
-    const DESTORY_MEHTOD = 'destroy';
+    public const DESTROY_METHOD = 'destroy';
 
     /**
      * Default pool size
      */
-    const DEFAULT_POOL_SIZE = 100;
+    public const DEFAULT_POOL_SIZE = 100;
 
     /**
      * @var Container
@@ -198,13 +198,15 @@ class Container implements ContainerInterface
      * @example
      * [
      *     'className' => [
-     *         'methods' => [
+     *         'comments' => 'class doc comments',
+     *         'methods'  => [
      *             'methodName' => [
-     *                'params' => [
+     *                'params'     => [
      *                    'argType',  // like `int $arg`
      *                    'argType',  // like `class $arg`
      *                    null // like `$arg`
      *                ],
+     *                'comments'   => 'method doc comments',
      *                'returnType' => 'returnType/null'
      *            ]
      *         ]
@@ -233,7 +235,7 @@ class Container implements ContainerInterface
      */
     public static function getInstance(): Container
     {
-        if (empty(self::$instance)) {
+        if (self::$instance === null) {
             self::$instance = new self();
         }
 
@@ -318,7 +320,7 @@ class Container implements ContainerInterface
     {
         // Not exist
         if (!isset($this->reflectionPool[$className])) {
-            $this->cacheRelectionClass($className);
+            $this->cacheReflectionClass($className);
         }
 
         return $this->reflectionPool[$className];
@@ -359,14 +361,14 @@ class Container implements ContainerInterface
         }
 
         //  Create bean only by class name
-        if (class_exists($name) && empty($definition)) {
+        if (empty($definition) && \class_exists($name)) {
             $definition = [
                 'class' => $name
             ];
         }
 
-        $definitionObjParser = new DefinitionObjParser($definition, []);
-        list(, $objectDefinitions) = $definitionObjParser->parseDefinitions();
+        $definitionObjParser   = new DefinitionObjParser($definition, [], []);
+        [, $objectDefinitions] = $definitionObjParser->parseDefinitions();
 
         $this->objectDefinitions[$name] = $objectDefinitions[$name];
 
@@ -411,16 +413,11 @@ class Container implements ContainerInterface
      */
     public function isSingleton(string $name): bool
     {
-        if (!isset($this->singletonPool[$name])) {
-            return false;
+        if (isset($this->aliases[$name])) {
+            $name = $this->aliases[$name];
         }
 
-        $alias = $this->aliases[$name] ?? '';
-        if (!empty($alias) && !$this->isSingleton($name)) {
-            return false;
-        }
-
-        return true;
+        return isset($this->singletonPool[$name]);
     }
 
     /**
@@ -469,7 +466,7 @@ class Container implements ContainerInterface
         $annotationParser = new AnnotationObjParser($this->definitions, $this->objectDefinitions, $this->classNames);
         $annotationData   = $annotationParser->parseAnnotations($this->annotations, $this->parsers);
 
-        list($this->definitions, $this->objectDefinitions, $this->classNames) = $annotationData;
+        [$this->definitions, $this->objectDefinitions, $this->classNames] = $annotationData;
     }
 
     /**
@@ -480,9 +477,8 @@ class Container implements ContainerInterface
     private function parseDefinitions(): void
     {
         $annotationParser = new DefinitionObjParser($this->definitions, $this->objectDefinitions, $this->classNames);
-        $annotationData   = $annotationParser->parseDefinitions();
-
-        list($this->definitions, $this->objectDefinitions, $this->classNames) = $annotationData;
+        // collect info
+        [$this->definitions, $this->objectDefinitions, $this->classNames] = $annotationParser->parseDefinitions();
     }
 
     /**
@@ -499,7 +495,7 @@ class Container implements ContainerInterface
      * @throws ContainerException
      * @throws \ReflectionException
      */
-    private function initializeBeans()
+    private function initializeBeans(): void
     {
         /* @var ObjectDefinition $objectDefinition */
         foreach ($this->objectDefinitions as $beanName => $objectDefinition) {
@@ -524,12 +520,12 @@ class Container implements ContainerInterface
         }
 
         $classNames = $this->classNames[$beanName] ?? [];
-        if (!isset($this->objectDefinitions[$beanName]) && empty($classNames)) {
+        if (empty($classNames) && !isset($this->objectDefinitions[$beanName])) {
             throw new ContainerException('Bean name of ' . $beanName . ' is not defined!');
         }
 
         if (!isset($this->objectDefinitions[$beanName])) {
-            $beanName = end($classNames);
+            $beanName = \end($classNames);
         }
 
         $objectDefinition = $this->objectDefinitions[$beanName];
@@ -539,21 +535,21 @@ class Container implements ContainerInterface
         $className = $objectDefinition->getClassName();
 
         // Cache reflection class
-        $this->cacheRelectionClass($className);
+        $this->cacheReflectionClass($className);
 
         // Before initialize bean
         $this->beforeInit($beanName, $className, $objectDefinition);
 
         $constructArgs   = [];
         $constructInject = $objectDefinition->getConstructorInjection();
-        if (!empty($constructInject)) {
+        if ($constructInject !== null) {
             $constructArgs = $this->getConstructParams($constructInject);
         }
 
         $propertyInjects = $objectDefinition->getPropertyInjections();
 
         // Proxy class
-        if (!empty($this->handler)) {
+        if ($this->handler) {
             $className = $this->handler->classProxy($className);
         }
 
@@ -568,12 +564,12 @@ class Container implements ContainerInterface
         }
 
         // Init method
-        if ($reflectionClass->hasMethod(self::INIT_MEHTOD)) {
-            $reflectObject->{self::INIT_MEHTOD}();
+        if ($reflectionClass->hasMethod(self::INIT_METHOD)) {
+            $reflectObject->{self::INIT_METHOD}();
         }
 
         // Prototype
-        if ($scope == Bean::PROTOTYPE) {
+        if ($scope === Bean::PROTOTYPE) {
             $this->prototypePool[$beanName] = $reflectObject;
             return clone $reflectObject;
         }
@@ -596,7 +592,7 @@ class Container implements ContainerInterface
     private function getConstructParams(MethodInjection $methodInjection): array
     {
         $methodName = $methodInjection->getMethodName();
-        if ($methodName != '__construct') {
+        if ($methodName !== '__construct') {
             throw new ContainerException('ConstructInjection method must be `__construct`');
         }
 
@@ -611,14 +607,14 @@ class Container implements ContainerInterface
 
             // Empty args
             $argValue = $argInject->getValue();
-            if (empty($argValue) || !is_string($argValue)) {
+            if (empty($argValue) || !\is_string($argValue)) {
                 $args[] = $argValue;
                 continue;
             }
 
             $isRef = $argInject->isRef();
             if ($isRef) {
-                $argValue = $this->getRefValue($argValue);;
+                $argValue = $this->getRefValue($argValue);
             }
 
             $args[] = $argValue;
@@ -662,7 +658,7 @@ class Container implements ContainerInterface
      * @throws ContainerException
      * @throws \ReflectionException
      */
-    private function newProperty($reflectObject, \ReflectionClass $reflectionClass, array $propertyInjects)
+    private function newProperty($reflectObject, \ReflectionClass $reflectionClass, array $propertyInjects): void
     {
         // New parent properties
         $parentClass = $reflectionClass->getParentClass();
@@ -680,7 +676,7 @@ class Container implements ContainerInterface
             $reflectProperty = $reflectionClass->getProperty($propertyName);
 
             if ($reflectProperty->isStatic()) {
-                throw new ContainerException('Property %s for bean can not be `static` ', $propertyName);
+                throw new ContainerException(\sprintf('Property %s for bean can not be `static` ', $propertyName));
             }
 
             if (!$reflectProperty->isPublic()) {
@@ -706,28 +702,31 @@ class Container implements ContainerInterface
      *
      * @throws \ReflectionException
      */
-    private function cacheRelectionClass(string $className)
+    private function cacheReflectionClass(string $className): void
     {
         if (isset($this->reflectionPool[$className])) {
             return;
         }
 
         $reflectionClass   = new \ReflectionClass($className);
-        $reflectionMethods = $reflectionClass->getMethods();
+        $reflectionMethods = $reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC);
 
-        $this->reflectionPool[$className]['name'] = $reflectionClass->getName();
+        $this->reflectionPool[$className]['name']     = $reflectionClass->getName();
+        $this->reflectionPool[$className]['comments'] = $reflectionClass->getDocComment();
+
         foreach ($reflectionMethods as $reflectionMethod) {
-
-            $methodName = $reflectionMethod->getName();
-
+            $methodName   = $reflectionMethod->getName();
             $methodParams = [];
+
             foreach ($reflectionMethod->getParameters() as $parameter) {
                 $methodParams[] = [
                     $parameter->getName(),
                     $parameter->getType()
                 ];
             }
+
             $this->reflectionPool[$className]['methods'][$methodName]['params']     = $methodParams;
+            $this->reflectionPool[$className]['methods'][$methodName]['comments']   = $reflectionMethod->getDocComment();
             $this->reflectionPool[$className]['methods'][$methodName]['returnType'] = $reflectionMethod->getReturnType();
         }
     }
@@ -739,9 +738,9 @@ class Container implements ContainerInterface
      * @param string           $className
      * @param ObjectDefinition $objectDefinition
      */
-    private function beforeInit(string $beanName, string $className, ObjectDefinition $objectDefinition)
+    private function beforeInit(string $beanName, string $className, ObjectDefinition $objectDefinition): void
     {
-        if (empty($this->handler)) {
+        if ($this->handler === null) {
             return;
         }
 
@@ -789,13 +788,12 @@ class Container implements ContainerInterface
             return $value;
         }
 
-        $refs = explode('.', $value);
-        if (count($refs) == 1) {
+        if (false === \strpos($value, '.')) {
             return $this->newBean($value);
         }
 
         // Other reference
-        if (!empty($this->handler)) {
+        if ($this->handler !== null) {
             $value = $this->handler->getReferenceValue($value);
         }
 

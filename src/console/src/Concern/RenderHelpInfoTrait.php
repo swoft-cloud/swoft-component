@@ -3,6 +3,7 @@
 namespace Swoft\Console\Concern;
 
 use Swoft\Console\Console;
+use Swoft\Console\Helper\DocBlock;
 use Swoft\Console\Helper\FormatUtil;
 use Swoft\Console\Helper\Show;
 use Swoft\Console\Output\Output;
@@ -63,7 +64,7 @@ trait RenderHelpInfoTrait
         ]);
 
         /* @var Router $router */
-        $router = \Swoft::getBean('cliRouter');
+        $router   = \Swoft::getBean('cliRouter');
         $keyWidth = $router->getKeyWidth();
 
         Console::startBuffer();
@@ -71,9 +72,10 @@ trait RenderHelpInfoTrait
 
         $grpHandler = function (string $group, array $info) use ($keyWidth) {
             Console::writef(
-                '  <info>%s</info>',
+                '  <info>%s</info>%s',
                 Str::padRight($group, $keyWidth),
-                $info['desc'] ?: 'No description message'
+                $info['desc'] ?: 'No description message',
+                $info['alias'] ? "(alias: <info>{$info['alias']}</info>)" : ''
             );
         };
 
@@ -95,55 +97,50 @@ trait RenderHelpInfoTrait
     /**
      * Display help, command list of the group
      *
-     * @param array $groupInfo
+     * @param string $group Group name
+     * @param array  $info Some base info of the group
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    protected function showGroupHelp(array $groupInfo): void
+    protected function showGroupHelp(string $group, array $info = []): void
     {
-        \var_dump($groupInfo);die;
         /* @var Router $router */
         $router = \Swoft::getBean('cliRouter');
+        $script = \input()->getScriptName();
 
-        $collector = CommandCollector::getCollector();
-        $routes    = $collector[$className]['routes'] ?? [];
-
-        $reflectionClass = new \ReflectionClass($className);
-        $classDocument   = $reflectionClass->getDocComment();
-        $classDocAry     = DocBlock::getTags($classDocument);
-        $classDesc       = $classDocAry['Description'];
-
-        $methodCommands = [];
-
-        foreach ($routes as $route) {
-            $mappedName = $route['mappedName'];
-            $methodName = $route['methodName'];
-            $mappedName = empty($mappedName) ? $methodName : $mappedName;
-
-            if ($methodName === 'init') {
-                continue;
-            }
-
-            if ($router->isDefaultCommand($methodName)) {
-                continue;
-            }
-            $reflectionMethod            = $reflectionClass->getMethod($methodName);
-            $methodDocument              = $reflectionMethod->getDocComment();
-            $methodDocAry                = DocBlock::getTags($methodDocument);
-            $methodCommands[$mappedName] = $methodDocAry['Description'];
+        if (!$info) {
+            $info = $router->getGroupInfo($group);
         }
 
-        // 命令显示结构
-        $commandList = [
-            'Description:' => [$classDesc],
-            'Usage:'       => [\input()->getCommand() . ':{command} [arguments] [options]'],
-            'Commands:'    => $methodCommands,
-            'Options:'     => [
-                '-h, --help' => 'Show help of the command group or specified command action',
-            ],
-        ];
+        // $class = $groupInfo['class'];
+        $names = $info['names'];
+        \sort($names);
+        $keyWidth  = $router->getKeyWidth();
+        $groupName = \sprintf('%s%s', $group, $info['alias'] ? " (alias: <cyan>{$info['alias']}</cyan>)" : '');
 
-        \output()->writeList($commandList);
+        Console::startBuffer();
+        Console::writeln($info['desc'] . \PHP_EOL);
+        Console::writeln("<comment>Group:</comment> $groupName");
+
+        Show::mList([
+            'Usage:'          => "{$script} {$group}:<info>COMMAND</info> [--opt ...] [arg ...]",
+            'Global Options:' => FormatUtil::alignOptions(self::$globalOptions),
+        ]);
+
+        Console::writeln('<comment>Available Commands:</comment>');
+
+        foreach ($names as $name) {
+            $cmdId = $router->buildCommandID($group, $name);
+            $cInfo = $router->getRouteByID($cmdId);
+            Console::writef(
+                '  <info>%s</info> %s',
+                Str::padRight($name, $keyWidth),
+                $cInfo['desc'] ?: 'No description message'
+            );
+        }
+
+        Console::writef("\nView the specified command, please use: <cyan>%s %s:COMMAND -h</cyan>", $script, $group);
+        Console::flushBuffer();
     }
 
     /**

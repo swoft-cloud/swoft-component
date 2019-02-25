@@ -1,22 +1,23 @@
 <?php
 
-namespace Swoft\Http\Server\Command;
+namespace Swoft\WebSocket\Server\Command;
 
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Annotation\Mapping\CommandMapping;
 use Swoft\Console\Annotation\Mapping\CommandOption;
 use Swoft\Console\Helper\Show;
-use Swoft\Http\Server\HttpServer;
+use Swoft\Helper\EnvHelper;
+use Swoft\Server\Server;
+use Swoft\WebSocket\Server\WebSocketServer;
 
 /**
- * provide some commands to manage the HTTP Server
- *
- * @Command("http", alias="httpserver, httpServer, http-server", coroutine=false)
+ * Class WsServerCommand
+ * @Command("http", coroutine=false, desc="provide some commands to operate WebSocket Server")
  */
-class HttpServerCommand
+class WsServerCommand
 {
     /**
-     * Start the http server
+     * Start the webSocket server
      *
      * @CommandMapping(
      *     usage="{fullCommand} [-d|--daemon]",
@@ -28,7 +29,7 @@ class HttpServerCommand
      * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Server\Exception\ServerException
      */
-    public function start(): void
+    public function start()
     {
         $server = $this->createServer();
 
@@ -38,6 +39,7 @@ class HttpServerCommand
             \output()->writeln("<error>The server have been running!(PID: {$masterPid})</error>");
             return;
         }
+
 
         // Startup settings
         $this->configStartOption($server);
@@ -154,17 +156,19 @@ class HttpServerCommand
     }
 
     /**
-     * @return HttpServer
+     * @return WebSocketServer
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    private function createServer(): HttpServer
+    private function createServer(): WebSocketServer
     {
         // check env
         // EnvHelper::check();
+
         // http server初始化
-        $server = \bean('httpServer');
         $script = input()->getScript();
+
+        $server = \bean('wsServer');
         $server->setScriptFile($script);
 
         return $server;
@@ -173,9 +177,9 @@ class HttpServerCommand
     /**
      * 设置启动选项，覆盖配置选项
      *
-     * @param HttpServer $server
+     * @param Server $server
      */
-    protected function configStartOption(HttpServer $server): void
+    protected function configStartOption(Server $server): void
     {
         $asDaemon = \input()->getSameOpt(['d', 'daemon'], false);
 
@@ -184,3 +188,4 @@ class HttpServerCommand
         }
     }
 }
+

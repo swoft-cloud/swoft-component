@@ -389,39 +389,43 @@ abstract class Server implements ServerInterface
         self::$server = $server;
     }
 
+    /**
+     * Restart server
+     */
     public function restart(): void
     {
-        // TODO: Implement restart() method.
+        // Check if it has started
+        if ($this->isRunning()) {
+            $this->stop();
+        }
+
+        // Restart default is daemon
+        $this->setDaemonize();
+
+        // Start server
+        $this->start();
     }
 
     /**
      * @param bool $onlyTaskWorker
+     * @return bool
      */
-    public function reload(bool $onlyTaskWorker = false): void
+    public function reload(bool $onlyTaskWorker = false): bool
     {
-        if (!$masterPid = $this->getPidFromFile(true)) {
-            Show::error("The swoole server({$this->name}) is not running.", true);
-            return;
+        if (($pid = $this->pidMap['manager']) < 1) {
+            return false;
         }
 
-        // SIGUSR1(10): 向管理进程发送信号，将平稳地重启所有worker进程; 也可在PHP代码中调用`$server->reload()`完成此操作
-        $signal = 10;
+        // SIGUSR1(10): 向管理进程发送信号，将平稳地重启所有worker进程
+        // SIGUSR2(12): 向管理进程发送信号，只重启task进程
+        $signal = $onlyTaskWorker ? 12 : 10;
 
-        if ($onlyTaskWorker) {
-            // $sig = SIGUSR2;
-            $signal = 12;
-        }
-
-        if (!ServerHelper::sendSignal($masterPid, $signal)) {
-            Show::error("The swoole server({$this->name}) worker process reload fail!", -1);
-        }
-
-        Show::success("The swoole server({$this->name}) worker process reload success.", 0);
+        return ServerHelper::sendSignal($pid, $signal);
     }
 
     public function stop(): bool
     {
-        if (($pid = $this->pidMap['master']) < 1) {
+        if (($pid = $this->pidMap['manager']) < 1) {
             return false;
         }
 
@@ -440,13 +444,14 @@ abstract class Server implements ServerInterface
 
     /**
      * Stop the worker process and immediately trigger the onWorkerStop callback function
-     * @param int $workerId
+     * @param int  $workerId
+     * @param bool $waitEvent
      * @return bool
      */
-    public function stopWorker(int $workerId = -1): bool
+    public function stopWorker(int $workerId = -1, bool $waitEvent = false): bool
     {
         if ($workerId > -1 && $this->swooleServer) {
-            return $this->swooleServer->stop($workerId);
+            return $this->swooleServer->stop($workerId, $waitEvent);
         }
 
         return false;
@@ -528,13 +533,14 @@ abstract class Server implements ServerInterface
     }
 
     /**
-     * Set server to Daemonize
+     * Set server, run server on the background
      *
+     * @param bool $yes
      * @return $this
      */
-    public function setDaemonize(): self
+    public function setDaemonize(bool $yes = true): self
     {
-        $this->setting['daemonize'] = 1;
+        $this->setting['daemonize'] = $yes ? 1 : 0;
         return $this;
     }
 
