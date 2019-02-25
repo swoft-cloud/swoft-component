@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Server;
 
@@ -9,13 +9,13 @@ namespace Swoft\Server;
  */
 interface ServerInterface
 {
-    // swoole mode list
+    // Swoole mode list
     public const MODE_LIST = [
         \SWOOLE_BASE    => 'Base',
         \SWOOLE_PROCESS => 'Process',
     ];
 
-    // swoole socket type list
+    // Swoole socket type list
     public const TYPE_LIST = [
         \SWOOLE_SOCK_TCP         => 'TCP',
         \SWOOLE_SOCK_TCP6        => 'TCP6',
@@ -26,7 +26,7 @@ interface ServerInterface
     ];
 
     /**
-     * Start server
+     * Start swoole server
      *
      * @return void
      */

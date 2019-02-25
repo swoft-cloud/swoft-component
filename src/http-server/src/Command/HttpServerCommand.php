@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Http\Server\Command;
 
@@ -175,7 +175,7 @@ class HttpServerCommand
         // EnvHelper::check();
         // http server初始化
         $server = \bean('httpServer');
-        $script = input()->getScript();
+        $script = \input()->getScript();
         $server->setScriptFile($script);
 
         return $server;

@@ -1,8 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Server;
 
 use Co\Server as CoServer;
+use Swoft\Console\Console;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Helper\ServerHelper;
 use Swoft\Server\Swoole\SwooleEvent;
@@ -64,6 +65,7 @@ abstract class Server implements ServerInterface
      * @var array
      */
     protected $setting = [
+        'daemonize'  => 0,
         'worker_num' => 1,
     ];
 
@@ -120,6 +122,11 @@ abstract class Server implements ServerInterface
     protected $swooleServer;
 
     /**
+     * @var bool
+     */
+    private $debug = false;
+
+    /**
      * Server constructor
      */
     public function __construct()
@@ -135,7 +142,7 @@ abstract class Server implements ServerInterface
      */
     public function init(): void
     {
-
+        // Do something ...
     }
 
     /**
@@ -476,7 +483,7 @@ abstract class Server implements ServerInterface
     }
 
     /**
-     * print log message to terminal
+     * Print log message to terminal
      * @param string $msg
      * @param array  $data
      * @param string $type
@@ -488,8 +495,7 @@ abstract class Server implements ServerInterface
         }
 
         if (\config('debug')) {
-            // TODO ...
-            // ConsoleUtil::log($msg, $data, $type);
+            Console::log($msg, $data, $type);
         }
     }
 
@@ -548,6 +554,22 @@ abstract class Server implements ServerInterface
     public function getSwooleServer()
     {
         return $this->swooleServer;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDebug(): bool
+    {
+        return $this->debug;
+    }
+
+    /**
+     * @param bool $debug
+     */
+    public function setDebug($debug): void
+    {
+        $this->debug = (bool)$debug;
     }
 
     /**
