@@ -391,11 +391,20 @@ class EventManager implements EventManagerInterface
     }
 
     /**
-     * 获取事件的所有监听器
+     * Get all the listeners
+     * @return ListenerQueue[]
+     */
+    public function getListeners(): array
+    {
+        return $this->listeners;
+    }
+
+    /**
+     * Get all the listeners for the event
      * @param  string|EventInterface $event
      * @return array
      */
-    public function getListeners($event): array
+    public function getEventListeners($event): array
     {
         if ($event instanceof EventInterface) {
             $event = $event->getName();
@@ -409,7 +418,7 @@ class EventManager implements EventManagerInterface
     }
 
     /**
-     * 统计获取事件的监听器数量
+     * Count the number of listeners that get the event
      * @param  string|EventInterface $event
      * @return int
      */
@@ -423,7 +432,7 @@ class EventManager implements EventManagerInterface
     }
 
     /**
-     * 移除对某个事件的监听
+     * Remove listeners for an event
      * @param                            $listener
      * @param null|string|EventInterface $event
      * 为空时，移除监听者队列中所有名为 $listener 的监听者
@@ -485,7 +494,7 @@ class EventManager implements EventManagerInterface
      ******************************************************************************/
 
     /**
-     * 添加一个不存在的事件
+     * Add a non-existing event
      * @param EventInterface|string $event event name
      * @param array                 $params
      * @return $this
@@ -504,7 +513,7 @@ class EventManager implements EventManagerInterface
     }
 
     /**
-     * 设定一个事件处理
+     * Set an event object
      * @param string|EventInterface $event
      * @param array                 $params
      * @return $this

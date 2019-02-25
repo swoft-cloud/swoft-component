@@ -8,6 +8,7 @@ use Swoft\Event\Manager\EventManager;
 
 /**
  * Event processor
+ * @since 2.0
  */
 class EventProcessor extends Processor
 {

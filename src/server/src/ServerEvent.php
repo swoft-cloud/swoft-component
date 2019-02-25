@@ -33,4 +33,9 @@ class ServerEvent
      * on work process start event
      */
     public const WORK_PROCESS_START = 'swoft.server.workProcessStart';
+
+    /**
+     * on user process start event
+     */
+    public const USER_PROCESS_START = 'swoft.server.userProcessStart';
 }

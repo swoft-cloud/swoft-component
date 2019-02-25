@@ -7,7 +7,7 @@ namespace Swoft\Server\Swoole;
  *
  * @since 2.0
  */
-class SwooleEvent
+final class SwooleEvent
 {
     /**
      * Start
