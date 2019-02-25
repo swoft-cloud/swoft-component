@@ -48,7 +48,7 @@ final class Command
      *
      * @var string
      */
-    private $desc = 'no description message';
+    private $desc = '';
 
     /**
      * @var bool
@@ -74,15 +74,15 @@ final class Command
         }
 
         if (isset($values['alias'])) {
-            $this->alias = (string)$values['alias'];
+            $this->alias = \trim((string)$values['alias']);
         }
 
         if (!empty($values['desc'])) {
-            $this->desc = (string)$values['desc'];
+            $this->desc = \trim((string)$values['desc']);
         }
 
         if (isset($values['coroutine'])) {
-            $this->coroutine = $values['coroutine'];
+            $this->coroutine = (bool)$values['coroutine'];
         }
 
         if (isset($values['enabled'])) {
@@ -135,6 +135,6 @@ final class Command
      */
     public function getAliases(): array
     {
-        return Str::explode($this->alias);
+        return $this->alias ? Str::explode($this->alias) : [];
     }
 }

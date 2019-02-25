@@ -59,8 +59,11 @@ abstract class AbstractFlag
             $this->name = (string)$values['name'];
         }
 
+        // clear space and '-'
+        $this->name = \trim($this->name, '- ');
+
         if (!empty($values['desc'])) {
-            $this->desc = (string)$values['desc'];
+            $this->desc = \trim((string)$values['desc']);
         }
 
         if (isset($values['mode'])) {
@@ -101,11 +104,16 @@ abstract class AbstractFlag
     }
 
     /**
+     * @param bool $upper
      * @return string
      */
-    public function getType(): string
+    public function getType(bool $upper = true): string
     {
-        return $this->type;
+        if ($this->type) {
+            return $upper ? \strtoupper($this->type) : $this->type;
+        }
+
+        return '';
     }
 
     /**

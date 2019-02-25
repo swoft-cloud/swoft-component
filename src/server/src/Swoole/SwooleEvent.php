@@ -12,107 +12,107 @@ class SwooleEvent
     /**
      * Start
      */
-    const START = 'start';
+    public const START = 'start';
 
     /**
      * Shutdown
      */
-    const SHUTDOWN = 'shutDown';
+    public const SHUTDOWN = 'shutDown';
 
     /**
      * WorkerStart
      */
-    const WORKER_START = 'workerStart';
+    public const WORKER_START = 'workerStart';
 
     /**
      * WorkerStop
      */
-    const WORKER_STOP = 'workerStop';
-
-    /**
-     * ManagerStart
-     */
-    const MANAGER_START = 'managerStart';
-
-    /**
-     * ManagerStop
-     */
-    const MANAGER_STOP = 'managerStop';
-
-    /**
-     * Task
-     */
-    const TASK = 'task';
-
-    /**
-     * Finish
-     */
-    const FINISH = 'finish';
-
-    /**
-     * PipeMessage
-     */
-    const PIPE_MESSAGE = 'pipeMessage';
+    public const WORKER_STOP = 'workerStop';
 
     /**
      * WorkerError
      */
-    const WORKER_ERROR = 'workerError';
+    public const WORKER_ERROR = 'workerError';
+
+    /**
+     * ManagerStart
+     */
+    public const MANAGER_START = 'managerStart';
+
+    /**
+     * ManagerStop
+     */
+    public const MANAGER_STOP = 'managerStop';
+
+    /**
+     * Task
+     */
+    public const TASK = 'task';
+
+    /**
+     * Finish
+     */
+    public const FINISH = 'finish';
+
+    /**
+     * PipeMessage
+     */
+    public const PIPE_MESSAGE = 'pipeMessage';
 
     /**
      * HandShake
      */
-    const HANDSHAKE = 'handShake';
+    public const HANDSHAKE = 'handShake';
 
     /**
      * Message
      */
-    const MESSAGE = 'message';
+    public const MESSAGE = 'message';
 
     /**
      * Open
      */
-    const OPEN = 'open';
+    public const OPEN = 'open';
 
     /**
      * Request
      */
-    const REQUEST = 'request';
+    public const REQUEST = 'request';
 
     /**
      * Packet
      */
-    const PACKET = 'packet';
+    public const PACKET = 'packet';
 
     /**
      * Receive
      */
-    const RECEIVE = 'receive';
+    public const RECEIVE = 'receive';
 
     /**
      * Connect
      */
-    const CONNECT = 'connect';
+    public const CONNECT = 'connect';
 
     /**
      * Close
      */
-    const CLOSE = 'close';
+    public const CLOSE = 'close';
 
     /**
      * BufferFull
      */
-    const BUFFER_FULL = 'bufferFull';
+    public const BUFFER_FULL = 'bufferFull';
 
     /**
      * BufferEmpty
      */
-    const BUFFER_EMPTY = 'bufferEmpty';
+    public const BUFFER_EMPTY = 'bufferEmpty';
 
     /**
      * Event interface listener mapping
      */
-    const LISTENER_MAPPING = [
+    public const LISTENER_MAPPING = [
         // for http server
         self::REQUEST   => RequestInterface::class,
         // for websocket server

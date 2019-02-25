@@ -42,10 +42,10 @@ interface EventInterface
     /**
      * Get a single parameter by name
      *
-     * @param  string $name
+     * @param  int|string $key
      * @return mixed
      */
-    public function getParam($name);
+    public function getParam($key);
 
     /**
      * Set the event name

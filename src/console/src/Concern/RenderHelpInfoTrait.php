@@ -7,6 +7,7 @@ use Swoft\Console\Helper\FormatUtil;
 use Swoft\Console\Helper\Show;
 use Swoft\Console\Output\Output;
 use Swoft\Console\Router\Router;
+use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\Str;
 
 /**
@@ -28,11 +29,11 @@ trait RenderHelpInfoTrait
         $swoftVersion  = \Swoft::VERSION;
         $swooleVersion = \SWOOLE_VERSION;
 
-        // display logo
-        $output->writeln(\Swoft::FONT_LOGO);
-        // display some information
+        // Display logo
+        $output->colored(\Swoft::FONT_LOGO);
+        // Display some information
         $output->writef(
-            "PHP: <info>%s</info>, Swoft: <info>%s</info>, Swoole: <info>%s</info>\n",
+            'PHP: <info>%s</info>, Swoft: <info>%s</info>, Swoole: <info>%s</info>',
             $phpVersion, $swoftVersion, $swooleVersion
         );
     }
@@ -52,28 +53,34 @@ trait RenderHelpInfoTrait
         }
 
         $script = \input()->getScriptName();
-        // built in options
-        $internalOptions = FormatUtil::alignOptions(self::$globalOptions);
+        // Global options
+        $globalOptions = self::$globalOptions;
+        // Append expand option
+        $globalOptions['--expand'] = 'Expand all sub-commands for the group';
 
-        // output list
-        // \output()->writeList($commandList, 'comment', 'info');
+        $appVer  = $this->getVersion();
+        $appDesc = $this->getDescription();
+
+        Console::startBuffer();
+        Console::writeln(\sprintf('%s%s' . \PHP_EOL, $appDesc, $appVer ? " (Version: <info>$appVer</info>)" : ''));
+
         Show::mList([
-            'Usage:'   => "$script <info>{command}</info> [arg0 arg1 arg2 ...] [--opt -v -h ...]",
-            'Options:' => $internalOptions,
+            'Usage:'   => "$script <info>COMMAND</info> [arg0 arg1 arg2 ...] [--opt -v -h ...]",
+            'Options:' => FormatUtil::alignOptions($globalOptions),
         ]);
 
         /* @var Router $router */
-        $router = \Swoft::getBean('cliRouter');
+        $router   = \Swoft::getBean('cliRouter');
         $keyWidth = $router->getKeyWidth();
 
-        Console::startBuffer();
         Console::writeln('<comment>Available Commands:</comment>');
 
         $grpHandler = function (string $group, array $info) use ($keyWidth) {
             Console::writef(
-                '  <info>%s</info>',
+                '  <info>%s</info>%s%s',
                 Str::padRight($group, $keyWidth),
-                $info['desc'] ?: 'No description message'
+                $info['desc'] ?: 'No description message',
+                $info['alias'] ? "(alias: <info>{$info['alias']}</info>)" : ''
             );
         };
 
@@ -88,142 +95,121 @@ trait RenderHelpInfoTrait
 
         $router->sortedEach($grpHandler, $cmdHandler);
 
-        Console::write("\nMore command information, please use: <cyan>$script {command} -h</cyan>");
+        Console::write("\nMore command information, please use: <cyan>$script COMMAND -h</cyan>");
         Console::flushBuffer();
     }
 
     /**
      * Display help, command list of the group
      *
-     * @param array $groupInfo
+     * @param string $group Group name
+     * @param array  $info Some base info of the group
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    protected function showGroupHelp(array $groupInfo): void
+    protected function showGroupHelp(string $group, array $info = []): void
     {
         /* @var Router $router */
         $router = \Swoft::getBean('cliRouter');
+        $script = \input()->getScriptName();
 
-        $collector = CommandCollector::getCollector();
-        $routes    = $collector[$className]['routes'] ?? [];
-
-        $reflectionClass = new \ReflectionClass($className);
-        $classDocument   = $reflectionClass->getDocComment();
-        $classDocAry     = DocBlock::getTags($classDocument);
-        $classDesc       = $classDocAry['Description'];
-
-        $methodCommands = [];
-
-        foreach ($routes as $route) {
-            $mappedName = $route['mappedName'];
-            $methodName = $route['methodName'];
-            $mappedName = empty($mappedName) ? $methodName : $mappedName;
-
-            if ($methodName === 'init') {
-                continue;
-            }
-
-            if ($router->isDefaultCommand($methodName)) {
-                continue;
-            }
-            $reflectionMethod            = $reflectionClass->getMethod($methodName);
-            $methodDocument              = $reflectionMethod->getDocComment();
-            $methodDocAry                = DocBlock::getTags($methodDocument);
-            $methodCommands[$mappedName] = $methodDocAry['Description'];
+        if (!$info) {
+            $info = $router->getGroupInfo($group);
         }
 
-        // 命令显示结构
-        $commandList = [
-            'Description:' => [$classDesc],
-            'Usage:'       => [\input()->getCommand() . ':{command} [arguments] [options]'],
-            'Commands:'    => $methodCommands,
-            'Options:'     => [
-                '-h, --help' => 'Show help of the command group or specified command action',
-            ],
-        ];
+        // $class = $groupInfo['class'];
+        $names = $info['names'];
+        \sort($names);
+        $keyWidth  = $router->getKeyWidth();
+        $groupName = \sprintf('%s%s', $group, $info['alias'] ? " (alias: <cyan>{$info['alias']}</cyan>)" : '');
 
-        \output()->writeList($commandList);
+        Console::startBuffer();
+        Console::writeln($info['desc'] . \PHP_EOL);
+        Console::writeln("<comment>Group:</comment> $groupName");
+
+        Show::mList([
+            'Usage:'          => "{$script} {$group}:<info>COMMAND</info> [--opt ...] [arg ...]",
+            'Global Options:' => FormatUtil::alignOptions(self::$globalOptions),
+        ]);
+
+        Console::writeln('<comment>Available Commands:</comment>');
+
+        foreach ($names as $name) {
+            $cmdId = $router->buildCommandID($group, $name);
+            $cInfo = $router->getRouteByID($cmdId);
+            Console::writef(
+                '  <info>%s</info> %s',
+                Str::padRight($name, $keyWidth),
+                $cInfo['desc'] ?: 'No description message'
+            );
+        }
+
+        Console::writef("\nView the specified command, please use: <cyan>%s %s:COMMAND -h</cyan>", $script, $group);
+        Console::flushBuffer();
     }
 
     /**
      * Display help for an command
      *
-     * @param string $controllerClass
-     * @param string $commandMethod
-     * @throws \ReflectionException
+     * @param array $info
      */
-    protected function showCommandHelp(string $controllerClass, string $commandMethod): void
+    protected function showCommandHelp(array $info): void
     {
-        // 反射获取方法描述
-        $reflectionClass  = new \ReflectionClass($controllerClass);
-        $reflectionMethod = $reflectionClass->getMethod($commandMethod);
-        $document         = $reflectionMethod->getDocComment();
-        $document         = $this->parseCommentsVars($document, $this->commentsVars());
-        $docs             = DocBlock::getTags($document);
+        $script = \input()->getScriptName();
 
-        $commands = [];
+        Console::startBuffer();
+        Console::writeln($info['desc'] . \PHP_EOL);
 
-        // 描述
-        if (isset($docs['Description'])) {
-            $commands['Description:'] = explode("\n", $docs['Description']);
-        }
+        Show::mList([
+            'Usage:'          => \sprintf('%s %s [--opt ...] [arg ...]', $script, $info['cmdId']),
+            'Global Options:' => FormatUtil::alignOptions(self::$globalOptions),
+        ]);
+        // [$className, $method] = $info['handler'];
 
-        // 使用
-        if (isset($docs['Usage'])) {
-            $commands['Usage:'] = $docs['Usage'];
-        }
+        // Command options
+        if ($options = $info['options']) {
+            \ksort($options);
+            Console::writeln('<comment>Options:</comment>');
 
-        // 参数
-        if (isset($docs['Arguments'])) {
-            // $arguments = $this->parserKeyAndDesc($docs['Arguments']);
-            $commands['Arguments:'] = $docs['Arguments'];
-        }
+            $maxLen  = 0;
+            $newOpts = [];
 
-        // 选项
-        if (isset($docs['Options'])) {
-            // $options = $this->parserKeyAndDesc($docs['Options']);
-            $commands['Options:'] = $docs['Options'];
-        }
+            foreach ($options as $name => $meta) {
+                if (($len = \strlen($name)) === 0) {
+                    continue;
+                }
 
-        // 实例
-        if (isset($docs['Example'])) {
-            $commands['Example:'] = [$docs['Example']];
-        }
+                if ($len === 1) {
+                    $key = \sprintf('-%s %s', $name, $meta['type']);
+                } else {
+                    $name .= $meta['short'] ? ', -' . $meta['short'] : '';
+                    $key  = \sprintf('--%s %s', $name, $meta['type']);
+                }
 
-        \output()->writeList($commands);
-    }
+                $kenLen = \strlen($key);
+                if ($kenLen > $maxLen) {
+                    $maxLen = $kenLen;
+                }
 
-    /**
-     * the command list
-     *
-     * @return array
-     * @throws \ReflectionException
-     */
-    private function parserCmdAndDesc(): array
-    {
-        $commands  = [];
-        $collector = CommandCollector::getCollector();
-
-        /* @var \Swoft\Console\Router\HandlerMapping $route */
-        $route = App::getBean('commandRoute');
-
-        foreach ($collector as $className => $command) {
-            if (!$command['enabled']) {
-                continue;
+                $newOpts[$key] = $meta;
             }
 
-            $rc         = new \ReflectionClass($className);
-            $docComment = $rc->getDocComment();
-            $docAry     = DocBlock::getTags($docComment);
-
-            $prefix            = $command['name'];
-            $prefix            = $route->getPrefix($prefix, $className);
-            $commands[$prefix] = StringHelper::ucfirst($docAry['Description']);
+            // render
+            foreach ($newOpts as $key => $meta) {
+                Console::writef('  %s    %s', Str::padRight($key, $maxLen), $meta['desc']);
+            }
         }
 
-        // sort commands
-        \ksort($commands);
+        // Command arguments
+        if ($arguments = $info['arguments']) {
+            Console::writeln('<comment>Arguments:</comment>');
 
-        return $commands;
+            $keyWidth = Arr::getKeyMaxWidth($arguments);
+            foreach ($arguments as $name => $meta) {
+                Console::writef('%s %s %s', Str::padRight($name, $keyWidth), $meta['type'], $meta['desc']);
+            }
+        }
+
+        Console::flushBuffer();
     }
 }

@@ -69,11 +69,11 @@ final class CommandMapping
         }
 
         if (isset($values['alias'])) {
-            $this->alias = (string)$values['alias'];
+            $this->alias = \trim((string)$values['alias']);
         }
 
         if (isset($values['desc'])) {
-            $this->desc = (string)$values['desc'];
+            $this->desc = \trim((string)$values['desc']);
         }
 
         if (isset($values['usage'])) {
@@ -106,7 +106,7 @@ final class CommandMapping
      */
     public function getAliases(): array
     {
-        return Str::explode($this->alias);
+        return $this->alias ? Str::explode($this->alias) : [];
     }
 
     /**

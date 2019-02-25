@@ -38,7 +38,7 @@ class CommandMappingParser extends Parser
         CommandParser::addRoute($this->className, $method, [
             'command' => $annotation->getName() ?: $method,
             'method'  => $method,
-            // 'alias'   => $annotation->getAlias(),
+            'alias'   => $annotation->getAlias(),
             'aliases' => $annotation->getAliases(),
             'desc'    => $annotation->getDesc(),
         ]);

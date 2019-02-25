@@ -27,19 +27,19 @@ class Router implements RouterInterface
     private $suffix = 'Command';
 
     /**
-     * The default group of command
+     * The default group of command. eg: http
      * @var string
      */
-    private $defaultGroup = 'http';
+    private $defaultGroup = '';
 
     /**
-     * The default command
+     * The default command. eg. 'start'
      * @var string
      */
     private $defaultCommand = 'index';
 
     /**
-     * the delimiter
+     * The delimiter for split group and command
      *
      * @var string
      */
@@ -53,6 +53,8 @@ class Router implements RouterInterface
     private $keyWidth = 12;
 
     /**
+     * All commands routes data
+     *
      * @var array
      * [
      *  // route ID => route info.
@@ -129,16 +131,17 @@ class Router implements RouterInterface
 
         if (\in_array($inputCmd, self::DEFAULT_METHODS, true)) {
             $group   = $this->defaultGroup;
-            $command = $this->resolveGroupAlias($inputCmd);
+            $command = $this->resolveCommandAlias($inputCmd);
 
             // only a group name
         } elseif (\strpos($inputCmd, $delimiter) === false) {
-            return [
-                self::ONLY_GROUP,
-                [
-                    'group' => $this->resolveGroupAlias($inputCmd),
-                ]
-            ];
+            $group = $this->resolveGroupAlias($inputCmd);
+
+            if (isset($this->groups[$group])) {
+                return [self::ONLY_GROUP, ['group' => $group]];
+            }
+
+            return [self::NOT_FOUND];
         } else {
             $nameList = \explode($delimiter, $inputCmd, 2);
 
@@ -153,23 +156,22 @@ class Router implements RouterInterface
             }
         }
 
-        // return [$group, $command ?: $this->defaultCommand];
         $group = $this->resolveGroupAlias($group);
         // build command ID
         $commandID = $this->buildCommandID($group, $command);
 
         if (isset($this->routes[$commandID])) {
             $info = $this->routes[$commandID];
+            // append some info
+            $info['cmdId']   = $commandID;
+            $info['group']   = $group;
+            $info['command'] = $command;
+
             return [self::FOUND, $info];
         }
 
-        if (isset($this->groups[$group])) {
-            return [
-                self::ONLY_GROUP,
-                [
-                    'group' => $group,
-                ]
-            ];
+        if ($group && isset($this->groups[$group])) {
+            return [self::ONLY_GROUP, ['group' => $group]];
         }
 
         return [self::NOT_FOUND];
@@ -186,7 +188,7 @@ class Router implements RouterInterface
 
         foreach ($groups as $group => $info) {
             $names = $info['names'];
-            \ksort($names);
+            \sort($names);
             unset($info['names']);
 
             // call group handle func
@@ -198,6 +200,15 @@ class Router implements RouterInterface
                 $cmdFunc($id, $this->routes[$id]);
             }
         }
+    }
+
+    /**
+     * @param string $cmdID It is equals to 'group:command'
+     * @return array
+     */
+    public function getRouteByID(string $cmdID): array
+    {
+        return $this->routes[$cmdID] ?? [];
     }
 
     /**
