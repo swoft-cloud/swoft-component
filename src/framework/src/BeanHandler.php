@@ -86,7 +86,7 @@ class BeanHandler extends Handler
                 $mtdAntClassNames[] = get_class($methodAnnotation);
             }
 
-            Aop::register($beanNames, $className, $methodName, $methodAnnotations);
+            Aop::register($beanNames, $className, $methodName, $mtdAntClassNames);
         }
     }
 

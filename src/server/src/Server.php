@@ -42,7 +42,7 @@ abstract class Server implements ServerInterface
      *
      * @var int
      */
-    protected $port = 9088;
+    protected $port = 88;
 
     /**
      * Default mode

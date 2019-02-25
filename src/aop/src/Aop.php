@@ -2,6 +2,8 @@
 
 namespace Swoft\Aop;
 
+use Swoft\WebSocket\Server\Command\WsServerCommand;
+
 /**
  * Class AopRegister
  *
@@ -63,10 +65,10 @@ class Aop
             // Is exclude
             $isExcludeBean       = self::isBeanOrAnnotation($beanNames, $pointBeanExclude);
             $isExcludeAnnotation = self::isBeanOrAnnotation($methodAnnotations, $pointAnnotationExclude);
-            $isExcludeExcution   = self::isExecution($className, $method, $pointExecutionExclude);
+            $isExcludeExecution  = self::isExecution($className, $method, $pointExecutionExclude);
 
             $isInclude = $isIncludeBean || $isIncludeAnnotation || $isIncludeExecution;
-            $isExclude = $isExcludeBean || $isExcludeAnnotation || $isExcludeExcution;
+            $isExclude = $isExcludeBean || $isExcludeAnnotation || $isExcludeExecution;
 
             if ($isInclude && !$isExclude) {
                 self::$mapping[$className][$method][] = $aspect['advice'];

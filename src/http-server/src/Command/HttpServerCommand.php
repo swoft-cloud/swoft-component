@@ -9,7 +9,9 @@ use Swoft\Console\Helper\Show;
 use Swoft\Http\Server\HttpServer;
 
 /**
- * provide some commands to manage the HTTP Server
+ * Provide some commands to manage the HTTP Server
+ *
+ * @since 2.0
  *
  * @Command("http", alias="httpserver,httpServer,http-server", coroutine=false)
  */
@@ -22,6 +24,7 @@ class HttpServerCommand
      *     usage="{fullCommand} [-d|--daemon]",
      *     example="{fullCommand}\n{fullCommand} -d"
      * )
+     *
      * @CommandOption("daemon", short="d", desc="Run server on the background")
      *
      * @throws \ReflectionException
