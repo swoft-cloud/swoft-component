@@ -13,7 +13,7 @@ if (!function_exists('env')) {
         $value = getenv($key);
 
         if ($value === false) {
-            return value($default);
+            return \value($default);
         }
 
         switch (strtolower($value)) {

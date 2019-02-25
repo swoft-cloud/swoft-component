@@ -29,6 +29,9 @@
         </testsuite>
         <testsuite name="db">
             <directory suffix="Test.php">src/db/test/case</directory>
+            <file>
+                src/db/test/bootstrap.php
+            </file>
         </testsuite>
         <testsuite name="defer">
             <directory suffix="Test.php">src/defer/test/case</directory>

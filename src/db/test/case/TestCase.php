@@ -13,18 +13,5 @@ use Swoft\Test\TestApplication;
  */
 class TestCase extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var TestApplication
-     */
-    protected $application;
 
-    /**
-     * Set up
-     */
-    public function setUp()
-    {
-        $this->application = new TestApplication();
-        $this->application->setBeanFile(__DIR__ . '/bean.php');
-        $this->application->run();
-    }
 }

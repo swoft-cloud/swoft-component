@@ -855,7 +855,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
             return $this->items[$key];
         }
 
-        return value($default);
+        return \value($default);
     }
 
     /**

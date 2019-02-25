@@ -11,15 +11,35 @@ use Swoft\Db\Query\Builder;
  *
  * @see   Connection
  * @since 2.0
+ *
+ * @method static Builder table($table);
  */
 class DB
 {
     /**
+     * Supported methods
+     *
      * @var array
      */
     private static $passthru = [
         'table',
+        'raw',
+        'selectOne',
+        'select',
+        'cursor',
         'insert',
+        'update',
+        'delete',
+        'statement',
+        'affectingStatement',
+        'unprepared',
+        'prepareBindings',
+        'transaction',
+        'beginTransaction',
+        'commit',
+        'rollBack',
+        'transactionLevel',
+        'pretend',
     ];
 
     /**
@@ -44,8 +64,7 @@ class DB
         }
     }
 
-
-    public static function __callStatic($name, $arguments)
+    public static function __callStatic(string $name, array $arguments)
     {
         if (!in_array($name, self::$passthru)) {
 

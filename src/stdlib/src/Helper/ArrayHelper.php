@@ -219,8 +219,9 @@ class ArrayHelper
     /**
      * Get all of the given array except for a specified array of keys.
      *
-     * @param  array  $array
-     * @param  array|string  $keys
+     * @param  array        $array
+     * @param  array|string $keys
+     *
      * @return array
      */
     public static function except($array, $keys)
@@ -1020,7 +1021,7 @@ class ArrayHelper
      *
      * @return array
      */
-    public static function flatten(array $array, int $depth = INF): array
+    public static function flatten(array $array, int $depth = PHP_INT_MAX): array
     {
         $result = [];
 
@@ -1041,9 +1042,11 @@ class ArrayHelper
 
     /**
      * find similar text from an array|Iterator
+     *
      * @param string          $need
      * @param \Iterator|array $iterator
      * @param int             $similarPercent
+     *
      * @return array
      */
     public static function findSimilar(string $need, $iterator, int $similarPercent = 45): array
@@ -1068,12 +1071,14 @@ class ArrayHelper
 
     /**
      * get key Max Width
+     *
      * @param  array $data
-     * [
+     *     [
      *     'key1'      => 'value1',
      *     'key2-test' => 'value2',
-     * ]
+     *     ]
      * @param bool   $expectInt
+     *
      * @return int
      */
     public static function getKeyMaxWidth(array $data, bool $expectInt = false): int
@@ -1083,11 +1088,41 @@ class ArrayHelper
         foreach ($data as $key => $value) {
             // key is not a integer
             if (!$expectInt || !\is_numeric($key)) {
-                $width = \mb_strlen($key, 'UTF-8');
+                $width       = \mb_strlen($key, 'UTF-8');
                 $keyMaxWidth = $width > $keyMaxWidth ? $width : $keyMaxWidth;
             }
         }
 
         return $keyMaxWidth;
+    }
+
+    /**
+     * Return the first element in an array passing a given truth test.
+     *
+     * @param  array         $array
+     * @param  callable|null $callback
+     * @param  mixed         $default
+     *
+     * @return mixed
+     */
+    public static function first($array, callable $callback = null, $default = null)
+    {
+        if (is_null($callback)) {
+            if (empty($array)) {
+                return \value($default);
+            }
+
+            foreach ($array as $item) {
+                return $item;
+            }
+        }
+
+        foreach ($array as $key => $value) {
+            if (call_user_func($callback, $value, $key)) {
+                return $value;
+            }
+        }
+
+        return \value($default);
     }
 }
