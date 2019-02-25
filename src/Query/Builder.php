@@ -250,13 +250,17 @@ class Builder implements PrototypeInterface
     /**
      * Set the columns to be selected.
      *
-     * @param  array|mixed $columns
+     * @param  string ...$columns
      *
      * @return static
      */
-    public function select($columns = ['*']): self
+    public function select(string ...$columns): self
     {
-        $this->columns = is_array($columns) ? $columns : func_get_args();
+        if (empty($columns)) {
+            $columns = ['*'];
+        }
+
+        $this->columns = $columns;
 
         return $this;
     }
@@ -310,7 +314,7 @@ class Builder implements PrototypeInterface
      * @throws \InvalidArgumentException
      * @throws PrototypeException
      */
-    public function fromSub($query, $as): self
+    public function fromSub($query, string $as): self
     {
         [$query, $bindings] = $this->createSub($query);
 
