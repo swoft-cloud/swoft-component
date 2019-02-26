@@ -57,12 +57,6 @@ class HttpServerCommand
 
         // TCP 启动参数
         // $tcpStatus = $server->getTcpSetting();
-        $tcpStatus = [];
-        $tcpEnable = $serverStatus['tcpable'] ?? false;
-        $tcpHost   = $tcpStatus['host'] ?? 'unknown';
-        $tcpPort   = $tcpStatus['port'] ?? 'unknown';
-        $tcpType   = $tcpStatus['type'] ?? 'unknown';
-        $tcpEnable = $tcpEnable ? '<info>Enabled</info>' : '<warning>Disabled</warning>';
 
         Show::panel([
             'HTTP' => [
@@ -172,11 +166,10 @@ class HttpServerCommand
     {
         // check env
         // EnvHelper::check();
-        // http server初始化
-        $server = \bean('httpServer');
         $script = input()->getScript();
-
-        $server->setScriptFile(\Swoft::app()->getBasePath() . '/' . $script);
+        /** @var HttpServer $server */
+        $server = \bean('httpServer');
+        $server->setScriptFile(\Swoft::app()->getPath($script));
 
         return $server;
     }

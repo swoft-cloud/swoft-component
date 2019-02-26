@@ -44,12 +44,6 @@ use Toolkit\Cli\Cli;
  */
 class Show
 {
-    /** @var string */
-    private static $buffer;
-
-    /** @var bool */
-    private static $buffering = false;
-
     /** @var array */
     public static $defaultBlocks = [
         'block',
@@ -73,12 +67,12 @@ class Show
      * @param int|boolean $quit If is int, setting it is exit code.
      * @return int
      */
-    public static function block($messages, $type = 'MESSAGE', string $style = Style::NORMAL, $quit = false): int
+    public static function block($messages, string $type = 'MESSAGE', string $style = Style::NORMAL, $quit = false): int
     {
         $messages = \is_array($messages) ? \array_values($messages) : [$messages];
 
         // add type
-        if (null !== $type) {
+        if ($type) {
             $messages[0] = \sprintf('[%s] %s', strtoupper($type), $messages[0]);
         }
 
@@ -94,7 +88,7 @@ class Show
 
     /**
      * @param mixed       $messages
-     * @param string|null $type
+     * @param string      $type
      * @param string      $style
      * @param int|boolean $quit If is int, setting it is exit code.
      * @return int
@@ -104,14 +98,14 @@ class Show
         $messages = \is_array($messages) ? \array_values($messages) : [$messages];
 
         // add type
-        if (null !== $type) {
+        if ($type) {
             $type = \sprintf('[%s]', \strtoupper($type));
         }
 
         $text  = \implode(\PHP_EOL, $messages);
         $color = static::getStyle();
 
-        if (\is_string($style) && $color->hasStyle($style)) {
+        if ($type && \is_string($style) && $color->hasStyle($style)) {
             $type = \sprintf('<%s>%s</%s> ', $style, $type, $style);
         }
 
@@ -169,6 +163,21 @@ class Show
     /**************************************************************************************************
      * Output Format Message(section/list/helpPanel/panel/table)
      **************************************************************************************************/
+
+    /**
+     * Print JSON
+     * @param mixed $data
+     * @param int   $flags
+     * @return int
+     */
+    public static function prettyJSON(
+        $data,
+        int $flags = \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES
+    ): int {
+        $string = (string)\json_encode($data, $flags);
+
+        return Console::write($string);
+    }
 
     /**
      * @param string $title
@@ -519,89 +528,6 @@ class Show
     public static function progressBar(int $total, array $opts = []): ?\Generator
     {
         return SimpleBar::gen($total, $opts);
-    }
-
-    /***********************************************************************************
-     * Output buffer
-     ***********************************************************************************/
-
-    /**
-     * @return bool
-     */
-    public static function isBuffering(): bool
-    {
-        return self::$buffering;
-    }
-
-    /**
-     * @return string
-     */
-    public static function getBuffer(): string
-    {
-        return self::$buffer;
-    }
-
-    /**
-     * @param string $buffer
-     */
-    public static function setBuffer(string $buffer): void
-    {
-        self::$buffer = $buffer;
-    }
-
-    /**
-     * start buffering
-     */
-    public static function startBuffer(): void
-    {
-        self::$buffering = true;
-    }
-
-    /**
-     * start buffering
-     */
-    public static function clearBuffer(): void
-    {
-        self::$buffer = null;
-    }
-
-    /**
-     * stop buffering
-     * @see Show::write()
-     * @param bool  $flush Whether flush buffer to output stream
-     * @param bool  $nl Default is False, because the last write() have been added "\n"
-     * @param bool  $quit
-     * @param array $opts
-     * @return null|string If flush = False, will return all buffer text.
-     */
-    public static function stopBuffer($flush = true, $nl = false, $quit = false, array $opts = []): ?string
-    {
-        self::$buffering = false;
-
-        if ($flush && self::$buffer) {
-            // all text have been rendered by Style::render() in every write();
-            $opts['color'] = false;
-
-            // flush to stream
-            self::write(self::$buffer, $nl, $quit, $opts);
-
-            // clear buffer
-            self::$buffer = null;
-        }
-
-        return self::$buffer;
-    }
-
-    /**
-     * stop buffering and flush buffer text
-     * @see Show::write()
-     * @param bool  $nl
-     * @param bool  $quit
-     * @param array $opts
-     */
-    public static function flushBuffer($nl = false, $quit = false, array $opts = []): void
-    {
-        self::stopBuffer(true, $nl, $quit, $opts);
     }
 
     /***********************************************************************************

@@ -116,13 +116,14 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
         // Storage as global static property.
         \Swoft::$app = $this;
 
-        // Init system path aliases
-        $this->setSystemAlias();
-
         // Can setting properties by array
         if ($config) {
             ObjectHelper::init($this, $config);
         }
+
+        // Init system path aliases
+        $this->findBasePath();
+        $this->setSystemAlias();
 
         $processors = $this->processors();
 
@@ -130,6 +131,13 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
         $this->processor->addFirstProcessor(...$processors);
 
         $this->init();
+    }
+
+    private function findBasePath()
+    {
+        $basePath = ComposerHelper::getClassLoader()->findFile(static::class);
+        // save
+        $this->basePath = \dirname($basePath, 2);
     }
 
     protected function init()
@@ -266,14 +274,20 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     }
 
     /**
+     * @param string $relativePath
+     * @return string
+     */
+    public function getPath(string $relativePath): string
+    {
+        return $this->basePath . '/' . $relativePath;
+    }
+
+    /**
      * @return string
      */
     public function getBasePath(): string
     {
-        $basePath = ComposerHelper::getClassLoader()->findFile(static::class);
-        $basePath = dirname($basePath, 2);
-
-        return $basePath;
+        return $this->basePath;
     }
 
     /**

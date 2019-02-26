@@ -4,6 +4,7 @@ namespace Swoft\Console\Output;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Console\Concern\FormatOutputAwareTrait;
+use Swoft\Console\Console;
 use Swoft\Console\Contract\OutputInterface;
 use Swoft\Console\Helper\Show;
 use Swoft\Console\Style\Style;
@@ -58,7 +59,7 @@ class Output implements OutputInterface
      */
     public function startBuffer(): void
     {
-        Show::startBuffer();
+        Console::startBuffer();
     }
 
     /**
@@ -66,17 +67,17 @@ class Output implements OutputInterface
      */
     public function clearBuffer(): void
     {
-        Show::clearBuffer();
+        Console::clearBuffer();
     }
 
     /**
      * stop buffering and flush buffer text
      * {@inheritdoc}
-     * @see Show::stopBuffer()
+     * @see Console::stopBuffer()
      */
     public function stopBuffer(bool $flush = true, $nl = false, $quit = false, array $opts = []): void
     {
-        Show::stopBuffer($flush, $nl, $quit, $opts);
+        Console::stopBuffer($flush, $nl, $quit, $opts);
     }
 
     /**
@@ -85,7 +86,7 @@ class Output implements OutputInterface
      */
     public function flush(bool $nl = false, $quit = false, array $opts = []): void
     {
-        $this->stopBuffer(true, $nl, $quit, $opts);
+        Console::flushBuffer($nl, $quit, $opts);
     }
 
     /***************************************************************************
@@ -93,33 +94,27 @@ class Output implements OutputInterface
      ***************************************************************************/
 
     /**
-     * 读取输入信息
+     * Read input information
      * @param  string $question 若不为空，则先输出文本
      * @param  bool   $nl true 会添加换行符 false 原样输出，不添加换行符
      * @return string
      */
     public function read($question = null, $nl = false): string
     {
-        if ($question) {
-            $this->write($question, $nl);
-        }
-
-        return \trim(\fgets(\STDIN));
+        return Console::read($question, $nl);
     }
 
     /**
      * Write a message to standard error output stream.
      * @param string  $text
      * @param boolean $nl True (default) to append a new line at the end of the output string.
-     * @return $this
+     * @return int
      */
-    public function stderr($text = '', $nl = true): self
+    public function stderr(string $text = '', $nl = true): int
     {
-        $text = $this->getStyle()->format($text);
-
-        \fwrite($this->errorStream, $text . ($nl ? "\n" : null));
-
-        return $this;
+        return Console::write($text, $nl, [
+            'steam' => $this->errorStream,
+        ]);
     }
 
     /***************************************************************************

@@ -595,7 +595,7 @@ abstract class Server implements ServerInterface
      *
      * @return int
      */
-    public function getPid(string $name = 'master'): int
+    public function getPid(string $name = 'masterPid'): int
     {
         return $this->pidMap[$name] ?? 0;
     }

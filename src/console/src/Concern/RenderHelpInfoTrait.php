@@ -62,7 +62,7 @@ trait RenderHelpInfoTrait
         $appDesc = $this->getDescription();
 
         Console::startBuffer();
-        Console::writeln(\sprintf('%s%s' . \PHP_EOL, $appDesc, $appVer ? " (Version: <info>$appVer</info>)" : ''));
+        Console::writeln(\sprintf("%s%s\n", $appDesc, $appVer ? " (Version: <info>$appVer</info>)" : ''));
 
         Show::mList([
             'Usage:'   => "$script <info>COMMAND</info> [arg0 arg1 arg2 ...] [--opt -v -h ...]",
