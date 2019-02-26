@@ -4,6 +4,7 @@ namespace Swoft\Processor;
 
 /**
  * Config processor
+ * @since 2.0
  */
 class ConfigProcessor extends Processor
 {

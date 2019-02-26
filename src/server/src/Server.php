@@ -396,7 +396,7 @@ abstract class Server implements ServerInterface
      */
     public function getTypeName(): string
     {
-        return self::MODE_LIST[$this->type] ?? 'Unknown';
+        return self::TYPE_LIST[$this->type] ?? 'Unknown';
     }
 
     /**

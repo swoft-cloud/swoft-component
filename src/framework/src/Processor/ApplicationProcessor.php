@@ -6,6 +6,7 @@ use Swoft\Stdlib\Helper\ArrayHelper;
 
 /**
  * Application processor
+ * @since 2.0
  */
 class ApplicationProcessor extends Processor
 {

@@ -6,24 +6,27 @@ use Swoft\Console\Console;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
+use Swoft\Server\Event\ServerRuntimeEvent;
 use Swoft\Server\Swoole\SwooleEvent;
 
 /**
  * Class ManagerStartListener
- * @since 2.o
+ * @since 2.0
  * @Listener(SwooleEvent::MANAGER_START)
  */
 class ManagerStartListener implements EventHandlerInterface
 {
     /**
-     * @param EventInterface $event
+     * @param EventInterface|ServerRuntimeEvent $event
      */
     public function handle(EventInterface $event): void
     {
-        /** @var \Swoft\Server\Server $server */
-        $server = $event->getParam(0);
-        $pidMap = $server->getPidMap();
+        $server = $event->coServer;
 
-        Console::writef('Server start success (Master PID: %d, Manager PID: %d)', $pidMap['master'], $pidMap['manager']);
+        Console::writef(
+            'Server start success (Master PID: %d, Manager PID: %d)',
+            $server->master_pid,
+            $server->manager_pid
+        );
     }
 }
