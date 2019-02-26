@@ -9,7 +9,6 @@
   ],
   "description": "micro-service framework base on swoole",
   "license": "Apache-2.0",
-  "minimum-stability": "dev",
   "require": {
     "php": ">7.1.0",
     "ext-pdo": "*",
@@ -24,7 +23,7 @@
     "vlucas/phpdotenv": "^2.5",
     "symfony/yaml": "^4.2",
     "toolkit/cli-utils": "^1.0",
-    "monolog/monolog": "2.0.0-beta1",
+    "monolog/monolog": "^1.24",
     "nikic/php-parser": "~4.2"
   },
   "require-dev": {
