@@ -63,16 +63,7 @@ class HttpServerCommand
         $tcpPort   = $tcpStatus['port'] ?? 'unknown';
         $tcpType   = $tcpStatus['type'] ?? 'unknown';
         $tcpEnable = $tcpEnable ? '<info>Enabled</info>' : '<warning>Disabled</warning>';
-        // 信息面板
-        // $lines = [
-        //     '                         Server Information                      ',
-        //     '********************************************************************',
-        //     "* HTTP | host: <note>$mainHost</note>, port: <note>$mainPort</note>, type: <note>ç</note>, worker: <note>$workerNum</note>, mode: <note>$modeName</note>",
-        //     "* TCP  | host: <note>$tcpHost</note>, port: <note>$tcpPort</note>, type: <note>$tcpType</note>, worker: <note>$workerNum</note> ($tcpEnable)",
-        //     '********************************************************************',
-        // ];
 
-        // \output()->writeln(implode("\n", $lines));
         Show::panel([
             'HTTP' => [
                 'listen' => $mainHost . ':' . $mainPort,
@@ -81,6 +72,8 @@ class HttpServerCommand
                 'worker' => $workerNum,
             ],
         ]);
+
+        \output()->writef('<success>Server start success !</success>');
 
         // Start the server
         $server->start();
@@ -155,12 +148,18 @@ class HttpServerCommand
      *
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Server\Exception\ServerException
      */
     public function restart(): void
     {
         $server = $this->createServer();
 
-        // Restart server
+        // Check if it has started
+        if ($server->isRunning()) {
+            $server->stop();
+        }
+
+        \output()->writef('<success>Server reload success !</success>');
         $server->restart();
     }
 
@@ -175,7 +174,7 @@ class HttpServerCommand
         // EnvHelper::check();
         // http server初始化
         $server = \bean('httpServer');
-        $script = input()->getScript();
+        $script = sprintf('%s/%s', input()->getPwd(), input()->getScript());
         $server->setScriptFile($script);
 
         return $server;

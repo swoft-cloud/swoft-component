@@ -2,7 +2,7 @@
 
 namespace Swoft\Server;
 
-use Co\Server as CoServer;
+use Swoole\Http\Server as CoServer;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Helper\ServerHelper;
 use Swoft\Server\Swoole\SwooleEvent;
@@ -42,7 +42,7 @@ abstract class Server implements ServerInterface
      *
      * @var int
      */
-    protected $port = 88;
+    protected $port = 80;
 
     /**
      * Default mode
@@ -155,16 +155,13 @@ abstract class Server implements ServerInterface
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    protected function onStart(CoServer $server): void
+    public function onStart(CoServer $server): void
     {
+        // Set pid map
+        $this->setPidMap($server);
+
         $masterPid  = $server->master_pid;
         $managerPid = $server->manager_pid;
-
-        // save to property
-        $this->pidMap = [
-            'master'  => $masterPid,
-            'manager' => $managerPid,
-        ];
 
         $pidStr = \sprintf('%s,%s', $masterPid, $managerPid);
         $title  = \sprintf('%s master process (%s)', $this->pidName, $this->scriptFile);
@@ -181,24 +178,30 @@ abstract class Server implements ServerInterface
      * Manager start event
      *
      * @param CoServer $server
+     *
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    protected function onManagerStart(CoServer $server): void
+    public function onManagerStart(CoServer $server): void
     {
+        // Server pid map
+        $this->setPidMap($server);
+
+        // Set process title
         Sys::setProcessTitle(\sprintf('%s manager process', $this->pidName));
 
-        \Swoft::trigger(SwooleEvent::MANAGER_START, $server->manager_pid, $server);
+        \Swoft::trigger(SwooleEvent::MANAGER_START, $server->manager_pid, $this);
     }
 
     /**
      * Manager stop event
      *
      * @param CoServer $server
+     *
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    protected function onManagerStop(CoServer $server): void
+    public function onManagerStop(CoServer $server): void
     {
         \Swoft::trigger(SwooleEvent::MANAGER_STOP, null, $server);
     }
@@ -208,10 +211,11 @@ abstract class Server implements ServerInterface
      *
      * @param CoServer $server
      * @param int      $workerId
+     *
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    protected function onWorkerStart(CoServer $server, int $workerId): void
+    public function onWorkerStart(CoServer $server, int $workerId): void
     {
         \Swoft::trigger(SwooleEvent::WORKER_START, $workerId, $server);
 
@@ -220,14 +224,14 @@ abstract class Server implements ServerInterface
 
         // Task process
         if ($workerId >= $setting['worker_num']) {
-            Sys::setProcessTitle(sprintf('%s task process', $workerId));
+            Sys::setProcessTitle(sprintf('%s task process', $this->pidName));
             \Swoft::trigger(ServerEvent::TASK_PROCESS_START, $workerId, $server);
 
             return;
         }
 
         // Worker process
-        Sys::setProcessTitle(sprintf('%s worker process', $workerId));
+        Sys::setProcessTitle(sprintf('%s worker process', $this->pidName));
         \Swoft::trigger(ServerEvent::WORK_PROCESS_START, $workerId, $server);
     }
 
@@ -236,10 +240,11 @@ abstract class Server implements ServerInterface
      *
      * @param CoServer $server
      * @param int      $workerId
+     *
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    protected function onWorkerStop(CoServer $server, int $workerId): void
+    public function onWorkerStop(CoServer $server, int $workerId): void
     {
         \Swoft::trigger(SwooleEvent::WORKER_STOP, $workerId, $server);
     }
@@ -252,10 +257,11 @@ abstract class Server implements ServerInterface
      * @param int      $workerPid
      * @param int      $exitCode
      * @param int      $signal
+     *
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    protected function onWorkerError(CoServer $server, int $workerId, int $workerPid, int $exitCode, int $signal): void
+    public function onWorkerError(CoServer $server, int $workerId, int $workerPid, int $exitCode, int $signal): void
     {
         \Swoft::trigger(SwooleEvent::WORKER_ERROR, $workerId, $server, $workerPid, $exitCode, $signal);
     }
@@ -264,10 +270,11 @@ abstract class Server implements ServerInterface
      * Shutdown event
      *
      * @param CoServer $server
+     *
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    protected function onShutdown(CoServer $server): void
+    public function onShutdown(CoServer $server): void
     {
         \Swoft::trigger(SwooleEvent::SHUTDOWN, null, $server);
     }
@@ -286,13 +293,21 @@ abstract class Server implements ServerInterface
 
         \Swoft::trigger(ServerEvent::BEFORE_SETTING);
 
-        // set settings
+        // Set settings
         $this->swooleServer->set($this->setting);
 
         \Swoft::trigger(ServerEvent::BEFORE_BIND_EVENT);
 
-        // register events
-        foreach ($this->on as $name => $listener) {
+        // Register events
+        $defaultEvents = $this->defaultEvents();
+        $swooleEvents  = array_merge($defaultEvents, $this->on);
+        foreach ($swooleEvents as $name => $listener) {
+            // Default events
+            if (isset($defaultEvents[$name])) {
+                $this->swooleServer->on($name, $listener);
+                continue;
+            }
+
             if (!isset(SwooleEvent::LISTENER_MAPPING[$name])) {
                 throw new ServerException(sprintf('Swoole %s event is not defined!', $name));
             }
@@ -412,11 +427,6 @@ abstract class Server implements ServerInterface
      */
     public function restart(): void
     {
-        // Check if it has started
-        if ($this->isRunning()) {
-            $this->stop();
-        }
-
         // Restart default is daemon
         $this->setDaemonize();
 
@@ -426,6 +436,7 @@ abstract class Server implements ServerInterface
 
     /**
      * @param bool $onlyTaskWorker
+     *
      * @return bool
      */
     public function reload(bool $onlyTaskWorker = false): bool
@@ -441,15 +452,19 @@ abstract class Server implements ServerInterface
         return ServerHelper::sendSignal($pid, $signal);
     }
 
+    /**
+     * @return bool
+     */
     public function stop(): bool
     {
-        if (($pid = $this->pidMap['manager']) < 1) {
+        $pid = $this->getPid();
+        if ($pid < 1) {
             return false;
         }
 
         // SIGTERM = 15
-        if (ServerHelper::killAndWait($pid, 15, 'Swoft')) {
-            return ServerHelper::removePidFile($this->pidFile);
+        if (ServerHelper::killAndWait($pid, 15, $this->pidName)) {
+            return ServerHelper::removePidFile(\alias($this->pidFile));
         }
 
         return false;
@@ -462,8 +477,10 @@ abstract class Server implements ServerInterface
 
     /**
      * Stop the worker process and immediately trigger the onWorkerStop callback function
+     *
      * @param int  $workerId
      * @param bool $waitEvent
+     *
      * @return bool
      */
     public function stopWorker(int $workerId = -1, bool $waitEvent = false): bool
@@ -477,6 +494,7 @@ abstract class Server implements ServerInterface
 
     /**
      * print log message to terminal
+     *
      * @param string $msg
      * @param array  $data
      * @param string $type
@@ -500,13 +518,14 @@ abstract class Server implements ServerInterface
      */
     public function isRunning(): bool
     {
-        $pidFile = $this->pidFile;
+        $pidFile = \alias($this->pidFile);
 
         // Is pid file exist ?
         if (\file_exists($pidFile)) {
             // Get pid file content and parse the content
             $pidFile = \file_get_contents($pidFile);
-            // parse and record PIDs
+
+            // Parse and record PIDs
             [$masterPID, $managerPID] = \explode(',', $pidFile);
             $this->pidMap['master']  = (int)$masterPID;
             $this->pidMap['manager'] = (int)$managerPID;
@@ -527,6 +546,7 @@ abstract class Server implements ServerInterface
 
     /**
      * @param string $name
+     *
      * @return int
      */
     public function getPid(string $name = 'master'): int
@@ -554,6 +574,7 @@ abstract class Server implements ServerInterface
      * Set server, run server on the background
      *
      * @param bool $yes
+     *
      * @return $this
      */
     public function setDaemonize(bool $yes = true): self
@@ -568,5 +589,34 @@ abstract class Server implements ServerInterface
     public function isDaemonize(): bool
     {
         return (int)$this->setting['daemonize'] === 1;
+    }
+
+    /**
+     * Set pid map
+     *
+     * @param CoServer $server
+     */
+    public function setPidMap(CoServer $server): void
+    {
+        $this->pidMap = [
+            'master'  => $server->master_pid,
+            'manager' => $server->manager_pid,
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function defaultEvents(): array
+    {
+        return [
+            SwooleEvent::WORKER_ERROR  => [$this, 'onWorkerError'],
+            SwooleEvent::WORKER_STOP   => [$this, 'onWorkerStop'],
+            SwooleEvent::MANAGER_STOP  => [$this, 'onManagerStop'],
+            SwooleEvent::MANAGER_START => [$this, 'onManagerStart'],
+            SwooleEvent::WORKER_START  => [$this, 'onWorkerStart'],
+            SwooleEvent::SHUTDOWN      => [$this, 'onShutdown'],
+            SwooleEvent::START         => [$this, 'onStart'],
+        ];
     }
 }

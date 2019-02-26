@@ -14,6 +14,18 @@ use Swoft\Server\Server;
  */
 class HttpServer extends Server
 {
+    /**
+     * Default http port/18306
+     *
+     * @var int
+     */
+    protected $port = 88;
+
+    /**
+     * Server type
+     *
+     * @var string
+     */
     protected static $serverType = 'HTTP';
 
     /**

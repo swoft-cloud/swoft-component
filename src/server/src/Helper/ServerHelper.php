@@ -2,6 +2,7 @@
 
 namespace Swoft\Server\Helper;
 
+use SebastianBergmann\CodeCoverage\Report\PHP;
 use Swoole\Process;
 
 /**
@@ -12,11 +13,13 @@ class ServerHelper
 {
     /**
      * Do shutdown process and wait it exit.
-     * @param int    $pid Process Pid
-     * @param int    $signal SIGTERM = 15
+     *
+     * @param int    $pid      Process Pid
+     * @param int    $signal   SIGTERM = 15
      * @param string $name
      * @param bool   $force
      * @param int    $waitTime Seconds
+     *
      * @return bool
      */
     public static function killAndWait(
@@ -26,15 +29,15 @@ class ServerHelper
         bool $force = false,
         int $waitTime = 10
     ): bool {
-        // do stop
+        // Do stop
         if (!self::sendSignal($pid, $signal, $force)) {
-            echo "Send stop signal to the $name(PID:$pid) failed!\n";
+            echo "Send stop signal to the $name(PID:$pid) failed!" . PHP_EOL;
             return false;
         }
 
         // not wait, only send signal
         if ($waitTime <= 0) {
-            echo "The $name process stopped.";
+            echo "The $name process stopped." . PHP_EOL;
             return true;
         }
 
@@ -58,18 +61,22 @@ class ServerHelper
         }
 
         if ($errorMsg) {
-            echo $errorMsg;
+            echo PHP_EOL . $errorMsg;
             return false;
         }
+
+        echo PHP_EOL . 'Stop success !' . PHP_EOL;
 
         return true;
     }
 
     /**
      * Send signal to the server process
+     *
      * @param int $pid
      * @param int $signal
      * @param int $timeout
+     *
      * @return bool
      */
     public static function sendSignal(int $pid, int $signal, int $timeout = 0): bool
@@ -89,7 +96,7 @@ class ServerHelper
         }
 
         // failed, try again ...
-        $timeout = $timeout > 0 && $timeout < 10 ? $timeout : 3;
+        $timeout   = $timeout > 0 && $timeout < 10 ? $timeout : 3;
         $startTime = \time();
 
         // retry stop if not stopped.
@@ -114,6 +121,7 @@ class ServerHelper
 
     /**
      * @param string $pidFile
+     *
      * @return bool
      */
     public static function removePidFile(string $pidFile): bool
@@ -127,6 +135,7 @@ class ServerHelper
 
     /**
      * @param int $pid
+     *
      * @return bool
      */
     public static function isRunning(int $pid): bool
