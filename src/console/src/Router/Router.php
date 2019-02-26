@@ -181,7 +181,7 @@ class Router implements RouterInterface
      * @param callable $grpFunc function(string $group, array $info)
      * @param callable $cmdFunc function(string $id, array $info)
      */
-    public function sortedEach(callable $grpFunc, callable $cmdFunc): void
+    public function sortedEach(callable $grpFunc, callable $cmdFunc = null): void
     {
         $groups = $this->groups;
         \ksort($groups);
@@ -193,6 +193,11 @@ class Router implements RouterInterface
 
             // call group handle func
             $grpFunc($group, $info);
+
+            // not set cmd handler func
+            if ($cmdFunc === null) {
+                continue;
+            }
 
             foreach ($names as $name) {
                 $id = $this->buildCommandID($group, $name);
@@ -399,11 +404,12 @@ class Router implements RouterInterface
     }
 
     /**
+     * @param int $plusValue
      * @return int
      */
-    public function getKeyWidth(): int
+    public function getKeyWidth(int $plusValue = 0): int
     {
-        return $this->keyWidth;
+        return $this->keyWidth + $plusValue;
     }
 
     /**

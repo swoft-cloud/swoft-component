@@ -56,7 +56,7 @@ trait RenderHelpInfoTrait
         // Global options
         $globalOptions = self::$globalOptions;
         // Append expand option
-        $globalOptions['--expand'] = 'Expand all sub-commands for the group';
+        $globalOptions['--expand'] = 'Expand sub-commands for all command groups';
 
         $appVer  = $this->getVersion();
         $appDesc = $this->getDescription();
@@ -71,7 +71,8 @@ trait RenderHelpInfoTrait
 
         /* @var Router $router */
         $router   = \Swoft::getBean('cliRouter');
-        $keyWidth = $router->getKeyWidth();
+        $expand   = \input()->getBoolOpt('expand');
+        $keyWidth = $router->getKeyWidth($expand ? 2 : 0);
 
         Console::writeln('<comment>Available Commands:</comment>');
 
@@ -93,7 +94,7 @@ trait RenderHelpInfoTrait
             );
         };
 
-        $router->sortedEach($grpHandler, $cmdHandler);
+        $router->sortedEach($grpHandler, $expand ? $cmdHandler : null);
 
         Console::write("\nMore command information, please use: <cyan>$script COMMAND -h</cyan>");
         Console::flushBuffer();
