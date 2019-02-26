@@ -8,7 +8,7 @@ use Co\Server;
  * Class WorkerEvent
  * @since 2.0
  */
-class WorkerEvent extends ServerRuntimeEvent
+class WorkerEvent extends ServerStartEvent
 {
     /**
      * @var int

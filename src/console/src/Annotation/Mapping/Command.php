@@ -58,7 +58,7 @@ final class Command
     /**
      * @var bool
      */
-    private $coroutine = true;
+    // private $coroutine = true;
 
     /**
      * Command constructor.
@@ -81,9 +81,9 @@ final class Command
             $this->desc = \trim((string)$values['desc']);
         }
 
-        if (isset($values['coroutine'])) {
-            $this->coroutine = (bool)$values['coroutine'];
-        }
+        // if (isset($values['coroutine'])) {
+        //     $this->coroutine = (bool)$values['coroutine'];
+        // }
 
         if (isset($values['enabled'])) {
             $this->enabled = (bool)$values['enabled'];
@@ -112,14 +112,6 @@ final class Command
     public function getAlias(): string
     {
         return $this->alias;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isCoroutine(): bool
-    {
-        return $this->coroutine;
     }
 
     /**

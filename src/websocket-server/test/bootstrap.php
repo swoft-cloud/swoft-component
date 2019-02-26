@@ -1,7 +1,6 @@
-<?php declare(strict_types=1);
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-04
- * Time: 16:30
- */
+<?php
+// Composer autoload
+$autoloadFile = dirname(__DIR__) . '/vendor/autoload.php';
+if (file_exists($autoloadFile)) {
+    require_once $autoloadFile;
+}

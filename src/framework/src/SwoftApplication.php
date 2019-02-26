@@ -2,6 +2,7 @@
 
 namespace Swoft;
 
+use Swoft\Concern\SwoftTrait;
 use Swoft\Contract\ApplicationInterface;
 use Swoft\Contract\SwoftInterface;
 use Swoft\Processor\AnnotationProcessor;

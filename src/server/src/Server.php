@@ -5,7 +5,7 @@ namespace Swoft\Server;
 use Co\Server as CoServer;
 use Swoft;
 use Swoft\Console\Console;
-use Swoft\Server\Event\ServerRuntimeEvent;
+use Swoft\Server\Event\ServerStartEvent;
 use Swoft\Server\Event\WorkerEvent;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Helper\ServerHelper;
@@ -189,7 +189,7 @@ abstract class Server implements ServerInterface
         // Update setting property
         $this->setSetting($server->setting);
 
-        Swoft::trigger(new ServerRuntimeEvent(SwooleEvent::START, $server));
+        Swoft::trigger(new ServerStartEvent(SwooleEvent::START, $server));
     }
 
     /**
@@ -208,7 +208,7 @@ abstract class Server implements ServerInterface
         // Set process title
         Sys::setProcessTitle(\sprintf('%s manager process', $this->pidName));
 
-        Swoft::trigger(new ServerRuntimeEvent(SwooleEvent::MANAGER_START, $server));
+        Swoft::trigger(new ServerStartEvent(SwooleEvent::MANAGER_START, $server));
     }
 
     /**
@@ -221,7 +221,7 @@ abstract class Server implements ServerInterface
      */
     public function onManagerStop(CoServer $server): void
     {
-        Swoft::trigger(new ServerRuntimeEvent(SwooleEvent::MANAGER_STOP, $server));
+        Swoft::trigger(new ServerStartEvent(SwooleEvent::MANAGER_STOP, $server));
     }
 
     /**
@@ -319,7 +319,7 @@ abstract class Server implements ServerInterface
      */
     public function onShutdown(CoServer $server): void
     {
-        Swoft::trigger(new ServerRuntimeEvent(SwooleEvent::SHUTDOWN, $server));
+        Swoft::trigger(new ServerStartEvent(SwooleEvent::SHUTDOWN, $server));
     }
 
     /**

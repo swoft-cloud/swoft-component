@@ -12,7 +12,7 @@ use Swoft\WebSocket\Server\WebSocketServer;
 
 /**
  * Class WsServerCommand
- * @Command("http", coroutine=false, desc="provide some commands to operate WebSocket Server")
+ * @Command("http", desc="provide some commands to operate WebSocket Server")
  */
 class WsServerCommand
 {

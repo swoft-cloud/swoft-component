@@ -6,7 +6,7 @@ use Swoft\Console\Console;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
-use Swoft\Server\Event\ServerRuntimeEvent;
+use Swoft\Server\Event\ServerStartEvent;
 use Swoft\Server\Swoole\SwooleEvent;
 
 /**
@@ -17,7 +17,7 @@ use Swoft\Server\Swoole\SwooleEvent;
 class ManagerStartListener implements EventHandlerInterface
 {
     /**
-     * @param EventInterface|ServerRuntimeEvent $event
+     * @param EventInterface|ServerStartEvent $event
      */
     public function handle(EventInterface $event): void
     {

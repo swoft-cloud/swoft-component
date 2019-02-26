@@ -13,7 +13,7 @@ use Swoft\Http\Server\HttpServer;
  *
  * @since 2.0
  *
- * @Command("http", alias="httpserver,httpServer,http-server", coroutine=false)
+ * @Command("http", alias="httpserver,httpServer,http-server")
  */
 class HttpServerCommand
 {

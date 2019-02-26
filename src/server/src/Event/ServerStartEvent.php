@@ -6,10 +6,10 @@ use Co\Server;
 use Swoft\Event\Event;
 
 /**
- * Class ServerRuntimeEvent
+ * Class ServerStartEvent
  * @since 2.0
  */
-class ServerRuntimeEvent extends Event
+class ServerStartEvent extends Event
 {
     /**
      * @var Server;
