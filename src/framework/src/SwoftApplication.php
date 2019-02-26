@@ -97,6 +97,17 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     private $disabledAutoLoaders = [];
 
     /**
+     * Scans containing these namespace prefixes will be excluded.
+     *
+     * @var array
+     * eg.
+     * [
+     *  'PHPUnit\\',
+     * ]
+     */
+    private $disabledPsr4Prefixes = [];
+
+    /**
      * Class constructor.
      * @param array $config
      */
@@ -228,6 +239,14 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     public function getDisabledAutoLoaders(): array
     {
         return $this->disabledAutoLoaders;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDisabledPsr4Prefixes(): array
+    {
+        return $this->disabledPsr4Prefixes;
     }
 
     /**

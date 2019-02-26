@@ -18,6 +18,8 @@ use Swoft\Stdlib\Helper\DirectoryHelper;
  */
 class AnnotationResource extends Resource
 {
+    public const DEFAULT_EXCLUDED_PSR4_PREFIXES = ['Psr\\', 'PHPUnit\\', 'Symfony\\'];
+
     /**
      * @var ClassLoader
      */
@@ -33,6 +35,22 @@ class AnnotationResource extends Resource
      */
     private $loaderClassName = 'AutoLoader';
 
+    /**
+     * Skip listed file names when parsing annotations
+     *
+     * @var array
+     */
+    private $excludedFilenames = [
+        'Swoft.php' => 1,
+    ];
+
+    /**
+     * Scans containing these namespace prefixes will be excluded
+     *
+     * @var array
+     * eg. ['Psr\\', 'PHPUnit\\', 'Symfony\\']
+     */
+    private $excludedPsr4Prefixes;
 
     /**
      * AnnotationResource constructor.
@@ -43,6 +61,9 @@ class AnnotationResource extends Resource
     {
         $this->registerLoader();
         $this->classLoader = ComposerHelper::getClassLoader();
+
+        // init $excludedPsr4Prefixes
+        $this->excludedPsr4Prefixes = self::DEFAULT_EXCLUDED_PSR4_PREFIXES;
     }
 
     /**
@@ -56,25 +77,47 @@ class AnnotationResource extends Resource
         $prefixDirsPsr4 = $this->classLoader->getPrefixesPsr4();
 
         foreach ($prefixDirsPsr4 as $ns => $paths) {
+            // is excluded psr4 prefix
+            if ($this->isExcludedPsr4Prefix($ns)) {
+                continue;
+            }
+
+            // find package/component loader class
             foreach ($paths as $path) {
                 $annotationLoaderFile = $this->getAnnoationClassLoaderFile($path);
-                if (!file_exists($annotationLoaderFile)) {
+                if (!\file_exists($annotationLoaderFile)) {
                     continue;
                 }
+
                 $loaderClass = $this->getAnnotationLoaderClassName($ns);
-                if (!class_exists($loaderClass)) {
+                if (!\class_exists($loaderClass)) {
                     continue;
                 }
 
                 $annotationLoader = new $loaderClass();
                 if ($annotationLoader instanceof LoaderInterface) {
-                    $this->loadAnnoation($annotationLoader);
+                    $this->loadAnnotation($annotationLoader);
                 }
 
                 // Register auto loader
                 AnnotationRegister::addAutoLoader($ns, $annotationLoader);
             }
         }
+    }
+
+    /**
+     * @param string $namespace
+     * @return bool
+     */
+    public function isExcludedPsr4Prefix(string $namespace): bool
+    {
+        foreach ($this->excludedPsr4Prefixes as $prefix) {
+            if (0 === \strpos($namespace, $prefix)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -85,18 +128,15 @@ class AnnotationResource extends Resource
      * @throws \Doctrine\Common\Annotations\AnnotationException
      * @throws \ReflectionException
      */
-    private function loadAnnoation(LoaderInterface $loader): void
+    private function loadAnnotation(LoaderInterface $loader): void
     {
-        $excludeFiles = [
-            'Swoft.php' => 1,
-        ];
         $nsPaths = $loader->getPrefixDirs();
         foreach ($nsPaths as $ns => $path) {
             $iterator = DirectoryHelper::iterator($path);
 
             /* @var \SplFileInfo $splFileInfo */
             foreach ($iterator as $splFileInfo) {
-                $pathName  = $splFileInfo->getPathname();
+                $pathName = $splFileInfo->getPathname();
 
                 if (\is_dir($pathName)) {
                     continue;
@@ -109,8 +149,8 @@ class AnnotationResource extends Resource
                     continue;
                 }
 
-                // is exclude file
-                if (isset($excludeFiles[$fileName])) {
+                // is exclude filename
+                if (isset($this->excludedFilenames[$fileName])) {
                     continue;
                 }
 
@@ -269,7 +309,7 @@ class AnnotationResource extends Resource
     private function registerLoader(): void
     {
         AnnotationRegistry::registerLoader(function (string $class) {
-            if (class_exists($class)) {
+            if (\class_exists($class)) {
                 return true;
             }
 
@@ -296,8 +336,24 @@ class AnnotationResource extends Resource
      *
      * @return string
      */
-    private function getAnnotationLoaderClassName(string $namespace)
+    private function getAnnotationLoaderClassName(string $namespace): string
     {
-        return sprintf('%s%s', $namespace, $this->loaderClassName);
+        return \sprintf('%s%s', $namespace, $this->loaderClassName);
+    }
+
+    /**
+     * @return array
+     */
+    public function getExcludedPsr4Prefixes(): array
+    {
+        return $this->excludedPsr4Prefixes;
+    }
+
+    /**
+     * @param array $excludedPsr4Prefixes
+     */
+    public function setExcludedPsr4Prefixes(array $excludedPsr4Prefixes): void
+    {
+        $this->excludedPsr4Prefixes = $excludedPsr4Prefixes;
     }
 }
