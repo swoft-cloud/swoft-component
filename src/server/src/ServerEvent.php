@@ -10,12 +10,12 @@ namespace Swoft\Server;
 class ServerEvent
 {
     /**
-     * before set swoole settings
+     * Before set swoole settings
      */
     public const BEFORE_SETTING = 'swoft.server.beforeSetting';
 
     /**
-     * before bind swoole events
+     * Before bind swoole events
      */
     public const BEFORE_BIND_EVENT = 'swoft.server.beforeBindEvent';
 
@@ -25,12 +25,12 @@ class ServerEvent
     public const BEFORE_START = 'swoft.server.beforeStart';
 
     /**
-     * on task process start event
+     * On task process start event
      */
     public const TASK_PROCESS_START = 'swoft.server.taskProcessStart';
 
     /**
-     * on work process start event
+     * On work process start event
      */
     public const WORK_PROCESS_START = 'swoft.server.workProcessStart';
 

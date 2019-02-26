@@ -9,7 +9,8 @@
   "description": "micro-service framework base on swoole",
   "license": "Apache-2.0",
   "require": {
-    "php": ">=7.1"
+    "php": ">=7.1",
+    "monolog/monolog": "^2.0"
   },
   "autoload": {
     "classmap": [
