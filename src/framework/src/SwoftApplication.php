@@ -2,6 +2,7 @@
 
 namespace Swoft;
 
+use Swoft\Concern\SwoftTrait;
 use Swoft\Contract\ApplicationInterface;
 use Swoft\Contract\SwoftInterface;
 use Swoft\Processor\AnnotationProcessor;
@@ -14,6 +15,7 @@ use Swoft\Processor\EventProcessor;
 use Swoft\Processor\Processor;
 use Swoft\Processor\ProcessorInterface;
 use Swoft\Stdlib\Helper\ComposerHelper;
+use Swoft\Stdlib\Helper\ObjectHelper;
 
 /**
  * Swoft application
@@ -34,32 +36,18 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     protected $basePath = '';
 
     /**
-     * Application path
-     *
-     * @var string
-     */
-    protected $appPath = '@base/app';
-
-    /**
-     * Runtime path
-     *
-     * @var string
-     */
-    protected $runtimePath = '@base/runtime';
-
-    /**
-     * Config path
-     *
-     * @var string
-     */
-    protected $configPath = '@base/config';
-
-    /**
      * Env file
      *
      * @var string
      */
     protected $envFile = '@base/.env';
+
+    /**
+     * Application path
+     *
+     * @var string
+     */
+    protected $appPath = '@base/app';
 
     /**
      * Default bean file
@@ -69,9 +57,23 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     protected $beanFile = '@app/bean.php';
 
     /**
+     * Config path
+     *
+     * @var string
+     */
+    protected $configPath = '@base/config';
+
+    /**
+     * Runtime path
+     *
+     * @var string
+     */
+    protected $runtimePath = '@base/runtime';
+
+    /**
      * @var ApplicationProcessor
      */
-    protected $processor;
+    private $processor;
 
     /**
      * Can disable processor class before handle.
@@ -82,7 +84,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
      *
      * @var array
      */
-    protected $disabledProcessors = [];
+    private $disabledProcessors = [];
 
     /**
      * Can disable AutoLoader class before handle.
@@ -93,27 +95,55 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
      *
      * @var array
      */
-    protected $disabledAutoLoaders = [];
+    private $disabledAutoLoaders = [];
 
     /**
-     * Application constructor.
+     * Scans containing these namespace prefixes will be excluded.
+     *
+     * @var array
+     * eg.
+     * [
+     *  'PHPUnit\\',
+     * ]
      */
-    public function __construct()
+    private $disabledPsr4Prefixes = [];
+
+    /**
+     * Class constructor.
+     * @param array $config
+     */
+    public function __construct(array $config = [])
     {
+        // Storage as global static property.
+        \Swoft::$app = $this;
+
+        // Can setting properties by array
+        if ($config) {
+            ObjectHelper::init($this, $config);
+        }
+
+        // Init system path aliases
+        $this->findBasePath();
+        $this->setSystemAlias();
+
         $processors = $this->processors();
 
         $this->processor = new ApplicationProcessor($this);
         $this->processor->addFirstProcessor(...$processors);
 
-        // Set system alias
-        $this->setSystemAlias();
-
         $this->init();
+    }
+
+    private function findBasePath()
+    {
+        $basePath = ComposerHelper::getClassLoader()->findFile(static::class);
+        // save
+        $this->basePath = \dirname($basePath, 2);
     }
 
     protected function init()
     {
-        // do something ...
+        // Do something ...
         // $this->disableProcessor(ConsoleProcessor::class, EnvProcessor::class);
     }
 
@@ -148,7 +178,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
         $this->processor->handle();
 
-        // trigger a app init event
+        // Trigger a app init event
         \Swoft::trigger(SwoftEvent::APP_INIT_AFTER);
     }
 
@@ -221,6 +251,14 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     }
 
     /**
+     * @return array
+     */
+    public function getDisabledPsr4Prefixes(): array
+    {
+        return $this->disabledPsr4Prefixes;
+    }
+
+    /**
      * @param string $beanFile
      */
     public function setBeanFile(string $beanFile): void
@@ -237,14 +275,20 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     }
 
     /**
+     * @param string $relativePath
+     * @return string
+     */
+    public function getPath(string $relativePath): string
+    {
+        return $this->basePath . '/' . $relativePath;
+    }
+
+    /**
      * @return string
      */
     public function getBasePath(): string
     {
-        $basePath = ComposerHelper::getClassLoader()->findFile(static::class);
-        $basePath = dirname($basePath, 2);
-
-        return $basePath;
+        return $this->basePath;
     }
 
     /**

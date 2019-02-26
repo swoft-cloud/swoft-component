@@ -50,7 +50,7 @@ final class Listener
         if (isset($values['value'])) {
             $this->event = (string)$values['value'];
         } elseif (isset($values['event'])) {
-            $this->event = $values['event'];
+            $this->event = (string)$values['event'];
         }
 
         if (isset($values['priority'])) {

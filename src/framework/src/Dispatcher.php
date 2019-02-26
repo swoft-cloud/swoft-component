@@ -1,9 +1,13 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft;
 
+use Swoft\Contract\DispatcherInterface;
 
+/**
+ * Class Dispatcher
+ * @since 2.0
+ */
 abstract class Dispatcher implements DispatcherInterface
 {
     /**

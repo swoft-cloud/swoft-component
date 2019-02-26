@@ -6,10 +6,10 @@ use Swoft\Annotation\AnnotationRegister;
 
 /**
  * Annotation processor
+ * @since 2.0
  */
 class AnnotationProcessor extends Processor
 {
-
     /**
      * Handle annotation
      *
@@ -21,6 +21,9 @@ class AnnotationProcessor extends Processor
         if (!$this->application->beforeAnnotation()) {
             return false;
         }
+
+        // TODO ... Get disabled loaders by application
+        $disabledLoaders = $this->application->getDisabledAutoLoaders();
 
         // Parse AutoLoader classes config, collect annotations.
         AnnotationRegister::load();

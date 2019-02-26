@@ -28,7 +28,7 @@ use Swoft\Stdlib\Helper\PhpHelper;
  * @method int liteDanger($messages, $quit = false)
  * @method int liteError($messages, $quit = false)
  *
- * @method int color($message, $style = 'info', $nl = true, array $opts = [])
+ * @method int prettyJSON($data)
  *
  * @method padding(array $data, string $title = null, array $opts = [])
  *
@@ -113,7 +113,7 @@ trait FormatOutputAwareTrait
      * @inheritdoc
      * @see Show::title()
      */
-    public function title($title, array $opts = []): void
+    public function title(string $title, array $opts = []): void
     {
         Show::title($title, $opts);
     }
@@ -122,7 +122,7 @@ trait FormatOutputAwareTrait
      * @inheritdoc
      * @see Show::section()
      */
-    public function section($title, $body, array $opts = []): void
+    public function section(string $title, $body, array $opts = []): void
     {
         Show::section($title, $body, $opts);
     }
@@ -131,7 +131,7 @@ trait FormatOutputAwareTrait
      * @inheritdoc
      * @see Show::aList()
      */
-    public function aList($data, $title = null, array $opts = []): void
+    public function aList($data, string $title = '', array $opts = []): void
     {
         Show::aList($data, $title, $opts);
     }

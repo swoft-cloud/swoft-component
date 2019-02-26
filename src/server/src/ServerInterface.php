@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Server;
 
@@ -26,7 +26,7 @@ interface ServerInterface
     ];
 
     /**
-     * Start server
+     * Start swoole server
      *
      * @return void
      */

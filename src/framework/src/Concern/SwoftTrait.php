@@ -1,11 +1,10 @@
 <?php
 
-namespace Swoft;
+namespace Swoft\Concern;
 
 /**
  * Trait SwoftTrait
  * @since 2.0
- * @package Swoft
  */
 trait SwoftTrait
 {

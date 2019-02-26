@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Http\Server\Command;
 
@@ -13,7 +13,7 @@ use Swoft\Http\Server\HttpServer;
  *
  * @since 2.0
  *
- * @Command("http", alias="httpserver,httpServer,http-server", coroutine=false)
+ * @Command("http", alias="httpserver,httpServer,http-server")
  */
 class HttpServerCommand
 {
@@ -57,12 +57,6 @@ class HttpServerCommand
 
         // TCP 启动参数
         // $tcpStatus = $server->getTcpSetting();
-        $tcpStatus = [];
-        $tcpEnable = $serverStatus['tcpable'] ?? false;
-        $tcpHost   = $tcpStatus['host'] ?? 'unknown';
-        $tcpPort   = $tcpStatus['port'] ?? 'unknown';
-        $tcpType   = $tcpStatus['type'] ?? 'unknown';
-        $tcpEnable = $tcpEnable ? '<info>Enabled</info>' : '<warning>Disabled</warning>';
 
         Show::panel([
             'HTTP' => [
@@ -172,10 +166,10 @@ class HttpServerCommand
     {
         // check env
         // EnvHelper::check();
-        // http server初始化
+        $script = input()->getScript();
+        /** @var HttpServer $server */
         $server = \bean('httpServer');
-        $script = sprintf('%s/%s', input()->getPwd(), input()->getScript());
-        $server->setScriptFile($script);
+        $server->setScriptFile(\Swoft::app()->getPath($script));
 
         return $server;
     }

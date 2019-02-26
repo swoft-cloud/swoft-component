@@ -111,14 +111,18 @@ class BeanHandler extends Handler
      *
      * @return mixed|string
      * @throws Bean\Exception\ContainerException
+     * @throws \ReflectionException
      */
     public function getReferenceValue($value)
     {
-        // Remove `config.`
-        $values = explode('.', $value);
-        array_shift($values);
-        $value = implode('.', $values);
+        $values = \explode('.', $value);
 
-        return config($value);
+        // Remove `config.` prefix, if exists.
+        if (isset($values[0]) && $values[0] === 'config') {
+            \array_shift($values);
+            $value = \implode('.', $values);
+        }
+
+        return \config($value);
     }
 }

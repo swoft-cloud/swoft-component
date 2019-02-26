@@ -12,7 +12,6 @@ namespace Swoft\Event;
 
 /**
  * Class Event
- * @package Swoft\Event
  * @since 2.0
  */
 class Event implements EventInterface, \ArrayAccess, \Serializable
@@ -20,7 +19,7 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
     /**
      * @var string Event name
      */
-    protected $name = '';
+    private $name = '';
 
     /**
      * @var array Event params
@@ -33,19 +32,24 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
     protected $target;
 
     /**
-     * 停止事件关联的监听器队列的执行
+     * Stop execution of the listener queue associated with the event
      * @var boolean
      */
     protected $stopPropagation = false;
 
+    /**
+     * @param string $name
+     * @param array  $params
+     * @return Event
+     */
     public static function create(string $name = '', array $params = []): self
     {
         return new static($name, $params);
     }
 
     /**
-     * @param string|null $name
-     * @param array       $params
+     * @param string $name
+     * @param array  $params
      * @throws \InvalidArgumentException
      */
     public function __construct(string $name = '', array $params = [])
@@ -169,7 +173,7 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
 
     /**
      * @param int|string $key
-     * @param mixed  $default
+     * @param mixed      $default
      * @return mixed
      */
     public function getParam($key, $default = null)
