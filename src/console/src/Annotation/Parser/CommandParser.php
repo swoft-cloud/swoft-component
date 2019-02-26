@@ -63,7 +63,6 @@ class CommandParser extends Parser
             'alias'     => $annotation->getAlias(),
             'aliases'   => $annotation->getAliases(),
             'enabled'   => $annotation->isEnabled(),
-            'coroutine' => $annotation->isCoroutine(),
         ];
 
         return [$class, $class, Bean::SINGLETON, ''];
@@ -148,7 +147,7 @@ class CommandParser extends Parser
                     'alias'     => $route['alias'],
                     'aliases'   => $route['aliases'],
                     'enabled'   => $mapping['enabled'],
-                    'coroutine' => $mapping['coroutine'],
+                    // 'coroutine' => $mapping['coroutine'],
                     // options
                     'options'   => $route['options'] ?? [],
                     // arguments

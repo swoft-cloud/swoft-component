@@ -37,18 +37,18 @@ final class Command
     private $name = '';
 
     /**
-     * Command group name alias. Allow add multi by ','
-     *
-     * @var string
-     */
-    private $alias = '';
-
-    /**
      * The group description message text
      *
      * @var string
      */
     private $desc = '';
+
+    /**
+     * Command group name alias. Allow add multi by ','
+     *
+     * @var string
+     */
+    private $alias = '';
 
     /**
      * @var bool
@@ -59,6 +59,13 @@ final class Command
      * @var bool
      */
     // private $coroutine = true;
+
+    /**
+     * Default command in the group
+     *
+     * @var string
+     */
+    private $defaultCommand = '';
 
     /**
      * Command constructor.
@@ -81,12 +88,12 @@ final class Command
             $this->desc = \trim((string)$values['desc']);
         }
 
-        // if (isset($values['coroutine'])) {
-        //     $this->coroutine = (bool)$values['coroutine'];
-        // }
-
         if (isset($values['enabled'])) {
             $this->enabled = (bool)$values['enabled'];
+        }
+
+        if (isset($values['defaultCommand'])) {
+            $this->defaultCommand = \trim($values['defaultCommand']);
         }
     }
 
@@ -128,5 +135,13 @@ final class Command
     public function getAliases(): array
     {
         return $this->alias ? Str::explode($this->alias) : [];
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultCommand(): string
+    {
+        return $this->defaultCommand;
     }
 }
