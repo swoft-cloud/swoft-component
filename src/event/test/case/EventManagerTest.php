@@ -44,10 +44,10 @@ class EventManagerTest extends TestCase
 
         $this->assertTrue($em->hasListener($l1));
         $this->assertTrue($em->hasListener($l1, 'test'));
-        $this->assertCount(2, $em->getListeners('test'));
+        $this->assertCount(2, $em->getEventListeners('test'));
 
         $em->detach('test', $l1);
-        $this->assertCount(1, $em->getListeners('test'));
+        $this->assertCount(1, $em->getEventListeners('test'));
     }
 
     public function testPriority(): void

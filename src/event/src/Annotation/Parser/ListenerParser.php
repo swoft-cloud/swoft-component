@@ -43,12 +43,9 @@ class ListenerParser extends Parser
         }
 
         // collect listeners
-        self::$listeners[] = [
-            $this->className,
-            [
-                // event name => listener priority
-                $annotation->getEvent() => $annotation->getPriority()
-            ]
+        self::$listeners[$this->className] = [
+            // event name => listener priority
+            $annotation->getEvent() => $annotation->getPriority()
         ];
 
         return [$this->className, $this->className, Bean::SINGLETON, ''];
@@ -61,7 +58,7 @@ class ListenerParser extends Parser
      */
     public static function addListeners(EventManager $em): void
     {
-        foreach (self::$listeners as [$listener, $eventInfo]) {
+        foreach (self::$listeners as $listener=> $eventInfo) {
             $em->addListener($listener, $eventInfo);
         }
 

@@ -11,6 +11,7 @@ use Swoft\Stdlib\Helper\ArrayHelper;
 
 /**
  * Bean processor
+ * @since 2.0
  */
 class BeanProcessor extends Processor
 {
