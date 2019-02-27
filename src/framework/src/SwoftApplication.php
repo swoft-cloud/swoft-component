@@ -17,6 +17,7 @@ use Swoft\Processor\Processor;
 use Swoft\Processor\ProcessorInterface;
 use Swoft\Stdlib\Helper\ComposerHelper;
 use Swoft\Stdlib\Helper\ObjectHelper;
+use Swoole\Runtime;
 
 /**
  * Swoft application
@@ -116,7 +117,12 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
      */
     public function __construct(array $config = [])
     {
+        // Init console logger
         $this->initCLogger();
+
+        // Enable swoole hook
+        Runtime::enableCoroutine();
+        CLog::info('Swoole\Runtime::enableCoroutine');
 
         // Storage as global static property.
         \Swoft::$app = $this;
@@ -190,7 +196,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
         foreach ($classes as $class) {
             $this->disabledProcessors[$class] = 1;
         }
-
+        
         $this->processor->handle();
 
         // Trigger a app init event
@@ -422,9 +428,9 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
         \Swoft::setAlias('@config', $configPath);
         \Swoft::setAlias('@runtime', $runtimePath);
 
-        CLog::info('set alias @base=%s', $basePath);
-        CLog::info('set alias @app=%s', $appPath);
-        CLog::info('set alias @config=%s', $configPath);
-        CLog::info('set alias @runtime=%s', $runtimePath);
+        CLog::info('Set alias @base=%s', $basePath);
+        CLog::info('Set alias @app=%s', $appPath);
+        CLog::info('Set alias @config=%s', $configPath);
+        CLog::info('Set alias @runtime=%s', $runtimePath);
     }
 }

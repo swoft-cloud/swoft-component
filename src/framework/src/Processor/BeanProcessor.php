@@ -7,6 +7,7 @@ use Swoft\Bean\BeanFactory;
 use Swoft\BeanHandler;
 use Swoft\Contract\ComponentInterface;
 use Swoft\Contract\DefinitionInterface;
+use Swoft\Helper\CLog;
 use Swoft\Stdlib\Helper\ArrayHelper;
 
 /**
@@ -28,6 +29,8 @@ class BeanProcessor extends Processor
             return false;
         }
 
+        CLog::info('Bean is beginning');
+
         $handler     = new BeanHandler();
         $definitions = $this->getDefinitions();
         $parsers     = AnnotationRegister::getParsers();
@@ -38,6 +41,8 @@ class BeanProcessor extends Processor
         BeanFactory::addParsers($parsers);
         BeanFactory::setHandler($handler);
         BeanFactory::init();
+
+        CLog::info('Bean is initialized');
 
         return $this->application->afterBean();
     }

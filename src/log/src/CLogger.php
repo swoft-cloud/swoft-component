@@ -82,12 +82,13 @@ class CLogger extends \Monolog\Logger
         $traces   = debug_backtrace();
         $count    = \count($traces);
 
-        if ($count >= 4) {
-            $info = $traces[3];
+        if ($count >= 5) {
+            $info = $traces[4];
             if (isset($info['file'], $info['class'])) {
                 $class    = $info['class'];
                 $lineNum  = $info['line'];
-                $stackStr = sprintf('%s:%s', $class, $lineNum);
+                $function = $info['function'];
+                $stackStr = sprintf('%s:%s(%s)', $class, $function, $lineNum);
             }
         }
 
