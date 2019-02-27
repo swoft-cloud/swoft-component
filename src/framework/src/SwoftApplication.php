@@ -4,6 +4,7 @@ namespace Swoft;
 
 use Swoft\Contract\ApplicationInterface;
 use Swoft\Contract\SwoftInterface;
+use Swoft\Helper\CLog;
 use Swoft\Processor\AnnotationProcessor;
 use Swoft\Processor\ApplicationProcessor;
 use Swoft\Processor\BeanProcessor;
@@ -100,6 +101,8 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
      */
     public function __construct()
     {
+        $this->initCLogger();
+
         $processors = $this->processors();
 
         $this->processor = new ApplicationProcessor($this);
@@ -114,7 +117,24 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     protected function init()
     {
         // do something ...
-        // $this->disableProcessor(ConsoleProcessor::class, EnvProcessor::class);
+    }
+
+    /**
+     * Run application
+     *
+     * @throws Bean\Exception\ContainerException
+     * @throws \ReflectionException
+     */
+    public function run(): void
+    {
+        if (!$this->beforeRun()) {
+            return;
+        }
+
+        $this->processor->handle();
+
+        // trigger a app init event
+        \Swoft::trigger(SwoftEvent::APP_INIT_AFTER);
     }
 
     /**
@@ -135,21 +155,6 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
         foreach ($classes as $class) {
             $this->disabledProcessors[$class] = 1;
         }
-    }
-
-    /**
-     * Run application
-     */
-    public function run(): void
-    {
-        if (!$this->beforeRun()) {
-            return;
-        }
-
-        $this->processor->handle();
-
-        // trigger a app init event
-        \Swoft::trigger(SwoftEvent::APP_INIT_AFTER);
     }
 
     /**
@@ -320,13 +325,51 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     }
 
     /**
+     * Get console logger config
+     *
+     * @return array
+     */
+    public function getCLoggerConfig(): array
+    {
+        return [
+            'name'    => 'swoft',
+            'enable'  => true,
+            'output'  => true,
+            'levels'  => [],
+            'logFile' => ''
+        ];
+    }
+
+    /**
+     * Init console logger
+     */
+    private function initCLogger(): void
+    {
+        // Console logger config
+        $config = $this->getCLoggerConfig();
+
+        // Init console log
+        CLog::init($config);
+    }
+
+    /**
      * Set base path
      */
     private function setSystemAlias(): void
     {
-        \Swoft::setAlias('@base', $this->getBasePath());
-        \Swoft::setAlias('@app', $this->getAppPath());
-        \Swoft::setAlias('@config', $this->getConfigPath());
-        \Swoft::setAlias('@runtime', $this->getRuntimePath());
+        $basePath    = $this->getBasePath();
+        $appPath     = $this->getAppPath();
+        $configPath  = $this->getConfigPath();
+        $runtimePath = $this->getRuntimePath();
+
+        \Swoft::setAlias('@base', $basePath);
+        \Swoft::setAlias('@app', $appPath);
+        \Swoft::setAlias('@config', $configPath);
+        \Swoft::setAlias('@runtime', $runtimePath);
+
+        CLog::info('set alias @base=%s', $basePath);
+        CLog::info('set alias @app=%s', $appPath);
+        CLog::info('set alias @config=%s', $configPath);
+        CLog::info('set alias @runtime=%s', $runtimePath);
     }
 }

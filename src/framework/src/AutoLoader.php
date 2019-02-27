@@ -2,10 +2,13 @@
 
 namespace Swoft;
 
+use Monolog\Formatter\LineFormatter;
 use Swoft\Config\Config;
 use Swoft\Annotation\AutoLoader as AnnotationAutoLoader;
 use Swoft\Contract\DefinitionInterface;
 use Swoft\Event\Manager\EventManager;
+use Swoft\Log\Handler\FileHandler;
+use Swoft\Log\Logger;
 
 /**
  * Class AutoLoader
@@ -30,20 +33,55 @@ class AutoLoader extends AnnotationAutoLoader implements DefinitionInterface
      * Core bean definition
      *
      * @return array
+     * @throws Bean\Exception\ContainerException
+     * @throws \ReflectionException
      */
     public function coreBean(): array
     {
         return [
-            'config' => [
+            'config'             => [
                 'class'   => Config::class,
                 'path'    => alias('@config'),
                 'parsers' => [
                     Config::TYPE_PHP => '${phpParser}'
                 ]
             ],
-            'eventManager' => [
+            'eventManager'       => [
                 'class' => EventManager::class,
             ],
+            'lineFormatter'      => [
+                'class'      => LineFormatter::class,
+                'format'     => '%datetime% [%level_name%] [%channel%] [logid:%logid%] [spanid:%spanid%] %messages%',
+                'dateFormat' => 'Y-m-d H:i:s',
+            ],
+            'noticeHandler'      => [
+                'class'     => FileHandler::class,
+                'logFile'   => '@runtime/logs/notice.log',
+                'formatter' => \bean('lineFormatter'),
+                'levels'    => [
+                    Logger::NOTICE,
+                    Logger::INFO,
+                    Logger::DEBUG,
+                    Logger::TRACE,
+                ],
+            ],
+            'applicationHandler' => [
+                'class'     => FileHandler::class,
+                'logFile'   => '@runtime/logs/error.log',
+                'formatter' => \bean('lineFormatter'),
+                'levels'    => [
+                    Logger::ERROR,
+                    Logger::WARNING,
+                ],
+            ],
+            'logger'             => [
+                'class'    => Logger::class,
+                'enable'   => true,
+                'handlers' => [
+                    'application' => \bean('applicationHandler'),
+                    'notice'      => \bean('noticeHandler'),
+                ],
+            ]
         ];
     }
 }
