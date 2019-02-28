@@ -10,22 +10,12 @@ namespace Swoft\Http\Server;
 class HttpServerEvent
 {
     /**
-     * Before onStart
+     * Before request event
      */
-    public const BEFORE_START = 'swoft.server.beforeStart';
+    public const BEFORE_REQUEST = 'swoft.http.server.request.before';
 
     /**
-     * After onStart
+     * After request event
      */
-    public const AFTER_START = 'swoft.server.afterStart';
-
-    /**
-     * Before onWorkerStart
-     */
-    public const BEFORE_WORKER_START = 'swoft.server.beforeWorkerStart';
-
-    /**
-     * After onWorkerStart
-     */
-    public const AFTER_WORKER_START = 'swoft.server.afterWorkerStart';
+    public const AFTER_REQUEST = 'swoft.http.server.request.after';
 }

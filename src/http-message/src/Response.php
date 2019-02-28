@@ -3,7 +3,7 @@
 namespace Swoft\Http\Message;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\Prototype;
+use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Http\Message\Concern\MessageTrait;
 use Swoft\Http\Message\Contract\ResponseFormatterInterface;
@@ -19,7 +19,7 @@ use Swoole\Http\Response as CoResponse;
  */
 class Response implements ResponseInterface
 {
-    use Prototype;
+    use PrototypeTrait;
 
     /**
      * Message trait

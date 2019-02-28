@@ -5,6 +5,7 @@ namespace Swoft\Processor;
 use Swoft\Event\Annotation\Parser\ListenerParser;
 use Swoft\Event\Annotation\Parser\SubscriberParser;
 use Swoft\Event\Manager\EventManager;
+use Swoft\Helper\CLog;
 
 /**
  * Event processor
@@ -21,6 +22,7 @@ class EventProcessor extends Processor
     public function handle(): bool
     {
         if (!$this->application->beforeEvent()) {
+            CLog::warning('Stop event processor by beforeEvent return false');
             return false;
         }
 

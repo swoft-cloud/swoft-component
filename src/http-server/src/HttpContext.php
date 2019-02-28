@@ -3,6 +3,7 @@
 namespace Swoft\Http\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Context\ContextInterface;
 use Swoft\Concern\DataPropertyTrait;
 use Swoft\Http\Message\Response;
@@ -17,7 +18,7 @@ use Swoft\Http\Message\ServerRequest;
  */
 class HttpContext implements ContextInterface
 {
-    use DataPropertyTrait;
+    use DataPropertyTrait, PrototypeTrait;
 
     /**
      * @var ServerRequest
@@ -30,13 +31,22 @@ class HttpContext implements ContextInterface
     protected $response;
 
     /**
-     * @param ServerRequest  $request
-     * @param Response $response
+     * Create context replace of construct
+     *
+     * @param ServerRequest $request
+     * @param Response      $response
+     *
+     * @return HttpContext
+     * @throws \Swoft\Bean\Exception\PrototypeException
      */
-    public function initialize(ServerRequest $request, Response $response): void
+    public static function new(ServerRequest $request, Response $response): self
     {
-        $this->request  = $request;
-        $this->response = $response;
+        $instance = self::__instance();
+
+        $instance->request  = $request;
+        $instance->response = $response;
+
+        return $instance;
     }
 
     /**
@@ -60,8 +70,10 @@ class HttpContext implements ContextInterface
      */
     public function clear(): void
     {
+        // Unset data
         $this->data = [];
-        // unset
+
+        //Unset request/response
         $this->request = $this->response = null;
     }
 }

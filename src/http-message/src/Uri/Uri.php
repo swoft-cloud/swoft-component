@@ -6,7 +6,7 @@ namespace Swoft\Http\Message\Uri;
 
 use Psr\Http\Message\UriInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\Prototype;
+use Swoft\Bean\Concern\PrototypeTrait;
 
 /**
  * Class Uri
@@ -17,7 +17,7 @@ use Swoft\Bean\Concern\Prototype;
  */
 class Uri implements UriInterface
 {
-    use Prototype;
+    use PrototypeTrait;
 
     /**
      * Absolute http and https URIs require a host per RFC 7230 Section 2.7

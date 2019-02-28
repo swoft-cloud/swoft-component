@@ -4,7 +4,7 @@ namespace Swoft\Http\Message;
 
 use Psr\Http\Message\UploadedFileInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\Prototype;
+use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Http\Message\Concern\InteractsWithInput;
 use Swoft\Http\Message\Contract\RequestParserInterface;
@@ -22,7 +22,7 @@ use Swoole\Http\Request as CoRequest;
  */
 class ServerRequest extends Request implements ServerRequestInterface
 {
-    use Prototype;
+    use PrototypeTrait;
 
     /**
      * Interacts input

@@ -2,10 +2,8 @@
 
 namespace Swoft\Http\Server;
 
-use Swoft\Bean\Exception\ContainerException;
-use Swoft\Context\Context;
-use Swoft\Dispatcher;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Dispatcher;
 use Swoft\Http\Message\Response;
 use Swoft\Http\Message\ServerRequest;
 use Swoft\Http\Server\Middleware\DefaultMiddleware;
@@ -39,14 +37,15 @@ class HttpDispatcher extends Dispatcher
     public function dispatch(...$params)
     {
         /**
-         * @var ServerRequest  $request
-         * @var Response $response
+         * @var ServerRequest $request
+         * @var Response      $response
          */
         [$request, $response] = $params;
 
         try {
 
-            $this->before($request, $response);
+            // Trigger before event
+            \Swoft::trigger(HttpServerEvent::BEFORE_REQUEST, $this, $request, $response);
 
             /* @var RequestHandler $requestHandler */
             $requestHandler = \bean(RequestHandler::class);
@@ -58,10 +57,9 @@ class HttpDispatcher extends Dispatcher
             var_dump($e->getMessage(), $e->getFile(), $e->getLine());
         }
 
-        $this->after($response);
+        \Swoft::trigger(HttpServerEvent::AFTER_REQUEST, $this, $response);
 
 //      $response->withContent("<h1>Hello Swoole. #" . rand(1000, 9999) . "</h1>")->send();
-
     }
 
     /**
@@ -84,37 +82,4 @@ class HttpDispatcher extends Dispatcher
             ValidatorMiddleware::class
         ];
     }
-
-    /**
-     * @param mixed ...$params
-     *
-     * @throws ContainerException
-     * @throws \ReflectionException
-     */
-    public function before(...$params): void
-    {
-        list($request, $response) = $params;
-
-        /* @var HttpContext $httpContext */
-        $httpContext = \bean(HttpContext::class);
-        $httpContext->initialize($request, $response);
-
-        Context::set($httpContext);
-    }
-
-    /**
-     * @param array ...$params
-     *
-     * @throws ContainerException
-     * @throws \ReflectionException
-     */
-    public function after(...$params): void
-    {
-        /* @var Response $response */
-        list($response) = $params;
-        $response->send();
-
-        Context::destroy();
-    }
-
 }

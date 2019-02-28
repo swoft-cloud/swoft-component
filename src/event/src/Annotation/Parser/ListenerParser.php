@@ -14,6 +14,7 @@ use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\Manager\EventManager;
+use Swoft\Helper\CLog;
 
 /**
  * Class ListenerParser

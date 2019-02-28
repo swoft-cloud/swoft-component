@@ -29,17 +29,32 @@ trait InteractsWithInput
     /**
      * Retrieve a header from the request
      *
-     * @param null|string $key
-     * @param null|mixed  $default
+     * @param string $key
+     * @param array  $default
      *
-     * @return array|string|mixed
+     * @return array
      */
-    public function header(string $key = null, $default = null)
+    public function header(string $key = null, array $default = null): array
     {
         if ($key === null) {
             return $this->getHeaders();
         }
         return $this->getHeader($key) ?? $default;
+    }
+
+    /**
+     * @param string $key
+     * @param string $default
+     *
+     * @return string
+     */
+    public function headerLine(string $key, string $default): string
+    {
+        if (!$this->hasHeader($key)) {
+            return $default;
+        }
+
+        return $this->getHeaderLine($key);
     }
 
     /**

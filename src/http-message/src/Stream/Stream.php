@@ -6,7 +6,7 @@ namespace Swoft\Http\Message\Stream;
 
 use Psr\Http\Message\StreamInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\Prototype;
+use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\PrototypeException;
 
 /**
@@ -18,7 +18,7 @@ use Swoft\Bean\Exception\PrototypeException;
  */
 class Stream implements StreamInterface
 {
-    use Prototype;
+    use PrototypeTrait;
 
     /**
      * @var string

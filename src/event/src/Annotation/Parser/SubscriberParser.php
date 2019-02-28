@@ -14,10 +14,11 @@ use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Event\Annotation\Mapping\Subscriber;
 use Swoft\Event\Manager\EventManager;
+use Swoft\Helper\CLog;
 
 /**
  * Class ListenerParser
- * @since 2.0
+ * @since   2.0
  * @package Swoft\Event\Annotation\Parser
  *
  * @AnnotationParser(Subscriber::class)
@@ -30,7 +31,7 @@ class SubscriberParser extends Parser
     private static $subscribers = [];
 
     /**
-     * @param int      $type
+     * @param int        $type
      * @param Subscriber $annotation
      *
      * @return array
@@ -60,5 +61,7 @@ class SubscriberParser extends Parser
 
         // clear data
         self::$subscribers = [];
+
+        CLog::info('EventManager add %d subscriber', count(self::$subscribers));
     }
 }

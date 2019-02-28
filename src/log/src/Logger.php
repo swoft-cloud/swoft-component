@@ -272,9 +272,9 @@ class Logger extends \Monolog\Logger
     /**
      * Format profile
      *
-     * @return array
+     * @return string
      */
-    public function getProfilesInfos(): array
+    public function getProfilesInfos(): string
     {
         $profileAry = [];
         $cid        = Co::tid();
@@ -453,6 +453,8 @@ class Logger extends \Monolog\Logger
 
 
         $message = implode(' ', $messageAry);
+
+        // Unset profile/counting/pushlogs/profileStack
         unset($this->profiles[$cid], $this->countings[$cid], $this->pushlogs[$cid], $this->profileStacks[$cid]);
 
         $levelName = self::$levels[self::NOTICE];
@@ -479,12 +481,7 @@ class Logger extends \Monolog\Logger
             static::$timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
         }
 
-        // php7.1+ always has microseconds enabled, so we do not need this hack
-        if ($this->microsecondTimestamps && PHP_VERSION_ID < 70100) {
-            $ts = \DateTime::createFromFormat('U.u', sprintf('%.6F', microtime(true)), static::$timezone);
-        } else {
-            $ts = new \DateTime(null, static::$timezone);
-        }
+        $ts = new \DateTime('now', static::$timezone);
 
         $ts->setTimezone(static::$timezone);
         return $ts;
@@ -548,9 +545,9 @@ class Logger extends \Monolog\Logger
     /**
      * Request time
      *
-     * @return int
+     * @return float
      */
-    private function getRequestTime(): int
+    private function getRequestTime(): float
     {
         return context()->get('requestTime', 0);
     }

@@ -10,7 +10,7 @@ use Swoft\Bean\Exception\PrototypeException;
  *
  * @since 2.0
  */
-trait Prototype
+trait PrototypeTrait
 {
     /**
      * Get instance from container

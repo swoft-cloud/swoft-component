@@ -6,6 +6,7 @@ use Swoft\Stdlib\Helper\ArrayHelper;
 
 /**
  * Trait DataPropertyTrait
+ *
  * @since 2.0
  */
 trait DataPropertyTrait
