@@ -8,6 +8,7 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\AnnotationRegister;
 use Swoft\Annotation\LoaderInterface;
+use Swoft\Helper\CLog;
 use Swoft\Stdlib\Helper\ComposerHelper;
 use Swoft\Stdlib\Helper\DirectoryHelper;
 
@@ -18,7 +19,14 @@ use Swoft\Stdlib\Helper\DirectoryHelper;
  */
 class AnnotationResource extends Resource
 {
-    public const DEFAULT_EXCLUDED_PSR4_PREFIXES = ['Psr\\', 'PHPUnit\\', 'Symfony\\'];
+    /**
+     * Default excluded psr4 prefixes
+     */
+    public const DEFAULT_EXCLUDED_PSR4_PREFIXES = [
+        'Psr\\',
+        'PHPUnit\\',
+        'Symfony\\'
+    ];
 
     /**
      * @var ClassLoader
@@ -79,8 +87,11 @@ class AnnotationResource extends Resource
         foreach ($prefixDirsPsr4 as $ns => $paths) {
             // is excluded psr4 prefix
             if ($this->isExcludedPsr4Prefix($ns)) {
+                CLog::info('Exclude %s', $ns);
                 continue;
             }
+
+            CLog::info('Scan %s', $ns);
 
             // find package/component loader class
             foreach ($paths as $path) {
@@ -89,8 +100,11 @@ class AnnotationResource extends Resource
                     continue;
                 }
 
+                CLog::info('Load %s', $annotationLoaderFile);
+
                 $loaderClass = $this->getAnnotationLoaderClassName($ns);
                 if (!\class_exists($loaderClass)) {
+                    CLog::info('Auto loader(%s) is not exist class', $loaderClass);
                     continue;
                 }
 
@@ -107,6 +121,7 @@ class AnnotationResource extends Resource
 
     /**
      * @param string $namespace
+     *
      * @return bool
      */
     public function isExcludedPsr4Prefix(string $namespace): bool

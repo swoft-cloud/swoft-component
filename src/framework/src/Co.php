@@ -52,6 +52,7 @@ class Co
      * Create coroutine
      *
      * @param callable $callable
+     *
      * @return int If success, return coID
      */
     public static function create(callable $callable): int
@@ -69,5 +70,19 @@ class Co
                 var_dump($e);
             }
         });
+    }
+
+    /**
+     * Write file
+     *
+     * @param string   $filename
+     * @param string   $data
+     * @param int|null $flags
+     *
+     * @return bool
+     */
+    public static function writeFile(string $filename, string $data, int $flags = null): bool
+    {
+        return Coroutine::writeFile($filename, $data, $flags);
     }
 }

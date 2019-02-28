@@ -3,6 +3,7 @@
 namespace Swoft\Processor;
 
 use Dotenv\Dotenv;
+use Swoft\Helper\CLog;
 
 /**
  * Env processor
@@ -19,14 +20,17 @@ class EnvProcessor extends Processor
     public function handle(): bool
     {
         if (!$this->application->beforeEnv()) {
+            CLog::warning('Stop env processor by beforeEnv return false');
             return false;
         }
 
         $envFile = $this->application->getEnvFile();
+        $envFile = \alias($envFile);
         $path    = dirname($envFile);
         $env     = basename($envFile);
 
-        if (!\file_exists($path . $env)) {
+        if (!\file_exists($envFile)) {
+            CLog::warning('Env file(%s) is not exist!', $envFile);
             return true;
         }
 
@@ -34,6 +38,7 @@ class EnvProcessor extends Processor
         $dotenv = new Dotenv($path, $env);
         $dotenv->load();
 
+        CLog::info('Env file(%s) is loaded', $envFile);
         return $this->application->afterEvent();
     }
 }

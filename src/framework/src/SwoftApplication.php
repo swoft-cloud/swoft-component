@@ -5,6 +5,7 @@ namespace Swoft;
 use Swoft\Concern\SwoftTrait;
 use Swoft\Contract\ApplicationInterface;
 use Swoft\Contract\SwoftInterface;
+use Swoft\Helper\CLog;
 use Swoft\Processor\AnnotationProcessor;
 use Swoft\Processor\ApplicationProcessor;
 use Swoft\Processor\BeanProcessor;
@@ -16,6 +17,7 @@ use Swoft\Processor\Processor;
 use Swoft\Processor\ProcessorInterface;
 use Swoft\Stdlib\Helper\ComposerHelper;
 use Swoft\Stdlib\Helper\ObjectHelper;
+use Swoole\Runtime;
 
 /**
  * Swoft application
@@ -110,10 +112,18 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
     /**
      * Class constructor.
+     *
      * @param array $config
      */
     public function __construct(array $config = [])
     {
+        // Init console logger
+        $this->initCLogger();
+
+        // Enable swoole hook
+        Runtime::enableCoroutine();
+        CLog::info('Swoole\Runtime::enableCoroutine');
+
         // Storage as global static property.
         \Swoft::$app = $this;
 
@@ -148,6 +158,24 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     }
 
     /**
+     * Run application
+     *
+     * @throws Bean\Exception\ContainerException
+     * @throws \ReflectionException
+     */
+    public function run(): void
+    {
+        if (!$this->beforeRun()) {
+            return;
+        }
+
+        $this->processor->handle();
+
+        // trigger a app init event
+        \Swoft::trigger(SwoftEvent::APP_INIT_AFTER);
+    }
+
+    /**
      * @param string ...$classes
      */
     public function disableAutoLoader(string ...$classes)
@@ -159,23 +187,16 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
     /**
      * @param string ...$classes
+     *
+     * @throws Bean\Exception\ContainerException
+     * @throws \ReflectionException
      */
     public function disableProcessor(string ...$classes)
     {
         foreach ($classes as $class) {
             $this->disabledProcessors[$class] = 1;
         }
-    }
-
-    /**
-     * Run application
-     */
-    public function run(): void
-    {
-        if (!$this->beforeRun()) {
-            return;
-        }
-
+        
         $this->processor->handle();
 
         // Trigger a app init event
@@ -276,6 +297,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
     /**
      * @param string $relativePath
+     *
      * @return string
      */
     public function getPath(string $relativePath): string
@@ -364,13 +386,51 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     }
 
     /**
+     * Get console logger config
+     *
+     * @return array
+     */
+    public function getCLoggerConfig(): array
+    {
+        return [
+            'name'    => 'swoft',
+            'enable'  => true,
+            'output'  => true,
+            'levels'  => [],
+            'logFile' => ''
+        ];
+    }
+
+    /**
+     * Init console logger
+     */
+    private function initCLogger(): void
+    {
+        // Console logger config
+        $config = $this->getCLoggerConfig();
+
+        // Init console log
+        CLog::init($config);
+    }
+
+    /**
      * Set base path
      */
     private function setSystemAlias(): void
     {
-        \Swoft::setAlias('@base', $this->getBasePath());
-        \Swoft::setAlias('@app', $this->getAppPath());
-        \Swoft::setAlias('@config', $this->getConfigPath());
-        \Swoft::setAlias('@runtime', $this->getRuntimePath());
+        $basePath    = $this->getBasePath();
+        $appPath     = $this->getAppPath();
+        $configPath  = $this->getConfigPath();
+        $runtimePath = $this->getRuntimePath();
+
+        \Swoft::setAlias('@base', $basePath);
+        \Swoft::setAlias('@app', $appPath);
+        \Swoft::setAlias('@config', $configPath);
+        \Swoft::setAlias('@runtime', $runtimePath);
+
+        CLog::info('Set alias @base=%s', $basePath);
+        CLog::info('Set alias @app=%s', $appPath);
+        CLog::info('Set alias @config=%s', $configPath);
+        CLog::info('Set alias @runtime=%s', $runtimePath);
     }
 }

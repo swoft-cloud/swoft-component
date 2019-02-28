@@ -5,32 +5,41 @@ namespace Swoft\Log\Handler;
 
 
 use Monolog\Handler\AbstractProcessingHandler;
+use Swoft\Co;
 
+/**
+ * Class FileHandler
+ *
+ * @since 2.0
+ */
 class FileHandler extends AbstractProcessingHandler
 {
     /**
-     * @var array 输出包含日志级别集合
+     * Write log levels
+     *
+     * @var array
      */
     protected $levels = [];
 
     /**
-     * @var string 输入日志文件名称
+     * Write log file
+     *
+     * @var string
      */
-    protected $logFile = "";
-
+    protected $logFile = '';
 
     /**
-     * 批量输出日志
+     * Write log by batch
      *
-     * @param array $records 日志记录集合
+     * @param array $records
      *
-     * @return bool
+     * @return void
      */
-    public function handleBatch(array $records)
+    public function handleBatch(array $records): void
     {
         $records = $this->recordFilter($records);
         if (empty($records)) {
-            return true;
+            return;
         }
 
         $lines = array_column($records, 'formatted');
@@ -39,67 +48,37 @@ class FileHandler extends AbstractProcessingHandler
     }
 
     /**
-     * 输出到文件
+     * Write file
      *
-     * @param array $records 日志记录集合
+     * @param array $records
      */
-    protected function write(array $records)
+    protected function write(array $records): void
     {
-        // 参数
         $this->createDir();
-        $logFile     = App::getAlias($this->logFile);
+
+        $logFile     = \alias($this->logFile);
         $messageText = implode("\n", $records) . "\n";
 
-        if (App::isCoContext()) {
-            // 协程写
-            $this->coWrite($logFile, $messageText);
-        } else {
-            $this->syncWrite($logFile, $messageText);
+        if (Co::id() <= 0) {
+            throw new \InvalidArgumentException('Write log file must be under Coroutine!');
+        }
+
+        $res = Co::writeFile($logFile, $messageText, FILE_APPEND);
+        if ($res === false) {
+            throw new \InvalidArgumentException(
+                sprintf('Unable to append to log file: %s', $logFile)
+            );
         }
     }
 
     /**
-     * 协程写文件
+     * Filter record
      *
-     * @param string $logFile     日志路径
-     * @param string $messageText 文本信息
-     */
-    private function coWrite(string $logFile, string $messageText)
-    {
-        go(function () use ($logFile, $messageText) {
-            $res = Coroutine::writeFile($logFile, $messageText, FILE_APPEND);
-            if ($res === false) {
-                throw new \InvalidArgumentException("Unable to append to log file: {$this->logFile}");
-            }
-        });
-    }
-
-    /**
-     * 同步写文件
-     *
-     * @param string $logFile     日志路径
-     * @param string $messageText 文本信息
-     */
-    private function syncWrite(string $logFile, string $messageText)
-    {
-        $fp = fopen($logFile, 'a');
-        if ($fp === false) {
-            throw new \InvalidArgumentException("Unable to append to log file: {$this->logFile}");
-        }
-        flock($fp, LOCK_EX);
-        fwrite($fp, $messageText);
-        flock($fp, LOCK_UN);
-        fclose($fp);
-    }
-
-    /**
-     * 记录过滤器
-     *
-     * @param array $records 日志记录集合
+     * @param array $records
      *
      * @return array
      */
-    private function recordFilter(array $records)
+    private function recordFilter(array $records): array
     {
         $messages = [];
         foreach ($records as $record) {
@@ -119,29 +98,30 @@ class FileHandler extends AbstractProcessingHandler
     }
 
     /**
-     * 创建目录
+     * Create dir
      */
-    private function createDir()
+    private function createDir(): void
     {
-        $logFile = App::getAlias($this->logFile);
-        $dir     = dirname($logFile);
-        if ($dir !== null && !is_dir($dir)) {
-            $status = mkdir($dir, 0777, true);
+        $logFile = \alias($this->logFile);
+        $logDir  = dirname($logFile);
+        if ($logDir !== null && !is_dir($logDir)) {
+            $status = mkdir($logDir, 0777, true);
             if ($status === false) {
-                throw new \UnexpectedValueException(sprintf('There is no existing directory at "%s" and its not buildable: ',
-                    $dir));
+                throw new \UnexpectedValueException(
+                    sprintf('There is no existing directory at "%s" and its not buildable: ', $logDir)
+                );
             }
         }
     }
 
     /**
-     * check是否输出日志
+     * Whether to handler log
      *
      * @param array $record
      *
      * @return bool
      */
-    public function isHandling(array $record)
+    public function isHandling(array $record): bool
     {
         if (empty($this->levels)) {
             return true;

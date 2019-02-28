@@ -3,10 +3,15 @@
 
 namespace Swoft\Log;
 
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Co;
+
 /**
  * Class Logger
  *
  * @since 2.0
+ *
+ * @Bean("logger")
  */
 class Logger extends \Monolog\Logger
 {
@@ -101,6 +106,14 @@ class Logger extends \Monolog\Logger
     ];
 
     /**
+     * Logger constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct($this->name);
+    }
+
+    /**
      * Add record
      *
      * @param int   $level
@@ -108,6 +121,8 @@ class Logger extends \Monolog\Logger
      * @param array $context
      *
      * @return bool
+     *
+     * @throws \Exception
      */
     public function addRecord($level, $message, array $context = array())
     {
@@ -135,12 +150,12 @@ class Logger extends \Monolog\Logger
         $record  = $this->formateRecord($message, $context, $level, $levelName, $ts, []);
 
         foreach ($this->processors as $processor) {
-            $record = \Swoole\Coroutine::call_user_func($processor, $record);
+            $record = call_user_func($processor, $record);
         }
 
         $this->messages[] = $record;
 
-        if (App::$isInTest || \count($this->messages) >= $this->flushInterval) {
+        if (\count($this->messages) >= $this->flushInterval) {
             $this->flushLog();
         }
 
@@ -148,22 +163,28 @@ class Logger extends \Monolog\Logger
     }
 
     /**
-     * 格式化一条日志记录
+     * Formate record
      *
-     * @param string    $message   信息
-     * @param array     $context   上下文信息
-     * @param int       $level     级别
-     * @param string    $levelName 级别名
-     * @param \DateTime $ts        时间
-     * @param array     $extra     附加信息
+     * @param string    $message
+     * @param array     $context
+     * @param int       $level
+     * @param string    $levelName
+     * @param \DateTime $ts
+     * @param array     $extra
      *
      * @return array
      */
-    public function formateRecord($message, $context, $level, $levelName, $ts, $extra)
-    {
+    public function formateRecord(
+        string $message,
+        array $context,
+        int $level,
+        string $levelName,
+        \DateTime $ts,
+        array $extra
+    ) {
         $record = array(
-            'logid'      => RequestContext::getLogid(),
-            'spanid'     => RequestContext::getSpanid(),
+            'logid'      => context()->get('logid'),
+            'spanid'     => context()->get('spanid'),
             'messages'   => $message,
             'context'    => $context,
             'level'      => $level,
@@ -182,14 +203,21 @@ class Logger extends \Monolog\Logger
      * @param string $key 记录KEY
      * @param mixed  $val 记录值
      */
-    public function pushLog($key, $val)
+
+    /**
+     * Push log
+     *
+     * @param string $key
+     * @param mixed  $val
+     */
+    public function pushLog(string $key, $val): void
     {
         if (!$this->enable || !(\is_string($key) || is_numeric($key))) {
             return;
         }
 
         $key = urlencode($key);
-        $cid = Coroutine::tid();
+        $cid = Co::tid();
         if (\is_array($val)) {
             $this->pushlogs[$cid][] = "$key=" . json_encode($val);
         } elseif (\is_bool($val)) {
@@ -202,31 +230,34 @@ class Logger extends \Monolog\Logger
     }
 
     /**
-     * 标记开始
+     * Profile start
      *
-     * @param string $name 标记名称
+     * @param string $name
      */
-    public function profileStart($name)
+    public function profileStart(string $name): void
     {
+
         if (!$this->enable || \is_string($name) === false || empty($name)) {
             return;
         }
-        $cid                                       = Coroutine::tid();
+
+        $cid = Co::tid();
+
         $this->profileStacks[$cid][$name]['start'] = microtime(true);
     }
 
     /**
-     * 标记开始
+     * Profile end
      *
-     * @param string $name 标记名称
+     * @param string $name
      */
-    public function profileEnd($name)
+    public function profileEnd(string $name): void
     {
         if (!$this->enable || \is_string($name) === false || empty($name)) {
             return;
         }
 
-        $cid = Coroutine::tid();
+        $cid = Co::tid();
         if (!isset($this->profiles[$cid][$name])) {
             $this->profiles[$cid][$name] = [
                 'cost'  => 0,
@@ -239,12 +270,14 @@ class Logger extends \Monolog\Logger
     }
 
     /**
-     * 组装profiles
+     * Format profile
+     *
+     * @return array
      */
-    public function getProfilesInfos()
+    public function getProfilesInfos(): array
     {
         $profileAry = [];
-        $cid        = Coroutine::tid();
+        $cid        = Co::tid();
         $profiles   = $this->profiles[$cid] ?? [];
         foreach ($profiles as $key => $profile) {
             if (!isset($profile['cost'], $profile['total'])) {
@@ -258,19 +291,19 @@ class Logger extends \Monolog\Logger
     }
 
     /**
-     * 缓存命中率计算
+     * Counting
      *
-     * @param string $name  计算KEY
-     * @param int    $hit   命中数
-     * @param int    $total 总数
+     * @param string   $name
+     * @param int      $hit
+     * @param int|null $total
      */
-    public function counting($name, $hit, $total = null)
+    public function counting(string $name, int $hit, int $total = null): void
     {
         if (!\is_string($name) || empty($name)) {
             return;
         }
 
-        $cid = Coroutine::tid();
+        $cid = Co::tid();
         if (!isset($this->countings[$cid][$name])) {
             $this->countings[$cid][$name] = ['hit' => 0, 'total' => 0];
         }
@@ -281,11 +314,13 @@ class Logger extends \Monolog\Logger
     }
 
     /**
-     * 组装字符串
+     * Format array
+     *
+     * @return string
      */
-    public function getCountingInfo()
+    public function getCountingInfo(): string
     {
-        $cid = Coroutine::tid();
+        $cid = Co::tid();
         if (!isset($this->countings[$cid]) || empty($this->countings[$cid])) {
             return '';
         }
@@ -303,13 +338,13 @@ class Logger extends \Monolog\Logger
     }
 
     /**
-     * 写入日志信息格式化
+     * Format message
      *
-     * @param $message
+     * @param mixed $message
      *
      * @return string
      */
-    public function formatMessage($message)
+    public function formatMessage($message): string
     {
         if (\is_array($message)) {
             return json_encode($message);
@@ -324,7 +359,15 @@ class Logger extends \Monolog\Logger
      *
      * @return string
      */
-    public function getTrace($message): string
+
+    /**
+     * Get trace stack
+     *
+     * @param string $message
+     *
+     * @return string
+     */
+    public function getTrace(string $message): string
     {
         $traces = debug_backtrace();
         $count  = \count($traces);
@@ -355,9 +398,9 @@ class Logger extends \Monolog\Logger
     }
 
     /**
-     * 刷新日志到handlers
+     * Flush log to handler
      */
-    public function flushLog()
+    public function flushLog(): void
     {
         if (empty($this->messages)) {
             return;
@@ -370,27 +413,29 @@ class Logger extends \Monolog\Logger
             next($this->handlers);
         }
 
-        // 清空数组
+        // Clear message
         $this->messages = [];
     }
 
     /**
-     * 请求完成追加一条notice日志
+     * Append notice log
      *
-     * @param bool $flush 是否刷新日志
+     * @param bool $flush
+     *
+     * @throws \Exception
      */
-    public function appendNoticeLog($flush = false)
+    public function appendNoticeLog($flush = false): void
     {
         if (!$this->enable) {
             return;
         }
-        $cid = Coroutine::tid();
+        $cid = Co::tid();
         $ts  = $this->getLoggerTime();
 
-        // php耗时单位ms毫秒
+        // PHP time used
         $timeUsed = sprintf('%.2f', (microtime(true) - $this->getRequestTime()) * 1000);
 
-        // php运行内存大小单位M
+        // PHP memory used
         $memUsed = sprintf('%.0f', memory_get_peak_usage() / (1024 * 1024));
 
         $profileInfo  = $this->getProfilesInfos();
@@ -408,7 +453,6 @@ class Logger extends \Monolog\Logger
 
 
         $message = implode(' ', $messageAry);
-
         unset($this->profiles[$cid], $this->countings[$cid], $this->pushlogs[$cid], $this->profileStacks[$cid]);
 
         $levelName = self::$levels[self::NOTICE];
@@ -416,7 +460,7 @@ class Logger extends \Monolog\Logger
 
         $this->messages[] = $message;
 
-        // 一个请求完成刷新一次或达到刷新的次数
+        // Flush by request by max count or request end
         $isReached = \count($this->messages) >= $this->flushInterval;
         if ($this->flushRequest || $isReached || $flush) {
             $this->flushLog();
@@ -424,11 +468,12 @@ class Logger extends \Monolog\Logger
     }
 
     /**
-     * 获取去日志时间
+     * Get logger time
      *
-     * @return \DateTime
+     * @return bool|\DateTime
+     * @throws \Exception
      */
-    private function getLoggerTime()
+    private function getLoggerTime(): \DateTime
     {
         if (!static::$timezone) {
             static::$timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
@@ -446,9 +491,9 @@ class Logger extends \Monolog\Logger
     }
 
     /**
-     * 日志初始化
+     * Init
      */
-    public function initialize()
+    public function initialize(): void
     {
         $this->profiles      = [];
         $this->countings     = [];
@@ -465,8 +510,19 @@ class Logger extends \Monolog\Logger
      * @param array  $context 附加信息
      *
      * @return bool
+     * @throws \Exception
      */
-    public function addTrace($message, array $context = array())
+
+    /**
+     * Add trace
+     *
+     * @param mixed $message
+     * @param array $context
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    public function addTrace($message, array $context = array()): bool
     {
         return $this->addRecord(static::TRACE, $message, $context);
     }
@@ -474,32 +530,28 @@ class Logger extends \Monolog\Logger
     /**
      * @param int $flushInterval
      */
-    public function setFlushInterval(int $flushInterval)
+    public function setFlushInterval(int $flushInterval): void
     {
         $this->flushInterval = $flushInterval;
     }
 
     /**
-     * 请求URI
+     * Request uri
      *
      * @return string
      */
     private function getUri(): string
     {
-        $contextData = RequestContext::getContextData();
-
-        return $contextData['uri'] ?? '';
+        return \context()->get('uri', '');
     }
 
     /**
-     * 请求开始时间
+     * Request time
      *
      * @return int
      */
     private function getRequestTime(): int
     {
-        $contextData = RequestContext::getContextData();
-
-        return $contextData['requestTime'] ?? 0;
+        return context()->get('requestTime', 0);
     }
 }
