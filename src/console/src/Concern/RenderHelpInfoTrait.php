@@ -164,10 +164,22 @@ trait RenderHelpInfoTrait
         Console::writeln($info['desc'] . \PHP_EOL);
 
         Show::mList([
-            'Usage:'          => \sprintf('%s %s [--opt ...] [arg ...]', $script, $info['cmdId']),
+            'Usage:'          => \sprintf('%s %s [arg ...] [--opt ...]', $script, $info['cmdId']),
             'Global Options:' => FormatUtil::alignOptions(self::$globalOptions),
         ]);
         // [$className, $method] = $info['handler'];
+
+        // Command arguments
+        if ($arguments = $info['arguments']) {
+            Console::writeln('<comment>Arguments:</comment>');
+
+            $keyWidth = Arr::getKeyMaxWidth($arguments);
+            foreach ($arguments as $name => $meta) {
+                Console::writef('  <info>%s</info> %s   %s', Str::padRight($name, $keyWidth), $meta['type'], $meta['desc']);
+            }
+
+            Console::writeln('');
+        }
 
         // Command options
         if ($options = $info['options']) {
@@ -176,17 +188,26 @@ trait RenderHelpInfoTrait
 
             $maxLen  = 0;
             $newOpts = [];
+            $hasShort = false;
 
             foreach ($options as $name => $meta) {
                 if (($len = \strlen($name)) === 0) {
                     continue;
                 }
 
+                $typeName = $meta['type'] === 'BOOL' ? '' : $meta['type'];
+
                 if ($len === 1) {
-                    $key = \sprintf('-%s %s', $name, $meta['type']);
+                    $key = \sprintf('-<info>%s</info> %s', $name, $typeName);
                 } else {
-                    $name .= $meta['short'] ? ', -' . $meta['short'] : '';
-                    $key  = \sprintf('--%s %s', $name, $meta['type']);
+                    $short = '';
+
+                    if ($meta['short']) {
+                        $hasShort = true;
+                        $short = '-' . $meta['short'] . ', ';
+                    }
+
+                    $key  = \sprintf('<info>%s--%s</info> %s', $short, $name, $typeName);
                 }
 
                 $kenLen = \strlen($key);
@@ -199,18 +220,18 @@ trait RenderHelpInfoTrait
 
             // render
             foreach ($newOpts as $key => $meta) {
+                if ($hasShort && false === \strpos($key, ',')) { // has short and key is long
+                    $key = '    ' . $key;
+                }
+
                 Console::writef('  %s    %s', Str::padRight($key, $maxLen), $meta['desc']);
             }
         }
 
-        // Command arguments
-        if ($arguments = $info['arguments']) {
-            Console::writeln('<comment>Arguments:</comment>');
+        if ($example = \trim($info['example'], "* \n")) {
+            $vars = $this->getCommentsVars();
 
-            $keyWidth = Arr::getKeyMaxWidth($arguments);
-            foreach ($arguments as $name => $meta) {
-                Console::writef('%s %s %s', Str::padRight($name, $keyWidth), $meta['type'], $meta['desc']);
-            }
+            Console::writef("\n<comment>Example:</comment>\n  %s", $this->parseCommentsVars($example, $vars));
         }
 
         Console::flushBuffer();
