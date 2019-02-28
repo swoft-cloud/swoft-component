@@ -67,7 +67,7 @@ class Co
                 self::$mapping[$id] = $tid;
                 PhpHelper::call($callable);
             } catch (\Throwable $e) {
-                var_dump($e);
+                var_dump($e->getMessage(), ' file='.$e->getFile().' line='.$e->getLine());
             }
         });
     }
