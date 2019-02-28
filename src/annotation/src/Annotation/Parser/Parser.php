@@ -11,19 +11,19 @@ namespace Swoft\Annotation\Annotation\Parser;
 abstract class Parser implements ParserInterface
 {
     /**
-     * Class
+     * Class annotation
      */
-    const TYPE_CLASS = 1;
+    public const TYPE_CLASS = 1;
 
     /**
-     * Property
+     * Property annotation
      */
-    const TYPE_PROPERTY = 2;
+    public const TYPE_PROPERTY = 2;
 
     /**
-     * Method
+     * Method annotation
      */
-    const TYPE_METHOD = 3;
+    public const TYPE_METHOD = 3;
 
     /**
      * Class name

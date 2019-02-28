@@ -88,9 +88,10 @@ trait RenderHelpInfoTrait
         $cmdHandler = function (string $cmdId, array $info) use ($keyWidth) {
             // \var_dump($info);die;
             Console::writef(
-                '  <info>%s</info> %s',
+                '  <info>%s</info> %s%s',
                 Str::padRight($cmdId, $keyWidth),
-                $info['desc'] ?: 'No description message'
+                $info['desc'] ?: 'No description message',
+                $info['alias'] ? "(alias: <info>{$info['alias']}</info>)" : ''
             );
         };
 
@@ -139,9 +140,10 @@ trait RenderHelpInfoTrait
             $cmdId = $router->buildCommandID($group, $name);
             $cInfo = $router->getRouteByID($cmdId);
             Console::writef(
-                '  <info>%s</info> %s',
+                '  <info>%s</info> %s%s',
                 Str::padRight($name, $keyWidth),
-                $cInfo['desc'] ?: 'No description message'
+                $cInfo['desc'] ?: 'No description message',
+                $cInfo['alias'] ? "(alias: <info>{$cInfo['alias']}</info>)" : ''
             );
         }
 

@@ -11,7 +11,7 @@ use Swoft\Console\Input\AbstractFlag;
  * Class CommandArgument
  * @since 2.0
  * @Annotation
- * @Target({"CLASS", "METHOD"})
+ * @Target("METHOD")
  * @Attributes(
  *     @Attribute("name", type="string"),
  *     @Attribute("desc", type="string")

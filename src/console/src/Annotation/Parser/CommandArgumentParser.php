@@ -28,8 +28,8 @@ class CommandArgumentParser extends Parser
      */
     public function parse(int $type, $annotation): array
     {
-        if ($type === self::TYPE_PROPERTY) {
-            throw new AnnotationException('`@CommandArgument` must be defined on class or method!');
+        if ($type !== self::TYPE_METHOD) {
+            throw new AnnotationException('`@CommandArgument` must be defined on class method!');
         }
 
         // add route info for controller action
