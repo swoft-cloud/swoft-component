@@ -5,7 +5,7 @@ namespace Swoft\Db\Query;
 
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\Prototype;
+use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Bean\PrototypeInterface;
 use Swoft\Db\Exception\QueryException;
@@ -19,7 +19,7 @@ use Swoft\Db\Exception\QueryException;
  */
 class JoinClause extends Builder
 {
-    use Prototype;
+    use PrototypeTrait;
 
     /**
      * The type of join being performed.
