@@ -2,7 +2,7 @@
 
 namespace Swoft\Server\Event;
 
-use Co\Server;
+use Swoole\Server;
 
 /**
  * Class WorkerEvent
@@ -29,6 +29,7 @@ class WorkerEvent extends ServerStartEvent
     {
         parent::__construct($name, $server);
 
+        $this->workerId  = $workerId;
         $this->workerPid = $server->worker_pid;
     }
 }

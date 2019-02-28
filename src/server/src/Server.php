@@ -2,7 +2,6 @@
 
 namespace Swoft\Server;
 
-use Co\Server as CoServer;
 use Swoft;
 use Swoft\Console\Console;
 use Swoft\Server\Event\ServerStartEvent;
@@ -10,8 +9,10 @@ use Swoft\Server\Event\WorkerEvent;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Helper\ServerHelper;
 use Swoft\Server\Swoole\SwooleEvent;
+use Swoft\Stdlib\Helper\Dir;
 use Swoft\Stdlib\Helper\Sys;
 use Swoole\Process;
+use Swoole\Server as CoServer;
 
 /**
  * Class Server
@@ -181,6 +182,8 @@ abstract class Server implements ServerInterface
         $title  = \sprintf('%s master process (%s)', $this->pidName, $this->scriptFile);
 
         // Save PID to file
+        $pidFile = \alias($this->pidFile);
+        Dir::make(\dirname($pidFile));
         \file_put_contents(\alias($this->pidFile), $pidStr);
 
         // Set process title

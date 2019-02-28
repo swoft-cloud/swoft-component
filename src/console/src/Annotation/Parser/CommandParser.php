@@ -24,10 +24,16 @@ class CommandParser extends Parser
      * @var array[]
      * [
      *  class => [
-     *      group => group name,
+     *      group   => group name,
+     *      desc    => group description,
+     *      alias   => group alias string,
+     *      aliases => [], // group alias list
+     *      options => [], // group options, will apply for all commands
      *      commands => [
      *          method => [
-     *              name      => command name
+     *              name      => command name,
+     *              desc      => command description,
+     *              alias     => command alias string,
      *              options   => [],
      *              arguments => [],
      *          ]
@@ -75,6 +81,10 @@ class CommandParser extends Parser
      */
     public static function addRoute(string $class, string $method, array $route): void
     {
+        // init some keys
+        $route['options']   = [];
+        $route['arguments'] = [];
+        // save
         self::$commands[$class]['commands'][$method] = $route;
     }
 
@@ -101,6 +111,12 @@ class CommandParser extends Parser
      */
     public static function bindOption(string $class, string $method, string $optName, array $info): void
     {
+        // if not 'commands', is bind group options.
+        if (!isset(self::$commands[$class]['commands'])) {
+            self::$commands[$class]['options'][$optName] = $info;
+            return;
+        }
+
         $cmdInfo = self::$commands[$class]['commands'][$method];
         // add option info
         $cmdInfo['options'][$optName] = $info;
@@ -127,6 +143,7 @@ class CommandParser extends Parser
             $router->setGroupAliases($group, $mapping['aliases']);
 
             $refInfo = \Swoft::getReflection($class);
+            $grpOpts = $mapping['options'] ?? [];
 
             foreach ($mapping['commands'] as $method => $route) {
                 // $method = $route['method'];
@@ -149,7 +166,7 @@ class CommandParser extends Parser
                     'enabled'   => $mapping['enabled'],
                     // 'coroutine' => $mapping['coroutine'],
                     // options
-                    'options'   => $route['options'] ?? [],
+                    'options'   => self::mergeOptions($grpOpts, $route['options']),
                     // arguments
                     'arguments' => $route['arguments'] ?? [],
                 ]);
@@ -179,5 +196,19 @@ class CommandParser extends Parser
         $router->setKeyWidth($maxLen + 1);
         // clear data
         self::$commands = [];
+    }
+
+    /**
+     * @param array $grpOptions
+     * @param array $cmdOptions
+     * @return array
+     */
+    private static function mergeOptions(array $grpOptions, array $cmdOptions): array
+    {
+        if ($grpOptions) {
+            return \array_merge($grpOptions, $cmdOptions);
+        }
+
+        return $cmdOptions;
     }
 }

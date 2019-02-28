@@ -136,9 +136,9 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
     private function findBasePath()
     {
-        $basePath = ComposerHelper::getClassLoader()->findFile(static::class);
+        $filePath = ComposerHelper::getClassLoader()->findFile(static::class);
         // save
-        $this->basePath = \dirname($basePath, 2);
+        $this->basePath = \dirname(\realpath($filePath), 2);
     }
 
     protected function init()

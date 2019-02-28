@@ -2,7 +2,7 @@
 
 namespace Swoft\Server\Event;
 
-use Co\Server;
+use Swoole\Server;
 use Swoft\Event\Event;
 
 /**
