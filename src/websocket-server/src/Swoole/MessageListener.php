@@ -12,7 +12,7 @@ use Swoft\Server\Swoole\MessageInterface;
 use Swoft\WebSocket\Server\Exception\WsServerException;
 use Swoft\WebSocket\Server\Router\Router;
 use Swoft\WebSocket\Server\WsContext;
-use Swoft\WebSocket\Server\WsEvent;
+use Swoft\WebSocket\Server\WsServerEvent;
 
 /**
  * Class MessageListener
@@ -42,7 +42,7 @@ class MessageListener implements MessageInterface
         // init fd and coId mapping
         Session::bindFd($fd);
 
-        \Swoft::trigger(WsEvent::ON_MESSAGE, null, $server, $frame);
+        \Swoft::trigger(WsServerEvent::BEFORE_MESSAGE, null, $server, $frame);
 
         \server()->log("received message: {$frame->data} from fd #{$fd}, co ID #" . Co::tid(), [], 'debug');
 

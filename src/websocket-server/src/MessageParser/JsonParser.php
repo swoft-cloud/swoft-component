@@ -1,10 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-12
- * Time: 13:06
- */
 
 namespace Swoft\WebSocket\Server\MessageParser;
 

@@ -659,6 +659,23 @@ abstract class Server implements ServerInterface
     }
 
     /**
+     * @return int
+     */
+    public function getErrorNo(): int
+    {
+        return $this->swooleServer->getLastError();
+    }
+
+    /**
+     * @param int $fd
+     * @return array
+     */
+    public function getClientInfo(int $fd): array
+    {
+        return $this->swooleServer->getClientInfo($fd);
+    }
+
+    /**
      * Set pid map
      *
      * @param CoServer $server

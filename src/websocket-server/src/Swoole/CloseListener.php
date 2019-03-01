@@ -14,7 +14,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Session\Session;
 use Swoft\Server\Swoole\CloseInterface;
 use Swoft\WebSocket\Server\Connection;
-use Swoft\WebSocket\Server\WsEvent;
+use Swoft\WebSocket\Server\WsServerEvent;
 
 /**
  * Class CloseListener
@@ -68,7 +68,7 @@ class CloseListener implements CloseInterface
         }
 
         // call on close callback
-        \Swoft::trigger(WsEvent::ON_CLOSE, $fd, $server);
+        \Swoft::trigger(WsServerEvent::ON_CLOSE, $fd, $server);
 
         // unbind fd
         Session::unbindFd();
