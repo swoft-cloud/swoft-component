@@ -12,7 +12,11 @@ use Swoft\WebSocket\Server\WebSocketServer;
 
 /**
  * Class WsServerCommand
- * @Command("http", desc="provide some commands to operate WebSocket Server")
+ * @Command("ws",
+ *     coroutine=false,
+ *     alias="ws-server,wsserver",
+ *     desc="provide some commands to operate WebSocket Server"
+ * )
  */
 class WsServerCommand
 {
@@ -29,7 +33,7 @@ class WsServerCommand
      * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Server\Exception\ServerException
      */
-    public function start()
+    public function start(): void
     {
         $server = $this->createServer();
 
@@ -39,7 +43,6 @@ class WsServerCommand
             \output()->writeln("<error>The server have been running!(PID: {$masterPid})</error>");
             return;
         }
-
 
         // Startup settings
         $this->configStartOption($server);
@@ -56,22 +59,17 @@ class WsServerCommand
 
         // TCP 启动参数
         // $tcpStatus = $server->getTcpSetting();
-        $tcpStatus = [];
-        $tcpEnable = $serverStatus['tcpable'] ?? false;
-        $tcpHost = $tcpStatus['host'] ?? 'unknown';
-        $tcpPort = $tcpStatus['port'] ?? 'unknown';
-        $tcpType = $tcpStatus['type'] ?? 'unknown';
-        $tcpEnable = $tcpEnable ? '<info>Enabled</info>' : '<warning>Disabled</warning>';
-        // 信息面板
-        $lines = [
-            '                         Server Information                      ',
-            '********************************************************************',
-            "* HTTP | host: <note>$mainHost</note>, port: <note>$mainPort</note>, type: <note>$typeName</note>, worker: <note>$workerNum</note>, mode: <note>$modeName</note>",
-            "* TCP  | host: <note>$tcpHost</note>, port: <note>$tcpPort</note>, type: <note>$tcpType</note>, worker: <note>$workerNum</note> ($tcpEnable)",
-            '********************************************************************',
-        ];
 
-        \output()->writeln(implode("\n", $lines));
+        Show::panel([
+            'WebSocket' => [
+                'listen' => $mainHost . ':' . $mainPort,
+                'type'   => $typeName,
+                'mode'   => $modeName,
+                'worker' => $workerNum,
+            ],
+        ]);
+
+        \output()->writef('<success>Server start success !</success>');
 
         // Start the server
         $server->start();

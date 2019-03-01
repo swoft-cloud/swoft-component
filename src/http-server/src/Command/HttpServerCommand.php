@@ -13,7 +13,7 @@ use Swoft\Http\Server\HttpServer;
  *
  * @since 2.0
  *
- * @Command("http", alias="httpserver,httpServer,http-server")
+ * @Command("http", alias="httpserver,httpServer,http-server", coroutine=false)
  */
 class HttpServerCommand
 {
@@ -142,7 +142,6 @@ class HttpServerCommand
      *
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Server\Exception\ServerException
      */
     public function restart(): void
     {

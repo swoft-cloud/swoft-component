@@ -41,6 +41,8 @@ class CommandMappingParser extends Parser
             'alias'   => $annotation->getAlias(),
             'aliases' => $annotation->getAliases(),
             'desc'    => $annotation->getDesc(),
+            'usage'   => $annotation->getUsage(),
+            'example' => $annotation->getExample(),
         ]);
 
         return [];

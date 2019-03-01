@@ -212,12 +212,12 @@ class Application implements ConsoleInterface
         $beanObject = \Swoft::getBean($className);
 
         // blocking running
-        // if (!$route['coroutine']) {
-        //     $this->beforeExecute(\get_parent_class($beanObject), $method);
-        //     PhpHelper::call([$beanObject, $method], $bindParams);
-        //     $this->afterExecute($method);
-        //     return;
-        // }
+        if (!$route['coroutine']) {
+            $this->beforeExecute(\get_parent_class($beanObject), $method);
+            PhpHelper::call([$beanObject, $method], $bindParams);
+            $this->afterExecute($method);
+            return;
+        }
 
         // coroutine running
         Co::create(function () use ($beanObject, $method, $bindParams) {
