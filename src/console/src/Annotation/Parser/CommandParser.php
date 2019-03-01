@@ -61,14 +61,16 @@ class CommandParser extends Parser
         }
 
         $class = $this->className;
+        $group = $annotation->getName() ?: Str::getClassName($class, 'Command');
 
         // add route for the command controller
         self::$commands[$class] = [
-            'group'   => $annotation->getName() ?: Str::getClassName($class, 'Command'),
-            'desc'    => $annotation->getDesc(),
-            'alias'   => $annotation->getAlias(),
-            'aliases' => $annotation->getAliases(),
-            'enabled' => $annotation->isEnabled(),
+            'group'     => $group,
+            'desc'      => $annotation->getDesc(),
+            'alias'     => $annotation->getAlias(),
+            'aliases'   => $annotation->getAliases(),
+            'enabled'   => $annotation->isEnabled(),
+            'coroutine' => $annotation->isCoroutine(),
         ];
 
         return [$class, $class, Bean::SINGLETON, ''];
@@ -161,8 +163,10 @@ class CommandParser extends Parser
 
                 $route['group']   = $group;
                 $route['desc']    = $cmdDesc ? \ucfirst($cmdDesc) : $defDesc;
-                $route['enabled'] = $mapping['enabled'];
                 $route['options'] = self::mergeOptions($grpOpts, $route['options']);
+                // append group option
+                $route['enabled']   = $mapping['enabled'];
+                $route['coroutine'] = $mapping['coroutine'];
 
                 $router->map($group, $command, [$class, $method], $route);
 

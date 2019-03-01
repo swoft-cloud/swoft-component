@@ -67,6 +67,8 @@ trait RenderHelpInfoTrait
         Show::mList([
             'Usage:'   => "$script <info>COMMAND</info> [arg0 arg1 arg2 ...] [--opt -v -h ...]",
             'Options:' => FormatUtil::alignOptions($globalOptions),
+        ], [
+            'sepChar' => '   ',
         ]);
 
         /* @var Router $router */
@@ -132,6 +134,8 @@ trait RenderHelpInfoTrait
         Show::mList([
             'Usage:'          => "{$script} {$group}:<info>COMMAND</info> [--opt ...] [arg ...]",
             'Global Options:' => FormatUtil::alignOptions(self::$globalOptions),
+        ], [
+            'sepChar' => '   ',
         ]);
 
         Console::writeln('<comment>Available Commands:</comment>');
@@ -166,6 +170,8 @@ trait RenderHelpInfoTrait
         Show::mList([
             'Usage:'          => \sprintf('%s %s [arg ...] [--opt ...]', $script, $info['cmdId']),
             'Global Options:' => FormatUtil::alignOptions(self::$globalOptions),
+        ], [
+            'sepChar' => '   ',
         ]);
         // [$className, $method] = $info['handler'];
 
