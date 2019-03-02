@@ -17,10 +17,10 @@ use Swoft\Processor\Processor;
 use Swoft\Processor\ProcessorInterface;
 use Swoft\Stdlib\Helper\ComposerHelper;
 use Swoft\Stdlib\Helper\ObjectHelper;
-use Swoole\Runtime;
 
 /**
  * Swoft application
+ *
  * @since 2.0
  */
 class SwoftApplication implements SwoftInterface, ApplicationInterface
@@ -121,7 +121,6 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
         $this->initCLogger();
 
         // Enable swoole hook
-        Runtime::enableCoroutine();
         CLog::info('Swoole\Runtime::enableCoroutine');
 
         // Storage as global static property.

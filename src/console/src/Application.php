@@ -213,10 +213,10 @@ class Application implements ConsoleInterface
 
         // blocking running
         // if (!$route['coroutine']) {
-        //     $this->beforeExecute(\get_parent_class($beanObject), $method);
-        //     PhpHelper::call([$beanObject, $method], $bindParams);
-        //     $this->afterExecute($method);
-        //     return;
+//             $this->beforeExecute(\get_parent_class($beanObject), $method);
+//             PhpHelper::call([$beanObject, $method], $bindParams);
+//             $this->afterExecute($method);
+//             return;
         // }
 
         // coroutine running
@@ -225,7 +225,7 @@ class Application implements ConsoleInterface
             PhpHelper::call([$beanObject, $method], $bindParams);
             $this->afterExecute($method);
         });
-
+//
         Event::wait();
     }
 

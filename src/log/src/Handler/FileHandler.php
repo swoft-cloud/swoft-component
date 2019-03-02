@@ -63,7 +63,10 @@ class FileHandler extends AbstractProcessingHandler
             throw new \InvalidArgumentException('Write log file must be under Coroutine!');
         }
 
+        var_dump('11111111111111111');
         $res = Co::writeFile($logFile, $messageText, FILE_APPEND);
+        var_dump('222222222222222');
+
         if ($res === false) {
             throw new \InvalidArgumentException(
                 sprintf('Unable to append to log file: %s', $logFile)
@@ -104,6 +107,7 @@ class FileHandler extends AbstractProcessingHandler
     {
         $logFile = \alias($this->logFile);
         $logDir  = dirname($logFile);
+
         if ($logDir !== null && !is_dir($logDir)) {
             $status = mkdir($logDir, 0777, true);
             if ($status === false) {
