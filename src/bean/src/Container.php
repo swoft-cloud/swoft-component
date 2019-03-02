@@ -367,7 +367,7 @@ class Container implements ContainerInterface
             ];
         }
 
-        $definitionObjParser   = new DefinitionObjParser($definition, [], []);
+        $definitionObjParser = new DefinitionObjParser($definition, [], []);
         [, $objectDefinitions] = $definitionObjParser->parseDefinitions();
 
         $this->objectDefinitions[$name] = $objectDefinitions[$name];
@@ -719,9 +719,15 @@ class Container implements ContainerInterface
             $methodParams = [];
 
             foreach ($reflectionMethod->getParameters() as $parameter) {
+                $defaultValue = null;
+                if ($parameter->isDefaultValueAvailable()) {
+                    $defaultValue = $parameter->getDefaultValue();
+                }
+
                 $methodParams[] = [
                     $parameter->getName(),
-                    $parameter->getType()
+                    $parameter->getType(),
+                    $defaultValue
                 ];
             }
 

@@ -4,7 +4,7 @@ namespace Swoft\Http\Server\Swoole;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\PrototypeException;
-use Swoft\Http\Message\ServerRequest;
+use Swoft\Http\Message\Request as ServerRequest;
 use Swoft\Http\Message\Response as ServerResponse;
 use Swoft\Http\Server\HttpDispatcher;
 use Swoft\Server\Swoole\RequestInterface;

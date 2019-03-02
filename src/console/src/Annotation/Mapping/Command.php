@@ -58,7 +58,7 @@ final class Command
     /**
      * @var bool
      */
-    // private $coroutine = true;
+    private $coroutine = true;
 
     /**
      * Default command in the group
@@ -90,6 +90,10 @@ final class Command
 
         if (isset($values['enabled'])) {
             $this->enabled = (bool)$values['enabled'];
+        }
+
+        if (isset($values['coroutine'])) {
+            $this->coroutine = (bool)$values['coroutine'];
         }
 
         if (isset($values['defaultCommand'])) {
@@ -143,5 +147,13 @@ final class Command
     public function getDefaultCommand(): string
     {
         return $this->defaultCommand;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCoroutine(): bool
+    {
+        return $this->coroutine;
     }
 }

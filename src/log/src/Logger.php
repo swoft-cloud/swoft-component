@@ -183,7 +183,7 @@ class Logger extends \Monolog\Logger
         array $extra
     ) {
         $record = array(
-            'logid'      => context()->get('logid'),
+            'logid'      => context()->get('traceid'),
             'spanid'     => context()->get('spanid'),
             'messages'   => $message,
             'context'    => $context,

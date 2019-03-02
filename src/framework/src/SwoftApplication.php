@@ -158,9 +158,6 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
     /**
      * Run application
-     *
-     * @throws Bean\Exception\ContainerException
-     * @throws \ReflectionException
      */
     public function run(): void
     {
@@ -169,9 +166,6 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
         }
 
         $this->processor->handle();
-
-        // trigger a app init event
-        \Swoft::trigger(SwoftEvent::APP_INIT_AFTER);
     }
 
     /**

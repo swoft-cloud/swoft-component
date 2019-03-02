@@ -24,6 +24,7 @@ class AnnotationResource extends Resource
      */
     public const DEFAULT_EXCLUDED_PSR4_PREFIXES = [
         'Psr\\',
+        'Monolog\\',
         'PHPUnit\\',
         'Symfony\\'
     ];

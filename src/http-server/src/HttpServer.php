@@ -19,7 +19,7 @@ class HttpServer extends Server
      *
      * @var int
      */
-    protected $port = 18306;
+    protected $port = 88;
 
     /**
      * Server type

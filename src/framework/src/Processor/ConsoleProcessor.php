@@ -24,9 +24,11 @@ class ConsoleProcessor extends Processor
             return false;
         }
 
-        /** @var Router $router */
+        /**
+         * @var Router      $router
+         * @var Application $cliApp
+         */
         $router = \bean('cliRouter');
-        /** @var Application $cliApp */
         $cliApp = \bean('cliApp');
 
         // Register console routes

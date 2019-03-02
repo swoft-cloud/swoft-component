@@ -4,7 +4,7 @@ namespace Swoft\WebSocket\Server;
 
 use Swoft\App;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Http\Message\Request;
+use Swoft\Http\Message\PsrRequest;
 use Swoft\Http\Message\Response;
 use Swoft\WebSocket\Server\Contract\ModuleInterface;
 use Swoft\WebSocket\Server\Exception\WsContextException;
@@ -23,13 +23,15 @@ class Dispatcher
 {
     /**
      * dispatch handshake request
-     * @param Request  $request
-     * @param Response $response
+     *
+     * @param PsrRequest $request
+     * @param Response   $response
+     *
      * @return array eg. [status, response]
      * @throws \Swoft\WebSocket\Server\Exception\WsRouteException
      * @throws \InvalidArgumentException
      */
-    public function handshake(Request $request, Response $response): array
+    public function handshake(PsrRequest $request, Response $response): array
     {
         try {
             $path = $request->getUri()->getPath();
@@ -65,13 +67,14 @@ class Dispatcher
     }
 
     /**
-     * @param Server  $server
-     * @param Request $request
-     * @param int     $fd
+     * @param Server     $server
+     * @param PsrRequest $request
+     * @param int        $fd
+     *
      * @throws \Swoft\WebSocket\Server\Exception\WsRouteException
      * @throws \InvalidArgumentException
      */
-    public function open(Server $server, Request $request, int $fd)
+    public function open(Server $server, PsrRequest $request, int $fd)
     {
         $path = $request->getUri()->getPath();
         list($className,) = $this->getHandler($path);

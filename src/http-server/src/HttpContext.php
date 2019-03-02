@@ -7,7 +7,7 @@ use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Context\ContextInterface;
 use Swoft\Concern\DataPropertyTrait;
 use Swoft\Http\Message\Response;
-use Swoft\Http\Message\ServerRequest;
+use Swoft\Http\Message\Request;
 
 /**
  * Class HttpContext
@@ -21,7 +21,7 @@ class HttpContext implements ContextInterface
     use DataPropertyTrait, PrototypeTrait;
 
     /**
-     * @var ServerRequest
+     * @var Request
      */
     protected $request;
 
@@ -33,13 +33,13 @@ class HttpContext implements ContextInterface
     /**
      * Create context replace of construct
      *
-     * @param ServerRequest $request
-     * @param Response      $response
+     * @param Request  $request
+     * @param Response $response
      *
      * @return HttpContext
      * @throws \Swoft\Bean\Exception\PrototypeException
      */
-    public static function new(ServerRequest $request, Response $response): self
+    public static function new(Request $request, Response $response): self
     {
         $instance = self::__instance();
 
@@ -50,9 +50,9 @@ class HttpContext implements ContextInterface
     }
 
     /**
-     * @return ServerRequest
+     * @return Request
      */
-    public function getRequest(): ServerRequest
+    public function getRequest(): Request
     {
         return $this->request;
     }

@@ -100,19 +100,19 @@ class Router implements RouterInterface
      * @param string         $group
      * @param string         $command
      * @param mixed|callable $handler
-     * @param array          $options
+     * @param array          $config
      */
-    public function map(string $group, string $command, $handler, array $options = []): void
+    public function map(string $group, string $command, $handler, array $config = []): void
     {
         $cmdID = $this->buildCommandID($group, $command);
 
-        if ($aliases = $options['aliases'] ?? []) {
+        if ($aliases = $config['aliases'] ?? []) {
             $this->setCommandAliases($command, $aliases);
         }
 
-        $options['handler'] = $handler;
+        $config['handler'] = $handler;
 
-        $this->routes[$cmdID] = $options;
+        $this->routes[$cmdID] = $config;
     }
 
     /**
@@ -163,9 +163,7 @@ class Router implements RouterInterface
         if (isset($this->routes[$commandID])) {
             $info = $this->routes[$commandID];
             // append some info
-            $info['cmdId']   = $commandID;
-            $info['group']   = $group;
-            $info['command'] = $command;
+            $info['cmdId'] = $commandID;
 
             return [self::FOUND, $info];
         }

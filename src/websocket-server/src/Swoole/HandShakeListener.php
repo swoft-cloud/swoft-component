@@ -6,7 +6,7 @@ namespace Swoft\WebSocket\Server\Swoole;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Co;
 use Swoft\Session\Session;
-use Swoft\Http\Message\ServerRequest as Psr7Request;
+use Swoft\Http\Message\Request as Psr7Request;
 use Swoft\Server\Swoole\HandShakeInterface;
 use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;

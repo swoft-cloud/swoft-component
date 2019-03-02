@@ -61,14 +61,16 @@ class CommandParser extends Parser
         }
 
         $class = $this->className;
+        $group = $annotation->getName() ?: Str::getClassName($class, 'Command');
 
         // add route for the command controller
         self::$commands[$class] = [
-            'group'     => $annotation->getName() ?: Str::getClassName($class, 'Command'),
+            'group'     => $group,
             'desc'      => $annotation->getDesc(),
             'alias'     => $annotation->getAlias(),
             'aliases'   => $annotation->getAliases(),
             'enabled'   => $annotation->isEnabled(),
+            'coroutine' => $annotation->isCoroutine(),
         ];
 
         return [$class, $class, Bean::SINGLETON, ''];
@@ -147,29 +149,26 @@ class CommandParser extends Parser
 
             foreach ($mapping['commands'] as $method => $route) {
                 // $method = $route['method'];
+                $cmdDesc = $route['desc'];
                 $command = $route['command'];
                 $idLen   = \strlen($group . $command);
 
                 if ($idLen > $maxLen) {
                     $maxLen = $idLen;
                 }
-                $cmdDesc = $route['desc'];
 
                 if (!$cmdDesc && !empty($refInfo['methods'][$method]['comments'])) {
                     $cmdDesc = DocBlock::firstLine($refInfo['methods'][$method]['comments']);
                 }
 
-                $router->map($group, $command, [$class, $method], [
-                    'desc'      => $cmdDesc ? \ucfirst($cmdDesc) : $defDesc,
-                    'alias'     => $route['alias'],
-                    'aliases'   => $route['aliases'],
-                    'enabled'   => $mapping['enabled'],
-                    // 'coroutine' => $mapping['coroutine'],
-                    // options
-                    'options'   => self::mergeOptions($grpOpts, $route['options']),
-                    // arguments
-                    'arguments' => $route['arguments'] ?? [],
-                ]);
+                $route['group']   = $group;
+                $route['desc']    = $cmdDesc ? \ucfirst($cmdDesc) : $defDesc;
+                $route['options'] = self::mergeOptions($grpOpts, $route['options']);
+                // append group option
+                $route['enabled']   = $mapping['enabled'];
+                $route['coroutine'] = $mapping['coroutine'];
+
+                $router->map($group, $command, [$class, $method], $route);
 
                 $names[] = $command;
             }

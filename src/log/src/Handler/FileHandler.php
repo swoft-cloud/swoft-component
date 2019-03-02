@@ -63,9 +63,7 @@ class FileHandler extends AbstractProcessingHandler
             throw new \InvalidArgumentException('Write log file must be under Coroutine!');
         }
 
-        var_dump('11111111111111111');
         $res = Co::writeFile($logFile, $messageText, FILE_APPEND);
-        var_dump('222222222222222');
 
         if ($res === false) {
             throw new \InvalidArgumentException(

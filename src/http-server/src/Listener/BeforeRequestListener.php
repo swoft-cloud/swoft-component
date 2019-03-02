@@ -10,7 +10,7 @@ use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Http\Message\Response;
-use Swoft\Http\Message\ServerRequest;
+use Swoft\Http\Message\Request;
 use Swoft\Http\Server\HttpContext;
 use Swoft\Http\Server\HttpServerEvent;
 
@@ -31,8 +31,8 @@ class BeforeRequestListener implements EventHandlerInterface
     public function handle(EventInterface $event): void
     {
         /**
-         * @var ServerRequest $request
-         * @var Response      $response
+         * @var Request  $request
+         * @var Response $response
          */
         [$request, $response] = $event->getParams();
 
