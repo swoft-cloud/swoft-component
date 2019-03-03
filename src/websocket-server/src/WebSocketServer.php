@@ -5,6 +5,7 @@ namespace Swoft\WebSocket\Server;
 use Co\Websocket\Frame;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Server\Server;
+use Swoft\Server\Swoole\SwooleEvent;
 
 /**
  * Class WebSocketServer
@@ -327,27 +328,18 @@ class WebSocketServer extends Server
     }
 
     /**
+     * @return bool
+     */
+    public function httpIsEnabled(): bool
+    {
+        return isset($this->on[SwooleEvent::REQUEST]);
+    }
+
+    /**
      * @return int
      */
     public function count(): int
     {
         return \count($this->swooleServer->connections);
-    }
-
-    /**
-     * @return int
-     */
-    public function getErrorNo(): int
-    {
-        return $this->swooleServer->getLastError();
-    }
-
-    /**
-     * @param int $fd
-     * @return array
-     */
-    public function getClientInfo(int $fd): array
-    {
-        return $this->swooleServer->getClientInfo($fd);
     }
 }

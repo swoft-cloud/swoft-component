@@ -115,8 +115,8 @@ class Dispatcher
             \server()->log('error on handle message, ERR: ' . $e->getMessage(), [], 'error');
 
             /** @see \Swoft\Event\EventManager::hasListenerQueue() */
-            if (App::hasBean('eventManager') && \bean('eventManager')->hasListenerQueue(WsEvent::ON_ERROR)) {
-                App::trigger(WsEvent::ON_ERROR, $frame, $e);
+            if (\bean('eventManager')->hasListenerQueue(WsServerEvent::ON_ERROR)) {
+                \Swoft::trigger(WsServerEvent::ON_ERROR, $frame, $e);
             } else {
                 App::error($e->getMessage(), ['fd' => $fd, 'data' => $frame->data]);
                 // close connection

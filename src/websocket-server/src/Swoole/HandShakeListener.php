@@ -12,7 +12,7 @@ use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\Dispatcher;
 use Swoft\WebSocket\Server\Helper\WsHelper;
-use Swoft\WebSocket\Server\WsEvent;
+use Swoft\WebSocket\Server\WsServerEvent;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 
@@ -63,7 +63,7 @@ class HandShakeListener implements HandShakeInterface
         // bind connection
         Session::set($fd, $conn);
 
-        \Swoft::trigger(WsEvent::ON_HANDSHAKE, $fd, $request, $response);
+        \Swoft::trigger(WsServerEvent::BEFORE_HANDSHAKE, $fd, $request, $response);
 
         /** @var Dispatcher $dispatcher */
         $dispatcher = \bean('wsDispatcher');
@@ -124,7 +124,7 @@ class HandShakeListener implements HandShakeInterface
     {
         $server = \server()->getSwooleServer();
 
-        \Swoft::trigger(WsEvent::ON_OPEN, null, $server, $request, $fd);
+        \Swoft::trigger(WsServerEvent::ON_OPEN, null, $server, $request, $fd);
 
         \server()->log("connection #$fd has been opened, co ID #" . Co::tid(), [], 'debug');
 

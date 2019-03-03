@@ -19,18 +19,13 @@ class EventManagerTest extends TestCase
     {
         $em = new EventManager();
         $this->assertInstanceOf(EventManagerInterface::class, $em);
-        $this->assertEmpty($em->getParent());
+        // $this->assertEmpty($em->getParent());
         $this->assertNotEmpty($em->getBasicEvent());
         $this->assertSame(0, $em->countEvents());
 
         $em->setBasicEvent(new Event('new'));
         $this->assertNotEmpty($evt = $em->getBasicEvent());
         $this->assertSame('new', $evt->getName());
-
-        $em1 = new EventManager();
-        $em1->setParent($em);
-
-        $this->assertNotEmpty($em1->getParent());
     }
 
     public function testAttach(): void
@@ -44,7 +39,9 @@ class EventManagerTest extends TestCase
 
         $this->assertTrue($em->hasListener($l1));
         $this->assertTrue($em->hasListener($l1, 'test'));
+        $this->assertTrue($em->isListenedEvent('test'));
         $this->assertCount(2, $em->getEventListeners('test'));
+        $this->assertArrayHasKey('test', $em->getListenedEvents(false));
 
         $em->detach('test', $l1);
         $this->assertCount(1, $em->getEventListeners('test'));

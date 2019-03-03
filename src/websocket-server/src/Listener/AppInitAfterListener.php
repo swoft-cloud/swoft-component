@@ -1,10 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-02
- * Time: 18:51
- */
 
 namespace Swoft\WebSocket\Server\Listener;
 
@@ -36,5 +30,7 @@ class AppInitAfterListener implements EventHandlerInterface
         $router = \bean('wsRouter');
 
         WsModuleParser::registerTo($router);
+        
+        \Swoft::trigger($event, $target, $params)
     }
 }
