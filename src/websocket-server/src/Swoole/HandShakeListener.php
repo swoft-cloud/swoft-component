@@ -7,6 +7,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Co;
 use Swoft\Session\Session;
 use Swoft\Http\Message\Request as Psr7Request;
+use Swoft\Http\Message\Response as Psr7Response;
 use Swoft\Server\Swoole\HandShakeInterface;
 use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
@@ -33,6 +34,7 @@ class HandShakeListener implements HandShakeInterface
      * @return bool
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Bean\Exception\PrototypeException
      */
     public function onHandShake(Request $request, Response $response): bool
     {
@@ -57,8 +59,8 @@ class HandShakeListener implements HandShakeInterface
         // initialize connection
         $conn->initialize($fd, $request);
 
-        $psr7Req = Psr7Request::loadFromSwooleRequest($request);
-        $psr7Res = new \Swoft\Http\Message\Response($response);
+        $psr7Req = Psr7Request::new($request);
+        $psr7Res = Psr7Response::new($response);
 
         // bind connection
         Session::set($fd, $conn);
@@ -124,7 +126,7 @@ class HandShakeListener implements HandShakeInterface
     {
         $server = \server()->getSwooleServer();
 
-        \Swoft::trigger(WsServerEvent::ON_OPEN, null, $server, $request, $fd);
+        \Swoft::trigger(WsServerEvent::AFTER_OPEN, $fd, $server, $request);
 
         \server()->log("connection #$fd has been opened, co ID #" . Co::tid(), [], 'debug');
 

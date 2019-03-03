@@ -4,7 +4,6 @@ namespace Swoft\Server\Swoole;
 
 use Co\Server as CoServer;
 
-
 /**
  * Interface CloseInterface
  *
