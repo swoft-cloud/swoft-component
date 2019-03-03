@@ -30,7 +30,5 @@ class AppInitAfterListener implements EventHandlerInterface
         $router = \bean('wsRouter');
 
         WsModuleParser::registerTo($router);
-        
-        \Swoft::trigger($event, $target, $params)
     }
 }
