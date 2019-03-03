@@ -548,6 +548,9 @@ abstract class Server implements ServerInterface
      * @param string $msg
      * @param array  $data
      * @param string $type
+     *
+     * @throws Swoft\Bean\Exception\ContainerException
+     * @throws \ReflectionException
      */
     public function log(string $msg, array $data = [], string $type = 'info'): void
     {
@@ -576,7 +579,7 @@ abstract class Server implements ServerInterface
 
             // Parse and record PIDs
             [$masterPID, $managerPID] = \explode(',', $pidFile);
-            $managerPID = (int)$masterPID;
+            $managerPID = (int)$managerPID;
 
             $this->pidMap['masterPid']  = $masterPID;
             $this->pidMap['managerPid'] = (int)$managerPID;

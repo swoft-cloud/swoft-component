@@ -183,7 +183,7 @@ class Logger extends \Monolog\Logger
         array $extra
     ) {
         $record = array(
-            'logid'      => context()->get('logid'),
+            'logid'      => context()->get('traceid'),
             'spanid'     => context()->get('spanid'),
             'messages'   => $message,
             'context'    => $context,
@@ -530,6 +530,14 @@ class Logger extends \Monolog\Logger
     public function setFlushInterval(int $flushInterval): void
     {
         $this->flushInterval = $flushInterval;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnable(): bool
+    {
+        return $this->enable;
     }
 
     /**

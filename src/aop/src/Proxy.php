@@ -28,10 +28,29 @@ class Proxy
 
         $parser->addNodeVisitor(ProxyVisitor::class, $visitor);
         $proxyCode = $parser->parse($className);
+        $proxyName = $visitor->getProxyName();
 
-        eval($proxyCode);
+        // Proxy file and proxy code
+        $proxyFile = sprintf('%s/%s.php', sys_get_temp_dir(), $proxyName);
+        $proxyCode = sprintf('<?php %s %s', PHP_EOL, $proxyCode);
 
+        // Generate proxy class
+        $result = file_put_contents($proxyFile, $proxyCode);
+        if ($result === false) {
+            throw new AopException(sprintf('Proxy file(%s) generate fail', $proxyFile));
+        }
+
+        // Load proxy php file
+        require $proxyFile;
+
+        // Remove proxy file
+        unlink($proxyFile);
+
+        // Proxy class
         $proxyClassName = $visitor->getProxyClassName();
+        if (!class_exists($proxyClassName)) {
+            throw new AopException(sprintf('Proxy class(%s) is not exist!', $proxyClassName));
+        }
 
         return $proxyClassName;
     }

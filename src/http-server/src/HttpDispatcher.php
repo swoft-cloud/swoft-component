@@ -5,7 +5,7 @@ namespace Swoft\Http\Server;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Dispatcher;
 use Swoft\Http\Message\Response;
-use Swoft\Http\Message\ServerRequest;
+use Swoft\Http\Message\Request;
 use Swoft\Http\Server\Middleware\DefaultMiddleware;
 use Swoft\Http\Server\Middleware\RequestMiddleware;
 use Swoft\Http\Server\Middleware\UserMiddleware;
@@ -37,8 +37,8 @@ class HttpDispatcher extends Dispatcher
     public function dispatch(...$params)
     {
         /**
-         * @var ServerRequest $request
-         * @var Response      $response
+         * @var Request  $request
+         * @var Response $response
          */
         [$request, $response] = $params;
 

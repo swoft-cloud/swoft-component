@@ -1967,17 +1967,17 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
         return new ArrayIterator($this->items);
     }
 
-    /**
-     * Get a CachingIterator instance.
-     *
-     * @param  int $flags
-     *
-     * @return \CachingIterator
-     */
-    public function getCachingIterator($flags = CachingIterator::CALL_TOSTRING): \CachingIterator
-    {
-        return new CachingIterator($this->getIterator(), $flags);
-    }
+//    /**
+//     * Get a CachingIterator instance.
+//     *
+//     * @param  int $flags
+//     *
+//     * @return \CachingIterator
+//     */
+//    public function getCachingIterator($flags = CachingIterator::CALL_TOSTRING): \CachingIterator
+//    {
+//        return new CachingIterator($this->getIterator(), $flags);
+//    }
 
     /**
      * Count the number of items in the collection.

@@ -6,8 +6,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Session\SessionInterface;
 use Swoft\Concern\DataPropertyTrait;
-use Swoft\Http\Message\ServerRequest;
-use Swoole\Http\Request;
+use Swoft\Http\Message\Request;
+use Swoole\Http\Request as SwooleRequest;
 
 /**
  * Class Connection
@@ -26,7 +26,7 @@ class Connection implements SessionInterface
     private $fd = 0;
 
     /**
-     * @var ServerRequest|ServerRequestInterface
+     * @var Request|ServerRequestInterface
      */
     private $request;
 
@@ -37,27 +37,32 @@ class Connection implements SessionInterface
 
     /**
      * Initialize connection object
-     * @param int     $fd
-     * @param Request $request
+     *
+     * @param int           $fd
+     * @param SwooleRequest $request
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public function initialize(int $fd, Request $request): void
+    public function initialize(int $fd, SwooleRequest $request): void
     {
         $this->fd = $fd;
 
         $this->set(self::METADATA_KEY, $this->buildMetadata($fd, $request));
-
-        $psr7Req = '';
 
         // ensure is false.
         $this->handshake = false;
     }
 
     /**
-     * @param int     $fd
-     * @param Request $request
+     * @param int           $fd
+     * @param SwooleRequest $request
+     *
      * @return array
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
-    protected function buildMetadata(int $fd, Request $request): array
+    protected function buildMetadata(int $fd, SwooleRequest $request): array
     {
         $info = \server()->getClientInfo($fd);
         $path = \parse_url($request->server['request_uri'], \PHP_URL_PATH);
@@ -100,6 +105,7 @@ class Connection implements SessionInterface
 
     /**
      * @param string $key
+     *
      * @return mixed
      */
     public function getMetaValue(string $key)
@@ -110,9 +116,9 @@ class Connection implements SessionInterface
     }
 
     /**
-     * @return ServerRequest
+     * @return Request
      */
-    public function getRequest(): ServerRequest
+    public function getRequest(): Request
     {
         return $this->request;
     }

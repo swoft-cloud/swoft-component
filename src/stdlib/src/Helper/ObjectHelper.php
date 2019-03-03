@@ -4,7 +4,7 @@ namespace Swoft\Stdlib\Helper;
 
 /**
  * Object helper
- * 
+ *
  * @since 2.0
  */
 class ObjectHelper
@@ -49,5 +49,67 @@ class ObjectHelper
         }
 
         return $object;
+    }
+
+    /**
+     * Parse the type of binding param
+     *
+     * @param string $type  the type of param
+     * @param mixed  $value the value of param
+     *
+     * @return mixed
+     */
+    public static function parseParamType(string $type, $value)
+    {
+        switch ($type) {
+            case 'int':
+                $value = (int)$value;
+                break;
+            case 'string':
+                $value = (string)$value;
+                break;
+            case 'bool':
+                $value = (bool)$value;
+                break;
+            case 'float':
+                $value = (float)$value;
+                break;
+            case 'double':
+                $value = (double)$value;
+                break;
+        }
+
+        return $value;
+    }
+
+    /**
+     * Get default by type
+     *
+     * @param string
+     *
+     * @return mixed
+     */
+    public static function getDefaultValue(string $type)
+    {
+        $value = null;
+        switch ($type) {
+            case 'int':
+                $value = 0;
+                break;
+            case 'string':
+                $value = '';
+                break;
+            case 'bool':
+                $value = false;
+                break;
+            case 'float':
+                $value = 0;
+                break;
+            case 'double':
+                $value = 0;
+                break;
+        }
+
+        return $value;
     }
 }

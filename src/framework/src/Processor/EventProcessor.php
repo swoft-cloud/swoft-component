@@ -6,6 +6,7 @@ use Swoft\Event\Annotation\Parser\ListenerParser;
 use Swoft\Event\Annotation\Parser\SubscriberParser;
 use Swoft\Event\Manager\EventManager;
 use Swoft\Helper\CLog;
+use Swoft\SwoftEvent;
 
 /**
  * Event processor
@@ -31,6 +32,9 @@ class EventProcessor extends Processor
 
         ListenerParser::addListeners($em);
         SubscriberParser::addSubscribers($em);
+
+        // Trigger a app init event
+        \Swoft::trigger(SwoftEvent::APP_INIT_AFTER);
 
         return $this->application->afterEvent();
     }

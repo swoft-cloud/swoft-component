@@ -156,26 +156,6 @@ class ProxyVisitor extends NodeVisitorAbstract
     }
 
     /**
-     * Get proxy class name
-     *
-     * @return string
-     */
-    public function getProxyClassName(): string
-    {
-        return sprintf('%s\\%s', $this->namespace, $this->proxyName);
-    }
-
-    /**
-     * Get proxy class name
-     *
-     * @return string
-     */
-    public function getOriginalClassName(): string
-    {
-        return $this->originalClassName;
-    }
-
-    /**
      * Proxy method
      *
      * @param Node\Stmt\ClassMethod $node
@@ -234,6 +214,34 @@ class ProxyVisitor extends NodeVisitorAbstract
         ];
 
         return new Node\Stmt\ClassMethod($methodName, $newMethodNodes);
+    }
+
+    /**
+     * Get proxy class name
+     *
+     * @return string
+     */
+    public function getProxyClassName(): string
+    {
+        return sprintf('%s\\%s', $this->namespace, $this->proxyName);
+    }
+
+    /**
+     * Get proxy class name
+     *
+     * @return string
+     */
+    public function getOriginalClassName(): string
+    {
+        return $this->originalClassName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProxyName(): string
+    {
+        return $this->proxyName;
     }
 
     /**

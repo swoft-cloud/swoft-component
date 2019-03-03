@@ -1,20 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-02
- * Time: 15:06
- */
-
 namespace Swoft\Http\Server\Router;
 
 use Swoft\Http\Server\Helper\RouteHelper;
 
 /**
  * Class RoutesCollector
- * @package Swoft\Http\Server\Router
+ *
+ * @since 2.0
  */
-class RoutesCollector
+class RouterRegister
 {
     /**
      * @var array
@@ -60,7 +54,7 @@ class RoutesCollector
                     continue;
                 }
 
-                // ensure is not empty
+                // Ensure is not empty
                 $mapRoute = $route['route'] ?: $route['action'];
 
                 // 以 '/' 开头的路由是一个单独的路由

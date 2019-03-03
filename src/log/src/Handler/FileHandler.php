@@ -64,6 +64,7 @@ class FileHandler extends AbstractProcessingHandler
         }
 
         $res = Co::writeFile($logFile, $messageText, FILE_APPEND);
+
         if ($res === false) {
             throw new \InvalidArgumentException(
                 sprintf('Unable to append to log file: %s', $logFile)
@@ -104,6 +105,7 @@ class FileHandler extends AbstractProcessingHandler
     {
         $logFile = \alias($this->logFile);
         $logDir  = dirname($logFile);
+
         if ($logDir !== null && !is_dir($logDir)) {
             $status = mkdir($logDir, 0777, true);
             if ($status === false) {

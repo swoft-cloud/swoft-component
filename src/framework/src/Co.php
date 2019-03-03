@@ -79,9 +79,9 @@ class Co
      * @param string   $data
      * @param int|null $flags
      *
-     * @return bool
+     * @return int
      */
-    public static function writeFile(string $filename, string $data, int $flags = null): bool
+    public static function writeFile(string $filename, string $data, int $flags = null): int
     {
         return Coroutine::writeFile($filename, $data, $flags);
     }
