@@ -1,13 +1,6 @@
 <?php declare(strict_types=1);
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-04
- * Time: 13:37
- */
 
 namespace Swoft\WebSocket\Server\Swoole;
-
 
 use Co\Server as CoServer;
 use Swoft\Bean\Annotation\Mapping\Bean;
@@ -19,7 +12,6 @@ use Swoft\WebSocket\Server\WsServerEvent;
 /**
  * Class CloseListener
  * @since 2.0
- * @package Swoft\WebSocket\Server\Swoole
  *
  * @Bean("closeListener")
  */
@@ -62,13 +54,13 @@ class CloseListener implements CloseInterface
         \server()->log("onClose: Client #{$fd} meta info:", $meta, 'debug');
 
         // 握手成功的才回调 close
-        if ($meta['handshake']) {
+        if ($conn->isHandshake()) {
             /** @see Dispatcher::close() */
             \bean('wsDispatcher')->close($server, $fd);
         }
 
         // call on close callback
-        \Swoft::trigger(WsServerEvent::ON_CLOSE, $fd, $server);
+        \Swoft::trigger(WsServerEvent::AFTER_CLOSE, $fd, $server);
 
         // unbind fd
         Session::unbindFd();

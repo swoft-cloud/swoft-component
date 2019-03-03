@@ -195,20 +195,12 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
     /**
      * @param string ...$classes
-     *
-     * @throws Bean\Exception\ContainerException
-     * @throws \ReflectionException
      */
     public function disableProcessor(string ...$classes)
     {
         foreach ($classes as $class) {
             $this->disabledProcessors[$class] = 1;
         }
-
-        $this->processor->handle();
-
-        // Trigger a app init event
-        \Swoft::trigger(SwoftEvent::APP_INIT_AFTER);
     }
 
     /**
