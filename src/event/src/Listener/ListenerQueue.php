@@ -67,7 +67,7 @@ class ListenerQueue implements \IteratorAggregate, \Countable
     }
 
     /**
-     * 删除一个监听器
+     * Delete a listener
      * @param $listener
      * @return $this
      */

@@ -7,6 +7,7 @@ use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Http\Message\ServerRequest;
 use Swoft\Http\Message\Response as ServerResponse;
 use Swoft\Http\Server\HttpDispatcher;
+use Swoft\Http\Server\HttpServerEvent;
 use Swoft\Server\Swoole\RequestInterface;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
@@ -30,7 +31,8 @@ class RequestListener implements RequestInterface
      */
     public function onRequest(Request $request, Response $response): void
     {
-        // $response->end("<h1>Hello origin Swoole. #".rand(1000, 9999)."</h1>");
+        // $response->end('<h1>Hello origin Swoole. </h1>');
+        // \Swoft::trigger('some.event');
 
         $psrRequest  = ServerRequest::new($request);
         $psrResponse = ServerResponse::new($response);

@@ -117,15 +117,18 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
      */
     public function __construct(array $config = [])
     {
+        // Storage as global static property.
+        \Swoft::$app = $this;
+
+        // before init
+        $this->beforeInit();
+
         // Init console logger
         $this->initCLogger();
 
         // Enable swoole hook
         Runtime::enableCoroutine();
         CLog::info('Swoole\Runtime::enableCoroutine');
-
-        // Storage as global static property.
-        \Swoft::$app = $this;
 
         // Can setting properties by array
         if ($config) {
@@ -142,6 +145,24 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
         $this->processor->addFirstProcessor(...$processors);
 
         $this->init();
+
+        // after init
+        $this->afterInit();
+    }
+
+    protected function beforeInit(): void
+    {
+
+    }
+
+    protected function init(): void
+    {
+    }
+
+    protected function afterInit(): void
+    {
+        // Do something ...
+        // $this->disableProcessor(ConsoleProcessor::class, EnvProcessor::class);
     }
 
     private function findBasePath()
@@ -149,12 +170,6 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
         $filePath = ComposerHelper::getClassLoader()->findFile(static::class);
         // save
         $this->basePath = \dirname(\realpath($filePath), 2);
-    }
-
-    protected function init()
-    {
-        // Do something ...
-        // $this->disableProcessor(ConsoleProcessor::class, EnvProcessor::class);
     }
 
     /**
@@ -196,7 +211,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
         foreach ($classes as $class) {
             $this->disabledProcessors[$class] = 1;
         }
-        
+
         $this->processor->handle();
 
         // Trigger a app init event
