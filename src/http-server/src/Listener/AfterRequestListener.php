@@ -39,7 +39,9 @@ class AfterRequestListener implements EventHandlerInterface
         $logger = \bean('logger');
 
         // Add notice log
-        $logger->appendNoticeLog();
+        if ($logger->isEnable()) {
+            $logger->appendNoticeLog();
+        }
 
         // Destroy context
         Context::destroy();

@@ -76,8 +76,8 @@ class AutoLoader extends AnnotationAutoLoader implements DefinitionInterface
             ],
             'logger'             => [
                 'class'        => Logger::class,
-                'flushRequest' => true,
-                'enable'       => true,
+                'flushRequest' => false,
+                'enable'       => false,
                 'handlers'     => [
                     'application' => \bean('applicationHandler'),
                     'notice'      => \bean('noticeHandler'),

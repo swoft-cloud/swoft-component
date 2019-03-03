@@ -80,6 +80,11 @@ class Request extends PsrRequest implements ServerRequestInterface
     protected $uploadedFiles = [];
 
     /**
+     * @var float
+     */
+    protected $requestTime = 0;
+
+    /**
      * All parsers
      *
      * @var array
@@ -139,6 +144,7 @@ class Request extends PsrRequest implements ServerRequestInterface
         $instace->uploadedFiles = self::normalizeFiles($coRequest->files ?? []);
         $instace->coRequest     = $coRequest;
         $instace->parsedBody    = $parsedBody;
+        $instace->requestTime   = $server['request_time_float'] ?? 0;
 
         // Update uri by host
         if (!$instace->hasHeader('Host')) {
@@ -524,6 +530,14 @@ class Request extends PsrRequest implements ServerRequestInterface
     {
         $this->coRequest = $coRequest;
         return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getRequestTime(): float
+    {
+        return $this->requestTime;
     }
 
     /**

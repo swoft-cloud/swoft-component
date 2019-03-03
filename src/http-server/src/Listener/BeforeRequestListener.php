@@ -13,6 +13,7 @@ use Swoft\Http\Message\Response;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Server\HttpContext;
 use Swoft\Http\Server\HttpServerEvent;
+use Swoft\Log\Logger;
 
 /**
  * Class BeforeRequestListener
@@ -27,6 +28,8 @@ class BeforeRequestListener implements EventHandlerInterface
      * @param EventInterface $event
      *
      * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function handle(EventInterface $event): void
     {
@@ -36,15 +39,22 @@ class BeforeRequestListener implements EventHandlerInterface
          */
         [$request, $response] = $event->getParams();
 
-        $data = [
-            'traceid'     => $request->headerLine('traceid', uniqid()),
-            'spanid'      => $request->headerLine('spanid', uniqid()),
-            'uri'         => $request->getUri()->getPath(),
-            'requestTime' => microtime(true),
-        ];
-
         $httpContext = HttpContext::new($request, $response);
-        $httpContext->setMulti($data);
+
+        /* @var Logger $logger */
+        $logger = \bean('logger');
+
+        // Add log data
+        if ($logger->isEnable()) {
+            $data = [
+                'traceid'     => $request->headerLine('traceid', ''),
+                'spanid'      => $request->headerLine('spanid', ''),
+                'uri'         => $request->getUri()->getPath(),
+                'requestTime' => $request->getRequestTime(),
+            ];
+
+            $httpContext->setMulti($data);
+        }
 
         Context::set($httpContext);
     }

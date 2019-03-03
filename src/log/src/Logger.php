@@ -533,6 +533,14 @@ class Logger extends \Monolog\Logger
     }
 
     /**
+     * @return bool
+     */
+    public function isEnable(): bool
+    {
+        return $this->enable;
+    }
+
+    /**
      * Request uri
      *
      * @return string
