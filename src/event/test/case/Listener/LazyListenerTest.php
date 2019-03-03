@@ -22,11 +22,17 @@ class LazyListenerTest extends TestCase
     public function testCall(): void
     {
         $listener = LazyListener::create(function (EventInterface $e) {
+            /** @var Event $e */
             $this->assertSame('lazy', $e->getName());
-            return 'ABC';
+            $e->setParam('word', 'ABC');
         });
 
         $this->assertNotEmpty($listener->getCallback());
-        $this->assertSame('ABC', $listener->handle(Event::create('lazy')));
+
+        $e = Event::create('lazy');
+
+        $listener->handle($e);
+
+        $this->assertSame('ABC', $e->getParam('word'));
     }
 }
