@@ -31,6 +31,6 @@ class AppInitAfterListener implements EventHandlerInterface
 
         WsModuleParser::registerTo($router);
         
-        \Swoft::trigger($event, $target, $params)
+//        \Swoft::trigger($event, $target, $params);
     }
 }

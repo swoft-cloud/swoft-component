@@ -38,6 +38,11 @@ final class Bean
     const REQUEST = 'request';
 
     /**
+     * New bean for one session
+     */
+    const SESSION = 'session';
+
+    /**
      * Bean name
      *
      * @var string

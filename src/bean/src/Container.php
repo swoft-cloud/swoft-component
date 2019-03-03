@@ -163,6 +163,34 @@ class Container implements ContainerInterface
     private $objectDefinitions = [];
 
     /**
+     * Request bean definitions
+     *
+     * @var ObjectDefinition[]
+     *
+     * @example
+     * [
+     *     'beanName' => new ObjectDefinition,
+     *     'beanName' => new ObjectDefinition,
+     *     'beanName' => new ObjectDefinition
+     * ]
+     */
+    private $requestDefinitions = [];
+
+    /**
+     * Session bean definitions
+     *
+     * @var ObjectDefinition[]
+     *
+     * @example
+     * [
+     *     'beanName' => new ObjectDefinition,
+     *     'beanName' => new ObjectDefinition,
+     *     'beanName' => new ObjectDefinition
+     * ]
+     */
+    private $sessionDefinitions = [];
+
+    /**
      * Singleton pool
      *
      * @var array
@@ -189,6 +217,34 @@ class Container implements ContainerInterface
      * ]
      */
     private $prototypePool = [];
+
+    /**
+     * Request pool
+     *
+     * @var array
+     *
+     * @example
+     * [
+     *     'beanName' => object,
+     *     'beanName' => object,
+     *     'beanName' => object,
+     * ]
+     */
+    private $requestPool = [];
+
+    /**
+     * Session pool
+     *
+     * @var array
+     *
+     * @example
+     * [
+     *     'beanName' => object,
+     *     'beanName' => object,
+     *     'beanName' => object,
+     * ]
+     */
+    private $sessionPool = [];
 
     /**
      * Reflection pool
@@ -260,6 +316,14 @@ class Container implements ContainerInterface
         $this->initializeBeans();
     }
 
+    public function initializeRequest(int $rid)
+    {
+//        /* @var ObjectDefinition $objectDefinition */
+//        foreach ($this->requestDefinitions as $beanName => $objectDefinition) {
+//
+//        }
+    }
+
     /**
      * Finds an entry of the container by its identifier and returns it.
      *
@@ -278,7 +342,7 @@ class Container implements ContainerInterface
             return $this->singletonPool[$id];
         }
 
-        // Prototype
+        // Prototype by clone
         if (isset($this->prototypePool[$id])) {
             return clone $this->prototypePool[$id];
         }
@@ -499,36 +563,104 @@ class Container implements ContainerInterface
     {
         /* @var ObjectDefinition $objectDefinition */
         foreach ($this->objectDefinitions as $beanName => $objectDefinition) {
+            $scope = $objectDefinition->getScope();
+            // Exclude request
+            if ($scope == Bean::REQUEST) {
+                $this->requestDefinitions[$beanName] = $objectDefinition;
+                unset($this->objectDefinitions[$beanName]);
+                continue;
+            }
+
+            // Exclude session
+            if ($scope == Bean::SESSION) {
+                $this->sessionDefinitions[$beanName] = $objectDefinition;
+                unset($this->objectDefinitions[$beanName]);
+                continue;
+            }
+
             // New bean
             $this->newBean($beanName);
         }
     }
 
     /**
-     * Initialize beans
-     *
      * @param string $beanName
      *
+     * @return ObjectDefinition
      * @throws ContainerException
-     * @throws \ReflectionException
-     * @return object
      */
-    private function newBean(string $beanName)
+    private function getNewObjectDefinition(string $beanName): ObjectDefinition
     {
         if (isset($this->singletonPool[$beanName])) {
             return $this->singletonPool[$beanName];
         }
 
+        if (isset($this->objectDefinitions[$beanName])) {
+            return $this->objectDefinitions[$beanName];
+        }
+
+        if (isset($this->requestDefinitions[$beanName])) {
+            return $this->requestDefinitions[$beanName];
+        }
+
+        if (isset($this->sessionDefinitions[$beanName])) {
+            return $this->sessionDefinitions[$beanName];
+        }
+
         $classNames = $this->classNames[$beanName] ?? [];
-        if (empty($classNames) && !isset($this->objectDefinitions[$beanName])) {
-            throw new ContainerException('Bean name of ' . $beanName . ' is not defined!');
-        }
-
-        if (!isset($this->objectDefinitions[$beanName])) {
+        if (!empty($classNames)) {
             $beanName = \end($classNames);
+            return $this->getNewObjectDefinition($beanName);
         }
 
-        $objectDefinition = $this->objectDefinitions[$beanName];
+        throw new ContainerException('Bean name of ' . $beanName . ' is not defined!');
+    }
+
+    /**
+     * @param string $beanName
+     * @param string $scope
+     * @param object $object
+     * @param int    $id
+     *
+     * @return object
+     */
+    private function setNewBean(string $beanName, string $scope, $object, int $id = 0)
+    {
+        switch ($scope) {
+            case Bean::SINGLETON:
+                // Singleton
+                $this->singletonPool[$beanName] = $object;
+                break;
+            case Bean::PROTOTYPE:
+                $this->prototypePool[$beanName] = $object;
+
+                $object = clone $object;
+                break;
+            case Bean::REQUEST:
+                $this->requestPool[$id][$beanName] = $object;
+                break;
+            case Bean::SESSION:
+                $this->sessionPool[$id][$beanName] = $object;
+                break;
+        }
+
+        return $object;
+    }
+
+    /**
+     * Initialize beans
+     *
+     * @param string $beanName
+     * @param int    $id
+     *
+     * @throws ContainerException
+     * @throws \ReflectionException
+     * @return object
+     */
+    private function newBean(string $beanName, int $id = 0)
+    {
+        // Get object definition
+        $objectDefinition = $this->getNewObjectDefinition($beanName);
 
         $scope     = $objectDefinition->getScope();
         $alias     = $objectDefinition->getAlias();
@@ -543,7 +675,7 @@ class Container implements ContainerInterface
         $constructArgs   = [];
         $constructInject = $objectDefinition->getConstructorInjection();
         if ($constructInject !== null) {
-            $constructArgs = $this->getConstructParams($constructInject);
+            $constructArgs = $this->getConstructParams($constructInject, $id);
         }
 
         $propertyInjects = $objectDefinition->getPropertyInjections();
@@ -556,7 +688,7 @@ class Container implements ContainerInterface
         $reflectionClass = new \ReflectionClass($className);
         $reflectObject   = $this->newInstance($reflectionClass, $constructArgs);
 
-        $this->newProperty($reflectObject, $reflectionClass, $propertyInjects);
+        $this->newProperty($reflectObject, $reflectionClass, $propertyInjects, $id);
 
         // Alias
         if (!empty($alias)) {
@@ -568,28 +700,20 @@ class Container implements ContainerInterface
             $reflectObject->{self::INIT_METHOD}();
         }
 
-        // Prototype
-        if ($scope === Bean::PROTOTYPE) {
-            $this->prototypePool[$beanName] = $reflectObject;
-            return clone $reflectObject;
-        }
-
-        // Singleton
-        $this->singletonPool[$beanName] = $reflectObject;
-
-        return $reflectObject;
+        return $this->setNewBean($beanName, $scope, $reflectObject, $id);
     }
 
     /**
      * Get construct args
      *
      * @param MethodInjection $methodInjection
+     * @param int             $id
      *
      * @return array
      * @throws ContainerException
      * @throws \ReflectionException
      */
-    private function getConstructParams(MethodInjection $methodInjection): array
+    private function getConstructParams(MethodInjection $methodInjection, int $id = 0): array
     {
         $methodName = $methodInjection->getMethodName();
         if ($methodName !== '__construct') {
@@ -614,7 +738,7 @@ class Container implements ContainerInterface
 
             $isRef = $argInject->isRef();
             if ($isRef) {
-                $argValue = $this->getRefValue($argValue);
+                $argValue = $this->getRefValue($argValue, $id);
             }
 
             $args[] = $argValue;
@@ -653,17 +777,22 @@ class Container implements ContainerInterface
      * @param  object          $reflectObject
      * @param \ReflectionClass $reflectionClass
      * @param array            $propertyInjects
+     * @param int              $id
      *
      * @return void
      * @throws ContainerException
      * @throws \ReflectionException
      */
-    private function newProperty($reflectObject, \ReflectionClass $reflectionClass, array $propertyInjects): void
-    {
+    private function newProperty(
+        $reflectObject,
+        \ReflectionClass $reflectionClass,
+        array $propertyInjects,
+        int $id = 0
+    ): void {
         // New parent properties
         $parentClass = $reflectionClass->getParentClass();
         if ($parentClass !== false) {
-            $this->newProperty($reflectObject, $parentClass, $propertyInjects);
+            $this->newProperty($reflectObject, $parentClass, $propertyInjects, $id);
         }
 
         /* @var PropertyInjection $propertyInject */
@@ -685,12 +814,12 @@ class Container implements ContainerInterface
 
             $propertyValue = $propertyInject->getValue();
             if (is_array($propertyValue)) {
-                $propertyValue = $this->newPropertyArray($propertyValue);
+                $propertyValue = $this->newPropertyArray($propertyValue, $id);
             }
 
             $isRef = $propertyInject->isRef();
             if ($isRef) {
-                $propertyValue = $this->getRefValue($propertyValue);
+                $propertyValue = $this->getRefValue($propertyValue, $id);
             }
 
             $reflectProperty->setValue($reflectObject, $propertyValue);
@@ -762,17 +891,18 @@ class Container implements ContainerInterface
      * New property array
      *
      * @param array $propertyValue
+     * @param int   $id
      *
      * @return array
      * @throws ContainerException
      * @throws \ReflectionException
      */
-    private function newPropertyArray(array $propertyValue): array
+    private function newPropertyArray(array $propertyValue, int $id = 0): array
     {
         foreach ($propertyValue as $proKey => &$proValue) {
             if ($proValue instanceof ArgsInjection && $proValue->isRef()) {
                 $refValue = $proValue->getValue();
-                $proValue = $this->getRefValue($refValue);
+                $proValue = $this->getRefValue($refValue, $id);
             }
         }
 
@@ -783,19 +913,20 @@ class Container implements ContainerInterface
      * Get ref value
      *
      * @param mixed $value
+     * @param int   $id
      *
      * @return mixed
      * @throws ContainerException
      * @throws \ReflectionException
      */
-    private function getRefValue($value)
+    private function getRefValue($value, int $id = 0)
     {
         if (!is_string($value)) {
             return $value;
         }
 
         if (false === \strpos($value, '.')) {
-            return $this->newBean($value);
+            return $this->newBean($value, $id);
         }
 
         // Other reference
