@@ -76,7 +76,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
 
         $self->syncOriginal();
         $self->fill($attributes);
-        $self->exists = true;
+        $self->exists = false;
 
         return $self;
     }
@@ -444,12 +444,12 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      * @param  array   $attributes
      *
      * @return void
-     * @throws QueryException
      * @throws EntityException
      */
     protected function insertAndSetId(Builder $query, $attributes)
     {
-        $id = $query->insertGetId($attributes, $keyName = $this->getKeyName());
+        $keyName = $this->getKeyName();
+        $id = $query->insertGetId($attributes, $keyName);
 
         $this->setAttribute($keyName, $id);
     }

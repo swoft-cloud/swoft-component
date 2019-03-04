@@ -3,12 +3,15 @@
 
 namespace Swoft\Db\Query\Processor;
 
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Db\Query\Builder;
 
 /**
  * Class Processor
  *
  * @since 2.0
+ *
+ * @Bean()
  */
 class Processor
 {

@@ -6,6 +6,7 @@ namespace Swoft\Db;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Db\Query\Grammar\MySqlGrammar;
 use Swoft\Db\Query\Grammar\Grammar;
+use Swoft\Db\Query\Processor\MySqlProcessor;
 
 /**
  * Class MySqlConnection
@@ -30,6 +31,18 @@ class MySqlConnection extends Connection
             throw new \InvalidArgumentException('%s class is not Grammar instance', get_class($grammar));
         }
         return $this->withTablePrefix($grammar);
+    }
+
+    /**
+     * Get the default post processor instance.
+     *
+     * @return object|string|MySqlProcessor|Query\Processor\Processor
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    protected function getDefaultPostProcessor()
+    {
+        return \bean(MySqlProcessor::class);
     }
 
     /**
