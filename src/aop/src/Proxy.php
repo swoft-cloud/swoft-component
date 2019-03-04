@@ -23,6 +23,11 @@ class Proxy
      */
     public static function newClassName(string $className): string
     {
+        // Only proxy AOP class
+        if (!Aop::matchClass($className)) {
+            return $className;
+        }
+
         $parser  = new Parser();
         $visitor = new ProxyVisitor();
 

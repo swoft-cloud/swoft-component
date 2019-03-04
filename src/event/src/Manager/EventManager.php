@@ -266,6 +266,7 @@ class EventManager implements EventManagerInterface
             $shouldCall[$name] = '';
         }
 
+        // $list = \explode('.', $name);
         // Like 'app.db.query' => prefix: 'app.db'
         if ($pos = \strrpos($name, '.')) {
             $prefix = \substr($name, 0, $pos);
