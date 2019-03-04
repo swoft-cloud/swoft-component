@@ -2,8 +2,6 @@
 
 namespace Swoft\Aop;
 
-use Swoft\WebSocket\Server\Command\WsServerCommand;
-
 /**
  * Class AopRegister
  *
@@ -14,9 +12,15 @@ class Aop
     /**
      * Ignore methods
      */
-    const IGNORE_METHODS = [
-        '__construct',
-        'init'
+    public const IGNORE_METHODS = [
+        'init'        => 1,
+        '__call'      => 1,
+        '__get'       => 1,
+        '__set'       => 1,
+        '__isset'     => 1,
+        '__toString'  => 1,
+        '__destruct'  => 1,
+        '__construct' => 1,
     ];
 
     /**
@@ -87,12 +91,24 @@ class Aop
     public static function match(string $className, string $method): array
     {
         // Ignore methods
-        if (in_array(strtolower($method), self::IGNORE_METHODS)) {
+        if (isset(self::IGNORE_METHODS[$method])) {
             return [];
         }
 
-        $aspects = self::$mapping[$className][$method] ?? [];
-        return $aspects;
+        return self::$mapping[$className][$method] ?? [];
+    }
+
+    /**
+     * Is aop proxy class
+     *
+     * @param string $className
+     *
+     * @return bool
+     */
+    public static function matchClass(string $className): bool
+    {
+        // Ignore methods
+        return isset(self::$mapping[$className]);
     }
 
     /**
@@ -106,11 +122,8 @@ class Aop
     private static function isBeanOrAnnotation(array $pointAry, array $classAry): bool
     {
         $intersectAry = \array_intersect($pointAry, $classAry);
-        if (empty($intersectAry)) {
-            return false;
-        }
 
-        return true;
+        return $intersectAry ? true : false;
     }
 
     /**
@@ -131,7 +144,7 @@ class Aop
             }
 
             // Class
-            list($executionClass, $executionMethod) = $executionAry;
+            [$executionClass, $executionMethod] = $executionAry;
             if ($executionClass !== $class) {
                 continue;
             }
