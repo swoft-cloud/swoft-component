@@ -30,6 +30,13 @@ class ModelTest extends TestCase
 
             // Insert id
             $this->assertGreaterThan(1, $user->getId());
+
+            $user2 = User::new();
+            $user2->setAge(100);
+
+            // Save result
+            $result2 = $user2->save();
+            $this->assertTrue($result2);
         });
     }
 }
