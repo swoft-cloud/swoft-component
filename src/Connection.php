@@ -63,6 +63,9 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
     /**
      * @param Pool     $pool
      * @param Database $database
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function initialize(Pool $pool, Database $database)
     {
@@ -73,6 +76,8 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
         // which are both very important parts of the database abstractions
         // so we initialize these to their default values while starting.
         $this->useDefaultQueryGrammar();
+
+        $this->useDefaultPostProcessor();
     }
 
     /**
@@ -83,6 +88,30 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
     public function getPostProcessor()
     {
         return $this->postProcessor;
+    }
+
+    /**
+     * Set the query post processor to the default implementation.
+     *
+     * @return void
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function useDefaultPostProcessor()
+    {
+        $this->postProcessor = $this->getDefaultPostProcessor();
+    }
+
+    /**
+     * Get the default post processor instance.
+     *
+     * @return Processor
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    protected function getDefaultPostProcessor()
+    {
+        return \bean(Processor::class);
     }
 
     /**

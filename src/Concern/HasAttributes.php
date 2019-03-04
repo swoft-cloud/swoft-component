@@ -4,8 +4,10 @@
 namespace Swoft\Db\Concern;
 
 
+use Swoft\Db\EntityRegister;
 use Swoft\Stdlib\Arrayable;
 use Swoft\Stdlib\Helper\Arr;
+use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Stdlib\Helper\Str;
 
 trait HasAttributes
@@ -36,7 +38,6 @@ trait HasAttributes
     }
 
 
-
     /**
      * Get an attribute array of all arrayable attributes.
      *
@@ -51,7 +52,8 @@ trait HasAttributes
     /**
      * Get an attribute array of all arrayable values.
      *
-     * @param  array  $values
+     * @param  array $values
+     *
      * @return array
      */
     protected function getArrayableItems(array $values)
@@ -70,12 +72,13 @@ trait HasAttributes
     /**
      * Get an attribute from the model.
      *
-     * @param  string  $key
+     * @param  string $key
+     *
      * @return mixed
      */
     public function getAttribute($key)
     {
-        if (! $key) {
+        if (!$key) {
             return;
         }
 
@@ -98,7 +101,8 @@ trait HasAttributes
     /**
      * Get a plain attribute (not a relationship).
      *
-     * @param  string  $key
+     * @param  string $key
+     *
      * @return mixed
      */
     public function getAttributeValue($key)
@@ -110,7 +114,8 @@ trait HasAttributes
     /**
      * Get an attribute from the $attributes array.
      *
-     * @param  string  $key
+     * @param  string $key
+     *
      * @return mixed
      */
     protected function getAttributeFromArray($key)
@@ -123,70 +128,81 @@ trait HasAttributes
     /**
      * Determine if a get mutator exists for an attribute.
      *
-     * @param  string  $key
+     * @param  string $key
+     *
      * @return bool
      */
     public function hasGetMutator($key)
     {
-        return method_exists($this, 'get'.Str::studly($key).'Attribute');
+        return method_exists($this, 'get' . Str::studly($key) . 'Attribute');
     }
 
     /**
      * Get the value of an attribute using its mutator.
      *
-     * @param  string  $key
+     * @param  string $key
      * @param  mixed  $value
+     *
      * @return mixed
      */
     protected function mutateAttribute($key, $value)
     {
-        return $this->{'get'.Str::studly($key).'Attribute'}($value);
+        return $this->{'get' . Str::studly($key) . 'Attribute'}($value);
     }
-
-
 
     /**
      * Set a given attribute on the model.
      *
-     * @param  string  $key
+     * @param  string $key
      * @param  mixed  $value
+     *
      * @return mixed
      */
-    public function setAttribute($key, $value)
+    public function setAttribute(string $key, $value): self
     {
-        $this->attributes[$key] = $value;
+        $mapping  = EntityRegister::getReverseMappingByColumn(static::class, $key);
+        $attrName = $mapping['attr'];
+        $attType  = $mapping['type'];
+        $setter   = sprintf('set%s', ucfirst($attrName));
 
+        $value = ObjectHelper::parseParamType($attType, $value);
+        if (method_exists($this, $setter)) {
+            $this->{$setter}($value);
+        }
         return $this;
     }
 
     /**
      * Determine if a set mutator exists for an attribute.
      *
-     * @param  string  $key
+     * @param  string $key
+     *
      * @return bool
      */
     public function hasSetter($key)
     {
-        return method_exists($this, 'set'.Str::studly($key).'Attribute');
+        return method_exists($this, 'set' . Str::studly($key) . 'Attribute');
     }
 
     /**
      * Set the value of an attribute using its mutator.
      *
-     * @param  string  $key
+     * @param  string $key
      * @param  mixed  $value
+     *
      * @return mixed
      */
     protected function setMutatedAttributeValue($key, $value)
     {
-        return $this->{'set'.Str::studly($key).'Attribute'}($value);
+        return $this->{'set' . Str::studly($key) . 'Attribute'}($value);
     }
 
     /**
      * Set a given JSON attribute on the model.
      *
-     * @param  string  $key
+     * @param  string $key
      * @param  mixed  $value
+     *
      * @return $this
      */
     public function fillJsonAttribute($key, $value)
@@ -203,9 +219,10 @@ trait HasAttributes
     /**
      * Get an array attribute with the given key and value set.
      *
-     * @param  string  $path
-     * @param  string  $key
+     * @param  string $path
+     * @param  string $key
      * @param  mixed  $value
+     *
      * @return $this
      */
     protected function getArrayAttributeWithValue($path, $key, $value)
@@ -218,7 +235,8 @@ trait HasAttributes
     /**
      * Get an array attribute or return an empty array if it is not set.
      *
-     * @param  string  $key
+     * @param  string $key
+     *
      * @return array
      */
     protected function getArrayAttributeByKey($key)
@@ -230,8 +248,9 @@ trait HasAttributes
     /**
      * Cast the given attribute to JSON.
      *
-     * @param  string  $key
+     * @param  string $key
      * @param  mixed  $value
+     *
      * @return string
      */
     protected function castAttributeAsJson($key, $value)
@@ -250,7 +269,8 @@ trait HasAttributes
     /**
      * Encode the given value as JSON.
      *
-     * @param  mixed  $value
+     * @param  mixed $value
+     *
      * @return string
      */
     protected function asJson($value)
@@ -261,24 +281,26 @@ trait HasAttributes
     /**
      * Decode the given JSON back into an array or object.
      *
-     * @param  string  $value
-     * @param  bool  $asObject
+     * @param  string $value
+     * @param  bool   $asObject
+     *
      * @return mixed
      */
     public function fromJson($value, $asObject = false)
     {
-        return json_decode($value, ! $asObject);
+        return json_decode($value, !$asObject);
     }
 
     /**
      * Decode the given float.
      *
-     * @param  mixed  $value
+     * @param  mixed $value
+     *
      * @return mixed
      */
     public function fromFloat($value)
     {
-        switch ((string) $value) {
+        switch ((string)$value) {
             case 'Infinity':
                 return INF;
             case '-Infinity':
@@ -286,14 +308,15 @@ trait HasAttributes
             case 'NaN':
                 return NAN;
             default:
-                return (float) $value;
+                return (float)$value;
         }
     }
 
     /**
      * Return a timestamp as unix timestamp.
      *
-     * @param  mixed  $value
+     * @param  mixed $value
+     *
      * @return int
      */
     protected function asTimestamp($value)
@@ -304,7 +327,8 @@ trait HasAttributes
     /**
      * Prepare a date for array / JSON serialization.
      *
-     * @param  \DateTimeInterface  $date
+     * @param  \DateTimeInterface $date
+     *
      * @return string
      */
     protected function serializeDate(DateTimeInterface $date)
@@ -313,11 +337,11 @@ trait HasAttributes
     }
 
 
-
     /**
      * Determine whether a value is Date / DateTime castable for inbound manipulation.
      *
-     * @param  string  $key
+     * @param  string $key
+     *
      * @return bool
      */
     protected function isDateCastable($key)
@@ -328,7 +352,8 @@ trait HasAttributes
     /**
      * Determine whether a value is JSON castable for inbound manipulation.
      *
-     * @param  string  $key
+     * @param  string $key
+     *
      * @return bool
      */
     protected function isJsonCastable($key)
@@ -343,14 +368,35 @@ trait HasAttributes
      */
     public function getAttributes()
     {
-        return $this->attributes;
+        $attributes = [];
+
+        $mapping = EntityRegister::getMapping(static::class);
+        foreach ($mapping as $attributeName => $map) {
+            $getter = sprintf('get%s', ucfirst($attributeName));
+            if (!method_exists($this, $getter)) {
+                continue;
+            }
+
+            $column = $attributeName;
+            if (isset($map['column']) && !empty($map['column'])) {
+                $column = $map['column'];
+            }
+
+            $value = $this->{$getter}();
+            if ($value !== null) {
+                $attributes[$column] = $value;
+            }
+        }
+
+        return $attributes;
     }
 
     /**
      * Set the array of model attributes. No checking is done.
      *
-     * @param  array  $attributes
+     * @param  array $attributes
      * @param  bool  $sync
+     *
      * @return $this
      */
     public function setRawAttributes(array $attributes, $sync = false)
@@ -367,8 +413,9 @@ trait HasAttributes
     /**
      * Get the model's original attribute values.
      *
-     * @param  string|null  $key
-     * @param  mixed  $default
+     * @param  string|null $key
+     * @param  mixed       $default
+     *
      * @return mixed|array
      */
     public function getOriginal($key = null, $default = null)
@@ -379,7 +426,8 @@ trait HasAttributes
     /**
      * Get a subset of the model's attributes.
      *
-     * @param  array|mixed  $attributes
+     * @param  array|mixed $attributes
+     *
      * @return array
      */
     public function only($attributes)
@@ -408,7 +456,8 @@ trait HasAttributes
     /**
      * Sync a single original attribute with its current value.
      *
-     * @param  string  $attribute
+     * @param  string $attribute
+     *
      * @return $this
      */
     public function syncOriginalAttribute($attribute)
@@ -419,7 +468,8 @@ trait HasAttributes
     /**
      * Sync multiple original attribute with their current values.
      *
-     * @param  array|string  $attributes
+     * @param  array|string $attributes
+     *
      * @return $this
      */
     public function syncOriginalAttributes($attributes)
@@ -448,7 +498,8 @@ trait HasAttributes
     /**
      * Determine if the model or given attribute(s) have been modified.
      *
-     * @param  array|string|null  $attributes
+     * @param  array|string|null $attributes
+     *
      * @return bool
      */
     public function isDirty($attributes = null)
@@ -461,18 +512,20 @@ trait HasAttributes
     /**
      * Determine if the model or given attribute(s) have remained the same.
      *
-     * @param  array|string|null  $attributes
+     * @param  array|string|null $attributes
+     *
      * @return bool
      */
     public function isClean($attributes = null)
     {
-        return ! $this->isDirty(...func_get_args());
+        return !$this->isDirty(...func_get_args());
     }
 
     /**
      * Determine if the model or given attribute(s) have been modified.
      *
-     * @param  array|string|null  $attributes
+     * @param  array|string|null $attributes
+     *
      * @return bool
      */
     public function wasChanged($attributes = null)
@@ -485,8 +538,9 @@ trait HasAttributes
     /**
      * Determine if the given attributes were changed.
      *
-     * @param  array  $changes
-     * @param  array|string|null  $attributes
+     * @param  array             $changes
+     * @param  array|string|null $attributes
+     *
      * @return bool
      */
     protected function hasChanges($changes, $attributes = null)
@@ -520,7 +574,7 @@ trait HasAttributes
         $dirty = [];
 
         foreach ($this->getAttributes() as $key => $value) {
-            if (! $this->originalIsEquivalent($key, $value)) {
+            if (!$this->originalIsEquivalent($key, $value)) {
                 $dirty[$key] = $value;
             }
         }

@@ -4,7 +4,7 @@
 namespace SwoftTest\Db\Eloquent;
 
 
-use Swoft\Bean\BeanFactory;
+use SwoftTest\Db\Entity\User;
 use SwoftTest\Db\TestCase;
 
 /**
@@ -14,8 +14,22 @@ use SwoftTest\Db\TestCase;
  */
 class ModelTest extends TestCase
 {
-    public function testMethod()
+    /**
+     * Save
+     */
+    public function testSave()
     {
-        $this->assertTrue(true);
+        go(function () {
+            $user = User::new();
+            $user->setAge(100);
+            $user->setUserDesc('desc');
+
+            // Save result
+            $result = $user->save();
+            $this->assertTrue($result);
+
+            // Insert id
+            $this->assertGreaterThan(1, $user->getId());
+        });
     }
 }

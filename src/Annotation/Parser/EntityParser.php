@@ -6,7 +6,9 @@ namespace Swoft\Db\Annotation\Parser;
 
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Db\Annotation\Mapping\Entity;
+use Swoft\Db\EntityRegister;
 
 /**
  * Class EntityParser
@@ -24,6 +26,8 @@ class EntityParser extends Parser
      */
     public function parse(int $type, $annotationObject): array
     {
-        return [];
+        EntityRegister::registerEntity($this->className, $annotationObject->getTable(), $annotationObject->getPool());
+
+        return [$this->className, $this->className, Bean::PROTOTYPE, ''];
     }
 }
