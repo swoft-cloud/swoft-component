@@ -259,51 +259,41 @@ class EventManager implements EventManagerInterface
             throw new \InvalidArgumentException('Invalid event params for trigger event handler');
         }
 
-        if (!$name) {
-            throw new \InvalidArgumentException('The triggered event name cannot be empty!');
-        }
-
         $shouldCall = [];
 
-        // have matched listener
+        // Have matched listener
         if (isset($this->listenedEvents[$name])) {
             $shouldCall[$name] = '';
         }
 
-        // like 'app.db.query' => prefix: 'app.db'
+        // Like 'app.db.query' => prefix: 'app.db'
         if ($pos = \strrpos($name, '.')) {
             $prefix = \substr($name, 0, $pos);
             $method = \substr($name, $pos + 1);
 
-            // have a group listener. eg 'app'
-            if (isset($this->listenedEvents[$prefix])) {
-                $shouldCall[$prefix] = $method;
-            }
-
-            // have a wildcards listener. eg 'app.*'
+            // Have a wildcards listener. eg 'app.db.*'
             $wildcardEvent = $prefix . '.*';
-
             if (isset($this->listenedEvents[$wildcardEvent])) {
                 $shouldCall[$wildcardEvent] = $method;
             }
         }
 
-        // not found listeners
+        // Not found listeners
         if (!$shouldCall) {
             return $isString ? $this->basicEvent : $event;
         }
 
+        /** @var EventInterface $event */
         if ($isString) {
-            $event = $this->events[$name] ?? $this->wrapperEvent($name);
+            $event = $this->events[$name] ?? $this->basicEvent;
         }
 
-        /** @var EventInterface $event */
+        // Initial value
         $event->setParams($args);
         $event->setTarget($target);
-        // Initial value of stop propagation flag should be false
         $event->stopPropagation(false);
 
-        // notify event listeners
+        // Notify event listeners
         foreach ($shouldCall as $name => $method) {
             $this->triggerListeners($this->listeners[$name], $event, $method);
 
@@ -312,7 +302,7 @@ class EventManager implements EventManagerInterface
             }
         }
 
-        // have global wildcards '*' listener.
+        // Have global wildcards '*' listener.
         if (isset($this->listenedEvents['*'])) {
             $this->triggerListeners($this->listeners['*'], $event);
         }
