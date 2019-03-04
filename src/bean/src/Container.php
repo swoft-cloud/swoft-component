@@ -591,11 +591,7 @@ class Container implements ContainerInterface
      */
     private function getNewObjectDefinition(string $beanName): ObjectDefinition
     {
-        if (isset($this->singletonPool[$beanName])) {
-            return $this->singletonPool[$beanName];
-        }
-
-        if (isset($this->objectDefinitions[$beanName])) {
+         if (isset($this->objectDefinitions[$beanName])) {
             return $this->objectDefinitions[$beanName];
         }
 
