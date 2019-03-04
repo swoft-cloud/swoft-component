@@ -316,12 +316,50 @@ class Container implements ContainerInterface
         $this->initializeBeans();
     }
 
-    public function initializeRequest(int $rid)
+    /**
+     * Get request bean
+     *
+     * @param string $name
+     * @param int    $id
+     *
+     * @return object
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
+    public function getRequest(string $name, int $id)
     {
-//        /* @var ObjectDefinition $objectDefinition */
-//        foreach ($this->requestDefinitions as $beanName => $objectDefinition) {
-//
-//        }
+        if (isset($this->requestPool[$id][$name])) {
+            return $this->requestPool[$id][$name];
+        }
+
+        if (!isset($this->requestDefinitions[$name])) {
+            throw new ContainerException(sprintf('Request bean(%s) is not defined', $name));
+        }
+
+        return $this->newBean($name, $id);
+    }
+
+    /**
+     * Get session bean
+     *
+     * @param string $name
+     * @param int    $id
+     *
+     * @return object
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
+    public function getSession(string $name, int $id)
+    {
+        if (isset($this->sessionPool[$id][$name])) {
+            return $this->sessionPool[$id][$name];
+        }
+
+        if (!isset($this->sessionDefinitions[$name])) {
+            throw new ContainerException(sprintf('Request bean(%s) is not defined', $name));
+        }
+
+        return $this->newBean($name, $id);
     }
 
     /**
@@ -485,6 +523,26 @@ class Container implements ContainerInterface
     }
 
     /**
+     * Destroy request bean
+     *
+     * @param int $id
+     */
+    public function destroyRequest(int $id): void
+    {
+        unset($this->requestPool[$id]);
+    }
+
+    /**
+     * Destroy session bean
+     *
+     * @param int $id
+     */
+    public function destroySession(int $id): void
+    {
+        unset($this->sessionPool[$id]);
+    }
+
+    /**
      * Add definitions
      *
      * @param array $definitions
@@ -591,7 +649,7 @@ class Container implements ContainerInterface
      */
     private function getNewObjectDefinition(string $beanName): ObjectDefinition
     {
-         if (isset($this->objectDefinitions[$beanName])) {
+        if (isset($this->objectDefinitions[$beanName])) {
             return $this->objectDefinitions[$beanName];
         }
 

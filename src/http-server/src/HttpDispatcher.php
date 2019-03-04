@@ -3,6 +3,8 @@
 namespace Swoft\Http\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\BeanEvent;
+use Swoft\Co;
 use Swoft\Dispatcher;
 use Swoft\Http\Message\Response;
 use Swoft\Http\Message\Request;
@@ -57,7 +59,11 @@ class HttpDispatcher extends Dispatcher
             var_dump($e->getMessage(), $e->getFile(), $e->getLine());
         }
 
+        // Trigger after request
         \Swoft::trigger(HttpServerEvent::AFTER_REQUEST, $this, $response);
+
+        // Trigger destroy request bean
+        \Swoft::trigger(BeanEvent::DESTROY_REQUEST, $this, Co::tid());
 
 //      $response->withContent("<h1>Hello Swoole. #" . rand(1000, 9999) . "</h1>")->send();
     }

@@ -83,6 +83,7 @@ class Swoft
      * Get an ReflectionClass object by input class.
      *
      * @param string $class
+     *
      * @return array
      * @throws ReflectionException
      */
@@ -103,6 +104,23 @@ class Swoft
      * @throws \Swoft\Bean\Exception\ContainerException
      */
     public static function trigger($event, $target = null, ...$params)
+    {
+        /** @see EventManager::trigger() */
+        return Container::getInstance()->get('eventManager')->trigger($event, $target, $params);
+    }
+
+    /**
+     * Trigger an swoft application event
+     *
+     * @param string|EventInterface $event eg: 'app.start' 'app.stop'
+     * @param array                 $params
+     * @param null|mixed            $target
+     *
+     * @return mixed|EventInterface
+     * @throws ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public static function triggerByArray($event, $target = null, array $params = [])
     {
         /** @see EventManager::trigger() */
         return Container::getInstance()->get('eventManager')->trigger($event, $target, $params);
