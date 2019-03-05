@@ -11,4 +11,3 @@ temp/
 .phpintel/
 .env
 .DS_Store
-public/devtool/

@@ -29,6 +29,15 @@ class FileHandler extends AbstractProcessingHandler
     protected $logFile = '';
 
     /**
+     * Will exec on construct
+     */
+    public function init(): void
+    {
+        $this->logFile = \alias($this->logFile);
+        $this->createDir();
+    }
+
+    /**
      * Write log by batch
      *
      * @param array $records
@@ -38,11 +47,11 @@ class FileHandler extends AbstractProcessingHandler
     public function handleBatch(array $records): void
     {
         $records = $this->recordFilter($records);
-        if (empty($records)) {
+        if (!$records) {
             return;
         }
 
-        $lines = array_column($records, 'formatted');
+        $lines = \array_column($records, 'formatted');
 
         $this->write($lines);
     }
@@ -54,20 +63,17 @@ class FileHandler extends AbstractProcessingHandler
      */
     protected function write(array $records): void
     {
-        $this->createDir();
-
-        $logFile     = \alias($this->logFile);
-        $messageText = implode("\n", $records) . "\n";
+        $messageText = \implode("\n", $records) . "\n";
 
         if (Co::id() <= 0) {
             throw new \InvalidArgumentException('Write log file must be under Coroutine!');
         }
 
-        $res = Co::writeFile($logFile, $messageText, FILE_APPEND);
+        $res = Co::writeFile($this->logFile, $messageText, FILE_APPEND);
 
         if ($res === false) {
             throw new \InvalidArgumentException(
-                sprintf('Unable to append to log file: %s', $logFile)
+                sprintf('Unable to append to log file: %s', $this->logFile)
             );
         }
     }
@@ -103,10 +109,9 @@ class FileHandler extends AbstractProcessingHandler
      */
     private function createDir(): void
     {
-        $logFile = \alias($this->logFile);
-        $logDir  = dirname($logFile);
+        $logDir = \dirname($this->logFile);
 
-        if ($logDir !== null && !is_dir($logDir)) {
+        if ($logDir !== null && !\is_dir($logDir)) {
             $status = mkdir($logDir, 0777, true);
             if ($status === false) {
                 throw new \UnexpectedValueException(
@@ -125,10 +130,10 @@ class FileHandler extends AbstractProcessingHandler
      */
     public function isHandling(array $record): bool
     {
-        if (empty($this->levels)) {
+        if ($this->levels) {
             return true;
         }
 
-        return in_array($record['level'], $this->levels);
+        return \in_array($record['level'], $this->levels, true);
     }
 }

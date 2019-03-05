@@ -59,13 +59,14 @@ class CLogger extends \Monolog\Logger
      *
      * @return bool
      */
-    public function addRecord($level, $message, array $context = array())
+    public function addRecord($level, $message, array $context = array()): bool
     {
         if (!$this->enable) {
             return true;
         }
 
         $message = $this->getTrace($message);
+
         return parent::addRecord($level, $message, $context);
     }
 
@@ -79,7 +80,7 @@ class CLogger extends \Monolog\Logger
     public function getTrace(string $message): string
     {
         $stackStr = '';
-        $traces   = debug_backtrace();
+        $traces   = \debug_backtrace();
         $count    = \count($traces);
 
         if ($count >= 5) {
@@ -88,12 +89,12 @@ class CLogger extends \Monolog\Logger
                 $class    = $info['class'];
                 $lineNum  = $info['line'];
                 $function = $info['function'];
-                $stackStr = sprintf('%s:%s(%s)', $class, $function, $lineNum);
+                $stackStr = \sprintf('%s:%s(%s)', $class, $function, $lineNum);
             }
         }
 
         if (!empty($stackStr)) {
-            $message = sprintf('%s %s', $stackStr, $message);
+            $message = \sprintf('%s %s', $stackStr, $message);
         }
 
         return $message;
