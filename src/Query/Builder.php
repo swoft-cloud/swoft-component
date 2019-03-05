@@ -294,7 +294,7 @@ class Builder implements PrototypeInterface
      */
     public function selectRaw(string $expression, array $bindings = []): self
     {
-        $this->addSelect(Expression::new($expression));
+        $this->addSelect([Expression::new($expression)]);
 
         if ($bindings) {
             $this->addBinding($bindings, 'select');
@@ -325,13 +325,13 @@ class Builder implements PrototypeInterface
      * Add a raw from clause to the query.
      *
      * @param  string $expression
-     * @param  mixed  $bindings
+     * @param  array  $bindings
      *
      * @return static
      *
      * @throws
      */
-    public function fromRaw($expression, $bindings = []): self
+    public function fromRaw(string $expression, array $bindings = []): self
     {
         $this->from = Expression::new($expression);
 
@@ -383,14 +383,12 @@ class Builder implements PrototypeInterface
     /**
      * Add a new select column to the query.
      *
-     * @param  array|mixed $column
+     * @param  array $column
      *
      * @return static
      */
-    public function addSelect($column): self
+    public function addSelect(array $column): self
     {
-        $column = is_array($column) ? $column : func_get_args();
-
         $this->columns = array_merge((array)$this->columns, $column);
 
         return $this;
@@ -482,7 +480,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws PrototypeException
      */
-    public function joinWhere($table, $first, $operator, $second, $type = 'inner'): self
+    public function joinWhere(string $table, $first, string $operator, string $second, string $type = 'inner'): self
     {
         return $this->join($table, $first, $operator, $second, $type, true);
     }
@@ -505,12 +503,12 @@ class Builder implements PrototypeInterface
      */
     public function joinSub(
         $query,
-        $as,
+        string $as,
         $first,
-        $operator = null,
-        $second = null,
-        $type = 'inner',
-        $where = false
+        string $operator = null,
+        string $second = null,
+        string $type = 'inner',
+        bool $where = false
     ): self {
         [$query, $bindings] = $this->createSub($query);
 
@@ -532,7 +530,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws PrototypeException
      */
-    public function leftJoin($table, $first, $operator = null, $second = null): self
+    public function leftJoin(string $table, $first, string $operator = null, string $second = null): self
     {
         return $this->join($table, $first, $operator, $second, 'left');
     }
@@ -548,7 +546,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws PrototypeException
      */
-    public function leftJoinWhere($table, $first, $operator, $second): self
+    public function leftJoinWhere(string $table, string $first, string $operator, string $second): self
     {
         return $this->joinWhere($table, $first, $operator, $second, 'left');
     }
@@ -566,7 +564,7 @@ class Builder implements PrototypeInterface
      * @throws PrototypeException
      *
      */
-    public function leftJoinSub($query, $as, $first, $operator = null, $second = null): self
+    public function leftJoinSub($query, string $as, string $first, string $operator = null, string $second = null): self
     {
         return $this->joinSub($query, $as, $first, $operator, $second, 'left');
     }
@@ -582,7 +580,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws PrototypeException
      */
-    public function rightJoin($table, $first, $operator = null, $second = null): self
+    public function rightJoin(string $table, $first, string $operator = null, string $second = null): self
     {
         return $this->join($table, $first, $operator, $second, 'right');
     }
@@ -598,7 +596,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws PrototypeException
      */
-    public function rightJoinWhere($table, $first, $operator, $second): self
+    public function rightJoinWhere(string $table, string $first, string $operator, string $second): self
     {
         return $this->joinWhere($table, $first, $operator, $second, 'right');
     }
@@ -615,8 +613,13 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws PrototypeException
      */
-    public function rightJoinSub($query, $as, $first, $operator = null, $second = null): self
-    {
+    public function rightJoinSub(
+        $query,
+        string $as,
+        string $first,
+        string $operator = null,
+        string $second = null
+    ): self {
         return $this->joinSub($query, $as, $first, $operator, $second, 'right');
     }
 
@@ -631,7 +634,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws PrototypeException
      */
-    public function crossJoin($table, $first = null, $operator = null, $second = null): self
+    public function crossJoin(string $table, $first = null, string $operator = null, string $second = null): self
     {
         if ($first) {
             return $this->join($table, $first, $operator, $second, 'cross');
@@ -650,7 +653,7 @@ class Builder implements PrototypeInterface
      *
      * @return void
      */
-    public function mergeWheres($wheres, $bindings): void
+    public function mergeWheres(array $wheres, array $bindings): void
     {
         $this->wheres = array_merge($this->wheres, (array)$wheres);
 
@@ -670,7 +673,7 @@ class Builder implements PrototypeInterface
      * @return $this
      * @throws PrototypeException
      */
-    public function where($column, $operator = null, $value = null, $boolean = 'and'): self
+    public function where($column, $operator = null, $value = null, string $boolean = 'and'): self
     {
         // If the column is an array, we will assume it is an array of key-value pairs
         // and can add them each as a where clause. We will maintain the boolean we
@@ -841,7 +844,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws PrototypeException
      */
-    public function whereColumn($first, $operator = null, $second = null, $boolean = 'and'): self
+    public function whereColumn($first, string $operator = null, string $second = null, string $boolean = 'and'): self
     {
         // If the column is an array, we will assume it is an array of key-value pairs
         // and can add them each as a where clause. We will maintain the boolean we
@@ -879,7 +882,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws PrototypeException
      */
-    public function orWhereColumn($first, $operator = null, $second = null): self
+    public function orWhereColumn($first, string $operator = null, string $second = null): self
     {
         return $this->whereColumn($first, $operator, $second, 'or');
     }
@@ -888,16 +891,16 @@ class Builder implements PrototypeInterface
      * Add a raw where clause to the query.
      *
      * @param  string $sql
-     * @param  mixed  $bindings
+     * @param  array  $bindings
      * @param  string $boolean
      *
      * @return $this
      */
-    public function whereRaw($sql, $bindings = [], $boolean = 'and'): self
+    public function whereRaw(string $sql, array $bindings = [], string $boolean = 'and'): self
     {
         $this->wheres[] = ['type' => 'raw', 'sql' => $sql, 'boolean' => $boolean];
 
-        $this->addBinding((array)$bindings, 'where');
+        $this->addBinding($bindings, 'where');
 
         return $this;
     }
@@ -906,11 +909,11 @@ class Builder implements PrototypeInterface
      * Add a raw or where clause to the query.
      *
      * @param  string $sql
-     * @param  mixed  $bindings
+     * @param  array  $bindings
      *
      * @return static
      */
-    public function orWhereRaw($sql, $bindings = []): self
+    public function orWhereRaw(string $sql, array $bindings = []): self
     {
         return $this->whereRaw($sql, $bindings, 'or');
     }
@@ -926,7 +929,7 @@ class Builder implements PrototypeInterface
      * @return $this
      * @throws PrototypeException
      */
-    public function whereIn($column, $values, $boolean = 'and', $not = false): self
+    public function whereIn(string $column, $values, string $boolean = 'and', bool $not = false): self
     {
         $type = $not ? 'NotIn' : 'In';
 
@@ -976,7 +979,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws PrototypeException
      */
-    public function orWhereIn($column, $values): self
+    public function orWhereIn(string $column, $values): self
     {
         return $this->whereIn($column, $values, 'or');
     }
@@ -991,7 +994,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws PrototypeException
      */
-    public function whereNotIn($column, $values, $boolean = 'and'): self
+    public function whereNotIn(string $column, $values, string $boolean = 'and'): self
     {
         return $this->whereIn($column, $values, $boolean, true);
     }
@@ -1005,7 +1008,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws PrototypeException
      */
-    public function orWhereNotIn($column, $values): self
+    public function orWhereNotIn(string $column, $values): self
     {
         return $this->whereNotIn($column, $values, 'or');
     }
@@ -1021,7 +1024,7 @@ class Builder implements PrototypeInterface
      * @return $this
      * @throws PrototypeException
      */
-    protected function whereInSub($column, \Closure $callback, $boolean, $not): self
+    protected function whereInSub(string $column, \Closure $callback, string $boolean, bool $not): self
     {
         $type = $not ? 'NotInSub' : 'InSub';
 
@@ -1047,7 +1050,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    protected function whereInExistingQuery($column, $query, $boolean, $not): self
+    protected function whereInExistingQuery(string $column, $query, string $boolean, bool $not): self
     {
         $type = $not ? 'NotInSub' : 'InSub';
 
@@ -1068,7 +1071,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function whereIntegerInRaw($column, $values, $boolean = 'and', $not = false): self
+    public function whereIntegerInRaw(string $column, $values, string $boolean = 'and', bool $not = false): self
     {
         $type = $not ? 'NotInRaw' : 'InRaw';
 
@@ -1094,7 +1097,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function whereIntegerNotInRaw($column, $values, $boolean = 'and'): self
+    public function whereIntegerNotInRaw(string $column, $values, string $boolean = 'and'): self
     {
         return $this->whereIntegerInRaw($column, $values, $boolean, true);
     }
@@ -1108,7 +1111,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function whereNull($column, $boolean = 'and', $not = false): self
+    public function whereNull(string $column, string $boolean = 'and', bool $not = false): self
     {
         $type = $not ? 'NotNull' : 'Null';
 
@@ -1124,7 +1127,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      */
-    public function orWhereNull($column): self
+    public function orWhereNull(string $column): self
     {
         return $this->whereNull($column, 'or');
     }
@@ -1137,7 +1140,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      */
-    public function whereNotNull($column, $boolean = 'and'): self
+    public function whereNotNull(string $column, string $boolean = 'and'): self
     {
         return $this->whereNull($column, $boolean, true);
     }
@@ -1152,7 +1155,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function whereBetween($column, array $values, $boolean = 'and', $not = false): self
+    public function whereBetween(string $column, array $values, string $boolean = 'and', bool $not = false): self
     {
         $type = 'between';
 
@@ -1171,7 +1174,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      */
-    public function orWhereBetween($column, array $values): self
+    public function orWhereBetween(string $column, array $values): self
     {
         return $this->whereBetween($column, $values, 'or');
     }
@@ -1185,7 +1188,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      */
-    public function whereNotBetween($column, array $values, $boolean = 'and'): self
+    public function whereNotBetween(string $column, array $values, string $boolean = 'and'): self
     {
         return $this->whereBetween($column, $values, $boolean, true);
     }
@@ -1198,7 +1201,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      */
-    public function orWhereNotBetween($column, array $values): self
+    public function orWhereNotBetween(string $column, array $values): self
     {
         return $this->whereNotBetween($column, $values, 'or');
     }
@@ -1210,7 +1213,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      */
-    public function orWhereNotNull($column): self
+    public function orWhereNotNull(string $column): self
     {
         return $this->whereNotNull($column, 'or');
     }
@@ -1225,7 +1228,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      */
-    public function whereDate($column, $operator, $value = null, $boolean = 'and'): self
+    public function whereDate(string $column, $operator,  $value = null, string $boolean = 'and'): self
     {
         [$value, $operator] = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2
@@ -1247,7 +1250,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      */
-    public function orWhereDate($column, $operator, $value = null): self
+    public function orWhereDate(string $column, string $operator, $value = null): self
     {
         [$value, $operator] = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2
@@ -1266,7 +1269,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      */
-    public function whereTime($column, $operator, $value = null, $boolean = 'and'): self
+    public function whereTime(string $column, $operator, $value = null, string $boolean = 'and'): self
     {
         [$value, $operator] = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2
@@ -1288,7 +1291,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      */
-    public function orWhereTime($column, $operator, $value = null): self
+    public function orWhereTime(string $column, string $operator, $value = null): self
     {
         [$value, $operator] = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2
@@ -1307,7 +1310,7 @@ class Builder implements PrototypeInterface
      *
      * @return static|static
      */
-    public function whereDay($column, $operator, $value = null, $boolean = 'and')
+    public function whereDay(string $column, string $operator, $value = null, string $boolean = 'and')
     {
         [$value, $operator] = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2
@@ -1329,7 +1332,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      */
-    public function orWhereDay($column, $operator, $value = null): self
+    public function orWhereDay(string $column, string $operator, $value = null): self
     {
         [$value, $operator] = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2
@@ -1348,7 +1351,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      */
-    public function whereMonth($column, $operator, $value = null, $boolean = 'and'): self
+    public function whereMonth(string $column, string $operator, $value = null, string $boolean = 'and'): self
     {
         [$value, $operator] = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2
@@ -1370,7 +1373,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      */
-    public function orWhereMonth($column, $operator, $value = null): self
+    public function orWhereMonth(string $column, string $operator, $value = null): self
     {
         [$value, $operator] = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2
@@ -1389,7 +1392,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      */
-    public function whereYear($column, $operator, $value = null, $boolean = 'and'): self
+    public function whereYear(string $column, string $operator, $value = null, string $boolean = 'and'): self
     {
         [$value, $operator] = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2
@@ -1411,7 +1414,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      */
-    public function orWhereYear($column, $operator, $value = null): self
+    public function orWhereYear(string $column, string $operator, $value = null): self
     {
         [$value, $operator] = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2
@@ -1431,8 +1434,13 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    protected function addDateBasedWhere($type, $column, $operator, $value, $boolean = 'and'): self
-    {
+    protected function addDateBasedWhere(
+        string $type,
+        string $column,
+        string $operator,
+        $value,
+        string $boolean = 'and'
+    ): self {
         $this->wheres[] = compact('column', 'type', 'boolean', 'operator', 'value');
 
         if (!$value instanceof Expression) {
@@ -1451,7 +1459,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws PrototypeException
      */
-    public function whereNested(\Closure $callback, $boolean = 'and'): self
+    public function whereNested(\Closure $callback, string $boolean = 'and'): self
     {
         call_user_func($callback, $query = $this->forNestedWhere());
 
@@ -1477,7 +1485,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function addNestedWhereQuery($query, $boolean = 'and'): self
+    public function addNestedWhereQuery($query, string $boolean = 'and'): self
     {
         if (count($query->wheres)) {
             $type = 'Nested';
@@ -1501,7 +1509,7 @@ class Builder implements PrototypeInterface
      * @return $this
      * @throws PrototypeException
      */
-    protected function whereSub($column, $operator, \Closure $callback, $boolean): self
+    protected function whereSub(string $column, string $operator, \Closure $callback,string $boolean): self
     {
         $type = 'Sub';
 
@@ -1529,7 +1537,7 @@ class Builder implements PrototypeInterface
      * @return $this
      * @throws PrototypeException
      */
-    public function whereExists(\Closure $callback, $boolean = 'and', $not = false): self
+    public function whereExists(\Closure $callback, string $boolean = 'and', bool $not = false): self
     {
         $query = $this->forSubQuery();
 
@@ -1550,7 +1558,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws PrototypeException
      */
-    public function orWhereExists(\Closure $callback, $not = false): self
+    public function orWhereExists(\Closure $callback, bool $not = false): self
     {
         return $this->whereExists($callback, 'or', $not);
     }
@@ -1564,7 +1572,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws PrototypeException
      */
-    public function whereNotExists(\Closure $callback, $boolean = 'and'): self
+    public function whereNotExists(\Closure $callback, string $boolean = 'and'): self
     {
         return $this->whereExists($callback, $boolean, true);
     }
@@ -1591,7 +1599,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function addWhereExistsQuery(Builder $query, $boolean = 'and', $not = false): self
+    public function addWhereExistsQuery(Builder $query, string $boolean = 'and', bool $not = false): self
     {
         $type = $not ? 'NotExists' : 'Exists';
 
@@ -1612,7 +1620,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function whereRowValues($columns, $operator, $values, $boolean = 'and'): self
+    public function whereRowValues(array $columns, string $operator, array $values, string $boolean = 'and'): self
     {
         if (count($columns) !== count($values)) {
             throw new \InvalidArgumentException('The number of columns must match the number of values');
@@ -1636,7 +1644,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function orWhereRowValues($columns, $operator, $values): self
+    public function orWhereRowValues(array $columns, string $operator, array $values): self
     {
         return $this->whereRowValues($columns, $operator, $values, 'or');
     }
@@ -1651,7 +1659,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function whereJsonContains($column, $value, $boolean = 'and', $not = false): self
+    public function whereJsonContains(string $column, $value, string $boolean = 'and', bool $not = false): self
     {
         $type = 'JsonContains';
 
@@ -1672,7 +1680,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function orWhereJsonContains($column, $value): self
+    public function orWhereJsonContains(string $column, $value): self
     {
         return $this->whereJsonContains($column, $value, 'or');
     }
@@ -1686,7 +1694,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function whereJsonDoesntContain($column, $value, $boolean = 'and'): self
+    public function whereJsonDoesntContain(string $column, $value, string $boolean = 'and'): self
     {
         return $this->whereJsonContains($column, $value, $boolean, true);
     }
@@ -1699,7 +1707,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function orWhereJsonDoesntContain($column, $value): self
+    public function orWhereJsonDoesntContain(string $column, $value): self
     {
         return $this->whereJsonDoesntContain($column, $value, 'or');
     }
@@ -1714,7 +1722,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function whereJsonLength($column, $operator, $value = null, $boolean = 'and'): self
+    public function whereJsonLength(string $column, $operator, $value = null, string $boolean = 'and'): self
     {
         $type = 'JsonLength';
 
@@ -1740,7 +1748,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function orWhereJsonLength($column, $operator, $value = null): self
+    public function orWhereJsonLength(string $column, $operator, $value = null): self
     {
         [$value, $operator] = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2
@@ -1758,7 +1766,7 @@ class Builder implements PrototypeInterface
      * @return $this
      * @throws PrototypeException
      */
-    public function dynamicWhere($method, $parameters): self
+    public function dynamicWhere(string $method, array $parameters): self
     {
         $finder = substr($method, 5);
 
@@ -1844,7 +1852,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function having($column, $operator = null, $value = null, $boolean = 'and'): self
+    public function having(string $column, string $operator = null, string $value = null, string $boolean = 'and'): self
     {
         $type = 'Basic';
 
@@ -1880,7 +1888,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      */
-    public function orHaving($column, $operator = null, $value = null): self
+    public function orHaving(string $column, string $operator = null, string $value = null): self
     {
         [$value, $operator] = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2
@@ -1899,7 +1907,7 @@ class Builder implements PrototypeInterface
      *
      * @return static|static
      */
-    public function havingBetween($column, array $values, $boolean = 'and', $not = false): self
+    public function havingBetween(string $column, array $values, string $boolean = 'and', bool $not = false): self
     {
         $type = 'between';
 
@@ -1919,7 +1927,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function havingRaw($sql, array $bindings = [], $boolean = 'and'): self
+    public function havingRaw(string $sql, array $bindings = [], string $boolean = 'and'): self
     {
         $type = 'Raw';
 
@@ -1938,7 +1946,7 @@ class Builder implements PrototypeInterface
      *
      * @return static|static
      */
-    public function orHavingRaw($sql, array $bindings = []): self
+    public function orHavingRaw(string $sql, array $bindings = []): self
     {
         return $this->havingRaw($sql, $bindings, 'or');
     }
@@ -1951,7 +1959,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function orderBy($column, $direction = 'asc'): self
+    public function orderBy(string $column, string $direction = 'asc'): self
     {
         $this->{$this->unions ? 'unionOrders' : 'orders'}[] = [
             'column'    => $column,
@@ -1968,7 +1976,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function orderByDesc($column): self
+    public function orderByDesc(string $column): self
     {
         return $this->orderBy($column, 'desc');
     }
@@ -1980,7 +1988,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      */
-    public function latest($column = 'created_at'): self
+    public function latest(string $column = 'created_at'): self
     {
         return $this->orderBy($column, 'desc');
     }
@@ -1992,7 +2000,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      */
-    public function oldest($column = 'created_at'): self
+    public function oldest(string $column = 'created_at'): self
     {
         return $this->orderBy($column, 'asc');
     }
@@ -2004,7 +2012,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function inRandomOrder($seed = ''): self
+    public function inRandomOrder(string $seed = ''): self
     {
         return $this->orderByRaw($this->grammar->compileRandom($seed));
     }
@@ -2017,7 +2025,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function orderByRaw($sql, $bindings = []): self
+    public function orderByRaw(string $sql, array $bindings = []): self
     {
         $type = 'Raw';
 
@@ -2035,7 +2043,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      */
-    public function skip($value): self
+    public function skip(int $value): self
     {
         return $this->offset($value);
     }
@@ -2047,7 +2055,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function offset($value): self
+    public function offset(int $value): self
     {
         $property = $this->unions ? 'unionOffset' : 'offset';
 
@@ -2063,7 +2071,7 @@ class Builder implements PrototypeInterface
      *
      * @return static|Builder
      */
-    public function take($value): self
+    public function take(int $value): self
     {
         return $this->limit($value);
     }
@@ -2075,7 +2083,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function limit($value): self
+    public function limit(int $value): self
     {
         $property = $this->unions ? 'unionLimit' : 'limit';
 
@@ -2094,7 +2102,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      */
-    public function forPage($page, $perPage = 15): self
+    public function forPage(int $page, int $perPage = 15): self
     {
         return $this->skip(($page - 1) * $perPage)->take($perPage);
     }
@@ -2109,7 +2117,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws PrototypeException
      */
-    public function forPageAfterId($perPage = 15, $lastId = 0, $column = 'id'): self
+    public function forPageAfterId(int $perPage = 15, int $lastId = null, string $column = 'id'): self
     {
         $this->orders = $this->removeExistingOrdersFor($column);
 
@@ -2128,7 +2136,7 @@ class Builder implements PrototypeInterface
      *
      * @return array
      */
-    protected function removeExistingOrdersFor($column): array
+    protected function removeExistingOrdersFor(string $column): array
     {
         return Collection::make($this->orders)
             ->reject(function ($order) use ($column) {
@@ -2146,7 +2154,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws PrototypeException
      */
-    public function union($query, $all = false): self
+    public function union($query, bool $all = false): self
     {
         if ($query instanceof \Closure) {
             call_user_func($query, $query = $this->newQuery());
@@ -2229,7 +2237,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws PrototypeException
      */
-    public function find($id, $columns = ['*']): self
+    public function find(string $id, array $columns = ['*']): self
     {
         return $this->where('id', '=', $id)->first($columns);
     }
@@ -2241,7 +2249,7 @@ class Builder implements PrototypeInterface
      *
      * @return mixed
      */
-    public function value($column)
+    public function value(string $column)
     {
         $result = (array)$this->first([$column]);
 
@@ -2255,7 +2263,7 @@ class Builder implements PrototypeInterface
      *
      * @return Collection
      */
-    public function get($columns = ['*']): Collection
+    public function get(array $columns = ['*']): Collection
     {
         $result = $this->onceWithColumns($columns, function () {
             return $this->processor->processSelect($this, $this->runSelect());
@@ -2285,8 +2293,12 @@ class Builder implements PrototypeInterface
      *
      * @return array
      */
-    public function paginate($perPage = 15, $columns = ['*'], $pageName = 'page', $page = null): array
-    {
+    public function paginate(
+        int $perPage = 15,
+        array $columns = ['*'],
+        string $pageName = 'page',
+        int $page = null
+    ): array {
         return [$perPage, $columns, $pageName, $page];
     }
 
@@ -2322,7 +2334,7 @@ class Builder implements PrototypeInterface
      *
      * @return array
      */
-    protected function runPaginationCountQuery($columns = ['*']): array
+    protected function runPaginationCountQuery(array $columns = ['*']): array
     {
         $without = $this->unions ? ['orders', 'limit', 'offset'] : ['columns', 'orders', 'limit', 'offset'];
 
@@ -2373,7 +2385,7 @@ class Builder implements PrototypeInterface
      * @return bool
      * @throws PrototypeException
      */
-    public function chunkById($count, callable $callback, $column = 'id', $alias = null): bool
+    public function chunkById(int $count, callable $callback, $column = 'id', int $alias = null): bool
     {
         $alias = $alias ?: $column;
 
@@ -2532,7 +2544,7 @@ class Builder implements PrototypeInterface
      *
      * @return string
      */
-    public function implode($column, $glue = ''): string
+    public function implode(string $column, string $glue = ''): string
     {
         return $this->pluck($column)->implode($glue);
     }
@@ -2579,7 +2591,7 @@ class Builder implements PrototypeInterface
      *
      * @return int
      */
-    public function count($columns = '*'): int
+    public function count(string $columns = '*'): int
     {
         return (int)$this->aggregate(__FUNCTION__, Arr::wrap($columns));
     }
@@ -2591,7 +2603,7 @@ class Builder implements PrototypeInterface
      *
      * @return array
      */
-    public function min($column): array
+    public function min(string $column): array
     {
         return $this->aggregate(__FUNCTION__, [$column]);
     }
@@ -2603,7 +2615,7 @@ class Builder implements PrototypeInterface
      *
      * @return array
      */
-    public function max($column): array
+    public function max(string $column): array
     {
         return $this->aggregate(__FUNCTION__, [$column]);
     }
@@ -2615,7 +2627,7 @@ class Builder implements PrototypeInterface
      *
      * @return mixed
      */
-    public function sum($column)
+    public function sum(string $column)
     {
         $result = $this->aggregate(__FUNCTION__, [$column]);
 
@@ -2641,7 +2653,7 @@ class Builder implements PrototypeInterface
      *
      * @return array
      */
-    public function average($column): array
+    public function average(string $column): array
     {
         return $this->avg($column);
     }
@@ -2654,7 +2666,7 @@ class Builder implements PrototypeInterface
      *
      * @return array
      */
-    public function aggregate($function, $columns = ['*']): array
+    public function aggregate(string $function, array $columns = ['*']): array
     {
         $results = $this->cloneWithout($this->unions ? [] : ['columns'])
             ->cloneWithoutBindings($this->unions ? [] : ['select'])
@@ -2676,7 +2688,7 @@ class Builder implements PrototypeInterface
      *
      * @return float|int
      */
-    public function numericAggregate($function, $columns = ['*'])
+    public function numericAggregate(string $function, array $columns = ['*'])
     {
         $result = $this->aggregate($function, $columns);
 
@@ -2796,7 +2808,7 @@ class Builder implements PrototypeInterface
      * @throws QueryException
      * @throws PrototypeException
      */
-    public function insertGetId(array $values, $sequence = null): string
+    public function insertGetId(array $values, string $sequence = null): string
     {
         $sql = $this->grammar->compileInsertGetId($this, $values, $sequence);
 
@@ -2873,7 +2885,7 @@ class Builder implements PrototypeInterface
      * @throws QueryException
      * @throws PrototypeException
      */
-    public function increment($column, $amount = 1, array $extra = [])
+    public function increment(string $column, $amount = 1, array $extra = [])
     {
         if (!is_numeric($amount)) {
             throw new \InvalidArgumentException('Non-numeric value passed to increment method.');
@@ -2897,7 +2909,7 @@ class Builder implements PrototypeInterface
      * @throws QueryException
      * @throws PrototypeException
      */
-    public function decrement($column, $amount = 1, array $extra = [])
+    public function decrement(string $column, $amount = 1, array $extra = [])
     {
         if (!is_numeric($amount)) {
             throw new \InvalidArgumentException('Non-numeric value passed to decrement method.');
@@ -3013,7 +3025,7 @@ class Builder implements PrototypeInterface
      *
      * @throws \InvalidArgumentException
      */
-    public function setBindings(array $bindings, $type = 'where')
+    public function setBindings(array $bindings, string $type = 'where')
     {
         if (!array_key_exists($type, $this->bindings)) {
             throw new \InvalidArgumentException("Invalid binding type: {$type}.");
@@ -3034,7 +3046,7 @@ class Builder implements PrototypeInterface
      *
      * @throws \InvalidArgumentException
      */
-    public function addBinding($value, $type = 'where')
+    public function addBinding($value, string $type = 'where')
     {
         if (!array_key_exists($type, $this->bindings)) {
             throw new \InvalidArgumentException("Invalid binding type: {$type}.");

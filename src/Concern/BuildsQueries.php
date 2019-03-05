@@ -80,7 +80,7 @@ trait BuildsQueries
      *
      * @return Model|object|static|null
      */
-    public function first($columns = ['*'])
+    public function first(array $columns = ['*'])
     {
         return $this->take(1)->get($columns)->first();
     }

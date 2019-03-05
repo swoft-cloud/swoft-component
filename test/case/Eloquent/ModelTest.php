@@ -39,4 +39,12 @@ class ModelTest extends TestCase
             $this->assertTrue($result2);
         });
     }
+
+    public function testFind()
+    {
+//        $result = User::findMany([22]);
+//        var_dump($result);
+
+//        var_dump(User::where('age', '=', 100)->select('id')->selectSub());
+    }
 }
