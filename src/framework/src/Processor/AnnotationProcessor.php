@@ -24,7 +24,7 @@ class AnnotationProcessor extends Processor
             return false;
         }
 
-        CLog::info('Annotation is beginning');
+        CLog::info('Annotation load is beginning');
 
         $app = $this->application;
 
