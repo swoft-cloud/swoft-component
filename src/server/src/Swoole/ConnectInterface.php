@@ -19,5 +19,5 @@ interface ConnectInterface
      * @param int      $fd
      * @param int      $reactorId
      */
-    function onConnect(CoServer $server, int $fd, int $reactorId): void;
+    public function onConnect(CoServer $server, int $fd, int $reactorId): void;
 }

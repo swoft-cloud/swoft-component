@@ -4,6 +4,7 @@ namespace Swoft\Server\Swoole;
 
 
 use Co\Websocket\Server;
+use Swoft\Http\Message\Request;
 
 /**
  * Interface OpenInterface

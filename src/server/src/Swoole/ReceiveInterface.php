@@ -4,7 +4,6 @@ namespace Swoft\Server\Swoole;
 
 use Co\Server as CoServer;
 
-
 /**
  * Interface ReceiveInterface
  *
@@ -20,5 +19,5 @@ interface ReceiveInterface
      * @param int      $reactorId
      * @param string   $data
      */
-    public function onReceive(SCoServerwooleServer $server, int $fd, int $reactorId, string $data): void;
+    public function onReceive(CoServer $server, int $fd, int $reactorId, string $data): void;
 }
