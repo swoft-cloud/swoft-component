@@ -579,12 +579,14 @@ abstract class Server implements ServerInterface
 
             // Parse and record PIDs
             [$masterPID, $managerPID] = \explode(',', $pidFile);
+            // Format type
+            $masterPID = (int)$masterPID;
             $managerPID = (int)$managerPID;
 
             $this->pidMap['masterPid']  = $masterPID;
-            $this->pidMap['managerPid'] = (int)$managerPID;
+            $this->pidMap['managerPid'] = $managerPID;
 
-            return $managerPID > 0 && Process::kill($managerPID, 0);
+            return $masterPID > 0 && Process::kill($masterPID, 0);
         }
 
         return false;

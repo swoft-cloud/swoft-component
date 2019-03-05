@@ -2,7 +2,6 @@
 
 namespace Swoft\Server\Helper;
 
-use SebastianBergmann\CodeCoverage\Report\PHP;
 use Swoole\Process;
 
 /**

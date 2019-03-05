@@ -184,7 +184,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     }
 
     /**
-     * @param string ...$classes
+     * @param array ...$classes
      */
     public function disableAutoLoader(string ...$classes)
     {
@@ -194,7 +194,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     }
 
     /**
-     * @param string ...$classes
+     * @param array ...$classes
      */
     public function disableProcessor(string ...$classes)
     {

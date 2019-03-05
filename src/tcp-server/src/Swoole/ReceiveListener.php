@@ -2,10 +2,9 @@
 
 namespace Swoft\Tcp\Server\Swoole;
 
-
+use Co\Server;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Server\Swoole\ReceiveInterface;
-use Swoft\Server\Swoole\SCoServerwooleServer;
 
 /**
  * Class ReceiveListener
@@ -17,13 +16,12 @@ use Swoft\Server\Swoole\SCoServerwooleServer;
 class ReceiveListener implements ReceiveInterface
 {
     /**
-     * @param SCoServerwooleServer $server
-     * @param int                  $fd
-     * @param int                  $reactorId
-     * @param string               $data
+     * @param Server $server
+     * @param int    $fd
+     * @param int    $reactorId
+     * @param string $data
      */
-    public function onReceive(SCoServerwooleServer $server, int $fd, int $reactorId, string $data): void
+    public function onReceive(Server $server, int $fd, int $reactorId, string $data): void
     {
-        // TODO: Implement onReceive() method.
     }
 }

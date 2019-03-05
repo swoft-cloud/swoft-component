@@ -14,7 +14,7 @@ interface TaskInterface
     /**
      * Task event
      *
-     * @param CoServer $serv
+     * @param CoServer $server
      * @param int      $taskId
      * @param int      $srcWorkerId
      * @param mixed    $data
