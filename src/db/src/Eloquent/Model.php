@@ -23,6 +23,32 @@ use Swoft\Stdlib\Jsonable;
  * Class Model
  *
  * @since 2.0
+ * @method static Model make(array $attributes = [])
+ * @method static Builder whereKey($id)
+ * @method static Builder whereKeyNot($id)
+ * @method static Builder where($column, $operator = null, $value = null, string $boolean = 'and')
+ * @method static Builder orWhere($column, $operator = null, $value = null)
+ * @method static Builder latest(string $column = null)
+ * @method static Builder oldest(string $column = null)
+ * @method static Collection hydrate(array $items)
+ * @method static Collection fromQuery(string $query, array $bindings = [])
+ * @method static Model find($id, array $columns = ['*'])
+ * @method static Collection findMany(array $ids, array $columns = ['*'])
+ * @method static Builder findOrFail($id, array $columns = ['*'])
+ * @method static Builder findOrNew($id, array $columns = ['*'])
+ * @method static Builder firstOrNew(array $attributes, array $values = [])
+ * @method static Builder firstOrCreate(array $attributes, array $values = [])
+ * @method static Builder updateOrCreate(array $attributes, array $values = [])
+ * @method static Builder firstOrFail(array $columns = ['*'])
+ * @method static Builder firstOr(array $columns = ['*'], \Closure $callback = null)
+ * @method static mixed value(string $column)
+ * @method static Collection get(array $columns = ['*'])
+ * @method static Model[] getModels($columns = ['*'])
+ * @method static \Generator cursor()
+ * @method static bool chunkById(int $count, callable $callback, string $column = null, string $alias = null)
+ * @method static void enforceOrderBy()
+ * @method static Collection pluck(string $column, string $key = null)
+ * @method static Model create(array $attributes = [])
  */
 abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializable
 {
@@ -347,6 +373,9 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return bool
      * @throws EntityException
+     * @throws PoolException
+     * @throws PrototypeException
+     * @throws QueryException
      */
     protected function performUpdate(Builder $query)
     {
@@ -375,6 +404,8 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return Builder
      * @throws EntityException
+     * @throws PoolException
+     * @throws PrototypeException
      */
     protected function setKeysForSaveQuery(Builder $query)
     {
@@ -401,7 +432,6 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      * @param  Builder $query
      *
      * @return bool
-     * @throws QueryException
      * @throws EntityException
      */
     protected function performInsert(Builder $query)
@@ -449,7 +479,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
     protected function insertAndSetId(Builder $query, $attributes)
     {
         $keyName = $this->getKeyName();
-        $id = $query->insertGetId($attributes, $keyName);
+        $id      = $query->insertGetId($attributes, $keyName);
 
         $this->setAttribute($keyName, $id);
     }
@@ -462,6 +492,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      * @throws EntityException
      * @throws PoolException
      * @throws PrototypeException
+     * @throws QueryException
      */
     public function delete(): bool
     {
@@ -499,6 +530,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      * @throws EntityException
      * @throws PoolException
      * @throws PrototypeException
+     * @throws QueryException
      */
     public function forceDelete()
     {
@@ -508,10 +540,10 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
     /**
      * Perform the actual delete query on this model instance.
      *
-     * @return void
      * @throws EntityException
      * @throws PoolException
      * @throws PrototypeException
+     * @throws QueryException
      */
     protected function performDeleteOnModel()
     {
@@ -607,7 +639,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      */
     public function toArray(): array
     {
-        return array_merge($this->attributesToArray(), $this->relationsToArray());
+        return array_merge($this->attributesToArray());
     }
 
     /**
@@ -655,6 +687,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      * Reload the current model instance with fresh attributes from the database.
      *
      * @return $this
+     * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
      * @throws PrototypeException
@@ -948,24 +981,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      */
     protected function forwardCallTo($object, $method, $parameters)
     {
-        try {
-            return $object->{$method}(...$parameters);
-        } catch (\Exception | \BadMethodCallException $e) {
-            $pattern = '~^Call to undefined method (?P<class>[^:]+)::(?P<method>[^\(]+)\(\)$~';
-
-            if (!preg_match($pattern, $e->getMessage(), $matches)) {
-                throw $e;
-            }
-
-            if ($matches['class'] != get_class($object) ||
-                $matches['method'] != $method) {
-                throw $e;
-            }
-
-            throw new \BadMethodCallException(sprintf(
-                'Call to undefined method %s::%s()', static::class, $method
-            ));
-        }
+        return $object->{$method}(...$parameters);
     }
 
     /**
