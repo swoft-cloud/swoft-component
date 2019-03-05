@@ -145,6 +145,8 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
         $this->init();
 
+        CLog::info('Project path is <info>%s</info>', $this->basePath);
+
         // after init
         $this->afterInit();
     }

@@ -88,7 +88,7 @@ class AnnotationResource extends Resource
     }
 
     /**
-     * Load annotation resource
+     * Load annotation resource by find ClassLoader
      *
      * @throws \Doctrine\Common\Annotations\AnnotationException
      * @throws \ReflectionException
@@ -100,20 +100,20 @@ class AnnotationResource extends Resource
         foreach ($prefixDirsPsr4 as $ns => $paths) {
             // It is excluded psr4 prefix
             if ($this->isExcludedPsr4Prefix($ns)) {
-                CLog::info('Exclude %s', $ns);
+                CLog::info('Exclude scan %s', $ns);
                 continue;
             }
 
-            CLog::info('Scan %s', $ns);
+            CLog::info('Scan namespace %s', $ns);
 
             // Find package/component loader class
             foreach ($paths as $path) {
-                $annotationLoaderFile = $this->getAnnotationClassLoaderFile($path);
-                if (!\file_exists($annotationLoaderFile)) {
+                $loaderFile = $this->getAnnotationClassLoaderFile($path);
+                if (!\file_exists($loaderFile)) {
                     continue;
                 }
 
-                CLog::info('Load %s', $annotationLoaderFile);
+                CLog::info('Loader file %s', $loaderFile);
 
                 $loaderClass = $this->getAnnotationLoaderClassName($ns);
                 if (!\class_exists($loaderClass)) {
@@ -121,13 +121,16 @@ class AnnotationResource extends Resource
                     continue;
                 }
 
-                $annotationLoader = new $loaderClass();
-                if ($annotationLoader instanceof LoaderInterface) {
-                    $this->loadAnnotation($annotationLoader);
+                $loaderObject = new $loaderClass();
+                $isEnabled    = !isset($this->disabledAutoLoaders[$loaderClass]);
+
+                // If is disable, will skip scan annotation classes
+                if ($isEnabled && $loaderObject instanceof LoaderInterface) {
+                    $this->loadAnnotation($loaderObject);
                 }
 
-                // Register auto loader
-                AnnotationRegister::addAutoLoader($ns, $annotationLoader);
+                // Storage auto loader to register
+                AnnotationRegister::addAutoLoader($ns, $loaderObject);
             }
         }
     }
@@ -166,7 +169,6 @@ class AnnotationResource extends Resource
             /* @var \SplFileInfo $splFileInfo */
             foreach ($iterator as $splFileInfo) {
                 $pathName = $splFileInfo->getPathname();
-
                 if (\is_dir($pathName)) {
                     continue;
                 }
@@ -178,16 +180,16 @@ class AnnotationResource extends Resource
                     continue;
                 }
 
-                // is exclude filename
+                // It is exclude filename
                 if (isset($this->excludedFilenames[$fileName])) {
                     continue;
                 }
 
-                $suffix        = sprintf('.%s', $this->loaderClassSuffix);
-                $classPathName = str_replace([$path, '/'], ['', '\\'], $pathName);
-                $classPathName = trim($classPathName, $suffix);
+                $suffix        = \sprintf('.%s', $this->loaderClassSuffix);
+                $classPathName = \str_replace([$path, '/'], ['', '\\'], $pathName);
+                $classPathName = \trim($classPathName, $suffix);
 
-                $className = sprintf('%s%s', $ns, $classPathName);
+                $className = \sprintf('%s%s', $ns, $classPathName);
 
                 // Fix repeated autoloaded, such as `Swoft`
                 if (!\class_exists($className)) {
@@ -355,7 +357,9 @@ class AnnotationResource extends Resource
      */
     private function getAnnotationClassLoaderFile(string $path): string
     {
-        return \sprintf('%s/%s.%s', $path, $this->loaderClassName, $this->loaderClassSuffix);
+        return \realpath(
+            \sprintf('%s/%s.%s', $path, $this->loaderClassName, $this->loaderClassSuffix)
+        );
     }
 
     /**

@@ -70,6 +70,7 @@ class BeanProcessor extends Processor
 
             // If the component is disabled by user.
             if (isset($disabledLoaders[$loaderClass])) {
+                CLog::info('Auto loader(%s) is <cyan>disabled</cyan>, skip handle it', $loaderClass);
                 continue;
             }
 
@@ -86,7 +87,9 @@ class BeanProcessor extends Processor
         $beanFile = \alias($beanFile);
 
         if (!\file_exists($beanFile)) {
-            throw new \InvalidArgumentException(sprintf('The file of %s is not exist!', $beanFile));
+            throw new \InvalidArgumentException(\sprintf(
+                'The bean config file of %s is not exist!', $beanFile
+            ));
         }
 
         $beanDefinitions = require $beanFile;

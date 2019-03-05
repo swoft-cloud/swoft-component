@@ -59,14 +59,14 @@ class CEchoHandler extends AbstractProcessingHandler
         $level     = $record['level'];
         $message   = $record['message'];
         $levelName = $record['level_name'];
-        $levelName = sprintf('[%s]', $levelName);
+        $levelName = \sprintf('[%s]', $levelName);
 
         // Add level tag
-        $tag       = self::STYLES[$level];
-        $levelName = ColorTag::add($levelName, $tag);
+        $tagName   = self::STYLES[$level] ?? 'info';
+        $levelName = ColorTag::add($levelName, $tagName);
 
         // Format message
-        $message = sprintf('%s %s %s ' . PHP_EOL, $time, $levelName, $message);
+        $message = \sprintf('%s %s %s' . PHP_EOL, $time, $levelName, $message);
 
         echo Color::render($message);
     }
