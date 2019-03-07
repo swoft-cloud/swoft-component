@@ -2,7 +2,7 @@
 
 namespace Swoft\Server\Swoole;
 
-use Co\Server as CoServer;
+use Swoole\Server;
 
 /**
  * Interface PipeMessageInterface
@@ -14,9 +14,9 @@ interface PipeMessageInterface
     /**
      * Pipe message event
      *
-     * @param CoServer $server
+     * @param Server $server
      * @param int      $srcWorkerId
      * @param mixed    $message
      */
-    public function onPipeMessage(CoServer $server, int $srcWorkerId, $message): void;
+    public function onPipeMessage(Server $server, int $srcWorkerId, $message): void;
 }

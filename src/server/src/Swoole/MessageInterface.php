@@ -2,8 +2,8 @@
 
 namespace Swoft\Server\Swoole;
 
-use Co\Websocket\Frame;
-use Co\Websocket\Server;
+use Swoole\Websocket\Frame;
+use Swoole\Websocket\Server;
 
 /**
  * Interface MessageInterface

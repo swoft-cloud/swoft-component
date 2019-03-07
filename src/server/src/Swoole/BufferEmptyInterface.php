@@ -2,7 +2,7 @@
 
 namespace Swoft\Server\Swoole;
 
-use Co\Server as CoServer;
+use Swoole\Server;
 
 /**
  * Interface BufferEmptyInterface
@@ -14,8 +14,8 @@ interface BufferEmptyInterface
     /**
      * Buffer empty event
      *
-     * @param CoServer $server
+     * @param Server $server
      * @param int      $fd
      */
-    public function onBufferEmpty(CoServer $server, int $fd): void;
+    public function onBufferEmpty(Server $server, int $fd): void;
 }

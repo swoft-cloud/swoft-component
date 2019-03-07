@@ -2,8 +2,7 @@
 
 namespace Swoft\Server\Swoole;
 
-use Co\Server as CoServer;
-
+use Swoole\Server;
 
 /**
  * Interface FinishInterface
@@ -15,9 +14,9 @@ interface FinishInterface
     /**
      * Finish event
      *
-     * @param CoServer $server
+     * @param Server $server
      * @param int      $taskId
      * @param string   $data
      */
-    public function onFinish(CoServer $server, int $taskId, string $data): void;
+    public function onFinish(Server $server, int $taskId, string $data): void;
 }

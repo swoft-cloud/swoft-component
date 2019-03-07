@@ -2,8 +2,7 @@
 
 namespace Swoft\Server\Swoole;
 
-use Co\Server;
-
+use Swoole\Server;
 
 /**
  * Interface PacketInterface

@@ -2,7 +2,7 @@
 
 namespace Swoft\Server\Swoole;
 
-use Co\Server as CoServer;
+use Swoole\Server;
 
 /**
  * Interface CloseInterface
@@ -17,9 +17,9 @@ interface CloseInterface
      * on connection closed
      * - you can do something. eg. record log
      *
-     * @param CoServer $server
+     * @param Server $server
      * @param int      $fd
      * @param int      $reactorId
      */
-    public function onClose(CoServer $server, int $fd, int $reactorId): void;
+    public function onClose(Server $server, int $fd, int $reactorId): void;
 }

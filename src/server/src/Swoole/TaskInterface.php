@@ -2,7 +2,7 @@
 
 namespace Swoft\Server\Swoole;
 
-use Co\Server as CoServer;
+use Swoole\Server;
 
 /**
  * Interface TaskInterface
@@ -14,10 +14,10 @@ interface TaskInterface
     /**
      * Task event
      *
-     * @param CoServer $server
+     * @param Server $server
      * @param int      $taskId
      * @param int      $srcWorkerId
      * @param mixed    $data
      */
-    public function onTask(CoServer $server, int $taskId, int $srcWorkerId, $data): void;
+    public function onTask(Server $server, int $taskId, int $srcWorkerId, $data): void;
 }
