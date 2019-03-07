@@ -191,7 +191,7 @@ class AnnotationResource extends Resource
 
                 $className = \sprintf('%s%s', $ns, $classPathName);
 
-                // Fix repeated autoloaded, such as `Swoft`
+                // Fix repeated load, such as `Swoft`
                 if (!\class_exists($className)) {
                     continue;
                 }
@@ -357,8 +357,11 @@ class AnnotationResource extends Resource
      */
     private function getAnnotationClassLoaderFile(string $path): string
     {
-        return \realpath(
-            \sprintf('%s/%s.%s', $path, $this->loaderClassName, $this->loaderClassSuffix)
+        return \sprintf(
+            '%s/%s.%s',
+            \realpath($path),
+            $this->loaderClassName,
+            $this->loaderClassSuffix
         );
     }
 
