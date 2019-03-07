@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Bean\Definition\Parser;
 
@@ -90,14 +90,14 @@ class ObjectParser
      */
     protected function getValueByRef($value): array
     {
-        if (!is_string($value)) {
+        if (!\is_string($value)) {
             return [$value, false];
         }
 
         // Reg match
-        $isRef = preg_match('/^\$\{(.*)\}$/', $value, $match);
+        $isRef = \preg_match('/^\$\{(.*)\}$/', $value, $match);
         if ($isRef && isset($match[1])) {
-            return [$match[1], $isRef];
+            return [$match[1], (bool)$isRef];
         }
 
         return [$value, false];

@@ -1,9 +1,8 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Log;
 
-
+use Swoft\Helper\ComposerJSON;
 use Swoft\SwoftComponent;
 
 /**
@@ -24,10 +23,15 @@ class AutoLoader extends SwoftComponent
     }
 
     /**
+     * Metadata information for the component.
+     *
      * @return array
+     * @see ComponentInterface::getMetadata()
      */
     public function metadata(): array
     {
-        return [];
+        $jsonFile = \dirname(__DIR__) . '/composer.json';
+
+        return ComposerJSON::open($jsonFile)->getMetadata();
     }
 }

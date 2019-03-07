@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Bean\Definition\Parser;
 
@@ -81,7 +81,7 @@ class DefinitionObjParser extends ObjectParser
         $classNames   = $this->classNames[$className] ?? [];
         $classNames[] = $beanName;
 
-        $this->classNames[$className]       = array_unique($classNames);
+        $this->classNames[$className]       = \array_unique($classNames);
         $this->objectDefinitions[$beanName] = $objDefinition;
     }
 
@@ -130,7 +130,7 @@ class DefinitionObjParser extends ObjectParser
         // Remove `__option`
         unset($definition['__option']);
 
-        // Parse definition propertes
+        // Parse definition properties
         $propertyInjects = [];
         foreach ($definition as $propertyName => $propertyValue) {
             if (!is_string($propertyName)) {
@@ -170,7 +170,7 @@ class DefinitionObjParser extends ObjectParser
             $objDfn->setConstructorInjection($constructInject);
         }
 
-        // Set property inejct
+        // Set property inject
         foreach ($propertyInjects as $propertyName => $propertyInject) {
             $objDfn->setPropertyInjection($propertyName, $propertyInject);
         }
@@ -184,7 +184,7 @@ class DefinitionObjParser extends ObjectParser
         $scope = $option['scope'] ?? '';
         $alias = $option['alias'] ?? '';
 
-        if (in_array($scope, $scopes)) {
+        if (\in_array($scope, $scopes, true)) {
             throw new ContainerException('Scope for definition is not undefined');
         }
 
@@ -211,12 +211,14 @@ class DefinitionObjParser extends ObjectParser
     private function parseArrayProperty(array $propertyValue): array
     {
         foreach ($propertyValue as $proKey => &$proValue) {
-            list($refValue, $isRef) = $this->getValueByRef($proValue);
+            [$refValue, $isRef] = $this->getValueByRef($proValue);
             if (!$isRef) {
                 continue;
             }
+
             $proValue = new ArgsInjection($refValue, $isRef);
         }
+
         return $propertyValue;
     }
 }

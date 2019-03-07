@@ -23,5 +23,5 @@ interface JoinPointInterface
     /**
      * @return string
      */
-    public function getMethod();
+    public function getMethod(): string;
 }

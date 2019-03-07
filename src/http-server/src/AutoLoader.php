@@ -2,6 +2,7 @@
 
 namespace Swoft\Http\Server;
 
+use Swoft\Helper\ComposerJSON;
 use Swoft\Http\Message\ContentType;
 use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Formatter\HtmlResponseFormatter;
@@ -18,8 +19,21 @@ use function bean;
  *
  * @since 2.0
  */
-class AutoLoader extends \Swoft\AutoLoader
+class AutoLoader extends \Swoft\SwoftComponent
 {
+    /**
+     * Metadata information for the component.
+     *
+     * @return array
+     * @see ComponentInterface::getMetadata()
+     */
+    public function metadata(): array
+    {
+        $jsonFile = \dirname(__DIR__) . '/composer.json';
+
+        return ComposerJSON::open($jsonFile)->getMetadata();
+    }
+
     /**
      * Get namespace and dirs
      *

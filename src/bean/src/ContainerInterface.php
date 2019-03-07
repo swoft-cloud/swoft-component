@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Bean;
 
@@ -9,5 +9,5 @@ namespace Swoft\Bean;
  */
 interface ContainerInterface extends \Psr\Container\ContainerInterface
 {
-    
+
 }

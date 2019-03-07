@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Tcp\Server\Swoole;
 
@@ -20,6 +20,6 @@ class BufferFullListener implements BufferFullInterface
      */
     public function onBufferFull(CoServer $server, int $fd): void
     {
-        
+
     }
 }

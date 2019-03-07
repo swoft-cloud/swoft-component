@@ -333,7 +333,7 @@ abstract class Server implements ServerInterface
      */
     protected function startSwoole(): void
     {
-        if ($this->swooleServer === null) {
+        if (!$this->swooleServer) {
             throw new ServerException('You must to new server before start swoole!');
         }
 
@@ -356,20 +356,21 @@ abstract class Server implements ServerInterface
             }
 
             if (!isset(SwooleEvent::LISTENER_MAPPING[$name])) {
-                throw new ServerException(sprintf('Swoole %s event is not defined!', $name));
+                throw new ServerException(\sprintf('Swoole %s event is not defined!', $name));
             }
 
             $listenerInterface = SwooleEvent::LISTENER_MAPPING[$name];
             if (!($listener instanceof $listenerInterface)) {
-                throw new ServerException(sprintf('Swoole %s event listener is not %s', $name, $listenerInterface));
+                throw new ServerException(\sprintf('Swoole %s event listener is not %s', $name, $listenerInterface));
             }
 
-            $listenerMethod = sprintf('on%s', ucfirst($name));
+            $listenerMethod = \sprintf('on%s', \ucfirst($name));
             $this->swooleServer->on($name, [$listener, $listenerMethod]);
         }
 
         Swoft::trigger(ServerEvent::BEFORE_START);
 
+        // Start swoole server
         $this->swooleServer->start();
     }
 

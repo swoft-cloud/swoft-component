@@ -54,6 +54,14 @@ abstract class SwoftComponent implements ComponentInterface
     /**
      * Metadata information for the component.
      *
+     * Quick config:
+     *
+     * ```php
+     * $jsonFile = \dirname(__DIR__) . '/composer.json';
+     *
+     * return ComposerJSON::open($jsonFile)->getMetadata();
+     * ```
+     *
      * @return array
      * @see ComponentInterface::getMetadata()
      */

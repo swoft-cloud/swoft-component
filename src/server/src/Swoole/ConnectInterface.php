@@ -1,9 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Server\Swoole;
 
-use Co\Server as CoServer;
-
+use Swoole\Server;
 
 /**
  * Interface ConnectInterface
@@ -15,9 +14,9 @@ interface ConnectInterface
     /**
      * Connect event
      *
-     * @param CoServer $server
+     * @param Server $server
      * @param int      $fd
      * @param int      $reactorId
      */
-    public function onConnect(CoServer $server, int $fd, int $reactorId): void;
+    public function onConnect(Server $server, int $fd, int $reactorId): void;
 }

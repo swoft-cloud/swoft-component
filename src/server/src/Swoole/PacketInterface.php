@@ -1,9 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Server\Swoole;
 
-use Co\Server;
-
+use Swoole\Server;
 
 /**
  * Interface PacketInterface

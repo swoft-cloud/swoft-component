@@ -1,10 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Server\Swoole;
 
-
-use Co\Websocket\Server;
 use Swoft\Http\Message\Request;
+use Swoole\Websocket\Server;
 
 /**
  * Interface OpenInterface

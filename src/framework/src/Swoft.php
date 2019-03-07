@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use Swoft\Bean\Container;
 use Swoft\Event\EventInterface;
