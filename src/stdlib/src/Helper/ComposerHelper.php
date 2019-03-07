@@ -24,7 +24,7 @@ class ComposerHelper
      */
     public static function getClassLoader(): ClassLoader
     {
-        if (!empty(self::$composerLoader)) {
+        if (self::$composerLoader) {
             return self::$composerLoader;
         }
 

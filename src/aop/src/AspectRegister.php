@@ -18,42 +18,42 @@ class AspectRegister
     /**
      * Point execution
      */
-    const POINT_EXECUTION = 'execution';
+    public const POINT_EXECUTION = 'execution';
 
     /**
      * Point bean
      */
-    const POINT_BEAN = 'bean';
+    public const POINT_BEAN = 'bean';
 
     /**
      * Point annotation
      */
-    const POINT_ANNOTATION = 'annotation';
+    public const POINT_ANNOTATION = 'annotation';
 
     /**
      * After advice
      */
-    const ADVICE_AFTER = 'after';
+    public const ADVICE_AFTER = 'after';
 
     /**
      * Before advice
      */
-    const ADVICE_BEFORE = 'before';
+    public const ADVICE_BEFORE = 'before';
 
     /**
      * Around advice
      */
-    const ADVICE_AROUND = 'around';
+    public const ADVICE_AROUND = 'around';
 
     /**
      * After throwing advice
      */
-    const ADVICE_AFTERTHROWING = 'afterThrowing';
+    public const ADVICE_AFTERTHROWING = 'afterThrowing';
 
     /**
      * After returning advice
      */
-    const ADVICE_AFTERRETURNING = 'afterReturning';
+    public const ADVICE_AFTERRETURNING = 'afterReturning';
 
     /**
      * Register aspect

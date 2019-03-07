@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Aop\Annotation\Parser;
 
@@ -29,7 +29,7 @@ class PointExecutionParser extends Parser
      */
     public function parse(int $type, $annotationObject): array
     {
-        if ($type != self::TYPE_CLASS) {
+        if ($type !== self::TYPE_CLASS) {
             throw new AopException('`@PointExecution` must be defined by class!');
         }
 

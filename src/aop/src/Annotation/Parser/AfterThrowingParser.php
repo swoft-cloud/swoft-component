@@ -1,10 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Aop\Annotation\Parser;
 
 
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
+use Swoft\Annotation\AnnotationException;
 use Swoft\Aop\Annotation\Mapping\AfterThrowing;
 use Swoft\Aop\AspectRegister;
 
@@ -24,12 +25,12 @@ class AfterThrowingParser extends Parser
      * @param AfterThrowing $annotationObject
      *
      * @return array
-     * @throws AopException
+     * @throws AnnotationException
      */
     public function parse(int $type, $annotationObject): array
     {
-        if ($type != self::TYPE_METHOD) {
-            throw new AopException('`@AfterThrowing` must be defined by method!');
+        if ($type !== self::TYPE_METHOD) {
+            throw new AnnotationException('`@AfterThrowing` must be defined by method!');
         }
 
         AspectRegister::registerAdvice(AspectRegister::ADVICE_AFTERTHROWING, $this->className, $this->methodName);

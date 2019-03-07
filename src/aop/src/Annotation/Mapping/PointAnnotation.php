@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Aop\Annotation\Mapping;
 
@@ -15,7 +15,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
  *     @Attribute("include", type="array"),
  *     @Attribute("exclude", type="array"),
  * })
- *            
+ *
  * @since 2.0
  */
 final class PointAnnotation

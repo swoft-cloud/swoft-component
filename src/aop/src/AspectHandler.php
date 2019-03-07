@@ -85,7 +85,7 @@ class AspectHandler
     }
 
     /**
-     * Invoke target and before advcie
+     * Invoke target and before advice
      *
      * @param array $params
      *
@@ -169,7 +169,7 @@ class AspectHandler
      */
     private function invokeAdvice(array $aspectAry, \Throwable $catch = null, $return = null)
     {
-        list($aspectClass, $aspectMethod) = $aspectAry;
+        [$aspectClass, $aspectMethod] = $aspectAry;
 
         // Reflection data from cache
         $rftAry = container()->getReflection($aspectClass);
@@ -178,7 +178,8 @@ class AspectHandler
         $aspectArgs = [];
         foreach ($params as $param) {
             /* @var \ReflectionType $reflectType */
-            list(, $reflectType) = $param;
+            // [, $reflectType] = $param;
+            $reflectType = $param[1];
             if ($reflectType === null) {
                 $aspectArgs[] = null;
                 continue;
@@ -212,16 +213,16 @@ class AspectHandler
      *
      * @return ProceedingJoinPoint
      */
-    private function getProceedingJoinPoint(\Throwable $catch = null, $return = null)
+    private function getProceedingJoinPoint(\Throwable $catch = null, $return = null): ProceedingJoinPoint
     {
         $proceedingJoinPoint = new ProceedingJoinPoint($this->target, $this->methodName, $this->args);
         $proceedingJoinPoint->setHandler($this);
 
-        if (!empty($catch)) {
+        if ($catch) {
             $proceedingJoinPoint->setCatch($catch);
         }
 
-        if (!empty($return)) {
+        if ($return) {
             $proceedingJoinPoint->setReturn($return);
         }
 
@@ -239,11 +240,11 @@ class AspectHandler
     private function getJoinPoint(\Throwable $catch = null, $return = null): JoinPoint
     {
         $joinPoint = new JoinPoint($this->target, $this->methodName, $this->args);
-        if (!empty($catch)) {
+        if ($catch) {
             $joinPoint->setCatch($catch);
         }
 
-        if (!empty($return)) {
+        if ($return) {
             $joinPoint->setReturn($return);
         }
 
@@ -259,8 +260,8 @@ class AspectHandler
     {
         $aspect = clone  $this;
 
-        // Next apsect data
-        $aspect->aspect  = array_shift($this->aspects);
+        // Next aspect data
+        $aspect->aspect  = \array_shift($this->aspects);
         $aspect->aspects = $this->aspects;
 
         return $aspect;

@@ -1,4 +1,4 @@
-<?php 
+<?php declare(strict_types=1);
 
 
 namespace Swoft\Aop\Ast;
@@ -25,7 +25,7 @@ class Parser
     private $parser;
 
     /**
-     * Node vistors
+     * Node visitors
      *
      * @var NodeVisitor[]
      *
@@ -36,7 +36,7 @@ class Parser
      *     'name' => new NodeVisitor(),
      * ]
      */
-    private $nodeVistors;
+    private $nodeVisitors;
 
     /**
      * Traverser
@@ -80,29 +80,28 @@ class Parser
         $code = $this->getCodeByClassName($className);
         $ast  = $this->parser->parse($code, $errorHandler);
 
-        // Add vistors
-        foreach ($this->nodeVistors as $name => $nodeVistor) {
-            if ($nodeVistor instanceof NodeVisitor) {
-                $this->traverser->addVisitor($nodeVistor);
+        // Add visitors
+        foreach ($this->nodeVisitors as $name => $nodeVisitor) {
+            if ($nodeVisitor instanceof NodeVisitor) {
+                $this->traverser->addVisitor($nodeVisitor);
             }
         }
 
         // New code by traverse
         $nodes   = $this->traverser->traverse($ast);
-        $newCode = $this->printer->prettyPrint($nodes);
 
-        return $newCode;
+        return $this->printer->prettyPrint($nodes);
     }
 
     /**
-     * Add node vistor
+     * Add node visitor
      *
      * @param string      $name
      * @param NodeVisitor $nodeVisitor
      */
     public function addNodeVisitor(string $name, NodeVisitor $nodeVisitor): void
     {
-        $this->nodeVistors[$name] = $nodeVisitor;
+        $this->nodeVisitors[$name] = $nodeVisitor;
     }
 
     /**
@@ -118,12 +117,10 @@ class Parser
         // Get file by class name
         $file = ComposerHelper::getClassLoader()->findFile($className);
 
-        if (!file_exists($file)) {
+        if (!\file_exists($file)) {
             throw new AopException(sprintf('%s file is not exist!', $file));
         }
 
-        $phpCode = file_get_contents($file);
-
-        return $phpCode;
+        return \file_get_contents($file);
     }
 }
