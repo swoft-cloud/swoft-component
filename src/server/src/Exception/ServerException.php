@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Server\Exception;
 
@@ -9,5 +9,5 @@ namespace Swoft\Server\Exception;
  */
 class ServerException extends \Exception
 {
-    
+
 }

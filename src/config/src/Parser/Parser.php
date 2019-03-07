@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 namespace Swoft\Config\Parser;
 
 
@@ -7,5 +7,5 @@ namespace Swoft\Config\Parser;
  */
 abstract class Parser implements ParserInterface
 {
-    
+
 }

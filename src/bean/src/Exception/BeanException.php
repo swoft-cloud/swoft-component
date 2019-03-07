@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Bean\Exception;
 
@@ -9,5 +9,5 @@ namespace Swoft\Bean\Exception;
  */
 class BeanException extends \Exception
 {
-    
+
 }
