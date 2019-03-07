@@ -125,7 +125,7 @@ abstract class Server implements ServerInterface
     /**
      * Swoole Server
      *
-     * @var \Co\Server|\Co\Http\Server|\Co\Websocket\Server
+     * @var \Swoole\Server|\Swoole\Http\Server|\Swoole\Websocket\Server
      */
     protected $swooleServer;
 
