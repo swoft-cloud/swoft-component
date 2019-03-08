@@ -94,6 +94,7 @@ class Application implements ConsoleInterface
             'workDir'     => input()->getPwd(),
             'script'      => input()->getScript(), // bin/app
             'command'     => input()->getCommand(), // demo OR home:test
+            'fullCmd'     => input()->getFullCommand(),
             'fullCommand' => input()->getFullCommand(),
         ];
     }
@@ -207,11 +208,11 @@ class Application implements ConsoleInterface
     {
         [$className, $method] = $route['handler'];
 
-        // bind method params
+        // Bind method params
         $bindParams = $this->getBindParams($className, $method);
         $beanObject = \Swoft::getBean($className);
 
-        // blocking running
+        // Blocking running
         if (!$route['coroutine']) {
             $this->beforeExecute(\get_parent_class($beanObject), $method);
             PhpHelper::call([$beanObject, $method], $bindParams);
@@ -219,7 +220,7 @@ class Application implements ConsoleInterface
             return;
         }
 
-        // coroutine running
+        // Coroutine running
         Co::create(function () use ($beanObject, $method, $bindParams) {
             $this->beforeExecute(\get_parent_class($beanObject), $method);
             PhpHelper::call([$beanObject, $method], $bindParams);
@@ -317,7 +318,6 @@ class Application implements ConsoleInterface
         }
 
         $map = [];
-
         foreach ($vars as $key => $value) {
             $key = self::HELP_VAR_LEFT . $key . self::HELP_VAR_RIGHT;
             // save

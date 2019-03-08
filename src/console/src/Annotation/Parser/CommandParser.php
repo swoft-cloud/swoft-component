@@ -76,9 +76,9 @@ class CommandParser extends Parser
         return [$class, $class, Bean::SINGLETON, ''];
     }
 
-    public static function addHandler()
+    public static function addHandler(): void
     {
-
+        // TODO ...
     }
 
     /**
@@ -139,9 +139,13 @@ class CommandParser extends Parser
     {
         $maxLen = 12;
         $groups = [];
-        // $defCmd = $router->getDefaultCommand();
-        // default description
-        $defDesc = 'No description message';
+        $docOpts = [
+            'allow' => ['example']
+        ];
+        $defInfo = [
+            'example'     => '',
+            'description' => 'No description message',
+        ];
 
         foreach (self::$commands as $class => $mapping) {
             $names = [];
@@ -150,48 +154,56 @@ class CommandParser extends Parser
             $router->setGroupAliases($group, $mapping['aliases']);
 
             $refInfo = \Swoft::getReflection($class);
+            $mhdInfo = $refInfo['methods'] ?? [];
             $grpOpts = $mapping['options'] ?? [];
 
             foreach ($mapping['commands'] as $method => $route) {
                 // $method = $route['method'];
                 $cmdDesc = $route['desc'];
                 $command = $route['command'];
-                $idLen   = \strlen($group . $command);
 
+                $idLen = \strlen($group . $command);
                 if ($idLen > $maxLen) {
                     $maxLen = $idLen;
                 }
 
-                if (!$cmdDesc && !empty($refInfo['methods'][$method]['comments'])) {
-                    $cmdDesc = DocBlock::firstLine($refInfo['methods'][$method]['comments']);
+                $cmdExam = '';
+                if (!empty($mhdInfo[$method]['comments'])) {
+                    $tagInfo = DocBlock::getTags($mhdInfo[$method]['comments'], $docOpts, $defInfo);
+                    $cmdDesc = $cmdDesc ?: $tagInfo['description'];
+                    $cmdExam = $tagInfo['example'];
                 }
 
                 $route['group']   = $group;
-                $route['desc']    = $cmdDesc ? \ucfirst($cmdDesc) : $defDesc;
+                $route['desc']    = \ucfirst($cmdDesc);
+                $route['example'] = $cmdExam;
                 $route['options'] = self::mergeOptions($grpOpts, $route['options']);
                 // append group option
                 $route['enabled']   = $mapping['enabled'];
                 $route['coroutine'] = $mapping['coroutine'];
 
                 $router->map($group, $command, [$class, $method], $route);
-
                 $names[] = $command;
             }
 
             // always register default command.
             // $router->map($group, $defCmd, [$class, $defCmd]);
 
+            $groupExam = '';
             $groupDesc = $mapping['desc'];
-            if (!$groupDesc && !empty($refInfo['comments'])) {
-                $groupDesc = DocBlock::firstLine($refInfo['comments']);
+            if (!empty($refInfo['comments'])) {
+                $tagInfo   = DocBlock::getTags($refInfo['comments'], $docOpts, $defInfo);
+                $groupDesc = $groupDesc ?: $tagInfo['description'];
+                $groupExam = $tagInfo['example'];
             }
 
             $groups[$group] = [
                 'names'   => $names,
-                'desc'    => $groupDesc ? \ucfirst($groupDesc) : $defDesc,
+                'desc'    => \ucfirst($groupDesc),
                 'class'   => $class,
                 'alias'   => $mapping['alias'],
                 'aliases' => $mapping['aliases'],
+                'example' => $groupExam,
             ];
         }
 

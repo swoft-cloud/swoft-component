@@ -15,6 +15,9 @@ use Swoft\Server\Command\BaseServerCommand;
  * @since 2.0
  *
  * @Command("http", alias="httpserver,httpServer,http-server", coroutine=false)
+ * @example
+ *  {fullCmd}:start     Start the http server
+ *  {fullCmd}:stop      Stop the http server
  */
 class HttpServerCommand extends BaseServerCommand
 {
