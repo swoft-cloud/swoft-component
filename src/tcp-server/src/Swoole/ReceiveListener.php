@@ -2,7 +2,7 @@
 
 namespace Swoft\Tcp\Server\Swoole;
 
-use Co\Server;
+use Swoole\Server;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Server\Swoole\ReceiveInterface;
 

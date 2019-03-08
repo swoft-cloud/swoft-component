@@ -22,7 +22,7 @@ class TcpServer extends Server
      */
     public function start(): void
     {
-        $this->swooleServer = new \Co\Server($this->host, $this->port, $this->mode, $this->type);
+        $this->swooleServer = new \Swoole\Server($this->host, $this->port, $this->mode, $this->type);
 
         $this->startSwoole();
     }

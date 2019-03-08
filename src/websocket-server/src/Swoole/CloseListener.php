@@ -2,7 +2,7 @@
 
 namespace Swoft\WebSocket\Server\Swoole;
 
-use Co\Server as CoServer;
+use Swoole\Server;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Session\Session;
 use Swoft\Server\Swoole\CloseInterface;
@@ -20,13 +20,13 @@ class CloseListener implements CloseInterface
     /**
      * Close event
      *
-     * @param CoServer $server
+     * @param Server $server
      * @param int      $fd
      * @param int      $reactorId
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public function onClose(CoServer $server, int $fd, int $reactorId): void
+    public function onClose(Server $server, int $fd, int $reactorId): void
     {
         /*
         WEBSOCKET_STATUS_CONNECTION = 1，连接进入等待握手
