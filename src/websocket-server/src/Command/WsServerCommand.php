@@ -7,6 +7,7 @@ use Swoft\Console\Annotation\Mapping\CommandMapping;
 use Swoft\Console\Annotation\Mapping\CommandOption;
 use Swoft\Console\Helper\Show;
 use Swoft\Helper\EnvHelper;
+use Swoft\Server\Command\BaseServerCommand;
 use Swoft\Server\Server;
 use Swoft\WebSocket\Server\WebSocketServer;
 
@@ -18,16 +19,17 @@ use Swoft\WebSocket\Server\WebSocketServer;
  *     desc="provide some commands to operate WebSocket Server"
  * )
  */
-class WsServerCommand
+class WsServerCommand extends BaseServerCommand
 {
     /**
      * Start the webSocket server
      *
-     * @CommandMapping(
-     *     usage="{fullCommand} [-d|--daemon]",
-     *     example="{fullCommand}\n{fullCommand} -d"
-     * )
+     * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
      * @CommandOption("daemon", short="d", desc="Run server on the background")
+     *
+     * @example
+     *  {fullCommand}
+     *  {fullCommand} -d
      *
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
@@ -134,14 +136,12 @@ class WsServerCommand
     /**
      * Restart the http server
      *
-     * @CommandMapping(
-     *     usage="{fullCommand} [-d|--daemon]",
-     *     example="
-     * {fullCommand}
-     * {fullCommand} -d"
-     * )
+     * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
      * @CommandOption("daemon", short="d", desc="Run server on the background")
      *
+     * @example
+     * {fullCommand}
+     * {fullCommand} -d
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
@@ -170,20 +170,6 @@ class WsServerCommand
         $server->setScriptFile($script);
 
         return $server;
-    }
-
-    /**
-     * 设置启动选项，覆盖配置选项
-     *
-     * @param Server $server
-     */
-    protected function configStartOption(Server $server): void
-    {
-        $asDaemon = \input()->getSameOpt(['d', 'daemon'], false);
-
-        if ($asDaemon) {
-            $server->setDaemonize();
-        }
     }
 }
 

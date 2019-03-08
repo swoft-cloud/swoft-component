@@ -76,6 +76,11 @@ class CommandParser extends Parser
         return [$class, $class, Bean::SINGLETON, ''];
     }
 
+    public static function addHandler()
+    {
+
+    }
+
     /**
      * @param string $class
      * @param string $method

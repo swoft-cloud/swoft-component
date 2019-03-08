@@ -234,7 +234,7 @@ trait RenderHelpInfoTrait
             }
         }
 
-        if ($example = \trim($info['example'], "* \n")) {
+        if ($example = \trim($info['example'] ?? '', "* \n")) {
             $vars = $this->getCommentsVars();
 
             Console::writef("\n<comment>Example:</comment>\n  %s", $this->parseCommentsVars($example, $vars));

@@ -5,21 +5,21 @@ namespace Swoft\Console\Annotation\Parser;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\AnnotationException;
-use Swoft\Console\Annotation\Mapping\CommandMapping;
+use Swoft\Console\Annotation\Mapping\CommandHandler;
 
 /**
- * Class CommandMappingParser
+ * Class CommandHandlerParser
  *
  * @since 2.0
- * @AnnotationParser(CommandMapping::class)
+ * @AnnotationParser(CommandHandler::class)
  */
-class CommandMappingParser extends Parser
+class CommandHandlerParser extends Parser
 {
     /**
      * Parse object
      *
      * @param int            $type Class or Method or Property
-     * @param CommandMapping $annotation Annotation object
+     * @param CommandHandler $annotation Annotation object
      *
      * @return array
      * Return empty array is nothing to do!
@@ -28,8 +28,8 @@ class CommandMappingParser extends Parser
      */
     public function parse(int $type, $annotation): array
     {
-        if ($type !== self::TYPE_METHOD) {
-            throw new AnnotationException('`@CommandMapping` must be defined on class method!');
+        if ($type !== self::TYPE_CLASS) {
+            throw new AnnotationException('`@CommandMapping` must be defined on class!');
         }
 
         $method = $this->methodName;
@@ -42,7 +42,6 @@ class CommandMappingParser extends Parser
             'aliases' => $annotation->getAliases(),
             'desc'    => $annotation->getDesc(),
             'usage'   => $annotation->getUsage(),
-            // 'example' => $annotation->getExample(),
         ]);
 
         return [];
