@@ -14,4 +14,5 @@ final class ConsoleEvent
     public const AFTER_EXECUTE   = 'console.execute.after';
     public const AFTER_DISPATCH  = 'console.dispatch.after';
     public const AFTER_RUN       = 'console.run.after';
+    public const ERROR_RUN       = 'console.run.error';
 }

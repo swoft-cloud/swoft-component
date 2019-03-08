@@ -114,9 +114,12 @@ class Application implements ConsoleInterface
     public function run(): void
     {
         try {
+            \Swoft::trigger(ConsoleEvent::BEFORE_RUN, $this);
+
+            // Prepare
             $this->prepare();
 
-            // get input command
+            // Get input command
             $inputCommand = $this->input->getCommand();
 
             if (!$inputCommand) {
@@ -124,14 +127,10 @@ class Application implements ConsoleInterface
             } else {
                 $this->doRun($inputCommand);
             }
+
+            \Swoft::trigger(ConsoleEvent::AFTER_RUN, $this, $inputCommand);
         } catch (\Throwable $e) {
-            $this->output->writef(
-                "<error>%s</error>\nAt %s line <cyan>%d</cyan>",
-                $e->getMessage(),
-                $e->getFile(),
-                $e->getLine()
-            );
-            $this->output->writef("Trace:\n%s", $e->getTraceAsString());
+            $this->handleException($e);
         }
     }
 
@@ -176,8 +175,12 @@ class Application implements ConsoleInterface
             return;
         }
 
+        \Swoft::triggerByArray(ConsoleEvent::BEFORE_DISPATCH, $this, $info);
+
         // Call command handler
         $this->dispatch($info);
+
+        \Swoft::triggerByArray(ConsoleEvent::AFTER_DISPATCH, $this, $info);
     }
 
     /**
@@ -301,7 +304,31 @@ class Application implements ConsoleInterface
     private function afterExecute(string $command): void
     {
         // TODO ... event params
-        \Swoft::trigger(ConsoleEvent::AFTER_EXECUTE, $command);
+        \Swoft::triggerByArray(ConsoleEvent::AFTER_EXECUTE, $command, [
+            'command' => $command,
+        ]);
+    }
+
+    protected function handleException(\Throwable $e): void
+    {
+        try {
+            $evt = \Swoft::triggerByArray(ConsoleEvent::ERROR_RUN, $this, [
+                'exception' => $e,
+            ]);
+
+            // Don't want to continue processing
+            if (!$evt->isPropagationStopped()) {
+                $this->output->writef(
+                    "<error>%s</error>\nAt %s line <cyan>%d</cyan>",
+                    $e->getMessage(),
+                    $e->getFile(),
+                    $e->getLine()
+                );
+                $this->output->writef("Trace:\n%s", $e->getTraceAsString());
+            }
+        } catch (\Throwable $e) {
+            // Do nothing
+        }
     }
 
     /**

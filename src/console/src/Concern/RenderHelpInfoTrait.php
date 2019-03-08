@@ -24,13 +24,19 @@ trait RenderHelpInfoTrait
         /** @var Output $output */
         $output = $this->output;
 
-        // version information
+        // Current application
+        $appVer  = $this->getVersion();
+        $appDesc = $this->getDescription();
+        $output->writef('%s%s', $appDesc, $appVer ? " (Version: <info>$appVer</info>)" : '');
+
+        // Version information
         $phpVersion    = \PHP_VERSION;
         $swoftVersion  = \Swoft::VERSION;
         $swooleVersion = \SWOOLE_VERSION;
 
         // Display logo
-        $output->colored(\Swoft::FONT_LOGO);
+        $output->colored(' ' . \ltrim(\Swoft::FONT_LOGO));
+
         // Display some information
         $output->writef(
             'PHP: <info>%s</info>, Swoft: <info>%s</info>, Swoole: <info>%s</info>',
