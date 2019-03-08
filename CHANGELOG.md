@@ -2,6 +2,13 @@
 
 > 日期时间都是大概的时间点
 
+## 2019.03.08
+
+- console 组件调整(@inhere)
+  - 支持添加独立命令Handler
+  - `Command` 所在class支持通过 `@example` 设置命令组的使用示例
+  - `CommandMapping` 所在命令方法上支持通过 `@example` 设置命令的使用示例
+
 ## 2019.03.05
 
 - 优化log日志组件代码(@inhere)

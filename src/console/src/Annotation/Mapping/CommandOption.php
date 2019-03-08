@@ -14,8 +14,6 @@ use Swoft\Stdlib\Helper\Str;
  * @Annotation
  * @Target({"CLASS", "METHOD"})
  * @Attributes(
- *     @Attribute("name", type="string"),
- *     @Attribute("desc", type="string"),
  *     @Attribute("short", type="string")
  * )
  */

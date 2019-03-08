@@ -386,6 +386,15 @@ class Router implements RouterInterface
 
     /**
      * @param string $name
+     * @param array  $info
+     */
+    public function setGroupInfo(string $name, array $info): void
+    {
+        $this->groups[$name] = $info;
+    }
+
+    /**
+     * @param string $name
      * @return array
      */
     public function getGroupInfo(string $name): array

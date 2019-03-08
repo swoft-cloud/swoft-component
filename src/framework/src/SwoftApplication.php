@@ -111,6 +111,15 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     private $disabledPsr4Prefixes = [];
 
     /**
+     * Get the application version
+     * @return string
+     */
+    public static function getVersion(): string
+    {
+        return self::VERSION;
+    }
+
+    /**
      * Class constructor.
      *
      * @param array $config

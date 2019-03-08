@@ -7,6 +7,7 @@ use Swoft\Console\Annotation\Mapping\CommandMapping;
 use Swoft\Console\Annotation\Mapping\CommandOption;
 use Swoft\Console\Helper\Show;
 use Swoft\Http\Server\HttpServer;
+use Swoft\Server\Command\BaseServerCommand;
 
 /**
  * Provide some commands to manage the HTTP Server
@@ -14,18 +15,21 @@ use Swoft\Http\Server\HttpServer;
  * @since 2.0
  *
  * @Command("http", alias="httpserver,httpServer,http-server", coroutine=false)
+ * @example
+ *  {fullCmd}:start     Start the http server
+ *  {fullCmd}:stop      Stop the http server
  */
-class HttpServerCommand
+class HttpServerCommand extends BaseServerCommand
 {
     /**
      * Start the http server
      *
-     * @CommandMapping(
-     *     usage="{fullCommand} [-d|--daemon]",
-     *     example="{fullCommand}\n{fullCommand} -d"
-     * )
-     *
+     * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
      * @CommandOption("daemon", short="d", desc="Run server on the background")
+     *
+     * @example
+     *  {fullCommand}
+     *  {fullCommand} -d
      *
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
@@ -132,14 +136,12 @@ class HttpServerCommand
     /**
      * Restart the http server
      *
-     * @CommandMapping(
-     *     usage="{fullCommand} [-d|--daemon]",
-     *     example="
-     * {fullCommand}
-     * {fullCommand} -d"
-     * )
+     * @CommandMapping(usage="{fullCommand} [-d|--daemon]",)
      * @CommandOption("daemon", short="d", desc="Run server on the background")
      *
+     * @example
+     *  {fullCommand}
+     *  {fullCommand} -d
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
@@ -171,19 +173,5 @@ class HttpServerCommand
         $server->setScriptFile(\Swoft::app()->getPath($script));
 
         return $server;
-    }
-
-    /**
-     * 设置启动选项，覆盖配置选项
-     *
-     * @param HttpServer $server
-     */
-    protected function configStartOption(HttpServer $server): void
-    {
-        $asDaemon = \input()->getSameOpt(['d', 'daemon'], false);
-
-        if ($asDaemon) {
-            $server->setDaemonize();
-        }
     }
 }
