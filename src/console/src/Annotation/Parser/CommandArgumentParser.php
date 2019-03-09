@@ -6,6 +6,7 @@ use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\AnnotationException;
 use Swoft\Console\Annotation\Mapping\CommandArgument;
+use Swoft\Console\CommandRegister;
 
 /**
  * Class CommandArgumentParser
@@ -32,8 +33,7 @@ class CommandArgumentParser extends Parser
             throw new AnnotationException('`@CommandArgument` must be defined on class method!');
         }
 
-        // add route info for controller action
-        CommandParser::bindArgument($this->className, $this->methodName, $annotation->getName(), [
+        CommandRegister::bindArgument($this->className, $this->methodName, $annotation->getName(), [
             'method'  => $this->methodName,
             'name'    => $annotation->getName(),
             'desc'    => $annotation->getDesc(),

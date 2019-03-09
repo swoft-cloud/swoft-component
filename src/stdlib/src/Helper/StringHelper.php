@@ -126,6 +126,23 @@ class StringHelper
     }
 
     /**
+     * @param string $str
+     * @return string
+     */
+    public static function firstLine(string $str): string
+    {
+        if (!$str = \trim($str)) {
+            return '';
+        }
+
+        if (\strpos($str, "\n") > 0) {
+            return \explode("\n", $str)[0];
+        }
+
+        return $str;
+    }
+
+    /**
      * Cap a string with a single instance of a given value.
      *
      * @param  string $value

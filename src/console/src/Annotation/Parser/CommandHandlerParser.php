@@ -5,7 +5,10 @@ namespace Swoft\Console\Annotation\Parser;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\AnnotationException;
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Console\Annotation\Mapping\CommandHandler;
+use Swoft\Console\CommandRegister;
+use Swoft\Stdlib\Helper\Str;
 
 /**
  * Class CommandHandlerParser
@@ -32,11 +35,12 @@ class CommandHandlerParser extends Parser
             throw new AnnotationException('`@CommandMapping` must be defined on class!');
         }
 
-        $method = $this->methodName;
+        $class  = $this->className;
+        $method = $annotation->getMethod();
 
         // add route info for controller action
-        CommandParser::addRoute($this->className, $method, [
-            'command' => $annotation->getName() ?: $method,
+        CommandRegister::addHandler($class, $method, [
+            'command' => $annotation->getName() ?: Str::getClassName($class, 'Handler'),
             'method'  => $method,
             'alias'   => $annotation->getAlias(),
             'aliases' => $annotation->getAliases(),
@@ -44,6 +48,6 @@ class CommandHandlerParser extends Parser
             'usage'   => $annotation->getUsage(),
         ]);
 
-        return [];
+        return [$class, $class, Bean::SINGLETON, ''];
     }
 }

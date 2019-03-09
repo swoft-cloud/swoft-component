@@ -274,6 +274,7 @@ class AnnotationObjParser extends ObjectParser
             $parserClassName  = $this->parsers[$annotationClass];
             $annotationParser = $this->getAnnotationParser($classAry, $parserClassName);
 
+
             $annotationParser->setMethodName($methodName);
             $data = $annotationParser->parse(Parser::TYPE_METHOD, $methodAnnotation);
 

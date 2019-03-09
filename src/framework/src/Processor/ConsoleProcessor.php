@@ -2,8 +2,7 @@
 
 namespace Swoft\Processor;
 
-use Swoft\Console\Annotation\Parser\CommandParser;
-use Swoft\Console\Application;
+use Swoft\Console\CommandRegister;
 use Swoft\Console\Router\Router;
 
 /**
@@ -28,7 +27,7 @@ class ConsoleProcessor extends Processor
         $router = \bean('cliRouter');
 
         // Register console routes
-        CommandParser::registerTo($router);
+        CommandRegister::register($router);
 
         // Run console application
         \bean('cliApp')->run();
