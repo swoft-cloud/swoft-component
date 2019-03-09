@@ -17,7 +17,7 @@ interface HandlerInterface
      *
      * @param string           $beanName
      * @param string           $className
-     * @param ObjectDefinition $objectDefinition
+     * @param ObjectDefinition $objDfn
      * @param array            $annotation
      */
     public function beforeInit(string $beanName, string $className, ObjectDefinition $objDfn, array $annotation): void;

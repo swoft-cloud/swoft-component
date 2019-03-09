@@ -316,12 +316,12 @@ class Container implements ContainerInterface
         $this->initializeBeans();
     }
 
-    public function initializeRequest(int $rid)
+    public function initializeRequest(int $rid): void
     {
-//        /* @var ObjectDefinition $objectDefinition */
-//        foreach ($this->requestDefinitions as $beanName => $objectDefinition) {
-//
-//        }
+        //        /* @var ObjectDefinition $objectDefinition */
+        //        foreach ($this->requestDefinitions as $beanName => $objectDefinition) {
+        //
+        //        }
     }
 
     /**
@@ -565,14 +565,14 @@ class Container implements ContainerInterface
         foreach ($this->objectDefinitions as $beanName => $objectDefinition) {
             $scope = $objectDefinition->getScope();
             // Exclude request
-            if ($scope == Bean::REQUEST) {
+            if ($scope === Bean::REQUEST) {
                 $this->requestDefinitions[$beanName] = $objectDefinition;
                 unset($this->objectDefinitions[$beanName]);
                 continue;
             }
 
             // Exclude session
-            if ($scope == Bean::SESSION) {
+            if ($scope === Bean::SESSION) {
                 $this->sessionDefinitions[$beanName] = $objectDefinition;
                 unset($this->objectDefinitions[$beanName]);
                 continue;
@@ -591,7 +591,7 @@ class Container implements ContainerInterface
      */
     private function getNewObjectDefinition(string $beanName): ObjectDefinition
     {
-         if (isset($this->objectDefinitions[$beanName])) {
+        if (isset($this->objectDefinitions[$beanName])) {
             return $this->objectDefinitions[$beanName];
         }
 
@@ -684,6 +684,7 @@ class Container implements ContainerInterface
         $reflectionClass = new \ReflectionClass($className);
         $reflectObject   = $this->newInstance($reflectionClass, $constructArgs);
 
+        // Inject properties values
         $this->newProperty($reflectObject, $reflectionClass, $propertyInjects, $id);
 
         // Alias
@@ -768,7 +769,7 @@ class Container implements ContainerInterface
     }
 
     /**
-     * New bean property
+     * Inject properties into this bean. The properties data from config, annotation
      *
      * @param  object          $reflectObject
      * @param \ReflectionClass $reflectionClass
@@ -804,20 +805,28 @@ class Container implements ContainerInterface
                 throw new ContainerException(\sprintf('Property %s for bean can not be `static` ', $propertyName));
             }
 
+            // Parse property value
+            $propertyValue = $propertyInject->getValue();
+            if (\is_array($propertyValue)) {
+                $propertyValue = $this->newPropertyArray($propertyValue, $id);
+            }
+
+            if ($propertyInject->isRef()) {
+                $propertyValue = $this->getRefValue($propertyValue, $id);
+            }
+
+            // First, try set value by setter method
+            $setter = 'set' . \ucfirst($propertyName);
+            if (\method_exists($reflectObject, $setter)) {
+                $reflectObject->$setter($propertyValue);
+                continue;
+            }
+
             if (!$reflectProperty->isPublic()) {
                 $reflectProperty->setAccessible(true);
             }
 
-            $propertyValue = $propertyInject->getValue();
-            if (is_array($propertyValue)) {
-                $propertyValue = $this->newPropertyArray($propertyValue, $id);
-            }
-
-            $isRef = $propertyInject->isRef();
-            if ($isRef) {
-                $propertyValue = $this->getRefValue($propertyValue, $id);
-            }
-
+            // Set value by reflection
             $reflectProperty->setValue($reflectObject, $propertyValue);
         }
     }
@@ -880,6 +889,9 @@ class Container implements ContainerInterface
             $annotation = $classAnnotations[$className] ?? $annotation;
         }
 
+        // $annotations = \array_column($this->annotations, $className);
+        // $annotation  = $annotations ? $annotations[0] : [];
+
         $this->handler->beforeInit($beanName, $className, $objectDefinition, $annotation);
     }
 
@@ -917,7 +929,7 @@ class Container implements ContainerInterface
      */
     private function getRefValue($value, int $id = 0)
     {
-        if (!is_string($value)) {
+        if (!\is_string($value)) {
             return $value;
         }
 
