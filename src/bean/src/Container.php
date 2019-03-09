@@ -325,6 +325,52 @@ class Container implements ContainerInterface
     }
 
     /**
+     * Get request bean
+     *
+     * @param string $name
+     * @param int    $id
+     *
+     * @return object
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
+    public function getRequest(string $name, int $id)
+    {
+        if (isset($this->requestPool[$id][$name])) {
+            return $this->requestPool[$id][$name];
+        }
+
+        if (!isset($this->requestDefinitions[$name])) {
+            throw new ContainerException(sprintf('Request bean(%s) is not defined', $name));
+        }
+
+        return $this->newBean($name, $id);
+    }
+
+    /**
+     * Get session bean
+     *
+     * @param string $name
+     * @param int    $id
+     *
+     * @return object
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
+    public function getSession(string $name, int $id)
+    {
+        if (isset($this->sessionPool[$id][$name])) {
+            return $this->sessionPool[$id][$name];
+        }
+
+        if (!isset($this->sessionDefinitions[$name])) {
+            throw new ContainerException(sprintf('Request bean(%s) is not defined', $name));
+        }
+
+        return $this->newBean($name, $id);
+    }
+
+    /**
      * Finds an entry of the container by its identifier and returns it.
      *
      * @param string $id Bean name Or alias Or class name
@@ -356,7 +402,7 @@ class Container implements ContainerInterface
         // Class name
         $classNames = $this->classNames[$id] ?? [];
         if (!empty($classNames)) {
-            $id = end($classNames);
+            $id = \end($classNames);
             return $this->get($id);
         }
 
@@ -482,6 +528,26 @@ class Container implements ContainerInterface
         }
 
         return isset($this->singletonPool[$name]);
+    }
+
+    /**
+     * Destroy request bean
+     *
+     * @param int $id
+     */
+    public function destroyRequest(int $id): void
+    {
+        unset($this->requestPool[$id]);
+    }
+
+    /**
+     * Destroy session bean
+     *
+     * @param int $id
+     */
+    public function destroySession(int $id): void
+    {
+        unset($this->sessionPool[$id]);
     }
 
     /**

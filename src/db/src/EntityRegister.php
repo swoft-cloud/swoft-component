@@ -100,6 +100,7 @@ class EntityRegister
      * @param string $column
      * @param string $pro
      * @param bool   $hidden
+     * @param string $type
      *
      * @throws EntityException
      */
@@ -108,7 +109,8 @@ class EntityRegister
         string $attrName,
         string $column,
         string $pro,
-        bool $hidden
+        bool $hidden,
+        string $type
     ): void {
         if (!isset(self::$entity[$className])) {
             throw new EntityException(sprintf('%s must be `@Entity` to use `@Column`', $className));
@@ -122,12 +124,14 @@ class EntityRegister
             'column' => $column,
             'pro'    => $pro,
             'hidden' => $hidden,
+            'type'   => $type,
         ];
 
         self::$columns[$className]['reverse'][$column] = [
             'attr'   => $attrName,
             'pro'    => $pro,
             'hidden' => $hidden,
+            'type'   => $type,
         ];
     }
 
@@ -139,8 +143,9 @@ class EntityRegister
      * @return string
      * @throws EntityException
      */
-    public static function getTable(string $className): string
-    {
+    public static function getTable(
+        string $className
+    ): string {
         $table = self::$entity[$className]['table'] ?? '';
         if (empty($table)) {
             throw new EntityException(sprintf('The table of `%s` entity is not defined or empty', $className));
@@ -202,5 +207,30 @@ class EntityRegister
     public static function getIdIncrementing(string $className): bool
     {
         return self::$entity[$className]['id']['incrementing'] ?? true;
+    }
+
+    /**
+     * Get column mapping
+     *
+     * @param string $className
+     *
+     * @return array
+     */
+    public static function getMapping(string $className): array
+    {
+        return self::$columns[$className]['mapping'] ?? [];
+    }
+
+    /**
+     * Get column mapping
+     *
+     * @param string $className
+     * @param string $column
+     *
+     * @return array
+     */
+    public static function getReverseMappingByColumn(string $className, string $column): array
+    {
+        return self::$columns[$className]['reverse'][$column] ?? [];
     }
 }

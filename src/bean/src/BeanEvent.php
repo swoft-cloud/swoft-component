@@ -11,19 +11,9 @@ namespace Swoft\Bean;
 class BeanEvent
 {
     /**
-     * Init request bean event
-     */
-    public const INIT_REQUEST = 'swoft.bean.request.init';
-
-    /**
      * Destroy request bean event
      */
     public const DESTROY_REQUEST = 'swoft.bean.request.destroy';
-
-    /**
-     * Init session event
-     */
-    public const INIT_SESSION = 'swoft.bean.session.init';
 
     /**
      * Destroy session event

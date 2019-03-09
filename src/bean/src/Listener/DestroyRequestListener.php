@@ -4,10 +4,12 @@
 namespace Swoft\Bean\Listener;
 
 
+use Swoft\Bean\BeanFactory;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Bean\BeanEvent;
+use Swoft\Helper\Log;
 
 /**
  * Class DestroyRequestListener
@@ -18,8 +20,16 @@ use Swoft\Bean\BeanEvent;
  */
 class DestroyRequestListener implements EventHandlerInterface
 {
+    /**
+     * @param EventInterface $event
+     */
     public function handle(EventInterface $event): void
     {
-        // TODO: Implement handle() method.
+        $id = (int)$event->getParam(0, 0);
+        if ($id === 0) {
+            return;
+        }
+
+        BeanFactory::destroyRequest($id);
     }
 }

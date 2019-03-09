@@ -62,6 +62,7 @@ class ObjectHelper
     public static function parseParamType(string $type, $value)
     {
         switch ($type) {
+            case 'integer':
             case 'int':
                 $value = (int)$value;
                 break;

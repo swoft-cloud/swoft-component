@@ -4,6 +4,7 @@
 namespace Swoft\Bean\Listener;
 
 
+use Swoft\Bean\BeanFactory;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
@@ -18,8 +19,16 @@ use Swoft\Bean\BeanEvent;
  */
 class DestroySessionListener implements EventHandlerInterface
 {
+    /**
+     * @param EventInterface $event
+     */
     public function handle(EventInterface $event): void
     {
-        // TODO: Implement handle() method.
+        $id = (int)$event->getParam(0, 0);
+        if ($id === 0) {
+            return;
+        }
+
+        BeanFactory::destroySession($id);
     }
 }

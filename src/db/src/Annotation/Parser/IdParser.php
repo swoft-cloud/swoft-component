@@ -7,6 +7,7 @@ namespace Swoft\Db\Annotation\Parser;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Db\Annotation\Mapping\Id;
+use Swoft\Db\EntityRegister;
 
 /**
  * Class IdParser
@@ -17,13 +18,15 @@ use Swoft\Db\Annotation\Mapping\Id;
 class IdParser extends Parser
 {
     /**
-     * @param int $type
-     * @param Id  $annotationObject
+     * @param int    $type
+     * @param object $annotationObject
      *
      * @return array
+     * @throws \Swoft\Db\Exception\EntityException
      */
     public function parse(int $type, $annotationObject): array
     {
+        EntityRegister::registerId($this->className, $this->propertyName, $annotationObject->isIncrementing());
         return [];
     }
 }

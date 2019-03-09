@@ -36,6 +36,36 @@ class BeanFactory
     }
 
     /**
+     * Get request bean
+     *
+     * @param string $name
+     * @param int    $id
+     *
+     * @return object
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
+    public static function getRequestBean(string $name, int $id)
+    {
+        return Container::getInstance()->getRequest($name, $id);
+    }
+
+    /**
+     * Get session bean
+     *
+     * @param string $name
+     * @param int    $id
+     *
+     * @return object
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
+    public static function getSessionBean(string $name, int $id)
+    {
+        return Container::getInstance()->getSession($name, $id);
+    }
+
+    /**
      * Create bean by definition
      *
      * @param string $name
@@ -57,6 +87,26 @@ class BeanFactory
     public static function createBean(string $name, array $definition = [])
     {
         return Container::getInstance()->create($name, $definition);
+    }
+
+    /**
+     * Destroy request bean
+     *
+     * @param int $id
+     */
+    public static function destroyRequest(int $id): void
+    {
+        Container::getInstance()->destroyRequest($id);
+    }
+
+    /**
+     * Destroy session bean
+     *
+     * @param int $id
+     */
+    public static function destroySession(int $id): void
+    {
+        Container::getInstance()->destroySession($id);
     }
 
     /**

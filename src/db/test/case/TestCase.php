@@ -13,5 +13,11 @@ use Swoft\Test\TestApplication;
  */
 class TestCase extends \PHPUnit\Framework\TestCase
 {
-
+    /**
+     * Wait event
+     */
+    public function tearDown()
+    {
+        \Swoole\Event::wait();
+    }
 }
