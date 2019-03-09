@@ -13,13 +13,9 @@ class ConfigProcessor extends Processor
      */
     public function handle(): bool
     {
-        if (!$this->application->beforeConsole()) {
+        if (!$this->application->beforeConfig()) {
             return false;
         }
-
-        //        var_dump(AnnotationRegister::getAnnotations());
-//        var_dump(AnnotationRegister::getParsers());
-        echo 'config' . PHP_EOL;
 
         return $this->application->afterConfig();
     }

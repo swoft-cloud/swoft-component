@@ -41,7 +41,7 @@ class AutoLoader extends AnnotationAutoLoader implements DefinitionInterface
         return [
             'config'             => [
                 'class'   => Config::class,
-                'path'    => alias('@config'),
+                'path'    => \alias('@config'),
                 'parsers' => [
                     Config::TYPE_PHP => '${phpParser}'
                 ]
