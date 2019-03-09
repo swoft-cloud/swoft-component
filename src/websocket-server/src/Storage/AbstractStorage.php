@@ -37,7 +37,7 @@ abstract class AbstractStorage
     /**
      * @param string $name
      */
-    public function newRoom(string $name)
+    public function newRoom(string $name): void
     {
 
     }
@@ -46,7 +46,7 @@ abstract class AbstractStorage
      * @param int    $fd
      * @param string $name
      */
-    public function joinRoom(int $fd, string $name)
+    public function joinRoom(int $fd, string $name): void
     {
 
     }
@@ -55,7 +55,7 @@ abstract class AbstractStorage
      * @param int    $fd
      * @param string $name
      */
-    public function leaveRoom(int $fd, string $name)
+    public function leaveRoom(int $fd, string $name): void
     {
 
     }

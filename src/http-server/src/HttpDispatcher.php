@@ -6,8 +6,8 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanEvent;
 use Swoft\Co;
 use Swoft\Dispatcher;
-use Swoft\Http\Message\Response;
 use Swoft\Http\Message\Request;
+use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Middleware\DefaultMiddleware;
 use Swoft\Http\Server\Middleware\RequestMiddleware;
 use Swoft\Http\Server\Middleware\UserMiddleware;
@@ -55,7 +55,7 @@ class HttpDispatcher extends Dispatcher
             $requestHandler->initialize($middlewares, $this->defaultMiddleware);
             $response = $requestHandler->handle($request);
         } catch (\Throwable $e) {
-            var_dump($e->getMessage(), $e->getFile(), $e->getLine());
+            \printf("Error: %s\nAt %s %d", $e->getMessage(), $e->getFile(), $e->getLine());
         }
 
         // Trigger after request
@@ -64,7 +64,7 @@ class HttpDispatcher extends Dispatcher
         // Trigger destroy request bean
         \Swoft::trigger(BeanEvent::DESTROY_REQUEST, $this, Co::tid());
 
-//      $response->withContent("<h1>Hello Swoole. #" . rand(1000, 9999) . "</h1>")->send();
+        // $response->withContent("<h1>Hello Swoole. #" . rand(1000, 9999) . "</h1>")->send();
     }
 
     /**

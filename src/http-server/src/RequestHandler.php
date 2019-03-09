@@ -3,13 +3,12 @@
 
 namespace Swoft\Http\Server;
 
-
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Http\Server\Middleware\MiddlewareInterface;
 use Swoft\Http\Server\Exception\HttpServerException;
+use Swoft\Http\Server\Middleware\MiddlewareInterface;
 
 /**
  * Class RequestHandler
@@ -42,10 +41,16 @@ class RequestHandler implements RequestHandlerInterface
      *
      * @param array  $middlewares
      * @param string $defaultMiddleware
+     * @throws HttpServerException
      */
-    public function initialize(array $middlewares, string $defaultMiddleware)
+    public function initialize(array $middlewares, string $defaultMiddleware): void
     {
-        $this->middlewares       = $middlewares;
+        $this->middlewares = $middlewares;
+
+        if (!$defaultMiddleware) {
+            throw new HttpServerException('You must define default middleware!');
+        }
+
         $this->defaultMiddleware = $defaultMiddleware;
     }
 
@@ -55,17 +60,12 @@ class RequestHandler implements RequestHandlerInterface
      * @param ServerRequestInterface $request
      *
      * @return ResponseInterface
-     * @throws HttpServerException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $middlewareName = $this->middlewares[$this->offset] ?? '';
-
-        if (!empty($middlewareName) && empty($this->defaultMiddleware)) {
-            throw new HttpServerException('You must define default middleware!');
-        }
 
         // Default middleware to handle request
         if (empty($middlewareName)) {
@@ -91,13 +91,12 @@ class RequestHandler implements RequestHandlerInterface
      */
     public function insertMiddlewares(array $middlewares, int $offset = null): void
     {
-        $offset = $offset === null ? $this->offset : $offset;
-
+        $offset = $offset ?? $this->offset;
         if ($offset > $this->offset) {
             throw new HttpServerException('Insert middleware offset must more than ' . $this->offset);
         }
 
         // Insert middlewares
-        array_splice($this->middlewares, $offset, 0, $middlewares);
+        \array_splice($this->middlewares, $offset, 0, $middlewares);
     }
 }

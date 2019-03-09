@@ -6,6 +6,7 @@ use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\AnnotationException;
 use Swoft\Console\Annotation\Mapping\CommandOption;
+use Swoft\Console\CommandRegister;
 
 /**
  * Class CommandOptionParser
@@ -32,9 +33,10 @@ class CommandOptionParser extends Parser
             throw new AnnotationException('`@CommandOption` must be defined on class or method!');
         }
 
+        $method = $this->methodName;
         // add route info for controller action
-        CommandParser::bindOption($this->className, $this->methodName, $annotation->getName(), [
-            'method'  => $this->methodName,
+        CommandRegister::bindOption($this->className, $method, $annotation->getName(), [
+            'method'  => $method,
             'name'    => $annotation->getName(),
             'short'   => $annotation->getShort(),
             'desc'    => $annotation->getDesc(),

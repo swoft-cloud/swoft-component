@@ -13,12 +13,20 @@ use Swoft\Console\AbstractHandler;
  */
 final class CommandHandler extends AbstractHandler
 {
+    public const GROUP  = '';
+    public const METHOD = 'execute';
+
     /**
      * Custom usage help information
      *
      * @var string
      */
     private $usage = '{fullCommand} [arguments ...] [options ...]';
+
+    /**
+     * @var string
+     */
+    private $method = self::METHOD;
 
     /**
      * Command constructor.
@@ -32,6 +40,10 @@ final class CommandHandler extends AbstractHandler
         if (isset($values['usage'])) {
             $this->usage = \trim($values['usage']);
         }
+
+        if (isset($values['method'])) {
+            $this->method = \trim($values['method']);
+        }
     }
 
     /**
@@ -40,5 +52,13 @@ final class CommandHandler extends AbstractHandler
     public function getUsage(): string
     {
         return $this->usage;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMethod(): string
+    {
+        return $this->method ?: self::METHOD;
     }
 }

@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft;
-
 
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoole\Coroutine;
@@ -31,6 +29,8 @@ class Co
      * Get current coroutine id
      *
      * @return int
+     * -1   Not in coroutine
+     * > -1 In coroutine
      */
     public static function id(): int
     {

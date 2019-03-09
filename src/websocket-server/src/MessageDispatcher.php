@@ -39,6 +39,8 @@ class MessageDispatcher
      * @param string      $command
      * @param array|mixed $body
      * @param Frame       $frame
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function dispatch($controller, string $command, $body, Frame $frame): void
     {

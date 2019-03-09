@@ -6,6 +6,7 @@ use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\AnnotationException;
 use Swoft\Console\Annotation\Mapping\CommandMapping;
+use Swoft\Console\CommandRegister;
 
 /**
  * Class CommandMappingParser
@@ -35,7 +36,7 @@ class CommandMappingParser extends Parser
         $method = $this->methodName;
 
         // add route info for controller action
-        CommandParser::addRoute($this->className, $method, [
+        CommandRegister::addRoute($this->className, $method, [
             'command' => $annotation->getName() ?: $method,
             'method'  => $method,
             'alias'   => $annotation->getAlias(),

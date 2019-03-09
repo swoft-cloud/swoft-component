@@ -1,25 +1,21 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Http\Server\Middleware;
 
-
-use App\Controller\TestController;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Http\Message\Request;
+use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Exception\MethodNotAllowedException;
 use Swoft\Http\Server\Exception\NotFoundRouteException;
 use Swoft\Http\Server\Formatter\AcceptResponseFormatter;
-use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Router\Route;
 use Swoft\Http\Server\Router\Router;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Stdlib\Helper\PhpHelper;
-use Swoole\Table\Row;
 
 /**
  * Class DefaultMiddleware
@@ -75,16 +71,17 @@ class DefaultMiddleware implements MiddlewareInterface
         [$status, , $route] = $router->match($uri, $method);
 
         // Not found route
-        if ($status == Router::NOT_FOUND || empty($route) || empty($route->getHandler())) {
+        if ($status === Router::NOT_FOUND) {
             throw new NotFoundRouteException(sprintf('Router(%s) not founded!', $uri));
         }
 
         // Method not allowed
-        if ($status == Router::METHOD_NOT_ALLOWED) {
+        if ($status === Router::METHOD_NOT_ALLOWED) {
             throw new MethodNotAllowedException(sprintf('Uri(%s) method(%s) not allowed!', $uri, $method));
         }
+
         // Controller and method
-        [$controllerClass, $method] = explode('@', $route->getHandler());
+        [$controllerClass, $method] = \explode('@', $route->getHandler());
 
         $pathParams = $route->getParams();
         $bindParams = $this->bindParams($controllerClass, $method, $pathParams);
@@ -98,7 +95,7 @@ class DefaultMiddleware implements MiddlewareInterface
             return $data;
         }
 
-        $response = context()->getResponse();
+        $response = \context()->getResponse();
         return $response->withData($data);
     }
 
@@ -135,7 +132,7 @@ class DefaultMiddleware implements MiddlewareInterface
             } elseif (isset($pathParams[$paramName])) {
                 $bindParams[] = ObjectHelper::parseParamType($type, $pathParams[$paramName]);
             } else {
-                $bindParams[] = ($paramDefaultType === null) ? ObjectHelper::getDefaultValue($type) : $paramDefaultType;
+                $bindParams[] = $paramDefaultType ?? ObjectHelper::getDefaultValue($type);
             }
         }
 
