@@ -94,7 +94,6 @@ trait RenderHelpInfoTrait
         };
 
         $cmdHandler = function (string $cmdId, array $info) use ($keyWidth) {
-            // \var_dump($info);die;
             Console::writef(
                 '  <info>%s</info> %s%s',
                 Str::padRight($cmdId, $keyWidth),

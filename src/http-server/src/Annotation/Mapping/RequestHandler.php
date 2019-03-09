@@ -2,7 +2,11 @@
 
 namespace Swoft\Http\Server\Annotation\Mapping;
 
-class RequestHandler
+/**
+ * Class RequestHandler
+ * @since 2.0
+ */
+final class RequestHandler
 {
 
 }

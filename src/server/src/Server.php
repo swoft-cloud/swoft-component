@@ -66,6 +66,7 @@ abstract class Server implements ServerInterface
     /**
      * Server setting for swoole. (@see swooleServer->setting)
      *
+     * @link https://wiki.swoole.com/wiki/page/274.html
      * @var array
      */
     protected $setting = [
@@ -207,6 +208,9 @@ abstract class Server implements ServerInterface
     {
         // Server pid map
         $this->setPidMap($server);
+\var_dump('manager pid='. $server->manager_pid . 'master pid='. $server->master_pid, 'mypid'. \getmypid());
+        \var_dump(__METHOD__ . __LINE__ . "coid:" . \Swoft\Co::id());
+        \var_dump(\preg_match('/\w+/', '/test/index'));
 
         // Set process title
         Sys::setProcessTitle(\sprintf('%s manager process', $this->pidName));
@@ -620,7 +624,7 @@ abstract class Server implements ServerInterface
     }
 
     /**
-     * @return \Co\Http\Server|CoServer|\Co\Websocket\Server
+     * @return \Swoole\Http\Server|CoServer|\Swoole\Websocket\Server
      */
     public function getSwooleServer()
     {

@@ -53,11 +53,10 @@ class HttpDispatcher extends Dispatcher
             $requestHandler->initialize($middlewares, $this->defaultMiddleware);
             $response = $requestHandler->handle($request);
         } catch (\Throwable $e) {
-            var_dump($e->getMessage(), $e->getFile(), $e->getLine());
+            \printf("Error: %s\nAt %s %d",$e->getMessage(), $e->getFile(), $e->getLine());
         }
 
         \Swoft::trigger(HttpServerEvent::AFTER_REQUEST, $this, $response);
-
 //      $response->withContent("<h1>Hello Swoole. #" . rand(1000, 9999) . "</h1>")->send();
     }
 

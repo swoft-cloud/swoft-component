@@ -36,7 +36,7 @@ class RequestMiddleware implements MiddlewareInterface
         }
 
         // Handle
-        $response = $handler->handle($request, $handler);
+        $response = $handler->handle($request);
 
         // Power by
         return $response->withAddedHeader('X-Powered-By', 'Swoft');

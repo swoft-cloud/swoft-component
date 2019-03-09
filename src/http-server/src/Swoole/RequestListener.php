@@ -39,6 +39,7 @@ class RequestListener implements RequestInterface
 
         /* @var HttpDispatcher $httpDispatcher */
         $httpDispatcher = \bean('httpDispatcher');
+
         $httpDispatcher->dispatch($psrRequest, $psrResponse);
     }
 }

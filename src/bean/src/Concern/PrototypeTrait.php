@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Bean\Concern;
 
 use Swoft\Bean\Exception\PrototypeException;

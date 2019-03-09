@@ -23,26 +23,11 @@ use Swoole\Http\Request as CoRequest;
 class Request extends PsrRequest implements ServerRequestInterface
 {
     use PrototypeTrait;
-
-    /**
-     * Interacts input
-     */
     use InteractsWithInput;
 
-    /**
-     * Html
-     */
     public const CONTENT_HTML = 'text/html';
-
-    /**
-     * Json
-     */
     public const CONTENT_JSON = 'application/json';
-
-    /**
-     * Xml
-     */
-    public const CONTENT_XML = 'application/xml';
+    public const CONTENT_XML  = 'application/xml';
 
     /**
      * @var CoRequest
@@ -101,13 +86,6 @@ class Request extends PsrRequest implements ServerRequestInterface
     /**
      * @param CoRequest $coRequest
      *
-     * @return static
-     * @throws PrototypeException
-     */
-
-    /**
-     * @param CoRequest $coRequest
-     *
      * @return Request
      * @throws PrototypeException
      */
@@ -116,53 +94,57 @@ class Request extends PsrRequest implements ServerRequestInterface
         $server  = $coRequest->server;
         $method  = $server['request_method'] ?? 'GET';
         $headers = $coRequest->header ?? [];
-        $content = $coRequest->rawcontent();
+        $content = $coRequest->rawContent();
         $content = $content === false ? '' : $content;
 
-        $instace = self::__instance();
+        $instance = self::__instance();
 
         // Set headers
-        $instace->setHeaders($headers);
+        $instance->setHeaders($headers);
 
         // Protocol
         if (isset($server['server_protocol'])) {
-            $instace->protocol = str_replace('HTTP/', '', $server['server_protocol']);
+            $instance->protocol = \str_replace('HTTP/', '', $server['server_protocol']);
         }
 
         // Parse body
         $parsedBody = $coRequest->post ?? [];
-        if (empty($parsedBody) && !$instace->isGet()) {
-            $parsedBody = $instace->parseBody($content);
+        if (empty($parsedBody) && !$instance->isGet()) {
+            $parsedBody = $instance->parseBody($content);
         }
 
-        $instace->method        = strtoupper($method);
-        $instace->uri           = $instace->getUriByCoRequest($coRequest);
-        $instace->stream        = Stream::new($content);
-        $instace->cookieParams  = ($coRequest->cookie ?? []);
-        $instace->queryParams   = ($coRequest->get ?? []);
-        $instace->serverParams  = ($server ?? []);
-        $instace->uploadedFiles = self::normalizeFiles($coRequest->files ?? []);
-        $instace->coRequest     = $coRequest;
-        $instace->parsedBody    = $parsedBody;
-        $instace->requestTime   = $server['request_time_float'] ?? 0;
+        $instance->method       = \strtoupper($method);
+        $instance->uri          = self::newUriByCoRequest($coRequest);
+        $instance->stream       = Stream::new($content);
+        $instance->cookieParams = ($coRequest->cookie ?? []);
+        $instance->queryParams  = ($coRequest->get ?? []);
+        $instance->serverParams = $server ?: [];
+
+        $instance->coRequest   = $coRequest;
+        $instance->parsedBody  = $parsedBody;
+        $instance->requestTime = $server['request_time_float'] ?? 0;
+
+        if ($coRequest->files) {
+            $instance->uploadedFiles = self::normalizeFiles($coRequest->files);
+        }
 
         // Update uri by host
-        if (!$instace->hasHeader('Host')) {
-            $instace->updateHostByUri();
+        if (!$instance->hasHeader('Host')) {
+            $instance->updateHostByUri();
         }
 
-        return $instace;
+        return $instance;
     }
 
     /**
      * Retrieve server parameters.
      * Retrieves data related to the incoming request environment,
-     * typically derived from PHP's $_SERVER superglobal. The data IS NOT
+     * typically derived from PHP's $_SERVER superGlobal. The data IS NOT
      * REQUIRED to originate from $_SERVER.
      *
      * @return array
      */
-    public function getServerParams()
+    public function getServerParams(): array
     {
         return $this->serverParams;
     }
@@ -186,7 +168,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      * Retrieve cookies.
      * Retrieves cookies sent by the client to the server.
      * The data MUST be compatible with the structure of the $_COOKIE
-     * superglobal.
+     * superGlobal.
      *
      * @return array
      */
@@ -236,7 +218,7 @@ class Request extends PsrRequest implements ServerRequestInterface
     /**
      * add param
      *
-     * @param string $name  the name of param
+     * @param string $name the name of param
      * @param mixed  $value the value of param
      *
      * @return static
@@ -287,7 +269,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      * @return array An array tree of UploadedFileInterface instances; an empty
      *     array MUST be returned if no data is present.
      */
-    public function getUploadedFiles()
+    public function getUploadedFiles(): array
     {
         return $this->uploadedFiles;
     }
@@ -332,7 +314,7 @@ class Request extends PsrRequest implements ServerRequestInterface
     /**
      * add parser body
      *
-     * @param string $name  the name of param
+     * @param string $name the name of param
      * @param mixed  $value the value of param
      *
      * @return static
@@ -407,7 +389,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      *
      * @see getAttributes()
      *
-     * @param string $name    The attribute name.
+     * @param string $name The attribute name.
      * @param mixed  $default Default value to return if the attribute does not exist.
      *
      * @return mixed
@@ -427,7 +409,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      *
      * @see getAttributes()
      *
-     * @param string $name  The attribute name.
+     * @param string $name The attribute name.
      * @param mixed  $value The value of the attribute.
      *
      * @return static
@@ -573,11 +555,13 @@ class Request extends PsrRequest implements ServerRequestInterface
         foreach ($files as $key => $value) {
             if ($value instanceof UploadedFileInterface) {
                 $normalized[$key] = $value;
-            } elseif (is_array($value) && isset($value['tmp_name'])) {
-                $normalized[$key] = self::createUploadedFileFromSpec($value);
-            } elseif (is_array($value)) {
+            } elseif (\is_array($value)) {
+                if (isset($value['tmp_name'])) {
+                    $normalized[$key] = self::createUploadedFileFromSpec($value);
+                    continue;
+                }
+
                 $normalized[$key] = self::normalizeFiles($value);
-                continue;
             } else {
                 throw new \InvalidArgumentException('Invalid value in files specification');
             }
@@ -623,7 +607,7 @@ class Request extends PsrRequest implements ServerRequestInterface
     {
         $normalizedFiles = [];
 
-        foreach (array_keys($files['tmp_name']) as $key) {
+        foreach (\array_keys($files['tmp_name']) as $key) {
             $spec                  = [
                 'tmp_name' => $files['tmp_name'][$key],
                 'size'     => $files['size'][$key],
@@ -645,7 +629,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      * @return Uri
      * @throws PrototypeException
      */
-    private function getUriByCoRequest(CoRequest $coRequest): Uri
+    public static function newUriByCoRequest(CoRequest $coRequest): Uri
     {
         $server = $coRequest->server;
         $header = $coRequest->header;
@@ -655,11 +639,11 @@ class Request extends PsrRequest implements ServerRequestInterface
 
         $hasPort = false;
         if (isset($server['http_host'])) {
-            $hostHeaderParts = explode(':', $server['http_host']);
-            $uri             = $uri->withHost($hostHeaderParts[0]);
-            if (isset($hostHeaderParts[1])) {
+            $parts = explode(':', $server['http_host']);
+            $uri   = $uri->withHost($parts[0]);
+            if (isset($parts[1])) {
                 $hasPort = true;
-                $uri     = $uri->withPort($hostHeaderParts[1]);
+                $uri     = $uri->withPort($parts[1]);
             }
         } elseif (isset($server['server_name'])) {
             $uri = $uri->withHost($server['server_name']);
@@ -686,11 +670,13 @@ class Request extends PsrRequest implements ServerRequestInterface
 
         $hasQuery = false;
         if (isset($server['request_uri'])) {
-            $requestUriParts = explode('?', $server['request_uri']);
-            $uri             = $uri->withPath($requestUriParts[0]);
-            if (isset($requestUriParts[1])) {
+            $parts = \explode('?', $server['request_uri']);
+            $uri   = $uri->withPath($parts[0]);
+
+            if (isset($parts[1])) {
                 $hasQuery = true;
-                $uri      = $uri->withQuery($requestUriParts[1]);
+                /** @var Uri $uri */
+                $uri = $uri->withQuery($parts[1]);
             }
         }
 

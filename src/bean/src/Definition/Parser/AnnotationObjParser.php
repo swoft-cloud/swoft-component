@@ -166,7 +166,7 @@ class AnnotationObjParser extends ObjectParser
      */
     private function parseClassAnnotations(array $classAry): ?ObjectDefinition
     {
-        list(, , $classAnnotations) = $classAry;
+        [, , $classAnnotations] = $classAry;
 
         $objectDefinition = null;
         foreach ($classAnnotations as $annotation) {
@@ -183,11 +183,11 @@ class AnnotationObjParser extends ObjectParser
                 continue;
             }
 
-            if (count($data) != 4) {
+            if (count($data) !== 4) {
                 throw new ContainerException(sprintf('%s annotation parse must be 4 size', $annotationClass));
             }
 
-            list($name, $className, $scope, $alias) = $data;
+            [$name, $className, $scope, $alias] = $data;
             $name = empty($name) ? $className : $name;
 
             if (empty($className)) {
@@ -228,21 +228,21 @@ class AnnotationObjParser extends ObjectParser
             $annotationParser->setPropertyName($propertyName);
             $data = $annotationParser->parse(Parser::TYPE_PROPERTY, $propertyAnnotation);
 
-            $definitions = $annotationParser->getDefinitions();
-            if (!empty($definitions)) {
-                $this->definitions = array_merge($this->definitions, $definitions);
-            }
-
             if (empty($data)) {
                 continue;
             }
 
-            if (count($data) != 2) {
+            if (\count($data) !== 2) {
                 throw new ContainerException('Return array with property annotation parse must be 2 size');
             }
 
+            $definitions = $annotationParser->getDefinitions();
+            if ($definitions) {
+                $this->definitions = $this->mergeDefinitions($this->definitions, $definitions);
+            }
+
             // Multiple coverage
-            list($propertyValue, $isRef) = $data;
+            [$propertyValue, $isRef] = $data;
             $propertyInjection = new PropertyInjection($propertyName, $propertyValue, $isRef);
         }
 
@@ -277,17 +277,27 @@ class AnnotationObjParser extends ObjectParser
             $annotationParser->setMethodName($methodName);
             $data = $annotationParser->parse(Parser::TYPE_METHOD, $methodAnnotation);
 
-            $definitions = $annotationParser->getDefinitions();
-            if (!empty($definitions)) {
-                $this->definitions = array_merge($this->definitions, $definitions);
-            }
-
             if (empty($data)) {
                 continue;
+            }
+
+            $definitions = $annotationParser->getDefinitions();
+            if ($definitions) {
+                $this->definitions = $this->mergeDefinitions($this->definitions, $definitions);
             }
         }
 
         return $methodInject;
+    }
+
+    /**
+     * @param array $definitions
+     * @param array $appendDefinitions
+     * @return array
+     */
+    private function mergeDefinitions(array $definitions, array $appendDefinitions): array
+    {
+        return \array_merge($definitions, $appendDefinitions);
     }
 
     /**
@@ -300,7 +310,7 @@ class AnnotationObjParser extends ObjectParser
      */
     private function getAnnotationParser(array $classAry, string $parserClassName): ParserInterface
     {
-        list($className, $reflectionClass, $classAnnotations) = $classAry;
+        [$className, $reflectionClass, $classAnnotations] = $classAry;
 
         /* @var ParserInterface $annotationParser */
         $annotationParser = new $parserClassName($className, $reflectionClass, $classAnnotations);
