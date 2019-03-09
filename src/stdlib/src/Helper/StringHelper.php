@@ -54,7 +54,7 @@ class StringHelper
      *
      * @return string
      */
-    public static function camel($value, $lcfirst = true): string
+    public static function camel($value, bool $lcfirst = true): string
     {
         if (isset(static::$camelCache[$value])) {
             return static::$camelCache[$value];
@@ -95,10 +95,10 @@ class StringHelper
      *
      * @return bool
      */
-    public static function contains($haystack, $needles): bool
+    public static function contains(string $haystack, $needles): bool
     {
         foreach ((array)$needles as $needle) {
-            if ($needle != '' && strpos($haystack, $needle) !== false) {
+            if ($needle !== '' && strpos($haystack, $needle) !== false) {
                 return true;
             }
         }
@@ -114,7 +114,7 @@ class StringHelper
      *
      * @return bool
      */
-    public static function endsWith($haystack, $needles): bool
+    public static function endsWith(string $haystack, $needles): bool
     {
         foreach ((array)$needles as $needle) {
             if ((string)$needle === substr($haystack, -strlen($needle))) {
@@ -148,9 +148,9 @@ class StringHelper
      *
      * @return bool
      */
-    public static function is($pattern, $value): bool
+    public static function is(string $pattern, string $value): bool
     {
-        if ($pattern == $value) {
+        if ($pattern === $value) {
             return true;
         }
 
@@ -228,7 +228,7 @@ class StringHelper
      *
      * @return string
      */
-    public static function lower($value): string
+    public static function lower(string $value): string
     {
         return mb_strtolower($value, 'UTF-8');
     }
@@ -261,7 +261,7 @@ class StringHelper
      *
      * @return array
      */
-    public static function parseCallback($callback, $default): array
+    public static function parseCallback(string $callback, string $default): array
     {
         return static::contains($callback, '@') ? explode('@', $callback, 2) : [$callback, $default];
     }
@@ -273,15 +273,15 @@ class StringHelper
      *
      * @return string
      * @throws \RuntimeException
+     * @throws \Exception
      */
-    public static function random($length = 16): string
+    public static function random(int $length = 16): string
     {
         $string = '';
 
         while (($len = strlen($string)) < $length) {
             $size = $length - $len;
-
-            $bytes = static::randomBytes($size);
+            $bytes = \random_bytes($size);
 
             $string .= substr(str_replace(['/', '+', '='], '', base64_encode($bytes)), 0, $size);
         }
@@ -298,7 +298,7 @@ class StringHelper
      * @throws \Exception
      * @deprecated since version 5.2. Use random_bytes instead.
      */
-    public static function randomBytes($length = 16): string
+    public static function randomBytes(int $length = 16): string
     {
         if (PHP_MAJOR_VERSION >= 7 || defined('RANDOM_COMPAT_READ_BUFFER')) {
             $bytes = random_bytes($length);
@@ -323,7 +323,7 @@ class StringHelper
      *
      * @return string
      */
-    public static function quickRandom($length = 16): string
+    public static function quickRandom(int $length = 16): string
     {
         $pool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -341,7 +341,7 @@ class StringHelper
      * @return bool
      * @deprecated since version 5.2. Use hash_equals instead.
      */
-    public static function equals($knownString, $userInput): bool
+    public static function equals(string $knownString, string $userInput): bool
     {
         return hash_equals($knownString, $userInput);
     }
@@ -375,7 +375,7 @@ class StringHelper
      *
      * @return string
      */
-    public static function replaceLast($search, $replace, $subject): string
+    public static function replaceLast(string $search, $replace, string $subject): string
     {
         $position = strrpos($subject, $search);
 
@@ -393,7 +393,7 @@ class StringHelper
      *
      * @return string
      */
-    public static function upper($value): string
+    public static function upper(string $value): string
     {
         return mb_strtoupper($value, 'UTF-8');
     }
@@ -418,12 +418,12 @@ class StringHelper
      *
      * @return string
      */
-    public static function slug($title, $separator = '-'): string
+    public static function slug(string $title, string $separator = '-'): string
     {
         $title = static::ascii($title);
 
         // Convert all dashes/underscores into separator
-        $flip = $separator == '-' ? '_' : '-';
+        $flip = $separator === '-' ? '_' : '-';
 
         $title = preg_replace('![' . preg_quote($flip) . ']+!u', $separator, $title);
 
@@ -444,7 +444,7 @@ class StringHelper
      *
      * @return string
      */
-    public static function snake($value, $delimiter = '_'): string
+    public static function snake(string $value, string $delimiter = '_'): string
     {
         $key = $value . $delimiter;
 
@@ -469,10 +469,10 @@ class StringHelper
      *
      * @return bool
      */
-    public static function startsWith($haystack, $needles): bool
+    public static function startsWith(string $haystack, $needles): bool
     {
         foreach ((array)$needles as $needle) {
-            if ($needle != '' && strpos($haystack, $needle) === 0) {
+            if ($needle !== '' && strpos($haystack, $needle) === 0) {
                 return true;
             }
         }
@@ -569,10 +569,11 @@ class StringHelper
      *     // Output:
      *     XCDDVXV7FUSYAVXFFKSL
      *
-     * @param   string  $type   A type of pool, or a string of characters to use as the pool
+     * @param   string  $type A type of pool, or a string of characters to use as the pool
      * @param   integer $length Length of string to return
      *
      * @return  string
+     * @throws \Exception
      */
     public static function randomString($type = 'alnum', $length = 8): string
     {
@@ -619,7 +620,7 @@ class StringHelper
         }
 
         // Make sure alnum strings contain at least one letter and one digit
-        if ($type === 'alnum' and $length > 1) {
+        if ($type === 'alnum' && $length > 1) {
             if (ctype_alpha($str)) {
                 // Add a random digit
                 $str[random_int(0, $length - 1)] = chr(random_int(48, 57));

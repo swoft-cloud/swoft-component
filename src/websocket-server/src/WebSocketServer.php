@@ -116,7 +116,7 @@ class WebSocketServer extends Server
      */
     public function sendTo(int $receiver, string $data, int $sender = 0, int $opcode = \WEBSOCKET_OPCODE_TEXT): int
     {
-        $finish = true;;
+        $finish = true;
         $fromUser = $sender < 1 ? 'SYSTEM' : $sender;
 
         $this->log("(private)The #{$fromUser} send message to the user #{$receiver}. Data: {$data}");

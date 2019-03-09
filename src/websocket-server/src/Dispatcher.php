@@ -7,6 +7,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Message\PsrRequest;
 use Swoft\Http\Message\Response;
 use Swoft\WebSocket\Server\Contract\ModuleInterface;
+use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\Exception\WsContextException;
 use Swoft\WebSocket\Server\Exception\WsServerException;
 use Swoft\WebSocket\Server\Exception\WsRouteException;
@@ -44,7 +45,7 @@ class Dispatcher
             // $response = $errorHandler->handle($e);
             if ($e instanceof WsRouteException) {
                 return [
-                    ModuleInterface::REJECT,
+                    WsModuleInterface::REJECT,
                     $response->withStatus(404)->withAddedHeader('Failure-Reason', 'Route not found')
                 ];
             }
@@ -53,12 +54,12 @@ class Dispatcher
             throw new WsServerException('handshake error: ' . $e->getMessage(), -500, $e);
         }
 
-        /** @var ModuleInterface $handler */
+        /** @var WsModuleInterface $handler */
         $handler = \bean($className);
 
         if (!\method_exists($handler, 'checkHandshake')) {
             return [
-                ModuleInterface::ACCEPT,
+                WsModuleInterface::ACCEPT,
                 $response->withAddedHeader('swoft-ws-handshake', 'auto')
             ];
         }
@@ -74,10 +75,10 @@ class Dispatcher
      * @throws \Swoft\WebSocket\Server\Exception\WsRouteException
      * @throws \InvalidArgumentException
      */
-    public function open(Server $server, PsrRequest $request, int $fd)
+    public function open(Server $server, PsrRequest $request, int $fd): void
     {
         $path = $request->getUri()->getPath();
-        list($className,) = $this->getHandler($path);
+        [$className,] = $this->getHandler($path);
 
         /** @var ModuleInterface $handler */
         $handler = \bean($className);

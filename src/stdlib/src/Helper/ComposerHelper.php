@@ -45,13 +45,13 @@ class ComposerHelper
     }
 
     /**
-     * @param string $file
-     *
+     * @param string        $file
+     * @param callable|null $filter
      * @return array
      */
-    public static function parseLockFile(string $file): array
+    public static function parseLockFile(string $file, callable $filter = null): array
     {
-        if (!\is_file($file)) {
+        if (!\file_exists($file)) {
             return [];
         }
 
@@ -60,29 +60,20 @@ class ComposerHelper
         }
 
         /** @var array[] $data */
-        $data       = \json_decode($json, true);
-        $components = [];
-
+        $data = \json_decode($json, true);
         if (!$data || !isset($data['packages'])) {
             return [];
         }
 
-        foreach ($data['packages'] as $package) {
-            if (0 !== \strpos($package['name'], 'swoft/')) {
+        $packages = [];
+        foreach ($data['packages'] as $pkg) {
+            if ($filter && false === $filter($pkg['name'], $pkg['type'])) {
                 continue;
             }
 
-            $components[] = [
-                'name'        => $package['name'],
-                'version'     => $package['version'],
-                'source'      => $package['source'],
-                'require'     => $package['require'] ?? [],
-                'description' => $package['description'],
-                'keywords'    => $package['keywords'],
-                'time'        => $package['time'],
-            ];
+            $packages[] = $pkg;
         }
 
-        return $components;
+        return $packages;
     }
 }
