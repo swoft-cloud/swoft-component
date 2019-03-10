@@ -20,6 +20,8 @@ trait BuildsQueries
      * @param  callable $callback
      *
      * @return bool
+     * @throws \Swoft\Bean\Exception\PrototypeException
+     * @throws \Swoft\Db\Exception\EloquentException
      */
     public function chunk($count, callable $callback)
     {
@@ -31,10 +33,11 @@ trait BuildsQueries
             // We'll execute the query for the given page and get the results. If there are
             // no results we can just break and return from here. When there are results
             // we will call the callback with the current chunk of these results here.
-            $results = $this->forPage($page, $count)->get();
+            /* @var \Swoft\Db\Eloquent\Builder|\Swoft\Db\Eloquent\Builder $builder */
+            $builder = $this->forPage($page, $count);
+            $results = $builder->get();
 
             $countResults = $results->count();
-
             if ($countResults == 0) {
                 break;
             }
@@ -61,6 +64,8 @@ trait BuildsQueries
      * @param  int      $count
      *
      * @return bool
+     * @throws \Swoft\Bean\Exception\PrototypeException
+     * @throws \Swoft\Db\Exception\EloquentException
      */
     public function each(callable $callback, $count = 1000)
     {
@@ -70,6 +75,8 @@ trait BuildsQueries
                     return false;
                 }
             }
+
+            return true;
         });
     }
 
@@ -79,10 +86,14 @@ trait BuildsQueries
      * @param  array $columns
      *
      * @return Model|object|static|null
+     * @throws \Swoft\Bean\Exception\PrototypeException
+     * @throws \Swoft\Db\Exception\EloquentException
      */
     public function first(array $columns = ['*'])
     {
-        return $this->take(1)->get($columns)->first();
+        /* @var \Swoft\Db\Eloquent\Builder|\Swoft\Db\Eloquent\Builder $builder */
+        $builder = $this->take(1);
+        return $builder->get($columns)->first();
     }
 
     /**

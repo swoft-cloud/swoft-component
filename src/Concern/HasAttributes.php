@@ -5,7 +5,6 @@ namespace Swoft\Db\Concern;
 
 
 use Swoft\Db\EntityRegister;
-use Swoft\Stdlib\Arrayable;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Stdlib\Helper\Str;
@@ -27,14 +26,26 @@ trait HasAttributes
     protected $original = [];
 
     /**
+     * The changed model attributes.
+     *
+     * @var array
+     */
+    protected $changes = [];
+
+    /**
      * Convert the model's attributes to an array.
      *
      * @return array
      */
     public function attributesToArray()
     {
+        $attributes = [];
+        foreach ($this->getArrayableAttributes() as $key => $value) {
+            [$pro, $value] = $this->getAttribute($key);
+            $attributes[$pro] = $value;
+        }
 
-        return $this->attributes;
+        return $attributes;
     }
 
 
@@ -74,55 +85,21 @@ trait HasAttributes
      *
      * @param  string $key
      *
-     * @return mixed
+     * @return array
      */
-    public function getAttribute($key)
+    public function getAttribute(string $key): array
     {
-        if (!$key) {
-            return;
+        [$attrName, , , $pro] = $this->getMappingByColumn($key);
+        $getter = sprintf('get%s', ucfirst($attrName));
+
+        if (!method_exists($this, $getter)) {
+            throw new \BadMethodCallException(
+                sprintf('%s method(%s) is not exist!', static::class, $getter)
+            );
         }
 
-        // If the attribute exists in the attribute array or has a "get" mutator we will
-        // get the attribute's value. Otherwise, we will proceed as if the developers
-        // are asking for a relationship's value. This covers both types of values.
-        if (array_key_exists($key, $this->attributes) ||
-            $this->hasGetMutator($key)) {
-            return $this->getAttributeValue($key);
-        }
-
-        // Here we will determine if the model base class itself contains this given key
-        // since we don't want to treat any of those methods as relationships because
-        // they are all intended as helper methods and none of these are relations.
-        if (method_exists(self::class, $key)) {
-            return;
-        }
-    }
-
-    /**
-     * Get a plain attribute (not a relationship).
-     *
-     * @param  string $key
-     *
-     * @return mixed
-     */
-    public function getAttributeValue($key)
-    {
-        $value = $this->getAttributeFromArray($key);
-        return $value;
-    }
-
-    /**
-     * Get an attribute from the $attributes array.
-     *
-     * @param  string $key
-     *
-     * @return mixed
-     */
-    protected function getAttributeFromArray($key)
-    {
-        if (isset($this->attributes[$key])) {
-            return $this->attributes[$key];
-        }
+        $value = $this->{$getter}();
+        return [$pro, $value];
     }
 
     /**
@@ -160,10 +137,8 @@ trait HasAttributes
      */
     public function setAttribute(string $key, $value): self
     {
-        $mapping  = EntityRegister::getReverseMappingByColumn(static::class, $key);
-        $attrName = $mapping['attr'];
-        $attType  = $mapping['type'];
-        $setter   = sprintf('set%s', ucfirst($attrName));
+        [$attrName, $attType] = $this->getMappingByColumn($key);
+        $setter = sprintf('set%s', ucfirst($attrName));
 
         $value = ObjectHelper::parseParamType($attType, $value);
         if (method_exists($this, $setter)) {
@@ -223,13 +198,14 @@ trait HasAttributes
      * @param  string $key
      * @param  mixed  $value
      *
-     * @return $this
+     * @return array
      */
-    protected function getArrayAttributeWithValue($path, $key, $value)
+    protected function getArrayAttributeWithValue(string $path, string $key, $value): array
     {
-        return tap($this->getArrayAttributeByKey($key), function (&$array) use ($path, $value) {
-            Arr::set($array, str_replace('->', '.', $path), $value);
-        });
+        $array = $this->getArrayAttributeByKey($key);
+        Arr::set($array, str_replace('->', '.', $path), $value);
+
+        return $this->getArrayAttributeByKey($key);
     }
 
     /**
@@ -243,27 +219,6 @@ trait HasAttributes
     {
         return isset($this->attributes[$key]) ?
             $this->fromJson($this->attributes[$key]) : [];
-    }
-
-    /**
-     * Cast the given attribute to JSON.
-     *
-     * @param  string $key
-     * @param  mixed  $value
-     *
-     * @return string
-     */
-    protected function castAttributeAsJson($key, $value)
-    {
-        $value = $this->asJson($value);
-
-        if ($value === false) {
-            throw JsonEncodingException::forAttribute(
-                $this, $key, json_last_error_msg()
-            );
-        }
-
-        return $value;
     }
 
     /**
@@ -313,55 +268,6 @@ trait HasAttributes
     }
 
     /**
-     * Return a timestamp as unix timestamp.
-     *
-     * @param  mixed $value
-     *
-     * @return int
-     */
-    protected function asTimestamp($value)
-    {
-        return $this->asDateTime($value)->getTimestamp();
-    }
-
-    /**
-     * Prepare a date for array / JSON serialization.
-     *
-     * @param  \DateTimeInterface $date
-     *
-     * @return string
-     */
-    protected function serializeDate(DateTimeInterface $date)
-    {
-        return $date->format($this->getDateFormat());
-    }
-
-
-    /**
-     * Determine whether a value is Date / DateTime castable for inbound manipulation.
-     *
-     * @param  string $key
-     *
-     * @return bool
-     */
-    protected function isDateCastable($key)
-    {
-        return $this->hasCast($key, ['date', 'datetime']);
-    }
-
-    /**
-     * Determine whether a value is JSON castable for inbound manipulation.
-     *
-     * @param  string $key
-     *
-     * @return bool
-     */
-    protected function isJsonCastable($key)
-    {
-        return $this->hasCast($key, ['array', 'json', 'object', 'collection']);
-    }
-
-    /**
      * Get all of the current attributes on the model.
      *
      * @return array
@@ -403,6 +309,18 @@ trait HasAttributes
     {
         $this->attributes = $attributes;
 
+        foreach ($attributes as $key => $value) {
+            [$attrName, $type] = $this->getMappingByColumn($key);
+
+            if (!property_exists($this, $attrName)) {
+                throw new \InvalidArgumentException(
+                    sprintf('%s property(%s) is not exist!', static::class, $attrName)
+                );
+            }
+
+            $this->{$key} = ObjectHelper::parseParamType($type, $value);
+        }
+
         if ($sync) {
             $this->syncOriginal();
         }
@@ -426,15 +344,15 @@ trait HasAttributes
     /**
      * Get a subset of the model's attributes.
      *
-     * @param  array|mixed $attributes
+     * @param  array $attributes
      *
      * @return array
      */
-    public function only($attributes)
+    public function only(array $attributes)
     {
         $results = [];
 
-        foreach (is_array($attributes) ? $attributes : func_get_args() as $attribute) {
+        foreach ($attributes as $attribute) {
             $results[$attribute] = $this->getAttribute($attribute);
         }
 
@@ -583,6 +501,32 @@ trait HasAttributes
     }
 
     /**
+     * Determine if the new and old values for a given key are equivalent.
+     *
+     * @param  string $key
+     * @param  mixed  $current
+     *
+     * @return bool
+     */
+    protected function originalIsEquivalent($key, $current)
+    {
+        if (!array_key_exists($key, $this->original)) {
+            return false;
+        }
+
+        $original = $this->getOriginal($key);
+
+        if ($current === $original) {
+            return true;
+        } elseif (is_null($current)) {
+            return false;
+        }
+
+        return is_numeric($current) && is_numeric($original)
+            && strcmp((string)$current, (string)$original) === 0;
+    }
+
+    /**
      * Get the attributes that were changed.
      *
      * @return array
@@ -592,4 +536,19 @@ trait HasAttributes
         return $this->changes;
     }
 
+    /**
+     * @param string $key
+     *
+     * @return array
+     */
+    private function getMappingByColumn(string $key): array
+    {
+        $mapping  = EntityRegister::getReverseMappingByColumn(static::class, $key);
+        $attrName = $mapping['attr'];
+        $type     = $mapping['type'];
+        $hidden   = $mapping['hidden'];
+        $pro      = $mapping['pro'];
+
+        return [$attrName, $type, $hidden, $pro];
+    }
 }
