@@ -22,20 +22,20 @@ class User extends Model
      * @Column(name="id", prop="id")
      * @var int|null
      */
-    private $id;
+    public $id;
 
     /**
      * @Column()
      *
      * @var int|null
      */
-    private $age;
+    public $age;
 
     /**
      * @Column(name="user_desc", prop="udesc")
      * @var string|null
      */
-    private $userDesc;
+    public $userDesc;
 
     /**
      * @return int|null

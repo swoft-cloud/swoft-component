@@ -44,6 +44,7 @@ class EntityRegister
      *                 'column' => 'columnName',
      *                 'pro' => 'proName',
      *                 'hidden' => false,
+     *                 'type' => 'int',
      *             ]
      *         ],
      *         'reverse' => [
@@ -51,6 +52,7 @@ class EntityRegister
      *                 'attr' => 'attrName',
      *                 'pro' => 'proName',
      *                 'hidden' => false,
+     *                 'type' => 'int',
      *             ]
      *         ]
      *     ]

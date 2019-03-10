@@ -4,17 +4,17 @@
 namespace Swoft\Db\Eloquent;
 
 
-use phpDocumentor\Reflection\Types\Mixed_;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\Concern\BuildsQueries;
+use Swoft\Db\Connection;
 use Swoft\Db\Exception\EloquentException;
 use Swoft\Db\Exception\EntityException;
 use Swoft\Db\Exception\PoolException;
 use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Query\Builder as QueryBuilder;
-use Swoft\Db\Query\Expression;
 use Swoft\Stdlib\Arrayable;
 use Swoft\Stdlib\Helper\Arr;
+use Swoft\Stdlib\Helper\PhpHelper;
 
 /**
  * Class Builder
@@ -101,6 +101,21 @@ use Swoft\Stdlib\Helper\Arr;
  * @method Builder take(int $value)
  * @method Builder limit(int $value)
  * @method Builder forPage(int $page, int $perPage = 15)
+ * @method Builder forPageAfterId(int $perPage = 15, int $lastId = null, string $column = 'id')
+ * @method string insertGetId(array $values, string $sequence = null)
+ * @method bool insert(array $values)
+ * @method array getBindings()
+ * @method string toSql()
+ * @method bool exists()
+ * @method bool doesntExist()
+ * @method string count(string $columns = '*')
+ * @method array min(string $column)
+ * @method array max(string $column)
+ * @method array sum(string $column)
+ * @method array avg($column)
+ * @method array average(string $column)
+ * @method Connection getConnection()
+ *
  */
 class Builder
 {
@@ -344,13 +359,18 @@ class Builder
      * @param  mixed $id
      * @param  array $columns
      *
-     * @return Model
+     * @return Collection|Model
+     * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
      * @throws PrototypeException
      */
     public function find($id, array $columns = ['*'])
     {
+        if (is_array($id) || $id instanceof Arrayable) {
+            return $this->findMany($id, $columns);
+        }
+
         return $this->whereKey($id)->first($columns);
     }
 
@@ -361,7 +381,6 @@ class Builder
      * @param  array           $columns
      *
      * @return Collection
-     * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
      * @throws PrototypeException
@@ -497,6 +516,8 @@ class Builder
      * @return Model|static
      *
      * @throws EntityException
+     * @throws EloquentException
+     * @throws PrototypeException
      */
     public function firstOrFail(array $columns = ['*'])
     {
@@ -514,6 +535,8 @@ class Builder
      * @param  \Closure|null  $callback
      *
      * @return Model|static|mixed
+     * @throws EloquentException
+     * @throws PrototypeException
      */
     public function firstOr(array $columns = ['*'], \Closure $callback = null)
     {
@@ -536,12 +559,16 @@ class Builder
      * @param  string $column
      *
      * @return mixed
+     * @throws EloquentException
+     * @throws PrototypeException
      */
     public function value(string $column)
     {
         if ($result = $this->first([$column])) {
             return $result->{$column};
         }
+
+        return null;
     }
 
     /**
@@ -551,7 +578,6 @@ class Builder
      *
      * @return Collection
      * @throws PrototypeException
-     * @throws EloquentException
      * @throws PrototypeException
      */
     public function get(array $columns = ['*'])
@@ -568,8 +594,6 @@ class Builder
      * @param  array $columns
      *
      * @return Model[]|static[]
-     * @throws EloquentException
-     * @throws PrototypeException
      */
     public function getModels($columns = ['*'])
     {
@@ -600,7 +624,6 @@ class Builder
      * @param  string|null $alias
      *
      * @return bool
-     * @throws EloquentException
      * @throws EntityException
      * @throws PrototypeException
      */
@@ -666,15 +689,6 @@ class Builder
     {
         $results = $this->toBase()->pluck($column, $key);
 
-        // If the model has a mutator for the requested column, we will spin through
-        // the results and mutate the values so that the mutated version of these
-        // columns are returned as you would expect from these EloquentException models.
-        if (!$this->model->hasGetMutator($column) &&
-            !$this->model->hasCast($column) &&
-            !in_array($column, $this->model->getDates())) {
-            return $results;
-        }
-
         return $results->map(function ($value) use ($column) {
             return $this->model->newFromBuilder([$column => $value])->{$column};
         });
@@ -739,6 +753,7 @@ class Builder
      * @param  array     $extra
      *
      * @return int
+     * @throws PrototypeException
      * @throws QueryException
      */
     public function decrement($column, $amount = 1, array $extra = [])
@@ -903,23 +918,9 @@ class Builder
             return $this->toBase()->{$method}(...$parameters);
         }
 
-        $this->forwardCallTo($this->query, $method, $parameters);
+        PhpHelper::call([$this->query, $method], ...$parameters);
 
         return $this;
-    }
-
-    /**
-     * Forward a method call to the given object.
-     *
-     * @param  mixed  $object
-     * @param  string $method
-     * @param  array  $parameters
-     *
-     * @return mixed
-     */
-    protected function forwardCallTo($object, $method, $parameters)
-    {
-        return $object->{$method}(...$parameters);
     }
 
     /**
