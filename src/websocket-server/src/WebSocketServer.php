@@ -355,7 +355,7 @@ class WebSocketServer extends HttpServer
      */
     public function getClientInfo(int $fd): array
     {
-        return $this->server->getClientInfo($fd);
+        return (array)$this->server->getClientInfo($fd);
     }
 
     /**
