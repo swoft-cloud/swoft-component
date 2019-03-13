@@ -126,13 +126,11 @@ class Service
             }
 
             App::profileEnd($profileKey);
-            $client->release(true);
-
             App::debug(sprintf('%s call %s success, data=%s', $this->interface, $func, json_encode($data, JSON_UNESCAPED_UNICODE)));
 
             $result = $packer->unpack($result);
-            $closeStatus = false;
             $data = $packer->checkData($result);
+            $closeStatus = false;
         } catch (\Throwable $throwable) {
             // If the client is normal, no need to close it.
             if ($closeStatus && isset($client) && $client instanceof AbstractServiceConnection) {
@@ -145,10 +143,15 @@ class Service
                     $throwable->getCode()
                 ));
             }
+
             if (empty($fallback)) {
                 throw $throwable;
             }
             $data = PhpHelper::call($fallback, $params);
+        } finally {
+            if (isset($client) && $client instanceof AbstractServiceConnection) {
+                $client->release(true);
+            }
         }
 
         return $data;
@@ -207,6 +210,7 @@ class Service
             $result = $circuitBreaker->call([$connection, 'send'], [$packData], $fallback);
 
             if ($result === null || $result === false) {
+                $connection->release(true);
                 return null;
             }
         } catch (\Throwable $throwable) {
