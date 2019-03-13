@@ -14,6 +14,7 @@ use Swoft\Bean\Resource\ServerAnnotationResource;
 use Swoft\Bean\Resource\WorkerAnnotationResource;
 use Swoft\Proxy\Handler\AopHandler;
 use Swoft\Proxy\Proxy;
+use Swoft\Helper\DirHelper;
 
 /**
  * 全局容器
@@ -424,7 +425,7 @@ class Container
         }
 
         $appDir = alias("@app");
-        $dirs   = glob($appDir . "/*");
+        $dirs = DirHelper::scan($appDir, DirHelper::SCAN_CURRENT_DIR, false);
 
         $beanNamespace = [];
         foreach ($dirs as $dir) {
