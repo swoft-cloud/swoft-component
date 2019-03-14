@@ -208,6 +208,15 @@ class AspectCollector implements CollectorInterface
     }
 
     /**
+     * @param string $className
+     * @return bool
+     */
+    public static function hasClassname(string $className): bool
+    {
+        return isset(self::$aspects[$className]);
+    }
+
+    /**
      * @return array
      */
     public static function getCollector(): array

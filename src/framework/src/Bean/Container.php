@@ -6,6 +6,7 @@ use Swoft\Aop\Aop;
 use Swoft\Aop\AopInterface;
 use Swoft\App;
 use Swoft\Bean\Annotation\Scope;
+use Swoft\Bean\Collector\AspectCollector;
 use Swoft\Bean\ObjectDefinition\ArgsInjection;
 use Swoft\Bean\ObjectDefinition\MethodInjection;
 use Swoft\Bean\ObjectDefinition\PropertyInjection;
@@ -249,6 +250,10 @@ class Container
      */
     private function proxyBean(string $name, string $className, $object)
     {
+        if (!AspectCollector::hasClassname($className)) {
+            return $object;
+        }
+
         /* @var Aop $aop */
         $aop = App::getBean(Aop::class);
 
