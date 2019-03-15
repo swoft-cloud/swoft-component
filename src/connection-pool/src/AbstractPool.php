@@ -72,11 +72,7 @@ abstract class AbstractPool implements PoolInterface
      */
     public function getConnection(): ConnectionInterface
     {
-        if (Coroutine::getCid() > 0) {
-            $connection = $this->getConnectionByChannel();
-        } else {
-            $connection = $this->getConnectionByQueue();
-        }
+        $connection = $this->getConnectionByChannel();
 
         if (!$connection->check()) {
             $connection->reconnect();
@@ -90,6 +86,15 @@ abstract class AbstractPool implements PoolInterface
      */
     public function release(ConnectionInterface $connection): void
     {
+        $this->releaseToChannel($connection);
+    }
+
+    /**
+     * Remove connection by reconnect error
+     */
+    public function remove(): void
+    {
+        $this->count--;
     }
 
     /**
@@ -148,49 +153,24 @@ abstract class AbstractPool implements PoolInterface
 
     /**
      * @return ConnectionInterface
+     *
      * @throws ConnectionPoolException
-     */
-    private function getConnectionByQueue(): ConnectionInterface
-    {
-        // Create queue
-        if ($this->queue == null) {
-            $this->queue = new \SplQueue();
-        }
-
-        // To reach `minActive` number
-        if ($this->count < $this->minActive) {
-            return $this->create();
-        }
-
-        // Pop connection
-        $connection = null;
-        if (!$this->queue->isEmpty()) {
-            $connection = $this->popByQueue();
-        }
-
-        // Pop connection is not null
-        if ($connection !== null) {
-            return $connection;
-        }
-
-        // Channel is empty or  not reach `maxActive` number
-        if ($this->count < $this->maxWait) {
-            return $this->create();
-        }
-
-        // Queue is full
-        throw new ConnectionPoolException(
-            sprintf('Queue is full, maxActive=%d, currentCount=%d', $this->maxActive, $this->count)
-        );
-    }
-
-    /**
-     * @return ConnectionInterface
      */
     private function create(): ConnectionInterface
     {
-        $connection = $this->createConnection();
+        // Count before to fix more connection bug
         $this->count++;
+
+        try {
+            $connection = $this->createConnection();
+        } catch (\Throwable $e) {
+            // Create error to reset count
+            $this->count--;
+
+            throw new ConnectionPoolException(
+                sprintf('Create connection error(%s)', $e->getMessage())
+            );
+        }
 
         return $connection;
     }
@@ -223,29 +203,15 @@ abstract class AbstractPool implements PoolInterface
     }
 
     /**
-     * Pop by queue
+     * Release to channel
      *
-     * @return ConnectionInterface|null
+     * @param ConnectionInterface $connection
      */
-    private function popByQueue(): ?ConnectionInterface
+    private function releaseToChannel(ConnectionInterface $connection)
     {
-        $time       = time();
-        $connection = null;
-
-        while (!$this->queue->isEmpty()) {
-            /* @var ConnectionInterface $connection */
-            $connection = $this->queue->pop();
-            $lastTime   = $connection->getLastTime();
-
-            // Out of `maxIdleTime`
-            if ($time - $lastTime > $this->maxIdleTime) {
-                $this->count--;
-                continue;
-            }
-
-            return $connection;
+        $stats = $this->channel->stats();
+        if ($stats['queue_num'] < $this->maxActive) {
+            $this->channel->push($connection);
         }
-
-        return $connection;
     }
 }
