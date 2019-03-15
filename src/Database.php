@@ -5,6 +5,7 @@ namespace Swoft\Db;
 
 use Swoft\Db\Connector\ConnectorInterface;
 use Swoft\Db\Connector\MySqlConnector;
+use Swoft\Exception\ConnectionException;
 use Swoft\Server\Swoole\ConnectInterface;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\ArrayHelper;
@@ -118,6 +119,11 @@ class Database
         return $connection;
     }
 
+    /**
+     * Get writer
+     *
+     * @return array
+     */
     public function getWrites(): array
     {
         $config = [
@@ -132,6 +138,7 @@ class Database
 
         $config = array_merge($config, $this->options);
 
+        // Merge config
         $masters = [];
         foreach ($this->writes as $master) {
             $masters[] = Arr::merge($config, $master);
@@ -144,6 +151,11 @@ class Database
         return $masters;
     }
 
+    /**
+     * Get reader
+     *
+     * @return array
+     */
     public function getReads(): array
     {
         if (empty($this->reads)) {
@@ -162,6 +174,7 @@ class Database
 
         $config = array_merge($config, $this->options);
 
+        // Merge slave
         $slaves = [];
         foreach ($this->reads as $slave) {
             $slaves[] = Arr::merge($config, $slave);
@@ -175,6 +188,7 @@ class Database
     }
 
     /**
+     * Get connector
      *
      * @return ConnectorInterface
      * @throws \ReflectionException
@@ -187,13 +201,15 @@ class Database
         $connector  = $connectors[$driver] ?? null;
 
         if (!$connector instanceof ConnectorInterface) {
-
+            throw new ConnectionException(sprintf('Connector(dirver=%s) is not exist', $driver));
         }
 
         return $connector;
     }
 
     /**
+     * Get connection
+     *
      * @return Connection
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
@@ -205,22 +221,29 @@ class Database
         $connection  = $connections[$driver] ?? null;
 
         if (!$connection instanceof Connection) {
-
+            throw new ConnectionException(sprintf('Connection(dirver=%s) is not exist', $driver));
         }
 
         return $connection;
     }
+
 
     /**
      * @return string
      */
     public function getDriver()
     {
-        if (($pos = strpos($this->dsn, ':')) !== false) {
-            return $this->_driverName = strtolower(substr($this->dsn, 0, $pos));
-        } else {
-            $this->_driverName = strtolower($this->getSlavePdo()->getAttribute(PDO::ATTR_DRIVER_NAME));
+        $dns = $this->dsn;
+        if (empty($dns)) {
+            $writes = $this->getWrites();
+            $dns    = $writes[0]['dns'] ?? '';
         }
+
+        if (($pos = strpos($dns, ':')) !== false) {
+            return strtolower(substr($dns, 0, $pos));
+        }
+
+        throw new ConnectionException('Driver parse error by dns(%s)', $dns);
     }
 
     /**
