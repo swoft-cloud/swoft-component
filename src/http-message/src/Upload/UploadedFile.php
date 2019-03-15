@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Http\Message\Upload;
 
 use Psr\Http\Message\StreamInterface;
@@ -14,23 +13,49 @@ use Psr\Http\Message\UploadedFileInterface;
 class UploadedFile implements UploadedFileInterface
 {
     /**
-     * @param string      $tmpFile
-     * @param int         $size
-     * @param int         $errorStatus
-     * @param string|null $clientFilename
-     * @param string|null $clientMediaType
+     * @var int
+     */
+    private $size;
+
+    /**
+     * @var int
+     */
+    private $errorCode;
+
+    /**
+     * @var string
+     */
+    private $file;
+
+    /**
+     * @var string
+     */
+    private $clientFilename;
+
+    /**
+     * @var string
+     */
+    private $clientMediaType;
+
+    /**
+     * @param string $tmpFile
+     * @param int    $size
+     * @param int    $errorStatus
+     * @param string $clientFilename
+     * @param string $clientMediaType
      */
     public function __construct(
-        $tmpFile,
-        $size,
-        $errorStatus,
-        $clientFilename = null,
-        $clientMediaType = null
+        string $tmpFile,
+        int $size,
+        int $errorStatus,
+        string $clientFilename = '',
+        string $clientMediaType = ''
     ) {
         $this->setError($errorStatus)
             ->setSize($size)
             ->setClientFilename($clientFilename)
             ->setClientMediaType($clientMediaType);
+
         $this->isOk() && $this->setFile($tmpFile);
     }
 
@@ -52,32 +77,13 @@ class UploadedFile implements UploadedFileInterface
      */
     public function getStream()
     {
+        // TODO ...
     }
 
     /**
      * Move the uploaded file to a new location.
      *
-     * Use this method as an alternative to move_uploaded_file(). This method is
-     * guaranteed to work in both SAPI and non-SAPI environments.
-     * Implementations must determine which environment they are in, and use the
-     * appropriate method (move_uploaded_file(), rename(), or a stream
-     * operation) to perform the operation.
-     *
-     * $targetPath may be an absolute path, or a relative path. If it is a
-     * relative path, resolution should be the same as used by PHP's rename()
-     * function.
-     *
-     * The original file or stream MUST be removed on completion.
-     *
-     * If this method is called more than once, any subsequent calls MUST raise
-     * an exception.
-     *
-     * When used in an SAPI environment where $_FILES is populated, when writing
-     * files via moveTo(), is_uploaded_file() and move_uploaded_file() SHOULD be
-     * used to ensure permissions and upload status are verified correctly.
-     *
-     * If you wish to move to a stream, use getStream(), as SAPI operations
-     * cannot guarantee writing to stream destinations.
+     * @inheritdoc
      *
      * @see http://php.net/is_uploaded_file
      * @see http://php.net/move_uploaded_file
@@ -88,8 +94,9 @@ class UploadedFile implements UploadedFileInterface
      * @throws \RuntimeException on any error during the move operation, or on
      *     the second or subsequent call to the method.
      */
-    public function moveTo($targetPath)
+    public function moveTo($targetPath): void
     {
+        // TODO ...
     }
 
     /**
@@ -101,8 +108,9 @@ class UploadedFile implements UploadedFileInterface
      *
      * @return int|null The file size in bytes or null if unknown.
      */
-    public function getSize()
+    public function getSize(): int
     {
+        return $this->size;
     }
 
     /**
@@ -119,8 +127,9 @@ class UploadedFile implements UploadedFileInterface
      * @see http://php.net/manual/en/features.file-upload.errors.php
      * @return int One of PHP's UPLOAD_ERR_XXX constants.
      */
-    public function getError()
+    public function getError(): int
     {
+        return $this->errorCode;
     }
 
     /**
@@ -136,8 +145,9 @@ class UploadedFile implements UploadedFileInterface
      * @return string|null The filename sent by the client or null if none
      *     was provided.
      */
-    public function getClientFilename()
+    public function getClientFilename(): string
     {
+        return $this->clientFilename;
     }
 
     /**
@@ -153,7 +163,66 @@ class UploadedFile implements UploadedFileInterface
      * @return string|null The media type sent by the client or null if none
      *     was provided.
      */
-    public function getClientMediaType()
+    public function getClientMediaType(): string
     {
+        return $this->clientMediaType;
+    }
+
+    /**
+     * @param int $errorCode
+     * @return UploadedFile
+     */
+    public function setError(int $errorCode): self
+    {
+        $this->errorCode = $errorCode;
+        return $this;
+    }
+
+    /**
+     * @param string $tmpFile
+     * @return UploadedFile
+     */
+    private function setFile(string $tmpFile): self
+    {
+        $this->file = $tmpFile;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOk(): bool
+    {
+        return $this->errorCode === \UPLOAD_ERR_OK;
+    }
+
+    /**
+     * @param int $size
+     * @return UploadedFile
+     */
+    public function setSize(int $size): UploadedFile
+    {
+        $this->size = $size;
+        return $this;
+    }
+
+    /**
+     * @param string $clientFilename
+     * @return UploadedFile
+     */
+    public function setClientFilename(string $clientFilename): UploadedFile
+    {
+        $this->clientFilename = $clientFilename;
+        return $this;
+    }
+
+    /**
+     * @param string $clientMediaType
+     * @return UploadedFile
+     */
+    public function setClientMediaType(string $clientMediaType): UploadedFile
+    {
+        $this->clientMediaType = $clientMediaType;
+        return $this;
     }
 }

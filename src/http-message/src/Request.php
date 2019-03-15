@@ -1,33 +1,57 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Http\Message;
 
-use Psr\Http\Message\UploadedFileInterface;
+use Psr\Http\Message\StreamInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\PrototypeException;
+use Swoft\Bean\Container;
 use Swoft\Http\Message\Concern\InteractsWithInput;
 use Swoft\Http\Message\Contract\RequestParserInterface;
 use Swoft\Http\Message\Contract\ServerRequestInterface;
 use Swoft\Http\Message\Stream\Stream;
-use Swoft\Http\Message\Upload\UploadedFile;
 use Swoft\Http\Message\Uri\Uri;
+use Swoft\Http\Server\Helper\HttpHelper;
 use Swoole\Http\Request as CoRequest;
 
 /**
- * Class ServerRequest
+ * Class Request - The PSR ServerRequestInterface implement
  *
  * @since 2.0
  * @Bean(name="httpRequest", scope=Bean::PROTOTYPE)
  */
 class Request extends PsrRequest implements ServerRequestInterface
 {
-    use PrototypeTrait;
     use InteractsWithInput;
 
     public const CONTENT_HTML = 'text/html';
     public const CONTENT_JSON = 'application/json';
     public const CONTENT_XML  = 'application/xml';
+
+    private const METHOD_OVERRIDE_KEY = '_method';
+
+    /**
+     * @see $_SERVER
+     * @var array
+     */
+    private const DEFAULT_SERVER = [
+        'server_protocol'      => 'HTTP/1.1',
+        'remote_addr'          => '127.0.0.1',
+        'request_method'       => 'GET',
+        'request_uri'          => '/',
+        'request_time'         => 0,
+        'request_time_float'   => 0,
+        'query_string'         => '',
+        'server_addr'          => '127.0.0.1',
+        'server_name'          => 'localhost',
+        'server_port'          => 80,
+        'script_name'          => '',
+        'https'                => '',
+        'http_host'            => 'localhost',
+        'http_accept'          => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'http_accept_language' => 'en-US,en;q=0.8',
+        'http_accept_charset'  => 'utf-8;q=0.7,*;q=0.3',
+        'http_user_agent'      => 'Unknown',
+    ];
 
     /**
      * @var CoRequest
@@ -47,27 +71,27 @@ class Request extends PsrRequest implements ServerRequestInterface
     /**
      * @var null|array|object
      */
-    protected $parsedBody;
+    private $parsedBody;
 
     /**
      * @var array
      */
-    protected $queryParams = [];
+    private $queryParams = [];
 
     /**
      * @var array
      */
-    protected $serverParams = [];
+    private $serverParams = [];
 
     /**
      * @var array
      */
-    protected $uploadedFiles = [];
+    private $uploadedFiles = [];
 
     /**
      * @var float
      */
-    protected $requestTime = 0;
+    private $requestTime = 0;
 
     /**
      * All parsers
@@ -84,56 +108,60 @@ class Request extends PsrRequest implements ServerRequestInterface
     private $parsers = [];
 
     /**
-     * @param CoRequest $coRequest
+     * Create Psr server request from swoole request
      *
+     * @param CoRequest $coRequest
      * @return Request
-     * @throws PrototypeException
      */
     public static function new(CoRequest $coRequest): self
     {
-        $server  = $coRequest->server;
-        $method  = $server['request_method'] ?? 'GET';
-        $headers = $coRequest->header ?? [];
-        $content = $coRequest->rawContent();
-        $content = $content === false ? '' : $content;
+        // on enter QPS: 4.5w
+        // return new self(); // QPS: 4.4w
+        $self = Container::$instance->getPrototype('httpRequest');
+        // return $self; // QPS: 4.2w
 
-        $instance = self::__instance();
+        // SERVER data. swoole Request->server always exists
+        // $serverParams = \array_change_key_case($coRequest->server, \CASE_UPPER);
+        $serverParams = \array_merge(self::DEFAULT_SERVER, $coRequest->server);
+        // return $self; // QPS: 3.7w
+
+        $self->coRequest = $coRequest;
+        // return $self; // QPS: 3.7w
+        // Protocol version
+        // $self->protocol = \str_replace('HTTP/', '', $serverParams['server_protocol']);
+        $self->protocol = \substr($serverParams['server_protocol'], 5); // faster
+        // return $self; // QPS: 3.7w
 
         // Set headers
-        $instance->setHeaders($headers);
-
-        // Protocol
-        if (isset($server['server_protocol'])) {
-            $instance->protocol = \str_replace('HTTP/', '', $server['server_protocol']);
+        if ($headers = $coRequest->header) {
+            // $self->setHeaders($headers); // QPS: 2.8w
+            $self->setHeadersFromSwoole($headers); // QPS: 3.4w
         }
+        // return $self;
 
-        // Parse body
-        $parsedBody = $coRequest->post ?? [];
-        if (empty($parsedBody) && !$instance->isGet()) {
-            $parsedBody = $instance->parseBody($content);
-        }
+        // Optimize: Don't create stream, init on first fetch
+        // $self->body = Stream::new($content);
+        $self->method = $serverParams['request_method'];
 
-        $instance->method       = \strtoupper($method);
-        $instance->uri          = self::newUriByCoRequest($coRequest);
-        $instance->stream       = Stream::new($content);
-        $instance->cookieParams = ($coRequest->cookie ?? []);
-        $instance->queryParams  = ($coRequest->get ?? []);
-        $instance->serverParams = $server ?: [];
-
-        $instance->coRequest   = $coRequest;
-        $instance->parsedBody  = $parsedBody;
-        $instance->requestTime = $server['request_time_float'] ?? 0;
+        $self->queryParams  = $coRequest->get ?: [];
+        $self->cookieParams = $coRequest->cookie ?: [];
+        $self->serverParams = $serverParams;
+        $self->requestTime  = $serverParams['request_time_float'];
 
         if ($coRequest->files) {
-            $instance->uploadedFiles = self::normalizeFiles($coRequest->files);
+            $self->uploadedFiles = HttpHelper::normalizeFiles($coRequest->files);
         }
+        // return $self; // QPS: 3.3w
+
+        $self->uri = self::newUriByCoRequest($serverParams, $headers);
+        // return $self; // QPS: 2.45w
 
         // Update uri by host
-        if (!$instance->hasHeader('Host')) {
-            $instance->updateHostByUri();
+        if (!isset($headers['host'])) {
+            $self->updateHostByUri();
         }
 
-        return $instance;
+        return $self; // QPS: 2.44w
     }
 
     /**
@@ -178,17 +206,7 @@ class Request extends PsrRequest implements ServerRequestInterface
     }
 
     /**
-     * Return an instance with the specified cookies.
-     * The data IS NOT REQUIRED to come from the $_COOKIE superglobal, but MUST
-     * be compatible with the structure of $_COOKIE. Typically, this data will
-     * be injected at instantiation.
-     * This method MUST NOT update the related Cookie header of the request
-     * instance, nor related values in the server params.
-     * This method MUST be implemented in such a way as to retain the
-     * immutability of the message, and MUST return an instance that has the
-     * updated cookie values.
-     *
-     * @param array $cookies Array of key/value pairs representing cookies.
+     * @inheritdoc
      *
      * @return static
      */
@@ -201,12 +219,7 @@ class Request extends PsrRequest implements ServerRequestInterface
     }
 
     /**
-     * Retrieve query string arguments.
-     * Retrieves the deserialized query string arguments, if any.
-     * Note: the query params might not be in sync with the URI or server
-     * params. If you need to ensure you are only getting the original
-     * values, you may need to parse the query string from `getUri()->getQuery()`
-     * or from the `QUERY_STRING` server param.
+     * @inheritdoc
      *
      * @return array
      */
@@ -232,22 +245,7 @@ class Request extends PsrRequest implements ServerRequestInterface
     }
 
     /**
-     * Return an instance with the specified query string arguments.
-     * These values SHOULD remain immutable over the course of the incoming
-     * request. They MAY be injected during instantiation, such as from PHP's
-     * $_GET superglobal, or MAY be derived from some other value such as the
-     * URI. In cases where the arguments are parsed from the URI, the data
-     * MUST be compatible with what PHP's parse_str() would return for
-     * purposes of how duplicate query parameters are handled, and how nested
-     * sets are handled.
-     * Setting query string arguments MUST NOT change the URI stored by the
-     * request, nor the values in the server params.
-     * This method MUST be implemented in such a way as to retain the
-     * immutability of the message, and MUST return an instance that has the
-     * updated query string arguments.
-     *
-     * @param array $query Array of query string arguments, typically from
-     *                     $_GET.
+     * @inheritdoc
      *
      * @return static
      */
@@ -260,12 +258,7 @@ class Request extends PsrRequest implements ServerRequestInterface
     }
 
     /**
-     * Retrieve normalized file upload data.
-     * This method returns upload metadata in a normalized tree, with each leaf
-     * an instance of Psr\Http\Message\UploadedFileInterface.
-     * These values MAY be prepared from $_FILES or the message body during
-     * instantiation, or MAY be injected via withUploadedFiles().
-     *
+     * @inheritdoc
      * @return array An array tree of UploadedFileInterface instances; an empty
      *     array MUST be returned if no data is present.
      */
@@ -275,12 +268,7 @@ class Request extends PsrRequest implements ServerRequestInterface
     }
 
     /**
-     * Create a new instance with the specified uploaded files.
-     * This method MUST be implemented in such a way as to retain the
-     * immutability of the message, and MUST return an instance that has the
-     * updated body parameters.
-     *
-     * @param array $uploadedFiles An array tree of UploadedFileInterface instances.
+     * @inheritdoc
      *
      * @return static
      * @throws \InvalidArgumentException if an invalid structure is provided.
@@ -294,20 +282,34 @@ class Request extends PsrRequest implements ServerRequestInterface
     }
 
     /**
-     * Retrieve any parameters provided in the request body.
-     * If the request Content-Type is either application/x-www-form-urlencoded
-     * or multipart/form-data, and the request method is POST, this method MUST
-     * return the contents of $_POST.
-     * Otherwise, this method may return any results of deserializing
-     * the request body content; as parsing returns structured content, the
-     * potential types MUST be arrays or objects only. A null value indicates
-     * the absence of body content.
+     * Returns the raw HTTP request body.
+     * @return string the request body
+     */
+    public function getRawBody(): string
+    {
+        return $this->coRequest->rawContent();
+    }
+
+    /**
+     * @inheritdoc
      *
      * @return null|array|object The deserialized body parameters, if any.
      *     These will typically be an array or object.
      */
     public function getParsedBody()
     {
+        // Need init
+        if (null === $this->parsedBody) {
+            $parsedBody = $coRequest->post ?? [];
+
+            // Parse body
+            if (!$parsedBody && !$this->isGet()) {
+                $parsedBody = $this->parseRawBody($this->getRawBody());
+            }
+
+            $this->parsedBody = $parsedBody;
+        }
+
         return $this->parsedBody;
     }
 
@@ -321,7 +323,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      */
     public function addParserBody(string $name, $value)
     {
-        if (!is_array($this->parsedBody)) {
+        if (!\is_array($this->parsedBody)) {
             return $this;
         }
 
@@ -329,32 +331,12 @@ class Request extends PsrRequest implements ServerRequestInterface
 
         $clone->parsedBody[$name] = $value;
         return $clone;
-
     }
 
     /**
-     * Return an instance with the specified body parameters.
-     * These MAY be injected during instantiation.
-     * If the request Content-Type is either application/x-www-form-urlencoded
-     * or multipart/form-data, and the request method is POST, use this method
-     * ONLY to inject the contents of $_POST.
-     * The data IS NOT REQUIRED to come from $_POST, but MUST be the results of
-     * deserializing the request body content. Deserialization/parsing returns
-     * structured data, and, as such, this method ONLY accepts arrays or objects,
-     * or a null value if nothing was available to parse.
-     * As an example, if content negotiation determines that the request data
-     * is a JSON payload, this method could be used to create a request
-     * instance with the deserialized parameters.
-     * This method MUST be implemented in such a way as to retain the
-     * immutability of the message, and MUST return an instance that has the
-     * updated body parameters.
-     *
-     * @param null|array|object $data The deserialized body data. This will
-     *                                typically be in an array or object.
-     *
+     * @inheritdoc
      * @return static
-     * @throws \InvalidArgumentException if an unsupported argument type is
-     *                                provided.
+     * @throws \InvalidArgumentException if an unsupported argument type is provided.
      */
     public function withParsedBody($data)
     {
@@ -365,12 +347,7 @@ class Request extends PsrRequest implements ServerRequestInterface
     }
 
     /**
-     * Retrieve attributes derived from the request.
-     * The request "attributes" may be used to allow injection of any
-     * parameters derived from the request: e.g., the results of path
-     * match operations; the results of decrypting cookies; the results of
-     * deserializing non-form-encoded message bodies; etc. Attributes
-     * will be application and request specific, and CAN be mutable.
+     * @inheritdoc
      *
      * @return array Attributes derived from the request.
      */
@@ -380,13 +357,7 @@ class Request extends PsrRequest implements ServerRequestInterface
     }
 
     /**
-     * Retrieve a single derived request attribute.
-     * Retrieves a single derived request attribute as described in
-     * getAttributes(). If the attribute has not been previously set, returns
-     * the default value as provided.
-     * This method obviates the need for a hasAttribute() method, as it allows
-     * specifying a default value to return if the attribute is not found.
-     *
+     * @inheritdoc
      * @see getAttributes()
      *
      * @param string $name The attribute name.
@@ -396,16 +367,11 @@ class Request extends PsrRequest implements ServerRequestInterface
      */
     public function getAttribute($name, $default = null)
     {
-        return array_key_exists($name, $this->attributes) ? $this->attributes[$name] : $default;
+        return $this->attributes[$name] ?? $default;
     }
 
     /**
-     * Return an instance with the specified derived request attribute.
-     * This method allows setting a single derived request attribute as
-     * described in getAttributes().
-     * This method MUST be implemented in such a way as to retain the
-     * immutability of the message, and MUST return an instance that has the
-     * updated attribute.
+     * @inheritdoc
      *
      * @see getAttributes()
      *
@@ -423,12 +389,7 @@ class Request extends PsrRequest implements ServerRequestInterface
     }
 
     /**
-     * Return an instance that removes the specified derived request attribute.
-     * This method allows removing a single derived request attribute as
-     * described in getAttributes().
-     * This method MUST be implemented in such a way as to retain the
-     * immutability of the message, and MUST return an instance that removes
-     * the attribute.
+     * @inheritdoc
      *
      * @see getAttributes()
      *
@@ -438,13 +399,13 @@ class Request extends PsrRequest implements ServerRequestInterface
      */
     public function withoutAttribute($name)
     {
-        if (false === array_key_exists($name, $this->attributes)) {
+        if (!isset($this->attributes[$name])) {
             return $this;
         }
 
         $clone = clone $this;
-        unset($clone->attributes[$name]);
 
+        unset($clone->attributes[$name]);
         return $clone;
     }
 
@@ -455,7 +416,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      */
     public function url(): string
     {
-        return rtrim(preg_replace('/\?.*/', '', $this->getUri()), '/');
+        return \rtrim(\preg_replace('/\?.*/', '', $this->getUri()), '/');
     }
 
     /**
@@ -481,11 +442,7 @@ class Request extends PsrRequest implements ServerRequestInterface
     }
 
     /**
-     * Returns true if the request is a XMLHttpRequest.
-     *
-     * It works if your JavaScript library sets an X-Requested-With HTTP header.
-     * It is known to work with common JavaScript frameworks:
-     *
+     * @inheritdoc
      * @see http://en.wikipedia.org/wiki/List_of_Ajax_frameworks#JavaScript
      *
      * @return bool true if the request is an XMLHttpRequest, false otherwise
@@ -493,6 +450,36 @@ class Request extends PsrRequest implements ServerRequestInterface
     public function isXmlHttpRequest(): bool
     {
         return 'XMLHttpRequest' === $this->getHeaderLine('X-Requested-With');
+    }
+
+    /**
+     * @return string
+     */
+    public function getMethod(): string
+    {
+        if ($method = $this->post(self::METHOD_OVERRIDE_KEY)) {
+            return \strtoupper($method);
+        }
+
+        if ($method = $this->getHeaderLine('X-Http-Method-Override')) {
+            return \strtoupper($method);
+        }
+
+        return parent::getMethod();
+    }
+
+    /**
+     * @return StreamInterface
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function getBody(): StreamInterface
+    {
+        if (!$this->stream) {
+            $this->stream = Stream::new($this->coRequest->rawContent());
+        }
+
+        return $this->stream;
     }
 
     /**
@@ -505,13 +492,10 @@ class Request extends PsrRequest implements ServerRequestInterface
 
     /**
      * @param CoRequest $coRequest
-     *
-     * @return $this
      */
-    public function setCoRequest(CoRequest $coRequest): self
+    public function setCoRequest(CoRequest $coRequest): void
     {
         $this->coRequest = $coRequest;
-        return $this;
     }
 
     /**
@@ -527,12 +511,13 @@ class Request extends PsrRequest implements ServerRequestInterface
      *
      * @return mixed
      */
-    private function parseBody(string $content)
+    private function parseRawBody(string $content)
     {
-        $contentTypes = $this->getHeader('content-type');
+        $contentTypes = $this->getHeader('Content-Type');
+
         foreach ($contentTypes as $contentType) {
             $parser = $this->parsers[$contentType] ?? null;
-            if (!empty($parser) && $parser instanceof RequestParserInterface) {
+            if ($parser && $parser instanceof RequestParserInterface) {
                 return $parser->parse($content);
             }
         }
@@ -541,119 +526,46 @@ class Request extends PsrRequest implements ServerRequestInterface
     }
 
     /**
-     * Return an UploadedFile instance array.
-     *
-     * @param array $files A array which respect $_FILES structure
-     *
-     * @throws \InvalidArgumentException for unrecognized values
-     * @return array
-     */
-    private static function normalizeFiles(array $files): array
-    {
-        $normalized = [];
-
-        foreach ($files as $key => $value) {
-            if ($value instanceof UploadedFileInterface) {
-                $normalized[$key] = $value;
-            } elseif (\is_array($value)) {
-                if (isset($value['tmp_name'])) {
-                    $normalized[$key] = self::createUploadedFileFromSpec($value);
-                    continue;
-                }
-
-                $normalized[$key] = self::normalizeFiles($value);
-            } else {
-                throw new \InvalidArgumentException('Invalid value in files specification');
-            }
-        }
-
-        return $normalized;
-    }
-
-    /**
-     * Create and return an UploadedFile instance from a $_FILES specification.
-     * If the specification represents an array of values, this method will
-     * delegate to normalizeNestedFileSpec() and return that return value.
-     *
-     * @param array $value $_FILES structure
-     *
-     * @return array|UploadedFileInterface
-     */
-    private static function createUploadedFileFromSpec(array $value)
-    {
-        if (is_array($value['tmp_name'])) {
-            return self::normalizeNestedFileSpec($value);
-        }
-
-        return new UploadedFile(
-            $value['tmp_name'],
-            (int)$value['size'],
-            (int)$value['error'],
-            $value['name'],
-            $value['type']
-        );
-    }
-
-    /**
-     * Normalize an array of file specifications.
-     * Loops through all nested files and returns a normalized array of
-     * UploadedFileInterface instances.
-     *
-     * @param array $files
-     *
-     * @return UploadedFileInterface[]
-     */
-    private static function normalizeNestedFileSpec(array $files = []): array
-    {
-        $normalizedFiles = [];
-
-        foreach (\array_keys($files['tmp_name']) as $key) {
-            $spec                  = [
-                'tmp_name' => $files['tmp_name'][$key],
-                'size'     => $files['size'][$key],
-                'error'    => $files['error'][$key],
-                'name'     => $files['name'][$key],
-                'type'     => $files['type'][$key],
-            ];
-            $normalizedFiles[$key] = self::createUploadedFileFromSpec($spec);
-        }
-
-        return $normalizedFiles;
-    }
-
-    /**
      * Get a Uri populated with values from $swooleRequest->server.
      *
-     * @param CoRequest $coRequest
-     *
+     * @param array $server
+     * @param array $header
      * @return Uri
-     * @throws PrototypeException
      */
-    public static function newUriByCoRequest(CoRequest $coRequest): Uri
+    public static function newUriByCoRequest(array &$server, array &$header): Uri
     {
-        $server = $coRequest->server;
-        $header = $coRequest->header;
+        /** @var Uri $uri */
+        $uri = Container::$instance->getPrototype(Uri::class);
+        $uri = $uri->withScheme(isset($server['https']) && $server['https'] !== 'off' ? 'https' : 'http');
 
-        $uri = Uri::new();
-        $uri = $uri->withScheme(!empty($server['https']) && $server['https'] !== 'off' ? 'https' : 'http');
+        $parts = \explode('?', $server['request_uri']);
+        $uri   = $uri->withPath($parts[0]);
+
+        $hasQuery = false;
+        if (isset($parts[1])) {
+            $hasQuery = true;
+            /** @var Uri $uri */
+            $uri = $uri->withQuery($parts[1]);
+        }
+
+        if (!$hasQuery && isset($server['query_string'])) {
+            $uri = $uri->withQuery($server['query_string']);
+        }
 
         $hasPort = false;
-        if (isset($server['http_host'])) {
-            $parts = explode(':', $server['http_host']);
+        if ($host = $server['http_host']) {
+            $parts = \explode(':', $host);
             $uri   = $uri->withHost($parts[0]);
             if (isset($parts[1])) {
                 $hasPort = true;
                 $uri     = $uri->withPort($parts[1]);
             }
-        } elseif (isset($server['server_name'])) {
-            $uri = $uri->withHost($server['server_name']);
-        } elseif (isset($server['server_addr'])) {
-            $uri = $uri->withHost($server['server_addr']);
+        } elseif ($host = $server['server_name'] ?: $server['server_addr']) {
+            $uri = $uri->withHost($host);
         } elseif (isset($header['host'])) {
             if (\strpos($header['host'], ':')) {
                 $hasPort = true;
-                [$host, $port] = explode(':', $header['host'], 2);
-
+                [$host, $port] = \explode(':', $header['host'], 2);
                 if ($port !== '80') {
                     $uri = $uri->withPort($port);
                 }
@@ -666,22 +578,6 @@ class Request extends PsrRequest implements ServerRequestInterface
 
         if (!$hasPort && isset($server['server_port'])) {
             $uri = $uri->withPort($server['server_port']);
-        }
-
-        $hasQuery = false;
-        if (isset($server['request_uri'])) {
-            $parts = \explode('?', $server['request_uri']);
-            $uri   = $uri->withPath($parts[0]);
-
-            if (isset($parts[1])) {
-                $hasQuery = true;
-                /** @var Uri $uri */
-                $uri = $uri->withQuery($parts[1]);
-            }
-        }
-
-        if (!$hasQuery && isset($server['query_string'])) {
-            $uri = $uri->withQuery($server['query_string']);
         }
 
         return $uri;

@@ -36,7 +36,7 @@ class Container implements ContainerInterface
     /**
      * @var Container
      */
-    private static $instance;
+    public static $instance;
 
     /**
      * All load annotations
@@ -318,10 +318,10 @@ class Container implements ContainerInterface
 
     public function initializeRequest(int $rid): void
     {
-        //        /* @var ObjectDefinition $objectDefinition */
-        //        foreach ($this->requestDefinitions as $beanName => $objectDefinition) {
-        //
-        //        }
+        // /* @var ObjectDefinition $objectDefinition */
+        // foreach ($this->requestDefinitions as $beanName => $objectDefinition) {
+        // TODO ...
+        // }
     }
 
     /**
@@ -364,7 +364,7 @@ class Container implements ContainerInterface
         }
 
         if (!isset($this->sessionDefinitions[$name])) {
-            throw new ContainerException(sprintf('Request bean(%s) is not defined', $name));
+            throw new ContainerException(\sprintf('Request bean(%s) is not defined', $name));
         }
 
         return $this->newBean($name, $id);
@@ -383,7 +383,7 @@ class Container implements ContainerInterface
      */
     public function get($id)
     {
-        // Singleton
+        // It is singleton
         if (isset($this->singletonPool[$id])) {
             return $this->singletonPool[$id];
         }
@@ -393,15 +393,15 @@ class Container implements ContainerInterface
             return clone $this->prototypePool[$id];
         }
 
-        // Alias
+        // Alias name
         $aliasId = $this->aliases[$id] ?? '';
-        if (!empty($aliasId)) {
+        if ($aliasId) {
             return $this->get($aliasId);
         }
 
         // Class name
         $classNames = $this->classNames[$id] ?? [];
-        if (!empty($classNames)) {
+        if ($classNames) {
             $id = \end($classNames);
             return $this->get($id);
         }
@@ -416,6 +416,38 @@ class Container implements ContainerInterface
 
         // Prototype
         return $this->newBean($objectDefinition->getName());
+    }
+
+    /**
+     * Quick get exist singleton
+     * @param string $name
+     * @return mixed
+     */
+    public function getSingleton(string $name)
+    {
+        if (isset($this->aliases[$name])) {
+            $name = $this->aliases[$name];
+        }
+
+        return $this->singletonPool[$name] ?? null;
+    }
+
+    /**
+     * @param string $name
+     * @return mixed|null
+     */
+    public function getPrototype(string $name)
+    {
+        if (isset($this->aliases[$name])) {
+            $name = $this->aliases[$name];
+        }
+
+        // Prototype by clone
+        if (isset($this->prototypePool[$name])) {
+            return clone $this->prototypePool[$name];
+        }
+
+        return null;
     }
 
     /**
@@ -515,7 +547,7 @@ class Container implements ContainerInterface
     }
 
     /**
-     * Whether is singleton
+     * Quick check has singleton
      *
      * @param string $name Bean name Or alias
      *
@@ -689,8 +721,7 @@ class Container implements ContainerInterface
     private function setNewBean(string $beanName, string $scope, $object, int $id = 0)
     {
         switch ($scope) {
-            case Bean::SINGLETON:
-                // Singleton
+            case Bean::SINGLETON: // Singleton
                 $this->singletonPool[$beanName] = $object;
                 break;
             case Bean::PROTOTYPE:
@@ -791,7 +822,6 @@ class Container implements ContainerInterface
         $args = [];
         /* @var ArgsInjection $arg */
         foreach ($argInjects as $argInject) {
-
             // Empty args
             $argValue = $argInject->getValue();
             if (empty($argValue) || !\is_string($argValue)) {

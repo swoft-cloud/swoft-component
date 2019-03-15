@@ -2,6 +2,7 @@
 
 namespace Swoft\Http\Message\Concern;
 
+use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\StreamInterface;
 use Swoft\Http\Message\Stream\Stream;
 
@@ -53,14 +54,7 @@ trait MessageTrait
     }
 
     /**
-     * Return an instance with the specified HTTP protocol version.
-     *
-     * The version string MUST contain only the HTTP version number (e.g.,
-     * "1.1", "1.0").
-     *
-     * This method MUST be implemented in such a way as to retain the
-     * immutability of the message, and MUST return an instance that has the
-     * new protocol version.
+     * @inheritdoc
      *
      * @param string $version HTTP protocol version
      *
@@ -72,9 +66,9 @@ trait MessageTrait
             return $this;
         }
 
-        $new           = clone $this;
-        $new->protocol = $version;
+        $new = clone $this;
 
+        $new->protocol = $version;
         return $new;
     }
 
@@ -119,7 +113,7 @@ trait MessageTrait
      */
     public function hasHeader($name): bool
     {
-        return isset($this->headerNames[strtolower($name)]);
+        return isset($this->headerNames[\strtolower($name)]);
     }
 
     /**
@@ -139,7 +133,7 @@ trait MessageTrait
      */
     public function getHeader($name): array
     {
-        $header = strtolower($name);
+        $header = \strtolower($name);
         if (!isset($this->headerNames[$header])) {
             return [];
         }
@@ -170,7 +164,7 @@ trait MessageTrait
      */
     public function getHeaderLine($name): string
     {
-        return implode(', ', $this->getHeader($name));
+        return \implode(', ', $this->getHeader($name));
     }
 
     /**
@@ -183,7 +177,7 @@ trait MessageTrait
      * immutability of the message, and MUST return an instance that has the
      * new and/or updated header and value.
      *
-     * @param string          $name  Case-insensitive header field name.
+     * @param string          $name Case-insensitive header field name.
      * @param string|string[] $value Header value(s).
      *
      * @return static
@@ -191,12 +185,12 @@ trait MessageTrait
      */
     public function withHeader($name, $value)
     {
-        if (!is_array($value)) {
+        if (!\is_array($value)) {
             $value = [$value];
         }
 
         $value      = $this->trimHeaderValues($value);
-        $normalized = strtolower($name);
+        $normalized = \strtolower($name);
         $new        = clone $this;
 
         if (isset($new->headerNames[$normalized])) {
@@ -210,17 +204,8 @@ trait MessageTrait
     }
 
     /**
-     * Return an instance with the specified header appended with the given value.
-     *
-     * Existing values for the specified header will be maintained. The new
-     * value(s) will be appended to the existing list. If the header did not
-     * exist previously, it will be added.
-     *
-     * This method MUST be implemented in such a way as to retain the
-     * immutability of the message, and MUST return an instance that has the
-     * new header and/or value.
-     *
-     * @param string          $name  Case-insensitive header field name to add.
+     * @see MessageInterface::withAddedHeader()
+     * @param string          $name Case-insensitive header field name to add.
      * @param string|string[] $value Header value(s).
      *
      * @return static
@@ -228,17 +213,17 @@ trait MessageTrait
      */
     public function withAddedHeader($name, $value)
     {
-        if (!is_array($value)) {
+        if (!\is_array($value)) {
             $value = [$value];
         }
 
         $value      = $this->trimHeaderValues($value);
-        $normalized = strtolower($name);
+        $normalized = \strtolower($name);
         $new        = clone $this;
 
         if (isset($new->headerNames[$normalized])) {
             $name                = $this->headerNames[$normalized];
-            $new->headers[$name] = array_merge($this->headers[$name], $value);
+            $new->headers[$name] = \array_merge($this->headers[$name], $value);
 
             return $new;
         }
@@ -264,7 +249,7 @@ trait MessageTrait
      */
     public function withoutHeader($name)
     {
-        $normalized = strtolower($name);
+        $normalized = \strtolower($name);
         if (!isset($this->headerNames[$normalized])) {
             return $this;
         }
@@ -286,7 +271,7 @@ trait MessageTrait
     public function getBody(): StreamInterface
     {
         if (!$this->stream) {
-            $this->stream = bean(Stream::class);
+            $this->stream = \bean(Stream::class);
         }
 
         return $this->stream;
@@ -329,17 +314,17 @@ trait MessageTrait
     {
         $this->headerNames = $this->headers = [];
         foreach ($headers as $header => $value) {
-            if (!is_array($value)) {
+            if (!\is_array($value)) {
                 $value = [$value];
             }
 
             $value      = $this->trimHeaderValues($value);
-            $normalized = strtolower($header);
+            $normalized = \strtolower($header);
 
             if (isset($this->headerNames[$normalized])) {
-
-                $header                 = $this->headerNames[$normalized];
-                $this->headers[$header] = array_merge($this->headers[$header], $value);
+                $headerName = $this->headerNames[$normalized];
+                //
+                $this->headers[$headerName] = \array_merge($this->headers[$headerName], $value);
                 continue;
             }
 
@@ -347,6 +332,17 @@ trait MessageTrait
             $this->headers[$header]         = $value;
         }
         return $this;
+    }
+
+    /**
+     * @param array $headers [name => value string]
+     */
+    protected function setHeadersFromSwoole(array &$headers): void
+    {
+        foreach ($headers as $name => $value) {
+            $this->headers[$name]     = [$value];
+            $this->headerNames[$name] = $name;
+        }
     }
 
     /**
@@ -365,8 +361,8 @@ trait MessageTrait
      */
     private function trimHeaderValues(array $values): array
     {
-        return array_map(function ($value) {
-            return trim($value, " \t");
+        return \array_map(function ($value) {
+            return \trim($value, " \t");
         }, $values);
     }
 }

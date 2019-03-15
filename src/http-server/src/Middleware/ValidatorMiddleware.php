@@ -1,13 +1,12 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Http\Server\Middleware;
-
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Http\Server\Contract\MiddlewareInterface;
 
 /**
  * Class ValidatorMiddleware

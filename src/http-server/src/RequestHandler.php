@@ -7,8 +7,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Container;
+use Swoft\Http\Server\Contract\MiddlewareInterface;
 use Swoft\Http\Server\Exception\HttpServerException;
-use Swoft\Http\Server\Middleware\MiddlewareInterface;
 
 /**
  * Class RequestHandler
@@ -41,16 +42,12 @@ class RequestHandler implements RequestHandlerInterface
      *
      * @param array  $middlewares
      * @param string $defaultMiddleware
-     * @throws HttpServerException
      */
     public function initialize(array $middlewares, string $defaultMiddleware): void
     {
-        $this->middlewares = $middlewares;
-
-        if (!$defaultMiddleware) {
-            throw new HttpServerException('You must define default middleware!');
-        }
-
+        $this->offset = 0;
+        // init
+        $this->middlewares       = $middlewares;
         $this->defaultMiddleware = $defaultMiddleware;
     }
 
@@ -60,25 +57,19 @@ class RequestHandler implements RequestHandlerInterface
      * @param ServerRequestInterface $request
      *
      * @return ResponseInterface
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $middlewareName = $this->middlewares[$this->offset] ?? '';
+        // Default middleware to handle request route
+        $middleware = $this->middlewares[$this->offset] ?? $this->defaultMiddleware;
 
-        // Default middleware to handle request
-        if (empty($middlewareName)) {
-            $middlewareName = $this->defaultMiddleware;
-        }
-
-        /* @var MiddlewareInterface $middleware */
-        $middleware = \bean($middlewareName);
+        /* @var MiddlewareInterface $bean */
+        $bean = Container::$instance->getSingleton($middleware);
 
         // Next middleware
         $this->offset++;
 
-        return $middleware->process($request, $this);
+        return $bean->process($request, $this);
     }
 
     /**

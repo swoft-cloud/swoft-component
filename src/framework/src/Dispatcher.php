@@ -25,13 +25,31 @@ abstract class Dispatcher implements DispatcherInterface
     protected $defaultMiddleware;
 
     /**
+     * @var array
+     */
+    private $preMiddlewares = [];
+
+    /**
+     * @var array
+     */
+    private $afterMiddlewares = [];
+
+    public function init(): void
+    {
+        $this->preMiddlewares   = $this->preMiddleware();
+        $this->afterMiddlewares = $this->afterMiddleware();
+    }
+
+    /**
      * Request middleware
      *
      * @return array
      */
     public function requestMiddleware(): array
     {
-        return \array_merge($this->preMiddleware(), $this->middlewares, $this->afterMiddleware());
+        return $this->middlewares ?
+            \array_merge($this->preMiddlewares, $this->middlewares, $this->afterMiddlewares) :
+            \array_merge($this->preMiddlewares, $this->afterMiddlewares);
     }
 
     /**

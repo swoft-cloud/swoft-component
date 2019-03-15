@@ -208,10 +208,6 @@ abstract class Server implements ServerInterface
     {
         // Server pid map
         $this->setPidMap($server);
-\var_dump('manager pid='. $server->manager_pid . 'master pid='. $server->master_pid, 'mypid'. \getmypid());
-        \var_dump(__METHOD__ . __LINE__ . "coid:" . \Swoft\Co::id());
-        \var_dump(\preg_match('/\w+/', '/test/index'));
-
         // Set process title
         Sys::setProcessTitle(\sprintf('%s manager process', $this->pidName));
 
