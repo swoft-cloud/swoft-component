@@ -73,8 +73,8 @@ class Router implements RouterInterface
     }
 
     /**
-     * @param string $path
-     * @param string $commandId
+     * @param string   $path
+     * @param string   $commandId
      * @param callable $handler
      */
     public function addCommand(string $path, string $commandId, $handler): void
@@ -106,7 +106,7 @@ class Router implements RouterInterface
             return [self::NOT_FOUND, null];
         }
 
-        $command  = \trim($command) ?: $this->modules[$path]['defaultCommand'];
+        $command = \trim($command) ?: $this->modules[$path]['defaultCommand'];
 
         if (isset($this->commands[$path][$command])) {
             // $commands[$command] is: [controllerClass, method]

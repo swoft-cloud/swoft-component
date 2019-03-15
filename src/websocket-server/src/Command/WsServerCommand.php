@@ -8,7 +8,6 @@ use Swoft\Console\Annotation\Mapping\CommandOption;
 use Swoft\Console\Helper\Show;
 use Swoft\Helper\EnvHelper;
 use Swoft\Server\Command\BaseServerCommand;
-use Swoft\Server\Server;
 use Swoft\WebSocket\Server\WebSocketServer;
 
 /**

@@ -2,16 +2,16 @@
 
 namespace SwoftTest\WebSocket\Server\Fixture;
 
+use Swoft\WebSocket\Server\Annotation\Mapping\OnClose;
+use Swoft\WebSocket\Server\Annotation\Mapping\OnHandShake;
+use Swoft\WebSocket\Server\Annotation\Mapping\OnOpen;
 use Swoft\WebSocket\Server\Annotation\Mapping\WsModule;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
+use Swoft\WebSocket\Server\MessageParser\JsonParser;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
-use Swoft\WebSocket\Server\MessageParser\JsonParser;
-use Swoft\WebSocket\Server\Annotation\Mapping\OnClose;
-use Swoft\WebSocket\Server\Annotation\Mapping\OnHandShake;
-use Swoft\WebSocket\Server\Annotation\Mapping\OnOpen;
 
 /**
  * Class AbstractModule
@@ -43,7 +43,7 @@ class ChatModule implements WsModuleInterface
 
     public function init(): void
     {
-        $this->options    = $this->configure();
+        $this->options = $this->configure();
         // $this->dispatcher = new MessageDispatcher($this->registerCommands());
     }
 

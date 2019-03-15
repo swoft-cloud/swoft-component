@@ -17,7 +17,7 @@ class MessageMappingParser extends Parser
     /**
      * Parse object
      *
-     * @param int       $type Class or Method or Property
+     * @param int            $type Class or Method or Property
      * @param MessageMapping $annotation Annotation object
      *
      * @return array

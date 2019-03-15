@@ -4,9 +4,9 @@ namespace Swoft\WebSocket\Server;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Session\SessionInterface;
 use Swoft\Concern\DataPropertyTrait;
 use Swoft\Http\Message\Request;
+use Swoft\Session\SessionInterface;
 use Swoole\Http\Request as SwooleRequest;
 
 /**

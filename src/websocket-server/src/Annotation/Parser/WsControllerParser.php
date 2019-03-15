@@ -13,7 +13,6 @@ use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\AnnotationException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\WebSocket\Server\Annotation\Mapping\WsController;
-use Swoft\WebSocket\Server\Router\Router;
 
 /**
  * Class WebSocketParser

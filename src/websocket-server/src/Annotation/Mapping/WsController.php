@@ -54,7 +54,7 @@ final class WsController
         }
     }
 
-        /**
+    /**
      * @return string
      */
     public function getPrefix(): string

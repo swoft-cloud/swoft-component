@@ -2,12 +2,12 @@
 
 namespace Swoft\WebSocket\Server\Swoole;
 
-use Swoole\Server;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Session\Session;
 use Swoft\Server\Swoole\CloseInterface;
+use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\WsServerEvent;
+use Swoole\Server;
 
 /**
  * Class CloseListener
@@ -21,8 +21,8 @@ class CloseListener implements CloseInterface
      * Close event
      *
      * @param Server|\Swoole\WebSocket\Server $server
-     * @param int      $fd
-     * @param int      $reactorId
+     * @param int                             $fd
+     * @param int                             $reactorId
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */

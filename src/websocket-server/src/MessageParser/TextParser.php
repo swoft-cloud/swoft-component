@@ -29,7 +29,7 @@ class TextParser implements MessageParserInterface
     {
         return [
             // use default message command
-            'cmd' => '',
+            'cmd'  => '',
             'data' => $data,
         ];
     }

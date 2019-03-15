@@ -9,8 +9,8 @@ use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\Exception\WsContextException;
-use Swoft\WebSocket\Server\Exception\WsServerException;
 use Swoft\WebSocket\Server\Exception\WsRouteException;
+use Swoft\WebSocket\Server\Exception\WsServerException;
 use Swoft\WebSocket\Server\Router\Router;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
@@ -26,8 +26,8 @@ class Dispatcher
     /**
      * dispatch handshake request
      *
-     * @param Request $request
-     * @param Response   $response
+     * @param Request  $request
+     * @param Response $response
      *
      * @return array eg. [status, response]
      * @throws \Swoft\WebSocket\Server\Exception\WsRouteException
@@ -69,9 +69,9 @@ class Dispatcher
     }
 
     /**
-     * @param Server     $server
+     * @param Server  $server
      * @param Request $request
-     * @param int        $fd
+     * @param int     $fd
      *
      * @throws \Swoft\WebSocket\Server\Exception\WsRouteException
      * @throws \InvalidArgumentException

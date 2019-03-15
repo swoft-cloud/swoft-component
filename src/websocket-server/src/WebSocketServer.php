@@ -2,10 +2,10 @@
 
 namespace Swoft\WebSocket\Server;
 
-use Swoole\Websocket\Frame;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Server\Server;
 use Swoft\Server\Swoole\SwooleEvent;
+use Swoole\Websocket\Frame;
 
 /**
  * Class WebSocketServer
@@ -53,7 +53,7 @@ class WebSocketServer extends Server
     }
 
     /**
-     * @param int $fd
+     * @param int    $fd
      * @param string $data Data for send to client. NOTICE: max size is 2M.
      * @param int    $opcode
      * text:   WEBSOCKET_OPCODE_TEXT   = 1
@@ -116,7 +116,7 @@ class WebSocketServer extends Server
      */
     public function sendTo(int $receiver, string $data, int $sender = 0, int $opcode = \WEBSOCKET_OPCODE_TEXT): int
     {
-        $finish = true;
+        $finish   = true;
         $fromUser = $sender < 1 ? 'SYSTEM' : $sender;
 
         $this->log("(private)The #{$fromUser} send message to the user #{$receiver}. Data: {$data}");
@@ -169,7 +169,7 @@ class WebSocketServer extends Server
         $fromUser = $sender < 1 ? 'SYSTEM' : $sender;
         $this->log("(broadcast)The #{$fromUser} send a message to all users. Data: {$data}");
 
-        return $this->pageEach(function (int $fd) use($data) {
+        return $this->pageEach(function (int $fd) use ($data) {
             $this->swooleServer->push($fd, $data);
         }, $pageSize);
     }
@@ -211,7 +211,7 @@ class WebSocketServer extends Server
 
         $this->log("(broadcast)The #{$fromUser} send the message to everyone except some people. Data: {$data}");
 
-        return $this->pageEach(function (int $fd) use($excluded, $data) {
+        return $this->pageEach(function (int $fd) use ($excluded, $data) {
             if (isset($excluded[$fd])) {
                 return;
             }

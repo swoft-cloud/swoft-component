@@ -2,17 +2,17 @@
 
 namespace Swoft\WebSocket\Server\Swoole;
 
-use Swoole\Websocket\Frame;
-use Swoole\Websocket\Server;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Co;
-use Swoft\Session\Session;
 use Swoft\Context\Context;
 use Swoft\Server\Swoole\MessageInterface;
+use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Exception\WsServerException;
 use Swoft\WebSocket\Server\Router\Router;
 use Swoft\WebSocket\Server\WsContext;
 use Swoft\WebSocket\Server\WsServerEvent;
+use Swoole\Websocket\Frame;
+use Swoole\Websocket\Server;
 
 /**
  * Class MessageListener
