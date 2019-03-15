@@ -17,6 +17,7 @@ use Swoft\Processor\Processor;
 use Swoft\Processor\ProcessorInterface;
 use Swoft\Stdlib\Helper\ComposerHelper;
 use Swoft\Stdlib\Helper\ObjectHelper;
+use Swoft\Stdlib\Helper\Str;
 
 /**
  * Swoft application
@@ -162,7 +163,6 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
     protected function beforeInit(): void
     {
-
     }
 
     protected function init(): void
@@ -171,6 +171,10 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
     protected function afterInit(): void
     {
+        if (\defined('IN_PHAR') && \IN_PHAR) {
+            $this->setRuntimePath(Str::rmPharPrefix($this->runtimePath));
+        }
+
         // Do something ...
         // $this->disableProcessor(ConsoleProcessor::class, EnvProcessor::class);
     }
@@ -178,8 +182,13 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     private function findBasePath()
     {
         $filePath = ComposerHelper::getClassLoader()->findFile(static::class);
-        // save
-        $this->basePath = \dirname(\realpath($filePath), 2);
+
+        // If run in phar package.
+        if (\defined('IN_PHAR') && \IN_PHAR) {
+            $this->basePath = \dirname($filePath, 2);
+        } else {
+            $this->basePath = \dirname(\realpath($filePath), 2);
+        }
     }
 
     /**
@@ -393,7 +402,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     {
         $this->runtimePath = $runtimePath;
 
-        \Swoft::setAlias('@config', $runtimePath);
+        \Swoft::setAlias('@runtime', $runtimePath);
     }
 
     /**

@@ -14,8 +14,8 @@ class Console
     // constants for error level 0 - 4. you can setting by '--debug LEVEL'
     public const VERB_QUIET = 0;
     public const VERB_ERROR = 1; // default reporting on error
-    public const VERB_WARN = 2;
-    public const VERB_INFO = 3;
+    public const VERB_WARN  = 2;
+    public const VERB_INFO  = 3;
     public const VERB_DEBUG = 4;
     public const VERB_CRAZY = 5;
 
@@ -122,8 +122,8 @@ class Console
      * Write a message to standard output stream.
      *
      * @param string|array $messages Output message
-     * @param boolean      $nl       True 会添加换行符, False 原样输出，不添加换行符
-     * @param int|boolean  $quit     If is int, setting it is exit code. 'True' translate as code 0 and exit, 'False' will not exit.
+     * @param boolean      $nl True 会添加换行符, False 原样输出，不添加换行符
+     * @param int|boolean  $quit If is int, setting it is exit code. 'True' translate as code 0 and exit, 'False' will not exit.
      * @param array        $opts
      *                               [
      *                               'color'  => bool, // whether render color, default is: True.
@@ -248,10 +248,10 @@ class Console
             }
         }
 
-        $optString = $userOpts ? ' ' . \implode(' ', $userOpts) : '';
-        $data      = $data ? \PHP_EOL . \json_encode($data, \JSON_UNESCAPED_SLASHES | \JSON_PRETTY_PRINT) : '';
+        $optString  = $userOpts ? ' ' . \implode(' ', $userOpts) : '';
+        $dataString = $data ? \PHP_EOL . \json_encode($data, \JSON_UNESCAPED_SLASHES | \JSON_PRETTY_PRINT) : '';
 
-        self::writef('%s [%s]%s %s %s', \date('Y/m/d H:i:s'), $type, $optString, \trim($msg), $data);
+        self::writef('%s [%s]%s %s %s', \date('Y/m/d H:i:s'), $type, $optString, \trim($msg), $dataString);
     }
 
     /***********************************************************************************
@@ -311,7 +311,7 @@ class Console
      * Read input information
      *
      * @param  mixed $message 若不为空，则先输出文本
-     * @param  bool  $nl      true 会添加换行符 false 原样输出，不添加换行符
+     * @param  bool  $nl true 会添加换行符 false 原样输出，不添加换行符
      *
      * @return string
      */
@@ -413,7 +413,7 @@ class Console
      * @see Console::write()
      *
      * @param bool  $flush Whether flush buffer to output stream
-     * @param bool  $nl    Default is False, because the last write() have been added "\n"
+     * @param bool  $nl Default is False, because the last write() have been added "\n"
      * @param bool  $quit
      * @param array $opts
      *

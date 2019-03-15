@@ -4,6 +4,7 @@ namespace Swoft\Processor;
 
 use Swoft\Console\CommandRegister;
 use Swoft\Console\Router\Router;
+use Swoft\Helper\CLog;
 
 /**
  * Console processor
@@ -28,6 +29,8 @@ class ConsoleProcessor extends Processor
 
         // Register console routes
         CommandRegister::register($router);
+
+        CLog::info('console routes registered (command %d, group %d)', $router->count(), $router->groupCount());
 
         // Run console application
         \bean('cliApp')->run();

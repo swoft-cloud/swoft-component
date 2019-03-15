@@ -159,9 +159,9 @@ trait FormatOutputAwareTrait
      * @inheritdoc
      * @see Show::helpPanel()
      */
-    public function helpPanel(array $config, $showAfterQuit = true): void
+    public function helpPanel(array $config): void
     {
-        Show::helpPanel($config, $showAfterQuit);
+        Show::helpPanel($config);
     }
 
     /**

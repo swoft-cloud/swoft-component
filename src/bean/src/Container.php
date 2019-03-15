@@ -12,6 +12,7 @@ use Swoft\Bean\Definition\Parser\DefinitionObjParser;
 use Swoft\Bean\Definition\PropertyInjection;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\ArrayHelper;
+use Swoft\Stdlib\Reflections;
 
 /**
  * Class Container
@@ -247,31 +248,6 @@ class Container implements ContainerInterface
     private $sessionPool = [];
 
     /**
-     * Reflection pool
-     *
-     * @var array
-     *
-     * @example
-     * [
-     *     'className' => [
-     *         'comments' => 'class doc comments',
-     *         'methods'  => [
-     *             'methodName' => [
-     *                'params'     => [
-     *                    'argType',  // like `int $arg`
-     *                    'argType',  // like `class $arg`
-     *                    null // like `$arg`
-     *                ],
-     *                'comments'   => 'method doc comments',
-     *                'returnType' => 'returnType/null'
-     *            ]
-     *         ]
-     *     ]
-     * ]
-     */
-    private $reflectionPool = [];
-
-    /**
      * Bean handler
      *
      * @var HandlerInterface
@@ -283,7 +259,6 @@ class Container implements ContainerInterface
      */
     private function __construct()
     {
-
     }
 
     /**
@@ -425,11 +400,22 @@ class Container implements ContainerInterface
      */
     public function getSingleton(string $name)
     {
-        if (isset($this->aliases[$name])) {
-            $name = $this->aliases[$name];
+        if (isset($this->singletonPool[$name])) {
+            return $this->singletonPool[$name];
         }
 
-        return $this->singletonPool[$name] ?? null;
+        if (isset($this->aliases[$name])) {
+            $name = $this->aliases[$name];
+            return $this->singletonPool[$name];
+        }
+
+        $classNames = $this->classNames[$name] ?? [];
+        if ($classNames) {
+            $name = \end($classNames);
+            return $this->singletonPool[$name];
+        }
+
+        return null;
     }
 
     /**
@@ -438,34 +424,23 @@ class Container implements ContainerInterface
      */
     public function getPrototype(string $name)
     {
-        if (isset($this->aliases[$name])) {
-            $name = $this->aliases[$name];
-        }
-
         // Prototype by clone
         if (isset($this->prototypePool[$name])) {
             return clone $this->prototypePool[$name];
         }
 
-        return null;
-    }
-
-    /**
-     * Get reflection array by className
-     *
-     * @param string $className
-     *
-     * @return array
-     * @throws \ReflectionException
-     */
-    public function getReflection(string $className): array
-    {
-        // Not exist
-        if (!isset($this->reflectionPool[$className])) {
-            $this->cacheReflectionClass($className);
+        if (isset($this->aliases[$name])) {
+            $name = $this->aliases[$name];
+            return clone $this->prototypePool[$name];
         }
 
-        return $this->reflectionPool[$className];
+        $classNames = $this->classNames[$name] ?? [];
+        if ($classNames) {
+            $name = \end($classNames);
+            return $this->prototypePool[$name];
+        }
+
+        return null;
     }
 
     /**
@@ -759,8 +734,8 @@ class Container implements ContainerInterface
         $alias     = $objectDefinition->getAlias();
         $className = $objectDefinition->getClassName();
 
-        // Cache reflection class
-        $this->cacheReflectionClass($className);
+        // Cache reflection class info
+        Reflections::cache($className);
 
         // Before initialize bean
         $this->beforeInit($beanName, $className, $objectDefinition);
@@ -924,46 +899,6 @@ class Container implements ContainerInterface
 
             // Set value by reflection
             $reflectProperty->setValue($reflectObject, $propertyValue);
-        }
-    }
-
-    /**
-     * @param string $className
-     *
-     * @throws \ReflectionException
-     */
-    private function cacheReflectionClass(string $className): void
-    {
-        if (isset($this->reflectionPool[$className])) {
-            return;
-        }
-
-        $reflectionClass   = new \ReflectionClass($className);
-        $reflectionMethods = $reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC);
-
-        $this->reflectionPool[$className]['name']     = $reflectionClass->getName();
-        $this->reflectionPool[$className]['comments'] = $reflectionClass->getDocComment();
-
-        foreach ($reflectionMethods as $reflectionMethod) {
-            $methodName   = $reflectionMethod->getName();
-            $methodParams = [];
-
-            foreach ($reflectionMethod->getParameters() as $parameter) {
-                $defaultValue = null;
-                if ($parameter->isDefaultValueAvailable()) {
-                    $defaultValue = $parameter->getDefaultValue();
-                }
-
-                $methodParams[] = [
-                    $parameter->getName(),
-                    $parameter->getType(),
-                    $defaultValue
-                ];
-            }
-
-            $this->reflectionPool[$className]['methods'][$methodName]['params']     = $methodParams;
-            $this->reflectionPool[$className]['methods'][$methodName]['comments']   = $reflectionMethod->getDocComment();
-            $this->reflectionPool[$className]['methods'][$methodName]['returnType'] = $reflectionMethod->getReturnType();
         }
     }
 

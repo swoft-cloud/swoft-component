@@ -33,9 +33,6 @@ class HttpDispatcher extends Dispatcher
      * Dispatch http request
      *
      * @param array ...$params
-     *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function dispatch(...$params): void
     {
@@ -51,7 +48,9 @@ class HttpDispatcher extends Dispatcher
 
         try {
             // Trigger before handle event
-            \Swoft::trigger(HttpServerEvent::BEFORE_REQUEST, $this, $request, $response);
+            \Swoft::trigger(HttpServerEvent::BEFORE_REQUEST, null, $request, $response);
+            // $response->send();
+            // return;
 
             // Begin handle request, return response
             $response = $requestHandler->handle($request);

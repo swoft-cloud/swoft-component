@@ -1,15 +1,12 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Bean\Listener;
-
 
 use Swoft\Bean\BeanFactory;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Bean\BeanEvent;
-use Swoft\Helper\Log;
 
 /**
  * Class DestroyRequestListener

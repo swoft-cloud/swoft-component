@@ -75,6 +75,15 @@ class AnnotationRegister
     private static $autoLoaders = [];
 
     /**
+     * @var array
+     */
+    private static $classStats = [
+        'parser'     => 0,
+        'annotation' => 0,
+        'autoloader' => 0,
+    ];
+
+    /**
      * Load annotation class
      *
      * @param array $config
@@ -94,6 +103,7 @@ class AnnotationRegister
      */
     public static function registerAnnotation(string $loadNamespace, string $className, array $classAnnotation): void
     {
+        self::$classStats['annotation']++;
         self::$annotations[$loadNamespace][$className] = $classAnnotation;
     }
 
@@ -103,6 +113,7 @@ class AnnotationRegister
      */
     public static function registerParser(string $annotationClass, string $parserClassName): void
     {
+        self::$classStats['parser']++;
         self::$parsers[$annotationClass] = $parserClassName;
     }
 
@@ -140,6 +151,7 @@ class AnnotationRegister
      */
     public static function addAutoLoader(string $namespace, LoaderInterface $autoLoader): void
     {
+        self::$classStats['autoloader']++;
         self::$autoLoaders[$namespace] = $autoLoader;
     }
 
@@ -150,5 +162,13 @@ class AnnotationRegister
     public static function getAutoLoader(string $namespace): ?LoaderInterface
     {
         return self::$autoLoaders[$namespace] ?? null;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getClassStats(): array
+    {
+        return self::$classStats;
     }
 }

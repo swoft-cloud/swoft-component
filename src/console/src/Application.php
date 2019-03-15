@@ -205,7 +205,6 @@ class Application implements ConsoleInterface
      * @param array $route
      * @return void
      * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function dispatch(array $route): void
     {
@@ -213,7 +212,7 @@ class Application implements ConsoleInterface
 
         // Bind method params
         $bindParams = $this->getBindParams($className, $method);
-        $beanObject = \Swoft::getBean($className);
+        $beanObject = \Swoft::getSingleton($className);
 
         // Blocking running
         if (!$route['coroutine']) {
@@ -244,7 +243,6 @@ class Application implements ConsoleInterface
     private function getBindParams(string $class, string $method): array
     {
         $classInfo = \Swoft::getReflection($class);
-
         if (!isset($classInfo['methods'][$method])) {
             return [];
         }
@@ -285,8 +283,6 @@ class Application implements ConsoleInterface
      *
      * @param string $class
      * @param string $command
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     private function beforeExecute(string $class, string $command): void
     {
@@ -298,8 +294,6 @@ class Application implements ConsoleInterface
      * After execute command
      *
      * @param string $command
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     private function afterExecute(string $command): void
     {
@@ -318,13 +312,17 @@ class Application implements ConsoleInterface
 
             // Don't want to continue processing
             if (!$evt->isPropagationStopped()) {
-                $this->output->writef(
-                    "<error>%s</error>\nAt %s line <cyan>%d</cyan>",
+                // Ensure no buffer
+                output()->clearBuffer();
+                output()->flush();
+                output()->writef(
+                    "<error>%s: %s</error>\nAt %s line <cyan>%d</cyan>\nTrace:\n%s",
+                    \get_class($e),
                     $e->getMessage(),
                     $e->getFile(),
-                    $e->getLine()
+                    $e->getLine(),
+                    $e->getTraceAsString()
                 );
-                $this->output->writef("Trace:\n%s", $e->getTraceAsString());
             }
         } catch (\Throwable $e) {
             // Do nothing

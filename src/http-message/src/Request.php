@@ -148,6 +148,7 @@ class Request extends PsrRequest implements ServerRequestInterface
         $self->serverParams = $serverParams;
         $self->requestTime  = $serverParams['request_time_float'];
 
+        $self->requestTarget = $serverParams['request_uri'];
         if ($coRequest->files) {
             $self->uploadedFiles = HttpHelper::normalizeFiles($coRequest->files);
         }
@@ -429,6 +430,14 @@ class Request extends PsrRequest implements ServerRequestInterface
         $query    = $this->getUri()->getQuery();
         $question = $this->getUri()->getHost() . ($this->getUri()->getPath() === '/' ? '/?' : '?');
         return $query ? $this->url() . $question . $query : $this->url();
+    }
+
+    /**
+     * @return string
+     */
+    public function getUriPath(): string
+    {
+        return $this->getUri()->getPath();
     }
 
     /**

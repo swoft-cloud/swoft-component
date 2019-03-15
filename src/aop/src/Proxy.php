@@ -5,6 +5,7 @@ namespace Swoft\Aop;
 use Swoft\Aop\Ast\Parser;
 use Swoft\Aop\Ast\Visitor\ProxyVisitor;
 use Swoft\Aop\Exception\AopException;
+use Swoft\Stdlib\Helper\Sys;
 
 /**
  * Class Proxy
@@ -36,11 +37,11 @@ class Proxy
         $proxyName = $visitor->getProxyName();
 
         // Proxy file and proxy code
-        $proxyFile = sprintf('%s/%s.php', sys_get_temp_dir(), $proxyName);
-        $proxyCode = sprintf('<?php %s %s', PHP_EOL, $proxyCode);
+        $proxyFile = \sprintf('%s/%s.php', Sys::getTempDir(), $proxyName);
+        $proxyCode = \sprintf('<?php %s %s', \PHP_EOL, $proxyCode);
 
         // Generate proxy class
-        $result = file_put_contents($proxyFile, $proxyCode);
+        $result = \file_put_contents($proxyFile, $proxyCode);
         if ($result === false) {
             throw new AopException(sprintf('Proxy file(%s) generate fail', $proxyFile));
         }

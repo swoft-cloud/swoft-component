@@ -79,7 +79,7 @@ class DocBlock
             }
         }
 
-        return $defaults ? \array_merge($defaults, $tags) :$tags;
+        return $defaults ? \array_merge($defaults, $tags) : $tags;
     }
 
     /**

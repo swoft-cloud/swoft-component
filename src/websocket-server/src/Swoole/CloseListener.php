@@ -20,7 +20,7 @@ class CloseListener implements CloseInterface
     /**
      * Close event
      *
-     * @param Server $server
+     * @param Server|\Swoole\WebSocket\Server $server
      * @param int      $fd
      * @param int      $reactorId
      * @throws \ReflectionException

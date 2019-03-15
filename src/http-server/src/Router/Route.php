@@ -240,7 +240,7 @@ final class Route implements \IteratorAggregate
             $pairs = [];
 
             foreach ($m[1] as $name) {
-                $regex                    = $bindParams[$name] ?? RouterInterface::DEFAULT_REGEX;
+                $regex                    = $bindParams[$name] ?? Router::DEFAULT_REGEX;
                 $pairs['{' . $name . '}'] = '(' . $regex . ')';
                 // $pairs['{' . $name . '}'] = \sprintf('(?P<%s>%s)', $name, $regex);
             }

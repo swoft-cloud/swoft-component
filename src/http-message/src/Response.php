@@ -134,7 +134,7 @@ class Response implements ResponseInterface
 
         // Write Headers to co response
         foreach ($response->getHeaders() as $key => $value) {
-            $this->coResponse->header($key, implode(';', $value));
+            $this->coResponse->header($key, \implode(';', $value));
         }
 
         // Set status code

@@ -3,11 +3,13 @@
 namespace Swoft\Bean;
 
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Stdlib\Reflections;
 
 /**
  * Class BeanFactory
+ * @since 1.0
  */
-class BeanFactory
+final class BeanFactory
 {
     /**
      * Init
@@ -199,6 +201,6 @@ class BeanFactory
      */
     public static function getReflection(string $className): array
     {
-        return Container::getInstance()->getReflection($className);
+        return Reflections::get($className);
     }
 }

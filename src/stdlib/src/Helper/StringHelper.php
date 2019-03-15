@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Stdlib\Helper;
 
@@ -684,5 +684,18 @@ class StringHelper
         }
 
         return $ok ? \lcfirst($match[1]) : '';
+    }
+
+    /**
+     * @param string $path
+     * @return string
+     */
+    public static function rmPharPrefix(string $path): string
+    {
+        if (0 === \strpos($path, 'phar://')) {
+            return \preg_replace('/[\w-]+\.phar/', '', self::substr($path, 7));
+        }
+
+        return $path;
     }
 }

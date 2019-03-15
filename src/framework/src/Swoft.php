@@ -58,7 +58,7 @@ class Swoft
      */
     public static function hasBean(string $name): bool
     {
-        return Container::getInstance()->has($name);
+        return Container::$instance->has($name);
     }
 
     /**
@@ -72,7 +72,17 @@ class Swoft
      */
     public static function getBean(string $name)
     {
-        return Container::getInstance()->get($name);
+        return Container::$instance->get($name);
+    }
+
+    /**
+     * @see Container::getSingleton()
+     * @param string $name
+     * @return mixed
+     */
+    public static function getSingleton(string $name)
+    {
+        return Container::$instance->getSingleton($name);
     }
 
     /*******************************************************************************
@@ -89,7 +99,7 @@ class Swoft
      */
     public static function getReflection(string $class): array
     {
-        return Container::getInstance()->getReflection($class);
+        return \Swoft\Stdlib\Reflections::get($class);
     }
 
     /**
@@ -100,28 +110,28 @@ class Swoft
      * @param array                 $params
      *
      * @return EventInterface
-     * @throws ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public static function trigger($event, $target = null, ...$params): EventInterface
     {
         /** @see EventManager::trigger() */
-        return Container::getInstance()->get('eventManager')->trigger($event, $target, $params);
+        return Container::$instance
+            ->getSingleton('eventManager')
+            ->trigger($event, $target, $params);
     }
 
     /**
      * Trigger an swoft application event. like self::trigger(), but params is array
      *
-     * @param mixed      $event
-     * @param null|mixed $target
-     * @param array      $params
+     * @param string|EventInterface $event
+     * @param null|mixed            $target
+     * @param array                 $params
      * @return EventInterface
-     * @throws ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public static function triggerByArray($event, $target = null, array $params = []): EventInterface
     {
         /** @see EventManager::trigger() */
-        return Container::getInstance()->get('eventManager')->trigger($event, $target, $params);
+        return Container::$instance
+            ->getSingleton('eventManager')
+            ->trigger($event, $target, $params);
     }
 }

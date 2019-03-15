@@ -1,12 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Http\Server\Annotation\Mapping;
-
 
 use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;
 use Doctrine\Common\Annotations\Annotation\Target;
-use Swoft\Bean\Annotation\Mapping\Bean;
 
 /**
  * Class Controller
