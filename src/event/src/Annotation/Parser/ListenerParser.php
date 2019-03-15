@@ -63,7 +63,10 @@ class ListenerParser extends Parser
             $em->addListener($listener, $eventInfo);
         }
 
-        // clear data
+        $count = \count(self::$listeners);
+        // Clear data
         self::$listeners = [];
+
+        CLog::info('EventManager add %d subscriber', $count);
     }
 }

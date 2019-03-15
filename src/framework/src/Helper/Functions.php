@@ -70,9 +70,7 @@ if (!function_exists('config')) {
      * @param string $key
      * @param mixed  $default
      *
-     * @return mixed|string
-     * @throws ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @return mixed
      */
     function config(string $key, $default = null)
     {
@@ -81,12 +79,9 @@ if (!function_exists('config')) {
         }
 
         /* @var \Swoft\Config\Config $config */
-        $config = \Swoft\Bean\BeanFactory::getBean('config');
-        if (!$config->has($key)) {
-            return $default;
-        }
+        $config = \Swoft\Bean\Container::$instance->getSingleton('config');
 
-        return $config->get($key);
+        return $config->get($key, $default);
     }
 }
 

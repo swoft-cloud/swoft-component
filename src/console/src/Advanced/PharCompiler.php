@@ -1,6 +1,6 @@
 <?php
 
-namespace Swoft\Console\Helper;
+namespace Swoft\Console\Advanced;
 
 use Seld\PharUtils\Timestamps;
 use Swoft\Stdlib\Helper\Dir;
@@ -8,7 +8,7 @@ use Swoft\Stdlib\Helper\Sys;
 
 /**
  * Class PharCompiler
- * @package Swoft\Consoles
+ * @since 1.0
  */
 class PharCompiler
 {
@@ -393,12 +393,12 @@ class PharCompiler
     public function findChangedByGit()
     {
         // -u expand dir's files
-        list(, $output,) = Sys::run('git status -s -u', $this->basePath);
+        [, $output,] = Sys::run('git status -s -u', $this->basePath);
 
         // 'D some.file'    deleted
         // ' M some.file'   modified
         // '?? some.file'   new file
-        foreach (explode("\n", trim($output)) as $file) {
+        foreach (\explode("\n", trim($output)) as $file) {
             $file = trim($file);
 
             // only php file.
@@ -408,11 +408,11 @@ class PharCompiler
 
             // modified files
             if (strpos($file, 'M ') === 0) {
-                yield substr($file, 2);
+                yield \substr($file, 2);
 
                 // new files
-            } elseif (strpos($file, '?? ') === 0) {
-                yield substr($file, 3);
+            } elseif (\strpos($file, '?? ') === 0) {
+                yield \substr($file, 3);
             }
         }
     }

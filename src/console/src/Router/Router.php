@@ -426,4 +426,14 @@ class Router implements RouterInterface
     {
         $this->keyWidth = $keyWidth;
     }
+
+    public function groupCount(): int
+    {
+        return \count($this->groups);
+    }
+
+    public function count(): int
+    {
+        return \count($this->routes);
+    }
 }

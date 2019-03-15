@@ -34,7 +34,13 @@ class AnnotationProcessor extends Processor
             'disabledPsr4Prefixes' => $app->getDisabledPsr4Prefixes(),
         ]);
 
-        CLog::info('Annotation is scanned');
+        $stats = AnnotationRegister::getClassStats();
+        CLog::info(
+            'Annotation is scanned (annotation %d, parser %d, autoloader %d)',
+            $stats['annotation'],
+            $stats['parser'],
+            $stats['autoloader']
+        );
         return $this->application->afterAnnotation();
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Swoft\Console\Helper;
+namespace Swoft\Console\Advanced;
 
 /**
  * Class AutoCompDumper Auto complete dumper

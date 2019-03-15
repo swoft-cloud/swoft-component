@@ -59,9 +59,10 @@ class SubscriberParser extends Parser
             $em->addSubscriber(new $className);
         }
 
-        // clear data
+        $count = \count(self::$subscribers);
+        // Clear data
         self::$subscribers = [];
 
-        CLog::info('EventManager add %d subscriber', count(self::$subscribers));
+        CLog::info('EventManager add %d subscriber', $count);
     }
 }

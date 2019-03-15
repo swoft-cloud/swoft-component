@@ -1964,7 +1964,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
      */
     public function getIterator(): \ArrayIterator
     {
-        return new ArrayIterator($this->items);
+        return new \ArrayIterator($this->items);
     }
 
 //    /**
@@ -1986,7 +1986,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
      */
     public function count(): int
     {
-        return count($this->items);
+        return \count($this->items);
     }
 
     /**

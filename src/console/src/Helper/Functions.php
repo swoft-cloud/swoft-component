@@ -5,7 +5,7 @@ if (!function_exists('input')) {
      */
     function input(): \Swoft\Console\Input\Input
     {
-        return \Swoft::getBean(\Swoft\Console\Input\Input::class);
+        return \Swoft::getSingleton(\Swoft\Console\Input\Input::class);
     }
 }
 
@@ -15,7 +15,7 @@ if (!function_exists('output')) {
      */
     function output(): \Swoft\Console\Output\Output
     {
-        return \Swoft::getBean(\Swoft\Console\Output\Output::class);
+        return \Swoft::getSingleton(\Swoft\Console\Output\Output::class);
     }
 }
 
@@ -25,6 +25,6 @@ if (!function_exists('style')) {
      */
     function style(): \Swoft\Console\Style\Style
     {
-        return \Swoft::getBean(\Swoft\Console\Style\Style::class);
+        return \Swoft::getSingleton(\Swoft\Console\Style\Style::class);
     }
 }

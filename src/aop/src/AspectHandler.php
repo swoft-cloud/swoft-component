@@ -6,6 +6,7 @@ namespace Swoft\Aop;
 use Swoft\Aop\Point\JoinPoint;
 use Swoft\Aop\Point\ProceedingJoinPoint;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Stdlib\Reflections;
 
 /**
  * Class Handler
@@ -152,7 +153,7 @@ class AspectHandler
      */
     public function setAspects(array $aspects): void
     {
-        $this->aspect  = array_shift($aspects);
+        $this->aspect  = \array_shift($aspects);
         $this->aspects = $aspects;
     }
 
@@ -172,7 +173,7 @@ class AspectHandler
         [$aspectClass, $aspectMethod] = $aspectAry;
 
         // Reflection data from cache
-        $rftAry = container()->getReflection($aspectClass);
+        $rftAry = Reflections::get($aspectClass);
         $params = $rftAry['methods'][$aspectMethod]['params'] ?? [];
 
         $aspectArgs = [];

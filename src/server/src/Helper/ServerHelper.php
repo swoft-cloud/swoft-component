@@ -29,7 +29,7 @@ class ServerHelper
         int $waitTime = 10
     ): bool {
         // Do stop
-        if (!self::sendSignal($pid, $signal, $force)) {
+        if (!self::sendSignal($pid, $signal)) {
             echo "Send stop signal to the $name(PID:$pid) failed!" . PHP_EOL;
             return false;
         }

@@ -756,9 +756,9 @@ class ArrayHelper
             }
 
             return true;
-        } else {
-            throw new \InvalidArgumentException('Argument $needles must be an array or implement Traversable');
         }
+
+        throw new \InvalidArgumentException('Argument $needles must be an array or implement Traversable');
     }
 
     /**
@@ -1088,7 +1088,7 @@ class ArrayHelper
         foreach ($data as $key => $value) {
             // key is not a integer
             if (!$expectInt || !\is_numeric($key)) {
-                $width       = \mb_strlen($key, 'UTF-8');
+                $width       = \mb_strlen((string)$key, 'UTF-8');
                 $keyMaxWidth = $width > $keyMaxWidth ? $width : $keyMaxWidth;
             }
         }
