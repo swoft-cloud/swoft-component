@@ -18,10 +18,11 @@ class LoadEnv implements Bootable
     public function bootstrap()
     {
         $file = '.env';
-        $filePath = App::getAlias('@root') . DS . $file;
+        $base_dir = boolval(\Phar::running(false)) ? dirname(\Phar::running(false)) : App::getAlias('@root');
+        $filePath = $base_dir . DS . $file;
 
         if (\file_exists($filePath) && \is_readable($filePath)) {
-            (new Dotenv(App::getAlias('@root'), $file))->load();
+            (new Dotenv($base_dir, $file))->load();
         }
     }
 }
