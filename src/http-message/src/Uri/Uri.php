@@ -1,12 +1,10 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Http\Message\Uri;
-
 
 use Psr\Http\Message\UriInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Container;
 
 /**
  * Class Uri
@@ -17,7 +15,7 @@ use Swoft\Bean\Concern\PrototypeTrait;
  */
 class Uri implements UriInterface
 {
-    use PrototypeTrait;
+    // use PrototypeTrait;
 
     /**
      * Absolute http and https URIs require a host per RFC 7230 Section 2.7
@@ -32,7 +30,7 @@ class Uri implements UriInterface
      *
      * @var array
      */
-    private static $defaultPorts = [
+    private const DEFAULT_PORTS = [
         'http'   => 80,
         'https'  => 443,
         'ftp'    => 21,
@@ -116,12 +114,12 @@ class Uri implements UriInterface
      * @param string $uri
      *
      * @return Uri
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public static function new(string $uri = ''): self
     {
-        $instance = self::__instance();
+        /** @var Uri $instance */
+        // $instance = self::__instance();
+        $instance = Container::$instance->getPrototype(__CLASS__);
 
         // weak type check to also accept null until we can add scalar type hints
         if ($uri === '') {
@@ -556,7 +554,7 @@ class Uri implements UriInterface
      */
     private function filterHost(string $host): string
     {
-        return strtolower($host);
+        return \strtolower($host);
     }
 
     /**
@@ -638,7 +636,7 @@ class Uri implements UriInterface
      */
     public function isDefaultPort(): bool
     {
-        $defaultPort   = self::$defaultPorts[$this->getScheme()] ?? null;
+        $defaultPort   = self::DEFAULT_PORTS[$this->getScheme()] ?? null;
         $isDefaultPort = $this->getPort() === $defaultPort;
 
         return $this->getPort() === null || $isDefaultPort;
@@ -647,11 +645,11 @@ class Uri implements UriInterface
     /**
      * Get default port of the current scheme.
      *
-     * @return int|null
+     * @return int
      */
-    public function getDefaultPort(): ?int
+    public function getDefaultPort(): int
     {
-        return self::$defaultPorts[$this->getScheme()] ?? null;
+        return self::DEFAULT_PORTS[$this->getScheme()] ?? 0;
     }
 
     /**
@@ -722,10 +720,10 @@ class Uri implements UriInterface
         }
 
         if ($this->getAuthority() === '') {
-            if (0 === strpos($this->path, '//')) {
+            if (0 === \strpos($this->path, '//')) {
                 throw new \InvalidArgumentException('The path of a URI without an authority must not start with two slashes "//"');
             }
-            if ($this->scheme === '' && false !== strpos(explode('/', $this->path, 2)[0], ':')) {
+            if ($this->scheme === '' && false !== \strpos(explode('/', $this->path, 2)[0], ':')) {
                 throw new \InvalidArgumentException('A relative URI must not have a path beginning with a segment containing a colon');
             }
         } elseif (isset($this->path[0]) && $this->path[0] !== '/') {

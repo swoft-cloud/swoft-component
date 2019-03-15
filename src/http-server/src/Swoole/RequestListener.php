@@ -23,9 +23,6 @@ class RequestListener implements RequestInterface
     /**
      * @param Request  $request
      * @param Response $response
-     *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function onRequest(Request $request, Response $response): void
     {

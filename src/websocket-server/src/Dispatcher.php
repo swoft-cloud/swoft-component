@@ -4,13 +4,14 @@ namespace Swoft\WebSocket\Server;
 
 use Swoft\App;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Http\Message\PsrRequest;
+use Swoft\Bean\Container;
+use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
-use Swoft\WebSocket\Server\Contract\ModuleInterface;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\Exception\WsContextException;
 use Swoft\WebSocket\Server\Exception\WsServerException;
 use Swoft\WebSocket\Server\Exception\WsRouteException;
+use Swoft\WebSocket\Server\Router\Router;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
 
@@ -25,17 +26,17 @@ class Dispatcher
     /**
      * dispatch handshake request
      *
-     * @param PsrRequest $request
+     * @param Request $request
      * @param Response   $response
      *
      * @return array eg. [status, response]
      * @throws \Swoft\WebSocket\Server\Exception\WsRouteException
      * @throws \InvalidArgumentException
      */
-    public function handshake(PsrRequest $request, Response $response): array
+    public function handshake(Request $request, Response $response): array
     {
         try {
-            $path = $request->getUri()->getPath();
+            $path = $request->getUriPath();
             [$className,] = $this->getHandler($path);
 
             \server()->log("found handler for path '$path', ws controller is $className", [], 'debug');
@@ -55,7 +56,7 @@ class Dispatcher
         }
 
         /** @var WsModuleInterface $handler */
-        $handler = \bean($className);
+        $handler = Container::$instance->getSingleton($className);
 
         if (!\method_exists($handler, 'checkHandshake')) {
             return [
@@ -69,19 +70,19 @@ class Dispatcher
 
     /**
      * @param Server     $server
-     * @param PsrRequest $request
+     * @param Request $request
      * @param int        $fd
      *
      * @throws \Swoft\WebSocket\Server\Exception\WsRouteException
      * @throws \InvalidArgumentException
      */
-    public function open(Server $server, PsrRequest $request, int $fd): void
+    public function open(Server $server, Request $request, int $fd): void
     {
-        $path = $request->getUri()->getPath();
+        $path = $request->getUriPath();
         [$className,] = $this->getHandler($path);
 
-        /** @var ModuleInterface $handler */
-        $handler = \bean($className);
+        /** @var WsModuleInterface $handler */
+        $handler = Container::$instance->getSingleton($className);
 
         if (\method_exists($handler, 'onOpen')) {
             $handler->onOpen($server, $request, $fd);
@@ -109,8 +110,8 @@ class Dispatcher
 
             \server()->log("call ws controller $className, method is 'onMessage'", [], 'debug');
 
-            /** @var ModuleInterface $handler */
-            $handler = \bean($className);
+            /** @var WsModuleInterface $handler */
+            $handler = Container::$instance->getSingleton($className);
             $handler->onMessage($server, $frame);
         } catch (\Throwable $e) {
             \server()->log('error on handle message, ERR: ' . $e->getMessage(), [], 'error');
@@ -145,8 +146,8 @@ class Dispatcher
 
             $className = $this->getHandler($path)[0];
 
-            /** @var ModuleInterface $handler */
-            $handler = \bean($className);
+            /** @var WsModuleInterface $handler */
+            $handler = Container::$instance->getSingleton($className);
 
             if (\method_exists($handler, 'onClose')) {
                 $handler->onClose($server, $fd);
@@ -166,7 +167,7 @@ class Dispatcher
     protected function getHandler(string $path): array
     {
         /** @var Router $router */
-        $router = \bean('wsRouter');
+        $router = Container::$instance->getSingleton('wsRouter');
         [$status, $info] = $router->getHandler($path);
 
         if ($status !== Router::FOUND) {

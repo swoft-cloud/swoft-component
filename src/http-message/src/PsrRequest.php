@@ -233,7 +233,7 @@ class PsrRequest implements RequestInterface
         if ($this->hasHeader('host')) {
             $header = $this->getHeaderLine('host');
         } else {
-            $header = 'Host';
+            $header = 'host';
             // save name
             $this->headerNames['host'] = 'Host';
         }

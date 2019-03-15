@@ -53,7 +53,7 @@ class MessageListener implements MessageInterface
             $conn = Session::mustGet();
             // get request path
             // $path = $conn->getMetaValue('path');
-            $path = $conn->getRequest()->getUri()->getPath();
+            $path = $conn->getRequest()->getUriPath();
 
             /** @var Router $router */
             $router = \Swoft::getBean('wsRouter');

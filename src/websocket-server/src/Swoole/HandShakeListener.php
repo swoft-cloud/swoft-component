@@ -4,6 +4,7 @@ namespace Swoft\WebSocket\Server\Swoole;
 
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Container;
 use Swoft\Co;
 use Swoft\Session\Session;
 use Swoft\Http\Message\Request as Psr7Request;
@@ -55,7 +56,7 @@ class HandShakeListener implements HandShakeInterface
 
         // get a clean connection instance.
         /** @var Connection $conn */
-        $conn = \bean(Connection::class);
+        $conn = Container::$instance->getPrototype(Connection::class);
         // initialize connection
         $conn->initialize($fd, $request);
 

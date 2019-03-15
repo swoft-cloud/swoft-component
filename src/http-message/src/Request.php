@@ -30,30 +30,6 @@ class Request extends PsrRequest implements ServerRequestInterface
     private const METHOD_OVERRIDE_KEY = '_method';
 
     /**
-     * @see $_SERVER
-     * @var array
-     */
-    private const DEFAULT_SERVER = [
-        'server_protocol'      => 'HTTP/1.1',
-        'remote_addr'          => '127.0.0.1',
-        'request_method'       => 'GET',
-        'request_uri'          => '/',
-        'request_time'         => 0,
-        'request_time_float'   => 0,
-        'query_string'         => '',
-        'server_addr'          => '127.0.0.1',
-        'server_name'          => 'localhost',
-        'server_port'          => 80,
-        'script_name'          => '',
-        'https'                => '',
-        'http_host'            => 'localhost',
-        'http_accept'          => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'http_accept_language' => 'en-US,en;q=0.8',
-        'http_accept_charset'  => 'utf-8;q=0.7,*;q=0.3',
-        'http_user_agent'      => 'Unknown',
-    ];
-
-    /**
      * @var CoRequest
      */
     protected $coRequest;
@@ -89,6 +65,16 @@ class Request extends PsrRequest implements ServerRequestInterface
     private $uploadedFiles = [];
 
     /**
+     * @var string
+     */
+    private $uriPath = '';
+
+    /**
+     * @var string
+     */
+    private $uriQuery = '';
+
+    /**
      * @var float
      */
     private $requestTime = 0;
@@ -117,27 +103,25 @@ class Request extends PsrRequest implements ServerRequestInterface
     {
         // on enter QPS: 4.5w
         // return new self(); // QPS: 4.4w
+        /** @var Request $self */
         $self = Container::$instance->getPrototype('httpRequest');
-        // return $self; // QPS: 4.2w
+        // return $self; // QPS: 4.2w -> 4.35w
 
         // SERVER data. swoole Request->server always exists
         // $serverParams = \array_change_key_case($coRequest->server, \CASE_UPPER);
         $serverParams = \array_merge(self::DEFAULT_SERVER, $coRequest->server);
-        // return $self; // QPS: 3.7w
+        // return $self; // QPS: 3.7w -> 4.2w
 
         $self->coRequest = $coRequest;
         // return $self; // QPS: 3.7w
         // Protocol version
         // $self->protocol = \str_replace('HTTP/', '', $serverParams['server_protocol']);
         $self->protocol = \substr($serverParams['server_protocol'], 5); // faster
-        // return $self; // QPS: 3.7w
+        // return $self; // QPS: 3.7w -> 4.0w
 
         // Set headers
-        if ($headers = $coRequest->header) {
-            // $self->setHeaders($headers); // QPS: 2.8w
-            $self->setHeadersFromSwoole($headers); // QPS: 3.4w
-        }
-        // return $self;
+        $self->setHeadersFromSwoole($headers = $coRequest->header ?: []);
+        // return $self; // QPS: 3.4w -> 3.6w
 
         // Optimize: Don't create stream, init on first fetch
         // $self->body = Stream::new($content);
@@ -148,13 +132,18 @@ class Request extends PsrRequest implements ServerRequestInterface
         $self->serverParams = $serverParams;
         $self->requestTime  = $serverParams['request_time_float'];
 
+        $parts = \explode('?', $serverParams['request_uri']);
+        // save
+        $self->uriPath  = $parts[0];
+        $self->uriQuery = $parts[1] ?? '';
+
         $self->requestTarget = $serverParams['request_uri'];
         if ($coRequest->files) {
             $self->uploadedFiles = HttpHelper::normalizeFiles($coRequest->files);
         }
         // return $self; // QPS: 3.3w
 
-        $self->uri = self::newUriByCoRequest($serverParams, $headers);
+        $self->uri = self::newUriByCoRequest($self->uriPath, $self->uriQuery, $serverParams, $headers);
         // return $self; // QPS: 2.45w
 
         // Update uri by host
@@ -427,8 +416,8 @@ class Request extends PsrRequest implements ServerRequestInterface
      */
     public function fullUrl(): string
     {
-        $query    = $this->getUri()->getQuery();
-        $question = $this->getUri()->getHost() . ($this->getUri()->getPath() === '/' ? '/?' : '?');
+        $query    = $this->getUriQuery();
+        $question = $this->getUri()->getHost() . ($this->getUriPath() === '/' ? '/?' : '?');
         return $query ? $this->url() . $question . $query : $this->url();
     }
 
@@ -437,7 +426,15 @@ class Request extends PsrRequest implements ServerRequestInterface
      */
     public function getUriPath(): string
     {
-        return $this->getUri()->getPath();
+        return $this->uriPath;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUriQuery(): string
+    {
+        return $this->uriQuery;
     }
 
     /**
@@ -537,29 +534,18 @@ class Request extends PsrRequest implements ServerRequestInterface
     /**
      * Get a Uri populated with values from $swooleRequest->server.
      *
-     * @param array $server
-     * @param array $header
+     * @param string $path
+     * @param string $query
+     * @param array  $server
+     * @param array  $header
      * @return Uri
      */
-    public static function newUriByCoRequest(array &$server, array &$header): Uri
+    public static function newUriByCoRequest(string $path, string $query, array &$server, array &$header): Uri
     {
         /** @var Uri $uri */
         $uri = Container::$instance->getPrototype(Uri::class);
         $uri = $uri->withScheme(isset($server['https']) && $server['https'] !== 'off' ? 'https' : 'http');
-
-        $parts = \explode('?', $server['request_uri']);
-        $uri   = $uri->withPath($parts[0]);
-
-        $hasQuery = false;
-        if (isset($parts[1])) {
-            $hasQuery = true;
-            /** @var Uri $uri */
-            $uri = $uri->withQuery($parts[1]);
-        }
-
-        if (!$hasQuery && isset($server['query_string'])) {
-            $uri = $uri->withQuery($server['query_string']);
-        }
+        $uri = $uri->withPath($path)->withQuery($query ?: $server['query_string']);
 
         $hasPort = false;
         if ($host = $server['http_host']) {

@@ -337,7 +337,7 @@ trait MessageTrait
     /**
      * @param array $headers [name => value string]
      */
-    protected function setHeadersFromSwoole(array &$headers): void
+    protected function setHeadersFromSwoole(array $headers): void
     {
         foreach ($headers as $name => $value) {
             $this->headers[$name]     = [$value];

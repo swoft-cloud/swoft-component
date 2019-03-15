@@ -49,14 +49,12 @@ class HttpDispatcher extends Dispatcher
         try {
             // Trigger before handle event
             \Swoft::trigger(HttpServerEvent::BEFORE_REQUEST, null, $request, $response);
-            // $response->send();
-            // return;
 
             // Begin handle request, return response
             $response = $requestHandler->handle($request);
         } catch (\Throwable $e) {
             \printf(
-                "HTTP Dispatch Error: %s\nAt %s %d",
+                "HTTP Dispatch Error: %s\nAt %s %d\n",
                 $e->getMessage(),
                 $e->getFile(),
                 $e->getLine()
