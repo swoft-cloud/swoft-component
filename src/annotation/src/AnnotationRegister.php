@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Annotation;
 
@@ -77,11 +77,13 @@ class AnnotationRegister
     /**
      * Load annotation class
      *
-     * @throws \Exception
+     * @param array $config
+     * @throws \Doctrine\Common\Annotations\AnnotationException
+     * @throws \ReflectionException
      */
-    public static function load(): void
+    public static function load(array $config = []): void
     {
-        $resource = new AnnotationResource();
+        $resource = new AnnotationResource($config);
         $resource->load();
     }
 

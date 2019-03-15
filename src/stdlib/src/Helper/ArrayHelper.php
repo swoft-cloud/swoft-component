@@ -224,7 +224,7 @@ class ArrayHelper
      *
      * @return array
      */
-    public static function except($array, $keys)
+    public static function except($array, $keys): array
     {
         static::forget($array, $keys);
 
@@ -1107,7 +1107,7 @@ class ArrayHelper
      */
     public static function first($array, callable $callback = null, $default = null)
     {
-        if (is_null($callback)) {
+        if ($callback === null) {
             if (empty($array)) {
                 return \value($default);
             }

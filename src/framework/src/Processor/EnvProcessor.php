@@ -30,7 +30,7 @@ class EnvProcessor extends Processor
         $env     = basename($envFile);
 
         if (!\file_exists($envFile)) {
-            CLog::warning('Env file(%s) is not exist!', $envFile);
+            CLog::warning('Env file(%s) is not exist! Skip load it', $envFile);
             return true;
         }
 

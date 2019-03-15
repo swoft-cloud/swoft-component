@@ -1,8 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Tcp\Server\Swoole;
 
-use Co\Server as CoServer;
+use Swoole\Server;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Server\Swoole\BufferFullInterface;
 
@@ -15,11 +15,11 @@ use Swoft\Server\Swoole\BufferFullInterface;
 class BufferFullListener implements BufferFullInterface
 {
     /**
-     * @param CoServer $server
+     * @param Server $server
      * @param int      $fd
      */
-    public function onBufferFull(CoServer $server, int $fd): void
+    public function onBufferFull(Server $server, int $fd): void
     {
-        
+
     }
 }

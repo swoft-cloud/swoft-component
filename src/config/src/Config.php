@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Config;
 
@@ -108,7 +108,7 @@ class Config extends Collection
      *
      * @return bool
      */
-    public function offsetExists($key)
+    public function offsetExists($key): bool
     {
         return ArrayHelper::has($this->items, $key);
     }

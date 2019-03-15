@@ -1926,7 +1926,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
      *
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return array_map(function ($value) {
             if ($value instanceof \JsonSerializable) {
@@ -1984,7 +1984,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return count($this->items);
     }
@@ -2006,7 +2006,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
      *
      * @return bool
      */
-    public function offsetExists($key)
+    public function offsetExists($key): bool
     {
         return array_key_exists($key, $this->items);
     }
@@ -2031,7 +2031,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
      *
      * @return void
      */
-    public function offsetSet($key, $value)
+    public function offsetSet($key, $value): void
     {
         if ($key === null) {
             $this->items[] = $value;
@@ -2047,7 +2047,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
      *
      * @return void
      */
-    public function offsetUnset($key)
+    public function offsetUnset($key): void
     {
         unset($this->items[$key]);
     }

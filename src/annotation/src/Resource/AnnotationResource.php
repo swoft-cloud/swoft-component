@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Annotation\Resource;
 
@@ -11,6 +11,7 @@ use Swoft\Annotation\LoaderInterface;
 use Swoft\Helper\CLog;
 use Swoft\Stdlib\Helper\ComposerHelper;
 use Swoft\Stdlib\Helper\DirectoryHelper;
+use Swoft\Stdlib\Helper\ObjectHelper;
 
 /**
  * Annotation resource
@@ -62,21 +63,32 @@ class AnnotationResource extends Resource
     private $excludedPsr4Prefixes;
 
     /**
+     * Can disable AutoLoader class before load component classes.
+     * eg. [ Swoft\Console\AutoLoader::class  => 1 ]
+     *
+     * @var array
+     */
+    private $disabledAutoLoaders = [];
+
+    /**
      * AnnotationResource constructor.
      *
-     * @throws \Exception
+     * @param array $config
      */
-    public function __construct()
+    public function __construct(array $config = [])
     {
+        // Init $excludedPsr4Prefixes
+        $this->excludedPsr4Prefixes = self::DEFAULT_EXCLUDED_PSR4_PREFIXES;
+
+        // Can set property by array
+        ObjectHelper::init($this, $config);
+
         $this->registerLoader();
         $this->classLoader = ComposerHelper::getClassLoader();
-
-        // init $excludedPsr4Prefixes
-        $this->excludedPsr4Prefixes = self::DEFAULT_EXCLUDED_PSR4_PREFIXES;
     }
 
     /**
-     * Load annotation resource
+     * Load annotation resource by find ClassLoader
      *
      * @throws \Doctrine\Common\Annotations\AnnotationException
      * @throws \ReflectionException
@@ -86,22 +98,22 @@ class AnnotationResource extends Resource
         $prefixDirsPsr4 = $this->classLoader->getPrefixesPsr4();
 
         foreach ($prefixDirsPsr4 as $ns => $paths) {
-            // is excluded psr4 prefix
+            // It is excluded psr4 prefix
             if ($this->isExcludedPsr4Prefix($ns)) {
-                CLog::info('Exclude %s', $ns);
+                CLog::info('Exclude scan %s', $ns);
                 continue;
             }
 
-            CLog::info('Scan %s', $ns);
+            CLog::info('Scan namespace %s', $ns);
 
-            // find package/component loader class
+            // Find package/component loader class
             foreach ($paths as $path) {
-                $annotationLoaderFile = $this->getAnnoationClassLoaderFile($path);
-                if (!\file_exists($annotationLoaderFile)) {
+                $loaderFile = $this->getAnnotationClassLoaderFile($path);
+                if (!\file_exists($loaderFile)) {
                     continue;
                 }
 
-                CLog::info('Load %s', $annotationLoaderFile);
+                CLog::info('Loader file %s', $loaderFile);
 
                 $loaderClass = $this->getAnnotationLoaderClassName($ns);
                 if (!\class_exists($loaderClass)) {
@@ -109,13 +121,16 @@ class AnnotationResource extends Resource
                     continue;
                 }
 
-                $annotationLoader = new $loaderClass();
-                if ($annotationLoader instanceof LoaderInterface) {
-                    $this->loadAnnotation($annotationLoader);
+                $loaderObject = new $loaderClass();
+                $isEnabled    = !isset($this->disabledAutoLoaders[$loaderClass]);
+
+                // If is disable, will skip scan annotation classes
+                if ($isEnabled && $loaderObject instanceof LoaderInterface) {
+                    $this->loadAnnotation($loaderObject);
                 }
 
-                // Register auto loader
-                AnnotationRegister::addAutoLoader($ns, $annotationLoader);
+                // Storage auto loader to register
+                AnnotationRegister::addAutoLoader($ns, $loaderObject);
             }
         }
     }
@@ -137,7 +152,7 @@ class AnnotationResource extends Resource
     }
 
     /**
-     * Load annotations
+     * Load annotations from an component loader config.
      *
      * @param LoaderInterface $loader
      *
@@ -147,13 +162,13 @@ class AnnotationResource extends Resource
     private function loadAnnotation(LoaderInterface $loader): void
     {
         $nsPaths = $loader->getPrefixDirs();
+
         foreach ($nsPaths as $ns => $path) {
             $iterator = DirectoryHelper::iterator($path);
 
             /* @var \SplFileInfo $splFileInfo */
             foreach ($iterator as $splFileInfo) {
                 $pathName = $splFileInfo->getPathname();
-
                 if (\is_dir($pathName)) {
                     continue;
                 }
@@ -165,18 +180,18 @@ class AnnotationResource extends Resource
                     continue;
                 }
 
-                // is exclude filename
+                // It is exclude filename
                 if (isset($this->excludedFilenames[$fileName])) {
                     continue;
                 }
 
-                $suffix        = sprintf('.%s', $this->loaderClassSuffix);
-                $classPathName = str_replace([$path, '/'], ['', '\\'], $pathName);
-                $classPathName = trim($classPathName, $suffix);
+                $suffix        = \sprintf('.%s', $this->loaderClassSuffix);
+                $classPathName = \str_replace([$path, '/'], ['', '\\'], $pathName);
+                $classPathName = \trim($classPathName, $suffix);
 
-                $className = sprintf('%s%s', $ns, $classPathName);
+                $className = \sprintf('%s%s', $ns, $classPathName);
 
-                // Fix repeated autoloaded, such as `Swoft`
+                // Fix repeated load, such as `Swoft`
                 if (!\class_exists($className)) {
                     continue;
                 }
@@ -340,9 +355,14 @@ class AnnotationResource extends Resource
      *
      * @return string
      */
-    private function getAnnoationClassLoaderFile(string $path): string
+    private function getAnnotationClassLoaderFile(string $path): string
     {
-        return sprintf('%s/%s.%s', $path, $this->loaderClassName, $this->loaderClassSuffix);
+        return \sprintf(
+            '%s/%s.%s',
+            \realpath($path),
+            $this->loaderClassName,
+            $this->loaderClassSuffix
+        );
     }
 
     /**
@@ -371,5 +391,37 @@ class AnnotationResource extends Resource
     public function setExcludedPsr4Prefixes(array $excludedPsr4Prefixes): void
     {
         $this->excludedPsr4Prefixes = $excludedPsr4Prefixes;
+    }
+
+    /**
+     * @return array
+     */
+    public function getExcludedFilenames(): array
+    {
+        return $this->excludedFilenames;
+    }
+
+    /**
+     * @param array $excludedFilenames
+     */
+    public function setExcludedFilenames(array $excludedFilenames): void
+    {
+        $this->excludedFilenames = $excludedFilenames;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDisabledAutoLoaders(): array
+    {
+        return $this->disabledAutoLoaders;
+    }
+
+    /**
+     * @param array $disabledAutoLoaders
+     */
+    public function setDisabledAutoLoaders(array $disabledAutoLoaders): void
+    {
+        $this->disabledAutoLoaders = $disabledAutoLoaders;
     }
 }

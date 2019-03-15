@@ -23,7 +23,7 @@ class CLog
      */
     public static function init(array $config): void
     {
-        if (!empty(self::$cLogger)) {
+        if (self::$cLogger !== null) {
             return;
         }
 
@@ -61,7 +61,7 @@ class CLog
      */
     public static function info(string $message, ...$params): void
     {
-        self::$cLogger->info(sprintf($message, ...$params), []);
+        self::$cLogger->info(\sprintf($message, ...$params), []);
     }
 
     /**
@@ -72,7 +72,7 @@ class CLog
      */
     public static function warning(string $message, ...$params): void
     {
-        self::$cLogger->warning(sprintf($message, ...$params), []);
+        self::$cLogger->warning(\sprintf($message, ...$params), []);
     }
 
     /**
@@ -83,6 +83,6 @@ class CLog
      */
     public static function error(string $message, ...$params): void
     {
-        self::$cLogger->error(sprintf($message, ...$params), []);
+        self::$cLogger->error(\sprintf($message, ...$params), []);
     }
 }

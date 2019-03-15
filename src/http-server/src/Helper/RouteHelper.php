@@ -25,7 +25,7 @@ class RouteHelper
     }
 
     /**
-     * format URI path
+     * Format URI path
      * @param string $path
      * @param bool   $ignoreLastSlash
      * @return string
@@ -36,42 +36,19 @@ class RouteHelper
             return '/';
         }
 
-        // clear '//', '///' => '/'
+        // Clear '//', '///' => '/'
         if (false !== \strpos($path, '//')) {
             $path = \preg_replace('#\/\/+#', '/', $path);
         }
 
-        // must be start withs '/'
+        // Must be start withs '/'
         if (\strpos($path, '/') !== 0) {
             $path = '/' . $path;
         }
 
-        // decode
+        // Decode
         $path = \rawurldecode($path);
 
         return $ignoreLastSlash ? \rtrim($path, '/') : $path;
-    }
-
-    /**
-     * Get controller prefix for register route
-     *
-     * @param string $prefix Annotation controller prefix
-     * @param string $class Controller class name
-     * @param string $controllerSuffix Controller suffix
-     *
-     * @return string
-     */
-    public static function getControllerPrefix(string $prefix, string $class, string $controllerSuffix): string
-    {
-        if (empty($prefix)) {
-            $regex  = '/^.*\\\(\w+)' . $controllerSuffix . '$/';
-
-            if ($result = \preg_match($regex, $class, $match)) {
-                $prefix = '/' . \lcfirst($match[1]);
-            }
-        }
-
-        // always add '/' on start.
-        return '/' . \trim($prefix, '/');
     }
 }

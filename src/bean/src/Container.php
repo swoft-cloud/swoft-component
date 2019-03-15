@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Bean;
 
@@ -36,7 +36,7 @@ class Container implements ContainerInterface
     /**
      * @var Container
      */
-    private static $instance;
+    public static $instance;
 
     /**
      * All load annotations
@@ -316,6 +316,14 @@ class Container implements ContainerInterface
         $this->initializeBeans();
     }
 
+    public function initializeRequest(int $rid): void
+    {
+        // /* @var ObjectDefinition $objectDefinition */
+        // foreach ($this->requestDefinitions as $beanName => $objectDefinition) {
+        // TODO ...
+        // }
+    }
+
     /**
      * Get request bean
      *
@@ -356,7 +364,7 @@ class Container implements ContainerInterface
         }
 
         if (!isset($this->sessionDefinitions[$name])) {
-            throw new ContainerException(sprintf('Request bean(%s) is not defined', $name));
+            throw new ContainerException(\sprintf('Request bean(%s) is not defined', $name));
         }
 
         return $this->newBean($name, $id);
@@ -375,7 +383,7 @@ class Container implements ContainerInterface
      */
     public function get($id)
     {
-        // Singleton
+        // It is singleton
         if (isset($this->singletonPool[$id])) {
             return $this->singletonPool[$id];
         }
@@ -385,16 +393,16 @@ class Container implements ContainerInterface
             return clone $this->prototypePool[$id];
         }
 
-        // Alias
+        // Alias name
         $aliasId = $this->aliases[$id] ?? '';
-        if (!empty($aliasId)) {
+        if ($aliasId) {
             return $this->get($aliasId);
         }
 
         // Class name
         $classNames = $this->classNames[$id] ?? [];
-        if (!empty($classNames)) {
-            $id = end($classNames);
+        if ($classNames) {
+            $id = \end($classNames);
             return $this->get($id);
         }
 
@@ -408,6 +416,38 @@ class Container implements ContainerInterface
 
         // Prototype
         return $this->newBean($objectDefinition->getName());
+    }
+
+    /**
+     * Quick get exist singleton
+     * @param string $name
+     * @return mixed
+     */
+    public function getSingleton(string $name)
+    {
+        if (isset($this->aliases[$name])) {
+            $name = $this->aliases[$name];
+        }
+
+        return $this->singletonPool[$name] ?? null;
+    }
+
+    /**
+     * @param string $name
+     * @return mixed|null
+     */
+    public function getPrototype(string $name)
+    {
+        if (isset($this->aliases[$name])) {
+            $name = $this->aliases[$name];
+        }
+
+        // Prototype by clone
+        if (isset($this->prototypePool[$name])) {
+            return clone $this->prototypePool[$name];
+        }
+
+        return null;
     }
 
     /**
@@ -507,7 +547,7 @@ class Container implements ContainerInterface
     }
 
     /**
-     * Whether is singleton
+     * Quick check has singleton
      *
      * @param string $name Bean name Or alias
      *
@@ -623,14 +663,14 @@ class Container implements ContainerInterface
         foreach ($this->objectDefinitions as $beanName => $objectDefinition) {
             $scope = $objectDefinition->getScope();
             // Exclude request
-            if ($scope == Bean::REQUEST) {
+            if ($scope === Bean::REQUEST) {
                 $this->requestDefinitions[$beanName] = $objectDefinition;
                 unset($this->objectDefinitions[$beanName]);
                 continue;
             }
 
             // Exclude session
-            if ($scope == Bean::SESSION) {
+            if ($scope === Bean::SESSION) {
                 $this->sessionDefinitions[$beanName] = $objectDefinition;
                 unset($this->objectDefinitions[$beanName]);
                 continue;
@@ -681,8 +721,7 @@ class Container implements ContainerInterface
     private function setNewBean(string $beanName, string $scope, $object, int $id = 0)
     {
         switch ($scope) {
-            case Bean::SINGLETON:
-                // Singleton
+            case Bean::SINGLETON: // Singleton
                 $this->singletonPool[$beanName] = $object;
                 break;
             case Bean::PROTOTYPE:
@@ -742,6 +781,7 @@ class Container implements ContainerInterface
         $reflectionClass = new \ReflectionClass($className);
         $reflectObject   = $this->newInstance($reflectionClass, $constructArgs);
 
+        // Inject properties values
         $this->newProperty($reflectObject, $reflectionClass, $propertyInjects, $id);
 
         // Alias
@@ -782,7 +822,6 @@ class Container implements ContainerInterface
         $args = [];
         /* @var ArgsInjection $arg */
         foreach ($argInjects as $argInject) {
-
             // Empty args
             $argValue = $argInject->getValue();
             if (empty($argValue) || !\is_string($argValue)) {
@@ -826,7 +865,7 @@ class Container implements ContainerInterface
     }
 
     /**
-     * New bean property
+     * Inject properties into this bean. The properties data from config, annotation
      *
      * @param  object          $reflectObject
      * @param \ReflectionClass $reflectionClass
@@ -862,20 +901,28 @@ class Container implements ContainerInterface
                 throw new ContainerException(\sprintf('Property %s for bean can not be `static` ', $propertyName));
             }
 
+            // Parse property value
+            $propertyValue = $propertyInject->getValue();
+            if (\is_array($propertyValue)) {
+                $propertyValue = $this->newPropertyArray($propertyValue, $id);
+            }
+
+            if ($propertyInject->isRef()) {
+                $propertyValue = $this->getRefValue($propertyValue, $id);
+            }
+
+            // First, try set value by setter method
+            $setter = 'set' . \ucfirst($propertyName);
+            if (\method_exists($reflectObject, $setter)) {
+                $reflectObject->$setter($propertyValue);
+                continue;
+            }
+
             if (!$reflectProperty->isPublic()) {
                 $reflectProperty->setAccessible(true);
             }
 
-            $propertyValue = $propertyInject->getValue();
-            if (is_array($propertyValue)) {
-                $propertyValue = $this->newPropertyArray($propertyValue, $id);
-            }
-
-            $isRef = $propertyInject->isRef();
-            if ($isRef) {
-                $propertyValue = $this->getRefValue($propertyValue, $id);
-            }
-
+            // Set value by reflection
             $reflectProperty->setValue($reflectObject, $propertyValue);
         }
     }
@@ -938,6 +985,9 @@ class Container implements ContainerInterface
             $annotation = $classAnnotations[$className] ?? $annotation;
         }
 
+        // $annotations = \array_column($this->annotations, $className);
+        // $annotation  = $annotations ? $annotations[0] : [];
+
         $this->handler->beforeInit($beanName, $className, $objectDefinition, $annotation);
     }
 
@@ -975,7 +1025,7 @@ class Container implements ContainerInterface
      */
     private function getRefValue($value, int $id = 0)
     {
-        if (!is_string($value)) {
+        if (!\is_string($value)) {
             return $value;
         }
 

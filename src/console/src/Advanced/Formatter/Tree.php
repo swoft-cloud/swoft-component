@@ -63,7 +63,6 @@ class Tree extends MessageFormatter
 
         if ($opts['_is_main']) {
             Console::write('node count: ' . $counter);
-            // var_dump('f');
             Console::flushBuffer();
 
             // reset.

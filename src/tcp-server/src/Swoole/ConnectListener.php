@@ -1,8 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Tcp\Server\Swoole;
 
-use Co\Server as CoServer;
+use Swoole\Server;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Server\Swoole\ConnectInterface;
 
@@ -16,11 +16,11 @@ use Swoft\Server\Swoole\ConnectInterface;
 class ConnectListener implements ConnectInterface
 {
     /**
-     * @param CoServer $server
+     * @param Server $server
      * @param int      $fd
      * @param int      $reactorId
      */
-    public function onConnect(CoServer $server, int $fd, int $reactorId): void
+    public function onConnect(Server $server, int $fd, int $reactorId): void
     {
 
     }

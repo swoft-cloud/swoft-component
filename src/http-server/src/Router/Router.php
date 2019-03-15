@@ -3,6 +3,7 @@
 namespace Swoft\Http\Server\Router;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Http\Server\Contract\RouterInterface;
 use Swoft\Http\Server\Helper\RouteHelper;
 
 /**
@@ -295,25 +296,24 @@ class Router implements RouterInterface
      */
     public function addRoute(Route $route): Route
     {
+        $this->routeCounter++;
         $this->appendGroupInfo($route);
 
         $path   = $route->getPath();
         $method = $route->getMethod();
 
-        $this->routeCounter++;
-
-        // has route name.
+        // Has route name.
         if ($name = $route->getName()) {
             $this->namedRoutes[$name] = $route;
         }
 
-        // it is static route
+        // It is static route
         if (RouteHelper::isStaticRoute($path)) {
             $this->staticRoutes[$method . ' ' . $path] = $route;
             return $route;
         }
 
-        // parse param route
+        // Parse param route
         // if the first node is static string.
         if ($first = $route->parseParam(self::$globalParams)) {
             $this->regularRoutes[$method . ' ' . $first][] = $route;
@@ -335,7 +335,7 @@ class Router implements RouterInterface
      */
     public function group(string $prefix, \Closure $callback, array $middleware = [], array $opts = []): void
     {
-        // backups
+        // Backups
         $previousGroupPrefix = $this->currentGroupPrefix;
         $previousGroupOption = $this->currentGroupOption;
         $previousGroupChains = $this->currentGroupChains;
@@ -344,10 +344,10 @@ class Router implements RouterInterface
         $this->currentGroupChains = $middleware;
         $this->currentGroupPrefix = $previousGroupPrefix . '/' . \trim($prefix, '/');
 
-        // run callback.
+        // Run callback.
         $callback($this);
 
-        // reverts
+        // Reverts
         $this->currentGroupPrefix = $previousGroupPrefix;
         $this->currentGroupOption = $previousGroupOption;
         $this->currentGroupChains = $previousGroupChains;
@@ -364,15 +364,16 @@ class Router implements RouterInterface
     {
         $path = $route->getPath();
 
-        // always add '/' prefix.
+        // Always add '/' prefix.
         $path = \strpos($path, '/') === 0 ? $path : '/' . $path;
         $path = $this->currentGroupPrefix . $path;
 
-        // setting 'ignoreLastSlash'
+        // Setting 'ignoreLastSlash'
         if ($path !== '/' && $this->ignoreLastSlash) {
             $path = \rtrim($path, '/');
         }
 
+        // Re-set formatted path
         $route->setPath($path);
 
         if ($grpOptions = $this->currentGroupOption) {
@@ -390,7 +391,7 @@ class Router implements RouterInterface
      ******************************************************************************/
 
     /**
-     * find the matched route info for the given request uri path
+     * Find the matched route info for the given request uri path
      *
      * @param string $method
      * @param string $path
@@ -408,17 +409,17 @@ class Router implements RouterInterface
         $method = \strtoupper($method);
         $sKey   = $method . ' ' . $path;
 
-        // is a static route path
+        // It is a static route path
         if (isset($this->staticRoutes[$sKey])) {
             return [self::FOUND, $path, $this->staticRoutes[$sKey]];
         }
 
-        // find in route caches.
+        // Find in route caches.
         if ($this->cacheRoutes && isset($this->cacheRoutes[$sKey])) {
             return [self::FOUND, $path, $this->cacheRoutes[$sKey]];
         }
 
-        // is a dynamic route, match by regexp
+        // It is a dynamic route, match by regexp
         $result = $this->matchDynamicRoute($path, $method);
         if ($result[0] === self::FOUND) { // will cache param route.
             $this->cacheMatchedParamRoute($path, $method, $result[2]);
@@ -453,7 +454,7 @@ class Router implements RouterInterface
             return [self::FOUND, $path, $this->staticRoutes[$sKey]];
         }
 
-        // collect allowed methods from: staticRoutes, vagueRoutes OR return not found.
+        // Collect allowed methods from: staticRoutes, vagueRoutes OR return not found.
         if ($this->handleMethodNotAllowed) {
             return $this->findAllowedMethods($path, $method);
         }
@@ -462,7 +463,7 @@ class Router implements RouterInterface
     }
 
     /**
-     * is a dynamic route, match by regexp
+     * It is a dynamic route, match by regexp
      *
      * @param string $path
      * @param string $method
@@ -482,7 +483,7 @@ class Router implements RouterInterface
             $fKey  = $method . ' ' . $first;
         }
 
-        // is a regular dynamic route(the first node is 1th level index key).
+        // It is a regular dynamic route(the first node is 1th level index key).
         if ($fKey && $routeList = $this->regularRoutes[$fKey] ?? false) {
             /** @var Route $route */
             foreach ($routeList as $route) {
@@ -493,7 +494,7 @@ class Router implements RouterInterface
             }
         }
 
-        // is a irregular dynamic route
+        // It is a irregular dynamic route
         if ($routeList = $this->vagueRoutes[$method] ?? false) {
             foreach ($routeList as $route) {
                 $result = $route->match($path);
@@ -514,8 +515,7 @@ class Router implements RouterInterface
      */
     protected function findAllowedMethods(string $path, string $method): array
     {
-        $allowedMethods = [];
-
+        $methodNames = [];
         foreach (self::METHODS_ARRAY as $m) {
             if ($method === $m) {
                 continue;
@@ -523,20 +523,19 @@ class Router implements RouterInterface
 
             $sKey = $m . ' ' . $path;
             if (isset($this->staticRoutes[$sKey])) {
-                $allowedMethods[] = $m;
+                $methodNames[$m] = 1;
+                continue;
             }
 
             $result = $this->matchDynamicRoute($path, $m);
             if ($result[0] === self::FOUND) {
-                $allowedMethods[] = $m;
+                $methodNames[$m] = 1;
             }
         }
 
-        if ($allowedMethods && ($list = \array_unique($allowedMethods))) {
-            return [self::METHOD_NOT_ALLOWED, $path, $list];
+        if ($methodNames) {
+            return [self::METHOD_NOT_ALLOWED, $path, \array_keys($methodNames)];
         }
-
-        // oo ... not found
         return [self::NOT_FOUND, $path, null];
     }
 
@@ -550,7 +549,7 @@ class Router implements RouterInterface
         $cacheKey = $method . ' ' . $path;
         $cacheNum = (int)$this->tmpCacheNumber;
 
-        // cache last $cacheNumber routes.
+        // Cache last $cacheNumber routes.
         if ($cacheNum > 0 && !isset($this->cacheRoutes[$cacheKey])) {
             if ($this->cacheCount() >= $cacheNum) {
                 \array_shift($this->cacheRoutes);

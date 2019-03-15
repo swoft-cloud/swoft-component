@@ -1,16 +1,10 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-02
- * Time: 15:33
- */
+<?php declare(strict_types=1);
 
 namespace Swoft;
 
 /**
  * Class SwoftEvent
- * @package Swoft
+ * @since 2.0
  */
 class SwoftEvent
 {
@@ -20,6 +14,6 @@ class SwoftEvent
     // public const BEAN_INIT_BEFORE = 'swoft.bean.beforeInit';
     // public const BEAN_INIT_AFTER  = 'swoft.bean.afterInit';
 
-    // public const APP_INIT_BEFORE = 'swoft.app.afterInit';
-    public const APP_INIT_AFTER  = 'swoft.app.afterInit';
+    // public const APP_INIT_BEFORE = 'swoft.app.init.before';
+    public const APP_INIT_AFTER  = 'swoft.app.init.after';
 }

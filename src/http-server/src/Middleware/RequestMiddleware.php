@@ -1,13 +1,12 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Http\Server\Middleware;
-
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Http\Server\Contract\MiddlewareInterface;
 use Swoft\Http\Server\Exception\HttpServerException;
 
 /**
@@ -36,7 +35,7 @@ class RequestMiddleware implements MiddlewareInterface
         }
 
         // Handle
-        $response = $handler->handle($request, $handler);
+        $response = $handler->handle($request);
 
         // Power by
         return $response->withAddedHeader('X-Powered-By', 'Swoft');

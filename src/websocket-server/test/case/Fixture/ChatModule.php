@@ -66,6 +66,7 @@ class ChatModule implements WsModuleInterface
     public function checkHandshake(Request $request, Response $response): array
     {
         // TODO: Implement checkHandshake() method.
+        return [];
     }
 
     /**
@@ -85,9 +86,8 @@ class ChatModule implements WsModuleInterface
      * - you can do something. eg. record log
      * @param Server $server
      * @param int    $fd
-     * @return mixed
      */
-    public function onClose(Server $server, int $fd)
+    public function onClose(Server $server, int $fd): void
     {
         // TODO: Implement onClose() method.
     }

@@ -66,6 +66,7 @@ abstract class Server implements ServerInterface
     /**
      * Server setting for swoole. (@see swooleServer->setting)
      *
+     * @link https://wiki.swoole.com/wiki/page/274.html
      * @var array
      */
     protected $setting = [
@@ -125,7 +126,7 @@ abstract class Server implements ServerInterface
     /**
      * Swoole Server
      *
-     * @var \Co\Server|\Co\Http\Server|\Co\Websocket\Server
+     * @var \Swoole\Server|\Swoole\Http\Server|\Swoole\Websocket\Server
      */
     protected $swooleServer;
 
@@ -207,7 +208,6 @@ abstract class Server implements ServerInterface
     {
         // Server pid map
         $this->setPidMap($server);
-
         // Set process title
         Sys::setProcessTitle(\sprintf('%s manager process', $this->pidName));
 
@@ -333,7 +333,7 @@ abstract class Server implements ServerInterface
      */
     protected function startSwoole(): void
     {
-        if ($this->swooleServer === null) {
+        if (!$this->swooleServer) {
             throw new ServerException('You must to new server before start swoole!');
         }
 
@@ -356,20 +356,21 @@ abstract class Server implements ServerInterface
             }
 
             if (!isset(SwooleEvent::LISTENER_MAPPING[$name])) {
-                throw new ServerException(sprintf('Swoole %s event is not defined!', $name));
+                throw new ServerException(\sprintf('Swoole %s event is not defined!', $name));
             }
 
             $listenerInterface = SwooleEvent::LISTENER_MAPPING[$name];
             if (!($listener instanceof $listenerInterface)) {
-                throw new ServerException(sprintf('Swoole %s event listener is not %s', $name, $listenerInterface));
+                throw new ServerException(\sprintf('Swoole %s event listener is not %s', $name, $listenerInterface));
             }
 
-            $listenerMethod = sprintf('on%s', ucfirst($name));
+            $listenerMethod = \sprintf('on%s', \ucfirst($name));
             $this->swooleServer->on($name, [$listener, $listenerMethod]);
         }
 
         Swoft::trigger(ServerEvent::BEFORE_START);
 
+        // Start swoole server
         $this->swooleServer->start();
     }
 
@@ -579,12 +580,14 @@ abstract class Server implements ServerInterface
 
             // Parse and record PIDs
             [$masterPID, $managerPID] = \explode(',', $pidFile);
+            // Format type
+            $masterPID = (int)$masterPID;
             $managerPID = (int)$managerPID;
 
             $this->pidMap['masterPid']  = $masterPID;
-            $this->pidMap['managerPid'] = (int)$managerPID;
+            $this->pidMap['managerPid'] = $managerPID;
 
-            return $managerPID > 0 && Process::kill($managerPID, 0);
+            return $masterPID > 0 && Process::kill($masterPID, 0);
         }
 
         return false;
@@ -617,7 +620,7 @@ abstract class Server implements ServerInterface
     }
 
     /**
-     * @return \Co\Http\Server|CoServer|\Co\Websocket\Server
+     * @return \Swoole\Http\Server|CoServer|\Swoole\Websocket\Server
      */
     public function getSwooleServer()
     {

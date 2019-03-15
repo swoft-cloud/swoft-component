@@ -4,10 +4,11 @@ namespace Swoft\Http\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanEvent;
+use Swoft\Bean\Container;
 use Swoft\Co;
 use Swoft\Dispatcher;
-use Swoft\Http\Message\Response;
 use Swoft\Http\Message\Request;
+use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Middleware\DefaultMiddleware;
 use Swoft\Http\Server\Middleware\RequestMiddleware;
 use Swoft\Http\Server\Middleware\UserMiddleware;
@@ -36,7 +37,7 @@ class HttpDispatcher extends Dispatcher
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public function dispatch(...$params)
+    public function dispatch(...$params): void
     {
         /**
          * @var Request  $request
@@ -44,19 +45,23 @@ class HttpDispatcher extends Dispatcher
          */
         [$request, $response] = $params;
 
-        try {
+        /* @var RequestHandler $requestHandler */
+        $requestHandler = Container::$instance->getPrototype(RequestHandler::class);
+        $requestHandler->initialize($this->requestMiddleware(), $this->defaultMiddleware);
 
-            // Trigger before event
+        try {
+            // Trigger before handle event
             \Swoft::trigger(HttpServerEvent::BEFORE_REQUEST, $this, $request, $response);
 
-            /* @var RequestHandler $requestHandler */
-            $requestHandler = \bean(RequestHandler::class);
-            $middlewares    = $this->requestMiddleware();
-
-            $requestHandler->initialize($middlewares, $this->defaultMiddleware);
+            // Begin handle request, return response
             $response = $requestHandler->handle($request);
         } catch (\Throwable $e) {
-            var_dump($e->getMessage(), $e->getFile(), $e->getLine());
+            \printf(
+                "HTTP Dispatch Error: %s\nAt %s %d",
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine()
+            );
         }
 
         // Trigger after request
@@ -64,8 +69,7 @@ class HttpDispatcher extends Dispatcher
 
         // Trigger destroy request bean
         \Swoft::trigger(BeanEvent::DESTROY_REQUEST, $this, Co::tid());
-
-//      $response->withContent("<h1>Hello Swoole. #" . rand(1000, 9999) . "</h1>")->send();
+        // $response->withContent('<h1>Hello Swoole</h1>')->send();
     }
 
     /**

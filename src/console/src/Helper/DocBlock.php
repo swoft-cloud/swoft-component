@@ -25,9 +25,10 @@ class DocBlock
      * - 'allow'  // only allowed tags
      * - 'ignore' // ignored tags
      * - 'default' => 'description', // default tag name, first line text will attach to it.
+     * @param array  $defaults
      * @return array The parsed tags
      */
-    public static function getTags(string $comment, array $options = []): array
+    public static function getTags(string $comment, array $options = [], array $defaults = []): array
     {
         if (!$comment = \trim($comment, "/ \n")) {
             return [];
@@ -59,22 +60,26 @@ class DocBlock
                     continue;
                 }
 
+                if (!$value = \trim($matches[2])) {
+                    continue;
+                }
+
                 // always allow default tag
                 if ($default !== $name && $allow && !\in_array($name, $allow, true)) {
                     continue;
                 }
 
                 if (!isset($tags[$name])) {
-                    $tags[$name] = \trim($matches[2]);
+                    $tags[$name] = $value;
                 } elseif (\is_array($tags[$name])) {
-                    $tags[$name][] = \trim($matches[2]);
+                    $tags[$name][] = $value;
                 } else {
-                    $tags[$name] = [$tags[$name], \trim($matches[2])];
+                    $tags[$name] = [$tags[$name], $value];
                 }
             }
         }
 
-        return $tags;
+        return $defaults ? \array_merge($defaults, $tags) :$tags;
     }
 
     /**

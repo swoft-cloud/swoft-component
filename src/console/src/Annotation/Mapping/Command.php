@@ -5,7 +5,7 @@ namespace Swoft\Console\Annotation\Mapping;
 use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;
 use Doctrine\Common\Annotations\Annotation\Target;
-use Swoft\Stdlib\Helper\Str;
+use Swoft\Console\AbstractHandler;
 
 /**
  * The annotation of command controller
@@ -17,7 +17,7 @@ use Swoft\Stdlib\Helper\Str;
  *     @Attribute("alias", type="string")
  * )
  */
-final class Command
+final class Command extends AbstractHandler
 {
     // fixed args and opts for a command/controller-command
     public const ARG_REQUIRED = 1;
@@ -28,37 +28,6 @@ final class Command
     public const OPT_REQUIRED = 2;
     public const OPT_OPTIONAL = 4;
     public const OPT_IS_ARRAY = 8; // allow multi value
-
-    /**
-     * Command group name
-     *
-     * @var string
-     */
-    private $name = '';
-
-    /**
-     * The group description message text
-     *
-     * @var string
-     */
-    private $desc = '';
-
-    /**
-     * Command group name alias. Allow add multi by ','
-     *
-     * @var string
-     */
-    private $alias = '';
-
-    /**
-     * @var bool
-     */
-    private $enabled = true;
-
-    /**
-     * @var bool
-     */
-    private $coroutine = true;
 
     /**
      * Default command in the group
@@ -74,27 +43,7 @@ final class Command
      */
     public function __construct(array $values)
     {
-        if (isset($values['value'])) {
-            $this->name = (string)$values['value'];
-        } elseif (isset($values['name'])) {
-            $this->name = (string)$values['name'];
-        }
-
-        if (isset($values['alias'])) {
-            $this->alias = \trim((string)$values['alias']);
-        }
-
-        if (!empty($values['desc'])) {
-            $this->desc = \trim((string)$values['desc']);
-        }
-
-        if (isset($values['enabled'])) {
-            $this->enabled = (bool)$values['enabled'];
-        }
-
-        if (isset($values['coroutine'])) {
-            $this->coroutine = (bool)$values['coroutine'];
-        }
+        parent::__construct($values);
 
         if (isset($values['defaultCommand'])) {
             $this->defaultCommand = \trim($values['defaultCommand']);
@@ -104,56 +53,8 @@ final class Command
     /**
      * @return string
      */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDesc(): string
-    {
-        return $this->desc;
-    }
-
-    /**
-     * @return string
-     */
-    public function getAlias(): string
-    {
-        return $this->alias;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEnabled(): bool
-    {
-        return $this->enabled;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getAliases(): array
-    {
-        return $this->alias ? Str::explode($this->alias) : [];
-    }
-
-    /**
-     * @return string
-     */
     public function getDefaultCommand(): string
     {
         return $this->defaultCommand;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isCoroutine(): bool
-    {
-        return $this->coroutine;
     }
 }

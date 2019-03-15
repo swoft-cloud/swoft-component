@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use Swoft\Bean\Container;
 use Swoft\Event\EventInterface;
@@ -93,34 +93,33 @@ class Swoft
     }
 
     /**
-     * trigger an swoft application event
+     * Trigger an swoft application event
      *
      * @param string|EventInterface $event eg: 'app.start' 'app.stop'
-     * @param array                 $params
      * @param null|mixed            $target
+     * @param array                 $params
      *
-     * @return mixed|EventInterface
+     * @return EventInterface
      * @throws ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public static function trigger($event, $target = null, ...$params)
+    public static function trigger($event, $target = null, ...$params): EventInterface
     {
         /** @see EventManager::trigger() */
         return Container::getInstance()->get('eventManager')->trigger($event, $target, $params);
     }
 
     /**
-     * Trigger an swoft application event
+     * Trigger an swoft application event. like self::trigger(), but params is array
      *
-     * @param string|EventInterface $event eg: 'app.start' 'app.stop'
-     * @param array                 $params
-     * @param null|mixed            $target
-     *
-     * @return mixed|EventInterface
+     * @param mixed      $event
+     * @param null|mixed $target
+     * @param array      $params
+     * @return EventInterface
      * @throws ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public static function triggerByArray($event, $target = null, array $params = [])
+    public static function triggerByArray($event, $target = null, array $params = []): EventInterface
     {
         /** @see EventManager::trigger() */
         return Container::getInstance()->get('eventManager')->trigger($event, $target, $params);

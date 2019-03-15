@@ -91,7 +91,7 @@ class JoinPoint implements JoinPointInterface
     /**
      * @return \Throwable
      */
-    public function getCatch()
+    public function getCatch(): \Throwable
     {
         return $this->catch;
     }

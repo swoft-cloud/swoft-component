@@ -24,13 +24,19 @@ trait RenderHelpInfoTrait
         /** @var Output $output */
         $output = $this->output;
 
-        // version information
+        // Current application
+        $appVer  = $this->getVersion();
+        $appDesc = $this->getDescription();
+        $output->writef('%s%s', $appDesc, $appVer ? " (Version: <info>$appVer</info>)" : '');
+
+        // Version information
         $phpVersion    = \PHP_VERSION;
         $swoftVersion  = \Swoft::VERSION;
         $swooleVersion = \SWOOLE_VERSION;
 
         // Display logo
-        $output->colored(\Swoft::FONT_LOGO);
+        $output->colored(' ' . \ltrim(\Swoft::FONT_LOGO));
+
         // Display some information
         $output->writef(
             'PHP: <info>%s</info>, Swoft: <info>%s</info>, Swoole: <info>%s</info>',
@@ -74,7 +80,7 @@ trait RenderHelpInfoTrait
         /* @var Router $router */
         $router   = \Swoft::getBean('cliRouter');
         $expand   = \input()->getBoolOpt('expand');
-        $keyWidth = $router->getKeyWidth($expand ? 2 : 0);
+        $keyWidth = $router->getKeyWidth($expand ? 2 : -4);
 
         Console::writeln('<comment>Available Commands:</comment>');
 
@@ -88,7 +94,6 @@ trait RenderHelpInfoTrait
         };
 
         $cmdHandler = function (string $cmdId, array $info) use ($keyWidth) {
-            // \var_dump($info);die;
             Console::writef(
                 '  <info>%s</info> %s%s',
                 Str::padRight($cmdId, $keyWidth),
@@ -124,7 +129,7 @@ trait RenderHelpInfoTrait
         // $class = $groupInfo['class'];
         $names = $info['names'];
         \sort($names);
-        $keyWidth  = $router->getKeyWidth();
+        $keyWidth  = $router->getKeyWidth(-4);
         $groupName = \sprintf('%s%s', $group, $info['alias'] ? " (alias: <cyan>{$info['alias']}</cyan>)" : '');
 
         Console::startBuffer();
@@ -138,7 +143,7 @@ trait RenderHelpInfoTrait
             'sepChar' => '   ',
         ]);
 
-        Console::writeln('<comment>Available Commands:</comment>');
+        Console::writeln('<comment>Commands:</comment>');
 
         foreach ($names as $name) {
             $cmdId = $router->buildCommandID($group, $name);
@@ -149,6 +154,11 @@ trait RenderHelpInfoTrait
                 $cInfo['desc'] ?: 'No description message',
                 $cInfo['alias'] ? "(alias: <info>{$cInfo['alias']}</info>)" : ''
             );
+        }
+
+        if ($info['example']) {
+            $vars = $this->getCommentsVars();
+            Console::writef("\n<comment>Example:</comment>\n %s", $this->parseCommentsVars($info['example'], $vars));
         }
 
         Console::writef("\nView the specified command, please use: <cyan>%s %s:COMMAND -h</cyan>", $script, $group);
@@ -166,7 +176,6 @@ trait RenderHelpInfoTrait
 
         Console::startBuffer();
         Console::writeln($info['desc'] . \PHP_EOL);
-
         Show::mList([
             'Usage:'          => \sprintf('%s %s [arg ...] [--opt ...]', $script, $info['cmdId']),
             'Global Options:' => FormatUtil::alignOptions(self::$globalOptions),
@@ -181,7 +190,8 @@ trait RenderHelpInfoTrait
 
             $keyWidth = Arr::getKeyMaxWidth($arguments);
             foreach ($arguments as $name => $meta) {
-                Console::writef('  <info>%s</info> %s   %s', Str::padRight($name, $keyWidth), $meta['type'], $meta['desc']);
+                Console::writef('  <info>%s</info> %s   %s', Str::padRight($name, $keyWidth), $meta['type'],
+                    $meta['desc']);
             }
 
             Console::writeln('');
@@ -192,8 +202,8 @@ trait RenderHelpInfoTrait
             \ksort($options);
             Console::writeln('<comment>Options:</comment>');
 
-            $maxLen  = 0;
-            $newOpts = [];
+            $maxLen   = 0;
+            $newOpts  = [];
             $hasShort = false;
 
             foreach ($options as $name => $meta) {
@@ -202,18 +212,16 @@ trait RenderHelpInfoTrait
                 }
 
                 $typeName = $meta['type'] === 'BOOL' ? '' : $meta['type'];
-
                 if ($len === 1) {
                     $key = \sprintf('-<info>%s</info> %s', $name, $typeName);
                 } else {
-                    $short = '';
-
+                    $shortMark = '';
                     if ($meta['short']) {
-                        $hasShort = true;
-                        $short = '-' . $meta['short'] . ', ';
+                        $hasShort  = true;
+                        $shortMark = '-' . $meta['short'] . ', ';
                     }
 
-                    $key  = \sprintf('<info>%s--%s</info> %s', $short, $name, $typeName);
+                    $key = \sprintf('<info>%s--%s</info> %s', $shortMark, $name, $typeName);
                 }
 
                 $kenLen = \strlen($key);
@@ -224,7 +232,7 @@ trait RenderHelpInfoTrait
                 $newOpts[$key] = $meta;
             }
 
-            // render
+            // Render
             foreach ($newOpts as $key => $meta) {
                 if ($hasShort && false === \strpos($key, ',')) { // has short and key is long
                     $key = '    ' . $key;
@@ -234,10 +242,9 @@ trait RenderHelpInfoTrait
             }
         }
 
-        if ($example = \trim($info['example'], "* \n")) {
+        if ($example = \trim($info['example'] ?? '', "* \n")) {
             $vars = $this->getCommentsVars();
-
-            Console::writef("\n<comment>Example:</comment>\n  %s", $this->parseCommentsVars($example, $vars));
+            Console::writef("\n<comment>Example:</comment>\n %s", $this->parseCommentsVars($example, $vars));
         }
 
         Console::flushBuffer();

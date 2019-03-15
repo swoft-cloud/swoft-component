@@ -2,6 +2,30 @@
 
 > 日期时间都是大概的时间点
 
+## 2019.03.14
+
+- 优化bean获取性能 (@inhere)
+- 添加一些快速获取内部bean的方法(@inhere)
+- 优化http server处理性能(@inhere)
+  - 优化 http request, response 初始化流程
+  - 优化 http 调用逻辑
+
+## 2019.03.09
+
+- bean container 属性值注入时，将会首先尝试使用 setter(@inhere)
+
+## 2019.03.08
+
+- console 组件调整(@inhere)
+  - 支持添加独立命令Handler
+  - `Command` 所在class支持通过 `@example` 设置命令组的使用示例
+  - `CommandMapping` 所在命令方法上支持通过 `@example` 设置命令的使用示例
+
+## 2019.03.05
+
+- 优化log日志组件代码(@inhere)
+- 优化framework组件代码(@inhere)
+
 ## 2019.03.04
 
 - 优化AOP性能
@@ -9,6 +33,7 @@
 ## 2019.03.03
 
 - 优化事件调用性能(@inhere)
+- 容器组件基本支出 `REQUEST` `SESSION` 级别的bean(@stelin)
 
 ## 2019.02.25
 

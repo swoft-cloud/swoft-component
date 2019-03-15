@@ -70,10 +70,10 @@ class HttpContext implements ContextInterface
      */
     public function clear(): void
     {
-        // Unset data
+        // Clear data
         $this->data = [];
 
-        //Unset request/response
+        // Clear request/response
         $this->request = $this->response = null;
     }
 }

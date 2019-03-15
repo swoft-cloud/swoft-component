@@ -522,8 +522,7 @@ class PharCompiler
      */
     private function createStub(): string
     {
-        // var_dump($this);die;
-        $date     = date('Y-m-d H:i');
+        $date     = \date('Y-m-d H:i');
         $pharName = $this->pharName;
         $stub     = <<<EOF
 <?php

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Aop\Annotation\Parser;
 
@@ -29,7 +29,7 @@ class AroundParser extends Parser
      */
     public function parse(int $type, $annotationObject): array
     {
-        if ($type != self::TYPE_METHOD) {
+        if ($type !== self::TYPE_METHOD) {
             throw new AopException('`@Around` must be defined by method!');
         }
 

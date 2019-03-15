@@ -111,6 +111,15 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     private $disabledPsr4Prefixes = [];
 
     /**
+     * Get the application version
+     * @return string
+     */
+    public static function getVersion(): string
+    {
+        return self::VERSION;
+    }
+
+    /**
      * Class constructor.
      *
      * @param array $config
@@ -144,6 +153,8 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
         $this->processor->addFirstProcessor(...$processors);
 
         $this->init();
+
+        CLog::info('Project path is <info>%s</info>', $this->basePath);
 
         // after init
         $this->afterInit();
@@ -184,7 +195,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     }
 
     /**
-     * @param string ...$classes
+     * @param array ...$classes
      */
     public function disableAutoLoader(string ...$classes)
     {
@@ -194,7 +205,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     }
 
     /**
-     * @param string ...$classes
+     * @param array ...$classes
      */
     public function disableProcessor(string ...$classes)
     {

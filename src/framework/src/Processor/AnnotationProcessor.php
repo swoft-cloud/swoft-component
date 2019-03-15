@@ -24,13 +24,15 @@ class AnnotationProcessor extends Processor
             return false;
         }
 
-        // TODO ... Get disabled loaders by application
-        $disabledLoaders = $this->application->getDisabledAutoLoaders();
+        CLog::info('Annotation load is beginning');
 
-        CLog::info('Annotation is beginning');
+        $app = $this->application;
 
-        // Parse AutoLoader classes config, collect annotations.
-        AnnotationRegister::load();
+        // Find AutoLoader classes. Parse and collect annotations.
+        AnnotationRegister::load([
+            'disabledAutoLoaders'  => $app->getDisabledAutoLoaders(),
+            'disabledPsr4Prefixes' => $app->getDisabledPsr4Prefixes(),
+        ]);
 
         CLog::info('Annotation is scanned');
         return $this->application->afterAnnotation();

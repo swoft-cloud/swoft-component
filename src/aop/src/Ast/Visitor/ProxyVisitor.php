@@ -4,6 +4,7 @@
 namespace Swoft\Aop\Ast\Visitor;
 
 use PhpParser\Node;
+use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\NodeFinder;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
@@ -28,7 +29,7 @@ class ProxyVisitor extends NodeVisitorAbstract
      *
      * @var string
      */
-    private $proxyId = '';
+    private $proxyId;
 
     /**
      * Origin class name
@@ -49,7 +50,7 @@ class ProxyVisitor extends NodeVisitorAbstract
      *
      * @var string
      */
-    private $aopClassName = '';
+    private $aopClassName;
 
     /**
      * ProxyVisitor constructor.
@@ -60,7 +61,7 @@ class ProxyVisitor extends NodeVisitorAbstract
     public function __construct(string $proxyId = '', string $aopClassName = AopTrait::class)
     {
         $this->aopClassName = $aopClassName;
-        $this->proxyId      = empty($proxyId) ? uniqid() : $proxyId;
+        $this->proxyId      = $proxyId ?: \uniqid('', true);
     }
 
     /**
@@ -123,14 +124,14 @@ class ProxyVisitor extends NodeVisitorAbstract
         }
 
         // Parse class method and rewrite public and protected
-        if ($node instanceof Node\Stmt\ClassMethod) {
+        if ($node instanceof ClassMethod) {
             if ($node->isPrivate() || $node->isStatic()) {
                 return NodeTraverser::REMOVE_NODE;
             }
 
             return $this->proxyMethod($node);
         }
-        
+
         return $node;
     }
 
@@ -149,24 +150,24 @@ class ProxyVisitor extends NodeVisitorAbstract
         $classNode = $nodeFinder->findFirstInstanceOf($nodes, Node\Stmt\Class_::class);
 
         $traitNode          = $this->getTraitNode();
-        $originalMethodNode = $this->getOrigianalClassNameMethodNode();
+        $originalMethodNode = $this->getOriginalClassNameMethodNode();
 
-        array_unshift($classNode->stmts, $traitNode, $originalMethodNode);
+        \array_unshift($classNode->stmts, $traitNode, $originalMethodNode);
         return $nodes;
     }
 
     /**
      * Proxy method
      *
-     * @param Node\Stmt\ClassMethod $node
+     * @param ClassMethod $node
      *
-     * @return Node\Stmt\ClassMethod
+     * @return ClassMethod
      */
-    private function proxyMethod(Node\Stmt\ClassMethod $node)
+    private function proxyMethod(ClassMethod $node): ClassMethod
     {
         $methodName = $node->name->toString();
 
-        // Origin method params
+        // TODO Origin method params
         $params = [];
         foreach ($node->params as $key => $param) {
             $params[] = $param;
@@ -189,13 +190,13 @@ class ProxyVisitor extends NodeVisitorAbstract
         // New method stmts
         $type = $node->returnType;
         $stmt = new Node\Stmt\Return_($proxyCall);
-        if ($type != null && $type instanceof Node\Identifier && $type->name == 'void') {
+        if ($type && $type instanceof Node\Identifier && $type->name === 'void') {
             $stmt = new Node\Stmt\Expression($proxyCall);
         }
 
         // Return `self` to return `originalClassName`
         $returnType = $node->returnType;
-        if ($returnType instanceof Node\Name && $returnType->toString() == 'self') {
+        if ($returnType instanceof Node\Name && $returnType->toString() === 'self') {
             $returnType->parts = [
                 sprintf('\\%s', $this->originalClassName)
             ];
@@ -213,7 +214,7 @@ class ProxyVisitor extends NodeVisitorAbstract
             ],
         ];
 
-        return new Node\Stmt\ClassMethod($methodName, $newMethodNodes);
+        return new ClassMethod($methodName, $newMethodNodes);
     }
 
     /**
@@ -223,7 +224,7 @@ class ProxyVisitor extends NodeVisitorAbstract
      */
     public function getProxyClassName(): string
     {
-        return sprintf('%s\\%s', $this->namespace, $this->proxyName);
+        return \sprintf('%s\\%s', $this->namespace, $this->proxyName);
     }
 
     /**
@@ -259,12 +260,12 @@ class ProxyVisitor extends NodeVisitorAbstract
     /**
      * Get original class method node
      *
-     * @return \PhpParser\Node\Stmt\ClassMethod
+     * @return ClassMethod
      */
-    private function getOrigianalClassNameMethodNode(): Node\Stmt\ClassMethod
+    private function getOriginalClassNameMethodNode(): ClassMethod
     {
         // Add getOriginalClassName method
-        return new Node\Stmt\ClassMethod('getOriginalClassName', [
+        return new ClassMethod('getOriginalClassName', [
             'flags'      => Node\Stmt\Class_::MODIFIER_PUBLIC,
             'returnType' => 'string',
             'stmts'      => [

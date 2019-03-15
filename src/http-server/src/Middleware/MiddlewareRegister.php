@@ -45,10 +45,10 @@ class MiddlewareRegister
      */
     public static function registerByClassName(string $name, string $className): void
     {
-        $controllerMiddlewares   = self::$middlewares[$className]['controller'] ?? [];
-        $controllerMiddlewares[] = $name;
+        $groupMiddlewares   = self::$middlewares[$className]['controller'] ?? [];
+        $groupMiddlewares[] = $name;
 
-        self::$middlewares[$className]['controller'] = array_unique($controllerMiddlewares);
+        self::$middlewares[$className]['controller'] = \array_unique($groupMiddlewares);
     }
 
     /**
@@ -62,10 +62,10 @@ class MiddlewareRegister
      */
     public static function registerByMethodName(string $name, string $className, string $methodName): void
     {
-        $controllerMiddlewares   = self::$middlewares[$className]['action'][$methodName] ?? [];
-        $controllerMiddlewares[] = $name;
+        $groupMiddlewares   = self::$middlewares[$className]['action'][$methodName] ?? [];
+        $groupMiddlewares[] = $name;
 
-        self::$middlewares[$className]['methods'][$methodName] = array_unique($controllerMiddlewares);
+        self::$middlewares[$className]['methods'][$methodName] = \array_unique($groupMiddlewares);
     }
 
     /**

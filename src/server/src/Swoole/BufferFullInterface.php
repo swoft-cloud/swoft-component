@@ -1,9 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Server\Swoole;
 
-use Co\Server as CoServer;
-
+use Swoole\Server;
 
 /**
  * Interface BufferFullInterface
@@ -15,8 +14,8 @@ interface BufferFullInterface
     /**
      * Buffer full event
      *
-     * @param CoServer $server
+     * @param Server $server
      * @param int      $fd
      */
-    public function onBufferFull(CoServer $server, int $fd): void;
+    public function onBufferFull(Server $server, int $fd): void;
 }

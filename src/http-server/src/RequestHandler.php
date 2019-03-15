@@ -3,12 +3,12 @@
 
 namespace Swoft\Http\Server;
 
-
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Http\Server\Middleware\MiddlewareInterface;
+use Swoft\Bean\Container;
+use Swoft\Http\Server\Contract\MiddlewareInterface;
 use Swoft\Http\Server\Exception\HttpServerException;
 
 /**
@@ -43,8 +43,10 @@ class RequestHandler implements RequestHandlerInterface
      * @param array  $middlewares
      * @param string $defaultMiddleware
      */
-    public function initialize(array $middlewares, string $defaultMiddleware)
+    public function initialize(array $middlewares, string $defaultMiddleware): void
     {
+        $this->offset = 0;
+        // init
         $this->middlewares       = $middlewares;
         $this->defaultMiddleware = $defaultMiddleware;
     }
@@ -55,30 +57,19 @@ class RequestHandler implements RequestHandlerInterface
      * @param ServerRequestInterface $request
      *
      * @return ResponseInterface
-     * @throws HttpServerException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $middlewareName = $this->middlewares[$this->offset] ?? '';
+        // Default middleware to handle request route
+        $middleware = $this->middlewares[$this->offset] ?? $this->defaultMiddleware;
 
-        if (!empty($middlewareName) && empty($this->defaultMiddleware)) {
-            throw new HttpServerException('You must define default middleware!');
-        }
-
-        // Default middleware to handle request
-        if (empty($middlewareName)) {
-            $middlewareName = $this->defaultMiddleware;
-        }
-
-        /* @var MiddlewareInterface $middleware */
-        $middleware = \bean($middlewareName);
+        /* @var MiddlewareInterface $bean */
+        $bean = Container::$instance->getSingleton($middleware);
 
         // Next middleware
         $this->offset++;
 
-        return $middleware->process($request, $this);
+        return $bean->process($request, $this);
     }
 
     /**
@@ -91,13 +82,12 @@ class RequestHandler implements RequestHandlerInterface
      */
     public function insertMiddlewares(array $middlewares, int $offset = null): void
     {
-        $offset = $offset === null ? $this->offset : $offset;
-
+        $offset = $offset ?? $this->offset;
         if ($offset > $this->offset) {
             throw new HttpServerException('Insert middleware offset must more than ' . $this->offset);
         }
 
         // Insert middlewares
-        array_splice($this->middlewares, $offset, 0, $middlewares);
+        \array_splice($this->middlewares, $offset, 0, $middlewares);
     }
 }

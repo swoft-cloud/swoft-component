@@ -19,7 +19,7 @@ class DirectoryHelper
     public static function make(string $dir, int $mode = 0755): void
     {
         if (!\file_exists($dir) && !\mkdir($dir, $mode, true) && !\is_dir($dir)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
+            throw new \RuntimeException(\sprintf('Directory "%s" was not created', $dir));
         }
     }
 
@@ -68,7 +68,7 @@ class DirectoryHelper
                 return true;
             }
 
-            // only find php file
+            // Only find php file
             return $f->isFile() && \substr($name, -4) === '.php';
         };
 

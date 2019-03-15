@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 if (!function_exists('bean')) {
     /**
      * Get bean by name
@@ -11,11 +12,11 @@ if (!function_exists('bean')) {
      */
     function bean(string $name)
     {
-        if (!\Swoft\Bean\BeanFactory::hasBean('config')) {
-            return sprintf('${%s}', $name);
+        if (\Swoft\Bean\BeanFactory::hasSingleton('config')) {
+            return \Swoft\Bean\BeanFactory::getBean($name);
         }
 
-        return \Swoft\Bean\BeanFactory::getBean($name);
+        return \sprintf('${%s}', $name);
     }
 }
 

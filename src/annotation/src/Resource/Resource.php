@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Annotation\Resource;
 
@@ -7,5 +7,5 @@ namespace Swoft\Annotation\Resource;
  */
 abstract class Resource implements ResourceInterface
 {
-    
+
 }

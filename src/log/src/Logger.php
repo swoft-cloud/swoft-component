@@ -18,7 +18,7 @@ class Logger extends \Monolog\Logger
     /**
      * Add trace level
      */
-    const TRACE = 650;
+    public const TRACE = 650;
 
     /**
      * Application name
@@ -56,14 +56,14 @@ class Logger extends \Monolog\Logger
     protected $countings = [];
 
     /**
-     * Pushlogs stack
+     * Push logs stack
      *
      * @var array
      */
     protected $pushlogs = [];
 
     /**
-     * Proflie stacks
+     * Profile stacks
      *
      * @var array
      */
@@ -124,7 +124,7 @@ class Logger extends \Monolog\Logger
      *
      * @throws \Exception
      */
-    public function addRecord($level, $message, array $context = array())
+    public function addRecord($level, $message, array $context = []): bool
     {
         if (!$this->enable) {
             return true;
@@ -133,12 +133,12 @@ class Logger extends \Monolog\Logger
         $levelName = static::getLevelName($level);
 
         if (!static::$timezone) {
-            static::$timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
+            static::$timezone = new \DateTimeZone(\date_default_timezone_get() ?: 'UTC');
         }
 
         // php7.1+ always has microseconds enabled, so we do not need this hack
         if ($this->microsecondTimestamps && PHP_VERSION_ID < 70100) {
-            $ts = \DateTime::createFromFormat('U.u', sprintf('%.6F', microtime(true)), static::$timezone);
+            $ts = \DateTime::createFromFormat('U.u', \sprintf('%.6F', \microtime(true)), static::$timezone);
         } else {
             $ts = new \DateTime(null, static::$timezone);
         }
@@ -147,10 +147,10 @@ class Logger extends \Monolog\Logger
 
         $message = $this->formatMessage($message);
         $message = $this->getTrace($message);
-        $record  = $this->formateRecord($message, $context, $level, $levelName, $ts, []);
+        $record  = $this->formatRecord($message, $context, $level, $levelName, $ts, []);
 
         foreach ($this->processors as $processor) {
-            $record = call_user_func($processor, $record);
+            $record = $processor($record);
         }
 
         $this->messages[] = $record;
@@ -163,7 +163,7 @@ class Logger extends \Monolog\Logger
     }
 
     /**
-     * Formate record
+     * Format record
      *
      * @param string    $message
      * @param array     $context
@@ -174,15 +174,15 @@ class Logger extends \Monolog\Logger
      *
      * @return array
      */
-    public function formateRecord(
+    public function formatRecord(
         string $message,
         array $context,
         int $level,
         string $levelName,
         \DateTime $ts,
         array $extra
-    ) {
-        $record = array(
+    ): array {
+        $record = [
             'logid'      => context()->get('traceid'),
             'spanid'     => context()->get('spanid'),
             'messages'   => $message,
@@ -192,7 +192,7 @@ class Logger extends \Monolog\Logger
             'channel'    => $this->name,
             'datetime'   => $ts,
             'extra'      => $extra,
-        );
+        ];
 
         return $record;
     }
@@ -212,18 +212,18 @@ class Logger extends \Monolog\Logger
      */
     public function pushLog(string $key, $val): void
     {
-        if (!$this->enable || !(\is_string($key) || is_numeric($key))) {
+        if (!$this->enable || !$key) {
             return;
         }
 
-        $key = urlencode($key);
+        $key = \urlencode($key);
         $cid = Co::tid();
         if (\is_array($val)) {
-            $this->pushlogs[$cid][] = "$key=" . json_encode($val);
+            $this->pushlogs[$cid][] = "$key=" . \json_encode($val);
         } elseif (\is_bool($val)) {
-            $this->pushlogs[$cid][] = "$key=" . var_export($val, true);
+            $this->pushlogs[$cid][] = "$key=" . \var_export($val, true);
         } elseif (\is_string($val) || is_numeric($val)) {
-            $this->pushlogs[$cid][] = "$key=" . urlencode($val);
+            $this->pushlogs[$cid][] = "$key=" . \urlencode($val);
         } elseif (null === $val) {
             $this->pushlogs[$cid][] = "$key=";
         }
@@ -236,14 +236,13 @@ class Logger extends \Monolog\Logger
      */
     public function profileStart(string $name): void
     {
-
-        if (!$this->enable || \is_string($name) === false || empty($name)) {
+        if (!$this->enable || !$name) {
             return;
         }
 
         $cid = Co::tid();
 
-        $this->profileStacks[$cid][$name]['start'] = microtime(true);
+        $this->profileStacks[$cid][$name]['start'] = \microtime(true);
     }
 
     /**
@@ -253,7 +252,7 @@ class Logger extends \Monolog\Logger
      */
     public function profileEnd(string $name): void
     {
-        if (!$this->enable || \is_string($name) === false || empty($name)) {
+        if (!$this->enable || !$name) {
             return;
         }
 
@@ -265,7 +264,7 @@ class Logger extends \Monolog\Logger
             ];
         }
 
-        $this->profiles[$cid][$name]['cost']  += microtime(true) - $this->profileStacks[$cid][$name]['start'];
+        $this->profiles[$cid][$name]['cost']  += \microtime(true) - $this->profileStacks[$cid][$name]['start'];
         $this->profiles[$cid][$name]['total'] += 1;
     }
 
@@ -283,11 +282,11 @@ class Logger extends \Monolog\Logger
             if (!isset($profile['cost'], $profile['total'])) {
                 continue;
             }
-            $cost         = sprintf('%.2f', $profile['cost'] * 1000);
+            $cost         = \sprintf('%.2f', $profile['cost'] * 1000);
             $profileAry[] = "$key=" . $cost . '(ms)/' . $profile['total'];
         }
 
-        return implode(',', $profileAry);
+        return \implode(',', $profileAry);
     }
 
     /**
@@ -307,7 +306,8 @@ class Logger extends \Monolog\Logger
         if (!isset($this->countings[$cid][$name])) {
             $this->countings[$cid][$name] = ['hit' => 0, 'total' => 0];
         }
-        $this->countings[$cid][$name]['hit'] += (int)$hit;
+
+        $this->countings[$cid][$name]['hit'] += $hit;
         if ($total !== null) {
             $this->countings[$cid][$name]['total'] += (int)$total;
         }
@@ -321,20 +321,22 @@ class Logger extends \Monolog\Logger
     public function getCountingInfo(): string
     {
         $cid = Co::tid();
-        if (!isset($this->countings[$cid]) || empty($this->countings[$cid])) {
+        if (empty($this->countings[$cid])) {
             return '';
         }
 
         $countAry  = [];
         $countings = $this->countings[$cid];
-        foreach ($countings ?? [] as $name => $counter) {
+
+        foreach ($countings as $name => $counter) {
             if (isset($counter['hit'], $counter['total']) && $counter['total'] !== 0) {
                 $countAry[] = "$name=" . $counter['hit'] . '/' . $counter['total'];
             } elseif (isset($counter['hit'])) {
                 $countAry[] = "$name=" . $counter['hit'];
             }
         }
-        return implode(',', $countAry);
+
+        return \implode(',', $countAry);
     }
 
     /**
@@ -346,10 +348,7 @@ class Logger extends \Monolog\Logger
      */
     public function formatMessage($message): string
     {
-        if (\is_array($message)) {
-            return json_encode($message);
-        }
-        return $message;
+        return \is_array($message) ? \json_encode($message) : $message;
     }
 
     /**
@@ -369,13 +368,13 @@ class Logger extends \Monolog\Logger
      */
     public function getTrace(string $message): string
     {
-        $traces = debug_backtrace();
+        $traces = \debug_backtrace();
         $count  = \count($traces);
         $ex     = '';
         if ($count >= 7) {
             $info = $traces[6];
             if (isset($info['file'], $info['line'])) {
-                $filename = basename($info['file']);
+                $filename = \basename($info['file']);
                 $lineNum  = $info['line'];
                 $ex       = "$filename:$lineNum";
             }
@@ -392,7 +391,6 @@ class Logger extends \Monolog\Logger
         if (!empty($ex)) {
             $message = "trace[$ex] " . $message;
         }
-
 
         return $message;
     }
@@ -433,32 +431,31 @@ class Logger extends \Monolog\Logger
         $ts  = $this->getLoggerTime();
 
         // PHP time used
-        $timeUsed = sprintf('%.2f', (microtime(true) - $this->getRequestTime()) * 1000);
+        $timeUsed = \sprintf('%.2f', (\microtime(true) - $this->getRequestTime()) * 1000);
 
         // PHP memory used
-        $memUsed = sprintf('%.0f', memory_get_peak_usage() / (1024 * 1024));
+        $memUsed = \sprintf('%.0f', \memory_get_peak_usage() / (1024 * 1024));
 
         $profileInfo  = $this->getProfilesInfos();
         $countingInfo = $this->getCountingInfo();
-        $pushlogs     = $this->pushlogs[$cid] ?? [];
+        $pushLogs     = $this->pushlogs[$cid] ?? [];
 
-        $messageAry = array(
+        $messageAry = [
             "[$timeUsed(ms)]",
             "[$memUsed(MB)]",
             "[{$this->getUri()}]",
-            '[' . implode(' ', $pushlogs) . ']',
+            '[' . \implode(' ', $pushLogs) . ']',
             'profile[' . $profileInfo . ']',
             'counting[' . $countingInfo . ']'
-        );
+        ];
 
-
-        $message = implode(' ', $messageAry);
+        $message = \implode(' ', $messageAry);
 
         // Unset profile/counting/pushlogs/profileStack
         unset($this->profiles[$cid], $this->countings[$cid], $this->pushlogs[$cid], $this->profileStacks[$cid]);
 
         $levelName = self::$levels[self::NOTICE];
-        $message   = $this->formateRecord($message, [], self::NOTICE, $levelName, $ts, []);
+        $message   = $this->formatRecord($message, [], self::NOTICE, $levelName, $ts, []);
 
         $this->messages[] = $message;
 
@@ -478,12 +475,12 @@ class Logger extends \Monolog\Logger
     private function getLoggerTime(): \DateTime
     {
         if (!static::$timezone) {
-            static::$timezone = new \DateTimeZone(date_default_timezone_get() ?: 'UTC');
+            static::$timezone = new \DateTimeZone(\date_default_timezone_get() ?: 'UTC');
         }
 
         $ts = new \DateTime('now', static::$timezone);
-
         $ts->setTimezone(static::$timezone);
+
         return $ts;
     }
 
@@ -519,7 +516,7 @@ class Logger extends \Monolog\Logger
      * @return bool
      * @throws \Exception
      */
-    public function addTrace($message, array $context = array()): bool
+    public function addTrace($message, array $context = []): bool
     {
         return $this->addRecord(static::TRACE, $message, $context);
     }
@@ -557,6 +554,6 @@ class Logger extends \Monolog\Logger
      */
     private function getRequestTime(): float
     {
-        return context()->get('requestTime', 0);
+        return \context()->get('requestTime', 0);
     }
 }

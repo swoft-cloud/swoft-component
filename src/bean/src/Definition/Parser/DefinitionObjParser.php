@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Bean\Definition\Parser;
 
@@ -52,7 +52,7 @@ class DefinitionObjParser extends ObjectParser
         $className    = $definition['class'] ?? '';
         $objClassName = $objDefinition->getClassName();
 
-        if (!empty($className) && $className != $objClassName) {
+        if (!empty($className) && $className !== $objClassName) {
             throw new ContainerException('Class for annotations and definitions must be the same Or not to define class');
         }
 
@@ -81,7 +81,7 @@ class DefinitionObjParser extends ObjectParser
         $classNames   = $this->classNames[$className] ?? [];
         $classNames[] = $beanName;
 
-        $this->classNames[$className]       = array_unique($classNames);
+        $this->classNames[$className]       = \array_unique($classNames);
         $this->objectDefinitions[$beanName] = $objDefinition;
     }
 
@@ -98,16 +98,17 @@ class DefinitionObjParser extends ObjectParser
         // Remove class key
         unset($definition['class']);
 
-        // Parse construnct
+        // Parse construct
         $constructArgs = $definition[0] ?? [];
         if (!is_array($constructArgs)) {
-            throw new ContainerException('Construnct args for definition must be array');
+            throw new ContainerException('Construct args for definition must be array');
         }
 
         // Parse construct args
         $argInjects = [];
         foreach ($constructArgs as $arg) {
-            list($argValue, $argIsRef) = $this->getValueByRef($arg);
+            [$argValue, $argIsRef] = $this->getValueByRef($arg);
+
             $argInjects[] = new ArgsInjection($argValue, $argIsRef);
         }
 
@@ -120,27 +121,26 @@ class DefinitionObjParser extends ObjectParser
         // Remove construct definition
         unset($definition[0]);
 
-
         // Parse definition option
         $option = $definition['__option'] ?? [];
-        if (!is_array($option)) {
+        if (!\is_array($option)) {
             throw new ContainerException('__option for definition must be array');
         }
 
         // Remove `__option`
         unset($definition['__option']);
 
-        // Parse definition propertes
+        // Parse definition properties
         $propertyInjects = [];
         foreach ($definition as $propertyName => $propertyValue) {
-            if (!is_string($propertyName)) {
+            if (!\is_string($propertyName)) {
                 throw new ContainerException('Property key from definition must be string');
             }
 
-            list($proValue, $proIsRef) = $this->getValueByRef($propertyValue);
+            [$proValue, $proIsRef] = $this->getValueByRef($propertyValue);
 
             // Parse property for array
-            if (is_array($proValue)) {
+            if (\is_array($proValue)) {
                 $proValue = $this->parseArrayProperty($proValue);
             }
 
@@ -163,14 +163,14 @@ class DefinitionObjParser extends ObjectParser
      */
     private function updateObjectDefinitionByDefinition(ObjectDefinition $objDfn, array $definition): ObjectDefinition
     {
-        list($constructInject, $propertyInjects, $option) = $this->parseDefinition($definition);
+        [$constructInject, $propertyInjects, $option] = $this->parseDefinition($definition);
 
         // Set construct inject
         if (!empty($constructInject)) {
             $objDfn->setConstructorInjection($constructInject);
         }
 
-        // Set property inejct
+        // Set property inject
         foreach ($propertyInjects as $propertyName => $propertyInject) {
             $objDfn->setPropertyInjection($propertyName, $propertyInject);
         }
@@ -184,7 +184,7 @@ class DefinitionObjParser extends ObjectParser
         $scope = $option['scope'] ?? '';
         $alias = $option['alias'] ?? '';
 
-        if (in_array($scope, $scopes)) {
+        if (\in_array($scope, $scopes, true)) {
             throw new ContainerException('Scope for definition is not undefined');
         }
 
@@ -211,12 +211,14 @@ class DefinitionObjParser extends ObjectParser
     private function parseArrayProperty(array $propertyValue): array
     {
         foreach ($propertyValue as $proKey => &$proValue) {
-            list($refValue, $isRef) = $this->getValueByRef($proValue);
+            [$refValue, $isRef] = $this->getValueByRef($proValue);
             if (!$isRef) {
                 continue;
             }
+
             $proValue = new ArgsInjection($refValue, $isRef);
         }
+
         return $propertyValue;
     }
 }

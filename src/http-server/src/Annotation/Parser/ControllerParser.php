@@ -7,7 +7,7 @@ use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Server\Annotation\Mapping\Controller;
 use Swoft\Http\Server\Exception\HttpServerException;
-use Swoft\Http\Server\Router\RouterRegister;
+use Swoft\Http\Server\Router\RouteRegister;
 
 /**
  * Class ControllerParser
@@ -32,7 +32,7 @@ class ControllerParser extends Parser
         }
 
         // add route prefix for controller
-        RouterRegister::addPrefix($this->className, $annotation->getPrefix());
+        RouteRegister::addPrefix($this->className, $annotation->getPrefix());
 
         return [$this->className, $this->className, Bean::SINGLETON, ''];
     }

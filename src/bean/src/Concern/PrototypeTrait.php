@@ -1,9 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Bean\Concern;
-
-use Swoft\Bean\Exception\PrototypeException;
 
 /**
  * Class Prototype
@@ -16,16 +13,11 @@ trait PrototypeTrait
      * Get instance from container
      *
      * @return static
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected static function __instance()
     {
-        try {
-            $prototype = bean(static::class);
-        } catch (\Throwable $e) {
-            throw new PrototypeException($e->getMessage());
-        }
-
-        return $prototype;
+        return \bean(static::class);
     }
 }
