@@ -31,12 +31,12 @@ class PharCompiler
     private $compressMode = 0;
 
     /**
-     * @var string|null The latest commit id
+     * @var string The latest commit id
      */
-    private $version;
+    private $version = '';
 
     /**
-     * @var string|null The latest tag name
+     * @var string The latest tag name
      */
     private $branchAliasVersion = '';
 
@@ -55,7 +55,7 @@ class PharCompiler
      * ]
      * @var string
      */
-    private $versionFile;
+    private $versionFile = '';
 
     /**
      * @var string The want to packaged project path
@@ -63,14 +63,14 @@ class PharCompiler
     private $basePath;
 
     /**
-     * @var string|null
+     * @var string
      */
-    private $cliIndex;
+    private $cliIndex = '';
 
     /**
-     * @var string|null
+     * @var string
      */
-    private $webIndex;
+    private $webIndex = '';
 
     /**
      * @var string|bool Set the shebang. eg '#!/usr/bin/env php'
@@ -166,7 +166,7 @@ class PharCompiler
     /**
      * @throws \RuntimeException
      */
-    private static function checkEnv()
+    private static function checkEnv(): void
     {
         if (!\class_exists(\Phar::class, false)) {
             throw new \RuntimeException("The 'phar' extension is required for build phar package");
@@ -188,9 +188,9 @@ class PharCompiler
     {
         self::checkEnv();
 
-        $this->basePath = realpath($basePath);
+        $this->basePath = \realpath($basePath);
 
-        if (!is_dir($this->basePath)) {
+        if (!\is_dir($this->basePath)) {
             throw new \RuntimeException("The inputted project path is not exists. DIR: {$this->basePath}");
         }
     }
@@ -201,7 +201,7 @@ class PharCompiler
      */
     public function addSuffix($suffixes): self
     {
-        $this->suffixes = array_merge($this->suffixes, (array)$suffixes);
+        $this->suffixes = \array_merge($this->suffixes, (array)$suffixes);
 
         return $this;
     }
@@ -212,7 +212,7 @@ class PharCompiler
      */
     public function addExclude($dirs): self
     {
-        $this->excludes = array_merge($this->excludes, (array)$dirs);
+        $this->excludes = \array_merge($this->excludes, (array)$dirs);
 
         return $this;
     }
@@ -223,7 +223,7 @@ class PharCompiler
      */
     public function addFile($files): self
     {
-        $this->files = array_merge($this->files, (array)$files);
+        $this->files = \array_merge($this->files, (array)$files);
 
         return $this;
     }
@@ -278,7 +278,7 @@ class PharCompiler
      */
     public function in($dirs): self
     {
-        $this->directories = array_merge($this->directories, (array)$dirs);
+        $this->directories = \array_merge($this->directories, (array)$dirs);
 
         return $this;
     }
@@ -303,6 +303,7 @@ class PharCompiler
      * @throws \BadMethodCallException
      * @throws \RuntimeException
      * @throws \InvalidArgumentException
+     * @throws \Exception
      */
     public function pack(string $pharFile, $refresh = true): string
     {
@@ -326,10 +327,10 @@ class PharCompiler
 
         if ($this->key !== null) {
             $privateKey = '';
-            openssl_pkey_export($this->key, $privateKey);
+            \openssl_pkey_export($this->key, $privateKey);
             $phar->setSignatureAlgorithm(\Phar::OPENSSL, $privateKey);
-            $keyDetails = openssl_pkey_get_details($this->key);
-            file_put_contents($pharFile . '.pubkey', $keyDetails['key']);
+            $keyDetails = \openssl_pkey_get_details($this->key);
+            \file_put_contents($pharFile . '.pubkey', $keyDetails['key']);
         } else {
             $phar->setSignatureAlgorithm($this->selectSignatureType());
         }
@@ -435,12 +436,11 @@ class PharCompiler
      * @param \Phar        $phar
      * @param \SplFileInfo $file
      */
-    private function packFile(\Phar $phar, \SplFileInfo $file)
+    private function packFile(\Phar $phar, \SplFileInfo $file): void
     {
         // skip error
-        if (!file_exists($file)) {
+        if (!\file_exists($file)) {
             $this->reportError("File $file is not exists!");
-
             return;
         }
 
@@ -481,7 +481,7 @@ class PharCompiler
     /**
      * @param \Phar $phar
      */
-    private function packIndexFile(\Phar $phar)
+    private function packIndexFile(\Phar $phar): void
     {
         if ($this->cliIndex) {
             $this->counter++;
@@ -633,15 +633,16 @@ EOF;
     /**
      * auto collect project information by git log
      * @throws \RuntimeException
+     * @throws \Exception
      */
-    private function collectInformation()
+    private function collectInformation(): void
     {
         if (!$this->collectVersionInfo) {
             return;
         }
 
         $basePath = $this->basePath;
-        list($code, $ret,) = Sys::run('git log --pretty="%H" -n1 HEAD', $basePath);
+        [$code, $ret,] = Sys::run('git log --pretty="%H" -n1 HEAD', $basePath);
 
         if ($code !== 0) {
             throw new \RuntimeException(
@@ -651,7 +652,7 @@ EOF;
 
         $this->version = trim($ret);
 
-        list($code, $ret,) = Sys::run('git log -n1 --pretty=%ci HEAD', $basePath);
+        [$code, $ret,] = Sys::run('git log -n1 --pretty=%ci HEAD', $basePath);
 
         if ($code !== 0) {
             throw new \RuntimeException(
@@ -659,15 +660,15 @@ EOF;
             );
         }
 
-        $this->versionDate = new \DateTime(trim($ret));
+        $this->versionDate = new \DateTime(\trim($ret));
         $this->versionDate->setTimezone(new \DateTimeZone('UTC'));
 
         // 获取到最新的 tag
-        list($code, $ret,) = Sys::run('git describe --tags --exact-match HEAD', $basePath);
+        [$code, $ret,] = Sys::run('git describe --tags --exact-match HEAD', $basePath);
         if ($code === 0) {
             $this->version = trim($ret);
         } else {
-            list($code, $ret,) = Sys::run('git branch', $basePath);
+            [$code, $ret,] = Sys::run('git branch', $basePath);
             $this->branchAliasVersion = $code === 0 ? trim($ret, '* ') : 'UNKNOWN';
         }
     }
@@ -681,16 +682,16 @@ EOF;
         $realPath   = $file->getRealPath();
         $pathPrefix = $this->basePath . DIRECTORY_SEPARATOR;
 
-        $pos          = strpos($realPath, $pathPrefix);
-        $relativePath = $pos !== false ? substr_replace($realPath, '', $pos, \strlen($pathPrefix)) : $realPath;
+        $pos          = \strpos($realPath, $pathPrefix);
+        $relativePath = $pos !== false ? \substr_replace($realPath, '', $pos, \strlen($pathPrefix)) : $realPath;
 
-        return str_replace('\\', '/', $relativePath);
+        return \str_replace('\\', '/', $relativePath);
     }
 
     /**
      * @param string $error
      */
-    private function reportError($error)
+    private function reportError($error): void
     {
         if ($cb = $this->events['error']) {
             $cb($error);
@@ -702,7 +703,7 @@ EOF;
      * @param string   $event
      * @param \Closure $closure
      */
-    public function on(string $event, \Closure $closure)
+    public function on(string $event, \Closure $closure): void
     {
         $this->events[$event] = $closure;
     }
@@ -710,7 +711,7 @@ EOF;
     /**
      * @param \Closure $onAdd
      */
-    public function onAdd(\Closure $onAdd)
+    public function onAdd(\Closure $onAdd): void
     {
         $this->events['add'] = $onAdd;
     }
@@ -718,7 +719,7 @@ EOF;
     /**
      * @param \Closure $onError
      */
-    public function onError(\Closure $onError)
+    public function onError(\Closure $onError): void
     {
         $this->events['error'] = $onError;
     }
@@ -734,9 +735,9 @@ EOF;
     /**
      * @param string $basePath
      */
-    public function setBasePath(string $basePath)
+    public function setBasePath(string $basePath): void
     {
-        $this->basePath = realpath($basePath);
+        $this->basePath = \realpath($basePath);
     }
 
     /**
@@ -756,9 +757,9 @@ EOF;
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getCliIndex()
+    public function getCliIndex(): string
     {
         return $this->cliIndex;
     }
@@ -775,9 +776,9 @@ EOF;
     }
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getWebIndex()
+    public function getWebIndex(): string
     {
         return $this->webIndex;
     }
@@ -801,9 +802,9 @@ EOF;
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getVersionFile()
+    public function getVersionFile(): string
     {
         return $this->versionFile;
     }
@@ -820,9 +821,9 @@ EOF;
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getVersion()
+    public function getVersion(): string
     {
         return $this->version;
     }
@@ -839,9 +840,9 @@ EOF;
     }
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getBranchAliasVersion()
+    public function getBranchAliasVersion(): string
     {
         return $this->branchAliasVersion;
     }

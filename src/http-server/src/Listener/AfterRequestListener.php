@@ -31,8 +31,7 @@ class AfterRequestListener implements EventHandlerInterface
         /**
          * @var Response $response
          */
-        [$response] = $event->getParams();
-
+        $response = $event->getParam(0);
         $response->send();
 
         /* @var Logger $logger */
