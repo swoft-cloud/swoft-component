@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Http\Server\Middleware;
 
 use Psr\Http\Message\ResponseInterface;

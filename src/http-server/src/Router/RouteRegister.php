@@ -4,7 +4,7 @@ namespace Swoft\Http\Server\Router;
 use Swoft\Http\Server\Helper\RouteHelper;
 
 /**
- * Class RoutesCollector
+ * Class RoutesRegister
  *
  * @since 2.0
  */
@@ -45,7 +45,7 @@ class RouterRegister
                 continue;
             }
 
-            // controller prefix
+            // Group/Controller prefix
             $prefix = RouteHelper::getControllerPrefix($mapping['prefix'], $class, $suffix);
 
             // Register a set of routes corresponding to the controller

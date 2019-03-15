@@ -133,6 +133,17 @@ class BeanFactory
         return Container::getInstance()->isSingleton($name);
     }
 
+    /**
+     * Whether has singleton
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
+    public static function hasSingleton(string $name): bool
+    {
+        return Container::getInstance()->isSingleton($name);
+    }
 
     /**
      * Add definitions

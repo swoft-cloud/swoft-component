@@ -1,16 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2017/7/16
- * Time: 下午10:43
- */
 
 namespace Swoft\Http\Server\Router;
 
 /**
  * Interface RouterInterface
- * @package Swoft\Http\Server\Router
+ * @since 1.0
  */
 interface RouterInterface extends \IteratorAggregate, \Countable, \Swoft\Contract\RouterInterface
 {
