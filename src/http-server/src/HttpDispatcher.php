@@ -4,6 +4,7 @@ namespace Swoft\Http\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanEvent;
+use Swoft\Bean\Container;
 use Swoft\Co;
 use Swoft\Dispatcher;
 use Swoft\Http\Message\Request;
@@ -44,18 +45,23 @@ class HttpDispatcher extends Dispatcher
          */
         [$request, $response] = $params;
 
+        /* @var RequestHandler $requestHandler */
+        $requestHandler = Container::$instance->getPrototype(RequestHandler::class);
+        $requestHandler->initialize($this->requestMiddleware(), $this->defaultMiddleware);
+
         try {
-            // Trigger before event
+            // Trigger before handle event
             \Swoft::trigger(HttpServerEvent::BEFORE_REQUEST, $this, $request, $response);
 
-            /* @var RequestHandler $requestHandler */
-            $requestHandler = \bean(RequestHandler::class);
-            $middlewares    = $this->requestMiddleware();
-
-            $requestHandler->initialize($middlewares, $this->defaultMiddleware);
+            // Begin handle request, return response
             $response = $requestHandler->handle($request);
         } catch (\Throwable $e) {
-            \printf("Error: %s\nAt %s %d", $e->getMessage(), $e->getFile(), $e->getLine());
+            \printf(
+                "HTTP Dispatch Error: %s\nAt %s %d",
+                $e->getMessage(),
+                $e->getFile(),
+                $e->getLine()
+            );
         }
 
         // Trigger after request
@@ -63,8 +69,7 @@ class HttpDispatcher extends Dispatcher
 
         // Trigger destroy request bean
         \Swoft::trigger(BeanEvent::DESTROY_REQUEST, $this, Co::tid());
-
-        // $response->withContent("<h1>Hello Swoole. #" . rand(1000, 9999) . "</h1>")->send();
+        // $response->withContent('<h1>Hello Swoole</h1>')->send();
     }
 
     /**

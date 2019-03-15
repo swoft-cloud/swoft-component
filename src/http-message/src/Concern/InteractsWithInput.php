@@ -2,6 +2,10 @@
 
 namespace Swoft\Http\Message\Concern;
 
+use Swoft\Http\Message\Stream\Stream;
+use Swoft\Stdlib\Helper\ArrayHelper;
+use Swoft\Stdlib\Helper\JsonHelper;
+
 /**
  * Class InteractsWithInput
  *
@@ -17,13 +21,13 @@ trait InteractsWithInput
      *
      * @return array|string|mixed
      */
-    public function server(string $key = null, $default = null)
+    public function server(string $key = '', $default = null)
     {
-        if ($key === null) {
-            return $this->getServerParams();
+        if ($key) {
+            return $this->getServerParams()[$key] ?? $default;
         }
 
-        return $this->getServerParams()[$key] ?? $default;
+        return $this->getServerParams();
     }
 
     /**
@@ -34,9 +38,9 @@ trait InteractsWithInput
      *
      * @return array
      */
-    public function header(string $key = null, array $default = null): array
+    public function header(string $key = '', array $default = null): array
     {
-        if ($key === null) {
+        if (!$key) {
             return $this->getHeaders();
         }
         return $this->getHeader($key) ?? $default;
@@ -65,9 +69,9 @@ trait InteractsWithInput
      *
      * @return array|string|mixed
      */
-    public function query(string $key = null, $default = null)
+    public function query(string $key = '', $default = null)
     {
-        if ($key === null) {
+        if (!$key) {
             return $this->getQueryParams();
         }
         return $this->getQueryParams()[$key] ?? $default;
@@ -81,9 +85,9 @@ trait InteractsWithInput
      *
      * @return array|string|mixed
      */
-    public function post(string $key = null, $default = null)
+    public function post(string $key = '', $default = null)
     {
-        if ($key === null) {
+        if (!$key) {
             return $this->getParsedBody();
         }
         return $this->getParsedBody()[$key] ?? $default;
@@ -97,10 +101,11 @@ trait InteractsWithInput
      *
      * @return array|string|mixed
      */
-    public function input(string $key = null, $default = null)
+    public function input(string $key = '', $default = null)
     {
-        $inputs = $this->getQueryParams() + $this->getParsedBody();
-        if ($key === null) {
+        $inputs = \array_merge($this->getParsedBody(), $this->getQueryParams());
+
+        if (!$key) {
             return $inputs;
         }
         return $inputs[$key] ?? $default;
@@ -114,12 +119,13 @@ trait InteractsWithInput
      *
      * @return array|string|mixed
      */
-    public function cookie(string $key = null, $default = null)
+    public function cookie(string $key = '', $default = null)
     {
-        if ($key === null) {
-            return $this->getCookieParams();
+        if ($key) {
+            return $this->getCookieParams()[$key] ?? $default;
         }
-        return $this->getCookieParams()[$key] ?? $default;
+
+        return $this->getCookieParams();
     }
 
     /**
@@ -134,7 +140,7 @@ trait InteractsWithInput
         $body = $this->getBody();
         $raw  = $default;
 
-        if ($body instanceof SwooleStream) {
+        if ($body instanceof Stream) {
             $raw = $body->getContents();
         }
 
@@ -154,38 +160,41 @@ trait InteractsWithInput
      */
     public function json(string $key = null, $default = null)
     {
+        $map = [];
         try {
             $contentType = $this->getHeader('content-type');
             if (!$contentType || false === \stripos($contentType[0], 'application/json')) {
                 throw new \InvalidArgumentException(sprintf('Invalid Content-Type of the request, expects %s, %s given',
                     'application/json', ($contentType ? current($contentType) : 'null')));
             }
+
             $body = $this->getBody();
-            if ($body instanceof SwooleStream) {
-                $raw         = $body->getContents();
-                $decodedBody = JsonHelper::decode($raw, true);
+            if ($body instanceof Stream) {
+                $raw = $body->getContents();
+                $map = JsonHelper::decode($raw, true);
             }
         } catch (\Exception $e) {
             return $default;
         }
+
         if ($key === null) {
-            return $decodedBody ?? $default;
-        } else {
-            return ArrayHelper::get($decodedBody, $key, $default);
+            return $map ?: $default;
         }
+
+        return ArrayHelper::get($map, $key, $default);
     }
 
     /**
      * Retrieve a upload item from the request
      *
-     * @param string|null $key
-     * @param null        $default
+     * @param string $key
+     * @param mixed  $default
      *
-     * @return array|\Swoft\Web\UploadedFile|null
+     * @return array|\Swoft\Http\Message\Upload\UploadedFile|null
      */
-    public function file(string $key = null, $default = null)
+    public function file(string $key = '', $default = null)
     {
-        if ($key === null) {
+        if (!$key) {
             return $this->getUploadedFiles();
         }
         return $this->getUploadedFiles()[$key] ?? $default;

@@ -3,6 +3,7 @@
 namespace Swoft\Http\Server\Swoole;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Container;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Http\Message\Request as ServerRequest;
 use Swoft\Http\Message\Response as ServerResponse;
@@ -25,21 +26,21 @@ class RequestListener implements RequestInterface
      * @param Request  $request
      * @param Response $response
      *
-     * @throws PrototypeException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function onRequest(Request $request, Response $response): void
     {
-        // $response->end('<h1>Hello origin Swoole. </h1>');
+        // $response->end('<h1>Hello Swoole. </h1>');
         // \Swoft::trigger('some.event');
+        // return;
 
         $psrRequest  = ServerRequest::new($request);
-        $psrResponse = ServerResponse::new($response);
+        // return;
+        $psrResponse = ServerResponse::new($response); // QPS: 2.3w
 
         /* @var HttpDispatcher $httpDispatcher */
-        $httpDispatcher = \bean('httpDispatcher');
-
+        $httpDispatcher = Container::$instance->getSingleton('httpDispatcher');
         $httpDispatcher->dispatch($psrRequest, $psrResponse);
     }
 }

@@ -3,8 +3,7 @@
 namespace Swoft\Http\Message;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\PrototypeException;
+use Swoft\Bean\Container;
 use Swoft\Http\Message\Concern\MessageTrait;
 use Swoft\Http\Message\Contract\ResponseFormatterInterface;
 use Swoft\Http\Message\Contract\ResponseInterface;
@@ -19,11 +18,6 @@ use Swoole\Http\Response as CoResponse;
  */
 class Response implements ResponseInterface
 {
-    use PrototypeTrait;
-
-    /**
-     * Message trait
-     */
     use MessageTrait;
 
     /**
@@ -100,25 +94,26 @@ class Response implements ResponseInterface
      * @param CoResponse $coResponse
      *
      * @return static|Response
-     * @throws PrototypeException
      */
     public static function new(CoResponse $coResponse): self
     {
-        $instance             = self::__instance();
-        $instance->coResponse = $coResponse;
+        $self = Container::$instance->getPrototype('httpResponse');
+        // $self = \bean('httpResponse');
+        /** @var Response $self */
+        $self->coResponse = $coResponse;
 
-        return $instance;
+        return $self;
     }
 
     /**
      * Redirect to a URL
      *
-     * @param string   $url
-     * @param null|int $status
+     * @param string $url
+     * @param int    $status
      *
      * @return static
      */
-    public function redirect($url, $status = 302): self
+    public function redirect($url, int $status = 302): self
     {
         $response = $this;
         $response = $response->withAddedHeader('Location', (string)$url)->withStatus($status);
@@ -142,7 +137,7 @@ class Response implements ResponseInterface
             $this->coResponse->header($key, implode(';', $value));
         }
 
-        // Set code
+        // Set status code
         $this->coResponse->status($response->getStatusCode());
 
         // Set body
@@ -159,7 +154,8 @@ class Response implements ResponseInterface
     private function prepare(): Response
     {
         $formatter = $this->formatters[$this->format] ?? null;
-        if (!empty($formatter) && $formatter instanceof ResponseFormatterInterface) {
+
+        if ($formatter && $formatter instanceof ResponseFormatterInterface) {
             return $formatter->format($this);
         }
 
@@ -172,7 +168,8 @@ class Response implements ResponseInterface
      * @param $content
      *
      * @return static
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function withContent($content): Response
     {
@@ -257,7 +254,7 @@ class Response implements ResponseInterface
      *
      * @see getAttributes()
      *
-     * @param string $name    The attribute name.
+     * @param string $name The attribute name.
      * @param mixed  $default Default value to return if the attribute does not exist.
      *
      * @return mixed
@@ -277,7 +274,7 @@ class Response implements ResponseInterface
      *
      * @see getAttributes()
      *
-     * @param string $name  The attribute name.
+     * @param string $name The attribute name.
      * @param mixed  $value The value of the attribute.
      *
      * @return static
@@ -312,26 +309,14 @@ class Response implements ResponseInterface
      *
      * @return int Status code.
      */
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         return $this->statusCode;
     }
 
     /**
-     * Return an instance with the specified status code and, optionally, reason phrase.
-     *
-     * If no reason phrase is specified, implementations MAY choose to default
-     * to the RFC 7231 or IANA recommended reason phrase for the response's
-     * status code.
-     *
-     * This method MUST be implemented in such a way as to retain the
-     * immutability of the message, and MUST return an instance that has the
-     * updated status and reason phrase.
-     *
-     * @link http://tools.ietf.org/html/rfc7231#section-6
-     * @link http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
-     *
-     * @param int    $code         The 3-digit integer result code to set.
+     * @inheritdoc
+     * @param int    $code The 3-digit integer result code to set.
      * @param string $reasonPhrase The reason phrase to use with the
      *                             provided status code; if none is provided, implementations MAY
      *                             use the defaults as suggested in the HTTP specification.
@@ -366,13 +351,7 @@ class Response implements ResponseInterface
     }
 
     /**
-     * Gets the response reason phrase associated with the status code.
-     *
-     * Because a reason phrase is not a required element in a response
-     * status line, the reason phrase value MAY be null. Implementations MAY
-     * choose to return the default RFC 7231 recommended reason phrase (or those
-     * listed in the IANA HTTP Status Code Registry) for the response's
-     * status code.
+     * @inheritdoc
      *
      * @link http://tools.ietf.org/html/rfc7231#section-6
      * @link http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
@@ -401,13 +380,9 @@ class Response implements ResponseInterface
 
     /**
      * @param string $charset
-     *
-     * @return Response
      */
-    public function setCharset(string $charset): Response
+    public function setCharset(string $charset): void
     {
         $this->charset = $charset;
-        return $this;
     }
-
 }

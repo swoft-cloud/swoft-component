@@ -1,6 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace Swoft\Http\Server\Router;
+namespace Swoft\Http\Server\Contract;
+
+use Swoft\Http\Server\Router\Route;
 
 /**
  * Interface RouterInterface

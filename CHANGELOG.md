@@ -2,9 +2,17 @@
 
 > 日期时间都是大概的时间点
 
+## 2019.03.14
+
+- 优化bean获取性能 (@inhere)
+- 添加一些快速获取内部bean的方法(@inhere)
+- 优化http server处理性能(@inhere)
+  - 优化 http request, response 初始化流程
+  - 优化 http 调用逻辑
+
 ## 2019.03.09
 
-- bean container 属性值注入时，将会首先尝试使用 setter
+- bean container 属性值注入时，将会首先尝试使用 setter(@inhere)
 
 ## 2019.03.08
 

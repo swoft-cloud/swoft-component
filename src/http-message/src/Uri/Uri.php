@@ -116,7 +116,8 @@ class Uri implements UriInterface
      * @param string $uri
      *
      * @return Uri
-     * @throws \Swoft\Bean\Exception\PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public static function new(string $uri = ''): self
     {
@@ -825,11 +826,11 @@ class Uri implements UriInterface
             return $path;
         }
 
-        if (\preg_match('/^[\w\/]+$/', $path) === 1) {
+        if (\preg_match('/^[\w-\/]+$/', $path) === 1) {
             return $path;
         }
 
-        return preg_replace_callback(
+        return \preg_replace_callback(
             '/(?:[^' . self::$charUnreserved . self::$charSubDelims . '%:@\/]++|%(?![A-Fa-f0-9]{2}))/',
             [$this, 'rawurlencodeMatchZero'],
             $path
@@ -847,11 +848,11 @@ class Uri implements UriInterface
      */
     private function filterQueryAndFragment($str): string
     {
-        if (!is_string($str)) {
+        if (!\is_string($str)) {
             throw new \InvalidArgumentException('Query and fragment must be a string');
         }
 
-        return preg_replace_callback(
+        return \preg_replace_callback(
             '/(?:[^' . self::$charUnreserved . self::$charSubDelims . '%:@\/\?]++|%(?![A-Fa-f0-9]{2}))/',
             [$this, 'rawurlencodeMatchZero'],
             $str

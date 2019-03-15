@@ -1,14 +1,14 @@
 <?php
 namespace Swoft\Http\Server\Router;
 
-use Swoft\Http\Server\Helper\RouteHelper;
+use Swoft\Stdlib\Helper\Str;
 
 /**
- * Class RoutesRegister
+ * Class RoutesRegister - collect all routes info from annotations
  *
  * @since 2.0
  */
-class RouterRegister
+class RouteRegister
 {
     /**
      * @var array
@@ -46,7 +46,9 @@ class RouterRegister
             }
 
             // Group/Controller prefix
-            $prefix = RouteHelper::getControllerPrefix($mapping['prefix'], $class, $suffix);
+            if (!$prefix = $mapping['prefix']) {
+                $prefix = '/' . Str::getClassName($class, $suffix);
+            }
 
             // Register a set of routes corresponding to the controller
             foreach ($mapping['routes'] as $route) {
@@ -55,11 +57,11 @@ class RouterRegister
                 }
 
                 // Ensure is not empty
-                $mapRoute = $route['route'] ?: $route['action'];
+                $routePath = $route['route'] ?: $route['action'];
 
                 // 以 '/' 开头的路由是一个单独的路由
                 // 未使用 '/' 需要和控制器组拼成一个路由
-                $path    = $mapRoute[0] === '/' ? $mapRoute : $prefix . '/' . $mapRoute;
+                $path    = $routePath[0] === '/' ? $routePath : $prefix . '/' . $routePath;
                 $handler = $class . '@' . $route['action'];
 
                 $router->map($route['method'], $path, $handler, $route['params']);

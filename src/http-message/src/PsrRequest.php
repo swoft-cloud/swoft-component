@@ -13,13 +13,11 @@ use Swoft\Http\Message\Concern\MessageTrait;
  */
 class PsrRequest implements RequestInterface
 {
-    /**
-     * Message trait
-     */
+    // Message trait
     use MessageTrait;
 
     /**
-     * Method
+     * Method name
      *
      * @var string
      */
@@ -52,7 +50,7 @@ class PsrRequest implements RequestInterface
      *
      * @return string
      */
-    public function getRequestTarget()
+    public function getRequestTarget(): string
     {
         if ($this->requestTarget !== null) {
             return $this->requestTarget;
@@ -88,11 +86,12 @@ class PsrRequest implements RequestInterface
      */
     public function withRequestTarget($requestTarget)
     {
-        if (preg_match('#\s#', $requestTarget)) {
+        if (\preg_match('#\s#', $requestTarget)) {
             throw new \InvalidArgumentException('Invalid request target provided; cannot contain whitespace');
         }
 
-        $new                = clone $this;
+        $new = clone $this;
+
         $new->requestTarget = $requestTarget;
         return $new;
     }
@@ -102,20 +101,13 @@ class PsrRequest implements RequestInterface
      *
      * @return string Returns the request method.
      */
-    public function getMethod()
+    public function getMethod(): string
     {
         return $this->method;
     }
 
     /**
-     * Return an instance with the provided HTTP method.
-     * While HTTP method names are typically all uppercase characters, HTTP
-     * method names are case-sensitive and thus implementations SHOULD NOT
-     * modify the given string.
-     * This method MUST be implemented in such a way as to retain the
-     * immutability of the message, and MUST return an instance that has the
-     * changed request method.
-     *
+     * @inheritdoc
      * @param string $method Case-sensitive method.
      *
      * @return static
@@ -123,10 +115,10 @@ class PsrRequest implements RequestInterface
      */
     public function withMethod($method)
     {
-        $method  = strtoupper($method);
+        $method  = \strtoupper($method);
         $methods = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'HEAD'];
 
-        if (!in_array($method, $methods, true)) {
+        if (!\in_array($method, $methods, true)) {
             throw new \InvalidArgumentException('Invalid Method');
         }
         $new         = clone $this;
@@ -149,28 +141,8 @@ class PsrRequest implements RequestInterface
     }
 
     /**
-     * Returns an instance with the provided URI.
-     * This method MUST update the Host header of the returned request by
-     * default if the URI contains a host component. If the URI does not
-     * contain a host component, any pre-existing Host header MUST be carried
-     * over to the returned request.
-     * You can opt-in to preserving the original state of the Host header by
-     * setting `$preserveHost` to `true`. When `$preserveHost` is set to
-     * `true`, this method interacts with the Host header in the following ways:
-     * - If the Host header is missing or empty, and the new URI contains
-     *   a host component, this method MUST update the Host header in the returned
-     *   request.
-     * - If the Host header is missing or empty, and the new URI does not contain a
-     *   host component, this method MUST NOT update the Host header in the returned
-     *   request.
-     * - If a Host header is present and non-empty, this method MUST NOT update
-     *   the Host header in the returned request.
-     * This method MUST be implemented in such a way as to retain the
-     * immutability of the message, and MUST return an instance that has the
-     * new UriInterface instance.
-     *
+     * @inheritdoc
      * @link http://tools.ietf.org/html/rfc3986#section-4.3
-     *
      * @param UriInterface $uri New request URI to use.
      * @param bool         $preserveHost Preserve the original state of the Host header.
      *
@@ -193,13 +165,53 @@ class PsrRequest implements RequestInterface
     }
 
     /**
-     * Is GET
+     * Is GET method
      *
      * @return bool
      */
     public function isGet(): bool
     {
         return $this->method === 'GET';
+    }
+
+    /**
+     * Is POST method
+     *
+     * @return bool
+     */
+    public function isPost(): bool
+    {
+        return $this->method === 'POST';
+    }
+
+    /**
+     * Is PATCH method
+     *
+     * @return bool
+     */
+    public function isPatch(): bool
+    {
+        return $this->method === 'PATCH';
+    }
+
+    /**
+     * Is PUT method
+     *
+     * @return bool
+     */
+    public function isPut(): bool
+    {
+        return $this->method === 'PUT';
+    }
+
+    /**
+     * Is DELETE method
+     *
+     * @return bool
+     */
+    public function isDelete(): bool
+    {
+        return $this->method === 'DELETE';
     }
 
     /**
@@ -210,7 +222,6 @@ class PsrRequest implements RequestInterface
     protected function updateHostByUri(): void
     {
         $host = $this->uri->getHost();
-
         if ($host === '') {
             return;
         }
@@ -222,9 +233,11 @@ class PsrRequest implements RequestInterface
         if ($this->hasHeader('host')) {
             $header = $this->getHeaderLine('host');
         } else {
-            $header                    = 'Host';
+            $header = 'Host';
+            // save name
             $this->headerNames['host'] = 'Host';
         }
+
         // Ensure Host is the first header.
         $this->headers = [$header => [$host]] + $this->headers;
     }
