@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Stdlib\Helper;
 
@@ -154,7 +154,7 @@ class SystemHelper extends EnvHelper
      */
     public static function getCurrentUser(): array
     {
-        return \posix_getpwuid(\posix_getuid());
+        return \posix_getpwuid(\getmyuid());
     }
 
     /**
