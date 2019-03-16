@@ -2,7 +2,7 @@
 
 namespace Swoft\WebSocket\Server;
 
-use Co\Websocket\Frame;
+use Swoole\Websocket\Frame;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Server\Server;
 use Swoft\Server\Swoole\SwooleEvent;
@@ -53,7 +53,7 @@ class WebSocketServer extends Server
     }
 
     /**
-     * @param string $fd
+     * @param int $fd
      * @param string $data Data for send to client. NOTICE: max size is 2M.
      * @param int    $opcode
      * text:   WEBSOCKET_OPCODE_TEXT   = 1

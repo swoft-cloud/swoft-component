@@ -1,14 +1,7 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-02
- * Time: 18:51
- */
+<?php declare(strict_types=1);
 
 namespace Swoft\Console\Listener;
 
-use Swoft\Console\Console;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;

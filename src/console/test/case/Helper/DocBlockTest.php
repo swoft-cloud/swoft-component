@@ -23,7 +23,7 @@ class DocBlockTest extends TestCase
  *  {fullCmd}:stop      Stop the http server
  */
 DOC;
-        $ret = DocBlock::getTags($comment);
+        $ret     = DocBlock::getTags($comment);
         $this->assertCount(3, $ret);
         $this->assertArrayHasKey('since', $ret);
         $this->assertArrayHasKey('example', $ret);

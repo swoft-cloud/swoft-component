@@ -549,9 +549,6 @@ abstract class Server implements ServerInterface
      * @param string $msg
      * @param array  $data
      * @param string $type
-     *
-     * @throws Swoft\Bean\Exception\ContainerException
-     * @throws \ReflectionException
      */
     public function log(string $msg, array $data = [], string $type = 'info'): void
     {

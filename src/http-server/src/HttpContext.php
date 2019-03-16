@@ -3,7 +3,7 @@
 namespace Swoft\Http\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Container;
 use Swoft\Context\ContextInterface;
 use Swoft\Concern\DataPropertyTrait;
 use Swoft\Http\Message\Response;
@@ -18,7 +18,7 @@ use Swoft\Http\Message\Request;
  */
 class HttpContext implements ContextInterface
 {
-    use DataPropertyTrait, PrototypeTrait;
+    use DataPropertyTrait;
 
     /**
      * @var Request
@@ -37,11 +37,11 @@ class HttpContext implements ContextInterface
      * @param Response $response
      *
      * @return HttpContext
-     * @throws \Swoft\Bean\Exception\PrototypeException
      */
     public static function new(Request $request, Response $response): self
     {
-        $instance = self::__instance();
+        // $instance = self::__instance();
+        $instance = Container::$instance->getPrototype(__CLASS__);
 
         $instance->request  = $request;
         $instance->response = $response;

@@ -1,9 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 namespace Swoft\Stdlib\Helper;
 
 /**
  * Json helper
- * 
+ *
  * @since 2.0
  */
 class JsonHelper

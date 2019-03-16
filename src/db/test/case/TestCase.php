@@ -16,7 +16,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
     /**
      * Wait event
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         \Swoole\Event::wait();
     }

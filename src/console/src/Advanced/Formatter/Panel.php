@@ -140,7 +140,7 @@ EOF;
             $titleLength = \mb_strlen($title, 'UTF-8');
             $panelWidth  = $panelWidth > $titleLength ? $panelWidth : $titleLength;
             $lenValue    = (int)(\ceil($panelWidth / 2) - \ceil($titleLength / 2));
-            $indentSpace = \str_pad(' ',  $lenValue + 2 * 2, ' ');
+            $indentSpace = \str_pad(' ', $lenValue + 2 * 2, ' ');
             Console::write("  {$indentSpace}<bold>{$title}</bold>");
         }
 

@@ -2,7 +2,6 @@
 
 namespace Swoft\Http\Server\Command;
 
-use Swoft\Co;
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Annotation\Mapping\CommandMapping;
 use Swoft\Console\Annotation\Mapping\CommandOption;
