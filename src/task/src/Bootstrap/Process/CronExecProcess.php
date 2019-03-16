@@ -33,7 +33,7 @@ class CronExecProcess implements ProcessInterface
             $tasks = $cron->getExecTasks();
             if (!empty($tasks)) {
                 foreach ($tasks as $task) {
-                    // Diliver task
+                    // Deliver task
                     Task::deliverByProcess($task['taskClass'], $task['taskMethod']);
                     $cron->finishTask($task['key']);
                 }

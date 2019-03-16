@@ -29,7 +29,7 @@ class Crontab
     const START = 2;
 
     /**
-     * @var array $task corntab任务
+     * @var array $task crontab任务
      */
     private $task;
 
