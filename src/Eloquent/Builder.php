@@ -577,7 +577,7 @@ class Builder
      * @param  array $columns
      *
      * @return Collection
-     * @throws PrototypeException
+     * @throws EloquentException
      * @throws PrototypeException
      */
     public function get(array $columns = ['*'])
@@ -594,10 +594,12 @@ class Builder
      * @param  array $columns
      *
      * @return Model[]|static[]
+     * @throws EloquentException
+     * @throws PrototypeException
      */
     public function getModels($columns = ['*'])
     {
-        return $this->model->hydrate(
+        return $this->hydrate(
             $this->query->get($columns)->all()
         )->all();
     }
