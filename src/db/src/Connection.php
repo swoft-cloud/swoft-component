@@ -315,7 +315,6 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
     {
         $records = $this->select($query, $bindings, $useReadPdo);
 
-        $this->release();
         return array_shift($records);
     }
 
@@ -341,8 +340,10 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
             $this->bindValues($statement, $this->prepareBindings($bindings));
 
             $statement->execute();
+            $rows = $statement->fetchAll();
 
-            return $statement->fetchAll();
+            $this->release();
+            return $rows;
         });
     }
 

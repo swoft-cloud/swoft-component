@@ -40,7 +40,7 @@ abstract class AbstractPool implements PoolInterface
      *
      * @var float
      */
-    protected $maxWaitTime = 3;
+    protected $maxWaitTime = 0;
 
     /**
      * Maximum idle time(second)
@@ -128,6 +128,7 @@ abstract class AbstractPool implements PoolInterface
 
         // Channel is empty or  not reach `maxActive` number
         if ($this->count < $this->maxActive) {
+
             return $this->create();
         }
 

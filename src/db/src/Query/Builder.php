@@ -227,7 +227,9 @@ class Builder implements PrototypeInterface
      * @param mixed ...$params
      *
      * @return Builder
-     * @throws PrototypeException
+     * @return PrototypeInterface|Builder
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public static function new(...$params)
     {
@@ -748,7 +750,8 @@ class Builder implements PrototypeInterface
      * @param  string $method
      *
      * @return $this
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function addArrayOfWheres($column, $boolean, $method = 'where'): self
     {
@@ -927,7 +930,8 @@ class Builder implements PrototypeInterface
      * @param  bool   $not
      *
      * @return $this
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function whereIn(string $column, $values, string $boolean = 'and', bool $not = false): self
     {
@@ -977,7 +981,8 @@ class Builder implements PrototypeInterface
      * @param  mixed  $values
      *
      * @return static
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function orWhereIn(string $column, $values): self
     {
@@ -992,7 +997,8 @@ class Builder implements PrototypeInterface
      * @param  string $boolean
      *
      * @return static
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function whereNotIn(string $column, $values, string $boolean = 'and'): self
     {
@@ -1006,7 +1012,8 @@ class Builder implements PrototypeInterface
      * @param  mixed  $values
      *
      * @return static
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function orWhereNotIn(string $column, $values): self
     {
@@ -1022,7 +1029,8 @@ class Builder implements PrototypeInterface
      * @param  bool     $not
      *
      * @return $this
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function whereInSub(string $column, \Closure $callback, string $boolean, bool $not): self
     {
@@ -1457,7 +1465,8 @@ class Builder implements PrototypeInterface
      * @param  string   $boolean
      *
      * @return static
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function whereNested(\Closure $callback, string $boolean = 'and'): self
     {
@@ -1470,7 +1479,8 @@ class Builder implements PrototypeInterface
      * Create a new query instance for nested where condition.
      *
      * @return static
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function forNestedWhere(): self
     {
@@ -1507,7 +1517,8 @@ class Builder implements PrototypeInterface
      * @param  string   $boolean
      *
      * @return $this
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function whereSub(string $column, string $operator, \Closure $callback,string $boolean): self
     {
@@ -1535,7 +1546,8 @@ class Builder implements PrototypeInterface
      * @param  bool     $not
      *
      * @return $this
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function whereExists(\Closure $callback, string $boolean = 'and', bool $not = false): self
     {
@@ -1556,7 +1568,8 @@ class Builder implements PrototypeInterface
      * @param  bool     $not
      *
      * @return static
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function orWhereExists(\Closure $callback, bool $not = false): self
     {
@@ -1570,7 +1583,8 @@ class Builder implements PrototypeInterface
      * @param  string   $boolean
      *
      * @return static
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function whereNotExists(\Closure $callback, string $boolean = 'and'): self
     {
@@ -1583,7 +1597,8 @@ class Builder implements PrototypeInterface
      * @param  \Closure $callback
      *
      * @return static
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function orWhereNotExists(\Closure $callback): self
     {
@@ -2152,7 +2167,8 @@ class Builder implements PrototypeInterface
      * @param  bool            $all
      *
      * @return static
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function union($query, bool $all = false): self
     {
@@ -2173,7 +2189,8 @@ class Builder implements PrototypeInterface
      * @param  static|\Closure $query
      *
      * @return static
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function unionAll($query): self
     {
@@ -2231,11 +2248,12 @@ class Builder implements PrototypeInterface
     /**
      * Execute a query for a single record by ID.
      *
-     * @param  int   $id
+     * @param  string   $id
      * @param  array $columns
      *
      * @return static
      * @throws PrototypeException
+     * @throws \Swoft\Db\Exception\EloquentException
      */
     public function find(string $id, array $columns = ['*']): self
     {
@@ -2248,6 +2266,8 @@ class Builder implements PrototypeInterface
      * @param  string $column
      *
      * @return mixed
+     * @throws PrototypeException
+     * @throws \Swoft\Db\Exception\EloquentException
      */
     public function value(string $column)
     {
@@ -2385,7 +2405,7 @@ class Builder implements PrototypeInterface
      * @return bool
      * @throws PrototypeException
      */
-    public function chunkById(int $count, callable $callback, $column = 'id', int $alias = null): bool
+    public function chunkById(int $count, callable $callback, $column = 'id', string $alias = null): bool
     {
         $alias = $alias ?: $column;
 
@@ -2964,7 +2984,8 @@ class Builder implements PrototypeInterface
      * Get a new instance of the query builder.
      *
      * @return static
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function newQuery(): self
     {
@@ -2975,7 +2996,8 @@ class Builder implements PrototypeInterface
      * Create a new query instance for a sub-query.
      *
      * @return static
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function forSubQuery(): self
     {

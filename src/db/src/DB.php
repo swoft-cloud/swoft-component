@@ -73,7 +73,5 @@ class DB
         $connection = self::pool();
 
         return $connection->$name(...$arguments);
-
-        // TODO: Implement __callStatic() method.
     }
 }
