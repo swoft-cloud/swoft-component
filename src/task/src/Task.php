@@ -52,10 +52,10 @@ class Task
         switch ($type) {
             case static::TYPE_CO:
                 $tasks[0] = $data;
-                $prifleKey = 'task' . '.' . $taskName . '.' . $methodName;
-                App::profileStart($prifleKey);
+                $profileKey = 'task' . '.' . $taskName . '.' . $methodName;
+                App::profileStart($profileKey);
                 $result = $server->taskCo($tasks, $timeout);
-                App::profileEnd($prifleKey);
+                App::profileEnd($profileKey);
                 return $result;
                 break;
             case static::TYPE_ASYNC:
