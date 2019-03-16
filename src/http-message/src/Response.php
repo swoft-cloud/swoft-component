@@ -121,6 +121,24 @@ class Response implements ResponseInterface
         return $response;
     }
 
+    /** @var string */
+    private $filePath = '';
+
+    /** @var string */
+    private $fileType = '';
+
+    /**
+     * @param string $filePath like '/path/to/some.jpg'
+     * @param string $contentType like 'image/jpeg'
+     * @return $this
+     */
+    public function file(string $filePath, string $contentType): self
+    {
+        $this->filePath = $filePath;
+        $this->fileType = $contentType;
+        return $this;
+    }
+
     /**
      * Send response
      *
@@ -129,6 +147,13 @@ class Response implements ResponseInterface
      */
     public function send(): void
     {
+        // Is send file
+        if ($this->filePath) {
+            $this->coResponse->header('Content-Type', $this->fileType);
+            $this->coResponse->sendfile($this->filePath);
+            return;
+        }
+
         // Prepare
         $response = $this->prepare();
 
@@ -136,6 +161,8 @@ class Response implements ResponseInterface
         foreach ($response->getHeaders() as $key => $value) {
             $this->coResponse->header($key, \implode(';', $value));
         }
+
+        // TODO ... write cookie
 
         // Set status code
         $this->coResponse->status($response->getStatusCode());

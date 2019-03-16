@@ -7,6 +7,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Container;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
+use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\Exception\WsContextException;
 use Swoft\WebSocket\Server\Exception\WsRouteException;
@@ -100,9 +101,12 @@ class Dispatcher
     public function message(Server $server, Frame $frame)
     {
         $fd = $frame->fd;
+        /** @var Connection $conn */
+        $conn = Session::get();
+        $path = $conn->getMetaValue('path');
 
         try {
-            if (!$path = WebSocketContext::getMeta('path', $fd)) {
+            if (!$path) {
                 throw new WsContextException("The connection info has lost of the fd#$fd, on message");
             }
 

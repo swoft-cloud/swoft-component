@@ -32,7 +32,7 @@ trait MessageTrait
      *
      * @var string
      */
-    protected $protocol = '1.1';
+    protected $protocol = '';
 
     /**
      * Stream interface
@@ -50,7 +50,7 @@ trait MessageTrait
      */
     public function getProtocolVersion(): string
     {
-        return $this->protocol;
+        return $this->protocol ?: '1.1';
     }
 
     /**

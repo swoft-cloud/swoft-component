@@ -41,6 +41,9 @@ class HttpDispatcher extends Dispatcher
          * @var Response $response
          */
         [$request, $response] = $params;
+        // return; // QPS: 3.14w
+        // $response->send(); // QPS: 2.43w
+        // return;
 
         /* @var RequestHandler $requestHandler */
         $requestHandler = Container::$instance->getPrototype(RequestHandler::class);
@@ -49,7 +52,8 @@ class HttpDispatcher extends Dispatcher
         try {
             // Trigger before handle event
             \Swoft::trigger(HttpServerEvent::BEFORE_REQUEST, null, $request, $response);
-
+            // $response->send();
+            // return;
             // Begin handle request, return response
             $response = $requestHandler->handle($request);
         } catch (\Throwable $e) {
@@ -74,7 +78,7 @@ class HttpDispatcher extends Dispatcher
     public function preMiddleware(): array
     {
         return [
-            RequestMiddleware::class
+            // RequestMiddleware::class
         ];
     }
 

@@ -2,7 +2,6 @@
 
 namespace Swoft\WebSocket\Server\Swoole;
 
-
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Container;
 use Swoft\Co;

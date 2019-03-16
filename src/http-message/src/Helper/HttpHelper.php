@@ -3,7 +3,9 @@
 namespace Swoft\Http\Server\Helper;
 
 use Psr\Http\Message\UploadedFileInterface;
+use Swoft\Bean\Container;
 use Swoft\Http\Message\Upload\UploadedFile;
+use Swoft\Http\Message\Uri\Uri;
 
 /**
  * Class HttpHelper
@@ -91,5 +93,47 @@ class HttpHelper
         }
 
         return $normalizedFiles;
+    }
+
+
+    /**
+     * Get a Uri populated with values from $swooleRequest->server.
+     *
+     * @param string $path
+     * @param string $query
+     * @param string $headerHost
+     * @param array  $server
+     * @return Uri
+     */
+    public static function newUriByCoRequest(string $path, string $query,  string $headerHost, array &$server): Uri
+    {
+        /** @var Uri $uri */
+        $uri = Container::$instance->getPrototype(Uri::class);
+        $uri = $uri->withScheme(isset($server['https']) && $server['https'] !== 'off' ? 'https' : 'http');
+        $uri = $uri->withPath($path)->withQuery($query ?: $server['query_string']);
+
+        if ($host = $server['http_host']) {
+            $parts = \explode(':', $host);
+            $uri   = $uri->withHost($parts[0]);
+
+            if (isset($parts[1])) {
+                return $uri->withPort($parts[1]);
+            }
+        } elseif ($host = $server['server_name'] ?: $server['server_addr']) {
+            $uri = $uri->withHost($host);
+        } elseif ($headerHost) {
+            $parts  = \explode(':', $headerHost, 2);
+            $uri   = $uri->withHost($parts[0]);
+
+            if (isset($parts[1])) {
+                return $uri->withPort($parts[1]);
+            }
+        }
+
+        if (isset($server['server_port'])) {
+            $uri = $uri->withPort($server['server_port']);
+        }
+
+        return $uri;
     }
 }

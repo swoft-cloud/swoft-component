@@ -4,6 +4,10 @@
 
 ## 2019.03.14
 
+- 优化http server处理性能: 延迟解析request URI信息 (@inhere)
+
+## 2019.03.14
+
 - 优化bean获取性能 (@inhere)
 - 添加一些快速获取内部bean的方法(@inhere)
 - 优化http server处理性能(@inhere)

@@ -112,46 +112,46 @@ class Request extends PsrRequest implements ServerRequestInterface
         $serverParams = \array_merge(self::DEFAULT_SERVER, $coRequest->server);
         // return $self; // QPS: 3.7w -> 4.2w
 
-        $self->coRequest = $coRequest;
-        // return $self; // QPS: 3.7w
-        // Protocol version
-        // $self->protocol = \str_replace('HTTP/', '', $serverParams['server_protocol']);
-        $self->protocol = \substr($serverParams['server_protocol'], 5); // faster
-        // return $self; // QPS: 3.7w -> 4.0w
-
         // Set headers
         $self->setHeadersFromSwoole($headers = $coRequest->header ?: []);
         // return $self; // QPS: 3.4w -> 3.6w
 
         // Optimize: Don't create stream, init on first fetch
         // $self->body = Stream::new($content);
-        $self->method = $serverParams['request_method'];
+        $self->method    = $serverParams['request_method'];
+        $self->coRequest = $coRequest;
 
-        $self->queryParams  = $coRequest->get ?: [];
-        $self->cookieParams = $coRequest->cookie ?: [];
-        $self->serverParams = $serverParams;
-        $self->requestTime  = $serverParams['request_time_float'];
+        $self->queryParams   = $coRequest->get ?: [];
+        $self->cookieParams  = $coRequest->cookie ?: [];
+        $self->serverParams  = $serverParams;
+        $self->requestTarget = $serverParams['request_uri'];
 
-        $parts = \explode('?', $serverParams['request_uri']);
+        $parts = \explode('?', $serverParams['request_uri'], 2);
         // save
         $self->uriPath  = $parts[0];
-        $self->uriQuery = $parts[1] ?? '';
+        $self->uriQuery = $parts[1] ?? $serverParams['query_string'];
 
-        $self->requestTarget = $serverParams['request_uri'];
-        if ($coRequest->files) {
-            $self->uploadedFiles = HttpHelper::normalizeFiles($coRequest->files);
-        }
-        // return $self; // QPS: 3.3w
+        // return $self; // QPS: 3.3w -> 3.45w
 
-        $self->uri = self::newUriByCoRequest($self->uriPath, $self->uriQuery, $serverParams, $headers);
-        // return $self; // QPS: 2.45w
+        /** @var Uri $uri */
+        $self->uri = Uri::new('', [
+            'host'        => $headers['host'] ?? '',
+            'path'        => $self->uriPath,
+            'query'       => $self->uriQuery,
+            'https'       => $serverParams['https'],
+            'http_host'   => $serverParams['http_host'],
+            'server_name' => $serverParams['server_name'],
+            'server_addr' => $serverParams['server_addr'],
+            'server_port' => $serverParams['server_port'],
+        ]);
+        // return $self; // QPS: 2.45w -> 3.35w
 
-        // Update uri by host
+        // Update host by Uri info
         if (!isset($headers['host'])) {
             $self->updateHostByUri();
         }
 
-        return $self; // QPS: 2.44w
+        return $self; // QPS: 2.44w -> 3.3w
     }
 
     /**
@@ -254,6 +254,14 @@ class Request extends PsrRequest implements ServerRequestInterface
      */
     public function getUploadedFiles(): array
     {
+        if ($this->uploadedFiles) {
+            return $this->uploadedFiles;
+        }
+
+        if ($files = $this->coRequest->files) {
+            $this->uploadedFiles = HttpHelper::normalizeFiles($files);
+        }
+
         return $this->uploadedFiles;
     }
 
@@ -509,7 +517,21 @@ class Request extends PsrRequest implements ServerRequestInterface
      */
     public function getRequestTime(): float
     {
-        return $this->requestTime;
+        return (float)$this->serverParams['request_time_float'];
+    }
+
+    /**
+     * Get protocol version
+     * @return string
+     */
+    public function getProtocolVersion(): string
+    {
+        if (!$this->protocol) {
+            // $self->protocol = \str_replace('HTTP/', '', $serverParams['server_protocol']);
+            $this->protocol = \substr($this->serverParams['server_protocol'], 5); // faster
+        }
+
+        return $this->protocol;
     }
 
     /**
@@ -529,52 +551,5 @@ class Request extends PsrRequest implements ServerRequestInterface
         }
 
         return $content;
-    }
-
-    /**
-     * Get a Uri populated with values from $swooleRequest->server.
-     *
-     * @param string $path
-     * @param string $query
-     * @param array  $server
-     * @param array  $header
-     * @return Uri
-     */
-    public static function newUriByCoRequest(string $path, string $query, array &$server, array &$header): Uri
-    {
-        /** @var Uri $uri */
-        $uri = Container::$instance->getPrototype(Uri::class);
-        $uri = $uri->withScheme(isset($server['https']) && $server['https'] !== 'off' ? 'https' : 'http');
-        $uri = $uri->withPath($path)->withQuery($query ?: $server['query_string']);
-
-        $hasPort = false;
-        if ($host = $server['http_host']) {
-            $parts = \explode(':', $host);
-            $uri   = $uri->withHost($parts[0]);
-            if (isset($parts[1])) {
-                $hasPort = true;
-                $uri     = $uri->withPort($parts[1]);
-            }
-        } elseif ($host = $server['server_name'] ?: $server['server_addr']) {
-            $uri = $uri->withHost($host);
-        } elseif (isset($header['host'])) {
-            if (\strpos($header['host'], ':')) {
-                $hasPort = true;
-                [$host, $port] = \explode(':', $header['host'], 2);
-                if ($port !== '80') {
-                    $uri = $uri->withPort($port);
-                }
-            } else {
-                $host = $header['host'];
-            }
-
-            $uri = $uri->withHost($host);
-        }
-
-        if (!$hasPort && isset($server['server_port'])) {
-            $uri = $uri->withPort($server['server_port']);
-        }
-
-        return $uri;
     }
 }

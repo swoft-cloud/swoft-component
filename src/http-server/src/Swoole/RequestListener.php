@@ -31,11 +31,13 @@ class RequestListener implements RequestInterface
         // return;
 
         $psrRequest  = ServerRequest::new($request);
-        // return;
-        $psrResponse = ServerResponse::new($response); // QPS: 2.3w
+        // return; // QPS: 2.3w -> 3.32w
+        $psrResponse = ServerResponse::new($response);
+        // return; // QPS: 2.3w -> 3.31w
 
-        /* @var HttpDispatcher $httpDispatcher */
-        $httpDispatcher = Container::$instance->getSingleton('httpDispatcher');
-        $httpDispatcher->dispatch($psrRequest, $psrResponse);
+        /* @var HttpDispatcher $dispatcher */
+        $dispatcher = Container::$instance->getSingleton('httpDispatcher');
+        // return; // QPS: 3.2w
+        $dispatcher->dispatch($psrRequest, $psrResponse);
     }
 }

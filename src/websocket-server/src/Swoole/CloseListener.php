@@ -28,23 +28,16 @@ class CloseListener implements CloseInterface
      */
     public function onClose(Server $server, int $fd, int $reactorId): void
     {
-        /*
-        WEBSOCKET_STATUS_CONNECTION = 1，连接进入等待握手
-        WEBSOCKET_STATUS_HANDSHAKE = 2，正在握手
-        WEBSOCKET_STATUS_FRAME = 3，已握手成功等待浏览器发送数据帧
-        */
-        $fdInfo = $server->getClientInfo($fd);
-
-        if ($fdInfo['websocket_status'] < 1) {
+        // Only allow handshake success conn
+        if (!$server->isEstablished($fd)) {
             return;
         }
 
-        $total = \server()->count();
-        \server()->log("onClose: Client #{$fd} connection has been closed. client count $total, client info:", $fdInfo,
-            'debug');
-
         /** @var Connection $conn */
-        $conn = Session::get();
+        $conn  = Session::get();
+        $total = \server()->count();
+
+        \server()->log("onClose: Client #{$fd} connection has been closed. client count $total", [], 'debug');
 
         if (!$meta = $conn->getMetadata()) {
             \server()->log("onClose: Client #{$fd} connection meta info has been lost");
