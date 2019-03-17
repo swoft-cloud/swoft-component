@@ -21,6 +21,7 @@ abstract class AbstractConnector implements ConnectorInterface
         \PDO::ATTR_ORACLE_NULLS      => \PDO::NULL_NATURAL,
         \PDO::ATTR_STRINGIFY_FETCHES => false,
         \PDO::ATTR_EMULATE_PREPARES  => false,
+        \PDO::ATTR_ERRMODE           => \PDO::ERRMODE_EXCEPTION
     ];
 
     /**
@@ -37,6 +38,7 @@ abstract class AbstractConnector implements ConnectorInterface
      */
     public function createConnection($dsn, string $username, string $password, array $options)
     {
+        $options = $this->getOptions($options);
         return new \PDO($dsn, $username, $password, $options);
     }
 

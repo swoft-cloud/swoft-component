@@ -33,10 +33,10 @@ abstract class AbstractPool implements PoolInterface
      *
      * @var int
      */
-    protected $maxWait = 20;
+    protected $maxWait = 0;
 
     /**
-     * Maximum waiting time(second)
+     * Maximum waiting time(second), if there is not limit to 0
      *
      * @var float
      */
@@ -72,13 +72,7 @@ abstract class AbstractPool implements PoolInterface
      */
     public function getConnection(): ConnectionInterface
     {
-        $connection = $this->getConnectionByChannel();
-
-        if (!$connection->check()) {
-            $connection->reconnect();
-        }
-
-        return $connection;
+        return $this->getConnectionByChannel();
     }
 
     /**
@@ -134,7 +128,7 @@ abstract class AbstractPool implements PoolInterface
 
         // Out of `maxWait` number
         $stats = $this->channel->stats();
-        if ($stats['consumer_num'] >= $this->maxWait) {
+        if ($this->maxWait > 0 && $stats['consumer_num'] >= $this->maxWait) {
             throw new ConnectionPoolException(
                 sprintf('Channel consumer is full, maxActive=%d, maxWait=%d, currentCount=%d',
                     $this->maxActive, $this->maxWaitTime, $this->count)

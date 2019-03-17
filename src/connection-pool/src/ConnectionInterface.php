@@ -18,15 +18,7 @@ interface ConnectionInterface
     /**
      * Reconnect connection
      */
-    public function reconnect(): void;
-
-    /**
-     * Check connection status
-     * Connected is return true, other return false
-     *
-     * @return bool
-     */
-    public function check(): bool;
+    public function reconnect(): bool;
 
     /**
      * Get connection unique id
