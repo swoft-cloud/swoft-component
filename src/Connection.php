@@ -4,6 +4,7 @@
 namespace Swoft\Db;
 
 
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Connection\Pool\ConnectionInterface as PoolConnectionInterface;
 use Swoft\Db\Exception\QueryException;
@@ -11,7 +12,6 @@ use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
 use Swoft\Db\Query\Grammar\Grammar;
 use Swoft\Db\Query\Processor\Processor;
-use Swoft\Exception\ConnectionException;
 
 /**
  * Class Connection
@@ -24,6 +24,21 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
      * Default fetch mode
      */
     const DEFAULT_FETCH_MODE = \PDO::FETCH_OBJ;
+
+    /**
+     * Default type
+     */
+    const TYPE_DEFAULT = 0;
+
+    /**
+     * Use write pdo
+     */
+    const TYPE_WRITE = 1;
+
+    /**
+     * Use read pdo
+     */
+    const TYPE_READ = 2;
 
     /**
      * The active PDO connection.
@@ -60,6 +75,13 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
      * @var Processor
      */
     protected $postProcessor;
+
+    /**
+     * Use pdo type
+     *
+     * @var int
+     */
+    protected $pdoType = 0;
 
     /**
      * Replace constructor
@@ -146,12 +168,24 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
         $this->createReadPdo();
     }
 
-    public function reconnect(): void
+    /**
+     * Reconnect
+     */
+    public function reconnect(): bool
     {
-    }
-
-    public function check(): bool
-    {
+        try {
+            switch ($this->pdoType) {
+                case  self::TYPE_WRITE;
+                    $this->createPdo();
+                    break;
+                case self::TYPE_READ;
+                    $this->createReadPdo();
+                    break;
+            }
+        } catch (\Throwable $e) {
+            return false;
+        }
+        
         return true;
     }
 
@@ -340,10 +374,7 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
             $this->bindValues($statement, $this->prepareBindings($bindings));
 
             $statement->execute();
-            $rows = $statement->fetchAll();
-
-            $this->release();
-            return $rows;
+            return $statement->fetchAll();
         });
     }
 
@@ -522,6 +553,8 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
      * @return mixed
      *
      * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function run(string $query, array $bindings, \Closure $callback)
     {
@@ -546,30 +579,57 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
      * @param  string   $query
      * @param  array    $bindings
      * @param  \Closure $callback
+     * @param  bool     $reconnect
      *
      * @return mixed
      *
      * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
-    protected function runQueryCallback(string $query, array $bindings, \Closure $callback)
+    protected function runQueryCallback(string $query, array $bindings, \Closure $callback, bool $reconnect = false)
     {
         // To execute the statement, we'll simply call the callback, which will actually
         // run the SQL against the PDO connection. Then we can calculate the time it
         // took to execute and log the query SQL, bindings and time in our memory.
         try {
             $result = $callback($query, $bindings);
-        }
 
+            // Release connection
+            $this->release();
+        } catch (\Throwable $e) {
             // If an exception occurs when attempting to run a query, we'll format the error
             // message to include the bindings with SQL, which will make this exception a
             // lot more helpful to the developer instead of just the database's errors.
-        catch (\Throwable $e) {
-            throw new QueryException(
-                $query, $this->prepareBindings($bindings), $e
-            );
+
+            if(!$reconnect && $this->isReconnect() && $this->reconnect()){
+                return $this->runQueryCallback($query, $bindings, $callback, true);
+            }
+
+            // Reconnect fail to remove exception connection
+            if ($this->isReconnect()) {
+                $this->pool->remove();
+            }else{
+                // Other exception to release connection
+                $this->release();
+            }
+
+            // Throw exception
+            throw new QueryException($e->getMessage());
         }
 
+        $this->pdoType = self::TYPE_DEFAULT;
         return $result;
+    }
+
+    /**
+     * Whether to reconnect
+     *
+     * @return bool
+     */
+    protected function isReconnect(): bool
+    {
+        return false;
     }
 
     /**
@@ -651,6 +711,7 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
      */
     public function getPdo(): \PDO
     {
+        $this->pdoType = self::TYPE_WRITE;
         return $this->pdo;
     }
 
@@ -670,6 +731,7 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
             return $this->getPdo();
         }
 
+        $this->pdoType = self::TYPE_READ;
         return $this->readPdo;
     }
 
@@ -689,72 +751,5 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
                 is_int($value) ? \PDO::PARAM_INT : \PDO::PARAM_STR
             );
         }
-    }
-
-    /**
-     * Pdo to reconnect
-     *
-     * @param bool   $reconnect
-     * @param string $method
-     * @param mixed  ...$params
-     *
-     * @return mixed
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     */
-    public function pdo(bool $reconnect, string $method, ...$params)
-    {
-        try {
-            $result = $this->pdo->{$method}(...$params);
-        } catch (\Throwable $e) {
-
-            if ($reconnect) {
-                $this->pool->remove();
-                throw new ConnectionException('');
-            }
-
-            // Reconnect
-            $this->createPdo();
-
-            return $this->pdo(true, $method, ...$params);
-        }
-
-        return $result;
-    }
-
-    /**
-     * Read pdo to reconnect
-     *
-     * @param bool   $useReadPdo
-     * @param bool   $reconnect
-     * @param string $method
-     * @param mixed  ...$params
-     *
-     * @return mixed
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     */
-    public function writePdo(bool $useReadPdo, bool $reconnect, string $method, ...$params)
-    {
-        if ($useReadPdo == false) {
-            return $this->pdo(false, $method, ...$params);
-        }
-
-        try {
-            $result = $this->readPdo->{$method}(...$params);
-        } catch (\Throwable $e) {
-
-            if ($reconnect) {
-                $this->pool->remove();
-                throw new ConnectionException('');
-            }
-
-            // Reconnect
-            $this->createReadPdo();
-
-            return $this->writePdo($useReadPdo, true, $method, ...$params);
-        }
-
-        return $result;
     }
 }
