@@ -84,17 +84,19 @@ abstract class ConnectionPool implements PoolInterface
     public function release(ConnectionInterface $connection)
     {
         $connectionId = $connection->getConnectionId();
-        $connection->updateLastTime();
-        $connection->setRecv(true);
-        $connection->setAutoRelease(true);
+        if($this->hasContextConnection($connectionId)) {
+            $connection->updateLastTime();
+            $connection->setRecv(true);
+            $connection->setAutoRelease(true);
 
-        if (App::isCoContext()) {
-            $this->releaseToChannel($connection);
-        } else {
-            $this->releaseToQueue($connection);
+            if (App::isCoContext()) {
+                $this->releaseToChannel($connection);
+            } else {
+                $this->releaseToQueue($connection);
+            }
+
+            $this->removeContextConnection($connectionId);
         }
-
-        $this->removeContextConnection($connectionId);
     }
 
     /**
@@ -284,12 +286,12 @@ abstract class ConnectionPool implements PoolInterface
 
         $time        = time();
         $moreActive  = $queueNum - $minActive;
-        $maxWaitTime = $this->poolConfig->getMaxWaitTime();
+        $maxIdleTime = $this->poolConfig->getMaxIdleTime();
         for ($i = 0; $i < $moreActive; $i++) {
             /* @var ConnectionInterface $connection */
             $connection = $this->getOriginalConnection($isChannel);;
             $lastTime = $connection->getLastTime();
-            if ($time - $lastTime < $maxWaitTime) {
+            if ($time - $lastTime < $maxIdleTime) {
                 return $connection;
             }
             $this->currentCount--;
@@ -331,5 +333,15 @@ abstract class ConnectionPool implements PoolInterface
     {
         $connectionKey = PoolHelper::getContextCntKey();
         RequestContext::removeContextDataByChildKey($connectionKey, $connectionId);
+    }
+
+    /**
+     * @param string $connectionId
+     * @return bool
+     */
+    private function hasContextConnection(string $connectionId): bool
+    {
+        $connectionKey = PoolHelper::getContextCntKey();
+        return RequestContext::hasContextDataByChildKey($connectionKey, $connectionId);
     }
 }

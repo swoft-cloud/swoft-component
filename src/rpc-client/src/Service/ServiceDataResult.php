@@ -34,9 +34,10 @@ class ServiceDataResult extends AbstractResult
                 throw $throwable;
             }
             $data = $this->fallbackData;
+        } finally {
+            $this->release();
         }
 
-        $this->release();
         return $data;
     }
 

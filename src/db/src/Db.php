@@ -181,7 +181,7 @@ class Db
             return self::RETURN_INSERTID;
         }
 
-        if (strpos($sql, 'UPDATE') === 0 || strpos($sql, 'DELETE') === 0) {
+        if (strpos($sql, 'UPDATE') === 0 || strpos($sql, 'DELETE') === 0 || strpos($sql, 'REPLACE') === 0) {
             return self::RETURN_ROWS;
         }
 

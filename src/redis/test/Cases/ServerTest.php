@@ -24,7 +24,7 @@ class ServerTest extends AbstractTestCase
             $this->assertTrue(is_array($result));
 
             foreach ($result as $index => $value) {
-                $this->assertEquals($expected[ $index ], $value);
+                $this->assertEquals($expected[$index], $value);
             }
         });
     }

@@ -24,9 +24,14 @@ class DbCoResult extends DbResult
      */
     public function getResult(...$params)
     {
-        $this->recv(true, false);
-        $result = $this->getResultByClassName();
-        $this->release();
+        try {
+            $this->recv(true, false);
+            $result = $this->getResultByClassName();
+        } catch (\Throwable $throwable) {
+            throw $throwable;
+        } finally {
+            $this->release();
+        }
 
         foreach ($this->decorators ?? [] as $decorator) {
             $result = value($decorator($result));

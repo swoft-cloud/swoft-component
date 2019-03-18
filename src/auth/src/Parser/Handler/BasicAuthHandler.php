@@ -16,18 +16,12 @@ use Swoft\Auth\Mapping\AuthHandlerInterface;
 use Swoft\Bean\Annotation\Bean;
 
 /**
- * Class BasicAuthParser
- * @package Swoft\Auth\Parser
  * @Bean()
  */
 class BasicAuthHandler implements AuthHandlerInterface
 {
     const NAME = 'Basic';
 
-    /**
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @return \Psr\Http\Message\ServerRequestInterface
-     */
     public function handle(ServerRequestInterface $request): ServerRequestInterface
     {
         $authHeader = $request->getHeaderLine(AuthConstants::HEADER_KEY) ?? '';
@@ -42,20 +36,20 @@ class BasicAuthHandler implements AuthHandlerInterface
 
     protected function getUsername(array $basic)
     {
-        return $basic[0]??'';
+        return $basic[0] ?? '';
     }
 
     protected function getPassword(array $basic)
     {
-        return $basic[1]??'';
+        return $basic[1] ?? '';
     }
 
-    protected function parseValue($string):array
+    protected function parseValue($string): array
     {
-        if (strpos(trim($string), self::NAME) !== 0) {
+        if (strpos(trim($string), static::NAME) !== 0) {
             return null;
         }
-        $val =  preg_replace('/.*\s/', '', $string);
+        $val = preg_replace('/.*\s/', '', $string);
         if (!$val) {
             return null;
         }

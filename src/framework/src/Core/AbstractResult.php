@@ -49,15 +49,25 @@ abstract class AbstractResult implements ResultInterface
     protected function recv(bool $defer = false, bool $release = true)
     {
         if ($this->connection instanceof ConnectionInterface) {
-            $result = $this->connection->receive();
-            $this->release($release);
+            try {
+                $result = $this->connection->receive();
+            } catch (\Throwable $throwable) {
+                throw $throwable;
+            } finally {
+                $this->release($release);
+            }
 
             return $result;
         }
 
-        $result = $this->connection->recv();
-        if ($defer) {
-            $this->connection->setDefer(false);
+        try {
+            $result = $this->connection->recv();
+        } catch (\Throwable $throwable) {
+            throw $throwable;
+        } finally {
+            if ($defer) {
+                $this->connection->setDefer(false);
+            }
         }
 
         return $result;

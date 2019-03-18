@@ -268,7 +268,7 @@ class ListTest extends AbstractTestCase
             });
 
             go(function () use ($key, $expected) {
-                \co::sleep(3.0);
+                \co::sleep(2.0);
                 $this->redis->lPush($key, $expected);
             });
         });

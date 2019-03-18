@@ -39,6 +39,10 @@ class SyncRedisConnection extends AbstractRedisConnection
             $redis->setOption(\Redis::OPT_PREFIX, $prefix);
         }
         $this->connection = $redis;
+
+        /** @var RedisPoolConfig $config */
+        $config = $this->getPool()->getPoolConfig();
+        $redis->select($config->getDb());
     }
 
     /**
@@ -52,18 +56,14 @@ class SyncRedisConnection extends AbstractRedisConnection
     }
 
     /**
-     * @param string $host
-     * @param int    $port
-     * @param int    $timeout
-     *
      * @return \Redis
      * @throws RedisException
      */
-    protected function getConnectRedis(string $host, int $port, int $timeout): \Redis
+    protected function getConnectRedis(string $host, int $port, float $timeout): \Redis
     {
         $redis  = new \Redis();
         $result = $redis->connect($host, $port, $timeout);
-        if ($result == false) {
+        if ($result === false) {
             $error = sprintf('Redis connection failure host=%s port=%d', $host, $port);
             throw new RedisException($error);
         }

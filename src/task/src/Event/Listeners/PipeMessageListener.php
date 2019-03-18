@@ -38,7 +38,7 @@ class PipeMessageListener implements EventHandlerInterface
         $timeout    = $data['timeout'];
         $methodName = $data['method'];
 
-        // delever task
+        // deliver task
         Task::deliver($taskName, $methodName, $params, $type, $timeout);
     }
 }

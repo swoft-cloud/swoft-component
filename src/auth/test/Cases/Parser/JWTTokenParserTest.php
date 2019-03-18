@@ -19,7 +19,6 @@ use SwoftTest\Auth\Account\TestAccount;
 class JWTTokenParserTest extends AbstractTestCase
 {
     /**
-     * @test
      * @covers JWTTokenParser::getToken()
      * @return string
      */
@@ -27,7 +26,7 @@ class JWTTokenParserTest extends AbstractTestCase
     {
         $parser = App::getBean(JWTTokenParser::class);
         $session = new AuthSession();
-        $session->setIdentity(1);
+        $session->setIdentity(2);
         $session->setExpirationTime(time()+10);
         $session->setAccountTypeName(TestAccount::class);
         $token = $parser->getToken($session);
@@ -36,7 +35,6 @@ class JWTTokenParserTest extends AbstractTestCase
     }
 
     /**
-     * @test
      * @covers JWTTokenParser::getSession()
      */
     public function testGetSession()
@@ -45,6 +43,6 @@ class JWTTokenParserTest extends AbstractTestCase
         $parser = App::getBean(JWTTokenParser::class);
         /** @var AuthSession $session */
         $session = $parser->getSession($token);
-        $this->assertEquals(1, $session->getIdentity());
+        $this->assertEquals(2, $session->getIdentity());
     }
 }

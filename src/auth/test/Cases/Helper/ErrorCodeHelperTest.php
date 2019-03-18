@@ -17,7 +17,6 @@ use SwoftTest\Auth\AbstractTestCase;
 class ErrorCodeHelperTest extends AbstractTestCase
 {
     /**
-     * @test
      * @covers ErrorCodeHelper::get()
      */
     public function testGet()

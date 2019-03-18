@@ -40,8 +40,16 @@ class Executor
         // Set Primary Id to Entity
         $query->addDecorator(function ($primaryId) use ($entity, $className) {
             list(, , $idColumn) = self::getTable($className);
+            // When Primary Id is auto increment
+            $getter = 'get' . StringHelper::camel($idColumn, false);
             $setter = 'set' . StringHelper::camel($idColumn, false);
-            method_exists($entity, $setter) && $entity->$setter($primaryId);
+            if (method_exists($entity, $getter) && method_exists($entity, $setter)) {
+                if ($entity->$getter() === null) {
+                    $entity->$setter($primaryId);
+                } else {
+                    $primaryId = $entity->$getter();
+                }
+            }
             return $primaryId;
         });
         return $query->insert($fields);
@@ -625,6 +633,12 @@ class Executor
             foreach ($option as $column => $order) {
                 $query = $query->orderBy($column, $order);
             }
+        }
+
+        if (isset($options['for_update']) && $options['for_update'] === true) {
+            $query->forUpdate();
+        } elseif (isset($options['shared_lock']) && $options['shared_lock'] === true) {
+            $query->sharedLock();
         }
 
         $limit  = $options['limit'] ?? null;

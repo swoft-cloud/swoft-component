@@ -89,8 +89,9 @@ class Timer
      * 定时器回调函数
      *
      * @param array $params 参数传递
+     * @param int   $timerId 定时器id
      */
-    public function timerCallback($params)
+    public function timerCallback($timerId, $params)
     {
         if (count($params) < 2) {
             return;

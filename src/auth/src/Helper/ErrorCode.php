@@ -10,10 +10,6 @@
 
 namespace Swoft\Auth\Helper;
 
-/**
- * Class ErrorCode
- * @package Swoft\Auth\Helper
- */
 class ErrorCode
 {
     /**

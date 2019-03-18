@@ -51,11 +51,6 @@ class Statement implements StatementInterface
         return $statement;
     }
 
-    /**
-     * select语句
-     *
-     * @return string
-     */
     protected function getSelectStatement(): string
     {
         $statement = '';
@@ -63,39 +58,44 @@ class Statement implements StatementInterface
             return $statement;
         }
 
-        // select语句
+        // select 语句
         $statement .= $this->getSelectString();
 
-        // from语句
+        // from 语句
         if ($this->builder->getFrom()) {
             $statement .= ' ' . $this->getFromString();
         }
 
-        // where语句
+        // where 语句
         if ($this->builder->getWhere()) {
             $statement .= ' ' . $this->getWhereString();
         }
 
-        // groupBy语句
+        // groupBy 语句
         if ($this->builder->getGroupBy()) {
             $statement .= ' ' . $this->getGroupByString();
         }
 
-        // having语句
+        // having 语句
         if ($this->builder->getHaving()) {
             $statement .= ' ' . $this->getHavingString();
         }
 
-        // orderBy语句
+        // orderBy 语句
         if ($this->builder->getOrderBy()) {
             $statement .= ' ' . $this->getOrderByString();
         }
 
-        // limit语句
+        // limit 语句
         if ($this->builder->getLimit()) {
             $statement .= ' ' . $this->getLimitString();
         }
-        
+
+        // lock 语句
+        if ($this->builder->getLocks()) {
+            $statement .= ' ' . $this->getLockString();
+        }
+
         return $statement;
     }
 
@@ -218,7 +218,12 @@ class Statement implements StatementInterface
         foreach ($select as $column => $alias) {
             // Filter db keyword
             if (array_key_exists($column, $fieldSelect) && trim($column) != '*' && strpos($column, '.') === false) {
-                $column = sprintf('`%s`', $column);
+                // 判断是否为函数调用
+                if (strpos($column, '(') || strpos($column, ')')) {
+                    $column = sprintf('%s', $column);
+                } else {
+                    $column = sprintf('`%s`', $column);
+                }
             }
 
             $statement .= $column;
@@ -602,6 +607,27 @@ class Statement implements StatementInterface
     }
 
     /**
+     * 加锁语句
+     *
+     * @return string
+     */
+    protected function getLockString(): string
+    {
+        $statement = '';
+        $locks = $this->builder->getLocks();
+        if (! $locks || ! $this->isSelect()) {
+            return $statement;
+        }
+        if (isset($locks['for_update']) && $locks['for_update'] === true) {
+            $statement = 'FOR UPDATE';
+        } elseif (isset($locks['shared_lock']) && $locks['shared_lock'] === true) {
+            $statement = 'LOCK IN SHARE MODE';
+        }
+
+        return $statement;
+    }
+
+    /**
      * @return string
      */
     protected function getInsertValuesString(): string
@@ -684,7 +710,7 @@ class Statement implements StatementInterface
 
         $statement .= $this->getInsert();
         if (!empty($statement)) {
-            $statement = 'INSERT INTO ' . $statement;
+            $statement = sprintf('INSERT INTO `%s`', $statement);
         }
 
         return $statement;
@@ -708,7 +734,7 @@ class Statement implements StatementInterface
         $statement .= ' ' . $this->getJoinString();
         $statement = rtrim($statement);
         if (!empty($statement)) {
-            $statement = 'UPDATE ' . $statement;
+            $statement = sprintf('UPDATE `%s`', $statement);
         }
 
         return $statement;

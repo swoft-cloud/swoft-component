@@ -56,6 +56,39 @@ trait ServerTrait
     }
 
     /**
+     * onManagerStop event callback
+     *
+     * @param Server $server
+     * @throws \InvalidArgumentException
+     */
+    public function onManagerStop(Server $server)
+    {
+        $this->fireServerEvent(SwooleEvent::ON_MANAGER_STOP, [$server]);
+    }
+
+    /**
+     * onWorkerStop event callback
+     *
+     * @param Server $server
+     * @throws \InvalidArgumentException
+     */
+    public function onWorkerStop(Server $server,int $worker_id)
+    {
+        $this->fireServerEvent(SwooleEvent::ON_WORKER_STOP, [$server,$worker_id]);
+    }
+
+    /**
+     * onShutdown event callback
+     *
+     * @param Server $server
+     * @throws \InvalidArgumentException
+     */
+    public function onShutdown(Server $server)
+    {
+        $this->fireServerEvent(SwooleEvent::ON_SHUTDOWN, [$server]);
+    }
+
+    /**
      * OnWorkerStart event callback
      *
      * @param Server $server server

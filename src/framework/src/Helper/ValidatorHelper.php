@@ -4,11 +4,6 @@ namespace Swoft\Helper;
 
 use Swoft\Exception\ValidatorException;
 
-/**
- * Class ValidatorHelper
- *
- * @package Swoft\Helper
- */
 class ValidatorHelper
 {
     /**
@@ -120,15 +115,15 @@ class ValidatorHelper
 
         $value = (int)$value;
         if ($min !== null && $value < $min) {
-            $template = empty($template) ?: $template;
+            $template = empty($template) ? sprintf('Parameter %s is too short (minimum is %d)', $name, $min): $template;
 
-            return self::validateError(sprintf('Parameter %s is too small (minimum is %d)', $name, $min), $throws);
+            return self::validateError($template, $throws);
         }
 
         if ($max !== null && $value > $max) {
-            $template = empty($template) ?: $template;
+            $template = empty($template) ? sprintf('Parameter %s is too large (maximum is %d)', $name, $max) : $template;
 
-            return self::validateError(sprintf('Parameter %s is too big (maximum is %d)', $name, $max), $throws);
+            return self::validateError($template, $throws);
         }
 
         return (int)$value;
@@ -177,13 +172,13 @@ class ValidatorHelper
 
         $value = (float)$value;
         if ($min !== null && $value < $min) {
-            $template = empty($template) ? sprintf('Parameter %s is too small (minimum is %d)', $name, $min) : $template;
+            $template = empty($template) ? sprintf('Parameter %s is too short (minimum is %d)', $name, $min) : $template;
 
             return self::validateError($template, $throws);
         }
 
         if ($max !== null && $value > $max) {
-            $template = empty($template) ? sprintf('Parameter %s is too big (maximum is %d)', $name, $max) : $template;
+            $template = empty($template) ? sprintf('Parameter %s is too large (maximum is %d)', $name, $max) : $template;
 
             return self::validateError($template, $throws);
         }

@@ -173,10 +173,10 @@ class QueryBuilderTest extends AbstractMysqlCase
         $otherUser  = Query::table(OtherUser::class)->where('id', $userId)->one()->getResult();
         $this->assertEquals($otherUser['age'], $data['age']);
         $this->assertEquals($otherUser['id'], $userId);
-        
+
         $otherUser2  = Query::table(OtherUser::class)->selectInstance('default')->where('id', $userId2)->one()->getResult();
         $this->assertEquals('this my desc default instance', $otherUser2['description']);
-        
+
         $user  = OtherUser::findById($userId)->getResult();
         $this->assertEquals($user->getAge(), $data['age']);
         $this->assertEquals($user->getId(), $userId);
@@ -472,5 +472,125 @@ class QueryBuilderTest extends AbstractMysqlCase
 
         $result = User::query()->where('id', $id)->one()->getResult();
         $this->assertEquals($id, $result->getId());
+    }
+
+    /**
+     * 使用函数是否可用
+     */
+    public function testQueryWithFunc()
+    {
+        // 仅统计sex = 1 的数据
+        $result = Query::table(User::class)
+            ->where('sex', 1)
+            ->groupBy('sex')
+            ->one([
+                'sex' => 'sex',
+                'count(1)' => 'sum'
+            ])->getResult();
+        // 仅统计sex = 1 的数据
+        $count = Query::table(User::class)->where('sex', 1)->count()->getResult();
+        // 比较结果
+        $this->assertEquals($result['sum'], $count);
+    }
+
+    public function testQueryWithFuncByCo()
+    {
+        go(function () {
+            $this->testQueryWithFunc();
+        });
+    }
+
+    /**
+    * 列别名查询
+    * @throws \Swoft\Db\Exception\MysqlException
+    */
+    public function testColumnAlias()
+    {
+        // 进行数据插入
+        $userData = [
+            'name'        => 'name:'.uniqid(),
+            'sex'         => 2,
+            'description' => 'this my desc',
+            'age'         => 99,
+        ];
+        $userId = Query::table(User::class)->insert($userData)->getResult();
+        // 查询条件
+        $where = ['id' => $userId];
+
+        // 进行查询，查询单个
+        $user = Query::table(User::class)->condition($where)
+            ->one([
+                'sex' => 'sex',
+                'name' => 'nickName'
+            ])->getResult();
+        // 比较结果, 判断是否为数组
+        $this->assertEquals(is_array($user), true);
+        // 判断是否有非属性值的key
+        $this->assertEquals($user['nickName'], $userData['name']);
+
+        // 通过Entity进行查询
+        $user = User::findOne($where)->getResult();
+        // 比较结果, 判断是否为User对象
+        $this->assertEquals($user instanceof User, true);
+        $this->assertEquals($user->getName(), $userData['name']);
+
+        // 进行查询，查询多个
+        $userList = Query::table(User::class)->condition($where)
+            ->get([
+                'sex' => 'sex',
+                'name' => 'nickName'
+            ])->getResult();
+        // array_pop
+        $user = array_pop($userList);
+        // 比较结果, 判断是否为数组
+        $this->assertEquals(is_array($user), true);
+        // 判断是否有非属性值的key
+        $this->assertEquals($user['nickName'], $userData['name']);
+
+        // 通过Entity获取列表
+        /**
+         * @var \Swoft\Db\Collection $userList
+         */
+        $userList = User::findAll($where)->getResult()->all();
+        // array_pop
+        $user = array_pop($userList);
+        // 比较结果, 判断是否为User对象
+        $this->assertEquals($user instanceof User, true);
+        $this->assertEquals($user->getName(), $userData['name']);
+    }
+
+    /**
+     * 列别名查询
+     * @throws \Swoft\Db\Exception\MysqlException
+     */
+    public function testColumnAliasByCo()
+    {
+        go(function () {
+            $this->testColumnAlias();
+        });
+    }
+
+    /**
+     * @dataProvider mysqlProvider
+     * @param int $id
+     */
+    public function testForUpdate(int $id)
+    {
+        Query::table(User::class)->where('id', $id)->forUpdate()->one()->getResult();
+        $lastSql = get_last_sql();
+        $lastSql = substr($lastSql, 0, strpos($lastSql, ' Params: '));
+        $this->assertTrue(StringHelper::endsWith($lastSql, 'FOR UPDATE'));
+    }
+
+    /**
+     * @dataProvider mysqlProvider
+     * @param int $id
+     */
+    public function testSharedLock(int $id)
+    {
+        Query::table(User::class)->where('id', $id)->sharedLock()->one()->getResult();
+        $lastSql = get_last_sql();
+        $lastSql = substr($lastSql, 0, strpos($lastSql, ' Params: '));
+        $this->assertTrue(StringHelper::endsWith($lastSql, 'LOCK IN SHARE MODE'));
     }
 }

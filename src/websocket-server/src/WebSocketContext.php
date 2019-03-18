@@ -101,6 +101,9 @@ class WebSocketContext
             return false;
         }
 
+        // delete coId to fd mapping
+        self::delFdByCoId();
+
         if (isset(self::$connections[$fd])) {
             unset(self::$connections[$fd]);
             return true;

@@ -25,6 +25,11 @@ class ConsulProvider implements ProviderInterface
     const DISCOVERY_PATH = '/v1/health/service/';
 
     /**
+     *  Deregister path
+     */
+    const DEREGISTER_PATH = '/v1/agent/service/deregister/';
+
+    /**
      * Specifies the address of the consul
      *
      * @Value(name="${config.provider.consul.address}", env="${CONSUL_ADDRESS}")
@@ -232,10 +237,28 @@ class ConsulProvider implements ProviderInterface
         ];
 
         $url = sprintf('%s:%d%s', $this->address, $this->port, self::REGISTER_PATH);
-        $this->putService($data, $url);
-
-        return true;
+        return $this->putService($data, $url);
     }
+
+
+    /**
+     * deregister service
+     *
+     * @param mixed ...$params
+     *
+     * @return bool
+     */
+    public function deregisterService(...$params)
+    {        
+        if (empty($this->registerId)) {
+            $hostName = gethostname();
+            $this->registerId = sprintf('service-%s-%s', $this->registerName, $hostName);
+        }
+
+        $url = sprintf('%s:%d%s', $this->address, $this->port, self::DEREGISTER_PATH);
+        $this->removeService([], $url.$this->registerId);
+    }
+
 
     /**
      * @param string $serviceName
@@ -271,10 +294,33 @@ class ConsulProvider implements ProviderInterface
         $options = [
             'json' => $service,
         ];
+
+        $httpClient = new Client();
+        $response = $httpClient->put($url, $options)->getResponse();
+
+        if ($response->getStatusCode() == 200) {
+            output()->writeln(sprintf('<success>RPC service register success by consul ! tcp=%s:%d</success>', $this->registerAddress, $this->registerPort));
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Remove Service
+     *
+     * @param  array $service
+     * @param string $url     consulURI
+     */
+    private function removeService(array $service, string $url)
+    {
+        $options = [
+            'json' => $service,
+        ];
+
         $httpClient = new Client();
         $result = $httpClient->put($url, $options)->getResult();
         if(empty($result)){
-            output()->writeln(sprintf('<success>RPC service register success by consul ! tcp=%s:%d</success>', $this->registerAddress, $this->registerPort));
+            output()->writeln(sprintf('<success>RPC deregister service success by consul ! tcp=%s:%d</success>', $this->registerAddress, $this->registerPort));
         }
     }
 }

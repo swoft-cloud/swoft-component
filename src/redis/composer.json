@@ -25,7 +25,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "SwoftTest\\Redis\\": "test/Cases"
+            "SwoftTest\\Redis\\": "test/Cases",
+            "SwoftTest\\Redis\\Testing\\": "test/Testing"
         }
     },
     "repositories": [

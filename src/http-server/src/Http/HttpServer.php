@@ -44,6 +44,9 @@ class HttpServer extends AbstractServer
         $this->server->on(SwooleEvent::ON_MANAGER_START, [$this, 'onManagerStart']);
         $this->server->on(SwooleEvent::ON_REQUEST, [$this, 'onRequest']);
         $this->server->on(SwooleEvent::ON_PIPE_MESSAGE, [$this, 'onPipeMessage']);
+        $this->server->on(SwooleEvent::ON_WORKER_STOP, [$this, 'onWorkerStop']);
+        $this->server->on(SwooleEvent::ON_MANAGER_STOP, [$this, 'onManagerStop']);
+        $this->server->on(SwooleEvent::ON_SHUTDOWN, [$this, 'onShutdown']);
 
         // Start RPC Server
         if ((int)$this->serverSetting['tcpable'] === 1) {
