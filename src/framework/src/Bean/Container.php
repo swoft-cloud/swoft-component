@@ -387,6 +387,8 @@ class Container
                     continue;
                 }
                 $injectAry[$key] = $propertyValue;
+            } else {
+                $injectAry[$key] = $property;
             }
         }
 
