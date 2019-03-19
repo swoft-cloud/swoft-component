@@ -11,8 +11,8 @@ use Swoft\Server\Swoole\HandShakeInterface;
 use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
-use Swoft\WebSocket\Server\Dispatcher;
 use Swoft\WebSocket\Server\Helper\WsHelper;
+use Swoft\WebSocket\Server\WsDispatcher;
 use Swoft\WebSocket\Server\WsServerEvent;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
@@ -34,40 +34,40 @@ class HandShakeListener implements HandShakeInterface
      * @return bool
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Bean\Exception\PrototypeException
      */
     public function onHandShake(Request $request, Response $response): bool
     {
-        $fd       = $request->fd;
-        $secWSKey = $request->header['sec-websocket-key'];
+        $fd     = $request->fd;
+        $secKey = $request->header['sec-websocket-key'];
 
-        // sec-websocket-key 错误
-        if (WsHelper::isInvalidSecWSKey($secWSKey)) {
+        // If sec-websocket-key error
+        if (WsHelper::isInvalidSecKey($secKey)) {
             \server()->log("Handshake: shake hands failed with the #$fd. 'sec-websocket-key' is error!");
             return false;
         }
 
-        // bind fd
+        // Bind fd
         Session::bindFd($fd);
 
         // Initialize psr7 Request and Response and metadata
-        $cid = Co::tid();
 
-        // get a clean connection instance.
         /** @var Connection $conn */
         $conn = Container::$instance->getPrototype(Connection::class);
-        // initialize connection
-        $conn->initialize($fd, $request);
 
         $psr7Req = Psr7Request::new($request);
         $psr7Res = Psr7Response::new($response);
 
-        // bind connection
+        // Initialize connection
+        $conn->initialize($fd, $psr7Req, $psr7Res);
+
+        // Bind connection
         Session::set($fd, $conn);
 
         \Swoft::trigger(WsServerEvent::BEFORE_HANDSHAKE, $fd, $request, $response);
 
-        /** @var Dispatcher $dispatcher */
+        $cid = Co::tid();
+
+        /** @var WsDispatcher $dispatcher */
         $dispatcher = \bean('wsDispatcher');
 
         /** @var \Swoft\Http\Message\Response $psr7Res */
@@ -80,16 +80,14 @@ class HandShakeListener implements HandShakeInterface
             \server()->log("Client #$fd handshake check failed, request path {$meta['path']}");
             $psr7Res->send();
 
-            Session::unbindFd();
             // NOTICE: Rejecting a handshake still triggers a close event.
             return false;
         }
 
         // setting response
-        $psr7Res = $psr7Res->withStatus(101)->withHeaders(WsHelper::handshakeHeaders($secWSKey));
-
-        if (isset($request->header['sec-websocket-protocol'])) {
-            $psr7Res = $psr7Res->withHeader('Sec-WebSocket-Protocol', $request->header['sec-websocket-protocol']);
+        $psr7Res = $psr7Res->withStatus(101)->withHeaders(WsHelper::handshakeHeaders($secKey));
+        if ($wsProtocol = $request->header['sec-websocket-protocol'] ?? '') {
+            $psr7Res = $psr7Res->withHeader('Sec-WebSocket-Protocol', $wsProtocol);
         }
 
         // $this->log("Handshake: response headers:\n", $psr7Res->getHeaders());
@@ -111,8 +109,6 @@ class HandShakeListener implements HandShakeInterface
             $this->onOpen($psr7Req, $fd);
         });
 
-        // unbind fd
-        Session::unbindFd();
         return true;
     }
 
@@ -130,7 +126,7 @@ class HandShakeListener implements HandShakeInterface
 
         \server()->log("connection #$fd has been opened, co ID #" . Co::tid(), [], 'debug');
 
-        /** @see Dispatcher::open() */
+        /** @see WsDispatcher::open() */
         \bean('wsDispatcher')->open($server, $request, $fd);
     }
 }

@@ -12,12 +12,18 @@ use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
+use SwoftTest\WebSocket\Server\Fixture\Chat\ChatController;
+use SwoftTest\WebSocket\Server\Fixture\Chat\UserController;
 
 /**
- * Class AbstractModule
+ * Class ChatModule
  * @since 2.0
  *
- * @WsModule(path="/chat", messageParser=JsonParser::class)
+ * @WsModule(
+ *     path="/chat",
+ *     messageParser=JsonParser::class,
+ *     controllers={UserController::class, ChatController::class}
+ * )
  */
 class ChatModule implements WsModuleInterface
 {
@@ -58,10 +64,7 @@ class ChatModule implements WsModuleInterface
      * @param Request  $request
      * @param Response $response
      * @return array
-     * [
-     *  self::HANDSHAKE_OK,
-     *  $response
-     * ]
+     * [ self::ACCEPT, $response ]
      */
     public function checkHandshake(Request $request, Response $response): array
     {

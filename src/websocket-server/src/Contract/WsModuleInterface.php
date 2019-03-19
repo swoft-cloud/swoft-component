@@ -11,7 +11,7 @@ use Swoole\Http\Response;
  */
 interface WsModuleInterface
 {
-    // accept or reject for handshake
+    // Accept or reject for handshake
     public const ACCEPT = 1;
     public const REJECT = 2;
 
@@ -24,10 +24,7 @@ interface WsModuleInterface
      * @param Request  $request
      * @param Response $response
      * @return array
-     * [
-     *  self::HANDSHAKE_OK,
-     *  $response
-     * ]
+     * [ self::ACCEPT, $response ]
      */
     public function checkHandshake(Request $request, Response $response): array;
 }

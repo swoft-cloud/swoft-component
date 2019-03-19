@@ -70,8 +70,10 @@ abstract class Server implements ServerInterface
      * @var array
      */
     protected $setting = [
-        'daemonize'  => 0,
-        'worker_num' => 1,
+        'daemonize'       => 0,
+        'worker_num'      => 1,
+        // If > 0, must listen event: task, finish
+        'task_worker_num' => 0,
     ];
 
     /**
@@ -168,8 +170,6 @@ abstract class Server implements ServerInterface
      * @param CoServer $server
      *
      * @return void
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function onStart(CoServer $server): void
     {
@@ -200,9 +200,6 @@ abstract class Server implements ServerInterface
      * Manager start event
      *
      * @param CoServer $server
-     *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function onManagerStart(CoServer $server): void
     {
@@ -218,9 +215,6 @@ abstract class Server implements ServerInterface
      * Manager stop event
      *
      * @param CoServer $server
-     *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function onManagerStop(CoServer $server): void
     {
@@ -232,40 +226,36 @@ abstract class Server implements ServerInterface
      *
      * @param CoServer $server
      * @param int      $workerId
-     *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function onWorkerStart(CoServer $server, int $workerId): void
     {
-        $isTaskProcess = $workerId >= $server->setting['worker_num'];
-
-        $event = new WorkerEvent(SwooleEvent::WORKER_START, $server, $workerId);
-        // is task process
-        $event->taskProcess = $isTaskProcess;
-
-        Swoft::trigger($event);
-
         // Save PID and workerId
         $this->pidMap['workerId']  = $workerId;
         $this->pidMap['workerPid'] = $server->worker_pid;
 
+        $event = new WorkerEvent(SwooleEvent::WORKER_START, $server, $workerId);
+        // Is task process
+        $isTaskProcess      = $workerId >= $server->setting['worker_num'];
+        $event->taskProcess = $isTaskProcess;
+
+        Swoft::trigger($event);
+
         // Task process
         if ($isTaskProcess) {
-            $newEvent = clone $event;
-            $newEvent->setName(ServerEvent::TASK_PROCESS_START);
-
-            Sys::setProcessTitle(sprintf('%s task process', $this->pidName));
-            Swoft::trigger($newEvent);
-
+            $procRole  = 'task';
+            $eventName = ServerEvent::TASK_PROCESS_START;
             // Worker process
         } else {
-            $newEvent = clone $event;
-            $newEvent->setName(ServerEvent::WORK_PROCESS_START);
-
-            Sys::setProcessTitle(sprintf('%s worker process', $this->pidName));
-            Swoft::trigger($newEvent);
+            $procRole  = 'worker';
+            $eventName = ServerEvent::WORK_PROCESS_START;
         }
+
+        // For special role process
+        $newEvent = clone $event;
+        $newEvent->setName($eventName);
+
+        Sys::setProcessTitle(\sprintf('%s %s process', $this->pidName, $procRole));
+        Swoft::trigger($newEvent);
     }
 
     /**
@@ -273,9 +263,6 @@ abstract class Server implements ServerInterface
      *
      * @param CoServer $server
      * @param int      $workerId
-     *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function onWorkerStop(CoServer $server, int $workerId): void
     {
@@ -294,9 +281,6 @@ abstract class Server implements ServerInterface
      * @param int      $workerPid
      * @param int      $exitCode
      * @param int      $signal
-     *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function onWorkerError(CoServer $server, int $workerId, int $workerPid, int $exitCode, int $signal): void
     {
@@ -316,9 +300,6 @@ abstract class Server implements ServerInterface
      * Shutdown event
      *
      * @param CoServer $server
-     *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function onShutdown(CoServer $server): void
     {
@@ -328,8 +309,6 @@ abstract class Server implements ServerInterface
     /**
      * Bind swoole event and start swoole server
      * @throws ServerException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function startSwoole(): void
     {
@@ -578,7 +557,7 @@ abstract class Server implements ServerInterface
             // Parse and record PIDs
             [$masterPID, $managerPID] = \explode(',', $pidFile);
             // Format type
-            $masterPID = (int)$masterPID;
+            $masterPID  = (int)$masterPID;
             $managerPID = (int)$managerPID;
 
             $this->pidMap['masterPid']  = $masterPID;
@@ -675,7 +654,7 @@ abstract class Server implements ServerInterface
      */
     public function getClientInfo(int $fd): array
     {
-        return $this->swooleServer->getClientInfo($fd);
+        return (array)$this->swooleServer->getClientInfo($fd);
     }
 
     /**

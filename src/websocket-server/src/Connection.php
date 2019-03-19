@@ -6,8 +6,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Concern\DataPropertyTrait;
 use Swoft\Http\Message\Request;
+use Swoft\Http\Message\Response;
 use Swoft\Session\SessionInterface;
-use Swoole\Http\Request as SwooleRequest;
 
 /**
  * Class Connection
@@ -26,9 +26,19 @@ class Connection implements SessionInterface
     private $fd = 0;
 
     /**
+     * @var
+     */
+    private $module;
+
+    /**
      * @var Request|ServerRequestInterface
      */
     private $request;
+
+    /**
+     * @var Response
+     */
+    private $response;
 
     /**
      * @var bool
@@ -38,45 +48,52 @@ class Connection implements SessionInterface
     /**
      * Initialize connection object
      *
-     * @param int           $fd
-     * @param SwooleRequest $request
-     *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @param int      $fd
+     * @param Request  $request
+     * @param Response $response
      */
-    public function initialize(int $fd, SwooleRequest $request): void
+    public function initialize(int $fd, Request $request, Response $response): void
     {
         $this->fd = $fd;
 
-        $this->set(self::METADATA_KEY, $this->buildMetadata($fd, $request));
+        // Init meta info
+        $this->buildMetadata($fd, $request->getUriPath());
 
-        // ensure is false.
+        $this->request   = $request;
+        $this->response  = $response;
         $this->handshake = false;
     }
 
     /**
-     * @param int           $fd
-     * @param SwooleRequest $request
-     *
-     * @return array
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @param int    $fd
+     * @param string $path
      */
-    protected function buildMetadata(int $fd, SwooleRequest $request): array
+    private function buildMetadata(int $fd, string $path): void
     {
         $info = \server()->getClientInfo($fd);
-        $path = \parse_url($request->server['request_uri'], \PHP_URL_PATH);
 
         \server()->log("onHandShake: Client #{$fd} send handshake request to {$path}, client info: ", $info, 'debug');
 
-        return [
+        $this->set(self::METADATA_KEY, [
             'fd'            => $fd,
             'ip'            => $info['remote_ip'],
             'port'          => $info['remote_port'],
             'path'          => $path,
             'connectTime'   => $info['connect_time'],
             'handshakeTime' => \microtime(true),
-        ];
+        ]);
+    }
+
+    /**
+     * Clear resource
+     */
+    public function clear(): void
+    {
+        $this->data = [];
+        // Clear
+        $this->request   = null;
+        $this->response  = null;
+        $this->handshake = false;
     }
 
     /**
@@ -132,13 +149,10 @@ class Connection implements SessionInterface
     }
 
     /**
-     * Clear resource
+     * @return Response
      */
-    public function clear(): void
+    public function getResponse(): Response
     {
-        $this->data = [];
-        // clear
-        $this->request   = null;
-        $this->handshake = false;
+        return $this->response;
     }
 }

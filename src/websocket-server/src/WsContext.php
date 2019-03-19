@@ -27,7 +27,7 @@ class WsContext implements ContextInterface
      */
     public function initialize(Frame $frame): void
     {
-
+        $this->frame = $frame;
     }
 
     /**

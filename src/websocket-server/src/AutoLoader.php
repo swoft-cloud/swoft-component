@@ -75,7 +75,7 @@ class AutoLoader extends SwoftComponent
                 'class' => Router::class,
             ],
             'wsDispatcher' => [
-                'class' => Dispatcher::class,
+                'class' => WsDispatcher::class,
             ],
         ];
     }

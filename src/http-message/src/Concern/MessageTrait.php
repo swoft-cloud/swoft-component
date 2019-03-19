@@ -234,6 +234,32 @@ trait MessageTrait
         return $new;
     }
 
+    public function withHeaders(array $headers): self
+    {
+        $new = clone $this;
+        foreach ($headers as $header => $value) {
+            if (!\is_array($value)) {
+                $value = [$value];
+            }
+
+            $value      = $new->trimHeaderValues($value);
+            $normalized = \strtolower($header);
+
+            if (isset($new->headerNames[$normalized])) {
+                $headerName = $new->headerNames[$normalized];
+                $oldValues = $new->headers[$headerName];
+                // re-save
+                $new->headers[$headerName] = \array_merge($oldValues, $value);
+                continue;
+            }
+
+            $new->headerNames[$normalized] = $header;
+            $new->headers[$header]         = $value;
+        }
+
+        return $new;
+    }
+
     /**
      * Return an instance without the specified header.
      *
@@ -323,8 +349,9 @@ trait MessageTrait
 
             if (isset($this->headerNames[$normalized])) {
                 $headerName = $this->headerNames[$normalized];
-                //
-                $this->headers[$headerName] = \array_merge($this->headers[$headerName], $value);
+                $oldValues = $this->headers[$headerName];
+                // re-save
+                $this->headers[$headerName] = \array_merge($oldValues, $value);
                 continue;
             }
 

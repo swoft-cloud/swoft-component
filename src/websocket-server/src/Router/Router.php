@@ -98,10 +98,14 @@ class Router implements RouterInterface
         return $this->modules[$path] ?? [];
     }
 
+    /**
+     * @param string $path
+     * @param string $command
+     * @return array
+     */
     public function matchCommand(string $path, string $command): array
     {
         $path = WsHelper::formatPath($path);
-
         if (!isset($this->commands[$path])) {
             return [self::NOT_FOUND, null];
         }

@@ -22,7 +22,7 @@ use Swoole\WebSocket\Server;
  *
  * @Bean("wsDispatcher")
  */
-class Dispatcher
+class WsDispatcher
 {
     /**
      * dispatch handshake request
@@ -36,9 +36,11 @@ class Dispatcher
      */
     public function handshake(Request $request, Response $response): array
     {
+        $status = WsModuleInterface::ACCEPT;
+
         try {
             $path = $request->getUriPath();
-            [$className,] = $this->getHandler($path);
+            [$className, ] = $this->getHandler($path);
 
             \server()->log("found handler for path '$path', ws controller is $className", [], 'debug');
         } catch (\Throwable $e) {
@@ -172,7 +174,7 @@ class Dispatcher
     {
         /** @var Router $router */
         $router = Container::$instance->getSingleton('wsRouter');
-        [$status, $info] = $router->getHandler($path);
+        [$status, $info] = $router->match($path);
 
         if ($status !== Router::FOUND) {
             throw new WsRouteException(sprintf(

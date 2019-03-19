@@ -3,9 +3,11 @@
 namespace Swoft\WebSocket\Server\Swoole;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Container;
 use Swoft\Server\Swoole\CloseInterface;
 use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Connection;
+use Swoft\WebSocket\Server\WsDispatcher;
 use Swoft\WebSocket\Server\WsServerEvent;
 use Swoole\Server;
 
@@ -30,6 +32,8 @@ class CloseListener implements CloseInterface
     {
         // Only allow handshake success conn
         if (!$server->isEstablished($fd)) {
+            Session::unbindFd();
+            Session::destroy($fd);
             return;
         }
 
@@ -46,18 +50,20 @@ class CloseListener implements CloseInterface
 
         \server()->log("onClose: Client #{$fd} meta info:", $meta, 'debug');
 
+        /** @var WsDispatcher $dispatcher */
+        $dispatcher = Container::$instance->getSingleton('wsDispatcher');
         // 握手成功的才回调 close
         if ($conn->isHandshake()) {
-            /** @see Dispatcher::close() */
+            /** @see WsDispatcher::close() */
             \bean('wsDispatcher')->close($server, $fd);
         }
 
-        // call on close callback
+        // Call on close callback
         \Swoft::trigger(WsServerEvent::AFTER_CLOSE, $fd, $server);
 
-        // unbind fd
+        // Unbind fd
         Session::unbindFd();
-        // remove connection
+        // Remove connection
         Session::destroy($fd);
     }
 }
