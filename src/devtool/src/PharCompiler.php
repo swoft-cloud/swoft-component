@@ -577,7 +577,8 @@ EOF;
 
                 // skip exclude directories.
                 if ($file->isDir()) {
-                    return !isset($this->excludes[$name]);
+                    $excludePath = str_replace(\alias('@root/'), '', $file->getPathname());
+                    return !isset($this->excludes[$excludePath]);
                 }
 
                 if ($this->suffixes) {
