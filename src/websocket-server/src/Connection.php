@@ -8,6 +8,7 @@ use Swoft\Concern\DataPropertyTrait;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\Session\SessionInterface;
+use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 
 /**
  * Class Connection
@@ -26,7 +27,7 @@ class Connection implements SessionInterface
     private $fd = 0;
 
     /**
-     * @var
+     * @var array
      */
     private $module;
 
@@ -154,5 +155,21 @@ class Connection implements SessionInterface
     public function getResponse(): Response
     {
         return $this->response;
+    }
+
+    /**
+     * @return array
+     */
+    public function getModule(): array
+    {
+        return $this->module;
+    }
+
+    /**
+     * @param array $module
+     */
+    public function setModule(array $module): void
+    {
+        $this->module = $module;
     }
 }

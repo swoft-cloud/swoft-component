@@ -2,7 +2,6 @@
 
 namespace Swoft\WebSocket\Server;
 
-use Swoft\App;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Container;
 use Swoft\Http\Message\Request;
@@ -25,7 +24,7 @@ use Swoole\WebSocket\Server;
 class WsDispatcher
 {
     /**
-     * dispatch handshake request
+     * Dispatch handshake request
      *
      * @param Request  $request
      * @param Response $response
@@ -36,13 +35,36 @@ class WsDispatcher
      */
     public function handshake(Request $request, Response $response): array
     {
-        $status = WsModuleInterface::ACCEPT;
+        $router = Container::$instance->getSingleton('wsRouter');
 
         try {
+            /** @var Connection $conn */
+            $conn = Session::mustGet();
             $path = $request->getUriPath();
-            [$className, ] = $this->getHandler($path);
+            /** @var Router $router */
+            [$status, $info] = $router->match($path);
+            if ($status !== Router::FOUND) {
+                throw new WsRouteException(sprintf(
+                    'The requested websocket route "%s" path is not exist!',
+                    $path
+                ));
+            }
 
-            \server()->log("found handler for path '$path', ws controller is $className", [], 'debug');
+            $class = $info['class'];
+            $conn->setModule($info);
+
+            \server()->log("found handler for path '$path', ws module class is $class", [], 'debug');
+
+            /** @var WsModuleInterface $module */
+            $module = Container::$instance->getSingleton($class);
+            $method = $info['eventMethods']['handShake'] ?? '';
+
+            // Auto handShake
+            if (!$method) {
+                return [true, $response->withAddedHeader('swoft-ws-handshake', 'auto')];
+            }
+
+            return $module->$method($request, $response);
         } catch (\Throwable $e) {
             /* @var ErrorHandler $errorHandler */
             // $errorHandler = \bean(ErrorHandler::class);
@@ -54,21 +76,9 @@ class WsDispatcher
                 ];
             }
 
-            // other error
+            // Other error
             throw new WsServerException('handshake error: ' . $e->getMessage(), -500, $e);
         }
-
-        /** @var WsModuleInterface $handler */
-        $handler = Container::$instance->getSingleton($className);
-
-        if (!\method_exists($handler, 'checkHandshake')) {
-            return [
-                WsModuleInterface::ACCEPT,
-                $response->withAddedHeader('swoft-ws-handshake', 'auto')
-            ];
-        }
-
-        return $handler->checkHandshake($request, $response);
     }
 
     /**

@@ -58,6 +58,7 @@ class WsModuleParser extends Parser
             'class'          => $class,
             'defaultCommand' => $annotation->getDefaultCommand(),
             'messageParser'  => $annotation->getMessageParser(),
+            'eventMethods'   => [],
         ];
 
         if (isset(self::$modules[$class])) {
@@ -74,15 +75,14 @@ class WsModuleParser extends Parser
      */
     public static function registerTo(Router $router): void
     {
-        // modules
+        // Modules
         foreach (self::$modules as $mdlClass => $mdlInfo) {
             $router->addModule($mdlInfo['path'], $mdlInfo);
         }
 
-        // commands
+        // Commands
         foreach (self::$commands as $ctrlClass => $info) {
             $path = self::$modules[$info['module']]['path'];
-
             foreach ($info['routes'] as $route) {
                 $id = $info['prefix'] . '.' . $route['command'];
                 $router->addCommand($path, $id, [$ctrlClass, $route['method']]);
@@ -97,7 +97,7 @@ class WsModuleParser extends Parser
      */
     public static function bindEvent(string $moduleClass, string $method, string $event): void
     {
-        self::$modules[$moduleClass]['events'][$event] = $method;
+        self::$modules[$moduleClass]['eventMethods'][$event] = $method;
     }
 
     /**

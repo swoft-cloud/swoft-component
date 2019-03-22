@@ -28,8 +28,6 @@ class MessageListener implements MessageInterface
     /**
      * @param Server $server
      * @param Frame  $frame
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function onMessage(Server $server, Frame $frame): void
     {
@@ -39,13 +37,12 @@ class MessageListener implements MessageInterface
         $ctx = Container::$instance->getSingleton(WsContext::class);
         $ctx->initialize($frame);
 
-        // storage context
+        // Storage context
         Context::set($ctx);
-        // init fd and coId mapping
+        // Init fd and coId mapping
         Session::bindFd($fd);
 
         \Swoft::trigger(WsServerEvent::BEFORE_MESSAGE, null, $server, $frame);
-
         \server()->log("received message: {$frame->data} from fd #{$fd}, co ID #" . Co::tid(), [], 'debug');
 
         /** @var WsDispatcher $dispatcher */

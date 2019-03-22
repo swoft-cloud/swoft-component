@@ -10,7 +10,6 @@ use Swoft\Http\Message\Response as Psr7Response;
 use Swoft\Server\Swoole\HandShakeInterface;
 use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Connection;
-use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\Helper\WsHelper;
 use Swoft\WebSocket\Server\WsDispatcher;
 use Swoft\WebSocket\Server\WsServerEvent;
@@ -20,7 +19,6 @@ use Swoole\Http\Response;
 /**
  * Class HandShakeListener
  * @since 2.0
- * @package Swoft\WebSocket\Server\Swoole
  *
  * @Bean("handShakeListener")
  */
@@ -50,22 +48,16 @@ class HandShakeListener implements HandShakeInterface
         Session::bindFd($fd);
 
         // Initialize psr7 Request and Response and metadata
-
-        /** @var Connection $conn */
-        $conn = Container::$instance->getPrototype(Connection::class);
-
         $psr7Req = Psr7Request::new($request);
         $psr7Res = Psr7Response::new($response);
 
-        // Initialize connection
+        /** @var Connection $conn Initialize connection */
+        $conn = Container::$instance->getPrototype(Connection::class);
         $conn->initialize($fd, $psr7Req, $psr7Res);
 
         // Bind connection
         Session::set($fd, $conn);
-
         \Swoft::trigger(WsServerEvent::BEFORE_HANDSHAKE, $fd, $request, $response);
-
-        $cid = Co::tid();
 
         /** @var WsDispatcher $dispatcher */
         $dispatcher = \bean('wsDispatcher');
@@ -73,29 +65,24 @@ class HandShakeListener implements HandShakeInterface
         /** @var \Swoft\Http\Message\Response $psr7Res */
         [$status, $psr7Res] = $dispatcher->handshake($psr7Req, $psr7Res);
 
+        $cid  = Co::tid();
         $meta = $conn->getMetadata();
 
-        // handshake check is failed -- 拒绝连接，比如需要认证，限定路由，限定ip，限定domain等
-        if (WsModuleInterface::ACCEPT !== $status) {
-            \server()->log("Client #$fd handshake check failed, request path {$meta['path']}");
+        if (true !== $status) {
             $psr7Res->send();
-
+            \server()->log("Client #$fd handshake check failed, request path {$meta['path']}");
             // NOTICE: Rejecting a handshake still triggers a close event.
             return false;
         }
 
-        // setting response
+        // Config response
         $psr7Res = $psr7Res->withStatus(101)->withHeaders(WsHelper::handshakeHeaders($secKey));
         if ($wsProtocol = $request->header['sec-websocket-protocol'] ?? '') {
             $psr7Res = $psr7Res->withHeader('Sec-WebSocket-Protocol', $wsProtocol);
         }
 
-        // $this->log("Handshake: response headers:\n", $psr7Res->getHeaders());
-
         // Response handshake successfully
         $psr7Res->send();
-
-        // mark handshake is ok
         $conn->setHandshake(true);
 
         \server()->log(
@@ -105,7 +92,7 @@ class HandShakeListener implements HandShakeInterface
         );
 
         // Handshaking successful, Manually triggering the open event
-        \server()->getSwooleServer()->defer(function () use ($psr7Req, $fd) {
+        Co::create(function () use ($psr7Req, $fd) {
             $this->onOpen($psr7Req, $fd);
         });
 
@@ -123,7 +110,6 @@ class HandShakeListener implements HandShakeInterface
         $server = \server()->getSwooleServer();
 
         \Swoft::trigger(WsServerEvent::AFTER_OPEN, $fd, $server, $request);
-
         \server()->log("connection #$fd has been opened, co ID #" . Co::tid(), [], 'debug');
 
         /** @see WsDispatcher::open() */

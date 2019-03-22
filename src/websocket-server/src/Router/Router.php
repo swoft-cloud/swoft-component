@@ -23,7 +23,7 @@ class Router implements RouterInterface
      *      'name'  => module name,
      *      'messageParser'  => message parser class,
      *      'defaultCommand' => default command,
-     *      'events'   => [
+     *      'eventMethods'   => [
      *          'handShake' => method1, (on the moduleClass)
      *          'open'      => method2,
      *          'close'     => method3,
@@ -94,7 +94,6 @@ class Router implements RouterInterface
     public function match(string $path): array
     {
         $path = WsHelper::formatPath($path);
-
         return $this->modules[$path] ?? [];
     }
 

@@ -3,9 +3,9 @@
 namespace Swoft\WebSocket\Server\Exception;
 
 /**
- * Class WsRouteException
+ * Class WsHandShakeException
  */
-class WsRouteException extends WsServerException
+class WsHandShakeException extends WsServerException
 {
 
 }
