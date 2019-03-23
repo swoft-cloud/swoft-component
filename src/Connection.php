@@ -4,9 +4,8 @@
 namespace Swoft\Db;
 
 
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Bean\Exception\PrototypeException;
-use Swoft\Connection\Pool\ConnectionInterface as PoolConnectionInterface;
+use Swoft\Connection\Pool\AbstractConnection;
 use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
@@ -18,7 +17,7 @@ use Swoft\Db\Query\Processor\Processor;
  *
  * @since 2.0
  */
-class Connection implements PoolConnectionInterface, ConnectionInterface
+class Connection extends AbstractConnection implements ConnectionInterface
 {
     /**
      * Default fetch mode
@@ -60,11 +59,6 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
     protected $database;
 
     /**
-     * @var Pool
-     */
-    protected $pool;
-
-    /**
      * The query grammar implementation.
      *
      * @var Grammar
@@ -82,6 +76,11 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
      * @var int
      */
     protected $pdoType = 0;
+
+    /**
+     * @var int
+     */
+    protected $id = 0;
 
     /**
      * Replace constructor
@@ -103,6 +102,8 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
         $this->useDefaultQueryGrammar();
 
         $this->useDefaultPostProcessor();
+
+        $this->id = $this->pool->getConnectionId();
     }
 
     /**
@@ -189,14 +190,17 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
         return true;
     }
 
-    public function getId(): string
+    public function getId(): int
     {
-        return uniqid();
+        return $this->id;
     }
 
-    public function release(): void
+    /**
+     * @param bool $force
+     */
+    public function release(bool $force = false): void
     {
-        $this->pool->release($this);
+        parent::release($force);
     }
 
     public function getLastTime(): int
@@ -562,8 +566,6 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
 
         // Here we will run this query. If an exception occurs we'll determine if it was
         // caused by a connection that has been lost. If that is the cause, we'll try
-
-        // 错误释放连接、事物处理
         $result = $this->runQueryCallback($query, $bindings, $callback);
 
         // Once we have run the query we will calculate the time that it took to run and

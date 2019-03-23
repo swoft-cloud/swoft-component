@@ -3,7 +3,9 @@
 
 namespace Swoft\Db;
 
+use Swoft\Bean\BeanFactory;
 use Swoft\Db\Exception\PoolException;
+use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Query\Builder;
 
 /**
@@ -56,7 +58,13 @@ class DB
                 throw new PoolException(sprintf('%s is not instance of pool', $name));
             }
 
-            return $pool->getConnection();
+            /* @var ConnectionManager $conManager*/
+            $conManager = BeanFactory::getBean(ConnectionManager::class);
+            $connection = $pool->getConnection();
+
+            $connection->setRelease(true);
+            $conManager->setOrdinaryConnection($connection);
+            return $connection;
         } catch (\Throwable $e) {
             throw new PoolException(
                 sprintf('Pool error is %s file=%s line=%d', $e->getMessage(), $e->getFile(), $e->getLine())
@@ -64,14 +72,23 @@ class DB
         }
     }
 
+    /**
+     * Call method
+     *
+     * @param string $name
+     * @param array  $arguments
+     *
+     * @return mixed
+     * @throws PoolException
+     * @throws QueryException
+     */
     public static function __callStatic(string $name, array $arguments)
     {
         if (!in_array($name, self::$passthru)) {
-
+            throw new QueryException(sprintf('Method(%s) is not exist!', $name));
         }
 
         $connection = self::pool();
-
         return $connection->$name(...$arguments);
     }
 }
