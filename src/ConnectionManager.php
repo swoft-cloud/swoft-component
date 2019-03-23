@@ -54,4 +54,28 @@ class ConnectionManager
         $key = sprintf('%d.connection.%d', Co::tid(), $connection->getId());
         $this->set($key, $connection);
     }
+
+    /**
+     * @param int $id
+     */
+    public function releaseOrdinaryConnection(int $id)
+    {
+        $key = sprintf('%d.connection.%d', Co::tid(), $id);
+        $this->unset($key);
+    }
+
+    /**
+     *
+     */
+    public function release(): void
+    {
+        $ordKey         = sprintf('%d.connection', Co::tid());
+        $OrdConnections = $this->get($ordKey);
+
+        foreach ($OrdConnections as $ordConnection) {
+            if($ordConnection instanceof BaseConnection){
+                $ordConnection->release(true);
+            }
+        }
+    }
 }
