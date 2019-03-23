@@ -16,4 +16,14 @@ class SwoftEvent
 
     // public const APP_INIT_BEFORE = 'swoft.app.init.before';
     public const APP_INIT_AFTER  = 'swoft.app.init.after';
+
+    /**
+     * Coroutine complete
+     */
+    public const COROUTINE_COMPLETE = 'swoft.co.complete';
+
+    /**
+     * Coroutine destroy
+     */
+    public const COROUTINE_DESTROY = 'swoft.co.destroy';
 }

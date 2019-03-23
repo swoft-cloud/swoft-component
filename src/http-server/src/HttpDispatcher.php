@@ -67,7 +67,7 @@ class HttpDispatcher extends Dispatcher
         \Swoft::trigger(HttpServerEvent::AFTER_REQUEST, $this, $response);
 
         // Trigger destroy request bean
-        \Swoft::trigger(BeanEvent::DESTROY_REQUEST, $this, Co::tid());
+//        \Swoft::trigger(BeanEvent::DESTROY_REQUEST, $this, Co::tid());
         // $response->withContent('<h1>Hello Swoole</h1>')->send();
     }
 

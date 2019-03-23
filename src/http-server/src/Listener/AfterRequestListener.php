@@ -34,15 +34,21 @@ class AfterRequestListener implements EventHandlerInterface
         $response = $event->getParam(0);
         $response->send();
 
-        /* @var Logger $logger */
-        $logger = \bean('logger');
+        \sgo(function (){
 
-        // Add notice log
-        if ($logger->isEnable()) {
-            $logger->appendNoticeLog();
-        }
+            // Wait
+            Context::getWaitGroup()->wait();
 
-        // Destroy context
-        Context::destroy();
+            /* @var Logger $logger */
+            $logger = \bean('logger');
+
+            // Add notice log
+            if ($logger->isEnable()) {
+                $logger->appendNoticeLog();
+            }
+
+            // Destroy context
+            Context::destroy();
+        }, false);
     }
 }

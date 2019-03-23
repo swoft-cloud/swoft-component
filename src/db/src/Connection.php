@@ -691,7 +691,6 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
         // TODO: Implement transactionLevel() method.
     }
 
-
     /**
      * Get the PDO connection to use for a select query.
      *
