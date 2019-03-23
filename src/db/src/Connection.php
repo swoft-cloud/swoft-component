@@ -4,6 +4,7 @@
 namespace Swoft\Db;
 
 
+use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Connection\Pool\AbstractConnection;
 use Swoft\Db\Exception\QueryException;
@@ -186,7 +187,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
         } catch (\Throwable $e) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -197,10 +198,18 @@ class Connection extends AbstractConnection implements ConnectionInterface
 
     /**
      * @param bool $force
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function release(bool $force = false): void
     {
-        parent::release($force);
+        /* @var ConnectionManager $conManager */
+        $conManager = BeanFactory::getBean(ConnectionManager::class);
+        if (true) {
+            $conManager->releaseOrdinaryConnection($this->id);
+            parent::release($force);
+        }
     }
 
     public function getLastTime(): int
@@ -604,14 +613,14 @@ class Connection extends AbstractConnection implements ConnectionInterface
             // message to include the bindings with SQL, which will make this exception a
             // lot more helpful to the developer instead of just the database's errors.
 
-            if(!$reconnect && $this->isReconnect() && $this->reconnect()){
+            if (!$reconnect && $this->isReconnect() && $this->reconnect()) {
                 return $this->runQueryCallback($query, $bindings, $callback, true);
             }
 
             // Reconnect fail to remove exception connection
             if ($this->isReconnect()) {
                 $this->pool->remove();
-            }else{
+            } else {
                 // Other exception to release connection
                 $this->release();
             }
