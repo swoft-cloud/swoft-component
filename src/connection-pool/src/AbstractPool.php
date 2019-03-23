@@ -67,6 +67,22 @@ abstract class AbstractPool implements PoolInterface
     protected $count = 0;
 
     /**
+     * Next connect id
+     *
+     * @var int
+     */
+    protected $connectionId = 0;
+
+    /**
+     * @return int
+     */
+    public function getConnectionId(): int
+    {
+        $this->connectionId++;
+        return $this->connectionId;
+    }
+
+    /**
      * @return ConnectionInterface
      * @throws ConnectionPoolException
      */

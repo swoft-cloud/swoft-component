@@ -45,6 +45,16 @@ trait DataPropertyTrait
     }
 
     /**
+     * Unset key
+     *
+     * @param string  $key
+     */
+    public function unset(string $key): void
+    {
+        ArrayHelper::forget($this->data, $key);
+    }
+
+    /**
      * Set multi value to context
      *
      * @param array $map

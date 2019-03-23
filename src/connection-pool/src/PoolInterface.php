@@ -30,4 +30,9 @@ interface PoolInterface
      * @param ConnectionInterface $connection
      */
     public function release(ConnectionInterface $connection): void;
+
+    /**
+     * @return int
+     */
+    public function getConnectionId(): int;
 }
