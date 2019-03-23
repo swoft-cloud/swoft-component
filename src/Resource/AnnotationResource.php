@@ -186,9 +186,7 @@ class AnnotationResource extends Resource
                 }
 
                 $suffix        = \sprintf('.%s', $this->loaderClassSuffix);
-                $classPathName = \str_replace([$path, '/'], ['', '\\'], $pathName);
-                $classPathName = \trim($classPathName, $suffix);
-
+                $classPathName = \str_replace([$path, '/', $suffix], ['', '\\', ''], $pathName);
                 $className = \sprintf('%s%s', $ns, $classPathName);
 
                 // Fix repeated load, such as `Swoft`
