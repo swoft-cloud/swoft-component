@@ -4,15 +4,11 @@
 namespace Swoft\Http\Server\Listener;
 
 
-use Swoft\Co;
-use Swoft\Context\Context;
-use Swoft\Db\ConnectionManager;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Http\Message\Response;
 use Swoft\Http\Server\HttpServerEvent;
-use Swoft\Log\Logger;
 use Swoft\SwoftEvent;
 
 /**
@@ -31,32 +27,14 @@ class AfterRequestListener implements EventHandlerInterface
      */
     public function handle(EventInterface $event): void
     {
-        /**
-         * @var Response $response
-         */
+        /** @var Response $response */
         $response = $event->getParam(0);
         $response->send();
 
+        // Defer
         \Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
 
-        \sgo(function (){
-            // Wait
-            Context::getWaitGroup()->wait();
-
-            /* @var Logger $logger */
-            $logger = \bean('logger');
-
-            // Add notice log
-            if ($logger->isEnable()) {
-                $logger->appendNoticeLog();
-            }
-
-            /* @var ConnectionManager $cm*/
-            $cm = bean(ConnectionManager::class);
-            $cm->release(true);
-
-            // Destroy context
-            Context::destroy();
-        }, false);
+        // Destroy
+        \Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
     }
 }

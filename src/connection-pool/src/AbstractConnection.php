@@ -51,7 +51,6 @@ abstract class AbstractConnection implements ConnectionInterface
     public function release(bool $force = false): void
     {
         if ($this->release) {
-//            var_dump('release-22');
             $this->release = false;
             $this->pool->release($this);
         }
