@@ -53,18 +53,12 @@ class DB
     public static function pool(string $name = Pool::DEFAULT_POOL): Connection
     {
         try {
-            $pool = \bean($name);
-            if (!$pool instanceof Pool) {
-                throw new PoolException(sprintf('%s is not instance of pool', $name));
+            $cm = bean(ConnectionManager::class);
+            if ($cm->isTransaction()) {
+                return $cm->getTransactionConnection();
             }
 
-            /* @var ConnectionManager $conManager*/
-            $conManager = BeanFactory::getBean(ConnectionManager::class);
-            $connection = $pool->getConnection();
-
-            $connection->setRelease(true);
-            $conManager->setOrdinaryConnection($connection);
-            return $connection;
+            return self::getConnectionFromPool($name);
         } catch (\Throwable $e) {
             throw new PoolException(
                 sprintf('Pool error is %s file=%s line=%d', $e->getMessage(), $e->getFile(), $e->getLine())
@@ -90,5 +84,32 @@ class DB
 
         $connection = self::pool();
         return $connection->$name(...$arguments);
+    }
+
+    /**
+     * Get connection from pool
+     *
+     * @param string $name
+     *
+     * @return Connection
+     * @throws PoolException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Connection\Pool\Exception\ConnectionPoolException
+     */
+    private static function getConnectionFromPool(string $name): Connection
+    {
+        $pool = \bean($name);
+        if (!$pool instanceof Pool) {
+            throw new PoolException(sprintf('%s is not instance of pool', $name));
+        }
+
+        /* @var ConnectionManager $conManager */
+        $conManager = BeanFactory::getBean(ConnectionManager::class);
+        $connection = $pool->getConnection();
+
+        $connection->setRelease(true);
+        $conManager->setOrdinaryConnection($connection);
+        return $connection;
     }
 }
