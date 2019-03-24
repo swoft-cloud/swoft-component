@@ -49,6 +49,10 @@ class ConnectionManager
      */
     use DataPropertyTrait;
 
+
+    /**
+     * @param BaseConnection $connection
+     */
     public function setOrdinaryConnection(BaseConnection $connection): void
     {
         $key = sprintf('%d.connection.%d', Co::tid(), $connection->getId());
@@ -65,17 +69,37 @@ class ConnectionManager
     }
 
     /**
+     * release
      *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function release(): void
     {
-        $ordKey         = sprintf('%d.connection', Co::tid());
-        $OrdConnections = $this->get($ordKey);
+        $ordKey = sprintf('%d.connection', Co::tid());
+        $tsKey  = sprintf('%d.transaction', Co::tid());
+
+        $OrdConnections = $this->get($ordKey, []);
+        $transactions   = $this->get($tsKey, []);
+
+        $tsConnections = [];
+        foreach ($transactions as $transaction) {
+            $tsConnection = $transaction['connection'] ?? null;
+            if ($tsConnection instanceof Connection) {
+                $tsConnections[$tsConnection->getId()] = 1;
+            }
+        }
 
         foreach ($OrdConnections as $ordConnection) {
-            if($ordConnection instanceof BaseConnection){
-                $ordConnection->release(true);
+            if (!$ordConnection instanceof Connection) {
+                continue;
             }
+
+            $ordConId = $ordConnection->getId();
+            if (isset($tsConnections[$ordConId])) {
+                $ordConnection->rollBack();
+            }
+            $ordConnection->release(true);
         }
     }
 }
