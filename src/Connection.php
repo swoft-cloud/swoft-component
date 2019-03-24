@@ -195,10 +195,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      */
     public function release(bool $force = false): void
     {
-//        echo json_encode(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 3)).PHP_EOL;
         $cm = $this->getConMananger();
         if (!$cm->isTransaction()) {
-//            var_dump('release-111');
             $cm->releaseOrdinaryConnection($this->id);
             parent::release($force);
         }
@@ -846,7 +844,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
      */
     protected function performRollBack(int $toLevel): void
     {
-//        var_dump('$toLevel-'.$toLevel);
         $cm = $this->getConMananger();
         if ($toLevel == 0) {
             $this->getPdo()->rollBack();
