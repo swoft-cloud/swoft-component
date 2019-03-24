@@ -30,7 +30,9 @@ class ConnectionManager
      *      ],
      *
      *     'connection' => [
-     *          'connectionId' => Connection
+     *          'cid' => [
+     *              'connectionId' => Connection
+     *          ]
      *      ]
      *   ],
      *  'tid2' => [
@@ -42,7 +44,9 @@ class ConnectionManager
      *      ],
      *
      *     'connection' => [
-     *          'connectionId' => Connection
+     *          'cid' => [
+     *              'connectionId' => Connection
+     *          ]
      *      ]
      *   ],
      * ]
@@ -55,7 +59,7 @@ class ConnectionManager
      */
     public function setOrdinaryConnection(BaseConnection $connection): void
     {
-        $key = sprintf('%d.connection.%d', Co::tid(), $connection->getId());
+        $key = sprintf('%d.connection.%d.%d', Co::tid(), Co::id(), $connection->getId());
         $this->set($key, $connection);
     }
 
@@ -64,7 +68,7 @@ class ConnectionManager
      */
     public function releaseOrdinaryConnection(int $id)
     {
-        $key = sprintf('%d.connection.%d', Co::tid(), $id);
+        $key = sprintf('%d.connection.%d.%d', Co::tid(), Co::id(), $id);
         $this->unset($key);
     }
 
@@ -156,26 +160,34 @@ class ConnectionManager
     /**
      * release
      *
+     * @param bool $final
+     *
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public function release(): void
+    public function release(bool $final = false): void
     {
-        $ordKey = sprintf('%d.connection', Co::tid());
-        $tsKey  = sprintf('%d.transaction', Co::tid());
-
-        $OrdConnections = $this->get($ordKey, []);
-        $transactions   = $this->get($tsKey, []);
-
-        $tsConnections = [];
-        foreach ($transactions as $transaction) {
-            $tsConnection = $transaction['connection'] ?? null;
-            if ($tsConnection instanceof Connection) {
-                $tsConnections[$tsConnection->getId()] = 1;
-            }
+        // Final release
+        if ($final) {
+            $finalKey = sprintf('%d', Co::tid());
+            $this->unset($finalKey);
+            return;
         }
 
-        foreach ($OrdConnections as $ordConnection) {
+        // Release current coroutine
+        $ordKey = sprintf('%d.connection.%d', Co::tid(), Co::id());
+        $tsKey  = sprintf('%d.transaction.%d', Co::tid(), Co::id());
+
+        $OrdConnection = $this->get($ordKey, []);
+        $transaction   = $this->get($tsKey, []);
+        $tsConnection  = $transaction['connection'] ?? null;
+
+        $tsConnections = [];
+        if ($tsConnection instanceof Connection) {
+            $tsConnections[$tsConnection->getId()] = 1;
+        }
+
+        foreach ($OrdConnection as $ordConnection) {
             if (!$ordConnection instanceof Connection) {
                 continue;
             }
@@ -188,5 +200,8 @@ class ConnectionManager
 
             $ordConnection->release(true);
         }
+
+        $this->unset($ordKey);
+        $this->unset($tsKey);
     }
 }

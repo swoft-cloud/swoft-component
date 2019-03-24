@@ -13,6 +13,7 @@ use Swoft\Event\EventInterface;
 use Swoft\Http\Message\Response;
 use Swoft\Http\Server\HttpServerEvent;
 use Swoft\Log\Logger;
+use Swoft\SwoftEvent;
 
 /**
  * Class AfterRequestListener
@@ -36,14 +37,11 @@ class AfterRequestListener implements EventHandlerInterface
         $response = $event->getParam(0);
         $response->send();
 
-        $tid = Co::tid();
-        var_dump('sgo1-'.$tid);
-        \sgo(function () use($tid){
+        \Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
 
-            var_dump('sgo2-'.$tid);
+        \sgo(function (){
             // Wait
             Context::getWaitGroup()->wait();
-            var_dump('sgo3-'.$tid);
 
             /* @var Logger $logger */
             $logger = \bean('logger');
@@ -55,7 +53,7 @@ class AfterRequestListener implements EventHandlerInterface
 
             /* @var ConnectionManager $cm*/
             $cm = bean(ConnectionManager::class);
-            $cm->release();
+            $cm->release(true);
 
             // Destroy context
             Context::destroy();
