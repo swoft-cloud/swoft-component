@@ -55,6 +55,7 @@ class HttpDispatcher extends Dispatcher
             // Begin handle request, return response
             $response = $requestHandler->handle($request);
         } catch (\Throwable $e) {
+            echo json_encode($e);
             \printf(
                 "HTTP Dispatch Error: %s\nAt %s %d",
                 $e->getMessage(),

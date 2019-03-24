@@ -4,6 +4,7 @@
 namespace Swoft\Http\Server\Listener;
 
 
+use Swoft\Co;
 use Swoft\Context\Context;
 use Swoft\Db\ConnectionManager;
 use Swoft\Event\Annotation\Mapping\Listener;
@@ -35,10 +36,14 @@ class AfterRequestListener implements EventHandlerInterface
         $response = $event->getParam(0);
         $response->send();
 
-        \sgo(function (){
+        $tid = Co::tid();
+        var_dump('sgo1-'.$tid);
+        \sgo(function () use($tid){
 
+            var_dump('sgo2-'.$tid);
             // Wait
             Context::getWaitGroup()->wait();
+            var_dump('sgo3-'.$tid);
 
             /* @var Logger $logger */
             $logger = \bean('logger');

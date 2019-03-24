@@ -153,6 +153,7 @@ abstract class AbstractPool implements PoolInterface
 
         // Sleep coroutine and resume coroutine after `maxWaitTime`, Return false is waiting timeout
         $connection = $this->channel->pop($this->maxWaitTime);
+//        var_dump('Channel pop wait');
         if ($connection === false) {
             throw new ConnectionPoolException(
                 sprintf('Channel pop timeout by %fs', $this->maxWaitTime)
@@ -223,6 +224,7 @@ abstract class AbstractPool implements PoolInterface
         $stats = $this->channel->stats();
         if ($stats['queue_num'] < $this->maxActive) {
             $this->channel->push($connection);
+//            var_dump($this->channel->stats());
         }
     }
 }

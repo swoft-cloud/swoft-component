@@ -79,6 +79,8 @@ class Co
 
             if ($wait) {
                 Context::getWaitGroup()->done();
+
+//                \Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
             }
         });
     }

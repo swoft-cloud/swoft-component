@@ -69,6 +69,91 @@ class ConnectionManager
     }
 
     /**
+     * @return bool
+     */
+    public function isTransaction(): bool
+    {
+        $key = sprintf('%d.transaction.%d.connection', Co::tid(), Co::id());
+        return $this->has($key);
+    }
+
+    /**
+     * Inc transactions for transaction
+     */
+    public function incTransactionTransactons(): void
+    {
+        $key = sprintf('%d.transaction.%d.transactions', Co::tid(), Co::id());
+
+        $transactions = $this->get($key, 0);
+        $this->set($key, $transactions + 1);
+    }
+
+    /**
+     * Dec transactions for transaction
+     */
+    public function decTransactionTransactons(): void
+    {
+        $key = sprintf('%d.transaction.%d.transactions', Co::tid(), Co::id());
+
+        $transactions = $this->get($key, 0);
+        if ($transactions <= 0) {
+            return;
+        }
+
+        $this->set($key, $transactions - 1);
+    }
+
+    /**
+     * @param int $transactions
+     */
+    public function setTransactionTransactons(int $transactions): void
+    {
+        $key = sprintf('%d.transaction.%d.transactions', Co::tid(), Co::id());
+        $this->set($key, $transactions);
+    }
+
+    /**
+     * @return int
+     */
+    public function getTransactionTransactons(): int
+    {
+        $key = sprintf('%d.transaction.%d.transactions', Co::tid(), Co::id());
+        return $this->get($key, 0);
+    }
+
+    /**
+     * @param BaseConnection $connection
+     */
+    public function setTransactionConnection(BaseConnection $connection): void
+    {
+        $key = sprintf('%d.transaction.%d.connection', Co::tid(), Co::id());
+        $this->set($key, $connection);
+    }
+
+    /**
+     * @return Connection
+     */
+    public function getTransactionConnection(): Connection
+    {
+        $key = sprintf('%d.transaction.%d.connection', Co::tid(), Co::id());
+        $con = $this->get($key, null);
+        if (!$con instanceof Connection) {
+            throw new \RuntimeException('Transaction is not beginning!');
+        }
+
+        return $con;
+    }
+
+    /**
+     * Release transaction
+     */
+    public function releaseTransaction(): void
+    {
+        $key = sprintf('%d.transaction.%d', Co::tid(), Co::id());
+        $this->unset($key);
+    }
+
+    /**
      * release
      *
      * @throws \ReflectionException
@@ -97,8 +182,10 @@ class ConnectionManager
 
             $ordConId = $ordConnection->getId();
             if (isset($tsConnections[$ordConId])) {
-                $ordConnection->rollBack();
+                $ordConnection->forceRollBack(0);
+                continue;
             }
+
             $ordConnection->release(true);
         }
     }

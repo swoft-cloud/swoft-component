@@ -26,4 +26,9 @@ class SwoftEvent
      * Coroutine destroy
      */
     public const COROUTINE_DESTROY = 'swoft.co.destroy';
+
+    /**
+     * Coroutine defer
+     */
+    public const COROUTINE_DEFER = 'swoft.co.defer';
 }

@@ -47,11 +47,23 @@ trait DataPropertyTrait
     /**
      * Unset key
      *
-     * @param string  $key
+     * @param string $key
      */
     public function unset(string $key): void
     {
         ArrayHelper::forget($this->data, $key);
+    }
+
+    /**
+     * Check if an item exists in an array using "dot" notation.
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function has(string $key): bool
+    {
+        return ArrayHelper::has($this->data, $key);
     }
 
     /**

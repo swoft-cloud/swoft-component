@@ -10,5 +10,18 @@ namespace Swoft\Db\Event;
  */
 class DbEvent
 {
+    /**
+     * Begin transaction
+     */
+    public const BEGIN_TRANSACTION = 'swoft.db.transaction.begin';
 
+    /**
+     * Commit transaction
+     */
+    public const COMMIT_TRANSACTION = 'swoft.db.transaction.commit';
+
+    /**
+     * Rollback
+     */
+    public const ROLLBACK_TRANSACTION = 'swoft.db.transaction.rollback';
 }

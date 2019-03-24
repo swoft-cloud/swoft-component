@@ -7,6 +7,7 @@ namespace Swoft\Db;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Connection\Pool\AbstractConnection;
+use Swoft\Db\Event\DbEvent;
 use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
@@ -77,11 +78,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @var int
      */
     protected $pdoType = 0;
-
-    /**
-     * @var int
-     */
-    protected $id = 0;
 
     /**
      * Replace constructor
@@ -191,11 +187,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
         return true;
     }
 
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
     /**
      * @param bool $force
      *
@@ -204,10 +195,11 @@ class Connection extends AbstractConnection implements ConnectionInterface
      */
     public function release(bool $force = false): void
     {
-        /* @var ConnectionManager $conManager */
-        $conManager = BeanFactory::getBean(ConnectionManager::class);
-        if (true) {
-            $conManager->releaseOrdinaryConnection($this->id);
+//        echo json_encode(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 3)).PHP_EOL;
+        $cm = $this->getConMananger();
+        if (!$cm->isTransaction()) {
+//            var_dump('release-111');
+            $cm->releaseOrdinaryConnection($this->id);
             parent::release($force);
         }
     }
@@ -387,6 +379,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
             $this->bindValues($statement, $this->prepareBindings($bindings));
 
             $statement->execute();
+
             return $statement->fetchAll();
         });
     }
@@ -682,19 +675,96 @@ class Connection extends AbstractConnection implements ConnectionInterface
 
     }
 
+    /**
+     * Start a new database transaction.
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
     public function beginTransaction(): void
     {
-        // TODO: Implement beginTransaction() method.
+        $cm = $this->getConMananger();
+
+        // Begin transaction
+        if (!$cm->isTransaction()) {
+            $this->createTransaction($cm);
+        }
+
+        // Inc transactions
+        $cm->incTransactionTransactons();
+
+        \Swoft::trigger(DbEvent::BEGIN_TRANSACTION);
     }
 
     public function commit(): void
     {
-        // TODO: Implement commit() method.
+        $cm = $this->getConMananger();
+        $ts = $cm->getTransactionTransactons();
+
+        // Not to commit
+        if ($ts <= 0) {
+            return;
+        }
+
+        // Commit
+        if ($ts == 1) {
+            $this->getPdo()->commit();
+
+            //Release from transaction manager
+            $cm->releaseTransaction();
+
+            // Release connection
+            $this->release();
+        }else{
+            // Dec transaction
+            $cm->decTransactionTransactons();
+        }
+
+        \Swoft::trigger(DbEvent::COMMIT_TRANSACTION);
     }
 
-    public function rollBack(): void
+    /**
+     * @param int|null $toLevel
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function rollBack(int $toLevel = null): void
     {
-        // TODO: Implement rollBack() method.
+        $cm = $this->getConMananger();
+        $ts = $cm->getTransactionTransactons();
+
+        // We allow developers to rollback to a certain transaction level. We will verify
+        // that this given transaction level is valid before attempting to rollback to
+        // that level. If it's not we will just return out and not attempt anything.
+        $toLevel = is_null($toLevel) ? $ts - 1 : $toLevel;
+
+        if ($toLevel < 0 || $toLevel >= $ts) {
+            return;
+        }
+
+        // Next, we will actually perform this rollback within this database and fire the
+        // rollback event. We will also set the current transaction level to the given
+        // level that was passed into this method so it will be right from here out.
+        $this->performRollBack($toLevel);
+
+        \Swoft::trigger(DbEvent::ROLLBACK_TRANSACTION);
+    }
+
+    /**
+     * @param int|null $toLevel
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function forceRollBack(int $toLevel = null): void
+    {
+        // Next, we will actually perform this rollback within this database and fire the
+        // rollback event. We will also set the current transaction level to the given
+        // level that was passed into this method so it will be right from here out.
+        $this->performRollBack($toLevel);
+
+        \Swoft::trigger(DbEvent::ROLLBACK_TRANSACTION);
     }
 
     public function transactionLevel(): void
@@ -729,11 +799,13 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * Get the current PDO connection used for reading.
      *
      * @return \PDO
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function getReadPdo(): \PDO
     {
-        // transaction
-        if (true) {
+        $cm = $this->getConMananger();
+        if ($cm->isTransaction()) {
             return $this->getPdo();
         }
 
@@ -761,5 +833,76 @@ class Connection extends AbstractConnection implements ConnectionInterface
                 is_int($value) ? \PDO::PARAM_INT : \PDO::PARAM_STR
             );
         }
+    }
+
+    /**
+     * Perform a rollback within the database.
+     *
+     * @param  int $toLevel
+     *
+     * @return void
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    protected function performRollBack(int $toLevel): void
+    {
+//        var_dump('$toLevel-'.$toLevel);
+        $cm = $this->getConMananger();
+        if ($toLevel == 0) {
+            $this->getPdo()->rollBack();
+
+            //Release transaction
+            $cm->releaseTransaction();
+
+            // Release connection
+            $this->release(true);
+        } elseif ($this->queryGrammar->supportsSavepoints()) {
+            $this->getPdo()->exec(
+                $this->queryGrammar->compileSavepointRollBack('trans' . ($toLevel + 1))
+            );
+
+            $cm->setTransactionTransactons($toLevel);
+        }
+    }
+
+    /**
+     * Create a transaction within the database.
+     *
+     * @param ConnectionManager $cm
+     */
+    protected function createTransaction(ConnectionManager $cm): void
+    {
+        $ts = $cm->getTransactionTransactons();
+        if ($ts == 0) {
+            $this->getPdo()->beginTransaction();
+            $cm->setTransactionConnection($this);
+        } elseif ($ts >= 1 && $this->queryGrammar->supportsSavepoints()) {
+            $this->createSavepoint($ts);
+        }
+    }
+
+    /**
+     * Create a save point within the database.
+     *
+     * @param int $ts
+     *
+     * @return void
+     */
+    protected function createSavepoint(int $ts): void
+    {
+        $this->getPdo()->exec(
+            $this->queryGrammar->compileSavepoint('trans' . ($ts + 1))
+        );
+    }
+
+    /**
+     * @return ConnectionManager
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    protected function getConMananger(): ConnectionManager
+    {
+        return BeanFactory::getBean(ConnectionManager::class);
     }
 }
