@@ -27,6 +27,8 @@ class BuilderTest extends TestCase
     }
 
     /**
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Bean\Exception\PrototypeException
      * @throws \Swoft\Db\Exception\PoolException
      */

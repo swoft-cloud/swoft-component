@@ -40,6 +40,7 @@ use Swoft\Stdlib\Jsonable;
  * @method static Builder firstOrNew(array $attributes, array $values = [])
  * @method static Builder firstOrCreate(array $attributes, array $values = [])
  * @method static Builder updateOrCreate(array $attributes, array $values = [])
+ * @method static bool updateOrInsert(array $attributes, array $values = [])
  * @method static Builder firstOrFail(array $columns = ['*'])
  * @method static Builder firstOr(array $columns = ['*'], \Closure $callback = null)
  * @method static mixed value(string $column)
