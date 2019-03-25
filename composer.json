@@ -1,0 +1,38 @@
+{
+    "name": "swoft/rpc",
+    "type": "library",
+    "keywords": [
+        "php",
+        "swoole",
+        "swoft",
+        "rpc"
+    ],
+    "description": "microservice framework base on swoole",
+    "license": "Apache-2.0",
+    "require": {
+
+    },
+    "require-dev": {
+    },
+    "autoload": {
+        "psr-4": {
+            "Swoft\\Rpc\\": "src/"
+        },
+        "files": [
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SwoftTest\\Rpc\\": "test/case"
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packagist.laravel-china.org"
+        }
+    ],
+    "scripts": {
+
+    }
+}
