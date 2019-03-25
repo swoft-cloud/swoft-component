@@ -175,6 +175,7 @@ class Builder
         'average',
         'sum',
         'getConnection',
+        'updateOrInsert'
     ];
 
     /**

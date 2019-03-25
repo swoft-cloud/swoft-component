@@ -7,6 +7,7 @@ use Swoft\Bean\BeanFactory;
 use Swoft\Db\Exception\PoolException;
 use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Query\Builder;
+use Swoft\Db\Query\Expression;
 
 /**
  * Class Db
@@ -15,6 +16,20 @@ use Swoft\Db\Query\Builder;
  * @since 2.0
  *
  * @method static Builder table($table);
+ * @method static Expression raw($value)
+ * @method static mixed selectOne($query, $bindings = [], $useReadPdo = true)
+ * @method static array select(string $query, array $bindings = [], bool $useReadPdo = true)
+ * @method static \Generator cursor(string $query, array $bindings = [], bool $useReadPdo = true)
+ * @method static bool insert(string $query, array $bindings = [])
+ * @method static int update(string $query, array $bindings = [])
+ * @method static int delete(string $query, array $bindings = [])
+ * @method static bool statement(string $query, array $bindings = [])
+ * @method static int affectingStatement(string $query, array $bindings = [])
+ * @method static bool unprepared(string $query)
+ * @method static mixed transaction(\Closure $callback, $attempts = 1)
+ * @method static void beginTransaction()
+ * @method static void commit()
+ * @method static void rollBack(int $toLevel = null)
  */
 class DB
 {
@@ -35,13 +50,10 @@ class DB
         'statement',
         'affectingStatement',
         'unprepared',
-        'prepareBindings',
         'transaction',
         'beginTransaction',
         'commit',
         'rollBack',
-        'transactionLevel',
-        'pretend',
     ];
 
     /**

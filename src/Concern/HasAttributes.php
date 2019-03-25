@@ -4,7 +4,9 @@
 namespace Swoft\Db\Concern;
 
 
+use mysql_xdevapi\Exception;
 use Swoft\Db\EntityRegister;
+use Swoft\Db\Exception\EloquentException;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Stdlib\Helper\Str;
@@ -144,6 +146,7 @@ trait HasAttributes
         if (method_exists($this, $setter)) {
             $this->{$setter}($value);
         }
+
         return $this;
     }
 
@@ -310,15 +313,9 @@ trait HasAttributes
         $this->attributes = $attributes;
 
         foreach ($attributes as $key => $value) {
-            [$attrName, $type] = $this->getMappingByColumn($key);
+            [, $type] = $this->getMappingByColumn($key);
 
-            if (!property_exists($this, $attrName)) {
-                throw new \InvalidArgumentException(
-                    sprintf('%s property(%s) is not exist!', static::class, $attrName)
-                );
-            }
-
-            $this->{$key} = ObjectHelper::parseParamType($type, $value);
+            $this->setAttribute($key, ObjectHelper::parseParamType($type, $value));
         }
 
         if ($sync) {
@@ -540,10 +537,16 @@ trait HasAttributes
      * @param string $key
      *
      * @return array
+     * @throws EloquentException
      */
     private function getMappingByColumn(string $key): array
     {
-        $mapping  = EntityRegister::getReverseMappingByColumn(static::class, $key);
+        $mapping = EntityRegister::getReverseMappingByColumn(static::class, $key);
+
+        if (empty($mapping)) {
+            throw new EloquentException(sprintf('Column(%s) is not exist!', $key));
+        }
+
         $attrName = $mapping['attr'];
         $type     = $mapping['type'];
         $hidden   = $mapping['hidden'];
