@@ -3,6 +3,7 @@
 
 namespace Swoft\Db\Eloquent;
 
+use Swoft\Aop\Proxy;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\Concern\HasAttributes;
 use Swoft\Db\Concern\HidesAttributes;
@@ -179,7 +180,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
     {
         try {
             /* @var static $self */
-            $self = bean(static::class);
+            $self = \bean(Proxy::getClassName(static::class));
         } catch (\Throwable $e) {
             throw new EloquentException($e->getMessage());
         }
@@ -828,7 +829,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      */
     public function getConnection(): Connection
     {
-        $pool = EntityRegister::getPool(static::class);
+        $pool = EntityRegister::getPool($this->getClassName());
 
         return DB::pool($pool);
     }
@@ -852,7 +853,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      */
     public function getKeyName()
     {
-        return EntityRegister::getId(static::class);
+        return EntityRegister::getId($this->getClassName());
     }
 
     /**
@@ -873,7 +874,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      */
     public function getIncrementing()
     {
-        return EntityRegister::getIdIncrementing(static::class);
+        return EntityRegister::getIdIncrementing($this->getClassName());
     }
 
     /**
@@ -993,6 +994,14 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
     public function __unset($key)
     {
         $this->offsetUnset($key);
+    }
+
+    /**
+     * @return string
+     */
+    protected function getClassName(): string
+    {
+        return Proxy::getClassName(static::class);
     }
 
     /**
