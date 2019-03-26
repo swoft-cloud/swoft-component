@@ -14,8 +14,8 @@ use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
  * Listener annotation - for mark an event listener handler class.
+ *
  * @since 2.0
- * @package Swoft\Event\Annotation\Mapping
  *
  * @Annotation
  * @Target("CLASS")
