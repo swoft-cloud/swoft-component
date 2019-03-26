@@ -28,7 +28,7 @@ final class WsController
     private $prefix = '';
 
     /**
-     * The module class full name.
+     * Bind current WS controller to the module.
      * Which module does the controller belong to?
      *
      * @var string
@@ -54,7 +54,7 @@ final class WsController
         }
     }
 
-        /**
+    /**
      * @return string
      */
     public function getPrefix(): string

@@ -9,7 +9,6 @@ use Swoole\Coroutine;
 /**
  * Class Co
  * @since   2.0
- * @package Swoft
  */
 class Co
 {
@@ -65,7 +64,7 @@ class Co
         return \go(function () use ($callable, $tid, $wait) {
             try {
                 $id = Coroutine::getCid();
-
+                // Storage fd
                 self::$mapping[$id] = $tid;
 
                 if ($wait) {

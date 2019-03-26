@@ -37,7 +37,7 @@ class WsHelper
      * @param string $secWSKey 'sec-websocket-key: xxxx'
      * @return bool
      */
-    public static function isInvalidSecWSKey(string $secWSKey): bool
+    public static function isInvalidSecKey(string $secWSKey): bool
     {
         return 0 === \preg_match(self::KEY_PATTEN, $secWSKey) ||
             16 !== \strlen(\base64_decode($secWSKey));
@@ -69,7 +69,7 @@ class WsHelper
         // websocket握手连接算法验证
         $secWSKey = $request->header['sec-websocket-key'];
 
-        if (self::isInvalidSecWSKey($secWSKey)) {
+        if (self::isInvalidSecKey($secWSKey)) {
             $response->end();
             return false;
         }

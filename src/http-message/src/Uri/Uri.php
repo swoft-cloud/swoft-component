@@ -1,12 +1,10 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Http\Message\Uri;
-
 
 use Psr\Http\Message\UriInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Container;
 
 /**
  * Class Uri
@@ -17,8 +15,6 @@ use Swoft\Bean\Concern\PrototypeTrait;
  */
 class Uri implements UriInterface
 {
-    use PrototypeTrait;
-
     /**
      * Absolute http and https URIs require a host per RFC 7230 Section 2.7
      * but in generic URIs the host can be empty. So for http(s) URIs
@@ -32,7 +28,7 @@ class Uri implements UriInterface
      *
      * @var array
      */
-    private static $defaultPorts = [
+    private const DEFAULT_PORTS = [
         'http'   => 80,
         'https'  => 443,
         'ftp'    => 21,
@@ -111,19 +107,37 @@ class Uri implements UriInterface
     private $fragment = '';
 
     /**
+     * Storage some params for after use.
+     * @var array
+     * [
+     *  host  => '', // it's from headers
+     *  https => '',
+     *  path  => '',
+     *  query => '',
+     *  http_host => '',
+     *  server_name => '',
+     *  server_addr => '',
+     *  server_port => '',
+     * ]
+     */
+    private $params = [];
+
+    /**
      * Create Url replace for constructor
      *
      * @param string $uri
      *
+     * @param array  $params
      * @return Uri
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public static function new(string $uri = ''): self
+    public static function new(string $uri = '', array $params = []): self
     {
-        $instance = self::__instance();
+        /** @var Uri $instance */
+        $instance = Container::$instance->getPrototype(__CLASS__);
+        // Save some params
+        $instance->params = $params;
 
-        // weak type check to also accept null until we can add scalar type hints
+        // Weak type check to also accept null until we can add scalar type hints
         if ($uri === '') {
             return $instance;
         }
@@ -145,6 +159,11 @@ class Uri implements UriInterface
      */
     public function getScheme(): string
     {
+        // Init on get
+        if (!$this->scheme) {
+            $this->scheme = $this->params['https'] !== 'off' ? 'https' : 'http';
+        }
+
         return $this->scheme;
     }
 
@@ -168,13 +187,12 @@ class Uri implements UriInterface
      */
     public function getAuthority(): string
     {
-        $authority = $this->host;
-
+        $authority = $this->getHost();
         if ($this->userInfo !== '') {
             $authority = $this->userInfo . '@' . $authority;
         }
 
-        if ($this->port !== null) {
+        if ($this->getPort() !== null) {
             $authority .= ':' . $this->port;
         }
         return $authority;
@@ -198,6 +216,11 @@ class Uri implements UriInterface
      */
     public function getHost(): string
     {
+        // Init on first get
+        if ('' === $this->host) {
+            $this->parseHostPort();
+        }
+
         return $this->host;
     }
 
@@ -208,7 +231,42 @@ class Uri implements UriInterface
      */
     public function getPort(): ?int
     {
+        // Init on first get
+        if (null === $this->port) {
+            $this->parseHostPort();
+        }
+
         return $this->port;
+    }
+
+    /**
+     * parse host port from $params
+     */
+    private function parseHostPort(): void
+    {
+        if ($host = $this->params['http_host']) {
+            $hostParts  = \explode(':', $host, 2);
+            $this->host = \strtolower($hostParts[0]);
+
+            if (isset($hostParts[1])) {
+                $this->port = $this->filterPort($hostParts[1]);
+                return;
+            }
+        } elseif ($host = $this->params['server_name'] ?: $this->params['server_addr']) {
+            $this->host = \strtolower($host);
+        } elseif ($headerHost = $this->params['host']) {
+            $hostParts  = \explode(':', $headerHost, 2);
+            $this->host = \strtolower($hostParts[0]);
+
+            if (isset($hostParts[1]) && $hostParts[1] !== '80') {
+                $this->port = $this->filterPort($hostParts[1]);
+                return;
+            }
+        }
+
+        if ($serverPort = $this->params['server_port']) {
+            $this->port = $this->filterPort($serverPort);
+        }
     }
 
     /**
@@ -220,6 +278,12 @@ class Uri implements UriInterface
      */
     public function getPath(): string
     {
+        // Init on get
+        if ('' === $this->path) {
+            // $this->path = $this->params['path'];
+            $this->path = $this->filterPath($this->params['path']);
+        }
+
         return $this->path;
     }
 
@@ -232,6 +296,12 @@ class Uri implements UriInterface
      */
     public function getQuery(): string
     {
+        // Init on get
+        if ('' === $this->query) {
+            // $this->query = $this->params['query'];
+            $this->query = $this->filterQueryAndFragment($this->params['query']);
+        }
+
         return $this->query;
     }
 
@@ -518,13 +588,9 @@ class Uri implements UriInterface
      *
      * @throws \InvalidArgumentException If the scheme is invalid.
      */
-    private function filterScheme($scheme): string
+    private function filterScheme(string $scheme): string
     {
-        if (!is_string($scheme)) {
-            throw new \InvalidArgumentException('Scheme must be a string');
-        }
-
-        return strtolower($scheme);
+        return \strtolower($scheme);
     }
 
     /**
@@ -556,7 +622,7 @@ class Uri implements UriInterface
      */
     private function filterHost(string $host): string
     {
-        return strtolower($host);
+        return \strtolower($host);
     }
 
     /**
@@ -638,7 +704,7 @@ class Uri implements UriInterface
      */
     public function isDefaultPort(): bool
     {
-        $defaultPort   = self::$defaultPorts[$this->getScheme()] ?? null;
+        $defaultPort   = self::DEFAULT_PORTS[$this->getScheme()] ?? null;
         $isDefaultPort = $this->getPort() === $defaultPort;
 
         return $this->getPort() === null || $isDefaultPort;
@@ -647,11 +713,11 @@ class Uri implements UriInterface
     /**
      * Get default port of the current scheme.
      *
-     * @return int|null
+     * @return int
      */
-    public function getDefaultPort(): ?int
+    public function getDefaultPort(): int
     {
-        return self::$defaultPorts[$this->getScheme()] ?? null;
+        return self::DEFAULT_PORTS[$this->getScheme()] ?? 0;
     }
 
     /**
@@ -722,10 +788,10 @@ class Uri implements UriInterface
         }
 
         if ($this->getAuthority() === '') {
-            if (0 === strpos($this->path, '//')) {
+            if (0 === \strpos($this->path, '//')) {
                 throw new \InvalidArgumentException('The path of a URI without an authority must not start with two slashes "//"');
             }
-            if ($this->scheme === '' && false !== strpos(explode('/', $this->path, 2)[0], ':')) {
+            if ($this->scheme === '' && false !== \strpos(explode('/', $this->path, 2)[0], ':')) {
                 throw new \InvalidArgumentException('A relative URI must not have a path beginning with a segment containing a colon');
             }
         } elseif (isset($this->path[0]) && $this->path[0] !== '/') {

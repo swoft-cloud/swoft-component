@@ -3,8 +3,8 @@
 namespace Swoft\WebSocket\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Context\ContextInterface;
 use Swoft\Concern\DataPropertyTrait;
+use Swoft\Context\ContextInterface;
 use Swoole\WebSocket\Frame;
 
 /**
@@ -27,7 +27,7 @@ class WsContext implements ContextInterface
      */
     public function initialize(Frame $frame): void
     {
-
+        $this->frame = $frame;
     }
 
     /**

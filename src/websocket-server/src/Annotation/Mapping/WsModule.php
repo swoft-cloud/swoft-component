@@ -42,6 +42,11 @@ final class WsModule
     private $messageParser;
 
     /**
+     * @var string[]
+     */
+    private $controllers;
+
+    /**
      * Default message command
      * @var string
      */
@@ -62,6 +67,10 @@ final class WsModule
 
         if (isset($values['name'])) {
             $this->name = (string)$values['name'];
+        }
+
+        if (isset($values['controllers'])) {
+            $this->controllers = (array)$values['controllers'];
         }
 
         if (isset($values['messageParser'])) {
@@ -103,5 +112,13 @@ final class WsModule
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getControllers(): array
+    {
+        return $this->controllers;
     }
 }

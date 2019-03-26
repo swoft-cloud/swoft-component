@@ -23,7 +23,7 @@ class Router implements RouterInterface
      *      'name'  => module name,
      *      'messageParser'  => message parser class,
      *      'defaultCommand' => default command,
-     *      'events'   => [
+     *      'eventMethods'   => [
      *          'handShake' => method1, (on the moduleClass)
      *          'open'      => method2,
      *          'close'     => method3,
@@ -47,6 +47,12 @@ class Router implements RouterInterface
     private $commands = [];
 
     /**
+     * Command counter
+     * @var int
+     */
+    private $counter = 0;
+
+    /**
      * @param string $path
      * @param array  $moduleInfo
      */
@@ -58,29 +64,15 @@ class Router implements RouterInterface
     }
 
     /**
-     * @param string $path
-     * @param array  $commands
-     */
-    public function addCommands(string $path, array $commands): void
-    {
-        $path = WsHelper::formatPath($path);
-
-        if (isset($this->commands[$path])) {
-            $this->commands[$path] = \array_merge($this->commands[$path], $commands);
-        } else {
-            $this->commands[$path] = $commands;
-        }
-    }
-
-    /**
-     * @param string $path
-     * @param string $commandId
+     * @param string   $path
+     * @param string   $commandId
      * @param callable $handler
      */
     public function addCommand(string $path, string $commandId, $handler): void
     {
         $path = WsHelper::formatPath($path);
-        // add
+
+        $this->counter++;
         $this->commands[$path][$commandId] = $handler;
     }
 
@@ -89,24 +81,26 @@ class Router implements RouterInterface
      *
      * @param string $path e.g '/echo'
      * @return array
-     * @throws \Swoft\WebSocket\Server\Exception\WsRouteException
      */
     public function match(string $path): array
     {
         $path = WsHelper::formatPath($path);
-
         return $this->modules[$path] ?? [];
     }
 
+    /**
+     * @param string $path
+     * @param string $command
+     * @return array [$status, $handler]
+     */
     public function matchCommand(string $path, string $command): array
     {
         $path = WsHelper::formatPath($path);
-
         if (!isset($this->commands[$path])) {
             return [self::NOT_FOUND, null];
         }
 
-        $command  = \trim($command) ?: $this->modules[$path]['defaultCommand'];
+        $command = \trim($command) ?: $this->modules[$path]['defaultCommand'];
 
         if (isset($this->commands[$path][$command])) {
             // $commands[$command] is: [controllerClass, method]
@@ -120,7 +114,7 @@ class Router implements RouterInterface
      * @param string $path
      * @return bool
      */
-    public function hasRoute(string $path): bool
+    public function hasModule(string $path): bool
     {
         return isset($this->modules[$path]);
     }
@@ -139,5 +133,21 @@ class Router implements RouterInterface
     public function getCommands(): array
     {
         return $this->commands;
+    }
+
+    /**
+     * @return int
+     */
+    public function getModuleCount(): int
+    {
+        return \count($this->modules);
+    }
+
+    /**
+     * @return int
+     */
+    public function getCounter(): int
+    {
+        return $this->counter;
     }
 }
