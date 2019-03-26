@@ -80,4 +80,5 @@ only tests an special component:
 
 ```bash
 phpunit --testsuite event
+php run.php --bootstrap test/bootstrap.php
 ```

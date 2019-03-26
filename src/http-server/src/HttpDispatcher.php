@@ -57,6 +57,7 @@ class HttpDispatcher extends Dispatcher
             // Begin handle request, return response
             $response = $requestHandler->handle($request);
         } catch (\Throwable $e) {
+            echo json_encode($e);
             \printf(
                 "HTTP Dispatch Error: %s\nAt %s %d\n",
                 $e->getMessage(),
@@ -67,9 +68,6 @@ class HttpDispatcher extends Dispatcher
 
         // Trigger after request
         \Swoft::trigger(HttpServerEvent::AFTER_REQUEST, null, $response);
-
-        // Trigger destroy request bean
-        \Swoft::trigger(BeanEvent::DESTROY_REQUEST, null, Co::tid());
     }
 
     /**

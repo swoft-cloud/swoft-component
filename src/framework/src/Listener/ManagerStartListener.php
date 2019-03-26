@@ -11,7 +11,9 @@ use Swoft\Server\Swoole\SwooleEvent;
 
 /**
  * Class ManagerStartListener
+ *
  * @since 2.0
+ *
  * @Listener(SwooleEvent::MANAGER_START)
  */
 class ManagerStartListener implements EventHandlerInterface

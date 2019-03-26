@@ -10,14 +10,49 @@ namespace Swoft\Connection\Pool;
  */
 abstract class AbstractConnection implements ConnectionInterface
 {
-    public function getId(): string
+    /**
+     * @var int
+     */
+    protected $id = 0;
+
+    /**
+     * @var PoolInterface
+     */
+    protected $pool;
+
+    /**
+     * Whether to release connection
+     *
+     * @var bool
+     */
+    protected $release = false;
+
+    /**
+     * @return int
+     */
+    public function getId(): int
     {
-        // TODO: Implement getId() method.
+        return $this->id;
     }
 
-    public function release(): void
+    /**
+     * @param bool $release
+     */
+    public function setRelease(bool $release): void
     {
-        // TODO: Implement release() method.
+        $this->release = $release;
     }
 
+    /**
+     * Release Connection
+     *
+     * @param bool $force
+     */
+    public function release(bool $force = false): void
+    {
+        if ($this->release) {
+            $this->release = false;
+            $this->pool->release($this);
+        }
+    }
 }

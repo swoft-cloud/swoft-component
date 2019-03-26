@@ -2,6 +2,7 @@
 
 namespace Swoft;
 
+use Swoft\Context\Context;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoole\Coroutine;
 
@@ -51,22 +52,35 @@ class Co
      * Create coroutine
      *
      * @param callable $callable
+     * @param bool     $wait
      *
      * @return int If success, return coID
      */
-    public static function create(callable $callable): int
+    public static function create(callable $callable, bool $wait = true): int
     {
         $tid = self::tid();
 
-        // Return coroutine ID on created.
-        return \go(function () use ($callable, $tid) {
+        // return coroutine ID for created.
+        return \go(function () use ($callable, $tid, $wait) {
             try {
                 $id = Coroutine::getCid();
                 // Storage fd
                 self::$mapping[$id] = $tid;
+
+                if ($wait) {
+                    Context::getWaitGroup()->add();
+                }
+
                 PhpHelper::call($callable);
             } catch (\Throwable $e) {
-                var_dump($e->getMessage(), ' file='.$e->getFile().' line='.$e->getLine());
+                var_dump($e->getMessage(), ' file=' . $e->getFile() . ' line=' . $e->getLine());
+            }
+
+            if ($wait) {
+                // Trigger defer
+                \Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
+
+                Context::getWaitGroup()->done();
             }
         });
     }

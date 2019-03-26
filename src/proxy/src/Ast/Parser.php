@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Aop\Ast;
+namespace Swoft\Proxy\Ast;
 
 use PhpParser\ErrorHandler;
 use PhpParser\Lexer;
@@ -9,7 +9,7 @@ use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard;
-use Swoft\Aop\Exception\AopException;
+use Swoft\Proxy\Exception\ProxyException;
 use Swoft\Stdlib\Helper\ComposerHelper;
 
 /**
@@ -73,7 +73,7 @@ class Parser
      * @param ErrorHandler|null $errorHandler
      *
      * @return string
-     * @throws AopException
+     * @throws ProxyException
      */
     public function parse(string $className, ErrorHandler $errorHandler = null): string
     {
@@ -88,7 +88,7 @@ class Parser
         }
 
         // New code by traverse
-        $nodes   = $this->traverser->traverse($ast);
+        $nodes = $this->traverser->traverse($ast);
 
         return $this->printer->prettyPrint($nodes);
     }
@@ -110,7 +110,7 @@ class Parser
      * @param string $className
      *
      * @return string
-     * @throws AopException|\Exception
+     * @throws ProxyException|\Exception
      */
     private function getCodeByClassName(string $className): string
     {
@@ -118,7 +118,7 @@ class Parser
         $file = ComposerHelper::getClassLoader()->findFile($className);
 
         if (!\file_exists($file)) {
-            throw new AopException(sprintf('%s file is not exist!', $file));
+            throw new ProxyException(sprintf('%s file is not exist!', $file));
         }
 
         return \file_get_contents($file);

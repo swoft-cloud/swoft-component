@@ -4,8 +4,10 @@
 namespace Swoft\Db;
 
 
+use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\PrototypeException;
-use Swoft\Connection\Pool\ConnectionInterface as PoolConnectionInterface;
+use Swoft\Connection\Pool\AbstractConnection;
+use Swoft\Db\Event\DbEvent;
 use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
@@ -17,12 +19,27 @@ use Swoft\Db\Query\Processor\Processor;
  *
  * @since 2.0
  */
-class Connection implements PoolConnectionInterface, ConnectionInterface
+class Connection extends AbstractConnection implements ConnectionInterface
 {
     /**
      * Default fetch mode
      */
     const DEFAULT_FETCH_MODE = \PDO::FETCH_OBJ;
+
+    /**
+     * Default type
+     */
+    const TYPE_DEFAULT = 0;
+
+    /**
+     * Use write pdo
+     */
+    const TYPE_WRITE = 1;
+
+    /**
+     * Use read pdo
+     */
+    const TYPE_READ = 2;
 
     /**
      * The active PDO connection.
@@ -44,11 +61,6 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
     protected $database;
 
     /**
-     * @var Pool
-     */
-    protected $pool;
-
-    /**
      * The query grammar implementation.
      *
      * @var Grammar
@@ -61,6 +73,15 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
     protected $postProcessor;
 
     /**
+     * Use pdo type
+     *
+     * @var int
+     */
+    protected $pdoType = 0;
+
+    /**
+     * Replace constructor
+     *
      * @param Pool     $pool
      * @param Database $database
      *
@@ -78,6 +99,8 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
         $this->useDefaultQueryGrammar();
 
         $this->useDefaultPostProcessor();
+
+        $this->id = $this->pool->getConnectionId();
     }
 
     /**
@@ -136,28 +159,47 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
      */
     public function create(): void
     {
+        // Create pdo
         $this->createPdo();
+
+        // Create read pdo
         $this->createReadPdo();
     }
 
-    public function reconnect(): void
+    /**
+     * Reconnect
+     */
+    public function reconnect(): bool
     {
-        // TODO: Implement reconnect() method.
-    }
+        try {
+            switch ($this->pdoType) {
+                case  self::TYPE_WRITE;
+                    $this->createPdo();
+                    break;
+                case self::TYPE_READ;
+                    $this->createReadPdo();
+                    break;
+            }
+        } catch (\Throwable $e) {
+            return false;
+        }
 
-    public function check(): bool
-    {
         return true;
     }
 
-    public function getId(): string
+    /**
+     * @param bool $force
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function release(bool $force = false): void
     {
-        return uniqid();
-    }
-
-    public function release(): void
-    {
-        // TODO: Implement release() method.
+        $cm = $this->getConMananger();
+        if (!$cm->isTransaction()) {
+            $cm->releaseOrdinaryConnection($this->id);
+            parent::release($force);
+        }
     }
 
     public function getLastTime(): int
@@ -515,6 +557,8 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
      * @return mixed
      *
      * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function run(string $query, array $bindings, \Closure $callback)
     {
@@ -522,8 +566,6 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
 
         // Here we will run this query. If an exception occurs we'll determine if it was
         // caused by a connection that has been lost. If that is the cause, we'll try
-
-        // 错误释放连接、事物处理
         $result = $this->runQueryCallback($query, $bindings, $callback);
 
         // Once we have run the query we will calculate the time that it took to run and
@@ -539,30 +581,57 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
      * @param  string   $query
      * @param  array    $bindings
      * @param  \Closure $callback
+     * @param  bool     $reconnect
      *
      * @return mixed
      *
      * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
-    protected function runQueryCallback(string $query, array $bindings, \Closure $callback)
+    protected function runQueryCallback(string $query, array $bindings, \Closure $callback, bool $reconnect = false)
     {
         // To execute the statement, we'll simply call the callback, which will actually
         // run the SQL against the PDO connection. Then we can calculate the time it
         // took to execute and log the query SQL, bindings and time in our memory.
         try {
             $result = $callback($query, $bindings);
-        }
 
+            // Release connection
+            $this->release();
+        } catch (\Throwable $e) {
             // If an exception occurs when attempting to run a query, we'll format the error
             // message to include the bindings with SQL, which will make this exception a
             // lot more helpful to the developer instead of just the database's errors.
-        catch (\Throwable $e) {
-            throw new QueryException(
-                $query, $this->prepareBindings($bindings), $e
-            );
+
+            if (!$reconnect && $this->isReconnect() && $this->reconnect()) {
+                return $this->runQueryCallback($query, $bindings, $callback, true);
+            }
+
+            // Reconnect fail to remove exception connection
+            if ($this->isReconnect()) {
+                $this->pool->remove();
+            } else {
+                // Other exception to release connection
+                $this->release();
+            }
+
+            // Throw exception
+            throw new QueryException($e->getMessage());
         }
 
+        $this->pdoType = self::TYPE_DEFAULT;
         return $result;
+    }
+
+    /**
+     * Whether to reconnect
+     *
+     * @return bool
+     */
+    protected function isReconnect(): bool
+    {
+        return false;
     }
 
     /**
@@ -604,26 +673,102 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
 
     }
 
+    /**
+     * Start a new database transaction.
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
     public function beginTransaction(): void
     {
-        // TODO: Implement beginTransaction() method.
+        $cm = $this->getConMananger();
+
+        // Begin transaction
+        if (!$cm->isTransaction()) {
+            $this->createTransaction($cm);
+        }
+
+        // Inc transactions
+        $cm->incTransactionTransactons();
+
+        \Swoft::trigger(DbEvent::BEGIN_TRANSACTION);
     }
 
     public function commit(): void
     {
-        // TODO: Implement commit() method.
+        $cm = $this->getConMananger();
+        $ts = $cm->getTransactionTransactons();
+
+        // Not to commit
+        if ($ts <= 0) {
+            return;
+        }
+
+        // Commit
+        if ($ts == 1) {
+            $this->getPdo()->commit();
+
+            //Release from transaction manager
+            $cm->releaseTransaction();
+
+            // Release connection
+            $this->release();
+        }else{
+            // Dec transaction
+            $cm->decTransactionTransactons();
+        }
+
+        \Swoft::trigger(DbEvent::COMMIT_TRANSACTION);
     }
 
-    public function rollBack(): void
+    /**
+     * @param int|null $toLevel
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function rollBack(int $toLevel = null): void
     {
-        // TODO: Implement rollBack() method.
+        $cm = $this->getConMananger();
+        $ts = $cm->getTransactionTransactons();
+
+        // We allow developers to rollback to a certain transaction level. We will verify
+        // that this given transaction level is valid before attempting to rollback to
+        // that level. If it's not we will just return out and not attempt anything.
+        $toLevel = is_null($toLevel) ? $ts - 1 : $toLevel;
+
+        if ($toLevel < 0 || $toLevel >= $ts) {
+            return;
+        }
+
+        // Next, we will actually perform this rollback within this database and fire the
+        // rollback event. We will also set the current transaction level to the given
+        // level that was passed into this method so it will be right from here out.
+        $this->performRollBack($toLevel);
+
+        \Swoft::trigger(DbEvent::ROLLBACK_TRANSACTION);
+    }
+
+    /**
+     * @param int|null $toLevel
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function forceRollBack(int $toLevel = null): void
+    {
+        // Next, we will actually perform this rollback within this database and fire the
+        // rollback event. We will also set the current transaction level to the given
+        // level that was passed into this method so it will be right from here out.
+        $this->performRollBack($toLevel);
+
+        \Swoft::trigger(DbEvent::ROLLBACK_TRANSACTION);
     }
 
     public function transactionLevel(): void
     {
         // TODO: Implement transactionLevel() method.
     }
-
 
     /**
      * Get the PDO connection to use for a select query.
@@ -644,6 +789,7 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
      */
     public function getPdo(): \PDO
     {
+        $this->pdoType = self::TYPE_WRITE;
         return $this->pdo;
     }
 
@@ -651,11 +797,13 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
      * Get the current PDO connection used for reading.
      *
      * @return \PDO
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function getReadPdo(): \PDO
     {
-        // transaction
-        if (true) {
+        $cm = $this->getConMananger();
+        if ($cm->isTransaction()) {
             return $this->getPdo();
         }
 
@@ -663,6 +811,7 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
             return $this->getPdo();
         }
 
+        $this->pdoType = self::TYPE_READ;
         return $this->readPdo;
     }
 
@@ -682,5 +831,75 @@ class Connection implements PoolConnectionInterface, ConnectionInterface
                 is_int($value) ? \PDO::PARAM_INT : \PDO::PARAM_STR
             );
         }
+    }
+
+    /**
+     * Perform a rollback within the database.
+     *
+     * @param  int $toLevel
+     *
+     * @return void
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    protected function performRollBack(int $toLevel): void
+    {
+        $cm = $this->getConMananger();
+        if ($toLevel == 0) {
+            $this->getPdo()->rollBack();
+
+            //Release transaction
+            $cm->releaseTransaction();
+
+            // Release connection
+            $this->release(true);
+        } elseif ($this->queryGrammar->supportsSavepoints()) {
+            $this->getPdo()->exec(
+                $this->queryGrammar->compileSavepointRollBack('trans' . ($toLevel + 1))
+            );
+
+            $cm->setTransactionTransactons($toLevel);
+        }
+    }
+
+    /**
+     * Create a transaction within the database.
+     *
+     * @param ConnectionManager $cm
+     */
+    protected function createTransaction(ConnectionManager $cm): void
+    {
+        $ts = $cm->getTransactionTransactons();
+        if ($ts == 0) {
+            $this->getPdo()->beginTransaction();
+            $cm->setTransactionConnection($this);
+        } elseif ($ts >= 1 && $this->queryGrammar->supportsSavepoints()) {
+            $this->createSavepoint($ts);
+        }
+    }
+
+    /**
+     * Create a save point within the database.
+     *
+     * @param int $ts
+     *
+     * @return void
+     */
+    protected function createSavepoint(int $ts): void
+    {
+        $this->getPdo()->exec(
+            $this->queryGrammar->compileSavepoint('trans' . ($ts + 1))
+        );
+    }
+
+    /**
+     * @return ConnectionManager
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    protected function getConMananger(): ConnectionManager
+    {
+        return BeanFactory::getBean(ConnectionManager::class);
     }
 }

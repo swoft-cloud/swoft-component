@@ -46,6 +46,11 @@
     "swoft/websocket-server": "self.version",
     "swoft/connection-pool": "self.version",
     "swoft/db": "self.version",
+    "swoft/rpc": "self.version",
+    "swoft/rpc-server": "self.version",
+    "swoft/rpc-client": "self.version",
+    "swoft/task": "self.version",
+    "swoft/proxy": "self.version",
     "swoft/test": "self.version"
   },
   "autoload": {
@@ -65,7 +70,12 @@
       "Swoft\\WebSocket\\Server\\": "src/websocket-server/src/",
       "Swoft\\Connection\\Pool\\": "src/connection-pool/src/",
       "Swoft\\Db\\": "src/db/src/",
-      "Swoft\\Test\\": "src/test/src/",
+      "Swoft\\Rpc\\": "src/rpc/src/",
+      "Swoft\\Rpc\\Client\\": "src/rpc-client/src/",
+      "Swoft\\Rpc\\Server\\": "src/rpc-server/src/",
+      "Swoft\\Task\\": "src/task/src/",
+      "Swoft\\Proxy\\": "src/proxy/src/",
+      "Swoft\\Test\\": "src/Test/src/",
       "Swoft\\": "src/framework/src/"
     },
     "files": [
@@ -86,7 +96,7 @@
       "SwoftTest\\Db\\": "src/db/test/case/",
       "SwoftTest\\Test\\": "src/test/test/case/",
       "SwoftTest\\Event\\": "src/event/test/case/",
-      "SwoftTest\\ErrorHandler\\": "src/error-handler/test/case/",
+      "SwoftTest\\Error\\Handler\\": "src/error-handler/test/case/",
       "SwoftTest\\": "src/framework/test/case/",
       "SwoftTest\\Http\\Server\\": "src/http-server/test/case/",
       "SwoftTest\\I18n\\": "src/i18n/test/case/",
@@ -94,9 +104,10 @@
       "SwoftTest\\Process\\": "src/process/test/case/",
       "SwoftTest\\Redis\\": "src/redis/test/case/",
       "SwoftTest\\Rpc\\": "src/rpc/test/case/",
-      "SwoftTest\\RpcClient\\": "src/rpc-client/test/case/",
-      "SwoftTest\\RpcServer\\": "src/rpc-server/test/case/",
+      "SwoftTest\\Rpc\\Client\\": "src/rpc-client/test/case/",
+      "SwoftTest\\Rpc\\Server\\": "src/rpc-server/test/case/",
       "SwoftTest\\Task\\": "src/task/test/case/",
+      "SwoftTest\\Proxy\\": "src/proxy/test/case/",
       "SwoftTest\\Trace\\": "src/trace/test/case/",
       "SwoftTest\\WebSocket\\Server\\": "src/websocket-server/test/case/"
     }

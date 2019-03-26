@@ -2,6 +2,7 @@
 
 namespace Swoft\Context;
 
+use Swoft\Bean\BeanFactory;
 use Swoft\Co;
 use Swoft\Exception\ContextException;
 use Swoft\Http\Server\HttpContext;
@@ -66,6 +67,19 @@ class Context
         $tid = Co::tid();
 
         self::$context[$tid] = $context;
+    }
+
+    /**
+     * Get context wait group
+     *
+     * @return ContextWaitGroup
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public static function getWaitGroup()
+    {
+        return BeanFactory::getBean(ContextWaitGroup::class);
     }
 
     /**

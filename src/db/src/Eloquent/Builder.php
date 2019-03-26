@@ -6,6 +6,7 @@ namespace Swoft\Db\Eloquent;
 
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\Concern\BuildsQueries;
+use Swoft\Db\Connection;
 use Swoft\Db\Exception\EloquentException;
 use Swoft\Db\Exception\EntityException;
 use Swoft\Db\Exception\PoolException;
@@ -13,11 +14,108 @@ use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Query\Builder as QueryBuilder;
 use Swoft\Stdlib\Arrayable;
 use Swoft\Stdlib\Helper\Arr;
+use Swoft\Stdlib\Helper\PhpHelper;
 
 /**
  * Class Builder
  *
  * @since 2.0
+ * @method Builder select(string ...$columns)
+ * @method Builder selectSub(\Closure|QueryBuilder|string $query, string $as)
+ * @method Builder selectRaw(string $expression, array $bindings = [])
+ * @method Builder fromSub(\Closure|QueryBuilder|string $query, string $as)
+ * @method Builder fromRaw(string $expression, array $bindings = [])
+ * @method Builder createSub(\Closure|QueryBuilder|string $query)
+ * @method Builder parseSub(\Closure|QueryBuilder|string $query)
+ * @method Builder addSelect(array $column)
+ * @method Builder distinct()
+ * @method Builder from(string $table)
+ * @method Builder join(string $table, \Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
+ * @method Builder joinWhere(string $table, \Closure|string $first, string $operator, string $second, string $type = 'inner')
+ * @method Builder joinSub(\Closure|QueryBuilder|string $query, string $as, \Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
+ * @method Builder leftJoin(string $table, \Closure|string $first, string $operator = null, string $second = null)
+ * @method Builder leftJoinWhere(string $table, string $first, string $operator, string $second)
+ * @method Builder leftJoinSub(\Closure|QueryBuilder|string $query, string $as, string $first, string $operator = null, string $second = null)
+ * @method Builder rightJoin(string $table, \Closure|string $first, string $operator = null, string $second = null)
+ * @method Builder rightJoinWhere(string $table, string $first, string $operator, string $second)
+ * @method Builder rightJoinSub(\Closure|QueryBuilder|string $query, string $as, string $first, string $operator = null, string $second = null)
+ * @method Builder crossJoin(string $table, \Closure|string $first = null, string $operator = null, string $second = null)
+ * @method void mergeWheres(array $wheres, array $bindings)
+ * @method Builder whereColumn(string|array $first, string $operator = null, string $second = null, string $boolean = 'and')
+ * @method Builder orWhereColumn(string|array $first, string $operator = null, string $second = null)
+ * @method Builder whereRaw(string $sql, array $bindings = [], string $boolean = 'and')
+ * @method Builder orWhereRaw(string $sql, array $bindings = [])
+ * @method Builder whereIn(string $column, mixed $values, string $boolean = 'and', bool $not = false)
+ * @method Builder orWhereIn(string $column, mixed $values)
+ * @method Builder whereNotIn(string $column, mixed $values, string $boolean = 'and')
+ * @method Builder orWhereNotIn(string $column, mixed $values)
+ * @method Builder whereIntegerInRaw(string $column, Arrayable|array $values, string $boolean = 'and', bool $not = false)
+ * @method Builder whereIntegerNotInRaw(string $column, Arrayable|array $values, string $boolean = 'and')
+ * @method Builder whereNull(string $column, string $boolean = 'and', bool $not = false)
+ * @method Builder orWhereNull(string $column)
+ * @method Builder whereNotNull(string $column, string $boolean = 'and')
+ * @method Builder whereBetween(string $column, array $values, string $boolean = 'and', bool $not = false)
+ * @method Builder orWhereBetween(string $column, array $values)
+ * @method Builder whereNotBetween(string $column, array $values, string $boolean = 'and')
+ * @method Builder orWhereNotBetween(string $column, array $values)
+ * @method Builder orWhereNotNull(string $column)
+ * @method Builder whereDate(string $column, $operator, \DateTimeInterface|string $value = null, string $boolean = 'and')
+ * @method Builder orWhereDate(string $column, string $operator, \DateTimeInterface|string $value = null)
+ * @method Builder whereTime(string $column, $operator, \DateTimeInterface|string $value = null, string $boolean = 'and')
+ * @method Builder orWhereTime(string $column, string $operator, \DateTimeInterface|string $value = null)
+ * @method Builder whereDay(string $column, string $operator, \DateTimeInterface|string $value = null, string $boolean = 'and')
+ * @method Builder orWhereDay(string $column, string $operator, \DateTimeInterface|string $value = null)
+ * @method Builder whereMonth(string $column, string $operator, \DateTimeInterface|string $value = null, string $boolean = 'and')
+ * @method Builder orWhereMonth(string $column, string $operator, \DateTimeInterface|string $value = null)
+ * @method Builder whereYear(string $column, string $operator, \DateTimeInterface|string|int $value = null, string $boolean = 'and')
+ * @method Builder orWhereYear(string $column, string $operator, \DateTimeInterface|string|int $value = null)
+ * @method Builder whereNested(\Closure $callback, string $boolean = 'and')
+ * @method Builder forNestedWhere()
+ * @method Builder addNestedWhereQuery(QueryBuilder $query, string $boolean = 'and')
+ * @method Builder whereSub(string $column, string $operator, \Closure $callback, string $boolean)
+ * @method Builder whereExists(\Closure $callback, string $boolean = 'and', bool $not = false)
+ * @method Builder orWhereExists(\Closure $callback, bool $not = false)
+ * @method Builder whereNotExists(\Closure $callback, string $boolean = 'and')
+ * @method Builder orWhereNotExists(\Closure $callback)
+ * @method Builder addWhereExistsQuery(Builder $query, string $boolean = 'and', bool $not = false)
+ * @method Builder whereRowValues(array $columns, string $operator, array $values, string $boolean = 'and')
+ * @method Builder orWhereRowValues(array $columns, string $operator, array $values)
+ * @method Builder whereJsonContains(string $column, $value, string $boolean = 'and', bool $not = false)
+ * @method Builder orWhereJsonContains(string $column, mixed $value)
+ * @method Builder whereJsonDoesntContain(string $column, mixed $value, string $boolean = 'and')
+ * @method Builder orWhereJsonDoesntContain(string $column, mixed $value)
+ * @method Builder whereJsonLength(string $column, mixed $operator, mixed $value = null, string $boolean = 'and')
+ * @method Builder orWhereJsonLength(string $column, mixed $operator, mixed $value = null)
+ * @method Builder groupBy(...$groups)
+ * @method Builder having(string $column, string $operator = null, string $value = null, string $boolean = 'and')
+ * @method Builder orHaving(string $column, string $operator = null, string $value = null)
+ * @method Builder havingBetween(string $column, array $values, string $boolean = 'and', bool $not = false)
+ * @method Builder havingRaw(string $sql, array $bindings = [], string $boolean = 'and')
+ * @method Builder orHavingRaw(string $sql, array $bindings = [])
+ * @method Builder orderBy(string $column, string $direction = 'asc')
+ * @method Builder orderByDesc(string $column)
+ * @method Builder inRandomOrder(string $seed = '')
+ * @method Builder orderByRaw(string $sql, array $bindings = [])
+ * @method Builder skip(int $value)
+ * @method Builder offset(int $value)
+ * @method Builder take(int $value)
+ * @method Builder limit(int $value)
+ * @method Builder forPage(int $page, int $perPage = 15)
+ * @method Builder forPageAfterId(int $perPage = 15, int $lastId = null, string $column = 'id')
+ * @method string insertGetId(array $values, string $sequence = null)
+ * @method bool insert(array $values)
+ * @method array getBindings()
+ * @method string toSql()
+ * @method bool exists()
+ * @method bool doesntExist()
+ * @method string count(string $columns = '*')
+ * @method array min(string $column)
+ * @method array max(string $column)
+ * @method array sum(string $column)
+ * @method array avg($column)
+ * @method array average(string $column)
+ * @method Connection getConnection()
+ *
  */
 class Builder
 {
@@ -77,6 +175,7 @@ class Builder
         'average',
         'sum',
         'getConnection',
+        'updateOrInsert'
     ];
 
     /**
@@ -198,7 +297,7 @@ class Builder
      *
      * @return $this
      */
-    public function latest($column = null)
+    public function latest(string $column = null)
     {
         $this->query->latest($column);
 
@@ -212,7 +311,7 @@ class Builder
      *
      * @return $this
      */
-    public function oldest($column = null)
+    public function oldest(string $column = null)
     {
         $this->query->oldest($column);
 
@@ -248,7 +347,7 @@ class Builder
      * @throws QueryException
      * @throws PrototypeException
      */
-    public function fromQuery($query, $bindings = [])
+    public function fromQuery(string $query, array $bindings = [])
     {
         return $this->hydrate(
             $this->query->getConnection()->select($query, $bindings)
@@ -261,13 +360,13 @@ class Builder
      * @param  mixed $id
      * @param  array $columns
      *
-     * @return Model|Collection|static[]|static|null
+     * @return Collection|Model
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
      * @throws PrototypeException
      */
-    public function find($id, $columns = ['*'])
+    public function find($id, array $columns = ['*'])
     {
         if (is_array($id) || $id instanceof Arrayable) {
             return $this->findMany($id, $columns);
@@ -283,12 +382,11 @@ class Builder
      * @param  array           $columns
      *
      * @return Collection
-     * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
      * @throws PrototypeException
      */
-    public function findMany($ids, $columns = ['*'])
+    public function findMany(array $ids, array $columns = ['*'])
     {
         if (empty($ids)) {
             return $this->model->newCollection();
@@ -309,7 +407,7 @@ class Builder
      * @throws PoolException
      * @throws PrototypeException
      */
-    public function findOrFail($id, $columns = ['*'])
+    public function findOrFail($id, array $columns = ['*'])
     {
         $result = $this->find($id, $columns);
 
@@ -419,8 +517,10 @@ class Builder
      * @return Model|static
      *
      * @throws EntityException
+     * @throws EloquentException
+     * @throws PrototypeException
      */
-    public function firstOrFail($columns = ['*'])
+    public function firstOrFail(array $columns = ['*'])
     {
         if (!is_null($model = $this->first($columns))) {
             return $model;
@@ -436,8 +536,10 @@ class Builder
      * @param  \Closure|null  $callback
      *
      * @return Model|static|mixed
+     * @throws EloquentException
+     * @throws PrototypeException
      */
-    public function firstOr($columns = ['*'], \Closure $callback = null)
+    public function firstOr(array $columns = ['*'], \Closure $callback = null)
     {
         if ($columns instanceof \Closure) {
             $callback = $columns;
@@ -458,12 +560,16 @@ class Builder
      * @param  string $column
      *
      * @return mixed
+     * @throws EloquentException
+     * @throws PrototypeException
      */
     public function value(string $column)
     {
         if ($result = $this->first([$column])) {
             return $result->{$column};
         }
+
+        return null;
     }
 
     /**
@@ -472,11 +578,10 @@ class Builder
      * @param  array $columns
      *
      * @return Collection
-     * @throws PrototypeException
      * @throws EloquentException
      * @throws PrototypeException
      */
-    public function get($columns = ['*'])
+    public function get(array $columns = ['*'])
     {
         $builder = $this;
 
@@ -495,7 +600,7 @@ class Builder
      */
     public function getModels($columns = ['*'])
     {
-        return $this->model->hydrate(
+        return $this->hydrate(
             $this->query->get($columns)->all()
         )->all();
     }
@@ -522,11 +627,10 @@ class Builder
      * @param  string|null $alias
      *
      * @return bool
-     * @throws EloquentException
      * @throws EntityException
      * @throws PrototypeException
      */
-    public function chunkById($count, callable $callback, $column = null, $alias = null)
+    public function chunkById(int $count, callable $callback, string $column = null, string $alias = null): bool
     {
         $column = is_null($column) ? $this->getModel()->getKeyName() : $column;
 
@@ -584,18 +688,9 @@ class Builder
      *
      * @return \Swoft\Stdlib\Collection
      */
-    public function pluck($column, $key = null)
+    public function pluck(string $column, string $key = null)
     {
         $results = $this->toBase()->pluck($column, $key);
-
-        // If the model has a mutator for the requested column, we will spin through
-        // the results and mutate the values so that the mutated version of these
-        // columns are returned as you would expect from these EloquentException models.
-        if (!$this->model->hasGetMutator($column) &&
-            !$this->model->hasCast($column) &&
-            !in_array($column, $this->model->getDates())) {
-            return $results;
-        }
 
         return $results->map(function ($value) use ($column) {
             return $this->model->newFromBuilder([$column => $value])->{$column};
@@ -622,28 +717,12 @@ class Builder
     }
 
     /**
-     * Save a new model and return the instance. Allow mass-assignment.
-     *
-     * @param  array $attributes
-     *
-     * @return Model|$this
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
-     * @throws QueryException
-     */
-    public function forceCreate(array $attributes)
-    {
-        return $this->newModelInstance()->create($attributes);
-    }
-
-    /**
      * Update a record in the database.
      *
      * @param  array $values
      *
      * @return int
+     * @throws PrototypeException
      * @throws QueryException
      */
     public function update(array $values)
@@ -659,9 +738,10 @@ class Builder
      * @param  array     $extra
      *
      * @return int
+     * @throws PrototypeException
      * @throws QueryException
      */
-    public function increment($column, $amount = 1, array $extra = [])
+    public function increment(string $column, $amount = 1, array $extra = [])
     {
         return $this->toBase()->increment(
             $column, $amount, $extra
@@ -676,6 +756,7 @@ class Builder
      * @param  array     $extra
      *
      * @return int
+     * @throws PrototypeException
      * @throws QueryException
      */
     public function decrement($column, $amount = 1, array $extra = [])
@@ -836,62 +917,13 @@ class Builder
      */
     public function __call($method, $parameters)
     {
-        if ($method === 'macro') {
-            $this->localMacros[$parameters[0]] = $parameters[1];
-
-            return;
-        }
-
-        if (isset($this->localMacros[$method])) {
-            array_unshift($parameters, $this);
-
-            return $this->localMacros[$method](...$parameters);
-        }
-
-        if (isset(static::$macros[$method])) {
-            if (static::$macros[$method] instanceof \Closure) {
-                return call_user_func_array(static::$macros[$method]->bindTo($this, static::class), $parameters);
-            }
-
-            return call_user_func_array(static::$macros[$method], $parameters);
-        }
-
         if (in_array($method, $this->passthru)) {
             return $this->toBase()->{$method}(...$parameters);
         }
 
-        $this->forwardCallTo($this->query, $method, $parameters);
+        PhpHelper::call([$this->query, $method], ...$parameters);
 
         return $this;
-    }
-
-    /**
-     * Dynamically handle calls into the query instance.
-     *
-     * @param  string $method
-     * @param  array  $parameters
-     *
-     * @return mixed
-     *
-     * @throws \BadMethodCallException
-     */
-    public static function __callStatic($method, $parameters)
-    {
-        if ($method === 'macro') {
-            static::$macros[$parameters[0]] = $parameters[1];
-
-            return;
-        }
-
-        if (!isset(static::$macros[$method])) {
-            static::throwBadMethodCallException($method);
-        }
-
-        if (static::$macros[$method] instanceof \Closure) {
-            return call_user_func_array(\Closure::bind(static::$macros[$method], null, static::class), $parameters);
-        }
-
-        return call_user_func_array(static::$macros[$method], $parameters);
     }
 
     /**

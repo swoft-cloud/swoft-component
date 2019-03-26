@@ -18,27 +18,21 @@ interface ConnectionInterface
     /**
      * Reconnect connection
      */
-    public function reconnect(): void;
+    public function reconnect(): bool;
 
     /**
-     * Check connection status
-     * Connected is return true, other return false
+     * Get connection id
      *
-     * @return bool
+     * @return int
      */
-    public function check(): bool;
-
-    /**
-     * Get connection unique id
-     *
-     * @return string
-     */
-    public function getId(): string;
+    public function getId(): int ;
 
     /**
      * Release connection
+     * 
+     * @param bool $force
      */
-    public function release(): void;
+    public function release(bool $force = false): void;
 
     /**
      * Get last time
@@ -46,6 +40,13 @@ interface ConnectionInterface
      * @return int
      */
     public function getLastTime(): int;
+
+    /**
+     * Set whether to release
+     *
+     * @param bool $release
+     */
+    public function setRelease(bool $release): void;
 
 
 }

@@ -3,6 +3,7 @@
 
 namespace Swoft\Db\Eloquent;
 
+use Swoft\Aop\Proxy;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\Concern\HasAttributes;
 use Swoft\Db\Concern\HidesAttributes;
@@ -16,6 +17,7 @@ use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Query\Builder as QueryBuilder;
 use Swoft\Stdlib\Arrayable;
 use Swoft\Stdlib\Helper\JsonHelper;
+use Swoft\Stdlib\Helper\PhpHelper;
 use Swoft\Stdlib\Helper\Str;
 use Swoft\Stdlib\Jsonable;
 
@@ -23,6 +25,115 @@ use Swoft\Stdlib\Jsonable;
  * Class Model
  *
  * @since 2.0
+ * @method static Model make(array $attributes = [])
+ * @method static Builder whereKey($id)
+ * @method static Builder whereKeyNot($id)
+ * @method static Builder where($column, $operator = null, $value = null, string $boolean = 'and')
+ * @method static Builder orWhere($column, $operator = null, $value = null)
+ * @method static Builder latest(string $column = null)
+ * @method static Builder oldest(string $column = null)
+ * @method static Collection hydrate(array $items)
+ * @method static Collection fromQuery(string $query, array $bindings = [])
+ * @method static Model find($id, array $columns = ['*'])
+ * @method static Collection findMany(array $ids, array $columns = ['*'])
+ * @method static Builder findOrFail($id, array $columns = ['*'])
+ * @method static Builder findOrNew($id, array $columns = ['*'])
+ * @method static Builder firstOrNew(array $attributes, array $values = [])
+ * @method static Builder firstOrCreate(array $attributes, array $values = [])
+ * @method static Builder updateOrCreate(array $attributes, array $values = [])
+ * @method static bool updateOrInsert(array $attributes, array $values = [])
+ * @method static Builder firstOrFail(array $columns = ['*'])
+ * @method static Builder firstOr(array $columns = ['*'], \Closure $callback = null)
+ * @method static mixed value(string $column)
+ * @method static Collection get(array $columns = ['*'])
+ * @method static Model[] getModels($columns = ['*'])
+ * @method static \Generator cursor()
+ * @method static bool chunkById(int $count, callable $callback, string $column = null, string $alias = null)
+ * @method static void enforceOrderBy()
+ * @method static Collection pluck(string $column, string $key = null)
+ * @method static Model create(array $attributes = [])
+ *
+ * @method static Builder select(string ...$columns)
+ * @method static Builder selectSub(\Closure|QueryBuilder|string $query, string $as)
+ * @method static Builder selectRaw(string $expression, array $bindings = [])
+ * @method static Builder fromSub(\Closure|QueryBuilder|string $query, string $as)
+ * @method static Builder fromRaw(string $expression, array $bindings = [])
+ * @method static Builder createSub(\Closure|QueryBuilder|string $query)
+ * @method static Builder parseSub(\Closure|QueryBuilder|string $query)
+ * @method static Builder addSelect(array $column)
+ * @method static Builder distinct()
+ * @method static Builder from(string $table)
+ * @method static Builder join(string $table, \Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
+ * @method static Builder joinWhere(string $table, \Closure|string $first, string $operator, string $second, string $type = 'inner')
+ * @method static Builder joinSub(\Closure|QueryBuilder|string $query, string $as, \Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
+ * @method static Builder leftJoin(string $table, \Closure|string $first, string $operator = null, string $second = null)
+ * @method static Builder leftJoinWhere(string $table, string $first, string $operator, string $second)
+ * @method static Builder leftJoinSub(\Closure|QueryBuilder|string $query, string $as, string $first, string $operator = null, string $second = null)
+ * @method static Builder rightJoin(string $table, \Closure|string $first, string $operator = null, string $second = null)
+ * @method static Builder rightJoinWhere(string $table, string $first, string $operator, string $second)
+ * @method static Builder rightJoinSub(\Closure|QueryBuilder|string $query, string $as, string $first, string $operator = null, string $second = null)
+ * @method static Builder crossJoin(string $table, \Closure|string $first = null, string $operator = null, string $second = null)
+ * @method static void mergeWheres(array $wheres, array $bindings)
+ * @method static Builder whereColumn(string|array $first, string $operator = null, string $second = null, string $boolean = 'and')
+ * @method static Builder orWhereColumn(string|array $first, string $operator = null, string $second = null)
+ * @method static Builder whereRaw(string $sql, array $bindings = [], string $boolean = 'and')
+ * @method static Builder orWhereRaw(string $sql, array $bindings = [])
+ * @method static Builder whereIn(string $column, mixed $values, string $boolean = 'and', bool $not = false)
+ * @method static Builder orWhereIn(string $column, mixed $values)
+ * @method static Builder whereNotIn(string $column, mixed $values, string $boolean = 'and')
+ * @method static Builder orWhereNotIn(string $column, mixed $values)
+ * @method static Builder whereIntegerInRaw(string $column, Arrayable|array $values, string $boolean = 'and', bool $not = false)
+ * @method static Builder whereIntegerNotInRaw(string $column, Arrayable|array $values, string $boolean = 'and')
+ * @method static Builder whereNull(string $column, string $boolean = 'and', bool $not = false)
+ * @method static Builder orWhereNull(string $column)
+ * @method static Builder whereNotNull(string $column, string $boolean = 'and')
+ * @method static Builder whereBetween(string $column, array $values, string $boolean = 'and', bool $not = false)
+ * @method static Builder orWhereBetween(string $column, array $values)
+ * @method static Builder whereNotBetween(string $column, array $values, string $boolean = 'and')
+ * @method static Builder orWhereNotBetween(string $column, array $values)
+ * @method static Builder orWhereNotNull(string $column)
+ * @method static Builder whereDate(string $column, $operator, \DateTimeInterface|string $value = null, string $boolean = 'and')
+ * @method static Builder orWhereDate(string $column, string $operator, \DateTimeInterface|string $value = null)
+ * @method static Builder whereTime(string $column, $operator, \DateTimeInterface|string $value = null, string $boolean = 'and')
+ * @method static Builder orWhereTime(string $column, string $operator, \DateTimeInterface|string $value = null)
+ * @method static Builder whereDay(string $column, string $operator, \DateTimeInterface|string $value = null, string $boolean = 'and')
+ * @method static Builder orWhereDay(string $column, string $operator, \DateTimeInterface|string $value = null)
+ * @method static Builder whereMonth(string $column, string $operator, \DateTimeInterface|string $value = null, string $boolean = 'and')
+ * @method static Builder orWhereMonth(string $column, string $operator, \DateTimeInterface|string $value = null)
+ * @method static Builder whereYear(string $column, string $operator, \DateTimeInterface|string|int $value = null, string $boolean = 'and')
+ * @method static Builder orWhereYear(string $column, string $operator, \DateTimeInterface|string|int $value = null)
+ * @method static Builder whereNested(\Closure $callback, string $boolean = 'and')
+ * @method static Builder forNestedWhere()
+ * @method static Builder addNestedWhereQuery(QueryBuilder $query, string $boolean = 'and')
+ * @method static Builder whereSub(string $column, string $operator, \Closure $callback, string $boolean)
+ * @method static Builder whereExists(\Closure $callback, string $boolean = 'and', bool $not = false)
+ * @method static Builder orWhereExists(\Closure $callback, bool $not = false)
+ * @method static Builder whereNotExists(\Closure $callback, string $boolean = 'and')
+ * @method static Builder orWhereNotExists(\Closure $callback)
+ * @method static Builder addWhereExistsQuery(Builder $query, string $boolean = 'and', bool $not = false)
+ * @method static Builder whereRowValues(array $columns, string $operator, array $values, string $boolean = 'and')
+ * @method static Builder orWhereRowValues(array $columns, string $operator, array $values)
+ * @method static Builder whereJsonContains(string $column, $value, string $boolean = 'and', bool $not = false)
+ * @method static Builder orWhereJsonContains(string $column, mixed $value)
+ * @method static Builder whereJsonDoesntContain(string $column, mixed $value, string $boolean = 'and')
+ * @method static Builder orWhereJsonDoesntContain(string $column, mixed $value)
+ * @method static Builder whereJsonLength(string $column, mixed $operator, mixed $value = null, string $boolean = 'and')
+ * @method static Builder orWhereJsonLength(string $column, mixed $operator, mixed $value = null)
+ * @method static Builder groupBy(...$groups)
+ * @method static Builder having(string $column, string $operator = null, string $value = null, string $boolean = 'and')
+ * @method static Builder orHaving(string $column, string $operator = null, string $value = null)
+ * @method static Builder havingBetween(string $column, array $values, string $boolean = 'and', bool $not = false)
+ * @method static Builder havingRaw(string $sql, array $bindings = [], string $boolean = 'and')
+ * @method static Builder orHavingRaw(string $sql, array $bindings = [])
+ * @method static Builder orderBy(string $column, string $direction = 'asc')
+ * @method static Builder orderByDesc(string $column)
+ * @method static Builder inRandomOrder(string $seed = '')
+ * @method static Builder orderByRaw(string $sql, array $bindings = [])
+ * @method static Builder skip(int $value)
+ * @method static Builder offset(int $value)
+ * @method static Builder take(int $value)
+ * @method static Builder limit(int $value)
+ * @method static Builder forPage(int $page, int $perPage = 15)
  */
 abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializable
 {
@@ -69,7 +180,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
     {
         try {
             /* @var static $self */
-            $self = bean(static::class);
+            $self = \bean(Proxy::getClassName(static::class));
         } catch (\Throwable $e) {
             throw new EloquentException($e->getMessage());
         }
@@ -347,6 +458,9 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return bool
      * @throws EntityException
+     * @throws PoolException
+     * @throws PrototypeException
+     * @throws QueryException
      */
     protected function performUpdate(Builder $query)
     {
@@ -375,6 +489,8 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return Builder
      * @throws EntityException
+     * @throws PoolException
+     * @throws PrototypeException
      */
     protected function setKeysForSaveQuery(Builder $query)
     {
@@ -401,7 +517,6 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      * @param  Builder $query
      *
      * @return bool
-     * @throws QueryException
      * @throws EntityException
      */
     protected function performInsert(Builder $query)
@@ -449,7 +564,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
     protected function insertAndSetId(Builder $query, $attributes)
     {
         $keyName = $this->getKeyName();
-        $id = $query->insertGetId($attributes, $keyName);
+        $id      = $query->insertGetId($attributes, $keyName);
 
         $this->setAttribute($keyName, $id);
     }
@@ -462,6 +577,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      * @throws EntityException
      * @throws PoolException
      * @throws PrototypeException
+     * @throws QueryException
      */
     public function delete(): bool
     {
@@ -499,6 +615,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      * @throws EntityException
      * @throws PoolException
      * @throws PrototypeException
+     * @throws QueryException
      */
     public function forceDelete()
     {
@@ -508,10 +625,10 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
     /**
      * Perform the actual delete query on this model instance.
      *
-     * @return void
      * @throws EntityException
      * @throws PoolException
      * @throws PrototypeException
+     * @throws QueryException
      */
     protected function performDeleteOnModel()
     {
@@ -607,7 +724,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      */
     public function toArray(): array
     {
-        return array_merge($this->attributesToArray(), $this->relationsToArray());
+        return $this->attributesToArray();
     }
 
     /**
@@ -636,6 +753,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      * Reload a fresh model instance from the database.
      *
      * @return static
+     * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
      * @throws PrototypeException
@@ -655,6 +773,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      * Reload the current model instance with fresh attributes from the database.
      *
      * @return $this
+     * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
      * @throws PrototypeException
@@ -710,7 +829,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      */
     public function getConnection(): Connection
     {
-        $pool = EntityRegister::getPool(static::class);
+        $pool = EntityRegister::getPool($this->getClassName());
 
         return DB::pool($pool);
     }
@@ -723,7 +842,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      */
     public function getTable()
     {
-        return EntityRegister::getTable(static::class);
+        return EntityRegister::getTable($this->getClassName());
     }
 
     /**
@@ -734,7 +853,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      */
     public function getKeyName()
     {
-        return EntityRegister::getId(static::class);
+        return EntityRegister::getId($this->getClassName());
     }
 
     /**
@@ -755,7 +874,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      */
     public function getIncrementing()
     {
-        return EntityRegister::getIdIncrementing(static::class);
+        return EntityRegister::getIdIncrementing($this->getClassName());
     }
 
     /**
@@ -802,31 +921,6 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
         $this->perPage = $perPage;
 
         return $this;
-    }
-
-    /**
-     * Dynamically retrieve attributes on the model.
-     *
-     * @param  string $key
-     *
-     * @return mixed
-     */
-    public function __get($key)
-    {
-        return $this->getAttribute($key);
-    }
-
-    /**
-     * Dynamically set attributes on the model.
-     *
-     * @param  string $key
-     * @param  mixed  $value
-     *
-     * @return void
-     */
-    public function __set($key, $value)
-    {
-        $this->setAttribute($key, $value);
     }
 
     /**
@@ -903,6 +997,14 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
     }
 
     /**
+     * @return string
+     */
+    protected function getClassName(): string
+    {
+        return Proxy::getClassName(static::class);
+    }
+
+    /**
      * Handle dynamic method calls into the model.
      *
      * @param $method
@@ -919,7 +1021,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
             return $this->$method(...$parameters);
         }
 
-        return $this->forwardCallTo($this->newQuery(), $method, $parameters);
+        return PhpHelper::call([$this->newModelQuery(), $method], ...$parameters);
     }
 
     /**
@@ -933,39 +1035,6 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
     public static function __callStatic($method, $parameters)
     {
         return (new static)->$method(...$parameters);
-    }
-
-    /**
-     * Forward a method call to the given object.
-     *
-     * @param  mixed  $object
-     * @param  string $method
-     * @param  array  $parameters
-     *
-     * @return mixed
-     *
-     * @throws \BadMethodCallException
-     */
-    protected function forwardCallTo($object, $method, $parameters)
-    {
-        try {
-            return $object->{$method}(...$parameters);
-        } catch (\Exception | \BadMethodCallException $e) {
-            $pattern = '~^Call to undefined method (?P<class>[^:]+)::(?P<method>[^\(]+)\(\)$~';
-
-            if (!preg_match($pattern, $e->getMessage(), $matches)) {
-                throw $e;
-            }
-
-            if ($matches['class'] != get_class($object) ||
-                $matches['method'] != $method) {
-                throw $e;
-            }
-
-            throw new \BadMethodCallException(sprintf(
-                'Call to undefined method %s::%s()', static::class, $method
-            ));
-        }
     }
 
     /**

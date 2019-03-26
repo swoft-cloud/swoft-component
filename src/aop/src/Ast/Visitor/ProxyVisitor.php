@@ -9,13 +9,14 @@ use PhpParser\NodeFinder;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
 use Swoft\Aop\AopTrait;
+use Swoft\Proxy\Ast\Visitor\Visitor;
 
 /**
  * Class ProxyVisitor
  *
  * @since 2.0
  */
-class ProxyVisitor extends NodeVisitorAbstract
+class ProxyVisitor extends Visitor
 {
     /**
      * Namespace
@@ -61,7 +62,7 @@ class ProxyVisitor extends NodeVisitorAbstract
     public function __construct(string $proxyId = '', string $aopClassName = AopTrait::class)
     {
         $this->aopClassName = $aopClassName;
-        $this->proxyId      = $proxyId ?: \uniqid('', true);
+        $this->proxyId      = $proxyId ?: \uniqid();
     }
 
     /**
@@ -103,7 +104,7 @@ class ProxyVisitor extends NodeVisitorAbstract
     public function leaveNode(Node $node)
     {
         // Remove trait use to fix return `self` bug
-        if($node instanceof  Node\Stmt\TraitUse){
+        if ($node instanceof Node\Stmt\TraitUse) {
             return NodeTraverser::REMOVE_NODE;
         }
 

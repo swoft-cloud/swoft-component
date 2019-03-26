@@ -91,10 +91,11 @@ if (!function_exists('sgo')) {
      * In the swoft, you must use `sgo()` instead of  swoole `go()` function
      *
      * @param callable $callable
+     * @param bool $wait
      */
-    function sgo(callable $callable)
+    function sgo(callable $callable, bool $wait = true)
     {
-        \Swoft\Co::create($callable);
+        \Swoft\Co::create($callable, $wait);
     }
 }
 

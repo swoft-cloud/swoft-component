@@ -7,6 +7,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Db\Query\Grammar\MySqlGrammar;
 use Swoft\Db\Query\Grammar\Grammar;
 use Swoft\Db\Query\Processor\MySqlProcessor;
+use Swoft\Helper\Log;
 
 /**
  * Class MySqlConnection
@@ -17,6 +18,20 @@ use Swoft\Db\Query\Processor\MySqlProcessor;
  */
 class MySqlConnection extends Connection
 {
+    /**
+     * Set the table prefix and return the grammar.
+     *
+     * @param Grammar $grammar
+     *
+     * @return Grammar
+     */
+    public function withTablePrefix(Grammar $grammar)
+    {
+        $grammar->setTablePrefix($this->database->getPrefix());
+
+        return $grammar;
+    }
+
     /**
      * Get the default query grammar instance.
      *
@@ -46,16 +61,30 @@ class MySqlConnection extends Connection
     }
 
     /**
-     * Set the table prefix and return the grammar.
+     * Whether to reconnect
      *
-     * @param Grammar $grammar
-     *
-     * @return Grammar
+     * @return bool
      */
-    public function withTablePrefix(Grammar $grammar)
+    protected function isReconnect(): bool
     {
-        $grammar->setTablePrefix($this->database->getPrefix());
+        $pdo = null;
+        if ($this->pdoType == self::TYPE_WRITE) {
+            $pdo = $this->pdo;
+        } elseif ($this->pdoType == self::TYPE_READ) {
+            $pdo = $this->readPdo;
+        }
 
-        return $grammar;
+        if (empty($pdo)) {
+            return false;
+        }
+
+        $errorInfo = $pdo->errorInfo();
+        $errorCode = $errorInfo[1] ?? 0;
+        $errorCode = (int)$errorCode;
+        if ($errorCode == 2006 || $errorCode == 2013) {
+            return true;
+        }
+
+        return false;
     }
 }

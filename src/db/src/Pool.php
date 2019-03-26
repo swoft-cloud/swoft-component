@@ -26,6 +26,13 @@ class Pool extends AbstractPool
      */
     protected $database;
 
+    /**
+     * Create connection
+     *
+     * @return ConnectionInterface
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
     public function createConnection(): ConnectionInterface
     {
         return $this->database->createConnection($this);

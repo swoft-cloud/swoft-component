@@ -33,14 +33,14 @@ abstract class AbstractPool implements PoolInterface
      *
      * @var int
      */
-    protected $maxWait = 20;
+    protected $maxWait = 0;
 
     /**
-     * Maximum waiting time(second)
+     * Maximum waiting time(second), if there is not limit to 0
      *
      * @var float
      */
-    protected $maxWaitTime = 3;
+    protected $maxWaitTime = 0;
 
     /**
      * Maximum idle time(second)
@@ -67,22 +67,28 @@ abstract class AbstractPool implements PoolInterface
     protected $count = 0;
 
     /**
+     * Next connect id
+     *
+     * @var int
+     */
+    protected $connectionId = 0;
+
+    /**
+     * @return int
+     */
+    public function getConnectionId(): int
+    {
+        $this->connectionId++;
+        return $this->connectionId;
+    }
+
+    /**
      * @return ConnectionInterface
      * @throws ConnectionPoolException
      */
     public function getConnection(): ConnectionInterface
     {
-        if (Coroutine::getCid() > 0) {
-            $connection = $this->getConnectionByChannel();
-        } else {
-            $connection = $this->getConnectionByQueue();
-        }
-
-        if (!$connection->check()) {
-            $connection->reconnect();
-        }
-
-        return $connection;
+        return $this->getConnectionByChannel();
     }
 
     /**
@@ -90,6 +96,15 @@ abstract class AbstractPool implements PoolInterface
      */
     public function release(ConnectionInterface $connection): void
     {
+        $this->releaseToChannel($connection);
+    }
+
+    /**
+     * Remove connection by reconnect error
+     */
+    public function remove(): void
+    {
+        $this->count--;
     }
 
     /**
@@ -123,12 +138,13 @@ abstract class AbstractPool implements PoolInterface
 
         // Channel is empty or  not reach `maxActive` number
         if ($this->count < $this->maxActive) {
+
             return $this->create();
         }
 
         // Out of `maxWait` number
         $stats = $this->channel->stats();
-        if ($stats['consumer_num'] >= $this->maxWait) {
+        if ($this->maxWait > 0 && $stats['consumer_num'] >= $this->maxWait) {
             throw new ConnectionPoolException(
                 sprintf('Channel consumer is full, maxActive=%d, maxWait=%d, currentCount=%d',
                     $this->maxActive, $this->maxWaitTime, $this->count)
@@ -148,49 +164,24 @@ abstract class AbstractPool implements PoolInterface
 
     /**
      * @return ConnectionInterface
+     *
      * @throws ConnectionPoolException
-     */
-    private function getConnectionByQueue(): ConnectionInterface
-    {
-        // Create queue
-        if ($this->queue == null) {
-            $this->queue = new \SplQueue();
-        }
-
-        // To reach `minActive` number
-        if ($this->count < $this->minActive) {
-            return $this->create();
-        }
-
-        // Pop connection
-        $connection = null;
-        if (!$this->queue->isEmpty()) {
-            $connection = $this->popByQueue();
-        }
-
-        // Pop connection is not null
-        if ($connection !== null) {
-            return $connection;
-        }
-
-        // Channel is empty or  not reach `maxActive` number
-        if ($this->count < $this->maxWait) {
-            return $this->create();
-        }
-
-        // Queue is full
-        throw new ConnectionPoolException(
-            sprintf('Queue is full, maxActive=%d, currentCount=%d', $this->maxActive, $this->count)
-        );
-    }
-
-    /**
-     * @return ConnectionInterface
      */
     private function create(): ConnectionInterface
     {
-        $connection = $this->createConnection();
+        // Count before to fix more connection bug
         $this->count++;
+
+        try {
+            $connection = $this->createConnection();
+        } catch (\Throwable $e) {
+            // Create error to reset count
+            $this->count--;
+
+            throw new ConnectionPoolException(
+                sprintf('Create connection error(%s)', $e->getMessage())
+            );
+        }
 
         return $connection;
     }
@@ -223,29 +214,15 @@ abstract class AbstractPool implements PoolInterface
     }
 
     /**
-     * Pop by queue
+     * Release to channel
      *
-     * @return ConnectionInterface|null
+     * @param ConnectionInterface $connection
      */
-    private function popByQueue(): ?ConnectionInterface
+    private function releaseToChannel(ConnectionInterface $connection)
     {
-        $time       = time();
-        $connection = null;
-
-        while (!$this->queue->isEmpty()) {
-            /* @var ConnectionInterface $connection */
-            $connection = $this->queue->pop();
-            $lastTime   = $connection->getLastTime();
-
-            // Out of `maxIdleTime`
-            if ($time - $lastTime > $this->maxIdleTime) {
-                $this->count--;
-                continue;
-            }
-
-            return $connection;
+        $stats = $this->channel->stats();
+        if ($stats['queue_num'] < $this->maxActive) {
+            $this->channel->push($connection);
         }
-
-        return $connection;
     }
 }
