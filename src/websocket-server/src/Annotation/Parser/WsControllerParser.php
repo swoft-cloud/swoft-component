@@ -13,6 +13,7 @@ use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\AnnotationException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\WebSocket\Server\Annotation\Mapping\WsController;
+use Swoft\WebSocket\Server\Router\RouteRegister;
 
 /**
  * Class WebSocketParser
@@ -40,9 +41,8 @@ class WsControllerParser extends Parser
         }
 
         $class = $this->className;
-        $path  = $annotation->getPrefix();
 
-        WsModuleParser::bindController($annotation->getModule(), $class, $annotation->getPrefix());
+        RouteRegister::bindController($annotation->getModule(), $class, $annotation->getPrefix());
 
         return [$class, $class, Bean::SINGLETON, ''];
     }

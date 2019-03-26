@@ -6,6 +6,7 @@ use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\AnnotationException;
 use Swoft\WebSocket\Server\Annotation\Mapping\MessageMapping;
+use Swoft\WebSocket\Server\Router\RouteRegister;
 
 /**
  * Class WsHandShakeParser
@@ -31,7 +32,7 @@ class MessageMappingParser extends Parser
             throw new AnnotationException('`@MessageMapping` must be defined on class method!');
         }
 
-        WsModuleParser::bindCommand($this->className, $this->methodName, $annotation->getCommand());
+        RouteRegister::bindCommand($this->className, $this->methodName, $annotation->getCommand());
 
         return [];
     }

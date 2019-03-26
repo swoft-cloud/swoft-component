@@ -12,9 +12,11 @@ use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\AnnotationException;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Helper\CLog;
 use Swoft\Stdlib\Helper\Str;
 use Swoft\WebSocket\Server\Annotation\Mapping\WsModule;
 use Swoft\WebSocket\Server\Router\Router;
+use Swoft\WebSocket\Server\Router\RouteRegister;
 
 /**
  * Class WebSocketParser
@@ -51,43 +53,19 @@ class WsModuleParser extends Parser
             throw new AnnotationException('`@WsModule` must be defined on class!');
         }
 
-        $class  = $this->className;
-        $option = [
+        $class = $this->className;
+
+        RouteRegister::bindModule($class, [
             'path'           => $annotation->getPath(),
             'name'           => $annotation->getName(),
             'class'          => $class,
-            'defaultCommand' => $annotation->getDefaultCommand(),
-            'messageParser'  => $annotation->getMessageParser(),
             'eventMethods'   => [],
-        ];
-
-        if (isset(self::$modules[$class])) {
-            self::$modules[$class] = \array_merge(self::$modules[$class], $option);
-        } else {
-            self::$modules[$class] = $option;
-        }
+            'controllers'    => $annotation->getControllers(),
+            'messageParser'  => $annotation->getMessageParser(),
+            'defaultCommand' => $annotation->getDefaultCommand(),
+        ]);
 
         return [$class, $class, Bean::SINGLETON, ''];
-    }
-
-    /**
-     * @param Router $router
-     */
-    public static function registerTo(Router $router): void
-    {
-        // Modules
-        foreach (self::$modules as $mdlClass => $mdlInfo) {
-            $router->addModule($mdlInfo['path'], $mdlInfo);
-        }
-
-        // Commands
-        foreach (self::$commands as $ctrlClass => $info) {
-            $path = self::$modules[$info['module']]['path'];
-            foreach ($info['routes'] as $route) {
-                $id = $info['prefix'] . '.' . $route['command'];
-                $router->addCommand($path, $id, [$ctrlClass, $route['method']]);
-            }
-        }
     }
 
     /**

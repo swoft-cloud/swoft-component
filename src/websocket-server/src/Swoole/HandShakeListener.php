@@ -10,6 +10,7 @@ use Swoft\Http\Message\Response as Psr7Response;
 use Swoft\Server\Swoole\HandShakeInterface;
 use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Connection;
+use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\Helper\WsHelper;
 use Swoft\WebSocket\Server\WsDispatcher;
 use Swoft\WebSocket\Server\WsServerEvent;
@@ -91,6 +92,8 @@ class HandShakeListener implements HandShakeInterface
             'debug'
         );
 
+        \Swoft::trigger(WsServerEvent::SUCCESS_HANDSHAKE, $fd, $request, $response);
+
         // Handshaking successful, Manually triggering the open event
         Co::create(function () use ($psr7Req, $fd) {
             $this->onOpen($psr7Req, $fd);
@@ -102,17 +105,40 @@ class HandShakeListener implements HandShakeInterface
     /**
      * @param Psr7Request $request
      * @param int         $fd
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     public function onOpen(Psr7Request $request, int $fd): void
     {
+        // Init fd and coId mapping
+        Session::bindFd($fd);
         $server = \server()->getSwooleServer();
+        \server()->log("conn#$fd has been opened, co ID #" . Co::tid(), [], 'debug');
 
-        \Swoft::trigger(WsServerEvent::AFTER_OPEN, $fd, $server, $request);
-        \server()->log("connection #$fd has been opened, co ID #" . Co::tid(), [], 'debug');
+        try {
+            \Swoft::trigger(WsServerEvent::AFTER_OPEN, $fd, $server, $request);
 
-        /** @see WsDispatcher::open() */
-        \bean('wsDispatcher')->open($server, $request, $fd);
+            /** @var Connection $conn */
+            $conn = Session::mustGet();
+            $info = $conn->getModule();
+
+            $method = $info['eventMethods']['open'] ?? '';
+            if (!$method) {
+                $class = $info['class'];
+
+                \server()->log("fd#{$fd} call ws open handler '{$class}->{$method}'", [], 'debug');
+
+                /** @var WsModuleInterface $module */
+                $module = Container::$instance->getSingleton($class);
+                $module->$method($request);
+            }
+        } catch (\Throwable $e) {
+            $evt = \Swoft::trigger(WsServerEvent::ON_ERROR, 'open', $e, $server);
+            if (!$evt->isPropagationStopped()) {
+                throw $e;
+            }
+        } finally {
+            // Delete coId from fd mapping
+            Session::unbindFd();
+        }
     }
 }

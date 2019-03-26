@@ -2,8 +2,8 @@
 
 namespace Swoft\WebSocket\Server\Contract;
 
-use Swoole\Http\Request;
-use Swoole\Http\Response;
+use Swoft\Http\Message\Request;
+use Swoft\Http\Message\Response;
 use Swoole\WebSocket\Server;
 
 /**

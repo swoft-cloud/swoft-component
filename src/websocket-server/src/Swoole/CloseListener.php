@@ -41,25 +41,29 @@ class CloseListener implements CloseInterface
         $conn  = Session::get();
         $total = \server()->count();
 
-        \server()->log("onClose: Client #{$fd} connection has been closed. client count $total", [], 'debug');
+        \server()->log("onClose: conn#{$fd} connection has been closed. client count $total", [], 'debug');
 
         if (!$meta = $conn->getMetadata()) {
-            \server()->log("onClose: Client #{$fd} connection meta info has been lost");
+            \server()->log("onClose: conn#{$fd} connection meta info has been lost");
             return;
         }
 
-        \server()->log("onClose: Client #{$fd} meta info:", $meta, 'debug');
+        \server()->log("onClose: conn#{$fd} meta info:", $meta, 'debug');
 
-        /** @var WsDispatcher $dispatcher */
-        $dispatcher = Container::$instance->getSingleton('wsDispatcher');
-        // 握手成功的才回调 close
-        if ($conn->isHandshake()) {
-            /** @see WsDispatcher::close() */
-            \bean('wsDispatcher')->close($server, $fd);
+        try {
+            // Handshake successful callback close handle
+            if ($conn->isHandshake()) {
+                /** @var WsDispatcher $dispatcher */
+                $dispatcher = Container::$instance->getSingleton('wsDispatcher');
+                $dispatcher->close($server, $fd);
+            }
+
+            // Call on close callback
+            \Swoft::trigger(WsServerEvent::AFTER_CLOSE, $fd, $server);
+        } catch (\Throwable $e) {
+            \server()->log("conn#{$fd} error on handle close, ERR: " . $e->getMessage(), [], 'error');
+            \Swoft::trigger(WsServerEvent::ON_ERROR, 'close', $e);
         }
-
-        // Call on close callback
-        \Swoft::trigger(WsServerEvent::AFTER_CLOSE, $fd, $server);
 
         // Unbind fd
         Session::unbindFd();

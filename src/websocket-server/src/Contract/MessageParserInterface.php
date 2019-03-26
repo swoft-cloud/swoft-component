@@ -20,6 +20,11 @@ interface MessageParserInterface
      * Decode data to array.
      * @param string $data
      * @return array
+     * [
+     *  'cmd'  => 'message command', // is must exists.
+     *  'data' => message data,
+     *  ...
+     * ]
      */
     public function decode(string $data): array;
 }

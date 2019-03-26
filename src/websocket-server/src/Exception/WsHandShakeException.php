@@ -7,5 +7,5 @@ namespace Swoft\WebSocket\Server\Exception;
  */
 class WsHandShakeException extends WsServerException
 {
-
+    // public $request;
 }

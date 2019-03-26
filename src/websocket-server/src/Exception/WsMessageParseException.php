@@ -3,10 +3,10 @@
 namespace Swoft\WebSocket\Server\Exception;
 
 /**
- * Class WsRouteException
+ * Class WsMessageParseException
  * @package Swoft\WebSocket\Server\Exception
  */
-class WsMessageException extends WsServerException
+class WsMessageParseException extends WsServerException
 {
 
 }

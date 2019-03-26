@@ -6,21 +6,21 @@ use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\AnnotationException;
 use Swoft\Server\Swoole\SwooleEvent;
-use Swoft\WebSocket\Server\Annotation\Mapping\OnHandShake;
+use Swoft\WebSocket\Server\Annotation\Mapping\OnOpen;
 use Swoft\WebSocket\Server\Router\RouteRegister;
 
 /**
- * Class WsHandShakeParser
+ * Class OnOpenParser
  * @since 2.0
- * @AnnotationParser(OnHandShake::class)
+ * @AnnotationParser(OnOpen::class)
  */
-class OnHandShakeParser extends Parser
+class OnOpenParser extends Parser
 {
     /**
      * Parse object
      *
-     * @param int         $type Class or Method or Property
-     * @param OnHandShake $annotation Annotation object
+     * @param int       $type Class or Method or Property
+     * @param OnOpen $annotation Annotation object
      *
      * @return array
      * Return empty array is nothing to do!
@@ -30,10 +30,10 @@ class OnHandShakeParser extends Parser
     public function parse(int $type, $annotation): array
     {
         if ($type !== self::TYPE_METHOD) {
-            throw new AnnotationException('`@OnHandShake` must be defined on class method!');
+            throw new AnnotationException('`@OnOpen` must be defined on class method!');
         }
 
-        RouteRegister::bindEvent($this->className, $this->methodName, SwooleEvent::HANDSHAKE);
+        RouteRegister::bindEvent($this->className, $this->methodName, SwooleEvent::OPEN);
 
         return [];
     }

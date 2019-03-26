@@ -7,6 +7,7 @@ use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\AnnotationException;
 use Swoft\Server\Swoole\SwooleEvent;
 use Swoft\WebSocket\Server\Annotation\Mapping\OnMessage;
+use Swoft\WebSocket\Server\Router\RouteRegister;
 
 /**
  * Class WsHandShakeParser
@@ -32,7 +33,7 @@ class OnMessageParser extends Parser
             throw new AnnotationException('`@OnMessage` must be defined on class method!');
         }
 
-        WsModuleParser::bindEvent($this->className, $this->methodName, SwooleEvent::MESSAGE);
+        RouteRegister::bindEvent($this->className, $this->methodName, SwooleEvent::MESSAGE);
 
         return [];
     }

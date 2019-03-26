@@ -8,7 +8,7 @@ use Swoft\Concern\DataPropertyTrait;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\Session\SessionInterface;
-use Swoft\WebSocket\Server\Contract\WsModuleInterface;
+use Swoft\WebSocket\Server\Router\Router;
 
 /**
  * Class Connection
@@ -28,6 +28,7 @@ class Connection implements SessionInterface
 
     /**
      * @var array
+     * @see Router::$modules for fileds information
      */
     private $module;
 

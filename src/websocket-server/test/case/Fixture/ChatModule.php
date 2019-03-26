@@ -8,8 +8,8 @@ use Swoft\WebSocket\Server\Annotation\Mapping\OnOpen;
 use Swoft\WebSocket\Server\Annotation\Mapping\WsModule;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\MessageParser\JsonParser;
-use Swoole\Http\Request;
-use Swoole\Http\Response;
+use Swoft\Http\Message\Request;
+use Swoft\Http\Message\Response;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
 use SwoftTest\WebSocket\Server\Fixture\Chat\ChatController;
@@ -141,53 +141,14 @@ class ChatModule implements WsModuleInterface
      *  'body' => ...    // body data
      * ]
      */
-    final public function onMessage(Server $server, Frame $frame): void
+    public function onMessage(Server $server, Frame $frame): void
     {
-        $cmd    = $this->defaultCommand;
-        $parser = $this->getParser();
-
-        if (!$data = $parser->decode($frame->data)) {
-            $skip = $this->onFormatError($frame);
-
-            if ($skip === false) {
-                return;
-            }
-
-            $body = $frame->data;
-        } else {
-            $body = $data['body'] ?: [];
-
-            if (isset($data['cmd'])) {
-                $cmd = $data['cmd'];
-            } elseif (!$body) {
-                $body = $data;
-            }
-        }
-
-        if (false === $this->beforeDispatch($cmd, $body, $frame)) {
-            return;
-        }
-
-        $this->dispatcher->dispatch($this, $cmd, $body, $frame);
-        \var_dump(__METHOD__);
-    }
-
-    /**
-     * @param string $cmd
-     * @param mixed  $body
-     * @param Frame  $frame
-     * @return bool
-     */
-    protected function beforeDispatch(string $cmd, $body, Frame $frame): bool
-    {
-        // \ws()->push($frame->fd, 'your sent data is invalid');
-        return true;
     }
 
     /**
      * @param Frame $frame
      */
-    protected function onFormatError(Frame $frame)
+    protected function onFormatError(Frame $frame): void
     {
         \server()->push($frame->fd, 'your sent data format is invalid');
     }

@@ -47,6 +47,12 @@ class Router implements RouterInterface
     private $commands = [];
 
     /**
+     * Command counter
+     * @var int
+     */
+    private $counter = 0;
+
+    /**
      * @param string $path
      * @param array  $moduleInfo
      */
@@ -58,21 +64,6 @@ class Router implements RouterInterface
     }
 
     /**
-     * @param string $path
-     * @param array  $commands
-     */
-    public function addCommands(string $path, array $commands): void
-    {
-        $path = WsHelper::formatPath($path);
-
-        if (isset($this->commands[$path])) {
-            $this->commands[$path] = \array_merge($this->commands[$path], $commands);
-        } else {
-            $this->commands[$path] = $commands;
-        }
-    }
-
-    /**
      * @param string   $path
      * @param string   $commandId
      * @param callable $handler
@@ -80,7 +71,8 @@ class Router implements RouterInterface
     public function addCommand(string $path, string $commandId, $handler): void
     {
         $path = WsHelper::formatPath($path);
-        // add
+
+        $this->counter++;
         $this->commands[$path][$commandId] = $handler;
     }
 
@@ -89,7 +81,6 @@ class Router implements RouterInterface
      *
      * @param string $path e.g '/echo'
      * @return array
-     * @throws \Swoft\WebSocket\Server\Exception\WsRouteException
      */
     public function match(string $path): array
     {
@@ -100,7 +91,7 @@ class Router implements RouterInterface
     /**
      * @param string $path
      * @param string $command
-     * @return array
+     * @return array [$status, $handler]
      */
     public function matchCommand(string $path, string $command): array
     {
@@ -123,7 +114,7 @@ class Router implements RouterInterface
      * @param string $path
      * @return bool
      */
-    public function hasRoute(string $path): bool
+    public function hasModule(string $path): bool
     {
         return isset($this->modules[$path]);
     }
@@ -142,5 +133,21 @@ class Router implements RouterInterface
     public function getCommands(): array
     {
         return $this->commands;
+    }
+
+    /**
+     * @return int
+     */
+    public function getModuleCount(): int
+    {
+        return \count($this->modules);
+    }
+
+    /**
+     * @return int
+     */
+    public function getCounter(): int
+    {
+        return $this->counter;
     }
 }
