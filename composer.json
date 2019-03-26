@@ -46,6 +46,10 @@
     "swoft/websocket-server": "self.version",
     "swoft/connection-pool": "self.version",
     "swoft/db": "self.version",
+    "swoft/rpc": "self.version",
+    "swoft/rpc-server": "self.version",
+    "swoft/rpc-client": "self.version",
+    "swoft/task": "self.version",
     "swoft/test": "self.version"
   },
   "autoload": {
