@@ -2,17 +2,17 @@
 
 namespace Swoft\WebSocket\Server\Swoole;
 
-use Swoole\Websocket\Frame;
-use Swoole\Websocket\Server;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Container;
 use Swoft\Co;
-use Swoft\Session\Session;
 use Swoft\Context\Context;
 use Swoft\Server\Swoole\MessageInterface;
-use Swoft\WebSocket\Server\Exception\WsServerException;
-use Swoft\WebSocket\Server\Router\Router;
+use Swoft\Session\Session;
+use Swoft\WebSocket\Server\WsDispatcher;
 use Swoft\WebSocket\Server\WsContext;
 use Swoft\WebSocket\Server\WsServerEvent;
+use Swoole\Websocket\Frame;
+use Swoole\Websocket\Server;
 
 /**
  * Class MessageListener
@@ -26,52 +26,46 @@ class MessageListener implements MessageInterface
     /**
      * @param Server $server
      * @param Frame  $frame
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     public function onMessage(Server $server, Frame $frame): void
     {
         $fd = $frame->fd;
 
         /** @var WsContext $ctx */
-        $ctx = \bean(WsContext::class);
+        $ctx = Container::$instance->getSingleton(WsContext::class);
         $ctx->initialize($frame);
 
-        // storage context
+        // Storage context
         Context::set($ctx);
-        // init fd and coId mapping
+        // Init fd and coId mapping
         Session::bindFd($fd);
 
-        \Swoft::trigger(WsServerEvent::BEFORE_MESSAGE, null, $server, $frame);
-
-        \server()->log("received message: {$frame->data} from fd #{$fd}, co ID #" . Co::tid(), [], 'debug');
-
-        /** @see Dispatcher::message() */
-        \bean('wsDispatcher')->message($server, $frame);
-
         try {
-            $conn = Session::mustGet();
-            // get request path
-            // $path = $conn->getMetaValue('path');
-            $path = $conn->getRequest()->getUri()->getPath();
+            /** @var WsDispatcher $dispatcher */
+            $dispatcher = Container::$instance->getSingleton('wsDispatcher');
 
-            /** @var Router $router */
-            $router = \Swoft::getBean('wsRouter');
+            \server()->log("conn#{$fd} received message: {$frame->data}, co ID #" . Co::tid(), [], 'debug');
+            \Swoft::trigger(WsServerEvent::BEFORE_MESSAGE, $fd, $server, $frame);
 
-            if (!$module = $router->match($path)) {
-                // Should never happen
-                throw new WsServerException('module info has been lost of the ' . $path);
-            }
+            // Parse and dispatch message
+            $dispatcher->message($server, $frame);
 
-            // TODO ...
-            $dataParser = $module['messageParser'];
+            \Swoft::trigger(WsServerEvent::AFTER_MESSAGE, $fd, $server, $frame);
         } catch (\Throwable $e) {
+            \server()->log("conn#{$fd} error on handle message, ERR: " . $e->getMessage(), [], 'error');
+            $evt = \Swoft::trigger(WsServerEvent::ON_ERROR, 'message', $e, $frame);
 
+            // Close connection if event handle is not stopped
+            if (!$evt->isPropagationStopped()) {
+                $server->close($fd);
+                throw $e;
+            }
+        } finally {
+            // Destroy context
+            Context::destroy();
+            // Delete coId from fd mapping
+            Session::unbindFd();
         }
-
-        // destroy context
-        Context::destroy();
-        // delete coId from fd mapping
-        Session::unbindFd();
     }
 }

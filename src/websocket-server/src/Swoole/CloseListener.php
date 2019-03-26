@@ -2,12 +2,14 @@
 
 namespace Swoft\WebSocket\Server\Swoole;
 
-use Swoole\Server;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Session\Session;
+use Swoft\Bean\Container;
 use Swoft\Server\Swoole\CloseInterface;
+use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Connection;
+use Swoft\WebSocket\Server\WsDispatcher;
 use Swoft\WebSocket\Server\WsServerEvent;
+use Swoole\Server;
 
 /**
  * Class CloseListener
@@ -21,50 +23,51 @@ class CloseListener implements CloseInterface
      * Close event
      *
      * @param Server|\Swoole\WebSocket\Server $server
-     * @param int      $fd
-     * @param int      $reactorId
+     * @param int                             $fd
+     * @param int                             $reactorId
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function onClose(Server $server, int $fd, int $reactorId): void
     {
-        /*
-        WEBSOCKET_STATUS_CONNECTION = 1，连接进入等待握手
-        WEBSOCKET_STATUS_HANDSHAKE = 2，正在握手
-        WEBSOCKET_STATUS_FRAME = 3，已握手成功等待浏览器发送数据帧
-        */
-        $fdInfo = $server->getClientInfo($fd);
-
-        if ($fdInfo['websocket_status'] < 1) {
+        // Only allow handshake success conn
+        if (!$server->isEstablished($fd)) {
+            Session::unbindFd();
+            Session::destroy($fd);
             return;
         }
-
-        $total = \server()->count();
-        \server()->log("onClose: Client #{$fd} connection has been closed. client count $total, client info:", $fdInfo,
-            'debug');
 
         /** @var Connection $conn */
-        $conn = Session::get();
+        $conn  = Session::get();
+        $total = \server()->count();
+
+        \server()->log("onClose: conn#{$fd} connection has been closed. client count $total", [], 'debug');
 
         if (!$meta = $conn->getMetadata()) {
-            \server()->log("onClose: Client #{$fd} connection meta info has been lost");
+            \server()->log("onClose: conn#{$fd} connection meta info has been lost");
             return;
         }
 
-        \server()->log("onClose: Client #{$fd} meta info:", $meta, 'debug');
+        \server()->log("onClose: conn#{$fd} meta info:", $meta, 'debug');
 
-        // 握手成功的才回调 close
-        if ($conn->isHandshake()) {
-            /** @see Dispatcher::close() */
-            \bean('wsDispatcher')->close($server, $fd);
+        try {
+            // Handshake successful callback close handle
+            if ($conn->isHandshake()) {
+                /** @var WsDispatcher $dispatcher */
+                $dispatcher = Container::$instance->getSingleton('wsDispatcher');
+                $dispatcher->close($server, $fd);
+            }
+
+            // Call on close callback
+            \Swoft::trigger(WsServerEvent::AFTER_CLOSE, $fd, $server);
+        } catch (\Throwable $e) {
+            \server()->log("conn#{$fd} error on handle close, ERR: " . $e->getMessage(), [], 'error');
+            \Swoft::trigger(WsServerEvent::ON_ERROR, 'close', $e);
         }
 
-        // call on close callback
-        \Swoft::trigger(WsServerEvent::AFTER_CLOSE, $fd, $server);
-
-        // unbind fd
+        // Unbind fd
         Session::unbindFd();
-        // remove connection
+        // Remove connection
         Session::destroy($fd);
     }
 }

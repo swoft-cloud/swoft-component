@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Test;
-
 
 use Swoft\Processor\AnnotationProcessor;
 use Swoft\Processor\BeanProcessor;

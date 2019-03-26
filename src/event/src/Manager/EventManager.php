@@ -16,7 +16,6 @@ use Swoft\Event\Listener\{LazyListener, ListenerPriority, ListenerQueue};
 
 /**
  * Class EventManager
- * @package Swoft\Event\Manager
  * @since 2.0
  * @Bean("eventManager", alias="eventDispatcher")
  */

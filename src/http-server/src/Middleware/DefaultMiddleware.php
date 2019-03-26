@@ -52,7 +52,7 @@ class DefaultMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @param ServerRequestInterface $request
+     * @param ServerRequestInterface|Request $request
      *
      * @return Response
      * @throws \ReflectionException
@@ -61,23 +61,23 @@ class DefaultMiddleware implements MiddlewareInterface
      */
     private function handle(ServerRequestInterface $request): Response
     {
-        $uri    = $request->getUri()->getPath();
-        $method = $request->getMethod();
+        $method  = $request->getMethod();
+        $uriPath = $request->getUriPath();
 
         /** @var Router $router */
         $router = Container::$instance->getSingleton('httpRouter');
 
         /* @var Route $route */
-        [$status, , $route] = $router->match($uri, $method);
+        [$status, , $route] = $router->match($uriPath, $method);
 
         // Not found route
         if ($status === Router::NOT_FOUND) {
-            throw new NotFoundRouteException(\sprintf('Router(%s) not founded!', $uri));
+            throw new NotFoundRouteException(\sprintf('Router(%s) not founded!', $uriPath));
         }
 
         // Method not allowed
         if ($status === Router::METHOD_NOT_ALLOWED) {
-            throw new MethodNotAllowedException(\sprintf('Uri(%s) method(%s) not allowed!', $uri, $method));
+            throw new MethodNotAllowedException(\sprintf('Uri(%s) method(%s) not allowed!', $uriPath, $method));
         }
 
         // Controller and method
