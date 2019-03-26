@@ -842,7 +842,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      */
     public function getTable()
     {
-        return EntityRegister::getTable(static::class);
+        return EntityRegister::getTable($this->getClassName());
     }
 
     /**
