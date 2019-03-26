@@ -75,6 +75,7 @@ class DefinitionObjParser extends ObjectParser
         if (empty($className)) {
             throw new ContainerException(sprintf('%s key for definition must be defined', $beanName));
         }
+
         $objDefinition = new ObjectDefinition($beanName, $className);
         $objDefinition = $this->updateObjectDefinitionByDefinition($objDefinition, $definition);
 

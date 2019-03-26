@@ -1,14 +1,15 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Aop\Ast\Visitor;
+namespace Swoft\Rpc\Client\Proxy\Ast;
 
+
+use Swoft\Proxy\Ast\Visitor\Visitor;
+use Swoft\Rpc\Client\Concern\ServiceTrait;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\NodeFinder;
 use PhpParser\NodeTraverser;
-use Swoft\Aop\AopTrait;
-use Swoft\Proxy\Ast\Visitor\Visitor;
 
 /**
  * Class ProxyVisitor
@@ -36,7 +37,7 @@ class ProxyVisitor extends Visitor
      *
      * @var string
      */
-    private $originalClassName = '';
+    private $originalInterfaceName = '';
 
     /**
      * Proxy class name without namespace
@@ -50,17 +51,17 @@ class ProxyVisitor extends Visitor
      *
      * @var string
      */
-    private $aopClassName;
+    private $serviceTrait;
 
     /**
      * ProxyVisitor constructor.
      *
      * @param string $proxyId
-     * @param string $aopClassName
+     * @param string $TraitClassName
      */
-    public function __construct(string $proxyId = '', string $aopClassName = AopTrait::class)
+    public function __construct(string $proxyId = '', string $TraitClassName = ServiceTrait::class)
     {
-        $this->aopClassName = $aopClassName;
+        $this->serviceTrait = $TraitClassName;
         $this->proxyId      = $proxyId ?: \uniqid();
     }
 
@@ -80,12 +81,11 @@ class ProxyVisitor extends Visitor
             return null;
         }
 
-        // Origin class node
-        if ($node instanceof Node\Stmt\Class_) {
-            $name = $node->name->toString();
-
-            $this->proxyName         = sprintf('%s_%s', $name, $this->proxyId);
-            $this->originalClassName = sprintf('%s\\%s', $this->namespace, $name);
+        // Origin interface node
+        if ($node instanceof Node\Stmt\Interface_) {
+            $name                        = $node->name->toString();
+            $this->proxyName             = sprintf('%s_%s', $name, $this->proxyId);
+            $this->originalInterfaceName = sprintf('%s\\%s', $this->namespace, $name);
 
             return null;
         }
@@ -102,25 +102,17 @@ class ProxyVisitor extends Visitor
      */
     public function leaveNode(Node $node)
     {
-        // Remove trait use to fix return `self` bug
-        if ($node instanceof Node\Stmt\TraitUse) {
-            return NodeTraverser::REMOVE_NODE;
-        }
-
-        // Parse new class node
-        if ($node instanceof Node\Stmt\Class_) {
+        // Parse new interface node
+        if ($node instanceof Node\Stmt\Interface_) {
             $newClassNodes = [
-                'flags'   => $node->flags,
-                'stmts'   => $node->stmts,
-                'extends' => new Node\Name('\\' . $this->originalClassName),
+                'flags'      => 0,
+                'stmts'      => $node->stmts,
+                'implements' => [
+                    new Node\Name('\\' . $this->originalInterfaceName)
+                ],
             ];
 
             return new Node\Stmt\Class_($this->proxyName, $newClassNodes);
-        }
-
-        // Remove property node
-        if ($node instanceof Node\Stmt\Property) {
-            return NodeTraverser::REMOVE_NODE;
         }
 
         // Parse class method and rewrite public and protected
@@ -175,7 +167,7 @@ class ProxyVisitor extends Visitor
 
         // Proxy method params
         $newParams = [
-            new Node\Scalar\String_($this->originalClassName),
+            new Node\Scalar\String_($this->originalInterfaceName),
             new Node\Scalar\String_($methodName),
             new Node\Expr\FuncCall(new Node\Name('func_get_args')),
         ];
@@ -198,7 +190,7 @@ class ProxyVisitor extends Visitor
         $returnType = $node->returnType;
         if ($returnType instanceof Node\Name && $returnType->toString() === 'self') {
             $returnType->parts = [
-                sprintf('\\%s', $this->originalClassName)
+                sprintf('\\%s', $this->originalInterfaceName)
             ];
         }
 
@@ -232,9 +224,9 @@ class ProxyVisitor extends Visitor
      *
      * @return string
      */
-    public function getOriginalClassName(): string
+    public function getOriginalInterfaceName(): string
     {
-        return $this->originalClassName;
+        return $this->originalInterfaceName;
     }
 
     /**
@@ -253,7 +245,7 @@ class ProxyVisitor extends Visitor
     private function getTraitNode(): Node\Stmt\TraitUse
     {
         return new Node\Stmt\TraitUse([
-            new Node\Name('\\' . $this->aopClassName)
+            new Node\Name('\\' . $this->serviceTrait)
         ]);
     }
 
@@ -269,7 +261,7 @@ class ProxyVisitor extends Visitor
             'flags'      => Node\Stmt\Class_::MODIFIER_PUBLIC,
             'returnType' => 'string',
             'stmts'      => [
-                new Node\Stmt\Return_(new Node\Scalar\String_($this->getOriginalClassName()))
+                new Node\Stmt\Return_(new Node\Scalar\String_($this->getOriginalInterfaceName()))
             ],
         ]);
     }

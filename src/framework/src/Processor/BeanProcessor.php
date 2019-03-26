@@ -8,6 +8,7 @@ use Swoft\BeanHandler;
 use Swoft\Contract\ComponentInterface;
 use Swoft\Contract\DefinitionInterface;
 use Swoft\Helper\CLog;
+use Swoft\Rpc\Client\Annotation\Mapping\Reference;
 use Swoft\Stdlib\Helper\ArrayHelper;
 
 /**

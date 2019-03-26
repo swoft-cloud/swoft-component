@@ -28,6 +28,11 @@ class Proxy
 //            return $className;
         }
 
+        // Ignore aop proxy
+        if (strpos($className, '_IGNORE_') !== false) {
+            return $className;
+        }
+
         $visitor = new ProxyVisitor();
         return BaseProxy::newClassName($className, $visitor);
     }
