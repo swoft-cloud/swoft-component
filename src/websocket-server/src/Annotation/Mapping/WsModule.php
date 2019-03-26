@@ -33,18 +33,18 @@ final class WsModule
      *
      * @var string
      */
-    private $name;
+    private $name = '';
 
     /**
      * Message parser class
      * @var string
      */
-    private $messageParser;
+    private $messageParser = '';
 
     /**
      * @var string[]
      */
-    private $controllers;
+    private $controllers = [];
 
     /**
      * Default message command
