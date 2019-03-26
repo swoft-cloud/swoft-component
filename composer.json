@@ -75,6 +75,7 @@
       "Swoft\\Rpc\\Server\\": "src/rpc-server/src/",
       "Swoft\\Task\\": "src/task/src/",
       "Swoft\\Proxy\\": "src/proxy/src/",
+      "Swoft\\Test\\": "src/Test/src/",
       "Swoft\\": "src/framework/src/"
     },
     "files": [
@@ -106,7 +107,7 @@
       "SwoftTest\\Rpc\\Client\\": "src/rpc-client/test/case/",
       "SwoftTest\\Rpc\\Server\\": "src/rpc-server/test/case/",
       "SwoftTest\\Task\\": "src/task/test/case/",
-      "SwoftTest\\Proxy\\": "src/Proxy/test/case/",
+      "SwoftTest\\Proxy\\": "src/proxy/test/case/",
       "SwoftTest\\Trace\\": "src/trace/test/case/",
       "SwoftTest\\WebSocket\\Server\\": "src/websocket-server/test/case/"
     }

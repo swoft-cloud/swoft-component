@@ -279,7 +279,7 @@ trait HasAttributes
     {
         $attributes = [];
 
-        $mapping = EntityRegister::getMapping(static::class);
+        $mapping = EntityRegister::getMapping($this->getClassName());
         foreach ($mapping as $attributeName => $map) {
             $getter = sprintf('get%s', ucfirst($attributeName));
             if (!method_exists($this, $getter)) {
@@ -541,7 +541,7 @@ trait HasAttributes
      */
     private function getMappingByColumn(string $key): array
     {
-        $mapping = EntityRegister::getReverseMappingByColumn(static::class, $key);
+        $mapping = EntityRegister::getReverseMappingByColumn($this->getClassName(), $key);
 
         if (empty($mapping)) {
             throw new EloquentException(sprintf('Column(%s) is not exist!', $key));
