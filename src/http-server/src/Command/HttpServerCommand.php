@@ -10,7 +10,7 @@ use Swoft\Http\Server\HttpServer;
 use Swoft\Server\Command\BaseServerCommand;
 
 /**
- * Provide some commands to manage the HTTP Server
+ * Provide some commands to manage the swoft HTTP Server
  *
  * @since 2.0
  *

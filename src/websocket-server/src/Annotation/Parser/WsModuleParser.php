@@ -12,10 +12,8 @@ use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\AnnotationException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Helper\CLog;
 use Swoft\Stdlib\Helper\Str;
 use Swoft\WebSocket\Server\Annotation\Mapping\WsModule;
-use Swoft\WebSocket\Server\Router\Router;
 use Swoft\WebSocket\Server\Router\RouteRegister;
 
 /**

@@ -2,18 +2,18 @@
 
 namespace SwoftTest\WebSocket\Server\Fixture;
 
+use Swoft\Http\Message\Request;
+use Swoft\Http\Message\Response;
 use Swoft\WebSocket\Server\Annotation\Mapping\OnClose;
 use Swoft\WebSocket\Server\Annotation\Mapping\OnHandShake;
 use Swoft\WebSocket\Server\Annotation\Mapping\OnOpen;
 use Swoft\WebSocket\Server\Annotation\Mapping\WsModule;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\MessageParser\JsonParser;
-use Swoft\Http\Message\Request;
-use Swoft\Http\Message\Response;
-use Swoole\WebSocket\Frame;
-use Swoole\WebSocket\Server;
 use SwoftTest\WebSocket\Server\Fixture\Chat\ChatController;
 use SwoftTest\WebSocket\Server\Fixture\Chat\UserController;
+use Swoole\WebSocket\Frame;
+use Swoole\WebSocket\Server;
 
 /**
  * Class ChatModule

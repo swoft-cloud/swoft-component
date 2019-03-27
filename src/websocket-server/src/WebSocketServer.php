@@ -24,15 +24,15 @@ class WebSocketServer extends Server
      */
     public function start(): void
     {
-        $this->swooleServer = new \Co\Websocket\Server($this->host, $this->port, $this->mode, $this->type);
+        $this->swooleServer = new \Swoole\Websocket\Server(
+            $this->host,
+            $this->port,
+            $this->mode,
+            $this->type
+        );
 
         $this->startSwoole();
     }
-
-    /*****************************************************************************
-     * handle WS events
-     ****************************************************************************/
-
 
     /*****************************************************************************
      * helper methods for send message

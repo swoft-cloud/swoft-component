@@ -30,8 +30,6 @@ class HttpServer extends Server
 
     /**
      * Start server
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Server\Exception\ServerException
      */
     public function start(): void

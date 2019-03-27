@@ -12,11 +12,14 @@ use Swoole\Http\Response;
  */
 class WsHelper
 {
-    public const WS_VERSION = 13;
+    public const WS_VERSION = '13';
     public const KEY_PATTEN = '#^[+/0-9A-Za-z]{21}[AQgw]==$#';
     public const SIGN_KEY   = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 
-    // websocket data opcode types
+    /**
+     * WebSocket data opcode types
+     * @see \WEBSOCKET_OPCODE_TEXT
+     */
     public const OPCODE_TEXT   = 0x01;
     public const OPCODE_BINARY = 0x02;
     public const OPCODE_CLOSE  = 0x08;
@@ -62,19 +65,17 @@ class WsHelper
      * @param Response $response
      * @return bool
      */
-    public static function quickHandshake(Request $request, Response $response): bool
+    public static function fastHandshake(Request $request, Response $response): bool
     {
         // $this->log("received handshake request from fd #{$request->fd}, co ID #" . Coroutine::tid());
-
-        // websocket握手连接算法验证
-        $secWSKey = $request->header['sec-websocket-key'];
-
-        if (self::isInvalidSecKey($secWSKey)) {
+        // WebSocket握手连接算法验证
+        $secKey = $request->header['sec-websocket-key'];
+        if (self::isInvalidSecKey($secKey)) {
             $response->end();
             return false;
         }
 
-        $headers = self::handshakeHeaders($secWSKey);
+        $headers = self::handshakeHeaders($secKey);
 
         // WebSocket connection to 'ws://127.0.0.1:9502/'
         // failed: Error during WebSocket handshake:

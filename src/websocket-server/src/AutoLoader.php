@@ -14,7 +14,6 @@ use Swoft\WebSocket\Server\Swoole\MessageListener;
  * Class AutoLoader
  *
  * @since 2.0
- * @package Swoft\WebSocket\Server\Event
  */
 class AutoLoader extends SwoftComponent
 {
@@ -23,7 +22,7 @@ class AutoLoader extends SwoftComponent
      */
     public function enable(): bool
     {
-        return false;
+        return (bool)\env('ENABLE_WS_SERVER', true);
     }
 
     /**
@@ -62,7 +61,8 @@ class AutoLoader extends SwoftComponent
         return [
             'wsServer'     => [
                 // 'class' => WebSocketServer::class,
-                'on' => [
+                'port' => 18307,
+                'on'   => [
                     // http
                     // SwooleEvent::REQUEST   => \bean(RequestListener::class),
                     // websocket

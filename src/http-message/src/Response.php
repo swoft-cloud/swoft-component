@@ -154,8 +154,20 @@ class Response implements ResponseInterface
             return;
         }
 
-        // Prepare
-        $response = $this->prepare();
+        // Prepare and send
+        $this->quickSend($this->prepare());
+    }
+
+    /**
+     * Quick send response
+     *
+     * @param self|null $response
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function quickSend(Response $response = null): void
+    {
+        $response = $response ?: $this;
 
         // Write Headers to co response
         foreach ($response->getHeaders() as $key => $value) {
@@ -169,7 +181,6 @@ class Response implements ResponseInterface
 
         // Set body
         $content = $response->getBody()->getContents();
-
         $this->coResponse->end($content);
     }
 

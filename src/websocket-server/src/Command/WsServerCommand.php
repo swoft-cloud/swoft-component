@@ -14,8 +14,8 @@ use Swoft\WebSocket\Server\WebSocketServer;
  * Class WsServerCommand
  * @Command("ws",
  *     coroutine=false,
- *     alias="ws-server,wsserver",
- *     desc="provide some commands to operate WebSocket Server"
+ *     alias="ws-server,wsserver,websocket",
+ *     desc="provide some commands to operate swoft WebSocket Server"
  * )
  */
 class WsServerCommand extends BaseServerCommand
@@ -28,7 +28,7 @@ class WsServerCommand extends BaseServerCommand
      *
      * @example
      *  {fullCommand}
-     *  {fullCommand} -d
+     *  {fullCommand} -d  Start server on background
      *
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
@@ -60,6 +60,7 @@ class WsServerCommand extends BaseServerCommand
 
         // TCP 启动参数
         // $tcpStatus = $server->getTcpSetting();
+        // $httpEnable = $server->hasListener(SwooleEvent::REQUEST);
 
         Show::panel([
             'WebSocket' => [
@@ -67,6 +68,10 @@ class WsServerCommand extends BaseServerCommand
                 'type'   => $typeName,
                 'mode'   => $modeName,
                 'worker' => $workerNum,
+            ],
+            'Extra'     => [
+                // 'httpHandle' => $httpEnable,
+                'pidFile' => $server->getPidFile(),
             ],
         ]);
 
