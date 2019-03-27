@@ -9,6 +9,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
  * Class WebSocket - mark an websocket module handler class
+ *
  * @since 2.0
  *
  * @Annotation
