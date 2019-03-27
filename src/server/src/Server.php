@@ -142,8 +142,6 @@ abstract class Server implements ServerInterface
      */
     public function __construct()
     {
-        self::$server = $this;
-
         // Init
         $this->init();
     }
@@ -316,18 +314,21 @@ abstract class Server implements ServerInterface
             throw new ServerException('You must to new server before start swoole!');
         }
 
-        Swoft::trigger(ServerEvent::BEFORE_SETTING);
+        Swoft::trigger(ServerEvent::BEFORE_SETTING, $this);
 
         // Set settings
         $this->swooleServer->set($this->setting);
 
-        Swoft::trigger(ServerEvent::BEFORE_BIND_EVENT);
+        Swoft::trigger(ServerEvent::BEFORE_BIND_EVENT, $this);
 
         // Register events
         $defaultEvents = $this->defaultEvents();
         $swooleEvents  = \array_merge($defaultEvents, $this->on);
 
+        $eventNames = [];
         foreach ($swooleEvents as $name => $listener) {
+            $eventNames[] = $name;
+
             // Default events
             if (isset($defaultEvents[$name])) {
                 $this->swooleServer->on($name, $listener);
@@ -347,7 +348,10 @@ abstract class Server implements ServerInterface
             $this->swooleServer->on($name, [$listener, $listenerMethod]);
         }
 
-        Swoft::trigger(ServerEvent::BEFORE_START);
+        Swoft::trigger(ServerEvent::BEFORE_START, $this, $eventNames);
+
+        // Storage server instance
+        self::$server = $this;
 
         // Start swoole server
         $this->swooleServer->start();
@@ -423,6 +427,23 @@ abstract class Server implements ServerInterface
     public function getOn(): array
     {
         return $this->on;
+    }
+
+    /**
+     * @param string $eventName
+     * @return bool
+     */
+    public function hasListener(string $eventName): bool
+    {
+        return isset($this->on[$eventName]);
+    }
+
+    /**
+     * @return array
+     */
+    public function getRegisteredEvents(): array
+    {
+        return \array_keys($this->on);
     }
 
     /**
@@ -536,7 +557,10 @@ abstract class Server implements ServerInterface
         }
 
         if (\config('debug')) {
-            Console::log($msg, $data, $type);
+            $tid = Swoft\Co::tid();
+            $cid = Swoft\Co::id();
+
+            Console::log("[TID:$tid, CID:$cid] " . $msg, $data, $type);
         }
     }
 
@@ -679,13 +703,13 @@ abstract class Server implements ServerInterface
     public function defaultEvents(): array
     {
         return [
-            SwooleEvent::WORKER_ERROR  => [$this, 'onWorkerError'],
-            SwooleEvent::WORKER_STOP   => [$this, 'onWorkerStop'],
-            SwooleEvent::MANAGER_STOP  => [$this, 'onManagerStop'],
-            SwooleEvent::MANAGER_START => [$this, 'onManagerStart'],
-            SwooleEvent::WORKER_START  => [$this, 'onWorkerStart'],
-            SwooleEvent::SHUTDOWN      => [$this, 'onShutdown'],
             SwooleEvent::START         => [$this, 'onStart'],
+            SwooleEvent::SHUTDOWN      => [$this, 'onShutdown'],
+            SwooleEvent::MANAGER_START => [$this, 'onManagerStart'],
+            SwooleEvent::MANAGER_STOP  => [$this, 'onManagerStop'],
+            SwooleEvent::WORKER_START  => [$this, 'onWorkerStart'],
+            SwooleEvent::WORKER_STOP   => [$this, 'onWorkerStop'],
+            SwooleEvent::WORKER_ERROR  => [$this, 'onWorkerError'],
         ];
     }
 }

@@ -18,14 +18,14 @@ class Stream implements StreamInterface
     use PrototypeTrait;
 
     /**
-     * @var string
-     */
-    protected $contents;
-
-    /**
      * @var int
      */
     protected $size = 0;
+
+    /**
+     * @var string
+     */
+    protected $contents = '';
 
     /**
      * Create stream replace of constructor.

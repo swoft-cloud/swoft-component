@@ -57,18 +57,18 @@ class WsDispatcher
             $class = $info['class'];
             $conn->setModule($info);
 
-            \server()->log("found handler for path '$path', ws module class is $class", [], 'debug');
+            \server()->log("Handshake: found handler for path '$path', ws module class is $class", [], 'debug');
 
             /** @var WsModuleInterface $module */
             $module = Container::$instance->getSingleton($class);
-            $method = $info['eventMethods']['handShake'] ?? '';
 
-            // Auto handShake
-            if (!$method) {
-                return [true, $response->withAddedHeader('swoft-ws-handshake', 'auto')];
+            // Call user method
+            if ($method = $info['eventMethods']['handShake'] ?? '') {
+                return $module->$method($request, $response);
             }
 
-            return $module->$method($request, $response);
+            // Auto handShake
+            return [true, $response->withAddedHeader('swoft-ws-handshake', 'auto')];
         } catch (\Throwable $e) {
             if ($e instanceof WsRouteException) {
                 /** @var Response|static $response */
@@ -99,10 +99,9 @@ class WsDispatcher
         $info = $conn->getModule();
 
         // Want custom message handle, will don't trigger message parse and dispatch.
-        $method = $info['eventMethods']['message'] ?? '';
-        if ($method) {
+        if ($method = $info['eventMethods']['message'] ?? '') {
             $class = $info['class'];
-            \server()->log("conn#{$fd} call ws message handler '{$class}->{$method}'", [], 'debug');
+            \server()->log("Message: conn#{$fd} call custom message handler '{$class}->{$method}'", [], 'debug');
 
             /** @var WsModuleInterface $module */
             $module = Container::$instance->getSingleton($class);
@@ -135,7 +134,7 @@ class WsDispatcher
         }
 
         [$ctlClass, $ctlMethod] = $handler;
-        \server()->log("conn#{$fd} call ws message handler '{$ctlClass}->{$ctlMethod}'", $body, 'debug');
+        \server()->log("Message: conn#{$fd} call message command handler '{$ctlClass}->{$ctlMethod}'", $body, 'debug');
 
         $controller = Container::$instance->get($ctlClass);
         $controller->$ctlMethod($data);

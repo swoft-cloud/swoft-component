@@ -61,7 +61,8 @@ class AutoLoader extends SwoftComponent
         return [
             'wsServer'     => [
                 // 'class' => WebSocketServer::class,
-                'on' => [
+                'port' => 18307,
+                'on'   => [
                     // http
                     // SwooleEvent::REQUEST   => \bean(RequestListener::class),
                     // websocket

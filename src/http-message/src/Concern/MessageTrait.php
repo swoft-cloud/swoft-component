@@ -389,7 +389,7 @@ trait MessageTrait
     private function trimHeaderValues(array $values): array
     {
         return \array_map(function ($value) {
-            return \trim($value, " \t");
+            return \trim((string)$value, " \t");
         }, $values);
     }
 }
