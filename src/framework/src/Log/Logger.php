@@ -483,7 +483,7 @@ class Logger extends \Monolog\Logger
     /**
      * 请求开始时间
      *
-     * @return int
+     * @return float
      */
     private function getRequestTime(): float
     {
