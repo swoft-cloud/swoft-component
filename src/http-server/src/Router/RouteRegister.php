@@ -50,6 +50,8 @@ class RouteRegister
                 $prefix = '/' . Str::getClassName($class, $suffix);
             }
 
+            $prefix = rtrim($prefix, '/');
+
             // Register a set of routes corresponding to the controller
             foreach ($mapping['routes'] as $route) {
                 if (!isset($route['route'], $route['method'], $route['action'])) {
