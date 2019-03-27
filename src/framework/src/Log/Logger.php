@@ -485,7 +485,7 @@ class Logger extends \Monolog\Logger
      *
      * @return int
      */
-    private function getRequestTime(): int
+    private function getRequestTime(): float
     {
         $contextData = RequestContext::getContextData();
 
