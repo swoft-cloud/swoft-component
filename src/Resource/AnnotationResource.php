@@ -245,7 +245,12 @@ class AnnotationResource extends Resource
     private function parseAnnotation(string $namespace, string $className): void
     {
         // Annotation reader
-        $reflectionClass    = new \ReflectionClass($className);
+        $reflectionClass = new \ReflectionClass($className);
+
+        // Fix ignore abstract
+        if ($reflectionClass->isAbstract()) {
+            return;
+        }
         $oneClassAnnotation = $this->parseOneClassAnnotation($reflectionClass);
 
         if (!empty($oneClassAnnotation)) {
