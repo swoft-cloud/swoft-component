@@ -51,22 +51,34 @@ class ErrorHandler
      */
     public function doHandler(\Throwable $throwable)
     {
-        $exceptionClass = get_class($throwable);
-        $collector      = ExceptionHandlerCollector::getCollector();
-        $isNotExistHandler = !isset($collector[$exceptionClass]) && !isset($collector[\Exception::class]);
-        if (empty($collector) || $isNotExistHandler) {
+        //all parent class
+        $exceptionClassArr = [];
+        $exceptionClassArr[] = get_class($throwable);
+
+        $class = new \ReflectionObject($throwable);
+
+        while ($class = $class->getParentClass()) {
+            $exceptionClassArr[] = $class->getName();
+        }
+
+        $collector = ExceptionHandlerCollector::getCollector();
+        $classBeanName = '';
+        $methodName = '';
+
+        foreach ($exceptionClassArr as $item) {
+            if (isset($collector[$item])) {
+                list($classBeanName, $methodName) = $collector[$item];
+                break;
+            }
+        }
+
+        if (empty($collector) || empty($classBeanName) || empty($methodName)) {
             return $this->handleThrowtable($throwable);
         }
 
-        if(isset($collector[$exceptionClass])){
-            list($classBeanName, $methodName) = $collector[$exceptionClass];
-        }else{
-            list($classBeanName, $methodName) = $collector[\Exception::class];
-        }
-
-        $handler    = App::getBean($classBeanName);
+        $handler = App::getBean($classBeanName);
         $bindParams = $this->getBindParams($classBeanName, $methodName, $throwable);
-        $response   = PhpHelper::call([$handler, $methodName], $bindParams);
+        $response = PhpHelper::call([$handler, $methodName], $bindParams);
         if ($response instanceof ResponseInterface) {
             return $response;
         }
