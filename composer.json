@@ -3,11 +3,11 @@
   "type": "library",
   "keywords": [
     "php",
-    "swoft",
-    "swoole",
+    "Swoft",
+    "Swoole",
     "swoft-component"
   ],
-  "description": "micro-service framework base on swoole",
+  "description": "micro-service framework base on Swoole",
   "license": "Apache-2.0",
   "require": {
     "php": ">7.1.0",

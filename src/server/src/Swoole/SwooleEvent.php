@@ -119,6 +119,8 @@ final class SwooleEvent
         self::HANDSHAKE => HandShakeInterface::class,
         self::MESSAGE   => MessageInterface::class,
         self::CLOSE     => CloseInterface::class,
+        self::RECEIVE   => ReceiveInterface::class,
+        self::CONNECT   => ConnectInterface::class,
     ];
 
     /**

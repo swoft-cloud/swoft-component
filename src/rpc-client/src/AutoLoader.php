@@ -4,6 +4,7 @@
 namespace Swoft\Rpc\Client;
 
 
+use Swoft\Rpc\Packet\JsonPacket;
 use Swoft\SwoftComponent;
 
 /**
@@ -29,5 +30,17 @@ class AutoLoader extends SwoftComponent
     public function metadata(): array
     {
         return [];
+    }
+
+    /**
+     * @return array
+     */
+    public function coreBean(): array
+    {
+        return [
+            'clientPacket' => [
+                'class' => JsonPacket::class,
+            ],
+        ];
     }
 }

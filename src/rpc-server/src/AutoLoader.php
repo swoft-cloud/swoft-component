@@ -4,6 +4,7 @@
 namespace Swoft\Rpc\Server;
 
 
+use Swoft\Rpc\Server\Swoole\CloseListener;
 use Swoft\Rpc\Server\Swoole\ConnectListener;
 use Swoft\Rpc\Server\Swoole\ReceiveListener;
 use Swoft\Server\Swoole\SwooleEvent;
@@ -28,17 +29,20 @@ class AutoLoader extends SwoftComponent
 
     /**
      * @return array
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function metadata(): array
+    {
+        return [];
+    }
+
+    public function coreBean(): array
     {
         return [
             'rpcServer' => [
                 'class' => ServiceServer::class,
-                'on' => [
+                'on'    => [
                     SwooleEvent::CONNECT => \bean(ConnectListener::class),
-                    SwooleEvent::RECEIVE => \bean(ReceiveListener::class),
+                    SwooleEvent::CLOSE   => \bean(CloseListener::class),
                     SwooleEvent::RECEIVE => \bean(ReceiveListener::class),
                 ]
             ]

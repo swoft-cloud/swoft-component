@@ -73,4 +73,14 @@ interface ServerInterface
      * @return array
      */
     public function getOn(): array;
+
+    /**
+     * @return array
+     */
+    public function getListener(): array;
+
+    /**
+     * @return string
+     */
+    public function getTypeName(): string;
 }

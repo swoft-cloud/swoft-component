@@ -5,6 +5,7 @@ namespace Swoft\Rpc\Server\Swoole;
 
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Rpc\Server\ServiceServerEvent;
 use Swoft\Server\Swoole\CloseInterface;
 use Swoole\Server;
 
@@ -24,6 +25,8 @@ class CloseListener implements CloseInterface
      */
     public function onClose(Server $server, int $fd, int $reactorId): void
     {
-
+        \Swoft::trigger(ServiceServerEvent::CLOSE);
+        
+        var_dump('close');
     }
 }

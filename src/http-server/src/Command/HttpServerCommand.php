@@ -8,9 +8,10 @@ use Swoft\Console\Annotation\Mapping\CommandOption;
 use Swoft\Console\Helper\Show;
 use Swoft\Http\Server\HttpServer;
 use Swoft\Server\Command\BaseServerCommand;
+use Swoft\Server\ServerInterface;
 
 /**
- * Provide some commands to manage the HTTP Server
+ * Provide some commands to manage the swoft HTTP Server
  *
  * @since 2.0
  *
@@ -58,18 +59,30 @@ class HttpServerCommand extends BaseServerCommand
         $mainPort = $server->getPort();
         $modeName = $server->getModeName();
         $typeName = $server->getTypeName();
-        
-        // TCP 启动参数
-        // $tcpStatus = $server->getTcpSetting();
 
-        Show::panel([
+        // Http
+        $panel = [
             'HTTP' => [
                 'listen' => $mainHost . ':' . $mainPort,
                 'type'   => $typeName,
                 'mode'   => $modeName,
                 'worker' => $workerNum,
             ],
-        ]);
+        ];
+
+        // Listener
+        $listeners = $server->getListener();
+        foreach ($listeners as $name => $listener) {
+            if (!$listener instanceof ServerInterface) {
+                continue;
+            }
+            $panel[$name] = [
+                'listen' => sprintf('%s:%s', $listener->getHost(), $listener->getPort()),
+                'type'   => $listener->getTypeName()
+            ];
+        }
+
+        Show::panel($panel);
 
         \output()->writef('<success>Server start success !</success>');
 

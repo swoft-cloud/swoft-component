@@ -5,6 +5,7 @@ namespace Swoft\Rpc\Server\Swoole;
 
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Rpc\Server\ServiceServerEvent;
 use Swoft\Server\Swoole\ConnectInterface;
 use Swoole\Server;
 
@@ -24,6 +25,8 @@ class ConnectListener implements ConnectInterface
      */
     public function onConnect(Server $server, int $fd, int $reactorId): void
     {
+        \Swoft::trigger(ServiceServerEvent::CLOSE);
 
+        var_dump('connect');
     }
 }

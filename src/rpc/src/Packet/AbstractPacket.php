@@ -21,22 +21,16 @@ abstract class AbstractPacket implements PacketInterface
 
     /**
      * @var bool
-     *
-     * @Config("rpc.open_eof_check")
      */
     protected $openEofCheck = false;
 
     /**
      * @var string
-     *
-     * @Config("rpc.package_eof")
      */
     protected $packageEof = '';
 
     /**
      * @var bool
-     *
-     * @Config("rpc.open_eof_split")
      */
     protected $openEofSplit = false;
 }

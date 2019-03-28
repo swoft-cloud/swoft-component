@@ -4,7 +4,6 @@
 namespace Swoft\Rpc\Packet;
 
 
-use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Rpc\Exception\RpcException;
 use Swoft\Rpc\Protocol;
 use Swoft\Stdlib\Helper\JsonHelper;
@@ -13,8 +12,6 @@ use Swoft\Stdlib\Helper\JsonHelper;
  * Class JsonPacket
  *
  * @since 2.0
- *
- * @Bean()
  */
 class JsonPacket extends AbstractPacket
 {

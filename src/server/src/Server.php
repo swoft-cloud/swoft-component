@@ -155,8 +155,6 @@ abstract class Server implements ServerInterface
      */
     public function __construct()
     {
-        self::$server = $this;
-
         // Init
         $this->init();
     }
@@ -329,12 +327,12 @@ abstract class Server implements ServerInterface
             throw new ServerException('You must to new server before start swoole!');
         }
 
-        Swoft::trigger(ServerEvent::BEFORE_SETTING);
+        Swoft::trigger(ServerEvent::BEFORE_SETTING, $this);
 
         // Set settings
         $this->swooleServer->set($this->setting);
 
-        Swoft::trigger(ServerEvent::BEFORE_BIND_EVENT);
+        Swoft::trigger(ServerEvent::BEFORE_BIND_EVENT, $this);
 
         // Register events
         $defaultEvents = $this->defaultEvents();
@@ -343,10 +341,16 @@ abstract class Server implements ServerInterface
         // Add event
         $this->addEvent($this->swooleServer, $swooleEvents, $defaultEvents);
 
-        Swoft::trigger(ServerEvent::BEFORE_START);
-
         // Add port listener
         $this->addListener();
+
+        // @todo
+
+        // Trigger
+        Swoft::trigger(ServerEvent::BEFORE_START, $this, array_keys($swooleEvents));
+
+        // Storage server instance
+        self::$server = $this;
 
         // Start swoole server
         $this->swooleServer->start();
@@ -366,11 +370,15 @@ abstract class Server implements ServerInterface
 
             $host = $listener->getHost();
             $port = $listener->getPort();
-            $type = $this->getType();
-            $on   = $this->getOn();
+            $type = $listener->getType();
+            $on   = $listener->getOn();
 
             /* @var CoServer\Port $server */
             $server = $this->swooleServer->listen($host, $port, $type);
+            $server->set([
+                'open_eof_check' => false,
+                'package_max_length' => 2048
+            ]);
             $this->addEvent($server, $on);
         }
     }
@@ -405,6 +413,13 @@ abstract class Server implements ServerInterface
             $listenerMethod = \sprintf('on%s', \ucfirst($name));
             $server->on($name, [$listener, $listenerMethod]);
         }
+    }
+
+    public function onReceive(\Swoole\Http\Server $server, int $fd, int $reactorId, string $data): void
+    {
+        var_dump($data);
+
+        $server->send($fd, 'hello');
     }
 
     /**
@@ -477,6 +492,23 @@ abstract class Server implements ServerInterface
     public function getOn(): array
     {
         return $this->on;
+    }
+
+    /**
+     * @param string $eventName
+     * @return bool
+     */
+    public function hasListener(string $eventName): bool
+    {
+        return isset($this->on[$eventName]);
+    }
+
+    /**
+     * @return array
+     */
+    public function getRegisteredEvents(): array
+    {
+        return \array_keys($this->on);
     }
 
     /**
@@ -590,7 +622,10 @@ abstract class Server implements ServerInterface
         }
 
         if (\config('debug')) {
-            Console::log($msg, $data, $type);
+            $tid = Swoft\Co::tid();
+            $cid = Swoft\Co::id();
+
+            Console::log("[TID:$tid, CID:$cid] " . $msg, $data, $type);
         }
     }
 
@@ -731,16 +766,24 @@ abstract class Server implements ServerInterface
     /**
      * @return array
      */
+    public function getListener(): array
+    {
+        return $this->listener;
+    }
+
+    /**
+     * @return array
+     */
     public function defaultEvents(): array
     {
         return [
-            SwooleEvent::WORKER_ERROR  => [$this, 'onWorkerError'],
-            SwooleEvent::WORKER_STOP   => [$this, 'onWorkerStop'],
-            SwooleEvent::MANAGER_STOP  => [$this, 'onManagerStop'],
-            SwooleEvent::MANAGER_START => [$this, 'onManagerStart'],
-            SwooleEvent::WORKER_START  => [$this, 'onWorkerStart'],
-            SwooleEvent::SHUTDOWN      => [$this, 'onShutdown'],
             SwooleEvent::START         => [$this, 'onStart'],
+            SwooleEvent::SHUTDOWN      => [$this, 'onShutdown'],
+            SwooleEvent::MANAGER_START => [$this, 'onManagerStart'],
+            SwooleEvent::MANAGER_STOP  => [$this, 'onManagerStop'],
+            SwooleEvent::WORKER_START  => [$this, 'onWorkerStart'],
+            SwooleEvent::WORKER_STOP   => [$this, 'onWorkerStop'],
+            SwooleEvent::WORKER_ERROR  => [$this, 'onWorkerError'],
         ];
     }
 }

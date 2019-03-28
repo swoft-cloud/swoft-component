@@ -73,7 +73,13 @@ class Co
 
                 PhpHelper::call($callable);
             } catch (\Throwable $e) {
-                var_dump($e->getMessage(), ' file=' . $e->getFile() . ' line=' . $e->getLine());
+                \printf(
+                    "Coroutine Exception: %s\nAt File %s line %d\nTrace:\n%s",
+                    $e->getMessage(),
+                    $e->getFile(),
+                    $e->getLine(),
+                    $e->getTraceAsString()
+                );
             }
 
             if ($wait) {

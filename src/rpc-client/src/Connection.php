@@ -4,43 +4,53 @@
 namespace Swoft\Rpc\Client;
 
 
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Connection\Pool\AbstractConnection;
 use Swoft\Rpc\Client\Contract\ConnectionInterface;
 use Swoft\Rpc\Client\Exception\RpcClientException;
+use Swoft\Rpc\Contract\PacketInterface;
 use Swoole\Coroutine\Client;
+use Swoft\Rpc\Client\Client as RpcClient;
 
 /**
  * Class Connection
  *
  * @since 2.0
+ *
+ * @Bean(scope=Bean::PROTOTYPE)
  */
 class Connection extends AbstractConnection implements ConnectionInterface
 {
+    use PrototypeTrait;
+
     /**
      * @var Client
      */
     protected $connection;
 
     /**
-     * Default host
-     *
-     * @var string
+     * @var RpcClient
      */
-    protected $host = '127.0.0.1';
+    protected $client;
 
     /**
-     * Default port
+     * @param \Swoft\Rpc\Client\Client $client
+     * @param Pool                     $pool
      *
-     * @var int
+     * @return Connection
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
-    protected $port = 18307;
+    public static function new(RpcClient $client, Pool $pool): Connection
+    {
+        $instance = self::__instance();
 
-    /**
-     * Setting
-     *
-     * @var array
-     */
-    protected $setting = [];
+        $instance->client = $client;
+        $instance->pool   = $pool;
+
+        return $instance;
+    }
 
     /**
      * @throws RpcClientException
@@ -49,13 +59,17 @@ class Connection extends AbstractConnection implements ConnectionInterface
     {
         $connection = new Client(SWOOLE_SOCK_TCP);
 
-        if (!empty($this->setting)) {
-            $connection->set($this->setting);
+        $host    = $this->client->getHost();
+        $port    = $this->client->getPort();
+        $setting = $this->client->getSetting();
+
+        if (!empty($setting)) {
+            $connection->set($setting);
         }
 
-        if (!$connection->connect($this->host, $this->port)) {
+        if (!$connection->connect($host, $port)) {
             throw new RpcClientException(
-                sprintf('Connect failed. host=%s port=%d', $this->host, $this->port)
+                sprintf('Connect failed. host=%s port=%d', $host, $port)
             );
         }
 
@@ -65,6 +79,15 @@ class Connection extends AbstractConnection implements ConnectionInterface
     public function reconnect(): bool
     {
 
+    }
+
+    /**
+     * @return PacketInterface
+     * @throws RpcClientException
+     */
+    public function getPacket(): PacketInterface
+    {
+        return $this->client->getPacket();
     }
 
     /**

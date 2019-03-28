@@ -4,12 +4,11 @@ namespace Swoft\WebSocket\Server\Swoole;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Container;
-use Swoft\Co;
 use Swoft\Context\Context;
 use Swoft\Server\Swoole\MessageInterface;
 use Swoft\Session\Session;
-use Swoft\WebSocket\Server\WsDispatcher;
 use Swoft\WebSocket\Server\WsContext;
+use Swoft\WebSocket\Server\WsDispatcher;
 use Swoft\WebSocket\Server\WsServerEvent;
 use Swoole\Websocket\Frame;
 use Swoole\Websocket\Server;
@@ -33,7 +32,7 @@ class MessageListener implements MessageInterface
         $fd = $frame->fd;
 
         /** @var WsContext $ctx */
-        $ctx = Container::$instance->getSingleton(WsContext::class);
+        $ctx = Container::$instance->getPrototype(WsContext::class);
         $ctx->initialize($frame);
 
         // Storage context
@@ -45,7 +44,7 @@ class MessageListener implements MessageInterface
             /** @var WsDispatcher $dispatcher */
             $dispatcher = Container::$instance->getSingleton('wsDispatcher');
 
-            \server()->log("conn#{$fd} received message: {$frame->data}, co ID #" . Co::tid(), [], 'debug');
+            \server()->log("Message: conn#{$fd} received message: {$frame->data}", [], 'debug');
             \Swoft::trigger(WsServerEvent::BEFORE_MESSAGE, $fd, $server, $frame);
 
             // Parse and dispatch message
@@ -53,7 +52,7 @@ class MessageListener implements MessageInterface
 
             \Swoft::trigger(WsServerEvent::AFTER_MESSAGE, $fd, $server, $frame);
         } catch (\Throwable $e) {
-            \server()->log("conn#{$fd} error on handle message, ERR: " . $e->getMessage(), [], 'error');
+            \server()->log("Message: conn#{$fd} error on handle message, ERR: " . $e->getMessage(), [], 'error');
             $evt = \Swoft::trigger(WsServerEvent::ON_ERROR, 'message', $e, $frame);
 
             // Close connection if event handle is not stopped

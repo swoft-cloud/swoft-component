@@ -25,6 +25,8 @@ class ReceiveListener implements ReceiveInterface
      */
     public function onReceive(Server $server, int $fd, int $reactorId, string $data): void
     {
+        var_dump($data);
 
+        $server->send($fd, 'hello');
     }
 }
