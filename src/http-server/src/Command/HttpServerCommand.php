@@ -58,7 +58,7 @@ class HttpServerCommand extends BaseServerCommand
         $mainPort = $server->getPort();
         $modeName = $server->getModeName();
         $typeName = $server->getTypeName();
-
+        
         // TCP 启动参数
         // $tcpStatus = $server->getTcpSetting();
 

@@ -119,6 +119,19 @@ abstract class Server implements ServerInterface
     protected $on = [];
 
     /**
+     * Add port listener
+     *
+     * @var array
+     *
+     * @example
+     * [
+     *    'name' => ServerInterface,
+     *    'name2' => ServerInterface,
+     * ]
+     */
+    protected $listener = [];
+
+    /**
      * Script file
      *
      * @var string
@@ -327,10 +340,56 @@ abstract class Server implements ServerInterface
         $defaultEvents = $this->defaultEvents();
         $swooleEvents  = \array_merge($defaultEvents, $this->on);
 
+        // Add event
+        $this->addEvent($this->swooleServer, $swooleEvents, $defaultEvents);
+
+        Swoft::trigger(ServerEvent::BEFORE_START);
+
+        // Add port listener
+        $this->addListener();
+
+        // Start swoole server
+        $this->swooleServer->start();
+    }
+
+    /**
+     * Add listener
+     *
+     * @throws ServerException
+     */
+    protected function addListener(): void
+    {
+        foreach ($this->listener as $listener) {
+            if (!$listener instanceof ServerInterface) {
+                continue;
+            }
+
+            $host = $listener->getHost();
+            $port = $listener->getPort();
+            $type = $this->getType();
+            $on   = $this->getOn();
+
+            /* @var CoServer\Port $server */
+            $server = $this->swooleServer->listen($host, $port, $type);
+            $this->addEvent($server, $on);
+        }
+    }
+
+    /**
+     * Add events
+     *
+     * @param \Swoole\Server|CoServer\Port $server
+     * @param array                        $swooleEvents
+     * @param array                        $defaultEvents
+     *
+     * @throws ServerException
+     */
+    protected function addEvent($server, array $swooleEvents, array $defaultEvents = []): void
+    {
         foreach ($swooleEvents as $name => $listener) {
             // Default events
             if (isset($defaultEvents[$name])) {
-                $this->swooleServer->on($name, $listener);
+                $server->on($name, $listener);
                 continue;
             }
 
@@ -344,13 +403,8 @@ abstract class Server implements ServerInterface
             }
 
             $listenerMethod = \sprintf('on%s', \ucfirst($name));
-            $this->swooleServer->on($name, [$listener, $listenerMethod]);
+            $server->on($name, [$listener, $listenerMethod]);
         }
-
-        Swoft::trigger(ServerEvent::BEFORE_START);
-
-        // Start swoole server
-        $this->swooleServer->start();
     }
 
     /**
@@ -650,6 +704,7 @@ abstract class Server implements ServerInterface
 
     /**
      * @param int $fd
+     *
      * @return array
      */
     public function getClientInfo(int $fd): array

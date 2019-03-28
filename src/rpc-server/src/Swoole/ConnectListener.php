@@ -13,7 +13,7 @@ use Swoole\Server;
  *
  * @since 2.0
  *
- * @Bean("connectListener")
+ * @Bean()
  */
 class ConnectListener implements ConnectInterface
 {

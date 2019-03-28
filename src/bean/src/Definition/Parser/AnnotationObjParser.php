@@ -51,7 +51,6 @@ class AnnotationObjParser extends ObjectParser
      *                     'reflection' => new ReflectionFunctionAbstract(),
      *                  ]
      *            ],
-     *           'pathName' => '/xxx/xx/xx.php'
      *        ]
      *    ]
      * ]

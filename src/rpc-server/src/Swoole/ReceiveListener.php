@@ -13,7 +13,7 @@ use Swoole\Server;
  *
  * @since 2.0
  *
- * @Bean("receiveListener")
+ * @Bean()
  */
 class ReceiveListener implements ReceiveInterface
 {
