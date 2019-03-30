@@ -5,6 +5,7 @@ namespace Swoft\WebSocket\Server\Listener;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
+use Swoft\Helper\CLog;
 use Swoft\SwoftEvent;
 use Swoft\WebSocket\Server\Router\Router;
 use Swoft\WebSocket\Server\Router\RouteRegister;
@@ -24,11 +25,17 @@ class AppInitAfterListener implements EventHandlerInterface
      */
     public function handle(EventInterface $event): void
     {
-        // - register WS routes
+        // Register WebSocket routes
 
         /** @var Router $router */
         $router = \bean('wsRouter');
 
         RouteRegister::registerTo($router);
+
+        CLog::info(
+            'WebSocket server route registered(module %d, message command %d)',
+            $router->getModuleCount(),
+            $router->getCounter()
+        );
     }
 }

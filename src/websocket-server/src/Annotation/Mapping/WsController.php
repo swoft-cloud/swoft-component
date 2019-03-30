@@ -13,8 +13,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
  * @Annotation
  * @Target("CLASS")
  * @Attributes(
- *     @Attribute("prefix", type="string"),
- *     @Attribute("module", type="string")
+ *     @Attribute("prefix", type="string")
  * )
  */
 final class WsController
@@ -25,14 +24,6 @@ final class WsController
      * @var string
      */
     private $prefix = '';
-
-    /**
-     * Bind current WS controller to the module.
-     * Which module does the controller belong to?
-     *
-     * @var string
-     */
-    private $module;
 
     /**
      * Class constructor.
@@ -46,10 +37,6 @@ final class WsController
         } elseif (isset($values['prefix'])) {
             $this->prefix = (string)$values['prefix'];
         }
-
-        if (isset($values['module'])) {
-            $this->module = (string)$values['module'];
-        }
     }
 
     /**
@@ -58,13 +45,5 @@ final class WsController
     public function getPrefix(): string
     {
         return $this->prefix;
-    }
-
-    /**
-     * @return string
-     */
-    public function getModule(): string
-    {
-        return $this->module;
     }
 }

@@ -24,6 +24,18 @@ final class BeanFactory
     }
 
     /**
+     * @return array
+     */
+    public static function getStats(): array
+    {
+        return Container::getInstance()->getStats();
+    }
+
+    /*****************************************************************************
+     * Bean manage
+     ****************************************************************************/
+
+    /**
      * Get object by name
      *
      * @param string $name Bean name Or alias Or class name
@@ -38,77 +50,27 @@ final class BeanFactory
     }
 
     /**
-     * Get request bean
+     * Get an singleton bean instance
      *
      * @param string $name
-     * @param int    $id
      *
-     * @return object
-     * @throws ContainerException
-     * @throws \ReflectionException
+     * @return mixed
      */
-    public static function getRequestBean(string $name, int $id)
+    public static function getSingleton(string $name)
     {
-        return Container::getInstance()->getRequest($name, $id);
+        return Container::getInstance()->getSingleton($name);
     }
 
     /**
-     * Get session bean
+     * Get an prototype bean instance
      *
      * @param string $name
-     * @param int    $id
      *
-     * @return object
-     * @throws ContainerException
-     * @throws \ReflectionException
+     * @return mixed
      */
-    public static function getSessionBean(string $name, int $id)
+    public static function getPrototype(string $name)
     {
-        return Container::getInstance()->getSession($name, $id);
-    }
-
-    /**
-     * Create bean by definition
-     *
-     * @param string $name
-     * @param array  $definition
-     *
-     * @example
-     *
-     * $bean = BeanFactory::createBean('className');
-     *
-     * $bean = BeanFactory::createBean('name', [
-     *     'class' => 'className',
-     *     ......
-     * ]);
-     *
-     * @return object
-     * @throws ContainerException
-     * @throws \ReflectionException
-     */
-    public static function createBean(string $name, array $definition = [])
-    {
-        return Container::getInstance()->create($name, $definition);
-    }
-
-    /**
-     * Destroy request bean
-     *
-     * @param int $id
-     */
-    public static function destroyRequest(int $id): void
-    {
-        Container::getInstance()->destroyRequest($id);
-    }
-
-    /**
-     * Destroy session bean
-     *
-     * @param int $id
-     */
-    public static function destroySession(int $id): void
-    {
-        Container::getInstance()->destroySession($id);
+        return Container::getInstance()->getPrototype($name);
     }
 
     /**
@@ -136,16 +98,87 @@ final class BeanFactory
     }
 
     /**
-     * Whether has singleton
+     * Create bean by definition
      *
      * @param string $name
+     * @param array  $definition
      *
-     * @return bool
+     * @example
+     *
+     * $bean = BeanFactory::createBean('className');
+     *
+     * $bean = BeanFactory::createBean('name', [
+     *     'class' => 'className',
+     *     ......
+     * ]);
+     *
+     * @return object
+     * @throws ContainerException
+     * @throws \ReflectionException
      */
-    public static function hasSingleton(string $name): bool
+    public static function createBean(string $name, array $definition = [])
     {
-        return Container::getInstance()->isSingleton($name);
+        return Container::getInstance()->create($name, $definition);
     }
+
+    /*****************************************************************************
+     * Session bean manage
+     ****************************************************************************/
+
+    /**
+     * Get request bean
+     *
+     * @param string $name
+     * @param int    $id
+     *
+     * @return object
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
+    public static function getRequestBean(string $name, int $id)
+    {
+        return Container::getInstance()->getRequest($name, $id);
+    }
+
+    /**
+     * Get session bean
+     *
+     * @param string $name
+     * @param int|string $id
+     *
+     * @return object
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
+    public static function getSessionBean(string $name, $id)
+    {
+        return Container::getInstance()->getSession($name, $id);
+    }
+
+
+    /**
+     * Destroy request bean
+     *
+     * @param int $id
+     */
+    public static function destroyRequest(int $id): void
+    {
+        Container::getInstance()->destroyRequest($id);
+    }
+
+    /**
+     * Destroy session bean
+     *
+     * @param int|string $id
+     */
+    public static function destroySession($id): void
+    {
+        Container::getInstance()->destroySession($id);
+    }
+
+    /*****************************************************************************
+     * Other methods
+     ****************************************************************************/
 
     /**
      * Add definitions

@@ -77,7 +77,7 @@ class Context
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public static function getWaitGroup()
+    public static function getWaitGroup(): ContextWaitGroup
     {
         return BeanFactory::getBean(ContextWaitGroup::class);
     }

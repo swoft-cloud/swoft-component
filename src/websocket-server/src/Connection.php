@@ -8,6 +8,7 @@ use Swoft\Concern\DataPropertyTrait;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\Session\SessionInterface;
+use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\Router\Router;
 
 /**
@@ -27,10 +28,10 @@ class Connection implements SessionInterface
     private $fd = 0;
 
     /**
-     * @var array
-     * @see Router::$modules for fileds information
+     * Save handshake success module instance
+     * @var WsModuleInterface
      */
-    private $module;
+    // private $module;
 
     /**
      * @var Request|ServerRequestInterface
@@ -46,6 +47,12 @@ class Connection implements SessionInterface
      * @var bool
      */
     private $handshake = false;
+
+    /**
+     * @var array
+     * @see Router::$modules for fileds information
+     */
+    private $moduleInfo;
 
     /**
      * Initialize connection object
@@ -87,15 +94,27 @@ class Connection implements SessionInterface
     }
 
     /**
+     * @param string $data
+     * @param int    $opcode
+     * @param bool   $finish
+     * @return bool
+     */
+    public function push(string $data, int $opcode = \WEBSOCKET_OPCODE_TEXT, bool $finish = true): bool
+    {
+        return \server()->push($this->fd, $data, $opcode, $finish);
+    }
+
+    /**
      * Clear resource
      */
     public function clear(): void
     {
         $this->data = [];
-        // Clear
-        $this->request   = null;
-        $this->response  = null;
-        $this->handshake = false;
+        // Clear data
+        $this->request    = null;
+        $this->response   = null;
+        $this->handshake  = false;
+        $this->moduleInfo = [];
     }
 
     /**
@@ -161,16 +180,16 @@ class Connection implements SessionInterface
     /**
      * @return array
      */
-    public function getModule(): array
+    public function getModuleInfo(): array
     {
-        return $this->module;
+        return $this->moduleInfo;
     }
 
     /**
-     * @param array $module
+     * @param array $moduleInfo
      */
-    public function setModule(array $module): void
+    public function setModuleInfo(array $moduleInfo): void
     {
-        $this->module = $module;
+        $this->moduleInfo = $moduleInfo;
     }
 }

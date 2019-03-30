@@ -42,7 +42,7 @@ class WsControllerParser extends Parser
 
         $class = $this->className;
 
-        RouteRegister::bindController($annotation->getModule(), $class, $annotation->getPrefix());
+        RouteRegister::bindController($class, $annotation->getPrefix());
 
         return [$class, $class, Bean::SINGLETON, ''];
     }

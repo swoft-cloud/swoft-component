@@ -30,17 +30,20 @@ class AnnotationProcessor extends Processor
 
         // Find AutoLoader classes. Parse and collect annotations.
         AnnotationRegister::load([
+            'basePath'             => $app->getBasePath(),
             'disabledAutoLoaders'  => $app->getDisabledAutoLoaders(),
             'disabledPsr4Prefixes' => $app->getDisabledPsr4Prefixes(),
         ]);
 
         $stats = AnnotationRegister::getClassStats();
+
         CLog::info(
-            'Annotation is scanned (annotation %d, parser %d, autoloader %d)',
+            'Annotation is scanned (autoloader %d, annotation %d, parser %d,)',
             $stats['annotation'],
             $stats['parser'],
             $stats['autoloader']
         );
+
         return $this->application->afterAnnotation();
     }
 }

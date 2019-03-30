@@ -12,7 +12,7 @@ if (!function_exists('bean')) {
      */
     function bean(string $name)
     {
-        if (\Swoft\Bean\BeanFactory::hasSingleton('config')) {
+        if (\Swoft\Bean\BeanFactory::isSingleton('config')) {
             return \Swoft\Bean\BeanFactory::getBean($name);
         }
 

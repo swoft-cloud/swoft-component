@@ -38,6 +38,11 @@ class AnnotationResource extends Resource
     /**
      * @var string
      */
+    private $basePath = '';
+
+    /**
+     * @var string
+     */
     private $loaderClassSuffix = 'php';
 
     /**
@@ -113,7 +118,7 @@ class AnnotationResource extends Resource
                     continue;
                 }
 
-                CLog::info('Loader file %s', $loaderFile);
+                CLog::info('Auto loader is %s', $this->clearBasePath($loaderFile));
 
                 $loaderClass = $this->getAnnotationLoaderClassName($ns);
                 if (!\class_exists($loaderClass)) {
@@ -133,6 +138,19 @@ class AnnotationResource extends Resource
                 AnnotationRegister::addAutoLoader($ns, $loaderObject);
             }
         }
+    }
+
+    /**
+     * @param string $filePath
+     * @return string
+     */
+    public function clearBasePath(string $filePath): string
+    {
+        if ($this->basePath) {
+            return \str_replace($this->basePath, '{project}', $filePath);
+        }
+
+        return $filePath;
     }
 
     /**
@@ -169,6 +187,7 @@ class AnnotationResource extends Resource
             /* @var \SplFileInfo $splFileInfo */
             foreach ($iterator as $splFileInfo) {
                 $pathName = $splFileInfo->getPathname();
+                // $splFileInfo->isDir();
                 if (\is_dir($pathName)) {
                     continue;
                 }
@@ -185,9 +204,9 @@ class AnnotationResource extends Resource
                     continue;
                 }
 
-                $suffix        = \sprintf('.%s', $this->loaderClassSuffix);
-                $classPathName = \str_replace([$path, '/', $suffix], ['', '\\', ''], $pathName);
-                $className     = \sprintf('%s%s', $ns, $classPathName);
+                $suffix    = \sprintf('.%s', $this->loaderClassSuffix);
+                $pathName  = \str_replace([$path, '/', $suffix], ['', '\\', ''], $pathName);
+                $className = \sprintf('%s%s', $ns, $pathName);
 
                 // Fix repeated load, such as `Swoft`
                 if (!\class_exists($className)) {
@@ -254,7 +273,7 @@ class AnnotationResource extends Resource
     }
 
     /**
-     * Parse class annotation
+     * Parse an class annotation
      *
      * @param \ReflectionClass $reflectionClass
      *
@@ -422,5 +441,21 @@ class AnnotationResource extends Resource
     public function setDisabledAutoLoaders(array $disabledAutoLoaders): void
     {
         $this->disabledAutoLoaders = $disabledAutoLoaders;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBasePath(): string
+    {
+        return $this->basePath;
+    }
+
+    /**
+     * @param string $basePath
+     */
+    public function setBasePath(string $basePath): void
+    {
+        $this->basePath = $basePath;
     }
 }

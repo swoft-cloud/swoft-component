@@ -3,7 +3,7 @@
 namespace Swoft\WebSocket\Server\Swoole;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Container;
+use Swoft\Bean\BeanFactory;
 use Swoft\Co;
 use Swoft\Http\Message\Request as Psr7Request;
 use Swoft\Http\Message\Response as Psr7Response;
@@ -21,7 +21,7 @@ use Swoole\Http\Response;
  * Class HandShakeListener
  * @since 2.0
  *
- * @Bean("handShakeListener")
+ * @Bean()
  */
 class HandShakeListener implements HandShakeInterface
 {
@@ -55,7 +55,7 @@ class HandShakeListener implements HandShakeInterface
         $psr7Res = Psr7Response::new($response);
 
         /** @var Connection $conn Initialize connection */
-        $conn = Container::$instance->getPrototype(Connection::class);
+        $conn = BeanFactory::getPrototype(Connection::class);
         $conn->initialize($fd, $psr7Req, $psr7Res);
 
         // Bind connection
@@ -63,7 +63,7 @@ class HandShakeListener implements HandShakeInterface
         \Swoft::trigger(WsServerEvent::BEFORE_HANDSHAKE, $fd, $request, $response);
 
         /** @var WsDispatcher $dispatcher */
-        $dispatcher = \bean('wsDispatcher');
+        $dispatcher = BeanFactory::getSingleton('wsDispatcher');
 
         /** @var \Swoft\Http\Message\Response $psr7Res */
         [$status, $psr7Res] = $dispatcher->handshake($psr7Req, $psr7Res);
@@ -114,17 +114,17 @@ class HandShakeListener implements HandShakeInterface
 
             /** @var Connection $conn */
             $conn = Session::mustGet();
-            $info = $conn->getModule();
+            $info = $conn->getModuleInfo();
 
             $method = $info['eventMethods']['open'] ?? '';
             if ($method) {
                 $class = $info['class'];
 
-                \server()->log("Open: conn#{$fd} call ws open handler '{$class}->{$method}'", [], 'debug');
+                \server()->log("Open: conn#{$fd} call ws open handler '{$class}::{$method}'", [], 'debug');
 
                 /** @var WsModuleInterface $module */
-                $module = Container::$instance->getSingleton($class);
-                $module->$method($request);
+                $module = BeanFactory::getSingleton($class);
+                $module->$method($request, $fd);
             }
         } catch (\Throwable $e) {
             $evt = \Swoft::trigger(WsServerEvent::ON_ERROR, 'open', $e, $server);

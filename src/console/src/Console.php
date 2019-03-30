@@ -35,7 +35,7 @@ class Console
         'warning' => 'warning',
         'debug'   => 'cyan',
         'notice'  => 'notice',
-        'error'   => 'error',
+        'error'   => 'red',
     ];
 
     /** @var Application */

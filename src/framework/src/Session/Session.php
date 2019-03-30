@@ -29,16 +29,20 @@ class Session
      *    'fd'  => SessionInterface,
      *    'fd2' => SessionInterface,
      *    'fd3' => SessionInterface,
+     *    'sess id' => SessionInterface,
      * ]
      */
-    private static $connections = [];
+    private static $sessions = [];
 
     /*****************************************************************************
      * FD and CID relationship manage
      ****************************************************************************/
 
     /**
-     * bind FD and CID relationship. (should call it on handshake ok)
+     * Bind current coroutine to an session
+     *  In webSocket server, will bind FD and CID relationship. (should call it on handshake ok)
+     *  In Http application, will bind sessId and cid relationship. (call on request)
+     *
      * @param int $fd
      */
     public static function bindFd(int $fd): void
@@ -82,11 +86,11 @@ class Session
      * @param int $fd If not specified, return the current corresponding connection
      * @return SessionInterface|Connection
      */
-    public static function get(int $fd = -1): ?SessionInterface
+    public static function get(int $fd = 0): ?SessionInterface
     {
-        $fd = $fd > -1 ? $fd : self::getBoundedFd();
+        $fd = $fd > 0 ? $fd : self::getBoundedFd();
 
-        return self::$connections[$fd] ?? null;
+        return self::$sessions[$fd] ?? null;
     }
 
     /**
@@ -95,12 +99,12 @@ class Session
      * @param int $fd
      * @return SessionInterface|Connection
      */
-    public static function mustGet(int $fd = -1): SessionInterface
+    public static function mustGet(int $fd = 0): SessionInterface
     {
-        $fd = $fd > -1 ? $fd : self::getBoundedFd();
+        $fd = $fd > 0 ? $fd : self::getBoundedFd();
 
-        if (isset(self::$connections[$fd])) {
-            return self::$connections[$fd];
+        if (isset(self::$sessions[$fd])) {
+            return self::$sessions[$fd];
         }
 
         throw new ConnectionException('connection information has been lost of the FD: ' . $fd);
@@ -114,21 +118,37 @@ class Session
      */
     public static function set(int $fd, SessionInterface $connection): void
     {
-        self::$connections[$fd] = $connection;
+        self::$sessions[$fd] = $connection;
     }
 
     /**
      * Destroy context
      * @param int $fd
      */
-    public static function destroy(int $fd = -1): void
+    public static function destroy(int $fd = 0): void
     {
-        $fd = $fd > -1 ? $fd : self::getBoundedFd();
+        $fd = $fd > 0 ? $fd : self::getBoundedFd();
 
-        if (isset(self::$connections[$fd])) {
+        if (isset(self::$sessions[$fd])) {
             // clear self data.
-            self::$connections[$fd]->clear();
-            unset(self::$connections[$fd], $conn);
+            self::$sessions[$fd]->clear();
+            unset(self::$sessions[$fd], $conn);
         }
+    }
+
+    /**
+     * @return array
+     */
+    public static function getFdMap(): array
+    {
+        return self::$fdMap;
+    }
+
+    /**
+     * @return SessionInterface[]
+     */
+    public static function getSessions(): array
+    {
+        return self::$sessions;
     }
 }

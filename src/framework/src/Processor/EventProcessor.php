@@ -30,8 +30,10 @@ class EventProcessor extends Processor
         /** @var EventManager $em */
         $em = \bean('eventManager');
 
-        ListenerParser::addListeners($em);
-        SubscriberParser::addSubscribers($em);
+        $count1 = ListenerParser::addListeners($em);
+        $count2 = SubscriberParser::addSubscribers($em);
+
+        CLog::info('Event manager initialized(%d listener, %d subscriber)', $count1, $count2);
 
         // Trigger a app init event
         \Swoft::trigger(SwoftEvent::APP_INIT_AFTER);

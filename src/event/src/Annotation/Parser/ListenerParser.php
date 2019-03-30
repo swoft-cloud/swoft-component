@@ -53,11 +53,12 @@ class ListenerParser extends Parser
     }
 
     /**
-     * register collected event listeners to EventManager
+     * Register collected event listeners to EventManager
      *
      * @param EventManager $em
+     * @return int
      */
-    public static function addListeners(EventManager $em): void
+    public static function addListeners(EventManager $em): int
     {
         foreach (self::$listeners as $listener=> $eventInfo) {
             $em->addListener($listener, $eventInfo);
@@ -67,6 +68,6 @@ class ListenerParser extends Parser
         // Clear data
         self::$listeners = [];
 
-        CLog::info('EventManager add %d subscriber', $count);
+        return $count;
     }
 }

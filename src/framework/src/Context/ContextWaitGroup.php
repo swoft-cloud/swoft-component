@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Context;
-
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Co;
@@ -82,9 +80,8 @@ class ContextWaitGroup implements WaitGroupInterface
      */
     private function getWaitGroup(): ?WaitGroup
     {
-        $tid       = Co::tid();
-        $waitGroup = $this->waitGroups[$tid] ?? null;
+        $tid = Co::tid();
 
-        return $waitGroup;
+        return $this->waitGroups[$tid] ?? null;
     }
 }
