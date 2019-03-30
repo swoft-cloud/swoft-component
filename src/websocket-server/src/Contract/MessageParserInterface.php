@@ -18,10 +18,10 @@ interface MessageParserInterface
 
     /**
      * Decode data to array.
-     * @param string $data
+     * @param string $data Message data. It's {@see \Swoole\WebSocket\Frame::$data)
      * @return array
      * [
-     *  'cmd'  => 'message command', // is must exists.
+     *  'cmd'  => 'home.index', // message command. it's must exists.
      *  'data' => message data,
      *  ...
      * ]

@@ -52,6 +52,10 @@ class Router implements RouterInterface
      */
     private $counter = 0;
 
+    private $defaultRoute = '';
+    private $defaultPrefix = '';
+    private $defaultCommand = '';
+
     /**
      * @param string $path
      * @param array  $moduleInfo
@@ -59,21 +63,21 @@ class Router implements RouterInterface
     public function addModule(string $path, array $moduleInfo = []): void
     {
         $path = WsHelper::formatPath($path);
-        // add
+        // add module
         $this->modules[$path] = $moduleInfo;
     }
 
     /**
      * @param string   $path
-     * @param string   $commandId
+     * @param string   $cmdId
      * @param callable $handler
      */
-    public function addCommand(string $path, string $commandId, $handler): void
+    public function addCommand(string $path, string $cmdId, $handler): void
     {
         $path = WsHelper::formatPath($path);
 
         $this->counter++;
-        $this->commands[$path][$commandId] = $handler;
+        $this->commands[$path][$cmdId] = $handler;
     }
 
     /**
@@ -85,26 +89,30 @@ class Router implements RouterInterface
     public function match(string $path): array
     {
         $path = WsHelper::formatPath($path);
+
         return $this->modules[$path] ?? [];
     }
 
     /**
      * @param string $path
-     * @param string $command
-     * @return array [$status, $handler]
+     * @param string $route like 'home.index'
+     * @return array
+     * [
+     *  status,
+     *  [controllerClass, method]
+     * ]
      */
-    public function matchCommand(string $path, string $command): array
+    public function matchCommand(string $path, string $route): array
     {
         $path = WsHelper::formatPath($path);
         if (!isset($this->commands[$path])) {
             return [self::NOT_FOUND, null];
         }
 
-        $command = \trim($command) ?: $this->modules[$path]['defaultCommand'];
+        $route = \trim($route) ?: $this->modules[$path]['defaultCommand'];
 
-        if (isset($this->commands[$path][$command])) {
-            // $commands[$command] is: [controllerClass, method]
-            return [self::FOUND, $this->commands[$path][$command]];
+        if (isset($this->commands[$path][$route])) {
+            return [self::FOUND, $this->commands[$path][$route]];
         }
 
         return [self::NOT_FOUND, null];

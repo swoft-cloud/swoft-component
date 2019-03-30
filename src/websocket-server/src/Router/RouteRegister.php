@@ -13,11 +13,23 @@ final class RouteRegister
 {
     /**
      * @var array
+     * [
+     *  module class => [
+     *      path => '/chat',
+     *      controllers => ['class1', 'class2'],
+     *  ]
+     * ]
      */
     private static $modules = [];
 
     /**
      * @var array
+     * [
+     *  controller class => [
+     *      prefix => 'home',
+     *
+     *  ]
+     * ]
      */
     private static $commands = [];
 
@@ -45,17 +57,13 @@ final class RouteRegister
     }
 
     /**
-     * @param string $moduleClass
      * @param string $controllerClass
      * @param string $prefix
      */
-    public static function bindController(string $moduleClass, string $controllerClass, string $prefix): void
+    public static function bindController(string $controllerClass, string $prefix): void
     {
-        self::$modules[$moduleClass]['controllers'][] = $controllerClass;
-
         self::$commands[$controllerClass] = [
             'prefix' => $prefix ?: Str::getClassName($controllerClass, 'Controller'),
-            'module' => $moduleClass,
             'class'  => $controllerClass,
             'routes' => [], // see bindCommand()
         ];
@@ -81,15 +89,24 @@ final class RouteRegister
     {
         // Modules
         foreach (self::$modules as $mdlClass => $mdlInfo) {
-            $router->addModule($mdlInfo['path'], $mdlInfo);
-        }
+            $path = $mdlInfo['path'];
+            $router->addModule($path, $mdlInfo);
 
-        // Commands
-        foreach (self::$commands as $ctrlClass => $info) {
-            $path = self::$modules[$info['module']]['path'];
-            foreach ($info['routes'] as $route) {
-                $id = $info['prefix'] . '.' . $route['command'];
-                $router->addCommand($path, $id, [$ctrlClass, $route['method']]);
+            // Commands
+            foreach ($mdlInfo['controllers'] as $ctrlClass) {
+                if (!isset(self::$commands[$ctrlClass])) {
+                    continue;
+                }
+
+                $info   = self::$commands[$ctrlClass];
+                $prefix = $info['prefix'];
+                // save module class
+                $info['module'] = $mdlClass;
+
+                foreach ($info['routes'] as $route) {
+                    $cmdId = $prefix . '.' . $route['command'];
+                    $router->addCommand($path, $cmdId, [$ctrlClass, $route['method']]);
+                }
             }
         }
 

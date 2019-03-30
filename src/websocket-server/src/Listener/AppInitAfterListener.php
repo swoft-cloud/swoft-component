@@ -24,7 +24,7 @@ class AppInitAfterListener implements EventHandlerInterface
      */
     public function handle(EventInterface $event): void
     {
-        // - register WS routes
+        // Register WebSocket routes
 
         /** @var Router $router */
         $router = \bean('wsRouter');

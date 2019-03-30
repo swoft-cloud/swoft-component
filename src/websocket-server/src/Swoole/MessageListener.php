@@ -3,10 +3,11 @@
 namespace Swoft\WebSocket\Server\Swoole;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Container;
+use Swoft\Bean\BeanFactory;
 use Swoft\Context\Context;
 use Swoft\Server\Swoole\MessageInterface;
 use Swoft\Session\Session;
+use Swoft\WebSocket\Server\Exception\WsMessageRouteException;
 use Swoft\WebSocket\Server\WsContext;
 use Swoft\WebSocket\Server\WsDispatcher;
 use Swoft\WebSocket\Server\WsServerEvent;
@@ -16,7 +17,7 @@ use Swoole\Websocket\Server;
 /**
  * Class MessageListener
  *
- * @Bean("messageListener")
+ * @Bean()
  *
  * @since 2.0
  */
@@ -29,10 +30,9 @@ class MessageListener implements MessageInterface
      */
     public function onMessage(Server $server, Frame $frame): void
     {
-        $fd = $frame->fd;
-
         /** @var WsContext $ctx */
-        $ctx = Container::$instance->getPrototype(WsContext::class);
+        $fd  = $frame->fd;
+        $ctx = BeanFactory::getPrototype(WsContext::class);
         $ctx->initialize($frame);
 
         // Storage context
@@ -40,10 +40,10 @@ class MessageListener implements MessageInterface
         // Init fd and coId mapping
         Session::bindFd($fd);
 
-        try {
-            /** @var WsDispatcher $dispatcher */
-            $dispatcher = Container::$instance->getSingleton('wsDispatcher');
+        /** @var WsDispatcher $dispatcher */
+        $dispatcher = BeanFactory::getSingleton('wsDispatcher');
 
+        try {
             \server()->log("Message: conn#{$fd} received message: {$frame->data}", [], 'debug');
             \Swoft::trigger(WsServerEvent::BEFORE_MESSAGE, $fd, $server, $frame);
 
@@ -52,13 +52,13 @@ class MessageListener implements MessageInterface
 
             \Swoft::trigger(WsServerEvent::AFTER_MESSAGE, $fd, $server, $frame);
         } catch (\Throwable $e) {
-            \server()->log("Message: conn#{$fd} error on handle message, ERR: " . $e->getMessage(), [], 'error');
-            $evt = \Swoft::trigger(WsServerEvent::ON_ERROR, 'message', $e, $frame);
+            \server()->log("Message: conn#{$fd} error: " . $e->getMessage(), [], 'error');
 
-            // Close connection if event handle is not stopped
-            if (!$evt->isPropagationStopped()) {
-                $server->close($fd);
-                throw $e;
+            if ($e instanceof WsMessageRouteException) {
+                \server()->push($fd, $e->getMessage());
+            } else {
+                // TODO: Close connection if event handle is not stopped
+                $dispatcher->error($e, 'message');
             }
         } finally {
             // Destroy context

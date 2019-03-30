@@ -2,11 +2,14 @@
 
 namespace Swoft\WebSocket\Server\MessageParser;
 
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Stdlib\Helper\JsonHelper;
 use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 
 /**
  * Class JsonParser
  * @since 2.0
+ * @Bean()
  */
 class JsonParser implements MessageParserInterface
 {
@@ -16,19 +19,26 @@ class JsonParser implements MessageParserInterface
      */
     public function encode($data): string
     {
-        // return \json_encode($data);
-        return '{"cmd": "login", "data": "welcome"}';
+        return JsonHelper::encode($data);
     }
 
     /**
-     * @param string $data
+     * Decode data to array.
+     * @param string $data Message data. It's {@see \Swoole\WebSocket\Frame::$data)
      * @return array
+     * [
+     *  'cmd'  => 'home.index', // message command. it's must exists.
+     *  'data' => message data,
+     *  ...
+     * ]
      */
     public function decode(string $data): array
     {
-        return [
-            'cmd'  => 'login',
-            'data' => 'hello',
+        $map = JsonHelper::decode($data, true);
+
+        return isset($map['cmd']) ? $map : [
+            'cmd'  => '',
+            'data' => $map,
         ];
     }
 }

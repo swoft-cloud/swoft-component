@@ -6,6 +6,7 @@ use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;
 use Doctrine\Common\Annotations\Annotation\Required;
 use Doctrine\Common\Annotations\Annotation\Target;
+use Swoft\WebSocket\Server\MessageParser\RawTextParser;
 
 /**
  * Class WebSocket - mark an websocket module handler class
@@ -15,7 +16,9 @@ use Doctrine\Common\Annotations\Annotation\Target;
  * @Target("CLASS")
  * @Attributes(
  *     @Attribute("name", type="string"),
- *     @Attribute("path", type="string")
+ *     @Attribute("path", type="string"),
+ *     @Attribute("controllers", type="array"),
+ *     @Attribute("messageParser", type="string"),
  * )
  */
 final class WsModule
@@ -36,21 +39,25 @@ final class WsModule
     private $name = '';
 
     /**
-     * Message parser class
-     * @var string
-     */
-    private $messageParser = '';
-
-    /**
+     * Message controllers of the module
+     *
      * @var string[]
      */
     private $controllers = [];
 
     /**
-     * Default message command
+     * Message parser class for the module
+     *
      * @var string
      */
-    private $defaultCommand = 'index';
+    private $messageParser = RawTextParser::class;
+
+    /**
+     * Default message command. Format 'controller.action'
+     *
+     * @var string
+     */
+    private $defaultCommand = 'home.index';
 
     /**
      * Class constructor.

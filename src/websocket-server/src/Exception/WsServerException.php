@@ -13,7 +13,7 @@ class WsServerException extends \RuntimeException
      * @param int    $code
      * @return WsServerException
      */
-    public static function make(string $message, int $code = 500): WsServerException
+    public static function make(string $message, int $code = 500): self
     {
         return new static($message, $code);
     }
