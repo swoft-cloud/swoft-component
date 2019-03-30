@@ -5,6 +5,7 @@
 ## 2019.03.29
 
 - 调整部分 websocket server 逻辑
+- session bean ID 调整可以使用字符串
 
 ## 2019.03.26
 

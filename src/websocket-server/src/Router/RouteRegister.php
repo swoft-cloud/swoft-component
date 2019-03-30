@@ -2,7 +2,6 @@
 
 namespace Swoft\WebSocket\Server\Router;
 
-use Swoft\Helper\CLog;
 use Swoft\Stdlib\Helper\Str;
 
 /**
@@ -109,12 +108,6 @@ final class RouteRegister
                 }
             }
         }
-
-        CLog::info(
-            'webSocket server add %d module, %d message command',
-            $router->getModuleCount(),
-            $router->getCounter()
-        );
 
         // Clear data
         self::$commands = self::$modules = [];

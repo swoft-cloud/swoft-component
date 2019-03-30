@@ -23,6 +23,14 @@ final class BeanFactory
         Container::getInstance()->init();
     }
 
+    /**
+     * @return array
+     */
+    public static function getStats(): array
+    {
+        return Container::getInstance()->getStats();
+    }
+
     /*****************************************************************************
      * Bean manage
      ****************************************************************************/

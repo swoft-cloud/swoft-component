@@ -8,6 +8,7 @@ use Swoft\BeanHandler;
 use Swoft\Contract\ComponentInterface;
 use Swoft\Contract\DefinitionInterface;
 use Swoft\Helper\CLog;
+use Swoft\Helper\SwoftHelper;
 use Swoft\Stdlib\Helper\ArrayHelper;
 
 /**
@@ -42,7 +43,9 @@ class BeanProcessor extends Processor
         BeanFactory::setHandler($handler);
         BeanFactory::init();
 
-        CLog::info('Bean is initialized');
+        $stats = BeanFactory::getStats();
+
+        CLog::info('Bean is initialized(%s)', SwoftHelper::formatStats($stats));
 
         return $this->application->afterBean();
     }

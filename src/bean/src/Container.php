@@ -627,6 +627,19 @@ class Container implements ContainerInterface
     }
 
     /**
+     * @return array
+     */
+    public function getStats(): array
+    {
+        return [
+            'singleton'  => \count($this->singletonPool),
+            'prototype'  => \count($this->prototypePool),
+            'definition' => \count($this->definitions),
+            // 'definition' => \count($this->r),
+        ];
+    }
+
+    /**
      * Initialize beans
      *
      * @throws ContainerException
