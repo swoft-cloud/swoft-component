@@ -122,7 +122,7 @@ class AnnotationResource extends Resource
 
                 $loaderClass = $this->getAnnotationLoaderClassName($ns);
                 if (!\class_exists($loaderClass)) {
-                    CLog::info('Auto loader(%s) is not exist class', $loaderClass);
+                    CLog::warning('Auto loader(%s) is not exist class', $loaderClass);
                     continue;
                 }
 
@@ -210,6 +210,7 @@ class AnnotationResource extends Resource
 
                 // Fix repeated load, such as `Swoft`
                 if (!\class_exists($className)) {
+                    CLog::info(sprintf('%s is not exist!', $className));
                     continue;
                 }
 

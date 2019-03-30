@@ -5,10 +5,10 @@ namespace Swoft;
 
 
 use Swoft\Aop\Aop;
-use Swoft\Aop\Exception\AopException;
 use Swoft\Aop\Proxy;
 use Swoft\Bean\Definition\ObjectDefinition;
 use Swoft\Bean\Handler;
+use Swoft\Proxy\Exception\ProxyException;
 
 /**
  * Class BeanHandler
@@ -97,7 +97,7 @@ class BeanHandler extends Handler
      *
      * @return string
      *
-     * @throws AopException
+     * @throws ProxyException
      */
     public function classProxy(string $className): string
     {
@@ -110,8 +110,6 @@ class BeanHandler extends Handler
      * @param $value
      *
      * @return mixed|string
-     * @throws Bean\Exception\ContainerException
-     * @throws \ReflectionException
      */
     public function getReferenceValue($value)
     {
