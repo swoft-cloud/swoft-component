@@ -489,12 +489,14 @@ abstract class Server implements ServerInterface
      */
     public function reload(bool $onlyTaskWorker = false): bool
     {
-        if (($pid = $this->pidMap['managerPid']) < 1) {
+        if (($pid = $this->pidMap['masterPid']) < 1) {
             return false;
         }
 
-        // SIGUSR1(10): 向管理进程发送信号，将平稳地重启所有worker进程
-        // SIGUSR2(12): 向管理进程发送信号，只重启task进程
+        // SIGUSR1(10):
+        //  Send a signal to the management process that will smoothly restart all worker processes
+        // SIGUSR2(12):
+        //  Send a signal to the management process, only restart the task process
         $signal = $onlyTaskWorker ? 12 : 10;
 
         return ServerHelper::sendSignal($pid, $signal);
@@ -541,6 +543,27 @@ abstract class Server implements ServerInterface
         }
 
         return false;
+    }
+
+    /**
+     * Response data to client by socket connection
+     * @param int    $fd
+     * @param string $data
+     * param int $length
+     * @return bool
+     */
+    public function writeTo(int $fd, string $data): bool
+    {
+        return $this->swooleServer->send($fd, $data);
+    }
+
+    /**
+     * @param int $fd
+     * @return bool
+     */
+    public function exist(int $fd): bool
+    {
+        return $this->swooleServer->exist($fd);
     }
 
     /**

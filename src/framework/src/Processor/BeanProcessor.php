@@ -75,7 +75,7 @@ class BeanProcessor extends Processor
             }
 
             // If the component is not enabled.
-            if ($autoLoader instanceof ComponentInterface && !$autoLoader->enable()) {
+            if ($autoLoader instanceof ComponentInterface && !$autoLoader->isEnable()) {
                 continue;
             }
 

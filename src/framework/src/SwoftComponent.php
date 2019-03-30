@@ -17,6 +17,11 @@ use Swoft\Contract\ComponentInterface;
 abstract class SwoftComponent implements ComponentInterface
 {
     /**
+     * @var bool Enable the component
+     */
+    private $enable;
+
+    /**
      * @var array
      */
     private $metadata;
@@ -26,13 +31,8 @@ abstract class SwoftComponent implements ComponentInterface
      */
     public function __construct()
     {
-        $defaultData = [
-            'name'        => '',
-            'title'       => '',
-            'description' => '',
-        ];
-
-        $this->metadata = \array_merge($defaultData, $this->metadata());
+        $this->enable   = $this->enable();
+        $this->metadata = \array_merge(self::DEFAULT_META, $this->metadata());
     }
 
     /**
@@ -73,5 +73,21 @@ abstract class SwoftComponent implements ComponentInterface
     public function getMetadata(): array
     {
         return $this->metadata;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnable(): bool
+    {
+        return $this->enable;
+    }
+
+    /**
+     * @param bool $enable
+     */
+    public function setEnable(bool $enable): void
+    {
+        $this->enable = $enable;
     }
 }

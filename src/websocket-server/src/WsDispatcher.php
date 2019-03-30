@@ -177,9 +177,10 @@ class WsDispatcher
         $conn  = Session::mustGet();
         $fd    = $conn->getFd();
         $info  = $conn->getModuleInfo();
-        $class = $info['class'];
 
         if ($method = $info['eventMethods']['error'] ?? '') {
+            $class = $info['class'];
+
             \server()->log("conn#{$fd} call ws error handler {$class}::{$method}", [], 'debug');
 
             /** @var WsModuleInterface $module */
