@@ -27,7 +27,7 @@ class CoroutineDeferListener implements EventHandlerInterface
     public function handle(EventInterface $event): void
     {
         /* @var ConnectionManager $cm*/
-        $cm = bean(ConnectionManager::class);
+        $cm = \bean(ConnectionManager::class);
         $cm->release();
     }
 }
