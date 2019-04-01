@@ -11,12 +11,12 @@ use Swoft\WebSocket\Server\Router\Router;
 use Swoft\WebSocket\Server\Router\RouteRegister;
 
 /**
- * Class AppInitAfterListener
+ * Class AppInitCompleteListener
  * @since 2.0
  *
- * @Listener(SwoftEvent::APP_INIT_AFTER)
+ * @Listener(SwoftEvent::APP_INIT_COMPLETE)
  */
-class AppInitAfterListener implements EventHandlerInterface
+class AppInitCompleteListener implements EventHandlerInterface
 {
     /**
      * @param EventInterface $event

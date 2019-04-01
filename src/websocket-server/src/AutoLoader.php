@@ -63,7 +63,7 @@ class AutoLoader extends SwoftComponent
                 // 'class' => WebSocketServer::class,
                 'port' => 18307,
                 'on'   => [
-                    // http
+                    // Enable http handle
                     // SwooleEvent::REQUEST   => \bean(RequestListener::class),
                     // websocket
                     SwooleEvent::HANDSHAKE => \bean(HandShakeListener::class),

@@ -5,7 +5,7 @@ namespace Swoft\Db;
 
 use Swoft\Db\Connector\ConnectorInterface;
 use Swoft\Db\Connector\MySqlConnector;
-use Swoft\Exception\ConnectionException;
+use Swoft\Exception\SessionException;
 use Swoft\Server\Swoole\ConnectInterface;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\ArrayHelper;
@@ -201,7 +201,7 @@ class Database
         $connector  = $connectors[$driver] ?? null;
 
         if (!$connector instanceof ConnectorInterface) {
-            throw new ConnectionException(sprintf('Connector(dirver=%s) is not exist', $driver));
+            throw new SessionException(sprintf('Connector(dirver=%s) is not exist', $driver));
         }
 
         return $connector;
@@ -221,7 +221,7 @@ class Database
         $connection  = $connections[$driver] ?? null;
 
         if (!$connection instanceof Connection) {
-            throw new ConnectionException(sprintf('Connection(dirver=%s) is not exist', $driver));
+            throw new SessionException(sprintf('Connection(dirver=%s) is not exist', $driver));
         }
 
         return $connection;
@@ -243,7 +243,7 @@ class Database
             return strtolower(substr($dns, 0, $pos));
         }
 
-        throw new ConnectionException('Driver parse error by dns(%s)', $dns);
+        throw new SessionException('Driver parse error by dns(%s)', $dns);
     }
 
     /**

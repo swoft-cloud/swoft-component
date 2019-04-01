@@ -10,12 +10,12 @@ use Swoft\Http\Server\Router\RouteRegister;
 use Swoft\SwoftEvent;
 
 /**
- * Class AppInitAfterListener
+ * Class AppInitCompleteListener
  * @since 2.0
  *
- * @Listener(SwoftEvent::APP_INIT_AFTER)
+ * @Listener(SwoftEvent::APP_INIT_COMPLETE)
  */
-class AppInitAfterListener implements EventHandlerInterface
+class AppInitCompleteListener implements EventHandlerInterface
 {
     /**
      * @param EventInterface $event

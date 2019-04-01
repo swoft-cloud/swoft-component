@@ -303,20 +303,20 @@ class Container implements ContainerInterface
      * Get request bean
      *
      * @param string $name
-     * @param int    $id Usually is coroutine ID
+     * @param string $id Usually is coroutine ID
      *
      * @return object
      * @throws ContainerException
      * @throws \ReflectionException
      */
-    public function getRequest(string $name, int $id)
+    public function getRequest(string $name, string $id)
     {
         if (isset($this->requestPool[$id][$name])) {
             return $this->requestPool[$id][$name];
         }
 
         if (!isset($this->requestDefinitions[$name])) {
-            throw new ContainerException(sprintf('Request bean(%s) is not defined', $name));
+            throw new ContainerException(\sprintf('Request bean(%s) is not defined', $name));
         }
 
         return $this->newBean($name, $id);
@@ -325,24 +325,24 @@ class Container implements ContainerInterface
     /**
      * Get session bean
      *
-     * @param string     $name
-     * @param int|string $id
+     * @param string $name
+     * @param string $sid
      *
      * @return object
      * @throws ContainerException
      * @throws \ReflectionException
      */
-    public function getSession(string $name, $id)
+    public function getSession(string $name, string $sid)
     {
-        if (isset($this->sessionPool[$id][$name])) {
-            return $this->sessionPool[$id][$name];
+        if (isset($this->sessionPool[$sid][$name])) {
+            return $this->sessionPool[$sid][$name];
         }
 
         if (!isset($this->sessionDefinitions[$name])) {
-            throw new ContainerException(\sprintf('Request bean(%s) is not defined', $name));
+            throw new ContainerException(\sprintf('Session bean(%s) is not defined', $name));
         }
 
-        return $this->newBean($name, $id);
+        return $this->newBean($name, $sid);
     }
 
     /**
@@ -550,11 +550,11 @@ class Container implements ContainerInterface
     /**
      * Destroy session bean
      *
-     * @param int|string $id
+     * @param string $sid
      */
-    public function destroySession($id): void
+    public function destroySession(string $sid): void
     {
-        unset($this->sessionPool[$id]);
+        unset($this->sessionPool[$sid]);
     }
 
     /**
@@ -699,14 +699,14 @@ class Container implements ContainerInterface
     }
 
     /**
-     * @param string     $beanName
-     * @param string     $scope
-     * @param object     $object
-     * @param int|string $id
+     * @param string $beanName
+     * @param string $scope
+     * @param object $object
+     * @param string $id
      *
      * @return object
      */
-    private function setNewBean(string $beanName, string $scope, $object, $id = 0)
+    private function setNewBean(string $beanName, string $scope, $object, string $id = '')
     {
         switch ($scope) {
             case Bean::SINGLETON: // Singleton
@@ -731,14 +731,14 @@ class Container implements ContainerInterface
     /**
      * Initialize beans
      *
-     * @param string     $beanName
-     * @param int|string $id
+     * @param string $beanName
+     * @param string $id
      *
      * @throws ContainerException
      * @throws \ReflectionException
      * @return object
      */
-    private function newBean(string $beanName, $id = 0)
+    private function newBean(string $beanName, string $id = '')
     {
         // Get object definition
         $objectDefinition = $this->getNewObjectDefinition($beanName);
@@ -789,13 +789,13 @@ class Container implements ContainerInterface
      * Get construct args
      *
      * @param MethodInjection $methodInjection
-     * @param int             $id
+     * @param string          $id
      *
      * @return array
      * @throws ContainerException
      * @throws \ReflectionException
      */
-    private function getConstructParams(MethodInjection $methodInjection, int $id = 0): array
+    private function getConstructParams(MethodInjection $methodInjection, string $id = ''): array
     {
         $methodName = $methodInjection->getMethodName();
         if ($methodName !== '__construct') {
@@ -858,7 +858,7 @@ class Container implements ContainerInterface
      * @param  object          $reflectObject
      * @param \ReflectionClass $reflectionClass
      * @param array            $propertyInjects
-     * @param int              $id
+     * @param string           $id
      *
      * @return void
      * @throws ContainerException
@@ -868,7 +868,7 @@ class Container implements ContainerInterface
         $reflectObject,
         \ReflectionClass $reflectionClass,
         array $propertyInjects,
-        int $id = 0
+        string $id = ''
     ): void {
         // New parent properties
         $parentClass = $reflectionClass->getParentClass();
@@ -942,14 +942,14 @@ class Container implements ContainerInterface
     /**
      * New property array
      *
-     * @param array $propertyValue
-     * @param int   $id
+     * @param array  $propertyValue
+     * @param string $id
      *
      * @return array
      * @throws ContainerException
      * @throws \ReflectionException
      */
-    private function newPropertyArray(array $propertyValue, int $id = 0): array
+    private function newPropertyArray(array $propertyValue, string $id = ''): array
     {
         foreach ($propertyValue as $proKey => &$proValue) {
             if ($proValue instanceof ArgsInjection && $proValue->isRef()) {
@@ -964,14 +964,14 @@ class Container implements ContainerInterface
     /**
      * Get ref value
      *
-     * @param mixed $value
-     * @param int   $id
+     * @param mixed  $value
+     * @param string $id
      *
      * @return mixed
      * @throws ContainerException
      * @throws \ReflectionException
      */
-    private function getRefValue($value, int $id = 0)
+    private function getRefValue($value, string $id = '')
     {
         if (!\is_string($value)) {
             return $value;
