@@ -8,10 +8,10 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\AnnotationRegister;
 use Swoft\Annotation\LoaderInterface;
-use Swoft\Helper\CLog;
 use Swoft\Stdlib\Helper\ComposerHelper;
 use Swoft\Stdlib\Helper\DirectoryHelper;
 use Swoft\Stdlib\Helper\ObjectHelper;
+use Swoft\Log\Helper\CLog;
 
 /**
  * Annotation resource
