@@ -394,10 +394,10 @@ class StringHelper
      */
     public static function replaceLast(string $search, $replace, string $subject): string
     {
-        $position = strrpos($subject, $search);
+        $position = \strrpos($subject, $search);
 
         if ($position !== false) {
-            return substr_replace($subject, $replace, $position, strlen($search));
+            return \substr_replace($subject, $replace, $position, \strlen($search));
         }
 
         return $subject;
@@ -412,7 +412,7 @@ class StringHelper
      */
     public static function upper(string $value): string
     {
-        return mb_strtoupper($value, 'UTF-8');
+        return \mb_strtoupper($value, 'UTF-8');
     }
 
     /**
@@ -424,7 +424,7 @@ class StringHelper
      */
     public static function title($value): string
     {
-        return mb_convert_case($value, MB_CASE_TITLE, 'UTF-8');
+        return \mb_convert_case($value, MB_CASE_TITLE, 'UTF-8');
     }
 
     /**

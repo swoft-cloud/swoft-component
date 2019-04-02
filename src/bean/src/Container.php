@@ -266,7 +266,7 @@ class Container implements ContainerInterface
      */
     public static function getInstance(): Container
     {
-        if (self::$instance === null) {
+        if (!self::$instance) {
             self::$instance = new self();
         }
 
@@ -303,7 +303,7 @@ class Container implements ContainerInterface
      * Get request bean
      *
      * @param string $name
-     * @param int    $id
+     * @param int    $id Usually is coroutine ID
      *
      * @return object
      * @throws ContainerException
@@ -325,14 +325,14 @@ class Container implements ContainerInterface
     /**
      * Get session bean
      *
-     * @param string $name
-     * @param int    $id
+     * @param string     $name
+     * @param int|string $id
      *
      * @return object
      * @throws ContainerException
      * @throws \ReflectionException
      */
-    public function getSession(string $name, int $id)
+    public function getSession(string $name, $id)
     {
         if (isset($this->sessionPool[$id][$name])) {
             return $this->sessionPool[$id][$name];
@@ -550,9 +550,9 @@ class Container implements ContainerInterface
     /**
      * Destroy session bean
      *
-     * @param int $id
+     * @param int|string $id
      */
-    public function destroySession(int $id): void
+    public function destroySession($id): void
     {
         unset($this->sessionPool[$id]);
     }
@@ -627,6 +627,19 @@ class Container implements ContainerInterface
     }
 
     /**
+     * @return array
+     */
+    public function getStats(): array
+    {
+        return [
+            'singleton'  => \count($this->singletonPool),
+            'prototype'  => \count($this->prototypePool),
+            'definition' => \count($this->definitions),
+            // 'definition' => \count($this->r),
+        ];
+    }
+
+    /**
      * Initialize beans
      *
      * @throws ContainerException
@@ -686,14 +699,14 @@ class Container implements ContainerInterface
     }
 
     /**
-     * @param string $beanName
-     * @param string $scope
-     * @param object $object
-     * @param int    $id
+     * @param string     $beanName
+     * @param string     $scope
+     * @param object     $object
+     * @param int|string $id
      *
      * @return object
      */
-    private function setNewBean(string $beanName, string $scope, $object, int $id = 0)
+    private function setNewBean(string $beanName, string $scope, $object, $id = 0)
     {
         switch ($scope) {
             case Bean::SINGLETON: // Singleton
@@ -701,7 +714,7 @@ class Container implements ContainerInterface
                 break;
             case Bean::PROTOTYPE:
                 $this->prototypePool[$beanName] = $object;
-
+                // Clone it
                 $object = clone $object;
                 break;
             case Bean::REQUEST:
@@ -718,14 +731,14 @@ class Container implements ContainerInterface
     /**
      * Initialize beans
      *
-     * @param string $beanName
-     * @param int    $id
+     * @param string     $beanName
+     * @param int|string $id
      *
      * @throws ContainerException
      * @throws \ReflectionException
      * @return object
      */
-    private function newBean(string $beanName, int $id = 0)
+    private function newBean(string $beanName, $id = 0)
     {
         // Get object definition
         $objectDefinition = $this->getNewObjectDefinition($beanName);

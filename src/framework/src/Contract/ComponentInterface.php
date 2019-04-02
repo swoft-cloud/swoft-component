@@ -10,12 +10,20 @@ use Swoft\Annotation\LoaderInterface;
  */
 interface ComponentInterface extends DefinitionInterface, LoaderInterface
 {
+    public const DEFAULT_META = [
+        'name'        => '',
+        'title'       => '',
+        'version'     => '1.0.0',
+        'homepage' => '',
+        'description' => '',
+    ];
+
     /**
      * Disable or enable this component.
      *
      * @return bool
      */
-    public function enable(): bool;
+    public function isEnable(): bool;
 
     /**
      * Metadata information for the component
@@ -31,6 +39,7 @@ interface ComponentInterface extends DefinitionInterface, LoaderInterface
      *          'homepage' => 'https://github.com/tom'
      *      ]
      *  ],
+     *  'keywords'    => ['one', 'two'],
      *  'createAt'    => '2019.02.12',
      *  'updateAt'    => '2019.04.12',
      *  'description' => 'description for the component',

@@ -4,7 +4,7 @@ namespace Swoft\WebSocket\Server\Exception;
 
 /**
  * Class WsRouteException
- * @package Swoft\WebSocket\Server\Exception
+ * @since 2.0
  */
 class WsMessageException extends WsServerException
 {

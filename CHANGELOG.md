@@ -2,12 +2,23 @@
 
 > 日期时间都是大概的时间点
 
+## 2019.03.29
+
+- 调整部分 websocket server 逻辑
+- session bean ID 调整可以使用字符串
+
+## 2019.03.26
+
+- 开始重构 RPC 功能(@stelin)
+  - 默认使用 JSONRPC 协议
+
 ## 2019.03.25
 
 - 完成websocket server基本的事件和消息处理流程 (@inhere)
 
 ## 2019.03.15
 
+- 完成 log 组件(@stelin)
 - 优化http server处理性能: 延迟解析request URI信息 (@inhere)
 
 ## 2019.03.14

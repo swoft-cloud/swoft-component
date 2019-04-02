@@ -96,6 +96,18 @@ class ChatModule implements WsModuleInterface
     }
 
     /**
+     * On error
+     *
+     * @param \Throwable $e
+     * @param int        $fd
+     */
+    public function onError(\Throwable $e, int $fd): void
+    {
+        // TODO: Implement onError() method.
+        // \server()->push($fd, 'your sent data format is invalid');
+    }
+
+    /**
      * @todo
      * @return array
      */
@@ -146,14 +158,6 @@ class ChatModule implements WsModuleInterface
     }
 
     /**
-     * @param Frame $frame
-     */
-    protected function onFormatError(Frame $frame): void
-    {
-        \server()->push($frame->fd, 'your sent data format is invalid');
-    }
-
-    /**
      * @return array
      */
     public function getOptions(): array
@@ -168,4 +172,5 @@ class ChatModule implements WsModuleInterface
     {
         return $this->handlers;
     }
+
 }

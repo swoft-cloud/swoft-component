@@ -2,13 +2,15 @@
 
 namespace Swoft\WebSocket\Server\MessageParser;
 
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 
 /**
  * Class TextParser
  * @since 2.0
+ * @Bean()
  */
-class TextParser implements MessageParserInterface
+class RawTextParser implements MessageParserInterface
 {
     /**
      * Encode data to string.

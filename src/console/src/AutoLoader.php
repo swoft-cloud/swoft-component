@@ -13,6 +13,14 @@ use Swoft\SwoftComponent;
 final class AutoLoader extends SwoftComponent
 {
     /**
+     * @return bool
+     */
+    public function enable(): bool
+    {
+        return false;
+    }
+
+    /**
      * Get namespace and dirs
      *
      * @return array
@@ -52,10 +60,5 @@ final class AutoLoader extends SwoftComponent
             //     'class' => Dispatcher::class,
             // ],
         ];
-    }
-
-    public function enable(): bool
-    {
-        return false;
     }
 }

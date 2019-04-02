@@ -12,16 +12,13 @@ use Swoole\WebSocket\Server;
  */
 interface WsModuleInterface
 {
-    // Accept or reject for handshake
-    public const ACCEPT = 1;
-    public const REJECT = 2;
-
     /**
      * Here you can verify the request information for the handshake
      * - You must return an array with two elements
      *  - The value of the first element to decide whether to handshake
      *  - The second element is the response object
-     * - 可以在response设置一些自定义header,body等信息
+     * - You can set some custom headers and other information in the response.
+     *
      * @param Request  $request
      * @param Response $response
      * @return array [bool, $response]
@@ -30,6 +27,7 @@ interface WsModuleInterface
 
     /**
      * On connection has open
+     *
      * @param Server  $server
      * @param Request $request
      * @param int     $fd
@@ -39,8 +37,17 @@ interface WsModuleInterface
     /**
      * On connection closed
      * - you can do something. eg. record log
+     *
      * @param Server $server
      * @param int    $fd
      */
     public function onClose(Server $server, int $fd): void;
+
+    /**
+     * On error
+     *
+     * @param \Throwable $e
+     * @param int        $fd
+     */
+    public function onError(\Throwable $e, int $fd): void;
 }
