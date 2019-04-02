@@ -4,7 +4,7 @@
 namespace Swoft\Rpc\Server\Contract;
 
 
-class MiddlewareInterface
+interface MiddlewareInterface
 {
 
 }

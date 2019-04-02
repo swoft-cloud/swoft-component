@@ -36,6 +36,11 @@ class AutoLoader extends SwoftComponent
         return [];
     }
 
+    /**
+     * @return array
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
     public function coreBean(): array
     {
         return [
@@ -47,7 +52,6 @@ class AutoLoader extends SwoftComponent
                     SwooleEvent::RECEIVE => \bean(ReceiveListener::class),
                 ]
             ],
-
             'rpcServerPacket' => [
                 'class' => Packet::class
             ]

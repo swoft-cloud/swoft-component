@@ -5,6 +5,10 @@ namespace Swoft\Rpc\Server\Swoole;
 
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\BeanFactory;
+use Swoft\Rpc\Server\Request;
+use Swoft\Rpc\Server\Response;
+use Swoft\Rpc\Server\ServiceDispatcher;
 use Swoft\Server\Swoole\ReceiveInterface;
 use Swoole\Server;
 
@@ -22,11 +26,19 @@ class ReceiveListener implements ReceiveInterface
      * @param int    $fd
      * @param int    $reactorId
      * @param string $data
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Rpc\Exception\RpcException
      */
     public function onReceive(Server $server, int $fd, int $reactorId, string $data): void
     {
-        var_dump($data);
+        $request  = Request::new($server, $fd, $reactorId, $data);
+        $response = Response::new($server, $fd, $reactorId);
 
-        $server->send($fd, 'hello');
+        /* @var ServiceDispatcher $dispatcher */
+        $dispatcher = BeanFactory::getSingleton('serviceDispatcher');
+
+        $dispatcher->dispatch($request, $response);
     }
 }

@@ -15,8 +15,6 @@ use Swoft\Stdlib\Helper\Arr;
  * Class Packet
  *
  * @since 2.0
- *
- * @Bean()
  */
 class Packet implements PacketInterface
 {

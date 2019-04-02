@@ -2,6 +2,10 @@
 
 namespace Swoft\Bean\Concern;
 
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Container;
+
 /**
  * Class Prototype
  *

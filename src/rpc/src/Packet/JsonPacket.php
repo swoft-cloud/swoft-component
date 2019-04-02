@@ -55,7 +55,7 @@ class JsonPacket extends AbstractPacket
     {
         $data  = JsonHelper::decode($string, true);
         $error = json_last_error();
-        if ($error == JSON_ERROR_NONE) {
+        if ($error != JSON_ERROR_NONE) {
             throw new RpcException(
                 sprintf('Data(%s) is not json format!', $string)
             );
