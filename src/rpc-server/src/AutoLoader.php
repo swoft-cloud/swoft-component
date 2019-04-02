@@ -4,6 +4,7 @@
 namespace Swoft\Rpc\Server;
 
 
+use Swoft\Rpc\Packet;
 use Swoft\Rpc\Server\Swoole\CloseListener;
 use Swoft\Rpc\Server\Swoole\ConnectListener;
 use Swoft\Rpc\Server\Swoole\ReceiveListener;
@@ -45,6 +46,10 @@ class AutoLoader extends SwoftComponent
                     SwooleEvent::CLOSE   => \bean(CloseListener::class),
                     SwooleEvent::RECEIVE => \bean(ReceiveListener::class),
                 ]
+            ],
+
+            'rpcServerPacket' => [
+                'class' => Packet::class
             ]
         ];
     }
