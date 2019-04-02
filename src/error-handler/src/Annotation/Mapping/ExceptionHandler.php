@@ -14,23 +14,24 @@ use Doctrine\Common\Annotations\Annotation\Target;
  * @Annotation
  * @Target({"METHOD"})
  * @Attributes({
- *     @Attribute("exception", type="string")
+ *     @Attribute("priority", type="integer"),
+ *     @Attribute("exceptions", type="array")
  * })
  */
 class ExceptionHandler
 {
     /**
-     * Exception handler class
-     *
-     * @var string
-     * @Required()
-     */
-    private $exception;
-
-    /**
      * @var int
      */
     private $priority = 0;
+
+    /**
+     * Exception handler classes
+     *
+     * @var string[]
+     * @Required()
+     */
+    private $exceptions;
 
     /**
      * Class constructor.
@@ -40,24 +41,16 @@ class ExceptionHandler
     public function __construct(array $values)
     {
         if (isset($values['value'])) {
-            $this->exception = $values['value'];
+            $this->exceptions = (array)$values['value'];
         }
 
-        if (isset($values['exception'])) {
-            $this->exception = $values['exception'];
+        if (isset($values['exceptions'])) {
+            $this->exceptions = (array)$values['exceptions'];
         }
 
         if (isset($values['priority'])) {
-            $this->priority = $values['priority'];
+            $this->priority = (int)$values['priority'];
         }
-    }
-
-    /**
-     * @return string
-     */
-    public function getException(): string
-    {
-        return $this->exception;
     }
 
     /**
@@ -66,5 +59,13 @@ class ExceptionHandler
     public function getPriority(): int
     {
         return $this->priority;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getExceptions(): array
+    {
+        return $this->exceptions;
     }
 }

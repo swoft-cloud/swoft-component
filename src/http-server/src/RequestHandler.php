@@ -57,6 +57,7 @@ class RequestHandler implements RequestHandlerInterface
      * @param ServerRequestInterface $request
      *
      * @return ResponseInterface
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {

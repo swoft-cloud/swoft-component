@@ -28,6 +28,6 @@ class DefaultExceptionHandler implements ErrorHandlerInterface
      */
     public function isStopped(): bool
     {
-        return false;
+        return true;
     }
 }

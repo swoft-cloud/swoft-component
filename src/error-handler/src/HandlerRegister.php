@@ -10,32 +10,36 @@ final class HandlerRegister
 {
     /**
      * @var array
+     * [
+     *  handler class => [priority, exception classes],
+     * ]
      */
     private static $handlers = [];
 
     /**
      * @param string $handlerClass
      * @param int    $priority
+     * @param array  $exceptions
      */
-    public static function collect(string $handlerClass, int $priority): void
+    public static function add(string $handlerClass, int $priority, array $exceptions): void
     {
-        self::$handlers[$handlerClass] = $priority;
+        self::$handlers[$handlerClass] = [$priority, $exceptions];
     }
 
     /**
      * @param ErrorHandlerChain $chain
-     * @return int
      */
-    public static function register(ErrorHandlerChain $chain): int
+    public static function register(ErrorHandlerChain $chain): void
     {
-        $count = \count(self::$handlers);
+        foreach (self::$handlers as $handlerClass => [$priority, $exceptions]) {
+            // $handler = \Swoft::getBean($handlerClass);
 
-        foreach (self::$handlers as $handler => $priority) {
-            $chain->addHandler(new $handler, $priority);
+            foreach ($exceptions as $exceptionClass) {
+                $chain->addHandler($exceptionClass, $handlerClass, $priority);
+            }
         }
 
         // Clear data
         self::$handlers = [];
-        return $count;
     }
 }

@@ -7,6 +7,7 @@ use Swoft\ErrorHandler\HandlerRegister;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
+use Swoft\Helper\CLog;
 use Swoft\SwoftEvent;
 
 /**
@@ -27,5 +28,7 @@ class AppInitCompleteListener implements EventHandlerInterface
         $chain = \Swoft::getBean(ErrorHandlerChain::class);
 
         HandlerRegister::register($chain);
+
+        CLog::info('Error handler init complete(%d handler)', $chain->count());
     }
 }

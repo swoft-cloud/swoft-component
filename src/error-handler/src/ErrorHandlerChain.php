@@ -18,6 +18,23 @@ class ErrorHandlerChain
     private $chains;
 
     /**
+     * @var int
+     */
+    private $counter = 0;
+
+    /**
+     * @var array
+     * [
+     *  exception class => [
+     *      handler class  => priority,
+     *      handler class1 => priority1,
+     *  ],
+     *  ...
+     * ]
+     */
+    private $handlers = [];
+
+    /**
      * @var ErrorHandlerInterface
      */
     private $defaultHandler;
@@ -28,8 +45,68 @@ class ErrorHandlerChain
     public function __construct()
     {
         $this->chains = new \SplPriorityQueue();
-        // add default handler
+
+        // Add default handler
         $this->defaultHandler = new DefaultExceptionHandler();
+
+        // Register system error handle
+        $this->registerErrorHandle();
+    }
+
+    /**
+     * Register system error handle
+     * @throws \InvalidArgumentException
+     */
+    protected function registerErrorHandle(): void
+    {
+        \set_error_handler([$this, 'handleError']);
+        \set_exception_handler([$this, 'handleException']);
+        \register_shutdown_function(function () {
+            if ($e = \error_get_last()) {
+                $this->handleError($e['type'], $e['message'], $e['file'], $e['line']);
+            }
+        });
+    }
+
+    /**
+     * Run error handling
+     * @param int    $num
+     * @param string $str
+     * @param string $file
+     * @param int    $line
+     * @throws \InvalidArgumentException
+     */
+    public function handleError(int $num, string $str, string $file, int $line): void
+    {
+        $this->handleException(new \ErrorException($str, 0, $num, $file, $line));
+    }
+
+    /**
+     * Running exception handling
+     * @param \Throwable $e
+     * @throws \InvalidArgumentException
+     */
+    public function handleException(\Throwable $e): void
+    {
+        $this->run($e);
+    }
+
+    /**
+     * Add a handler to chains
+     *
+     * @param string $exceptionClass
+     * @param string $handlerClass
+     * @param int    $priority
+     */
+    public function addHandler(
+        string $exceptionClass,
+        string $handlerClass,
+        int $priority = 0
+    ): void
+    {
+        $this->counter++;
+        $this->handlers[$exceptionClass][$handlerClass] = $priority;
+        // $this->chains->insert($handler, $priority);
     }
 
     /**
@@ -37,7 +114,18 @@ class ErrorHandlerChain
      */
     public function run(\Throwable $e): void
     {
+        // no handlers or before add handler
+        if ($this->count() === 0) {
+            $this->defaultHandler->handle($e);
+            return;
+        }
+
         try {
+            $expClass = \get_class($e);
+            if (isset($this->handlers[$expClass])) {
+                $handlers = $this->handlers[$expClass];
+            }
+
             $chains = clone $this->getChains();
 
             /** @var ErrorHandlerInterface $handler */
@@ -74,21 +162,10 @@ class ErrorHandlerChain
         }
 
         if ($e instanceof $handler) {
-
+            // TODO ...
         }
 
         return true;
-    }
-
-    /**
-     * Add a handler to chains
-     *
-     * @param ErrorHandlerInterface $handler
-     * @param int                   $priority
-     */
-    public function addHandler(ErrorHandlerInterface $handler, int $priority = 1): void
-    {
-        $this->chains->insert($handler, $priority);
     }
 
     /**
@@ -96,7 +173,7 @@ class ErrorHandlerChain
      */
     public function count(): int
     {
-        return $this->chains->count();
+        return $this->counter;
     }
 
     /**

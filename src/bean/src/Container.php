@@ -396,7 +396,8 @@ class Container implements ContainerInterface
     /**
      * Quick get exist singleton
      * @param string $name
-     * @return mixed
+     * @return object|mixed
+     * @throws ContainerException
      */
     public function getSingleton(string $name)
     {
@@ -415,12 +416,13 @@ class Container implements ContainerInterface
             return $this->singletonPool[$name];
         }
 
-        return null;
+        throw new ContainerException(\sprintf('The singleton bean of %s is not defined', $name));
     }
 
     /**
      * @param string $name
-     * @return mixed|null
+     * @return object|mixed
+     * @throws ContainerException
      */
     public function getPrototype(string $name)
     {
@@ -440,7 +442,7 @@ class Container implements ContainerInterface
             return $this->prototypePool[$name];
         }
 
-        return null;
+        throw new ContainerException(\sprintf('The singleton bean of %s is not defined', $name));
     }
 
     /**
