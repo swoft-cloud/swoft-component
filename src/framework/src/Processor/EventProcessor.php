@@ -36,7 +36,7 @@ class EventProcessor extends Processor
         CLog::info('Event manager initialized(%d listener, %d subscriber)', $count1, $count2);
 
         // Trigger a app init event
-        \Swoft::trigger(SwoftEvent::APP_INIT_AFTER);
+        \Swoft::trigger(SwoftEvent::APP_INIT_COMPLETE);
 
         return $this->application->afterEvent();
     }

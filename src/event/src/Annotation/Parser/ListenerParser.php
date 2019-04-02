@@ -1,10 +1,4 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-01
- * Time: 20:03
- */
+<?php declare(strict_types=1);
 
 namespace Swoft\Event\Annotation\Parser;
 
@@ -14,7 +8,6 @@ use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\Manager\EventManager;
-use Swoft\Helper\CLog;
 
 /**
  * Class ListenerParser

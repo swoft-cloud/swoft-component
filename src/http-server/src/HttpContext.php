@@ -37,6 +37,7 @@ class HttpContext implements ContextInterface
      * @param Response $response
      *
      * @return HttpContext
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public static function new(Request $request, Response $response): self
     {

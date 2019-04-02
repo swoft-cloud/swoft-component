@@ -129,13 +129,13 @@ final class BeanFactory
      * Get request bean
      *
      * @param string $name
-     * @param int    $id
+     * @param string $id
      *
      * @return object
      * @throws ContainerException
      * @throws \ReflectionException
      */
-    public static function getRequestBean(string $name, int $id)
+    public static function getRequestBean(string $name, string $id)
     {
         return Container::getInstance()->getRequest($name, $id);
     }
@@ -144,17 +144,16 @@ final class BeanFactory
      * Get session bean
      *
      * @param string $name
-     * @param int|string $id
+     * @param string $sid
      *
      * @return object
      * @throws ContainerException
      * @throws \ReflectionException
      */
-    public static function getSessionBean(string $name, $id)
+    public static function getSessionBean(string $name, string $sid)
     {
-        return Container::getInstance()->getSession($name, $id);
+        return Container::getInstance()->getSession($name, $sid);
     }
-
 
     /**
      * Destroy request bean
@@ -169,11 +168,11 @@ final class BeanFactory
     /**
      * Destroy session bean
      *
-     * @param int|string $id
+     * @param string $sid
      */
-    public static function destroySession($id): void
+    public static function destroySession(string $sid): void
     {
-        Container::getInstance()->destroySession($id);
+        Container::getInstance()->destroySession($sid);
     }
 
     /*****************************************************************************
