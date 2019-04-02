@@ -8,10 +8,10 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\AnnotationRegister;
 use Swoft\Annotation\LoaderInterface;
-use Swoft\Helper\CLog;
 use Swoft\Stdlib\Helper\ComposerHelper;
 use Swoft\Stdlib\Helper\DirectoryHelper;
 use Swoft\Stdlib\Helper\ObjectHelper;
+use Swoft\Log\Helper\CLog;
 
 /**
  * Annotation resource
@@ -264,7 +264,12 @@ class AnnotationResource extends Resource
     private function parseAnnotation(string $namespace, string $className): void
     {
         // Annotation reader
-        $reflectionClass    = new \ReflectionClass($className);
+        $reflectionClass = new \ReflectionClass($className);
+
+        // Fix ignore abstract
+        if ($reflectionClass->isAbstract()) {
+            return;
+        }
         $oneClassAnnotation = $this->parseOneClassAnnotation($reflectionClass);
 
         if (!empty($oneClassAnnotation)) {

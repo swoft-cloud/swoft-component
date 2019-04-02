@@ -5,7 +5,7 @@ namespace Swoft\Listener;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
-use Swoft\Helper\CLog;
+use Swoft\Log\Helper\CLog;
 use Swoft\Server\Server;
 use Swoft\Server\ServerEvent;
 

@@ -15,11 +15,11 @@ use Swoft\Server\Server;
 class HttpServer extends Server
 {
     /**
-     * Default http port/18306
+     * Default http port
      *
      * @var int
      */
-    protected $port = 88;
+    protected $port = 18306;
 
     /**
      * Server type
@@ -30,6 +30,7 @@ class HttpServer extends Server
 
     /**
      * Start server
+     *
      * @throws \Swoft\Server\Exception\ServerException
      */
     public function start(): void

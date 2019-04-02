@@ -198,13 +198,6 @@ class Logger extends \Monolog\Logger
     }
 
     /**
-     * pushlog日志
-     *
-     * @param string $key 记录KEY
-     * @param mixed  $val 记录值
-     */
-
-    /**
      * Push log
      *
      * @param string $key

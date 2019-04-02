@@ -10,6 +10,7 @@ use Swoft\WebSocket\Server\MessageParser\RawTextParser;
 
 /**
  * Class WebSocket - mark an websocket module handler class
+ *
  * @since 2.0
  *
  * @Annotation

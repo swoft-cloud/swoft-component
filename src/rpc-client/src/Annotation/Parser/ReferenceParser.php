@@ -11,6 +11,7 @@ use Swoft\Bean\BeanFactory;
 use Swoft\Rpc\Client\Annotation\Mapping\Reference;
 use Swoft\Rpc\Client\Exception\RpcClientException;
 use Swoft\Rpc\Client\Proxy;
+use Swoft\Rpc\Client\ReferenceRegister;
 
 /**
  * Class ReferenceParser
@@ -45,10 +46,12 @@ class ReferenceParser extends Parser
         }
 
         $className = Proxy::newClassName($propClassType);
+
         $this->definitions[$className] = [
-            'class' => $className
+            'class' => $className,
         ];
 
+        ReferenceRegister::registerPool($className, $annotationObject->getPool());
         return [$className, true];
     }
 }

@@ -3,7 +3,7 @@
 namespace Swoft\Processor;
 
 use Dotenv\Dotenv;
-use Swoft\Helper\CLog;
+use Swoft\Log\Helper\CLog;
 
 /**
  * Env processor

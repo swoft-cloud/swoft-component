@@ -5,10 +5,10 @@ namespace Swoft\WebSocket\Server\Listener;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
-use Swoft\Helper\CLog;
 use Swoft\SwoftEvent;
 use Swoft\WebSocket\Server\Router\Router;
 use Swoft\WebSocket\Server\Router\RouteRegister;
+use Swoft\Log\Helper\CLog;
 
 /**
  * Class AppInitCompleteListener

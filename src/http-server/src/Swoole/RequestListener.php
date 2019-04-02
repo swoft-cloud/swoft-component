@@ -14,7 +14,7 @@ use Swoole\Http\Response;
 /**
  * Class RequestListener
  *
- * @Bean("requestListener")
+ * @Bean()
  *
  * @since 2.0
  */
