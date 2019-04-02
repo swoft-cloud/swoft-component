@@ -11,19 +11,18 @@ final class HandlerRegister
     /**
      * @var array
      * [
-     *  handler class => [priority, exception classes],
+     *  handler class => [exception class, exception class1],
      * ]
      */
     private static $handlers = [];
 
     /**
      * @param string $handlerClass
-     * @param int    $priority
      * @param array  $exceptions
      */
-    public static function add(string $handlerClass, int $priority, array $exceptions): void
+    public static function add(string $handlerClass, array $exceptions): void
     {
-        self::$handlers[$handlerClass] = [$priority, $exceptions];
+        self::$handlers[$handlerClass] = $exceptions;
     }
 
     /**
@@ -31,11 +30,9 @@ final class HandlerRegister
      */
     public static function register(ErrorHandlerChain $chain): void
     {
-        foreach (self::$handlers as $handlerClass => [$priority, $exceptions]) {
-            // $handler = \Swoft::getBean($handlerClass);
-
+        foreach (self::$handlers as $handlerClass => $exceptions) {
             foreach ($exceptions as $exceptionClass) {
-                $chain->addHandler($exceptionClass, $handlerClass, $priority);
+                $chain->addHandler($exceptionClass, $handlerClass);
             }
         }
 

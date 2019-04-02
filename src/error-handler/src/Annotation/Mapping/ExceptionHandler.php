@@ -12,19 +12,13 @@ use Doctrine\Common\Annotations\Annotation\Target;
  *
  * @since 2.0
  * @Annotation
- * @Target({"METHOD"})
+ * @Target({"CLASS"})
  * @Attributes({
- *     @Attribute("priority", type="integer"),
  *     @Attribute("exceptions", type="array")
  * })
  */
 class ExceptionHandler
 {
-    /**
-     * @var int
-     */
-    private $priority = 0;
-
     /**
      * Exception handler classes
      *
@@ -47,18 +41,6 @@ class ExceptionHandler
         if (isset($values['exceptions'])) {
             $this->exceptions = (array)$values['exceptions'];
         }
-
-        if (isset($values['priority'])) {
-            $this->priority = (int)$values['priority'];
-        }
-    }
-
-    /**
-     * @return int
-     */
-    public function getPriority(): int
-    {
-        return $this->priority;
     }
 
     /**

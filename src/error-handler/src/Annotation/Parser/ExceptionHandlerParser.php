@@ -4,7 +4,6 @@ namespace Swoft\ErrorHandler\Annotation\Mapping;
 
 use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;
-use Doctrine\Common\Annotations\Annotation\Required;
 use Doctrine\Common\Annotations\Annotation\Target;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\AnnotationException;
@@ -26,7 +25,7 @@ class ExceptionHandlerParser extends Parser
     /**
      * Parse object
      *
-     * @param int    $type Class or Method or Property
+     * @param int              $type Class or Method or Property
      * @param ExceptionHandler $annotation Annotation object
      *
      * @return array
@@ -42,7 +41,7 @@ class ExceptionHandlerParser extends Parser
 
         $handlerClass = $this->className;
 
-        HandlerRegister::add($handlerClass, $annotation->getPriority(), $annotation->getExceptions());
+        HandlerRegister::add($handlerClass, $annotation->getExceptions());
 
         return [$handlerClass, $handlerClass, Bean::SINGLETON, ''];
     }

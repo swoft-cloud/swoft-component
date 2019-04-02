@@ -14,9 +14,4 @@ interface ErrorHandlerInterface
      * @return void
      */
     public function handle(\Throwable $e): void;
-
-    /**
-     * @return bool
-     */
-    public function isStopped(): bool;
 }

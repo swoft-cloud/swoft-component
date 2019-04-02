@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\ErrorHandler;
 
@@ -15,19 +15,11 @@ class DefaultExceptionHandler implements ErrorHandlerInterface
     public function handle(\Throwable $e): void
     {
         \printf(
-            "Exception: %s\nAt File %s line %d\nTrace:\n%s",
+            "(DEFAULT)Exception: %s\nAt File %s line %d\nTrace:\n%s\n",
             $e->getMessage(),
             $e->getFile(),
             $e->getLine(),
             $e->getTraceAsString()
         );
-    }
-
-    /**
-     * @return bool
-     */
-    public function isStopped(): bool
-    {
-        return true;
     }
 }

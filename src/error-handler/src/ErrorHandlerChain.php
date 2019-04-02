@@ -12,24 +12,21 @@ use Swoft\Bean\Annotation\Mapping\Bean;
  */
 class ErrorHandlerChain
 {
-    /**
-     * @var \SplPriorityQueue
-     */
-    private $chains;
-
-    /**
-     * @var int
-     */
-    private $counter = 0;
+    public const TYPE_WS   = 1;
+    public const TYPE_CLI  = 2;
+    public const TYPE_RPC  = 3;
+    public const TYPE_UDP  = 4;
+    public const TYPE_TCP  = 5;
+    public const TYPE_HTTP = 6;
+    public const TYPE_SOCK = 7;
+    public const TYPE_SYS  = 8;
+    public const TYPE_AUTO = 9;
 
     /**
      * @var array
      * [
-     *  exception class => [
-     *      handler class  => priority,
-     *      handler class1 => priority1,
-     *  ],
-     *  ...
+     *  exception class => handler class,
+     *  ... ...
      * ]
      */
     private $handlers = [];
@@ -44,8 +41,6 @@ class ErrorHandlerChain
      */
     public function __construct()
     {
-        $this->chains = new \SplPriorityQueue();
-
         // Add default handler
         $this->defaultHandler = new DefaultExceptionHandler();
 
@@ -62,9 +57,11 @@ class ErrorHandlerChain
         \set_error_handler([$this, 'handleError']);
         \set_exception_handler([$this, 'handleException']);
         \register_shutdown_function(function () {
-            if ($e = \error_get_last()) {
-                $this->handleError($e['type'], $e['message'], $e['file'], $e['line']);
+            if (!$e = \error_get_last()) {
+                return;
             }
+
+            $this->handleError($e['type'], $e['message'], $e['file'], $e['line']);
         });
     }
 
@@ -92,80 +89,50 @@ class ErrorHandlerChain
     }
 
     /**
-     * Add a handler to chains
+     * Add a handler class to chains
      *
      * @param string $exceptionClass
      * @param string $handlerClass
-     * @param int    $priority
      */
-    public function addHandler(
-        string $exceptionClass,
-        string $handlerClass,
-        int $priority = 0
-    ): void
+    public function addHandler(string $exceptionClass, string $handlerClass): void
     {
-        $this->counter++;
-        $this->handlers[$exceptionClass][$handlerClass] = $priority;
-        // $this->chains->insert($handler, $priority);
+        $this->handlers[$exceptionClass] = $handlerClass;
     }
 
     /**
      * @param \Throwable $e
+     * @param int        $type
      */
-    public function run(\Throwable $e): void
+    public function run(\Throwable $e, int $type = self::TYPE_SYS): void
     {
-        // no handlers or before add handler
+        /** @var ErrorHandlerInterface $handler */
+        $handler = $this->defaultHandler;
+
+        // No handlers or before add handler
         if ($this->count() === 0) {
-            $this->defaultHandler->handle($e);
+            $handler->handle($e);
             return;
         }
 
         try {
-            $expClass = \get_class($e);
-            if (isset($this->handlers[$expClass])) {
-                $handlers = $this->handlers[$expClass];
-            }
+            $errClass = \get_class($e);
 
-            $chains = clone $this->getChains();
-
-            /** @var ErrorHandlerInterface $handler */
-            foreach ($chains as $handler) {
-                if (!$this->match($e, $handler)) {
-                    continue;
-                }
-
-                // call handler
-                $handler->handle($e);
-
-                // want stop loop
-                if ($handler->isStopped()) {
-                    break;
+            if (isset($this->handlers[$errClass])) {
+                $handler = \Swoft::getSingleton($this->handlers[$errClass]);
+            } else {
+                foreach ($this->handlers as $exceptionClass => $handlerClass) {
+                    if ($e instanceof $exceptionClass) {
+                        $handler = \Swoft::getSingleton($handlerClass);
+                        break;
+                    }
                 }
             }
+
+            // Call error handler
+            $handler->handle($e);
         } catch (\Throwable $t) {
             $this->defaultHandler->handle($e);
         }
-    }
-
-    /**
-     * @param \Throwable            $e
-     * @param ErrorHandlerInterface $handler
-     * @return bool
-     */
-    public function match(\Throwable $e, ErrorHandlerInterface $handler): bool
-    {
-        $errorClass   = \get_class($e);
-        $handlerClass = \get_class($handler);
-
-        if ($errorClass === $handlerClass) {
-            return true;
-        }
-
-        if ($e instanceof $handler) {
-            // TODO ...
-        }
-
-        return true;
     }
 
     /**
@@ -173,15 +140,7 @@ class ErrorHandlerChain
      */
     public function count(): int
     {
-        return $this->counter;
-    }
-
-    /**
-     * @return \SplPriorityQueue
-     */
-    public function getChains(): \SplPriorityQueue
-    {
-        return $this->chains;
+        return \count($this->handlers);
     }
 
     /**
@@ -191,7 +150,7 @@ class ErrorHandlerChain
      */
     public function clear(): void
     {
-        $this->chains = new \SplPriorityQueue();
+        $this->handlers = [];
     }
 
     /**
