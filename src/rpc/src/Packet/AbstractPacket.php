@@ -4,8 +4,9 @@
 namespace Swoft\Rpc\Packet;
 
 
-use Swoft\Config\Annotation\Mapping\Config;
+use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Rpc\Contract\PacketInterface;
+use Swoft\Rpc\Packet;
 
 /**
  * Class AbstractPacket
@@ -20,17 +21,29 @@ abstract class AbstractPacket implements PacketInterface
     const DELIMITER = '::';
 
     /**
-     * @var bool
+     * @var Packet
      */
-    protected $openEofCheck = false;
+    protected $packet;
 
     /**
-     * @var string
+     * @param Packet $packet
      */
-    protected $packageEof = '';
+    public function initialize(Packet $packet)
+    {
+        $this->packet = $packet;
+    }
 
     /**
-     * @var bool
+     * @param string $string
+     *
+     * @return string
      */
-    protected $openEofSplit = false;
+    protected function addPackageEof(string $string): string
+    {
+        if ($this->packet->isOpenEofCheck() || $this->packet->isOpenEofSplit()) {
+            $string .= $this->packet->getPackageEof();
+        }
+
+        return $string;
+    }
 }

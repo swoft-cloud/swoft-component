@@ -4,7 +4,7 @@ namespace Swoft\Processor;
 
 use Swoft\Console\CommandRegister;
 use Swoft\Console\Router\Router;
-use Swoft\Helper\CLog;
+use Swoft\Log\Helper\CLog;
 
 /**
  * Console processor

@@ -3,7 +3,7 @@
 namespace Swoft\Processor;
 
 use Swoft\Annotation\AnnotationRegister;
-use Swoft\Helper\CLog;
+use Swoft\Log\Helper\CLog;
 
 /**
  * Annotation processor

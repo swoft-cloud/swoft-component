@@ -7,7 +7,7 @@ use Swoft\Bean\BeanFactory;
 use Swoft\BeanHandler;
 use Swoft\Contract\ComponentInterface;
 use Swoft\Contract\DefinitionInterface;
-use Swoft\Helper\CLog;
+use Swoft\Log\Helper\CLog;
 use Swoft\Helper\SwoftHelper;
 use Swoft\Stdlib\Helper\ArrayHelper;
 

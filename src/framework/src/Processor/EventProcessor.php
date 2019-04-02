@@ -5,7 +5,7 @@ namespace Swoft\Processor;
 use Swoft\Event\Annotation\Parser\ListenerParser;
 use Swoft\Event\Annotation\Parser\SubscriberParser;
 use Swoft\Event\Manager\EventManager;
-use Swoft\Helper\CLog;
+use Swoft\Log\Helper\CLog;
 use Swoft\SwoftEvent;
 
 /**

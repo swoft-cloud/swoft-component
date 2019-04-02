@@ -1,14 +1,18 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Helper;
-
+namespace Swoft\Log\Helper;
 
 use Monolog\Formatter\LineFormatter;
 use Swoft\Log\CLogger;
 use Swoft\Log\Handler\CEchoHandler;
 use Swoft\Log\Handler\CFileHandler;
 
+/**
+ * Class CLog
+ *
+ * @since 2.0
+ */
 class CLog
 {
     /**

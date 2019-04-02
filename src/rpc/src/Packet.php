@@ -7,6 +7,7 @@ namespace Swoft\Rpc;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Rpc\Contract\PacketInterface;
 use Swoft\Rpc\Exception\RpcException;
+use Swoft\Rpc\Packet\AbstractPacket;
 use Swoft\Rpc\Packet\JsonPacket;
 use Swoft\Stdlib\Helper\Arr;
 
@@ -35,6 +36,26 @@ class Packet implements PacketInterface
      * Packet
      */
     private $packets = [];
+
+    /**
+     * @var bool
+     */
+    private $openEofCheck = false;
+
+    /**
+     * @var string
+     */
+    private $packageEof = '';
+
+    /**
+     * @var bool
+     */
+    private $openEofSplit = false;
+
+    /**
+     * @var AbstractPacket
+     */
+    private $packet;
 
     /**
      * @param Protocol $protocol
@@ -72,6 +93,10 @@ class Packet implements PacketInterface
      */
     public function getPacket(): PacketInterface
     {
+        if (!empty($this->packet)) {
+            return $this->packet;
+        }
+
         $packets = Arr::merge($this->defaultPackets(), $this->packets);
         $packet  = $packets[$this->type] ?? null;
         if (empty($packet)) {
@@ -80,11 +105,14 @@ class Packet implements PacketInterface
             );
         }
 
-        if (!$packet instanceof PacketInterface) {
+        if (!$packet instanceof AbstractPacket) {
             throw new RpcException(
                 sprintf('Packet type(%s) is not instanceof PacketInterface!', $this->type)
             );
         }
+
+        $packet->initialize($this);
+        $this->packet = $packet;
 
         return $packet;
     }
@@ -99,5 +127,29 @@ class Packet implements PacketInterface
         return [
             self::JSON => \bean(JsonPacket::class)
         ];
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOpenEofCheck(): bool
+    {
+        return $this->openEofCheck;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPackageEof(): string
+    {
+        return $this->packageEof;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOpenEofSplit(): bool
+    {
+        return $this->openEofSplit;
     }
 }

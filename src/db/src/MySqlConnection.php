@@ -7,7 +7,6 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Db\Query\Grammar\MySqlGrammar;
 use Swoft\Db\Query\Grammar\Grammar;
 use Swoft\Db\Query\Processor\MySqlProcessor;
-use Swoft\Helper\Log;
 
 /**
  * Class MySqlConnection

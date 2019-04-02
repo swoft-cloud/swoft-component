@@ -4,6 +4,7 @@
 namespace Swoft\Rpc\Packet;
 
 
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Rpc\Exception\RpcException;
 use Swoft\Rpc\Protocol;
 use Swoft\Stdlib\Helper\JsonHelper;
@@ -12,6 +13,8 @@ use Swoft\Stdlib\Helper\JsonHelper;
  * Class JsonPacket
  *
  * @since 2.0
+ *
+ * @Bean(scope=Bean::PROTOTYPE)
  */
 class JsonPacket extends AbstractPacket
 {
@@ -36,10 +39,7 @@ class JsonPacket extends AbstractPacket
         ];
 
         $string = JsonHelper::encode($data, JSON_UNESCAPED_UNICODE);
-        if ($this->openEofCheck || $this->openEofSplit) {
-            $string .= $this->packageEof;
-        }
-
+        $string = $this->addPackageEof($string);
         return $string;
     }
 

@@ -5,7 +5,6 @@ namespace Swoft;
 use Swoft\Concern\SwoftTrait;
 use Swoft\Contract\ApplicationInterface;
 use Swoft\Contract\SwoftInterface;
-use Swoft\Helper\CLog;
 use Swoft\Processor\AnnotationProcessor;
 use Swoft\Processor\ApplicationProcessor;
 use Swoft\Processor\BeanProcessor;
@@ -18,6 +17,7 @@ use Swoft\Processor\ProcessorInterface;
 use Swoft\Stdlib\Helper\ComposerHelper;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Stdlib\Helper\Str;
+use Swoft\Log\Helper\CLog;
 
 /**
  * Swoft application

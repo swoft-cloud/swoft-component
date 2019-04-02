@@ -39,9 +39,6 @@ class AutoLoader extends SwoftComponent
     public function coreBean(): array
     {
         return [
-            'rpcClinet'       => [
-                'class' => JsonPacket::class,
-            ],
             'rpcClientPacket' => [
                 'class' => Packet::class
             ]
