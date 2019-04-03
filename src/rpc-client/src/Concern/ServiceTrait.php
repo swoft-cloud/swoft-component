@@ -39,7 +39,8 @@ trait ServiceTrait
 
         /* @var Connection $connection */
         $connection = $pool->getConnection();
-        $packet     = $connection->getPacket();
+        $connection->setRelease(true);
+        $packet = $connection->getPacket();
 
         $ext = [
 
@@ -48,13 +49,27 @@ trait ServiceTrait
         $protocol = Protocol::new($version, $interfaceClass, $methodName, $params, $ext);
         $data     = $packet->encode($protocol);
 
-        if ($connection->send($data)) {
-            $result = $connection->recv();
-            return [$result];
+        if (!$connection->send($data)) {
+            throw new RpcClientException(
+                sprintf('Rpc call failed.interface=%s method=%s', $interfaceClass, $methodName)
+            );
         }
 
-        throw new RpcClientException(
-            sprintf('Rpc call failed.interface=%s method=%s', $interfaceClass, $methodName)
-        );
+        $result = $connection->recv();
+        $connection->release();
+        $response = $packet->decodeResponse($result);
+
+        if ($response->getError() !== null) {
+            $code      = $response->getError()->getCode();
+            $message   = $response->getError()->getMessage();
+            $errorData = $response->getError()->getData();
+
+            throw new RpcClientException(
+                sprintf('Rpc call error!code=%d message=%d data=%s', $code, $message, $errorData)
+            );
+        }
+
+        return $response->getResult();
+
     }
 }

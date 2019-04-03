@@ -103,7 +103,7 @@ if (!function_exists('context')) {
     /**
      * Get current context
      *
-     * @return \Swoft\Context\ContextInterface|\Swoft\Http\Server\HttpContext
+     * @return \Swoft\Context\ContextInterface|\Swoft\Http\Server\HttpContext|\Swoft\Rpc\Server\ServiceContext
      */
     function context(): \Swoft\Context\ContextInterface
     {

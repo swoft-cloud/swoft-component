@@ -90,7 +90,7 @@ class Request implements RequestInterface
 
         /* @var Packet $packet */
         $packet   = \bean('rpcServerPacket');
-        $protocol = $packet->getPacket()->decode($data);
+        $protocol = $packet->decode($data);
 
         $instance->version     = $protocol->getVersion();
         $instance->interface   = $protocol->getInterface();

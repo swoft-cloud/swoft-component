@@ -4,6 +4,7 @@
 namespace Swoft\Rpc\Server\Contract;
 
 
+use Swoft\Rpc\Error;
 use Swoole\Server;
 
 /**
@@ -13,6 +14,21 @@ use Swoole\Server;
  */
 interface ResponseInterface
 {
+
+    /**
+     * @param Error $error
+     *
+     * @return ResponseInterface
+     */
+    public function withError(Error $error): ResponseInterface;
+
+    /**
+     * @param $data
+     *
+     * @return ResponseInterface
+     */
+    public function withData($data): ResponseInterface;
+
     /**
      * @param string $content
      *

@@ -14,6 +14,14 @@ class ReferenceRegister
 {
     /**
      * @var array
+     *
+     * @example
+     * [
+     *     'className' => [
+     *         'pool' => 'poolName',
+     *         'version' => 'version',
+     *     ]
+     * ]
      */
     private static $references = [];
 

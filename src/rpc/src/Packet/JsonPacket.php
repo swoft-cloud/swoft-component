@@ -5,8 +5,10 @@ namespace Swoft\Rpc\Packet;
 
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Rpc\Error;
 use Swoft\Rpc\Exception\RpcException;
 use Swoft\Rpc\Protocol;
+use Swoft\Rpc\Response;
 use Swoft\Stdlib\Helper\JsonHelper;
 
 /**
@@ -92,5 +94,62 @@ class JsonPacket extends AbstractPacket
         }
 
         return Protocol::new($version, $interfaceClass, $methodName, $params, $ext);
+    }
+
+    /**
+     * @param mixed  $result
+     * @param int    $code
+     * @param string $message
+     * @param Error  $data
+     *
+     * @return string
+     */
+    public function encodeResponse($result, int $code = null, string $message = '', $data = null): string
+    {
+        $data['jsonrpc'] = self::VERSION;
+
+        if ($code === null) {
+            $data['result'] = $result;
+
+            return JsonHelper::encode($data, JSON_UNESCAPED_UNICODE);
+        }
+
+        $error = [
+            'code'    => $code,
+            'message' => $message,
+        ];
+
+        if ($data !== null) {
+            $error['data'] = $data;
+        }
+
+        $data['error'] = $error;
+
+        return JsonHelper::encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * @param string $string
+     *
+     * @return Response
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function decodeResponse(string $string): Response
+    {
+        $data   = JsonHelper::decode($string, true);
+        $result = $data['result'] ?? null;
+
+        if ($result !== null) {
+            return Response::new($result, null);
+        }
+
+        $code    = $data['error']['code'] ?? 0;
+        $message = $data['error']['message'] ?? '';
+        $data    = $data['error']['data'] ?? null;
+
+        $error = Error::new($code, $message, $data);
+
+        return Response::new(null, $error);
     }
 }

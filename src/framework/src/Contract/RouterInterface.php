@@ -14,10 +14,13 @@ namespace Swoft\Contract;
  */
 interface RouterInterface
 {
-    /** match result status list */
+    /**
+     * Found route
+     */
     public const FOUND     = 1;
-    public const NOT_FOUND = 2;
 
-    // public function add(string $method, string $path, $handler, array $binds = [], array $opts = []);
-    // public function match(...$params): array;
+    /**
+     * Not found
+     */
+    public const NOT_FOUND = 2;
 }

@@ -46,7 +46,9 @@ class Reference
             $this->pool = $values['value'];
         } elseif (isset($values['pool'])) {
             $this->pool = $values['pool'];
-        } elseif (isset($values['version'])) {
+        }
+
+        if (isset($values['version'])) {
             $this->version = $values['version'];
         }
     }
