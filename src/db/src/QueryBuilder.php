@@ -960,11 +960,15 @@ class QueryBuilder implements QueryBuilderInterface
         foreach ($parameters as $index => $parameter) {
             $key = $type = $value = null;
 
-            if (\count($parameter) >= 3) {
-                list($key, $value, $type) = $parameter;
-            } elseif (\count($parameter) == 2) {
-                list($key, $value) = $parameter;
-            } elseif (!\is_array($parameter)) {
+            if (\is_array($parameter)) {
+                $paramNum = \count($parameter);
+                
+                if ($paramNum >= 3) {
+                    list($key, $value, $type) = $parameter;
+                } elseif ($paramNum == 2) {
+                    list($key, $value) = $parameter;
+                }
+            } else {
                 $key   = $index;
                 $value = $parameter;
             }
@@ -973,6 +977,7 @@ class QueryBuilder implements QueryBuilderInterface
                 App::warning('Sql parameter formatting error, parameters=' . \json_encode($parameters));
                 continue;
             }
+            
             $this->setParameter($key, $value, $type);
         }
 
