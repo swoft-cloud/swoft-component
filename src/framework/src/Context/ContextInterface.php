@@ -40,4 +40,19 @@ interface ContextInterface
      * Clear resource
      */
     public function clear(): void;
+
+    /**
+     * @return string
+     */
+    public function getParentId(): string;
+
+    /**
+     * @return string
+     */
+    public function getTraceId(): string;
+
+    /**
+     * @return string
+     */
+    public function getSpanId(): string;
 }

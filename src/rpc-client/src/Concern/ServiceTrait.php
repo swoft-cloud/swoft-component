@@ -43,7 +43,7 @@ trait ServiceTrait
         $packet = $connection->getPacket();
 
         $ext = [
-
+            
         ];
 
         $protocol = Protocol::new($version, $interfaceClass, $methodName, $params, $ext);
