@@ -11,20 +11,20 @@
 namespace Swoft\Event\Listener;
 
 /**
- * Class ListenerQueue - 一个事件的监听器队列存储管理类
+ * Class ListenerQueue - Listener queue management class for an event
  * @package Swoft\Event\Listener
  * @since 2.0
  */
 class ListenerQueue implements \IteratorAggregate, \Countable
 {
     /**
-     * 对象存储器 - 监听器实例存储
+     * Object store - listener instance store
      * @var \SplObjectStorage
      */
     private $store;
 
     /**
-     * 优先级队列
+     * Priority queue
      * @var \SplPriorityQueue
      */
     private $queue;
@@ -42,9 +42,9 @@ class ListenerQueue implements \IteratorAggregate, \Countable
     }
 
     /**
-     * 添加一个监听器, 增加了添加 callback(string|array)
-     * @param \Closure|callable|\stdClass|mixed $listener 监听器
-     * @param integer                           $priority 优先级
+     * Add a listener, support add callback(string|array)
+     * @param \Closure|callable|\stdClass|mixed $listener
+     * @param integer                           $priority
      * @return $this
      */
     public function add($listener, $priority): self
@@ -80,7 +80,7 @@ class ListenerQueue implements \IteratorAggregate, \Countable
             $queue = new \SplPriorityQueue();
 
             foreach ($this->store as $otherListener) {
-                // 优先级信息 @see self::add(). It like `[priority, counter value]`
+                // Priority information @see self::add(). It like `[priority, counter value]`
                 $priority = $this->store->getInfo();
                 $queue->insert($otherListener, $priority);
             }

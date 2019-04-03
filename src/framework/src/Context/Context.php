@@ -6,7 +6,7 @@ use Swoft\Bean\BeanFactory;
 use Swoft\Co;
 use Swoft\Exception\ContextException;
 use Swoft\Http\Server\HttpContext;
-use Swoft\WebSocket\Server\WsContext;
+use Swoft\WebSocket\Server\WsMessageContext;
 
 /**
  * Class Context - request context manager
@@ -32,7 +32,7 @@ class Context
     /**
      * Get context
      *
-     * @return ContextInterface|HttpContext|WsContext
+     * @return ContextInterface|HttpContext|WsMessageContext
      */
     public static function get(): ?ContextInterface
     {
@@ -44,7 +44,7 @@ class Context
     /**
      * Get context by coID, if not found will throw exception.
      *
-     * @return ContextInterface|HttpContext|WsContext
+     * @return ContextInterface|HttpContext|WsMessageContext
      */
     public static function mustGet(): ContextInterface
     {

@@ -6,6 +6,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\Server\Swoole\CloseInterface;
 use Swoft\Session\Session;
+use Swoft\SwoftEvent;
 use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\WsDispatcher;
 use Swoft\WebSocket\Server\WsServerEvent;
@@ -34,7 +35,8 @@ class CloseListener implements CloseInterface
         }
 
         // Init fd and cid mapping
-        Session::bindFd($fd);
+        $sid = (string)$fd;
+        Session::bindCo($sid);
 
         /** @var Connection $conn */
         $conn  = Session::get();
@@ -64,8 +66,9 @@ class CloseListener implements CloseInterface
         }
 
         // Unbind fd
-        Session::unbindFd();
+        Session::unbindCo();
+
         // Remove connection
-        Session::destroy($fd);
+        \Swoft::trigger(SwoftEvent::SESSION_COMPLETE, $sid);
     }
 }

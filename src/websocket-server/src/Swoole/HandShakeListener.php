@@ -33,22 +33,24 @@ class HandShakeListener implements HandShakeInterface
      * @return bool
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     public function onHandShake(Request $request, Response $response): bool
     {
-        $fd     = $request->fd;
-        $secKey = $request->header['sec-websocket-key'];
+        $fd  = $request->fd;
+        $sid = (string)$fd;
 
         \server()->log("Handshake: conn#$fd start an websocket connection request", [], 'debug');
 
         // If sec-websocket-key error
+        $secKey = $request->header['sec-websocket-key'];
         if (WsHelper::isInvalidSecKey($secKey)) {
             \server()->log("Handshake: shake hands failed with the #$fd. 'sec-websocket-key' is error!");
             return false;
         }
 
         // Bind fd
-        Session::bindFd($fd);
+        Session::bindCo($sid);
 
         // Initialize psr7 Request and Response and metadata
         $psr7Req = Psr7Request::new($request);
@@ -59,7 +61,7 @@ class HandShakeListener implements HandShakeInterface
         $conn->initialize($fd, $psr7Req, $psr7Res);
 
         // Bind connection
-        Session::set($fd, $conn);
+        Session::set($sid, $conn);
         \Swoft::trigger(WsServerEvent::BEFORE_HANDSHAKE, $fd, $request, $response);
 
         /** @var WsDispatcher $dispatcher */
@@ -104,7 +106,7 @@ class HandShakeListener implements HandShakeInterface
     public function onOpen(Psr7Request $request, int $fd): void
     {
         // Init fd and coId mapping
-        Session::bindFd($fd);
+        Session::bindCo((string)$fd);
 
         $server = \server()->getSwooleServer();
         \server()->log("Open: conn#$fd has been opened", [], 'debug');
@@ -116,8 +118,7 @@ class HandShakeListener implements HandShakeInterface
             $conn = Session::mustGet();
             $info = $conn->getModuleInfo();
 
-            $method = $info['eventMethods']['open'] ?? '';
-            if ($method) {
+            if ($method = $info['eventMethods']['open'] ?? '') {
                 $class = $info['class'];
 
                 \server()->log("Open: conn#{$fd} call ws open handler '{$class}::{$method}'", [], 'debug');
@@ -128,12 +129,13 @@ class HandShakeListener implements HandShakeInterface
             }
         } catch (\Throwable $e) {
             $evt = \Swoft::trigger(WsServerEvent::ON_ERROR, 'open', $e, $server);
+
             if (!$evt->isPropagationStopped()) {
                 throw $e;
             }
         } finally {
             // Delete coId from fd mapping
-            Session::unbindFd();
+            Session::unbindCo();
         }
     }
 }

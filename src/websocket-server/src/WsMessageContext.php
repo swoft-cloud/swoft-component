@@ -8,12 +8,12 @@ use Swoft\Context\ContextInterface;
 use Swoole\WebSocket\Frame;
 
 /**
- * Class WsContext
+ * Class WsMessageContext
  *
  * @since 2.0
  * @Bean(scope=Bean::PROTOTYPE)
  */
-class WsContext implements ContextInterface
+class WsMessageContext implements ContextInterface
 {
     use DataPropertyTrait;
 

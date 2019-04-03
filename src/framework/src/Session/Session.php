@@ -3,145 +3,150 @@
 namespace Swoft\Session;
 
 use Swoft\Co;
-use Swoft\Exception\ConnectionException;
+use Swoft\Exception\SessionException;
 use Swoft\WebSocket\Server\Connection;
 
 /**
- * Class Session - sessions manage
+ * Class Session - Global session manage
+ *
  * @since 2.0
  */
 class Session
 {
     /**
-     * The map for coroutine id to fd
-     * @var array
-     * [ coID => fd ]
+     * The map for coroutineID to SessionID
+     *
+     * @var array [ CID => SID ]
      */
-    private static $fdMap = [];
+    private static $idMap = [];
 
     /**
-     * Connection list
+     * Session connection list
      *
      * @var SessionInterface[]
      *
      * @example
      * [
-     *    'fd'  => SessionInterface,
-     *    'fd2' => SessionInterface,
-     *    'fd3' => SessionInterface,
-     *    'sess id' => SessionInterface,
+     *      // Such as webSocket connection
+     *      'fd'  => SessionInterface,
+     *      'fd2' => SessionInterface,
+     *      'fd3' => SessionInterface,
+     *      // Such as http session
+     *      'sess id' => SessionInterface,
      * ]
      */
     private static $sessions = [];
 
     /*****************************************************************************
-     * FD and CID relationship manage
+     * SID and CID relationship manage
      ****************************************************************************/
 
     /**
      * Bind current coroutine to an session
      *  In webSocket server, will bind FD and CID relationship. (should call it on handshake ok)
-     *  In Http application, will bind sessId and cid relationship. (call on request)
+     *  In Http application, will bind session Id and cid relationship. (call on request)
      *
-     * @param int $fd
+     * @param string $sid
      */
-    public static function bindFd(int $fd): void
+    public static function bindCo(string $sid): void
     {
-        self::$fdMap[Co::tid()] = $fd;
+        self::$idMap[Co::tid()] = $sid;
     }
 
     /**
-     * unbind FD and CID relationship. (should call it on close OR error)
-     * @return int
+     * Unbind SID and CID relationship. (should call it on close OR error)
+     *
+     * @return string
      */
-    public static function unbindFd(): int
+    public static function unbindCo(): string
     {
-        $fd  = 0;
+        $sid = '';
         $tid = Co::tid();
 
-        if (isset(self::$fdMap[$tid])) {
-            $fd = self::$fdMap[$tid];
-            unset(self::$fdMap[$tid]);
+        if (isset(self::$idMap[$tid])) {
+            $sid = self::$idMap[$tid];
+            unset(self::$idMap[$tid]);
         }
 
-        return $fd;
+        return $sid;
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public static function getBoundedFd(): int
+    public static function getBoundedSid(): string
     {
         $tid = Co::tid();
-        return self::$fdMap[$tid] ?? 0;
+        return self::$idMap[$tid] ?? '';
     }
 
     /*****************************************************************************
-     * connection manage
+     * Session manage
      ****************************************************************************/
 
     /**
-     * Get connection by FD
+     * Get session by FD
      *
-     * @param int $fd If not specified, return the current corresponding connection
+     * @param string $sid If not specified, return the current corresponding session
      * @return SessionInterface|Connection
      */
-    public static function get(int $fd = 0): ?SessionInterface
+    public static function get(string $sid = ''): ?SessionInterface
     {
-        $fd = $fd > 0 ? $fd : self::getBoundedFd();
+        $sid = $sid ?: self::getBoundedSid();
 
-        return self::$sessions[$fd] ?? null;
+        return self::$sessions[$sid] ?? null;
     }
 
     /**
      * Get connection by FD. if not found will throw exception.
      *
-     * @param int $fd
+     * @param string $sid
      * @return SessionInterface|Connection
      */
-    public static function mustGet(int $fd = 0): SessionInterface
+    public static function mustGet(string $sid = ''): SessionInterface
     {
-        $fd = $fd > 0 ? $fd : self::getBoundedFd();
+        $sid = $sid ?: self::getBoundedSid();
 
-        if (isset(self::$sessions[$fd])) {
-            return self::$sessions[$fd];
+        if (isset(self::$sessions[$sid])) {
+            return self::$sessions[$sid];
         }
 
-        throw new ConnectionException('connection information has been lost of the FD: ' . $fd);
+        throw new SessionException('session information has been lost of the SID: ' . $sid);
     }
 
     /**
-     * Set connection
+     * Set Session connection
      *
-     * @param int              $fd On websocket server, context bind by fd.
-     * @param SessionInterface $connection
+     * @param string           $sid On websocket server, sid is connection fd.
+     * @param SessionInterface $session
      */
-    public static function set(int $fd, SessionInterface $connection): void
+    public static function set(string $sid, SessionInterface $session): void
     {
-        self::$sessions[$fd] = $connection;
+        self::$sessions[$sid] = $session;
     }
 
     /**
-     * Destroy context
-     * @param int $fd
+     * Destroy session
+     *
+     * @param string $sid If empty, destroy current CID relationship session
      */
-    public static function destroy(int $fd = 0): void
+    public static function destroy(string $sid = ''): void
     {
-        $fd = $fd > 0 ? $fd : self::getBoundedFd();
+        $sid = $sid ?: self::getBoundedSid();
 
-        if (isset(self::$sessions[$fd])) {
-            // clear self data.
-            self::$sessions[$fd]->clear();
-            unset(self::$sessions[$fd], $conn);
+        if (isset(self::$sessions[$sid])) {
+            // Clear self data.
+            self::$sessions[$sid]->clear();
+            unset(self::$sessions[$sid], $conn);
         }
     }
 
     /**
      * @return array
      */
-    public static function getFdMap(): array
+    public static function getIdMap(): array
     {
-        return self::$fdMap;
+        return self::$idMap;
     }
 
     /**

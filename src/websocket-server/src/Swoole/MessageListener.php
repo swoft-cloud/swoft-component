@@ -7,8 +7,9 @@ use Swoft\Bean\BeanFactory;
 use Swoft\Context\Context;
 use Swoft\Server\Swoole\MessageInterface;
 use Swoft\Session\Session;
+use Swoft\SwoftEvent;
 use Swoft\WebSocket\Server\Exception\WsMessageRouteException;
-use Swoft\WebSocket\Server\WsContext;
+use Swoft\WebSocket\Server\WsMessageContext;
 use Swoft\WebSocket\Server\WsDispatcher;
 use Swoft\WebSocket\Server\WsServerEvent;
 use Swoole\Websocket\Frame;
@@ -30,15 +31,16 @@ class MessageListener implements MessageInterface
      */
     public function onMessage(Server $server, Frame $frame): void
     {
-        /** @var WsContext $ctx */
+        /** @var WsMessageContext $ctx */
         $fd  = $frame->fd;
-        $ctx = BeanFactory::getPrototype(WsContext::class);
+        $sid = (string)$fd;
+        $ctx = BeanFactory::getPrototype(WsMessageContext::class);
         $ctx->initialize($frame);
 
         // Storage context
         Context::set($ctx);
         // Init fd and coId mapping
-        Session::bindFd($fd);
+        Session::bindCo($sid);
 
         /** @var WsDispatcher $dispatcher */
         $dispatcher = BeanFactory::getSingleton('wsDispatcher');
@@ -57,14 +59,18 @@ class MessageListener implements MessageInterface
             if ($e instanceof WsMessageRouteException) {
                 \server()->push($fd, $e->getMessage());
             } else {
-                // TODO: Close connection if event handle is not stopped
+                // TODO: Close connection on error ?
                 $dispatcher->error($e, 'message');
             }
         } finally {
-            // Destroy context
-            Context::destroy();
+            // Defer
+            \Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
+
+            // Destroy
+            \Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
+
             // Delete coId from fd mapping
-            Session::unbindFd();
+            Session::unbindCo();
         }
     }
 }
