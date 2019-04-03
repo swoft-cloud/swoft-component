@@ -8,6 +8,7 @@ use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;
 use Doctrine\Common\Annotations\Annotation\Required;
 use Doctrine\Common\Annotations\Annotation\Target;
+use Swoft\Rpc\Protocol;
 
 /**
  * Class Reference
@@ -30,6 +31,11 @@ class Reference
     private $pool;
 
     /**
+     * @var string
+     */
+    private $version = Protocol::DEFAULT_VERSION;
+
+    /**
      * Reference constructor.
      *
      * @param array $values
@@ -40,7 +46,17 @@ class Reference
             $this->pool = $values['value'];
         } elseif (isset($values['pool'])) {
             $this->pool = $values['pool'];
+        } elseif (isset($values['version'])) {
+            $this->version = $values['version'];
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersion(): string
+    {
+        return $this->version;
     }
 
     /**
@@ -49,13 +65,5 @@ class Reference
     public function getPool(): string
     {
         return $this->pool;
-    }
-
-    /**
-     * @param string $pool
-     */
-    public function setPool(string $pool): void
-    {
-        $this->pool = $pool;
     }
 }

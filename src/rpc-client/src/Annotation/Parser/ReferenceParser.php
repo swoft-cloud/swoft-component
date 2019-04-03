@@ -51,7 +51,7 @@ class ReferenceParser extends Parser
             'class' => $className,
         ];
 
-        ReferenceRegister::registerPool($className, $annotationObject->getPool());
+        ReferenceRegister::register($className, $annotationObject->getPool(), $annotationObject->getVersion());
         return [$className, true];
     }
 }

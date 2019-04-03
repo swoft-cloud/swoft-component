@@ -32,6 +32,7 @@ trait ServiceTrait
     private function __proxyCall(string $interfaceClass, string $methodName, array $params)
     {
         $poolName = ReferenceRegister::getPool(__CLASS__);
+        $version  = ReferenceRegister::getVersion(__CLASS__);
 
         /* @var Pool $pool */
         $pool = BeanFactory::getBean($poolName);
@@ -44,7 +45,7 @@ trait ServiceTrait
 
         ];
 
-        $protocol = Protocol::new($interfaceClass, $methodName, $params, $ext);
+        $protocol = Protocol::new($version, $interfaceClass, $methodName, $params, $ext);
         $data     = $packet->encode($protocol);
 
         if ($connection->send($data)) {

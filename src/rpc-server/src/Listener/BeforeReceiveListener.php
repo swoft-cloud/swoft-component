@@ -39,11 +39,14 @@ class BeforeReceiveListener implements EventHandlerInterface
         $serviceContext = ServiceContext::new($request, $response);
 
         if (Log::getLogger()->isEnable()) {
+
+            $uri = sprintf('%s::%s::%s', $request->getVersion(), $request->getInterface(), $request->getMethod());
+
             $data = [
                 'traceid'     => $request->getExtKey('traceid', ''),
                 'spanid'      => $request->getExtKey('spanid', ''),
                 'parentid'    => $request->getExtKey('parentid', ''),
-                'uri'         => sprintf('%s::%s', $request->getInterface(), $request->getMethod()),
+                'uri'         => $uri,
                 'requestTime' => $request->getRequestTime(),
             ];
 

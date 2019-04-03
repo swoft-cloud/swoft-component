@@ -19,7 +19,7 @@ use Swoft\Stdlib\Helper\JsonHelper;
 class JsonPacket extends AbstractPacket
 {
     /**
-     * Version
+     * Json-rpc version
      */
     const VERSION = '2.0';
 
@@ -30,9 +30,14 @@ class JsonPacket extends AbstractPacket
      */
     public function encode(Protocol $protocol): string
     {
-        $data = [
+        $version    = $protocol->getVersion();
+        $interface  = $protocol->getInterface();
+        $methodName = $protocol->getMethod();
+
+        $method = sprintf('%s%s%s%s%s', $version, self::DELIMITER, $interface, self::DELIMITER, $methodName);
+        $data   = [
             'jsonrpc' => self::VERSION,
-            'method'  => sprintf('%s::%s', $protocol->getInterface(), $protocol->getMethod()),
+            'method'  => $method,
             'params'  => $protocol->getParams(),
             'id'      => '',
             'ext'     => $protocol->getExt()
@@ -72,13 +77,13 @@ class JsonPacket extends AbstractPacket
         }
 
         $methodAry = explode(self::DELIMITER, $method);
-        if (count($methodAry) < 2) {
+        if (count($methodAry) < 3) {
             throw new RpcException(
                 sprintf('Method(%s) is bad format!', $method)
             );
         }
 
-        [$interfaceClass, $methodName] = $methodAry;
+        [$version, $interfaceClass, $methodName] = $methodAry;
 
         if (empty($interfaceClass) || empty($methodName)) {
             throw new RpcException(
@@ -86,6 +91,6 @@ class JsonPacket extends AbstractPacket
             );
         }
 
-        return Protocol::new($interfaceClass, $method, $params, $ext);
+        return Protocol::new($version, $interfaceClass, $methodName, $params, $ext);
     }
 }
