@@ -1,19 +1,20 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Server\Swoole;
 
+namespace Swoft\Task\Swoole;
+
+
+use Swoft\Server\Swoole\TaskInterface;
 use Swoole\Server;
 
 /**
- * Interface TaskInterface
+ * Class TaskListener
  *
  * @since 2.0
  */
-interface TaskInterface
+class TaskListener implements TaskInterface
 {
     /**
-     * Task event
-     *
      * @param Server $server
      * @param int    $taskId
      * @param int    $srcWorkerId
@@ -21,5 +22,8 @@ interface TaskInterface
      *
      * @return mixed
      */
-    public function onTask(Server $server, int $taskId, int $srcWorkerId, $data);
+    public function onTask(Server $server, int $taskId, int $srcWorkerId, $data)
+    {
+        
+    }
 }
