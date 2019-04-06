@@ -80,10 +80,22 @@ class Swoft
      * @see Container::getSingleton()
      * @param string $name
      * @return mixed
+     * @throws \Throwable
      */
     public static function getSingleton(string $name)
     {
         return Container::$instance->getSingleton($name);
+    }
+
+    /**
+     * @see Container::getPrototype()
+     * @param string $name
+     * @return mixed
+     * @throws \Throwable
+     */
+    public static function getPrototype(string $name)
+    {
+        return Container::$instance->getPrototype($name);
     }
 
     /*******************************************************************************

@@ -15,7 +15,25 @@ use Swoft\Context\AbstractContext;
 class ConsoleContext extends AbstractContext
 {
     /**
+     * @return ConsoleContext
+     * @throws \Throwable
+     */
+    public static function new(): self
+    {
+        /** @var self $ctx */
+        $ctx = \Swoft::getPrototype(__CLASS__);
+        $ctx->setMulti([
+            'parentid' => '',
+            'spanid'   => \uniqid('', 0),
+            'traceid'  => \uniqid('', 0),
+        ]);
+
+        return $ctx;
+    }
+
+    /**
      * @return Input
+     * @throws \Throwable
      */
     public function getInput(): Input
     {
@@ -23,7 +41,8 @@ class ConsoleContext extends AbstractContext
     }
 
     /**
-     * @return Input
+     * @return Output
+     * @throws \Throwable
      */
     public function getOutput(): Output
     {

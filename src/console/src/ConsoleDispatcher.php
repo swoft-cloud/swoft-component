@@ -6,8 +6,10 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Co;
 use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
+use Swoft\Context\Context;
 use Swoft\Contract\DispatcherInterface;
 use Swoft\Stdlib\Helper\PhpHelper;
+use Swoft\SwoftEvent;
 use Swoole\Event;
 
 /**
@@ -21,6 +23,7 @@ class ConsoleDispatcher implements DispatcherInterface
      * @param array $params
      * @return void
      * @throws \ReflectionException
+     * @throws \Throwable
      */
     public function dispatch(...$params): void
     {
@@ -52,14 +55,28 @@ class ConsoleDispatcher implements DispatcherInterface
      * @param object $beanObject
      * @param string $method
      * @param array  $bindParams
+     * @throws \Throwable
      */
     public function executeByCo($beanObject, string $method, array $bindParams): void
     {
-        $this->before($method, \get_class($beanObject));
+        try {
+            Context::set($ctx = ConsoleContext::new());
 
-        PhpHelper::call([$beanObject, $method], ...$bindParams);
+            $this->before($method, \get_class($beanObject));
 
-        $this->after($method);
+            PhpHelper::call([$beanObject, $method], ...$bindParams);
+
+            $this->after($method);
+        } catch (\Throwable $e) {
+            // TODO: throw error
+            throw $e;
+        } finally {
+            // Defer
+            \Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
+
+            // Destroy
+            \Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
+        }
     }
 
     /**

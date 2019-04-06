@@ -3,7 +3,6 @@
 namespace Swoft\Console;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Co;
 use Swoft\Console\Concern\RenderHelpInfoTrait;
 use Swoft\Console\Contract\ConsoleInterface;
 use Swoft\Console\Input\Input;
@@ -11,8 +10,6 @@ use Swoft\Console\Output\Output;
 use Swoft\Console\Router\Router;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\ObjectHelper;
-use Swoft\Stdlib\Helper\PhpHelper;
-use Swoole\Event;
 use function input;
 use function output;
 
@@ -139,6 +136,7 @@ class Application implements ConsoleInterface
      * @return void
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     public function doRun(string $inputCmd): void
     {
