@@ -38,7 +38,7 @@ class AnnotationProcessor extends Processor
         $stats = AnnotationRegister::getClassStats();
 
         CLog::info(
-            'Annotation is scanned (autoloader %d, annotation %d, parser %d,)',
+            'Annotations is scanned(autoloader %d, annotation %d, parser %d)',
             $stats['annotation'],
             $stats['parser'],
             $stats['autoloader']

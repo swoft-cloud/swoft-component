@@ -201,6 +201,7 @@ class AnnotationResource extends Resource
 
                 // It is exclude filename
                 if (isset($this->excludedFilenames[$fileName])) {
+                    CLog::info('Exclude filename: %s', $fileName);
                     continue;
                 }
 
@@ -208,9 +209,9 @@ class AnnotationResource extends Resource
                 $pathName  = \str_replace([$path, '/', $suffix], ['', '\\', ''], $pathName);
                 $className = \sprintf('%s%s', $ns, $pathName);
 
-                // Fix repeated load, such as `Swoft`
+                // Will filtering: interfaces and traits
                 if (!\class_exists($className)) {
-                    CLog::info(sprintf('%s is not exist!', $className));
+                    CLog::info('Skip not exist or invalid class: %s', $className);
                     continue;
                 }
 
