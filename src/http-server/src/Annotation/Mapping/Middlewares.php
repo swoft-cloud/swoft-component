@@ -5,6 +5,7 @@ namespace Swoft\Http\Server\Annotation\Mapping;
 
 use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;
+use Doctrine\Common\Annotations\Annotation\Required;
 use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
@@ -13,7 +14,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
  * @Annotation
  * @Target({"CLASS", "METHOD"})
  * @Attributes({
- *     @Attribute("name", type="array", required=true),
+ *     @Attribute("name", type="array"),
  * })
  *
  * @since 2.0
@@ -24,6 +25,8 @@ final class Middlewares
      * Middlewares
      *
      * @var array
+     *
+     * @Required()
      */
     private $middlewares = [];
 

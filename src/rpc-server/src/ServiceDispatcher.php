@@ -34,9 +34,10 @@ class ServiceDispatcher extends Dispatcher
         list($request, $response) = $params;
 
         try {
-
             \Swoft::trigger(ServiceServerEvent::BEFORE_RECEIVE, null, $request, $response);
-            $response = $response->withContent('hello rpc');
+
+            $handler  = ServiceHandler::new($this->requestMiddleware(), $this->defaultMiddleware);
+            $response = $handler->handle($request);
         } catch (\Throwable $e) {
             echo json_encode($e);
             \printf(

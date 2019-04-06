@@ -4,7 +4,6 @@
 namespace Swoft\Rpc;
 
 
-use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Rpc\Contract\PacketInterface;
 use Swoft\Rpc\Exception\RpcException;
 use Swoft\Rpc\Packet\AbstractPacket;
@@ -84,35 +83,34 @@ class Packet implements PacketInterface
     }
 
     /**
-     * @return PacketInterface
+     * @param mixed    $result
+     * @param int|null $code
+     * @param string   $message
+     * @param null     $data
+     *
+     * @return string
      * @throws RpcException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public function getPacket(): PacketInterface
+    public function encodeResponse($result, int $code = null, string $message = '', $data = null): string
     {
-        if (!empty($this->packet)) {
-            return $this->packet;
-        }
+        $packet = $this->getPacket();
+        return $packet->encodeResponse($result, $code, $message, $data);
+    }
 
-        $packets = Arr::merge($this->defaultPackets(), $this->packets);
-        $packet  = $packets[$this->type] ?? null;
-        if (empty($packet)) {
-            throw new RpcException(
-                sprintf('Packet type(%s) is not supported!', $this->type)
-            );
-        }
-
-        if (!$packet instanceof AbstractPacket) {
-            throw new RpcException(
-                sprintf('Packet type(%s) is not instanceof PacketInterface!', $this->type)
-            );
-        }
-
-        $packet->initialize($this);
-        $this->packet = $packet;
-
-        return $packet;
+    /**
+     * @param string $string
+     *
+     * @return Response
+     * @throws RpcException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function decodeResponse(string $string): Response
+    {
+        $packet = $this->getPacket();
+        return $packet->decodeResponse($string);
     }
 
     /**
@@ -149,5 +147,37 @@ class Packet implements PacketInterface
     public function isOpenEofSplit(): bool
     {
         return $this->openEofSplit;
+    }
+
+    /**
+     * @return PacketInterface
+     * @throws RpcException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    private function getPacket(): PacketInterface
+    {
+        if (!empty($this->packet)) {
+            return $this->packet;
+        }
+
+        $packets = Arr::merge($this->defaultPackets(), $this->packets);
+        $packet  = $packets[$this->type] ?? null;
+        if (empty($packet)) {
+            throw new RpcException(
+                sprintf('Packet type(%s) is not supported!', $this->type)
+            );
+        }
+
+        if (!$packet instanceof AbstractPacket) {
+            throw new RpcException(
+                sprintf('Packet type(%s) is not instanceof PacketInterface!', $this->type)
+            );
+        }
+
+        $packet->initialize($this);
+        $this->packet = $packet;
+
+        return $packet;
     }
 }

@@ -16,7 +16,7 @@ trait DataPropertyTrait
      *
      * @var array
      */
-    private $data = [];
+    protected $data = [];
 
     /**
      * Set value to  context

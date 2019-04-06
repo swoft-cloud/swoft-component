@@ -4,10 +4,9 @@ namespace Swoft\Http\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Container;
-use Swoft\Context\ContextInterface;
-use Swoft\Concern\DataPropertyTrait;
-use Swoft\Http\Message\Response;
+use Swoft\Context\AbstractContext;
 use Swoft\Http\Message\Request;
+use Swoft\Http\Message\Response;
 
 /**
  * Class HttpContext
@@ -16,10 +15,8 @@ use Swoft\Http\Message\Request;
  *
  * @since 2.0
  */
-class HttpContext implements ContextInterface
+class HttpContext extends AbstractContext
 {
-    use DataPropertyTrait;
-
     /**
      * @var Request
      */

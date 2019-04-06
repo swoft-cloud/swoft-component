@@ -11,6 +11,11 @@ use Swoft\Server\Exception\ServerException;
 class ServiceServer extends Server
 {
     /**
+     * @var string
+     */
+    protected static $serverType = 'rpc';
+
+    /**
      * Default port
      *
      * @var int

@@ -3,7 +3,9 @@
 
 namespace Swoft\Rpc\Contract;
 
+use Swoft\Rpc\Error;
 use Swoft\Rpc\Protocol;
+use Swoft\Rpc\Response;
 
 /**
  * Class PacketInterface
@@ -25,4 +27,21 @@ interface PacketInterface
      * @return Protocol
      */
     public function decode(string $string): Protocol;
+
+    /**
+     * @param mixed  $result
+     * @param int    $code
+     * @param string $message
+     * @param Error  $data
+     *
+     * @return string
+     */
+    public function encodeResponse($result, int $code = null, string $message = '', $data = null): string;
+
+    /**
+     * @param string $string
+     *
+     * @return Response
+     */
+    public function decodeResponse(string $string): Response;
 }

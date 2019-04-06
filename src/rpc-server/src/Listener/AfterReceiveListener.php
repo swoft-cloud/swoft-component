@@ -22,6 +22,10 @@ class AfterReceiveListener implements EventHandlerInterface
 {
     /**
      * @param EventInterface $event
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Rpc\Exception\RpcException
      */
     public function handle(EventInterface $event): void
     {

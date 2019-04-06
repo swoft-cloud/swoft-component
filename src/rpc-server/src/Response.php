@@ -6,6 +6,8 @@ namespace Swoft\Rpc\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Rpc\Error;
+use Swoft\Rpc\Packet;
 use Swoft\Rpc\Server\Contract\ResponseInterface;
 use Swoole\Server;
 
@@ -41,6 +43,16 @@ class Response implements ResponseInterface
     private $content = '';
 
     /**
+     * @var mixed
+     */
+    private $data;
+
+    /**
+     * @var Error
+     */
+    private $error;
+
+    /**
      * @param Server $server
      * @param int    $fd
      * @param int    $reactorId
@@ -61,6 +73,32 @@ class Response implements ResponseInterface
     }
 
     /**
+     * @param Error $error
+     *
+     * @return ResponseInterface
+     */
+    public function withError(Error $error): ResponseInterface
+    {
+        $clone = clone $this;
+
+        $clone->error = $error;
+        return $clone;
+    }
+
+    /**
+     * @param $data
+     *
+     * @return ResponseInterface
+     */
+    public function withData($data): ResponseInterface
+    {
+        $clone = clone $this;
+
+        $clone->data = $data;
+        return $clone;
+    }
+
+    /**
      * @param string $content
      *
      * @return ResponseInterface
@@ -75,9 +113,13 @@ class Response implements ResponseInterface
 
     /**
      * @return bool
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Rpc\Exception\RpcException
      */
     public function send(): bool
     {
+        $this->prepare();
         return $this->server->send($this->fd, $this->content);
     }
 
@@ -103,5 +145,27 @@ class Response implements ResponseInterface
     public function getReactorId(): int
     {
         return $this->reactorId;
+    }
+
+    /**
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Rpc\Exception\RpcException
+     */
+    private function prepare(): void
+    {
+        /* @var Packet $packet */
+        $packet = \bean('rpcServerPacket');
+
+        if ($this->error === null) {
+            $this->content = $packet->encodeResponse($this->data);
+            return;
+        }
+
+        $code    = $this->error->getCode();
+        $message = $this->error->getMessage();
+        $data    = $this->error->getData();
+
+        $this->content = $packet->encodeResponse(null, $code, $message, $data);
     }
 }

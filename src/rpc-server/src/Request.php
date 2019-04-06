@@ -24,6 +24,11 @@ class Request implements RequestInterface
     /**
      * @var string
      */
+    private $version = '';
+
+    /**
+     * @var string
+     */
     private $interface = '';
 
     /**
@@ -85,8 +90,9 @@ class Request implements RequestInterface
 
         /* @var Packet $packet */
         $packet   = \bean('rpcServerPacket');
-        $protocol = $packet->getPacket()->decode($data);
+        $protocol = $packet->decode($data);
 
+        $instance->version     = $protocol->getVersion();
         $instance->interface   = $protocol->getInterface();
         $instance->method      = $protocol->getMethod();
         $instance->params      = $protocol->getParams();
@@ -98,6 +104,14 @@ class Request implements RequestInterface
         $instance->requestTime = microtime(true);
 
         return $instance;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersion(): string
+    {
+        return $this->version;
     }
 
     /**

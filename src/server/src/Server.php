@@ -204,7 +204,7 @@ abstract class Server implements ServerInterface
         // Update setting property
         $this->setSetting($server->setting);
 
-        Swoft::trigger(new ServerStartEvent(SwooleEvent::START, $server));
+        Swoft::trigger(new ServerStartEvent(SwooleEvent::START, $server), $this);
     }
 
     /**

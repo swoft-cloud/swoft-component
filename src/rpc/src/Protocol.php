@@ -16,6 +16,11 @@ use Swoft\Bean\Concern\PrototypeTrait;
  */
 class Protocol
 {
+    /**
+     * Default version
+     */
+    const DEFAULT_VERSION = '1.0';
+
     use PrototypeTrait;
 
     /**
@@ -39,8 +44,14 @@ class Protocol
     private $ext = [];
 
     /**
+     * @var string
+     */
+    private $version = self::DEFAULT_VERSION;
+
+    /**
      * Replace constructor
      *
+     * @param string $version
      * @param string $interface
      * @param string $method
      * @param array  $params
@@ -50,10 +61,11 @@ class Protocol
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public static function new(string $interface, string $method, array $params, array $ext)
+    public static function new(string $version, string $interface, string $method, array $params, array $ext)
     {
         $instance = self::__instance();
 
+        $instance->version   = $version;
         $instance->interface = $interface;
         $instance->method    = $method;
         $instance->params    = $params;
@@ -71,27 +83,11 @@ class Protocol
     }
 
     /**
-     * @param string $interface
-     */
-    public function setInterface(string $interface): void
-    {
-        $this->interface = $interface;
-    }
-
-    /**
      * @return string
      */
     public function getMethod(): string
     {
         return $this->method;
-    }
-
-    /**
-     * @param string $method
-     */
-    public function setMethod(string $method): void
-    {
-        $this->method = $method;
     }
 
     /**
@@ -103,14 +99,6 @@ class Protocol
     }
 
     /**
-     * @param array $params
-     */
-    public function setParams(array $params): void
-    {
-        $this->params = $params;
-    }
-
-    /**
      * @return array
      */
     public function getExt(): array
@@ -119,10 +107,10 @@ class Protocol
     }
 
     /**
-     * @param array $ext
+     * @return string
      */
-    public function setExt(array $ext): void
+    public function getVersion(): string
     {
-        $this->ext = $ext;
+        return $this->version;
     }
 }

@@ -6,8 +6,7 @@ namespace Swoft\Rpc\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Concern\DataPropertyTrait;
-use Swoft\Context\ContextInterface;
+use Swoft\Context\AbstractContext;
 
 /**
  * Class ServiceContext
@@ -16,9 +15,9 @@ use Swoft\Context\ContextInterface;
  *
  * @Bean(scope=Bean::PROTOTYPE)
  */
-class ServiceContext implements ContextInterface
+class ServiceContext extends AbstractContext
 {
-    use DataPropertyTrait, PrototypeTrait;
+    use PrototypeTrait;
 
     /**
      * @var Request

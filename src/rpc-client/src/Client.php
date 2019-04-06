@@ -40,6 +40,10 @@ class Client
      */
     protected $packet;
 
+    protected $extender;
+
+    protected $provider;
+
     /**
      * @param Pool $pool
      *

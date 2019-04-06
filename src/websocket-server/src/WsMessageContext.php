@@ -4,6 +4,7 @@ namespace Swoft\WebSocket\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Concern\DataPropertyTrait;
+use Swoft\Context\AbstractContext;
 use Swoft\Context\ContextInterface;
 use Swoole\WebSocket\Frame;
 
@@ -13,10 +14,8 @@ use Swoole\WebSocket\Frame;
  * @since 2.0
  * @Bean(scope=Bean::PROTOTYPE)
  */
-class WsMessageContext implements ContextInterface
+class WsMessageContext extends AbstractContext
 {
-    use DataPropertyTrait;
-
     /**
      * @var Frame
      */

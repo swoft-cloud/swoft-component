@@ -15,6 +15,11 @@ interface RequestInterface
     /**
      * @return string
      */
+    public function getVersion(): string;
+
+    /**
+     * @return string
+     */
     public function getInterface(): string;
 
     /**
