@@ -36,4 +36,9 @@ abstract class AbstractContext implements ContextInterface
     {
         return $this->get('spanid', '');
     }
+
+    public function clear(): void
+    {
+        $this->data = [];
+    }
 }

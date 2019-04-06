@@ -3,9 +3,7 @@
 namespace Swoft\WebSocket\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Concern\DataPropertyTrait;
 use Swoft\Context\AbstractContext;
-use Swoft\Context\ContextInterface;
 use Swoole\WebSocket\Frame;
 
 /**
@@ -50,7 +48,8 @@ class WsMessageContext extends AbstractContext
      */
     public function clear(): void
     {
-        $this->data  = [];
+        parent::clear();
+
         $this->frame = null;
     }
 }

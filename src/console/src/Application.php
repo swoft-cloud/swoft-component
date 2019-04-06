@@ -1,9 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Console;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Co;
 use Swoft\Console\Concern\RenderHelpInfoTrait;
 use Swoft\Console\Contract\ConsoleInterface;
 use Swoft\Console\Input\Input;
@@ -11,8 +10,6 @@ use Swoft\Console\Output\Output;
 use Swoft\Console\Router\Router;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\ObjectHelper;
-use Swoft\Stdlib\Helper\PhpHelper;
-use Swoole\Event;
 use function input;
 use function output;
 
@@ -139,6 +136,7 @@ class Application implements ConsoleInterface
      * @return void
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     public function doRun(string $inputCmd): void
     {
@@ -175,12 +173,14 @@ class Application implements ConsoleInterface
             return;
         }
 
-        \Swoft::triggerByArray(ConsoleEvent::BEFORE_DISPATCH, $this, $info);
+        \Swoft::triggerByArray(ConsoleEvent::DISPATCH_BEFORE, $this, $info);
 
         // Call command handler
-        $this->dispatch($info);
+        /** @var ConsoleDispatcher $dispatcher */
+        $dispatcher = \Swoft::getSingleton('cliDispatcher');
+        $dispatcher->dispatch($info);
 
-        \Swoft::triggerByArray(ConsoleEvent::AFTER_DISPATCH, $this, $info);
+        \Swoft::triggerByArray(ConsoleEvent::DISPATCH_AFTER, $this, $info);
     }
 
     /**
@@ -202,107 +202,8 @@ class Application implements ConsoleInterface
     }
 
     /**
-     * @param array $route
-     * @return void
-     * @throws \ReflectionException
+     * @param \Throwable $e
      */
-    public function dispatch(array $route): void
-    {
-        [$className, $method] = $route['handler'];
-
-        // Bind method params
-        $bindParams = $this->getBindParams($className, $method);
-        $beanObject = \Swoft::getSingleton($className);
-
-        // Blocking running
-        if (!$route['coroutine']) {
-            $this->beforeExecute(\get_parent_class($beanObject), $method);
-            PhpHelper::call([$beanObject, $method], $bindParams);
-            $this->afterExecute($method);
-            return;
-        }
-
-        // Coroutine running
-        Co::create(function () use ($beanObject, $method, $bindParams) {
-            $this->beforeExecute(\get_parent_class($beanObject), $method);
-            PhpHelper::call([$beanObject, $method], $bindParams);
-            $this->afterExecute($method);
-        });
-
-        Event::wait();
-    }
-
-    /**
-     * Get method bounded params
-     *
-     * @param string $class
-     * @param string $method
-     * @return array
-     * @throws \ReflectionException
-     */
-    private function getBindParams(string $class, string $method): array
-    {
-        $classInfo = \Swoft::getReflection($class);
-        if (!isset($classInfo['methods'][$method])) {
-            return [];
-        }
-
-        // binding params
-        $bindParams   = [];
-        $methodParams = $classInfo['methods'][$method]['params'];
-
-        /**
-         * @var string               $key
-         * @var \ReflectionParameter $reflectParam
-         */
-        foreach ($methodParams as $key => $reflectParam) {
-            $reflectType = $reflectParam->getType();
-
-            // undefined type of the param
-            if ($reflectType === null) {
-                $bindParams[$key] = null;
-                continue;
-            }
-
-            // defined type of the param
-            $type = $reflectType->getName();
-            if ($type === Output::class) {
-                $bindParams[$key] = \output();
-            } elseif ($type === Input::class) {
-                $bindParams[$key] = \input();
-            } else {
-                $bindParams[$key] = null;
-            }
-        }
-
-        return $bindParams;
-    }
-
-    /**
-     * Before execute command
-     *
-     * @param string $class
-     * @param string $command
-     */
-    private function beforeExecute(string $class, string $command): void
-    {
-        // TODO ... event params
-        \Swoft::trigger(ConsoleEvent::BEFORE_EXECUTE, $command, $class);
-    }
-
-    /**
-     * After execute command
-     *
-     * @param string $command
-     */
-    private function afterExecute(string $command): void
-    {
-        // TODO ... event params
-        \Swoft::triggerByArray(ConsoleEvent::AFTER_EXECUTE, $command, [
-            'command' => $command,
-        ]);
-    }
-
     protected function handleException(\Throwable $e): void
     {
         try {

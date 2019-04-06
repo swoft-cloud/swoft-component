@@ -1,16 +1,10 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-01-06
- * Time: 00:09
- */
+<?php declare(strict_types=1);
 
 namespace Swoft\Console\Helper;
 
 /**
  * Class DocBlockHelper
- * @package Swoft\Console\Helper
+ * @since 1.0
  */
 class DocBlock
 {

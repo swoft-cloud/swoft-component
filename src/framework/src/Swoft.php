@@ -1,5 +1,6 @@
 <?php declare(strict_types=1);
 
+use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Container;
 use Swoft\Event\EventInterface;
 use Swoft\Event\Manager\EventManager;
@@ -79,10 +80,22 @@ class Swoft
      * @see Container::getSingleton()
      * @param string $name
      * @return mixed
+     * @throws \Throwable
      */
     public static function getSingleton(string $name)
     {
         return Container::$instance->getSingleton($name);
+    }
+
+    /**
+     * @see Container::getPrototype()
+     * @param string $name
+     * @return mixed
+     * @throws \Throwable
+     */
+    public static function getPrototype(string $name)
+    {
+        return Container::$instance->getPrototype($name);
     }
 
     /*******************************************************************************
@@ -114,9 +127,7 @@ class Swoft
     public static function trigger($event, $target = null, ...$params): EventInterface
     {
         /** @see EventManager::trigger() */
-        return Container::$instance
-            ->getSingleton('eventManager')
-            ->trigger($event, $target, $params);
+        return BeanFactory::getSingleton('eventManager')->trigger($event, $target, $params);
     }
 
     /**
@@ -130,8 +141,6 @@ class Swoft
     public static function triggerByArray($event, $target = null, array $params = []): EventInterface
     {
         /** @see EventManager::trigger() */
-        return Container::$instance
-            ->getSingleton('eventManager')
-            ->trigger($event, $target, $params);
+        return BeanFactory::getSingleton('eventManager')->trigger($event, $target, $params);
     }
 }

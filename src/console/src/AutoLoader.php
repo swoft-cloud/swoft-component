@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Console;
 
@@ -56,9 +56,9 @@ final class AutoLoader extends SwoftComponent
             'cliRouter' => [
                 'class' => Router::class,
             ],
-            // 'cliDispatcher' => [
-            //     'class' => Dispatcher::class,
-            // ],
+            'cliDispatcher' => [
+                'class' => ConsoleDispatcher::class,
+            ],
         ];
     }
 }

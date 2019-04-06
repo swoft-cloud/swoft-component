@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Console\Helper;
 
@@ -7,8 +7,8 @@ use Swoft\Stdlib\Helper\Sys;
 use Toolkit\Cli\ColorTag;
 
 /**
- * Class FormatUtil
- * @package Inhere\Console\Util
+ * Class FormatUtil - refer from inhere/console
+ * @since 2.0
  */
 final class FormatUtil
 {
