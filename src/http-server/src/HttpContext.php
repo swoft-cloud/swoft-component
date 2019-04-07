@@ -69,7 +69,7 @@ class HttpContext extends AbstractContext
     public function clear(): void
     {
         // Clear data
-        $this->data = [];
+        parent::clear();
 
         // Clear request/response
         $this->request = $this->response = null;

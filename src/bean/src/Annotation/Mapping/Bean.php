@@ -25,22 +25,22 @@ final class Bean
     /**
      * Singleton bean
      */
-    const SINGLETON = 'singleton';
+    public const SINGLETON = 'singleton';
 
     /**
      * New bean
      */
-    const PROTOTYPE = 'prototype';
+    public const PROTOTYPE = 'prototype';
 
     /**
      * New bean from every request
      */
-    const REQUEST = 'request';
+    public const REQUEST = 'request';
 
     /**
      * New bean for one session
      */
-    const SESSION = 'session';
+    public const SESSION = 'session';
 
     /**
      * Bean name

@@ -416,7 +416,7 @@ class Container implements ContainerInterface
             return $this->singletonPool[$name];
         }
 
-        throw new ContainerException(\sprintf('The singleton bean of %s is not defined', $name));
+        throw new ContainerException(\sprintf('The singleton bean "%s" is not defined', $name));
     }
 
     /**
@@ -442,7 +442,7 @@ class Container implements ContainerInterface
             return $this->prototypePool[$name];
         }
 
-        throw new ContainerException(\sprintf('The singleton bean of %s is not defined', $name));
+        throw new ContainerException(\sprintf('The prototype bean "%s" is not defined', $name));
     }
 
     /**

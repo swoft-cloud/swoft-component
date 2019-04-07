@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Console\Advanced;
 
@@ -570,7 +570,7 @@ class PharCompiler
         $date     = \date('Y-m-d H:i');
         $pharName = $this->pharName;
         $stub     = <<<EOF
-<?php
+<?php declare(strict_types=1);
 /**
  * @date $date
  * @author inhere <in.798@qq.com>

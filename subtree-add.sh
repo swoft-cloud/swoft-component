@@ -1,9 +1,19 @@
 #!/bin/sh
 #
 # add repo to the component
+# usage: ./subtree-add.sh http-server
 #
 
-REPO=$@
+binName="bash $(basename $0)"
+
+if [[ -z "$1" ]]; then
+    echo -e "Usage: $binName PROJECT_NAME\n"
+    echo "Example:"
+    echo "  $binName http-server"
+    exit
+fi
+
+REPO=$1
 
 set -ex
 

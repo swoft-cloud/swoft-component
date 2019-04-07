@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 if (!function_exists('input')) {
     /**
      * @return \Swoft\Console\Input\Input
