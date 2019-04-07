@@ -6,9 +6,8 @@ namespace Swoft\Task;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Context\AbstractContext;
-use Swoole\Server;
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Context\AbstractContext;
 
 /**
  * Class TaskContext
@@ -19,9 +18,59 @@ use Swoft\Bean\Exception\ContainerException;
  */
 class TaskContext extends AbstractContext
 {
-    public function clear(): void
+    use PrototypeTrait;
+
+    /**
+     * @var Request
+     */
+    private $request;
+
+    /**
+     * @var Response
+     */
+    private $repsonse;
+
+    /**
+     * @param Request  $request
+     * @param Response $response
+     *
+     * @return TaskContext
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
+    public static function new(Request $request, Response $response): self
     {
-        // TODO: Implement clear() method.
+        $intance = self::__instance();
+
+        $intance->request  = $request;
+        $intance->repsonse = $response;
+
+        $intance->setMulti($request->getExt());
+        return $intance;
     }
 
+    /**
+     * @return Request
+     */
+    public function getRequest(): Request
+    {
+        return $this->request;
+    }
+
+    /**
+     * @return Response
+     */
+    public function getRepsonse(): Response
+    {
+        return $this->repsonse;
+    }
+
+    /**
+     * Clear
+     */
+    public function clear(): void
+    {
+        $this->request  = null;
+        $this->repsonse = null;
+    }
 }

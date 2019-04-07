@@ -6,8 +6,9 @@ namespace Swoft\Task;
 
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Server\Server;
 use Swoft\Task\Contract\RequestInterface;
+use Swoft\Task\Exception\TaskException;
+use Swoole\Server;
 
 class Request implements RequestInterface
 {
@@ -34,6 +35,32 @@ class Request implements RequestInterface
     private $data;
 
     /**
+     * @var string
+     */
+    private $type = '';
+
+    /**
+     * @var string
+     */
+    private $name = '';
+
+    /**
+     * @var string
+     */
+    private $method = '';
+
+    /**
+     * @var array
+     */
+    private $params = [];
+
+    /**
+     * @var array
+     */
+    private $ext = [];
+
+
+    /**
      * @param Server $server
      * @param int    $taskId
      * @param int    $srcWorkerId
@@ -42,6 +69,7 @@ class Request implements RequestInterface
      * @return Request
      * @throws \ReflectionException
      * @throws ContainerException
+     * @throws TaskException
      */
     public static function new(Server $server, int $taskId, int $srcWorkerId, string $data): self
     {
@@ -51,6 +79,14 @@ class Request implements RequestInterface
         $instance->taskId      = $taskId;
         $instance->srcWorkerId = $srcWorkerId;
         $instance->data        = $data;
+
+        [
+            $instance->type,
+            $instance->name,
+            $instance->method,
+            $instance->params,
+            $instance->ext
+        ] = Packet::unpack($data);
 
         return $instance;
     }
@@ -80,6 +116,65 @@ class Request implements RequestInterface
     }
 
     /**
+     * @return string
+     */
+    public function getData(): string
+    {
+        return $this->data;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMethod(): string
+    {
+        return $this->method;
+    }
+
+    /**
+     * @return array
+     */
+    public function getParams(): array
+    {
+        return $this->params;
+    }
+
+    /**
+     * @return array
+     */
+    public function getExt(): array
+    {
+        return $this->ext;
+    }
+
+    /**
+     * @param string $name
+     * @param null   $default
+     *
+     * @return mixed|null
+     */
+    public function getExtKey(string $name, $default = null)
+    {
+        return $this->ext[$name] ?? $default;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
      * Clear
      */
     public function clear(): void
@@ -87,5 +182,8 @@ class Request implements RequestInterface
         $this->server      = null;
         $this->taskId      = null;
         $this->srcWorkerId = null;
+        $this->params      = [];
+        $this->ext         = [];
+        $this->data        = [];
     }
 }

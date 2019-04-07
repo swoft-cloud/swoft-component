@@ -91,7 +91,7 @@ if (!function_exists('sgo')) {
      * In the swoft, you must use `sgo()` instead of  swoole `go()` function
      *
      * @param callable $callable
-     * @param bool $wait
+     * @param bool     $wait
      */
     function sgo(callable $callable, bool $wait = true)
     {
@@ -103,7 +103,7 @@ if (!function_exists('context')) {
     /**
      * Get current context
      *
-     * @return \Swoft\Context\ContextInterface|\Swoft\Http\Server\HttpContext|\Swoft\Rpc\Server\ServiceContext
+     * @return \Swoft\Context\ContextInterface|\Swoft\Http\Server\HttpContext|\Swoft\Rpc\Server\ServiceContext|\Swoft\Task\TaskContext
      */
     function context(): \Swoft\Context\ContextInterface
     {
