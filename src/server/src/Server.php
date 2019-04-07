@@ -181,6 +181,7 @@ abstract class Server implements ServerInterface
      * @param CoServer $server
      *
      * @return void
+     * @throws Swoft\Bean\Exception\ContainerException
      */
     public function onStart(CoServer $server): void
     {
@@ -211,6 +212,8 @@ abstract class Server implements ServerInterface
      * Manager start event
      *
      * @param CoServer $server
+     *
+     * @throws Swoft\Bean\Exception\ContainerException
      */
     public function onManagerStart(CoServer $server): void
     {
@@ -226,6 +229,8 @@ abstract class Server implements ServerInterface
      * Manager stop event
      *
      * @param CoServer $server
+     *
+     * @throws Swoft\Bean\Exception\ContainerException
      */
     public function onManagerStop(CoServer $server): void
     {
@@ -237,6 +242,8 @@ abstract class Server implements ServerInterface
      *
      * @param CoServer $server
      * @param int      $workerId
+     *
+     * @throws Swoft\Bean\Exception\ContainerException
      */
     public function onWorkerStart(CoServer $server, int $workerId): void
     {
@@ -274,6 +281,8 @@ abstract class Server implements ServerInterface
      *
      * @param CoServer $server
      * @param int      $workerId
+     *
+     * @throws Swoft\Bean\Exception\ContainerException
      */
     public function onWorkerStop(CoServer $server, int $workerId): void
     {
@@ -292,6 +301,8 @@ abstract class Server implements ServerInterface
      * @param int      $workerPid
      * @param int      $exitCode
      * @param int      $signal
+     *
+     * @throws Swoft\Bean\Exception\ContainerException
      */
     public function onWorkerError(CoServer $server, int $workerId, int $workerPid, int $exitCode, int $signal): void
     {
@@ -311,6 +322,8 @@ abstract class Server implements ServerInterface
      * Shutdown event
      *
      * @param CoServer $server
+     *
+     * @throws Swoft\Bean\Exception\ContainerException
      */
     public function onShutdown(CoServer $server): void
     {
@@ -320,6 +333,7 @@ abstract class Server implements ServerInterface
     /**
      * Bind swoole event and start swoole server
      * @throws ServerException
+     * @throws Swoft\Bean\Exception\ContainerException
      */
     protected function startSwoole(): void
     {
@@ -376,7 +390,7 @@ abstract class Server implements ServerInterface
             /* @var CoServer\Port $server */
             $server = $this->swooleServer->listen($host, $port, $type);
             $server->set([
-                'open_eof_check' => false,
+                'open_eof_check'     => false,
                 'package_max_length' => 2048
             ]);
             $this->addEvent($server, $on);
@@ -413,13 +427,6 @@ abstract class Server implements ServerInterface
             $listenerMethod = \sprintf('on%s', \ucfirst($name));
             $server->on($name, [$listener, $listenerMethod]);
         }
-    }
-
-    public function onReceive(\Swoole\Http\Server $server, int $fd, int $reactorId, string $data): void
-    {
-        var_dump($data);
-
-        $server->send($fd, 'hello');
     }
 
     /**
@@ -496,6 +503,7 @@ abstract class Server implements ServerInterface
 
     /**
      * @param string $eventName
+     *
      * @return bool
      */
     public function hasListener(string $eventName): bool
@@ -612,9 +620,11 @@ abstract class Server implements ServerInterface
 
     /**
      * Response data to client by socket connection
+     *
      * @param int    $fd
      * @param string $data
      * param int $length
+     *
      * @return bool
      */
     public function writeTo(int $fd, string $data): bool
@@ -624,6 +634,7 @@ abstract class Server implements ServerInterface
 
     /**
      * @param int $fd
+     *
      * @return bool
      */
     public function exist(int $fd): bool

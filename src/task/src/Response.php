@@ -7,16 +7,23 @@ namespace Swoft\Task;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Task\Contract\ResponseInterface;
+use Swoole\Server\Task as SwooleTask;
 
 /**
  * Class Response
  *
  * @since 2.0
+ *
  * @Bean(scope=Bean::PROTOTYPE)
  */
 class Response implements ResponseInterface
 {
     use PrototypeTrait;
+
+    /**
+     * @var SwooleTask
+     */
+    private $task;
 
     /**
      * @var mixed
@@ -34,21 +41,17 @@ class Response implements ResponseInterface
     private $errorMessage = '';
 
     /**
-     * @param null   $result
-     * @param null   $errorCode
-     * @param string $errorMessage
+     * @param SwooleTask $task
      *
      * @return Response
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public static function new($result = null, $errorCode = null, $errorMessage = ''): self
+    public static function new(SwooleTask $task): self
     {
         $instance = self::__instance();
 
-        $instance->result       = $result;
-        $instance->errorCode    = $errorCode;
-        $instance->errorMessage = $errorMessage;
+        $instance->task = $task;
 
         return $instance;
     }
@@ -90,6 +93,6 @@ class Response implements ResponseInterface
      */
     public function send(): void
     {
-        \Swoft::swooleServer()->finish($this->getResponseData());
+        $this->task->finish($this->getResponseData());
     }
 }

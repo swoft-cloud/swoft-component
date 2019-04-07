@@ -26,6 +26,8 @@ class BeforeRequestListener implements EventHandlerInterface
 {
     /**
      * @param EventInterface $event
+     *
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function handle(EventInterface $event): void
     {

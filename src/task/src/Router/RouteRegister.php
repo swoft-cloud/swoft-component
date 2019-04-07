@@ -68,7 +68,6 @@ class RouteRegister
 
                 $router->addRoute($className, $name, $mappingName);
             }
-
         }
     }
 }

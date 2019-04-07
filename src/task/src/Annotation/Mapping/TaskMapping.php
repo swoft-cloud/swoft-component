@@ -45,4 +45,12 @@ class TaskMapping
             $this->name = $values['name'];
         }
     }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
 }

@@ -28,13 +28,9 @@ class AfterTaskListener implements EventHandlerInterface
      */
     public function handle(EventInterface $event): void
     {
-        $type = context()->getRequest()->getType();
-
-        if ($type == Task::ASYNC) {
-            /* @var Response $response */
-            $response = $event->getParam(0);
-            $response->send();
-        }
+        /* @var Response $response */
+        $response = $event->getParam(0);
+        $response->send();
 
         // Defer
         \Swoft::trigger(SwoftEvent::COROUTINE_DEFER);

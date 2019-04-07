@@ -21,5 +21,5 @@ interface TaskInterface
      *
      * @return mixed
      */
-    public function onTask(Server $server, int $taskId, int $srcWorkerId, $data);
+//    public function onTask(Server $server,  $taskId, int $srcWorkerId, $data);
 }

@@ -4,12 +4,21 @@
 namespace Swoft\Task;
 
 
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Task\Contract\RequestInterface;
 use Swoft\Task\Exception\TaskException;
 use Swoole\Server;
+use Swoole\Server\Task as SwooleTask;
 
+/**
+ * Class Request
+ *
+ * @since 2.0
+ *
+ * @Bean(scope=Bean::PROTOTYPE)
+ */
 class Request implements RequestInterface
 {
     use PrototypeTrait;
@@ -18,6 +27,11 @@ class Request implements RequestInterface
      * @var Server
      */
     private $server;
+
+    /**
+     * @var SwooleTask
+     */
+    private $task;
 
     /**
      * @var int
@@ -61,24 +75,23 @@ class Request implements RequestInterface
 
 
     /**
-     * @param Server $server
-     * @param int    $taskId
-     * @param int    $srcWorkerId
-     * @param string $data
+     * @param Server     $server
+     * @param SwooleTask $task
      *
      * @return Request
      * @throws \ReflectionException
      * @throws ContainerException
      * @throws TaskException
      */
-    public static function new(Server $server, int $taskId, int $srcWorkerId, string $data): self
+    public static function new(Server $server, SwooleTask $task): self
     {
         $instance = self::__instance();
 
         $instance->server      = $server;
-        $instance->taskId      = $taskId;
-        $instance->srcWorkerId = $srcWorkerId;
-        $instance->data        = $data;
+        $instance->taskId      = $task->id;
+        $instance->srcWorkerId = $task->worker_id;
+        $instance->data        = $task->data;
+        $instance->task        = $task;
 
         [
             $instance->type,
@@ -86,7 +99,7 @@ class Request implements RequestInterface
             $instance->method,
             $instance->params,
             $instance->ext
-        ] = Packet::unpack($data);
+        ] = Packet::unpack($task->data);
 
         return $instance;
     }

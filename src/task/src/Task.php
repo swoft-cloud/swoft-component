@@ -108,11 +108,18 @@ class Task
         $resultData = [];
 
         $taskResults = \Swoft::swooleServer()->taskCo($taskData, $timeout);
-        foreach ($taskResults as $taskResult) {
+        foreach ($taskResults as $key => $taskResult) {
+            if ($taskResult == false) {
+                [$name, $method] = $tasks[$key];
+                throw new TaskException(
+                    sprintf('Task co error(name=%s method=%s)', $name, $method)
+                );
+            }
+
             [$result, $errorCode, $errorMessage] = Packet::unpackResponse($taskResult);
             if ($errorCode !== null) {
                 throw new TaskException(
-                    sprintf('Result error is %s(code=%d)', $errorMessage, $errorCode)
+                    sprintf('%s(code=%d)', $errorMessage, $errorCode)
                 );
             }
             $resultData[] = $result;

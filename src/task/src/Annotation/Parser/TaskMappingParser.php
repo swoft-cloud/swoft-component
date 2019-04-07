@@ -7,6 +7,7 @@ namespace Swoft\Task\Annotation\Parser;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Task\Annotation\Mapping\TaskMapping;
+use Swoft\Task\Router\RouteRegister;
 
 /**
  * Class TaskMappingParser
@@ -25,6 +26,7 @@ class TaskMappingParser extends Parser
      */
     public function parse(int $type, $annotationObject): array
     {
+        RouteRegister::registerByMethodName($this->className, $this->methodName, $annotationObject->getName());
 
         return [];
     }

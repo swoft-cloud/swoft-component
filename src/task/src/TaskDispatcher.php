@@ -23,12 +23,11 @@ class TaskDispatcher
      * @param Request  $request
      * @param Response $response
      *
-     * @return mixed
      * @throws ContainerException
      */
     public function dispatch(Request $request, Response $response)
     {
-        \Swoft::trigger(TaskEvent::BEFORE_TASK);
+        \Swoft::trigger(TaskEvent::BEFORE_TASK, null, $request, $response);
 
         $result = null;
         try {
@@ -39,13 +38,7 @@ class TaskDispatcher
             $response->setErrorMessage($e->getMessage());
         }
 
-        \Swoft::trigger(TaskEvent::AFTER_TASK);
-
-        if ($request->getType() == Task::CO) {
-            return Packet::packResponse($result);
-        }
-
-        return null;
+        \Swoft::trigger(TaskEvent::AFTER_TASK, null, $response);
     }
 
     /**

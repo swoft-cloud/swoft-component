@@ -44,7 +44,7 @@ class Packet
      */
     public static function unpack(string $string): array
     {
-        $data = JsonHelper::decode($string);
+        $data = JsonHelper::decode($string, true);
 
         $type   = $data['type'] ?? '';
         $name   = $data['name'] ?? '';
@@ -82,7 +82,7 @@ class Packet
      */
     public static function packResponse($result, int $errorCode = null, string $errorMessage = ''): string
     {
-        if ($errorCode != null) {
+        if ($errorCode !== null) {
             $data = [
                 'code'    => $errorCode,
                 'message' => $errorMessage

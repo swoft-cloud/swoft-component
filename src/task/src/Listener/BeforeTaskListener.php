@@ -28,14 +28,14 @@ class BeforeTaskListener implements EventHandlerInterface
      *
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Task\Exception\TaskException
      */
     public function handle(EventInterface $event): void
     {
-        [$server, $taskId, $srcWorkerId, $data] = $event->getParams();
-
-        $request  = Request::new($server, $taskId, $srcWorkerId, $data);
-        $response = Response::new(null, null, '');;
+        /**
+         * @var Request  $request
+         * @var Response $response
+         */
+        [$request, $response] = $event->getParams();
         $context = TaskContext::new($request, $response);
 
         if (Log::getLogger()->isEnable()) {

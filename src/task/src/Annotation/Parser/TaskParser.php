@@ -6,7 +6,9 @@ namespace Swoft\Task\Annotation\Parser;
 
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Task\Annotation\Mapping\Task;
+use Swoft\Task\Router\RouteRegister;
 
 /**
  * Class TaskParser
@@ -18,13 +20,15 @@ use Swoft\Task\Annotation\Mapping\Task;
 class TaskParser extends Parser
 {
     /**
-     * @param int    $type
+     * @param int  $type
      * @param Task $annotationObject
      *
      * @return array
      */
     public function parse(int $type, $annotationObject): array
     {
-        return [];
+        RouteRegister::registerByClassName($this->className, $annotationObject->getName());
+
+        return [$this->className, $this->className, Bean::SINGLETON, ''];
     }
 }
