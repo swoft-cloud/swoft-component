@@ -73,7 +73,7 @@ abstract class Server implements ServerInterface
         'daemonize'       => 0,
         'worker_num'      => 1,
         // If > 0, must listen event: task, finish
-        'task_worker_num' => 0,
+        'task_worker_num' => 0
     ];
 
     /**

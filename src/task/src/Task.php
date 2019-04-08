@@ -52,7 +52,8 @@ class Task
      * @param int      $dstWorkerId
      * @param callable $fallback
      *
-     * @return bool
+     * @return int Task id
+     * @throws TaskException
      */
     public static function async(
         string $name,
@@ -61,10 +62,16 @@ class Task
         array $ext = [],
         int $dstWorkerId = -1,
         callable $fallback = null
-    ): bool {
+    ): int {
         $data   = Packet::pack(self::ASYNC, $name, $method, $params, $ext);
         $result = \Swoft::swooleServer()->task($data, $dstWorkerId, $fallback);
-        return (bool)$result;
+        if ($result === false) {
+            throw new TaskException(
+                sprintf('Task error name=%d method=%d', $name, $method)
+            );
+        }
+
+        return (int)$result;
     }
 
     /**
@@ -126,5 +133,17 @@ class Task
         }
 
         return $resultData;
+    }
+
+    /**
+     * Get task global unique id
+     *
+     * @param int $taskId
+     *
+     * @return string
+     */
+    public static function getUniqid(int $taskId): string
+    {
+        return sprintf('task-%d', $taskId);
     }
 }
