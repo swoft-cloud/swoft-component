@@ -10,7 +10,7 @@ use Swoft\WebSocket\Server\Contract\WsErrorHandlerInterface;
  * Class WsErrorHandler
  * @since 2.0
  */
-abstract class WsErrorHandler implements ErrorHandlerInterface, WsErrorHandlerInterface
+abstract class WsErrorHandler
 {
     /**
      * @param \Throwable $e
