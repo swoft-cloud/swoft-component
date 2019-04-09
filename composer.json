@@ -1,0 +1,40 @@
+{
+    "name": "swoft/redis",
+    "type": "library",
+    "keywords": [
+        "php",
+        "swoole",
+        "swoft",
+        "redis"
+    ],
+    "description": "Redis Component for Swoft",
+    "license": "Apache-2.0",
+    "require": {
+    },
+    "autoload": {
+        "classmap": [
+        ],
+        "psr-4": {
+            "Swoft\\Redis\\": "src/"
+        },
+        "files": [
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SwoftTest\\Redis\\": "test/case"
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packagist.laravel-china.org"
+        }
+    ],
+    "require-dev": {
+
+    },
+    "scripts": {
+
+    }
+}
