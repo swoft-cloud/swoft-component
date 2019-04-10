@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\ErrorHandler\Annotation\Mapping;
+namespace Swoft\Error\Annotation\Mapping;
 
 use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;
@@ -8,7 +8,6 @@ use Doctrine\Common\Annotations\Annotation\Target;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\AnnotationException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\ErrorHandler\HandlerRegister;
 
 /**
  * Class ExceptionHandler
@@ -22,6 +21,14 @@ use Swoft\ErrorHandler\HandlerRegister;
  */
 class ExceptionHandlerParser extends Parser
 {
+    /**
+     * @var array
+     * [
+     *  handler class => [exception class, exception class1],
+     * ]
+     */
+    private static $handlers = [];
+
     /**
      * Parse object
      *
@@ -41,8 +48,33 @@ class ExceptionHandlerParser extends Parser
 
         $handlerClass = $this->className;
 
-        HandlerRegister::add($handlerClass, $annotation->getExceptions());
+        self::add($handlerClass, $annotation->getExceptions());
 
         return [$handlerClass, $handlerClass, Bean::SINGLETON, ''];
+    }
+
+    /**
+     * @param string $handlerClass
+     * @param array  $exceptions
+     */
+    public static function add(string $handlerClass, array $exceptions): void
+    {
+        self::$handlers[$handlerClass] = $exceptions;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getHandlers(): array
+    {
+        return self::$handlers;
+    }
+
+    /**
+     * Clear data
+     */
+    public static function clear(): void
+    {
+        self::$handlers = [];
     }
 }

@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\ErrorHandler;
+namespace Swoft\Error;
 
 /**
  * Class ErrorType
+ * @since 2.0
  */
 final class ErrorType
 {
@@ -14,6 +15,10 @@ final class ErrorType
     public const TCP  = 5;
     public const HTTP = 6;
     public const SOCK = 7;
-    public const SYS  = 8;
-    public const AUTO = 9;
+    public const TASK = 8;
+    public const SYS  = 15;
+
+    // default
+    public const DEF     = 20;
+    public const DEFAULT = 20;
 }

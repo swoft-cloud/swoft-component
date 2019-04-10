@@ -1,27 +1,17 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\ErrorHandler;
+namespace Swoft\Error;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Error\Contract\ErrorHandlerInterface;
 
 /**
- * Class ErrorHandlerChain
- *
- * @since 1.0
+ * Class ErrorHandlers
+ * @since 2.0
  * @Bean()
  */
-class ErrorHandlerChain
+class ErrorHandlers
 {
-    public const TYPE_WS   = 1;
-    public const TYPE_CLI  = 2;
-    public const TYPE_RPC  = 3;
-    public const TYPE_UDP  = 4;
-    public const TYPE_TCP  = 5;
-    public const TYPE_HTTP = 6;
-    public const TYPE_SOCK = 7;
-    public const TYPE_SYS  = 8;
-    public const TYPE_AUTO = 9;
-
     /**
      * @var array
      * [
@@ -93,46 +83,41 @@ class ErrorHandlerChain
      *
      * @param string $exceptionClass
      * @param string $handlerClass
+     * @param int    $type
      */
-    public function addHandler(string $exceptionClass, string $handlerClass): void
+    public function addHandler(string $exceptionClass, string $handlerClass, int $type = ErrorType::DEF): void
     {
-        $this->handlers[$exceptionClass] = $handlerClass;
+        $this->handlers[$type][$exceptionClass] = $handlerClass;
     }
 
     /**
      * @param \Throwable $e
-     * @param int        $type
+     * @return mixed|null
+     * @throws \Throwable
      */
-    public function run(\Throwable $e, int $type = self::TYPE_SYS): void
+    public function matchHandler(\Throwable $e)
     {
-        /** @var ErrorHandlerInterface $handler */
-        $handler = $this->defaultHandler;
-
         // No handlers or before add handler
         if ($this->count() === 0) {
-            $handler->handle($e);
-            return;
+            return null;
         }
 
-        try {
-            $errClass = \get_class($e);
+        $handler  = null;
+        $errClass = \get_class($e);
 
-            if (isset($this->handlers[$errClass])) {
-                $handler = \Swoft::getSingleton($this->handlers[$errClass]);
-            } else {
-                foreach ($this->handlers as $exceptionClass => $handlerClass) {
-                    if ($e instanceof $exceptionClass) {
-                        $handler = \Swoft::getSingleton($handlerClass);
-                        break;
-                    }
+        if (isset($this->handlers[$errClass])) {
+            $handler = \Swoft::getSingleton($this->handlers[$errClass]);
+        } else {
+            foreach ($this->handlers as $exceptionClass => $handlerClass) {
+                if ($e instanceof $exceptionClass) {
+                    $handler = \Swoft::getSingleton($handlerClass);
+                    break;
                 }
             }
-
-            // Call error handler
-            $handler->handle($e);
-        } catch (\Throwable $t) {
-            $this->defaultHandler->handle($e);
         }
+
+        // Call error handler
+        return $handler;
     }
 
     /**

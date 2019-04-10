@@ -2,7 +2,7 @@
 
 namespace Swoft\Http\Server;
 
-use Swoft\ErrorHandler\ErrorHandlerInterface;
+use Swoft\Error\ErrorHandlerInterface;
 use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Contract\HttpErrorHandlerInterface;
 

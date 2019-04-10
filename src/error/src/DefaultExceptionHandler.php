@@ -1,12 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\ErrorHandler;
+namespace Swoft\Error;
+
+use Swoft\Error\Contract\DefaultErrorHandlerInterface;
 
 /**
  * Class DefaultExceptionHandler
  * @since 2.0
  */
-class DefaultExceptionHandler implements ErrorHandlerInterface
+class DefaultExceptionHandler implements DefaultErrorHandlerInterface
 {
     /**
      * @param \Throwable $e
@@ -21,5 +23,13 @@ class DefaultExceptionHandler implements ErrorHandlerInterface
             $e->getLine(),
             $e->getTraceAsString()
         );
+    }
+
+    /**
+     * @return int
+     */
+    public function getType(): int
+    {
+        return ErrorType::DEF;
     }
 }

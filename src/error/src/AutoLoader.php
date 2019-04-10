@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\ErrorHandler;
+namespace Swoft\Error;
 
 use Swoft\Helper\ComposerJSON;
 use Swoft\SwoftComponent;
