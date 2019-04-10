@@ -4,7 +4,7 @@
 namespace Swoft\Redis;
 
 
-class Redis
+class Pool
 {
-    
+
 }
