@@ -48,19 +48,24 @@ class RedisDb
     private $database = 0;
 
     /**
+     * @var string
+     */
+    private $password = '';
+
+    /**
      * @var float
      */
     private $timeout = 0.0;
 
     /**
-     * @var null
+     * @var int
      */
-    private $reserved = null;
+    private $retryInterval = 0;
 
     /**
      * @var int
      */
-    private $retryInterval = 0;
+    private $readTimeout = 0;
 
     /**
      * Set client option.
@@ -221,11 +226,11 @@ class RedisDb
     }
 
     /**
-     * @return null
+     * @return string
      */
-    public function getReserved()
+    public function getPassword(): string
     {
-        return $this->reserved;
+        return $this->password;
     }
 
     /**
@@ -234,6 +239,14 @@ class RedisDb
     public function getRetryInterval(): int
     {
         return $this->retryInterval;
+    }
+
+    /**
+     * @return int
+     */
+    public function getReadTimeout(): int
+    {
+        return $this->readTimeout;
     }
 
     /**

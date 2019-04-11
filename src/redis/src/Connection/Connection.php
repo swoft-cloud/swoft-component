@@ -305,7 +305,15 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      */
     public function createClient(): void
     {
-        $config = [];
+        $config = [
+            'host'           => $this->redisDb->getHost(),
+            'port'           => $this->redisDb->getPort(),
+            'timeout'        => $this->redisDb->getTimeout(),
+            'retry_interval' => $this->redisDb->getRetryInterval(),
+            'password'       => $this->redisDb->getPassword(),
+            'read_timeout'   => $this->redisDb->getReadTimeout(),
+        ];
+
         $option = $this->redisDb->getOption();
 
         $this->client = $this->redisDb->getConnector()->connect($config, $option);
@@ -343,6 +351,8 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
         }
 
         $result = $this->client->{$method}(...$parameters);
+
+        $this->release();
         return $result;
     }
 
@@ -379,7 +389,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
 
     public function getLastTime(): int
     {
-        // TODO: Implement getLastTime() method.
+        return time();
     }
 
     /**

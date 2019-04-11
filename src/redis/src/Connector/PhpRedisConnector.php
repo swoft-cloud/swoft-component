@@ -104,7 +104,7 @@ class PhpRedisConnector implements ConnectorInterface
             $config['host'],
             $config['port'],
             $config['timeout'],
-            null,
+            '',
             $config['retry_interval'],
         ];
 
