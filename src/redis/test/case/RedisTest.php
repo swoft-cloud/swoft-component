@@ -14,5 +14,9 @@ class RedisTest extends \PHPUnit\Framework\TestCase
     public function testRedis()
     {
         $this->assertTrue(true);
+        $this->assertTrue(true);
+        $this->assertTrue(true);
+        $this->assertTrue(true);
+        $this->assertTrue(true);
     }
 }
