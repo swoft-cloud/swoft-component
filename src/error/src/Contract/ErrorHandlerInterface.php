@@ -9,8 +9,6 @@ namespace Swoft\Error\Contract;
  */
 interface ErrorHandlerInterface
 {
-    public const TYPE = 20;
-
     /**
      * @return int
      */

@@ -6,7 +6,7 @@ namespace Swoft\WebSocket\Server\Exception;
  * Class WsRouteException
  * @since 2.0
  */
-class WsRouteException extends WsServerException
+class WsModuleRouteException extends WsServerException
 {
 
 }

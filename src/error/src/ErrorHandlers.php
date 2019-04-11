@@ -3,7 +3,6 @@
 namespace Swoft\Error;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Error\Contract\ErrorHandlerInterface;
 
 /**
  * Class ErrorHandlers
@@ -22,63 +21,6 @@ class ErrorHandlers
     private $handlers = [];
 
     /**
-     * @var ErrorHandlerInterface
-     */
-    private $defaultHandler;
-
-    /**
-     * Class constructor.
-     */
-    public function __construct()
-    {
-        // Add default handler
-        $this->defaultHandler = new DefaultExceptionHandler();
-
-        // Register system error handle
-        $this->registerErrorHandle();
-    }
-
-    /**
-     * Register system error handle
-     * @throws \InvalidArgumentException
-     */
-    protected function registerErrorHandle(): void
-    {
-        \set_error_handler([$this, 'handleError']);
-        \set_exception_handler([$this, 'handleException']);
-        \register_shutdown_function(function () {
-            if (!$e = \error_get_last()) {
-                return;
-            }
-
-            $this->handleError($e['type'], $e['message'], $e['file'], $e['line']);
-        });
-    }
-
-    /**
-     * Run error handling
-     * @param int    $num
-     * @param string $str
-     * @param string $file
-     * @param int    $line
-     * @throws \InvalidArgumentException
-     */
-    public function handleError(int $num, string $str, string $file, int $line): void
-    {
-        $this->handleException(new \ErrorException($str, 0, $num, $file, $line));
-    }
-
-    /**
-     * Running exception handling
-     * @param \Throwable $e
-     * @throws \InvalidArgumentException
-     */
-    public function handleException(\Throwable $e): void
-    {
-        $this->run($e);
-    }
-
-    /**
      * Add a handler class to chains
      *
      * @param string $exceptionClass
@@ -92,31 +34,33 @@ class ErrorHandlers
 
     /**
      * @param \Throwable $e
+     * @param int        $type
      * @return mixed|null
      * @throws \Throwable
      */
-    public function matchHandler(\Throwable $e)
+    public function matchHandler(\Throwable $e, int $type = ErrorType::DEF)
     {
-        // No handlers or before add handler
-        if ($this->count() === 0) {
+        // No handlers found
+        if (!isset($this->handlers[$type]) || $this->count() === 0) {
             return null;
         }
 
-        $handler  = null;
         $errClass = \get_class($e);
+        $handlers = $this->handlers[$type];
 
-        if (isset($this->handlers[$errClass])) {
-            $handler = \Swoft::getSingleton($this->handlers[$errClass]);
-        } else {
-            foreach ($this->handlers as $exceptionClass => $handlerClass) {
-                if ($e instanceof $exceptionClass) {
-                    $handler = \Swoft::getSingleton($handlerClass);
-                    break;
-                }
+        if (isset($handlers[$errClass])) {
+            return \Swoft::getSingleton($handlers[$errClass]);
+        }
+
+        $handler = null;
+
+        foreach ($handlers as $exceptionClass => $handlerClass) {
+            if ($e instanceof $exceptionClass) {
+                $handler = \Swoft::getSingleton($handlerClass);
+                break;
             }
         }
 
-        // Call error handler
         return $handler;
     }
 
@@ -138,19 +82,4 @@ class ErrorHandlers
         $this->handlers = [];
     }
 
-    /**
-     * @return ErrorHandlerInterface
-     */
-    public function getDefaultHandler(): ErrorHandlerInterface
-    {
-        return $this->defaultHandler;
-    }
-
-    /**
-     * @param ErrorHandlerInterface $defaultHandler
-     */
-    public function setDefaultHandler(ErrorHandlerInterface $defaultHandler): void
-    {
-        $this->defaultHandler = $defaultHandler;
-    }
 }

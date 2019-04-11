@@ -9,6 +9,10 @@ namespace Swoft\Error;
 final class ErrorType
 {
     public const WS   = 1;
+    public const WS_HS    = 1;
+    public const WS_OPN   = 1;
+    public const WS_MSG   = 1;
+    public const WS_CLS   = 1;
     public const CLI  = 2;
     public const RPC  = 3;
     public const UDP  = 4;
@@ -19,6 +23,6 @@ final class ErrorType
     public const SYS  = 15;
 
     // default
-    public const DEF     = 20;
-    public const DEFAULT = 20;
+    public const DEF     = 50;
+    public const DEFAULT = 50;
 }
