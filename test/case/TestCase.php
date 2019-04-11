@@ -11,7 +11,7 @@ use SwoftTest\Db\Entity\User;
  *
  * @since 2.0
  */
-class TestCase extends \PHPUnit\Framework\TestCase
+abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     /**
      * Wait event
