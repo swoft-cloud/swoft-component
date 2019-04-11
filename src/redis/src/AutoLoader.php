@@ -30,4 +30,22 @@ class AutoLoader extends SwoftComponent
     {
         return [];
     }
+
+    /**
+     * @return array
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function coreBean(): array
+    {
+        return [
+            'redis'      => [
+                'class' => RedisDb::class,
+            ],
+            'redis.pool' => [
+                'class'   => Pool::class,
+                'redisDb' => \bean('redis')
+            ]
+        ];
+    }
 }

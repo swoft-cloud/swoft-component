@@ -62,6 +62,9 @@
         </testsuite>
         <testsuite name="redis">
             <directory suffix="Test.php">src/redis/test/case</directory>
+            <file>
+                src/redis/test/bootstrap.php
+            </file>
         </testsuite>
         <testsuite name="rpc">
             <directory suffix="Test.php">src/rpc/test/case</directory>

@@ -6,6 +6,7 @@ namespace Swoft\Redis\Connection;
 
 use Swoft\Connection\Pool\AbstractConnection;
 use Swoft\Redis\Contract\ConnectionInterface;
+use Swoft\Redis\Exception\RedisException;
 use Swoft\Redis\Pool;
 use Swoft\Redis\RedisDb;
 
@@ -39,8 +40,6 @@ use Swoft\Redis\RedisDb;
  * @method float hIncrByFloat(string $key, string $field, float $increment)
  * @method array hKeys(string $key)
  * @method int hLen(string $key)
- * @method array hMGet(string $key, array $hashKeys)
- * @method bool hMSet(string $key, array $hashKeys)
  * @method int hSet(string $key, string $hashKey, string $value)
  * @method bool hSetNx(string $key, string $hashKey, string $value)
  * @method array hVals(string $key)
@@ -55,7 +54,6 @@ use Swoft\Redis\RedisDb;
  * @method int|bool lPush(string $key, string $value1, string $value2 = null, string $valueN = null)
  * @method int|bool lPushx(string $key, string $value)
  * @method bool lSet(string $key, int $index, string $value)
- * @method bool mset(array $array)
  * @method int msetnx(array $array)
  * @method bool persist(string $key)
  * @method bool pExpire(string $key, int $ttl)
@@ -95,7 +93,6 @@ use Swoft\Redis\RedisDb;
  * @method int type(string $key)
  * @method void unwatch()
  * @method void watch(string $key)
- * @method int zAdd(string $key, float $score1, string $value1, float $score2 = null, string $value2 = null, float $scoreN = null, string $valueN = null)
  * @method int zCard(string $key)
  * @method int zCount(string $key, int $start, int $end)
  * @method float zIncrBy(string $key, float $value, string $member)
@@ -119,7 +116,6 @@ use Swoft\Redis\RedisDb;
  * @method array lRange(string $key, int $start, int $end)
  * @method int|bool lRem(string $key, string $value, int $count)
  * @method array|bool lTrim(string $key, int $start, int $stop)
- * @method array mget(array $array)
  * @method bool rename(string $srcKey, string $dstKey)
  * @method int sCard(string $key)
  * @method bool sIsMember(string $key, string $value)
@@ -133,6 +129,8 @@ use Swoft\Redis\RedisDb;
 abstract class Connection extends AbstractConnection implements ConnectionInterface
 {
     /**
+     * Supported methods
+     *
      * @var array
      */
     protected $supportedMethods = [
@@ -261,6 +259,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
         'subscribe',
         'unsubscribe',
     ];
+
     /**
      * @var \Redis|\RedisCluster
      */
@@ -284,7 +283,9 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     }
 
     /**
-     * Create redis client
+     * @throws RedisException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function create(): void
     {
@@ -298,42 +299,87 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     }
 
     /**
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Redis\Exception\RedisException
+     */
+    public function createClient(): void
+    {
+        $config = [];
+        $option = $this->redisDb->getOption();
+
+        $this->client = $this->redisDb->getConnector()->connect($config, $option);
+    }
+
+    /**
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Redis\Exception\RedisException
+     */
+    public function createClusterClient(): void
+    {
+        $config = [];
+        $option = $this->redisDb->getOption();
+
+        $this->client = $this->redisDb->getConnector()->connectToCluster($config, $option);
+    }
+
+    /**
      * Run a command against the Redis database.
      *
      * @param  string $method
      * @param  array  $parameters
      *
      * @return mixed
+     * @throws RedisException
      */
-    public function command($method, array $parameters = [])
+    public function command(string $method, array $parameters = [])
     {
+        $lowerMethod = $method;
+        if (!in_array($lowerMethod, $this->supportedMethods, true)) {
+            throw new RedisException(
+                sprintf('Method(%s) is not supported!', $method)
+            );
+        }
+
         $result = $this->client->{$method}(...$parameters);
         return $result;
     }
+
+    public function hMGet(string $key, array $keys): array
+    {
+        return [];
+    }
+
+    public function hMSet(string $key, array $keyValues): bool
+    {
+        // TODO: Implement hMSet() method.
+    }
+
+    public function zAdd(string $key, array $scoreValues): int
+    {
+        // TODO: Implement zAdd() method.
+    }
+
+    public function mget(array $keys): array
+    {
+        // TODO: Implement mget() method.
+    }
+
+    public function mset(array $keyValues): bool
+    {
+        // TODO: Implement mset() method.
+    }
+
 
     public function reconnect(): bool
     {
         // TODO: Implement reconnect() method.
     }
 
-    public function getId(): int
-    {
-        // TODO: Implement getId() method.
-    }
-
-    public function release(bool $force = false): void
-    {
-        // TODO: Implement release() method.
-    }
-
     public function getLastTime(): int
     {
         // TODO: Implement getLastTime() method.
-    }
-
-    public function setRelease(bool $release): void
-    {
-        // TODO: Implement setRelease() method.
     }
 
     /**
@@ -343,9 +389,24 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @param  array  $parameters
      *
      * @return mixed
+     * @throws RedisException
      */
     public function __call(string $method, array $parameters)
     {
         return $this->command($method, $parameters);
+    }
+
+    /**
+     * Apply prefix to the given key if necessary.
+     *
+     * @param  string $key
+     *
+     * @return string
+     */
+    private function applyPrefix(string $key): string
+    {
+        $prefix = (string)$this->client->getOption(\Redis::OPT_PREFIX);
+
+        return $prefix . $key;
     }
 }
