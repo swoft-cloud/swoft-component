@@ -1,7 +1,0 @@
-    /**
-     * @return {= returnType}
-     */
-    public function {= methodName}()
-    {
-        return $this->{= property};
-    }
