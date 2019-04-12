@@ -1,0 +1,14 @@
+.buildpath
+.settings/
+.phpintel/
+.project
+.idea/
+.git/
+runtime/
+vendor/
+test/coverages/
+.env
+.DS_Store
+*.cache
+*.patch
+*.lock

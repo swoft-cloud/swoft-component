@@ -1,0 +1,35 @@
+{
+  "name": "swoft/websocket-server",
+  "type": "library",
+  "keywords": [
+    "php",
+    "swoole",
+    "swoft",
+    "websocket-server",
+    "websocket"
+  ],
+  "description": "websocket server for swoft",
+  "license": "Apache-2.0",
+  "require": {
+  },
+  "autoload": {
+    "psr-4": {
+      "Swoft\\WebSocket\\Server\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "SwoftTest\\WebSocket\\Server\\": "test/case/"
+    }
+  },
+  "repositories": {
+    "packagist": {
+      "type": "composer",
+      "url": "https://packagist.laravel-china.org"
+    }
+  },
+  "require-dev": {
+  },
+  "scripts": {
+  }
+}

@@ -1,0 +1,88 @@
+<?php declare(strict_types=1);
+
+namespace Swoft;
+
+use Monolog\Formatter\LineFormatter;
+use Swoft\Config\Config;
+use Swoft\Annotation\AutoLoader as AnnotationAutoLoader;
+use Swoft\Contract\DefinitionInterface;
+use Swoft\Event\Manager\EventManager;
+use Swoft\Log\Handler\FileHandler;
+use Swoft\Log\Logger;
+
+/**
+ * Class AutoLoader
+ *
+ * @since 2.0
+ */
+class AutoLoader extends AnnotationAutoLoader implements DefinitionInterface
+{
+    /**
+     * Get namespace and dirs
+     *
+     * @return array
+     */
+    public function getPrefixDirs(): array
+    {
+        return [
+            __NAMESPACE__ => __DIR__,
+        ];
+    }
+
+    /**
+     * Core bean definition
+     *
+     * @return array
+     * @throws Bean\Exception\ContainerException
+     * @throws \ReflectionException
+     */
+    public function coreBean(): array
+    {
+        return [
+            'config'             => [
+                'class'   => Config::class,
+                'path'    => \alias('@config'),
+                'parsers' => [
+                    Config::TYPE_PHP => '${phpParser}'
+                ]
+            ],
+            'eventManager'       => [
+                'class' => EventManager::class,
+            ],
+            'lineFormatter'      => [
+                'class'      => LineFormatter::class,
+                'format'     => '%datetime% [%level_name%] [%channel%] [logid:%logid%] [spanid:%spanid%] %messages%',
+                'dateFormat' => 'Y-m-d H:i:s',
+            ],
+            'noticeHandler'      => [
+                'class'     => FileHandler::class,
+                'logFile'   => '@runtime/logs/notice.log',
+                'formatter' => \bean('lineFormatter'),
+                'levels'    => [
+                    Logger::NOTICE,
+                    Logger::INFO,
+                    Logger::DEBUG,
+                    Logger::TRACE,
+                ],
+            ],
+            'applicationHandler' => [
+                'class'     => FileHandler::class,
+                'logFile'   => '@runtime/logs/error.log',
+                'formatter' => \bean('lineFormatter'),
+                'levels'    => [
+                    Logger::ERROR,
+                    Logger::WARNING,
+                ],
+            ],
+            'logger'             => [
+                'class'        => Logger::class,
+                'flushRequest' => false,
+                'enable'       => false,
+                'handlers'     => [
+                    'application' => \bean('applicationHandler'),
+                    'notice'      => \bean('noticeHandler'),
+                ],
+            ]
+        ];
+    }
+}

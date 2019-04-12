@@ -1,0 +1,38 @@
+{
+    "name": "swoft/framework",
+    "type": "library",
+    "keywords": [
+        "php",
+        "swoole",
+        "swoft"
+    ],
+    "description": "micro-service framework base on swoole",
+    "license": "Apache-2.0",
+    "require": {
+        "php": ">7.1.0"
+    },
+    "autoload": {
+        "classmap": [
+            "src/Swoft.php"
+        ],
+        "psr-4": {
+            "Swoft\\": "src/"
+        },
+        "files": [
+            "src/Helper/Functions.php"
+        ]
+    },
+    "require-dev": {
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SwoftTest\\": "test/case/"
+        }
+    },
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://packagist.laravel-china.org"
+        }
+    }
+}
