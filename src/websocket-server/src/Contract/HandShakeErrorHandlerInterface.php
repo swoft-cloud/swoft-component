@@ -11,11 +11,10 @@ use Swoft\Http\Message\Response;
  */
 interface HandShakeErrorHandlerInterface extends ErrorHandlerInterface
 {
-    public const TYPE = 23;
-
     /**
      * @param \Throwable $e
+     * @param Response   $response
      * @return Response
      */
-    public function handle(\Throwable $e): Response;
+    public function handle(\Throwable $e, Response $response): Response;
 }

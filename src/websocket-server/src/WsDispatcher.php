@@ -9,11 +9,11 @@ use Swoft\Http\Message\Response;
 use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
-use Swoft\WebSocket\Server\Exception\WsHandShakeException;
+use Swoft\WebSocket\Server\Exception\Dispatcher\WsErrorDispatcher;
 use Swoft\WebSocket\Server\Exception\WsMessageException;
 use Swoft\WebSocket\Server\Exception\WsMessageParseException;
 use Swoft\WebSocket\Server\Exception\WsMessageRouteException;
-use Swoft\WebSocket\Server\Exception\WsRouteException;
+use Swoft\WebSocket\Server\Exception\WsModuleRouteException;
 use Swoft\WebSocket\Server\MessageParser\RawTextParser;
 use Swoft\WebSocket\Server\Router\Router;
 use Swoole\WebSocket\Frame;
@@ -34,7 +34,7 @@ class WsDispatcher
      * @param Response $response
      *
      * @return array eg. [status, response]
-     * @throws \Swoft\WebSocket\Server\Exception\WsRouteException
+     * @throws \Swoft\WebSocket\Server\Exception\WsModuleRouteException
      * @throws \InvalidArgumentException
      * @throws \Throwable
      */
@@ -49,7 +49,7 @@ class WsDispatcher
             $path = $request->getUriPath();
 
             if (!$info = $router->match($path)) {
-                throw new WsRouteException(\sprintf(
+                throw new WsModuleRouteException(\sprintf(
                     'The requested websocket route path "%s" is not exist!',
                     $path
                 ));
@@ -71,16 +71,12 @@ class WsDispatcher
             // Auto handShake
             return [true, $response->withAddedHeader('swoft-ws-handshake', 'auto')];
         } catch (\Throwable $e) {
-            if ($e instanceof WsRouteException) {
-                /** @var Response|static $response */
-                $response = $response
-                    ->withStatus(404)
-                    ->withAddedHeader('Failure-Reason', 'Route not found');
-            } else {
-                $e = new WsHandShakeException($e->getMessage(), -500, $e);
-                // Other error
-                $this->error($e, 'handshake');
-            }
+            \Swoft::trigger(WsServerEvent::HANDSHAKE_ERROR, $e, $request);
+
+            /** @var WsErrorDispatcher $errDispatcher */
+            $errDispatcher = BeanFactory::getSingleton(WsErrorDispatcher::class);
+
+            $response = $errDispatcher->handshakeError($e, $response);
         }
 
         return [false, $response];
@@ -174,9 +170,9 @@ class WsDispatcher
     public function error(\Throwable $e, string $type): void
     {
         /** @var Connection $conn */
-        $conn  = Session::mustGet();
-        $fd    = $conn->getFd();
-        $info  = $conn->getModuleInfo();
+        $conn = Session::mustGet();
+        $fd   = $conn->getFd();
+        $info = $conn->getModuleInfo();
 
         if ($method = $info['eventMethods']['error'] ?? '') {
             $class = $info['class'];

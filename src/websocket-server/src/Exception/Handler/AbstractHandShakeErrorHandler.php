@@ -2,18 +2,20 @@
 
 namespace Swoft\WebSocket\Server\Exception;
 
-use Swoft\Error\Contract\ErrorHandlerInterface;
-use Swoft\Http\Message\Response;
+use Swoft\Error\ErrorType;
+use Swoft\WebSocket\Server\Contract\HandShakeErrorHandlerInterface;
 
 /**
  * Class AbstractHandShakeErrorHandler
  * @since 2.0
  */
-abstract class AbstractHandShakeErrorHandler implements ErrorHandlerInterface
+abstract class AbstractHandShakeErrorHandler implements HandShakeErrorHandlerInterface
 {
     /**
-     * @param \Throwable $e
-     * @return Response
+     * @return int
      */
-    abstract public function handle(\Throwable $e): Response;
+    public function getType(): int
+    {
+        return ErrorType::WS_HS;
+    }
 }

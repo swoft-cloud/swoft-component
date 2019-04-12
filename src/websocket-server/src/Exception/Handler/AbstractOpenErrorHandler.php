@@ -3,19 +3,19 @@
 namespace Swoft\WebSocket\Server\Exception;
 
 use Swoft\Error\ErrorType;
-use Swoft\WebSocket\Server\Contract\CloseErrorHandlerInterface;
+use Swoft\WebSocket\Server\Contract\OpenErrorHandlerInterface;
 
 /**
  * Class AbstractCloseErrorHandler
  * @since 2.0
  */
-abstract class AbstractCloseErrorHandler implements CloseErrorHandlerInterface
+abstract class AbstractOpenErrorHandler implements OpenErrorHandlerInterface
 {
     /**
      * @return int
      */
     public function getType(): int
     {
-        return ErrorType::WS_CLS;
+        return ErrorType::WS_OPN;
     }
 }

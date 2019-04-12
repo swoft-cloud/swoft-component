@@ -2,21 +2,20 @@
 
 namespace Swoft\WebSocket\Server\Exception;
 
-use Swoole\Websocket\Frame;
 use Swoft\Error\ErrorType;
-use Swoft\WebSocket\Server\Contract\MessageErrorHandlerInterface;
+use Swoft\WebSocket\Server\Contract\CloseErrorHandlerInterface;
 
 /**
- * Class AbstractMessageErrorHandler
+ * Class AbstractCloseErrorHandler
  * @since 2.0
  */
-abstract class AbstractMessageErrorHandler implements MessageErrorHandlerInterface
+abstract class AbstractCloseErrorHandler implements CloseErrorHandlerInterface
 {
     /**
      * @return int
      */
     public function getType(): int
     {
-        return ErrorType::WS_MSG;
+        return ErrorType::WS_CLS;
     }
 }

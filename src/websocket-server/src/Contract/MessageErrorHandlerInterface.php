@@ -3,17 +3,17 @@
 namespace Swoft\WebSocket\Server\Contract;
 
 use Swoft\Error\Contract\ErrorHandlerInterface;
-use Swoft\Http\Message\Response;
+use Swoole\WebSocket\Frame;
 
 /**
- * Interface HandShakeErrorHandlerInterface
+ * Interface MessageErrorHandlerInterface
  * @since 2.0
  */
-interface HandShakeErrorHandlerInterface extends ErrorHandlerInterface
+interface MessageErrorHandlerInterface extends ErrorHandlerInterface
 {
     /**
      * @param \Throwable $e
-     * @return Response
+     * @param Frame      $frame
      */
-    public function handle(\Throwable $e): Response;
+    public function handle(\Throwable $e, Frame $frame): void;
 }

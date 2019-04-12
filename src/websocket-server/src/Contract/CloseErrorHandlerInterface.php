@@ -6,14 +6,14 @@ use Swoft\Error\Contract\ErrorHandlerInterface;
 use Swoole\WebSocket\Frame;
 
 /**
- * Interface MessageErrorHandlerInterface
+ * Interface CloseErrorHandlerInterface
  * @since 2.0
  */
-interface MessageErrorHandlerInterface extends ErrorHandlerInterface
+interface CloseErrorHandlerInterface extends ErrorHandlerInterface
 {
     /**
      * @param \Throwable $e
-     * @param Frame      $frame
+     * @param int        $fd
      */
-    public function handle(\Throwable $e, Frame $frame): void;
+    public function handle(\Throwable $e, int $fd): void;
 }

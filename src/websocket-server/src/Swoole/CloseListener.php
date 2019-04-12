@@ -62,13 +62,13 @@ class CloseListener implements CloseInterface
             \Swoft::trigger(WsServerEvent::AFTER_CLOSE, $fd, $server);
         } catch (\Throwable $e) {
             \server()->log("Close: conn#{$fd} error on handle close, ERR: " . $e->getMessage(), [], 'error');
-            \Swoft::trigger(WsServerEvent::ON_ERROR, 'close', $e);
+            \Swoft::trigger(WsServerEvent::CLOSE_ERROR, 'close', $e);
+        } finally {
+            // Unbind fd
+            Session::unbindCo();
+
+            // Remove connection
+            \Swoft::trigger(SwoftEvent::SESSION_COMPLETE, $sid);
         }
-
-        // Unbind fd
-        Session::unbindCo();
-
-        // Remove connection
-        \Swoft::trigger(SwoftEvent::SESSION_COMPLETE, $sid);
     }
 }

@@ -9,12 +9,15 @@ namespace Swoft\WebSocket\Server;
 final class WsServerEvent
 {
     public const REGISTER_ROUTE    = 'swoft.ws.server.router.register';
-    public const BEFORE_HANDSHAKE  = 'swoft.ws.server.handshake.before';
-    public const SUCCESS_HANDSHAKE = 'swoft.ws.server.handshake.ok';
-    public const AFTER_OPEN        = 'swoft.ws.server.open.after';
-    public const BEFORE_MESSAGE    = 'swoft.ws.server.message.before';
-    public const AFTER_MESSAGE     = 'swoft.ws.server.message.after';
+    public const HANDSHAKE_BEFORE  = 'swoft.ws.server.handshake.before';
+    public const HANDSHAKE_SUCCESS = 'swoft.ws.server.handshake.ok';
+    public const HANDSHAKE_ERROR   = 'swoft.ws.server.handshake.error';
+    public const OPEN_AFTER        = 'swoft.ws.server.open.after';
+    public const OPEN_ERROR        = 'swoft.ws.server.open.error';
+    public const MESSAGE_BEFORE    = 'swoft.ws.server.message.before';
     public const MESSAGE_ERROR     = 'swoft.ws.server.message.error';
+    public const MESSAGE_AFTER     = 'swoft.ws.server.message.after';
     public const AFTER_CLOSE       = 'swoft.ws.server.close.after';
+    public const CLOSE_ERROR       = 'swoft.ws.server.close.error';
     public const ON_ERROR          = 'swoft.ws.server.error';
 }

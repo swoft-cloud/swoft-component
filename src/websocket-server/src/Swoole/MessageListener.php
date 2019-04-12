@@ -8,9 +8,9 @@ use Swoft\Context\Context;
 use Swoft\Server\Swoole\MessageInterface;
 use Swoft\Session\Session;
 use Swoft\SwoftEvent;
-use Swoft\WebSocket\Server\Exception\WsMessageRouteException;
-use Swoft\WebSocket\Server\WsMessageContext;
+use Swoft\WebSocket\Server\Exception\Dispatcher\WsErrorDispatcher;
 use Swoft\WebSocket\Server\WsDispatcher;
+use Swoft\WebSocket\Server\WsMessageContext;
 use Swoft\WebSocket\Server\WsServerEvent;
 use Swoole\Websocket\Frame;
 use Swoole\Websocket\Server;
@@ -47,21 +47,20 @@ class MessageListener implements MessageInterface
 
         try {
             \server()->log("Message: conn#{$fd} received message: {$frame->data}", [], 'debug');
-            \Swoft::trigger(WsServerEvent::BEFORE_MESSAGE, $fd, $server, $frame);
+            \Swoft::trigger(WsServerEvent::MESSAGE_BEFORE, $fd, $server, $frame);
 
             // Parse and dispatch message
             $dispatcher->message($server, $frame);
 
-            \Swoft::trigger(WsServerEvent::AFTER_MESSAGE, $fd, $server, $frame);
+            \Swoft::trigger(WsServerEvent::MESSAGE_AFTER, $fd, $server, $frame);
         } catch (\Throwable $e) {
+            \Swoft::trigger(WsServerEvent::HANDSHAKE_ERROR, $e, $frame);
+
             \server()->log("Message: conn#{$fd} error: " . $e->getMessage(), [], 'error');
 
-            if ($e instanceof WsMessageRouteException) {
-                \server()->push($fd, $e->getMessage());
-            } else {
-                // TODO: Close connection on error ?
-                $dispatcher->error($e, 'message');
-            }
+            /** @var WsErrorDispatcher $errDispatcher */
+            $errDispatcher = BeanFactory::getSingleton(WsErrorDispatcher::class);
+            $errDispatcher->messageError($e, $frame);
         } finally {
             // Defer
             \Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
