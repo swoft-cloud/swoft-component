@@ -12,13 +12,13 @@ use Swoft\Redis\Connection\ConnectionManager;
 use Swoft\SwoftEvent;
 
 /**
- * Class CoroutineDeferListener
+ * Class CoroutineDestoryListener
  *
  * @since 2.0
  *
- * @Listener(event=SwoftEvent::COROUTINE_DEFER)
+ * @Listener(event=SwoftEvent::COROUTINE_DESTROY)
  */
-class CoroutineDeferListener implements EventHandlerInterface
+class CoroutineDestoryListener implements EventHandlerInterface
 {
     /**
      * @param EventInterface $event

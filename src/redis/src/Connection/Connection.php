@@ -4,6 +4,7 @@
 namespace Swoft\Redis\Connection;
 
 
+use Swoft\Bean\BeanFactory;
 use Swoft\Connection\Pool\AbstractConnection;
 use Swoft\Redis\Contract\ConnectionInterface;
 use Swoft\Redis\Exception\RedisException;
@@ -337,23 +338,45 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      *
      * @param  string $method
      * @param  array  $parameters
+     * @param bool    $reconnect
      *
      * @return mixed
-     * @throws RedisException
      */
-    public function command(string $method, array $parameters = [])
+    public function command(string $method, array $parameters = [], bool $reconnect = false)
     {
-        $lowerMethod = $method;
-        if (!in_array($lowerMethod, $this->supportedMethods, true)) {
-            throw new RedisException(
-                sprintf('Method(%s) is not supported!', $method)
-            );
+        try {
+
+            $lowerMethod = $method;
+            if (!in_array($lowerMethod, $this->supportedMethods, true)) {
+                throw new RedisException(
+                    sprintf('Method(%s) is not supported!', $method)
+                );
+            }
+
+            $result = $this->client->{$method}(...$parameters);
+
+            // Release Connection
+            $this->release();
+        } catch (\Throwable $e) {
+            var_dump($reconnect);
         }
 
-        $result = $this->client->{$method}(...$parameters);
-
-        $this->release();
         return $result;
+    }
+
+    /**
+     * @param bool $force
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function release(bool $force = false): void
+    {
+        /* @var ConnectionManager $conManager */
+        $conManager = BeanFactory::getBean(ConnectionManager::class);
+        $conManager->releaseConnection($this->id);
+
+        parent::release($force);
     }
 
     public function hMGet(string $key, array $keys): array
@@ -384,7 +407,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
 
     public function reconnect(): bool
     {
-        // TODO: Implement reconnect() method.
+        return true;
     }
 
     public function getLastTime(): int

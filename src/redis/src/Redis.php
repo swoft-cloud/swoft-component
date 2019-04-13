@@ -5,6 +5,8 @@ namespace Swoft\Redis;
 
 use Swoft\Bean\BeanFactory;
 use Swoft\Redis\Connection\Connection;
+use Swoft\Redis\Connection\ConnectionManager;
+use Swoft\Redis\Exception\RedisException;
 
 /**
  * Class Redis
@@ -125,13 +127,36 @@ use Swoft\Redis\Connection\Connection;
  */
 class Redis
 {
+    /**
+     * @param string $pool
+     *
+     * @return Connection
+     * @throws RedisException
+     */
     public static function connection(string $pool = Pool::DEFAULT_POOL): Connection
     {
-        /* @var Pool $redisPool */
-        $redisPool = BeanFactory::getBean($pool);
-        $connection = $redisPool->getConnection();
-        $connection->setRelease(true);
+        try {
+            /* @var ConnectionManager $conManager */
+            $conManager = BeanFactory::getBean(ConnectionManager::class);
 
+            /* @var Pool $redisPool */
+            $redisPool  = BeanFactory::getBean($pool);
+            $connection = $redisPool->getConnection();
+            
+            $connection->setRelease(true);
+            $conManager->setConnection($connection);
+        } catch (\Throwable $e) {
+            throw new RedisException(
+                sprintf('Pool error is %s file=%s line=%d', $e->getMessage(), $e->getFile(), $e->getLine())
+            );
+        }
+
+        // Not instanceof Connection
+        if (!$connection instanceof Connection) {
+            throw new RedisException(
+                sprintf('%s is not instanceof %s', get_class($connection), Connection::class)
+            );
+        }
         return $connection;
     }
 
@@ -140,6 +165,7 @@ class Redis
      * @param array  $arguments
      *
      * @return mixed
+     * @throws RedisException
      */
     public static function __callStatic(string $method, array $arguments)
     {
