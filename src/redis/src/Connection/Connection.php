@@ -5,7 +5,9 @@ namespace Swoft\Redis\Connection;
 
 
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\AbstractConnection;
+use Swoft\Log\Helper\Log;
 use Swoft\Redis\Contract\ConnectionInterface;
 use Swoft\Redis\Exception\RedisException;
 use Swoft\Redis\Pool;
@@ -341,6 +343,9 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @param bool    $reconnect
      *
      * @return mixed
+     * @throws RedisException
+     * @throws ContainerException
+     * @throws \ReflectionException
      */
     public function command(string $method, array $parameters = [], bool $reconnect = false)
     {
@@ -353,12 +358,20 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
                 );
             }
 
+            Log::profileStart('redis.%s', $method);
             $result = $this->client->{$method}(...$parameters);
+            Log::profileEnd('redis.%s', $method);
 
             // Release Connection
             $this->release();
         } catch (\Throwable $e) {
-            var_dump($reconnect);
+            if (!$reconnect && $this->reconnect()) {
+                $this->command($method, $parameters, true);
+            }
+
+            throw new RedisException(
+                sprintf('Redis command reconnect error(%s)', $e->getMessage())
+            );
         }
 
         return $result;
@@ -404,9 +417,20 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
         // TODO: Implement mset() method.
     }
 
-
+    /**
+     * @return bool
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
     public function reconnect(): bool
     {
+        try {
+            $this->create();
+        } catch (\Throwable $e) {
+            Log::error('Redis reconnect error(%s)', $e->getMessage());
+            return false;
+        }
+
         return true;
     }
 
@@ -423,6 +447,8 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      *
      * @return mixed
      * @throws RedisException
+     * @throws ContainerException
+     * @throws \ReflectionException
      */
     public function __call(string $method, array $parameters)
     {

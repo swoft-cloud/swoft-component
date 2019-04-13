@@ -60,7 +60,7 @@ class RedisDb
     /**
      * @var int
      */
-    private $retryInterval = 0;
+    private $retryInterval = 10;
 
     /**
      * @var int

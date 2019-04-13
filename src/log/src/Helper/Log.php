@@ -105,13 +105,14 @@ class Log
      * Profile start
      *
      * @param string $name
+     * @param array  $params
      *
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public static function profileStart(string $name): void
+    public static function profileStart(string $name, ...$params): void
     {
-        self::getLogger()->profileStart($name);
+        self::getLogger()->profileStart(\sprintf($name, ...$params));
     }
 
     /**
@@ -131,13 +132,14 @@ class Log
      * Profile end
      *
      * @param string $name
+     * @param array  $params
      *
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public static function profileEnd(string $name): void
+    public static function profileEnd(string $name, ...$params): void
     {
-        self::getLogger()->profileEnd($name);
+        self::getLogger()->profileEnd(\sprintf($name, ...$params));
     }
 
     /**
