@@ -83,6 +83,7 @@ class RedisDb
 
     /**
      * @var array
+     *
      * @example
      * [
      *     [

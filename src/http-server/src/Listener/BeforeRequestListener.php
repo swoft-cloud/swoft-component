@@ -14,6 +14,7 @@ use Swoft\Http\Message\Response;
 use Swoft\Http\Server\HttpContext;
 use Swoft\Http\Server\HttpServerEvent;
 use Swoft\Log\Logger;
+use Swoft\Server\Swoole\SwooleEvent;
 
 /**
  * Class BeforeRequestListener
@@ -44,8 +45,7 @@ class BeforeRequestListener implements EventHandlerInterface
         // Add log data
         if ($logger->isEnable()) {
             $data = [
-                'traceid'     => $request->headerLine('traceid', ''),
-                'spanid'      => $request->headerLine('spanid', ''),
+                'event'       => SwooleEvent::REQUEST,
                 'uri'         => $request->getRequestTarget(),
                 'requestTime' => $request->getRequestTime(),
             ];

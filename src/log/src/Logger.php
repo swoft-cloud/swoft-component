@@ -89,6 +89,22 @@ class Logger extends \Monolog\Logger
     protected $enable = false;
 
     /**
+     * @var bool
+     */
+    protected $json = false;
+
+    /**
+     * Customized items
+     *
+     * @var array
+     */
+    protected $items = [
+        'traceid',
+        'spanid',
+        'parentid',
+    ];
+
+    /**
      * All levels
      *
      * @var array
@@ -140,7 +156,7 @@ class Logger extends \Monolog\Logger
         if ($this->microsecondTimestamps && PHP_VERSION_ID < 70100) {
             $ts = \DateTime::createFromFormat('U.u', \sprintf('%.6F', \microtime(true)), static::$timezone);
         } else {
-            $ts = new \DateTime(null, static::$timezone);
+            $ts = new \DateTime('now', static::$timezone);
         }
 
         $ts->setTimezone(static::$timezone);
@@ -182,9 +198,8 @@ class Logger extends \Monolog\Logger
         \DateTime $ts,
         array $extra
     ): array {
+
         $record = [
-            'logid'      => context()->get('traceid'),
-            'spanid'     => context()->get('spanid'),
             'messages'   => $message,
             'context'    => $context,
             'level'      => $level,
@@ -192,7 +207,16 @@ class Logger extends \Monolog\Logger
             'channel'    => $this->name,
             'datetime'   => $ts,
             'extra'      => $extra,
+            'event'      => \context()->get('event'),
+            'tid'        => Co::tid(),
+            'cid'        => Co::id(),
         ];
+
+        // Customized items
+        foreach ($this->items as $item) {
+            $record[$item] = context()->get($item, '');
+        }
+
 
         return $record;
     }
@@ -345,8 +369,6 @@ class Logger extends \Monolog\Logger
     }
 
     /**
-     * 计算调用trace
-     *
      * @param $message
      *
      * @return string
@@ -364,16 +386,17 @@ class Logger extends \Monolog\Logger
         $traces = \debug_backtrace();
         $count  = \count($traces);
         $ex     = '';
-        if ($count >= 7) {
-            $info = $traces[6];
+        if ($count >= 10) {
+            $info = $traces[9];
             if (isset($info['file'], $info['line'])) {
                 $filename = \basename($info['file']);
                 $lineNum  = $info['line'];
                 $ex       = "$filename:$lineNum";
             }
         }
-        if ($count >= 8) {
-            $info = $traces[7];
+
+        if ($count >= 11) {
+            $info = $traces[10];
             if (isset($info['class'], $info['type'], $info['function'])) {
                 $ex .= ',' . $info['class'] . $info['type'] . $info['function'];
             } elseif (isset($info['function'])) {
@@ -423,6 +446,42 @@ class Logger extends \Monolog\Logger
         $cid = Co::tid();
         $ts  = $this->getLoggerTime();
 
+        // Format message
+        $messageAry = $this->formatNoticeMessage();
+
+        // Unset profile/counting/pushlogs/profileStack
+        unset($this->profiles[$cid], $this->countings[$cid], $this->pushlogs[$cid], $this->profileStacks[$cid]);
+        $levelName = self::$levels[self::NOTICE];
+
+        if ($this->json) {
+            // Json
+            $message = $this->formatRecord('', [], self::NOTICE, $levelName, $ts, []);
+            unset($message['messages']);
+
+            $this->messages[] = array_merge($message, $messageAry);
+        } else {
+            $message = \implode(' ', $messageAry);
+            $message = $this->formatRecord($message, [], self::NOTICE, $levelName, $ts, []);
+
+            $this->messages[] = $message;
+        }
+
+        // Flush by request by max count or request end
+        $isReached = \count($this->messages) >= $this->flushInterval;
+        if ($this->flushRequest || $isReached || $flush) {
+            $this->flushLog();
+        }
+    }
+
+    /**
+     * Format notice message
+     *
+     * @return array
+     */
+    private function formatNoticeMessage(): array
+    {
+        $cid = Co::tid();
+
         // PHP time used
         $timeUsed = \sprintf('%.2f', (\microtime(true) - $this->getRequestTime()) * 1000);
 
@@ -433,6 +492,19 @@ class Logger extends \Monolog\Logger
         $countingInfo = $this->getCountingInfo();
         $pushLogs     = $this->pushlogs[$cid] ?? [];
 
+        if ($this->json) {
+            $messageAry = [
+                'cost(ms'  => (float)$timeUsed,
+                'mem(MB)'  => (float)$memUsed,
+                'uri'      => $this->getUri(),
+                'pushLog'  => \implode(' ', $pushLogs),
+                'profile'  => $profileInfo,
+                'counting' => $countingInfo,
+            ];
+
+            return $messageAry;
+        }
+
         $messageAry = [
             "[$timeUsed(ms)]",
             "[$memUsed(MB)]",
@@ -442,21 +514,7 @@ class Logger extends \Monolog\Logger
             'counting[' . $countingInfo . ']'
         ];
 
-        $message = \implode(' ', $messageAry);
-
-        // Unset profile/counting/pushlogs/profileStack
-        unset($this->profiles[$cid], $this->countings[$cid], $this->pushlogs[$cid], $this->profileStacks[$cid]);
-
-        $levelName = self::$levels[self::NOTICE];
-        $message   = $this->formatRecord($message, [], self::NOTICE, $levelName, $ts, []);
-
-        $this->messages[] = $message;
-
-        // Flush by request by max count or request end
-        $isReached = \count($this->messages) >= $this->flushInterval;
-        if ($this->flushRequest || $isReached || $flush) {
-            $this->flushLog();
-        }
+        return $messageAry;
     }
 
     /**
@@ -491,10 +549,8 @@ class Logger extends \Monolog\Logger
     }
 
     /**
-     * 添加一条trace日志
-     *
-     * @param string $message 日志信息
-     * @param array  $context 附加信息
+     * @param string $message
+     * @param array  $context
      *
      * @return bool
      * @throws \Exception
@@ -528,6 +584,14 @@ class Logger extends \Monolog\Logger
     public function isEnable(): bool
     {
         return $this->enable;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isJson(): bool
+    {
+        return $this->json;
     }
 
     /**

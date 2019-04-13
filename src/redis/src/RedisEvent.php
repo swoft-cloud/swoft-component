@@ -10,5 +10,13 @@ namespace Swoft\Redis;
  */
 class RedisEvent
 {
+    /**
+     * Before command
+     */
+    const BEFORE_COMMAND = 'swoft.redis.command.before';
 
+    /**
+     * After command
+     */
+    const AFTER_COMMAND = 'swoft.redis.command.after';
 }
