@@ -10,7 +10,7 @@ use Swoft\WebSocket\Server\Annotation\Mapping\OnMessage;
 use Swoft\WebSocket\Server\Router\RouteRegister;
 
 /**
- * Class WsHandShakeParser
+ * Class OnMessageParser
  * @since 2.0
  * @AnnotationParser(OnMessage::class)
  */

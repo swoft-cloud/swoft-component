@@ -60,9 +60,9 @@ final class SwooleEvent
     public const PIPE_MESSAGE = 'pipeMessage';
 
     /**
-     * HandShake
+     * Handshake
      */
-    public const HANDSHAKE = 'handShake';
+    public const HANDSHAKE = 'handshake';
 
     /**
      * Message
@@ -116,7 +116,7 @@ final class SwooleEvent
         // For http server
         self::REQUEST   => RequestInterface::class,
         // For websocket server
-        self::HANDSHAKE => HandShakeInterface::class,
+        self::HANDSHAKE => HandshakeInterface::class,
         self::MESSAGE   => MessageInterface::class,
         // For tcp
         self::CLOSE     => CloseInterface::class,

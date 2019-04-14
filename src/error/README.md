@@ -1,13 +1,13 @@
-# Swoft WebSocket Server
+# Swoft Error Handler
 
-WebSocket server component for swoft
+Swoft Error Handler Component
 
 ## Install
 
 - composer command
 
 ```bash
-composer require swoft/websocket-server
+composer require swoft/error
 ```
 
 ## Document

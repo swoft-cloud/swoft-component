@@ -8,7 +8,7 @@ namespace Swoft\Http\Server\Exception;
  *
  * @since 2.0
  */
-class MethodNotAllowedException extends \Exception
+class MethodNotAllowedException extends HttpServerException
 {
 
 }

@@ -9,11 +9,10 @@ use Swoft\Http\Message\Response;
 use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
-use Swoft\WebSocket\Server\Exception\WsHandShakeException;
 use Swoft\WebSocket\Server\Exception\WsMessageException;
 use Swoft\WebSocket\Server\Exception\WsMessageParseException;
 use Swoft\WebSocket\Server\Exception\WsMessageRouteException;
-use Swoft\WebSocket\Server\Exception\WsRouteException;
+use Swoft\WebSocket\Server\Exception\WsModuleRouteException;
 use Swoft\WebSocket\Server\MessageParser\RawTextParser;
 use Swoft\WebSocket\Server\Router\Router;
 use Swoole\WebSocket\Frame;
@@ -34,7 +33,7 @@ class WsDispatcher
      * @param Response $response
      *
      * @return array eg. [status, response]
-     * @throws \Swoft\WebSocket\Server\Exception\WsRouteException
+     * @throws \Swoft\WebSocket\Server\Exception\WsModuleRouteException
      * @throws \InvalidArgumentException
      * @throws \Throwable
      */
@@ -43,47 +42,32 @@ class WsDispatcher
         /** @var Router $router */
         $router = BeanFactory::getSingleton('wsRouter');
 
-        try {
-            /** @var Connection $conn */
-            $conn = Session::mustGet();
-            $path = $request->getUriPath();
+        /** @var Connection $conn */
+        $conn = Session::mustGet();
+        $path = $request->getUriPath();
 
-            if (!$info = $router->match($path)) {
-                throw new WsRouteException(\sprintf(
-                    'The requested websocket route path "%s" is not exist!',
-                    $path
-                ));
-            }
-
-            $class = $info['class'];
-            $conn->setModuleInfo($info);
-
-            \server()->log("Handshake: found handler for path '$path', ws module class is $class", [], 'debug');
-
-            /** @var WsModuleInterface $module */
-            $module = BeanFactory::getSingleton($class);
-
-            // Call user method
-            if ($method = $info['eventMethods']['handShake'] ?? '') {
-                return $module->$method($request, $response);
-            }
-
-            // Auto handShake
-            return [true, $response->withAddedHeader('swoft-ws-handshake', 'auto')];
-        } catch (\Throwable $e) {
-            if ($e instanceof WsRouteException) {
-                /** @var Response|static $response */
-                $response = $response
-                    ->withStatus(404)
-                    ->withAddedHeader('Failure-Reason', 'Route not found');
-            } else {
-                $e = new WsHandShakeException($e->getMessage(), -500, $e);
-                // Other error
-                $this->error($e, 'handshake');
-            }
+        if (!$info = $router->match($path)) {
+            throw new WsModuleRouteException(\sprintf(
+                'The requested websocket route path "%s" is not exist!',
+                $path
+            ));
         }
 
-        return [false, $response];
+        $class = $info['class'];
+        $conn->setModuleInfo($info);
+
+        \server()->log("Handshake: found handler for path '$path', ws module class is $class", [], 'debug');
+
+        /** @var WsModuleInterface $module */
+        $module = BeanFactory::getSingleton($class);
+
+        // Call user method
+        if ($method = $info['eventMethods']['handshake'] ?? '') {
+            return $module->$method($request, $response);
+        }
+
+        // Auto handshake
+        return [true, $response->withAddedHeader('swoft-ws-handshake', 'auto')];
     }
 
     /**
@@ -156,43 +140,15 @@ class WsDispatcher
         $info = $conn->getModuleInfo();
 
         $method = $info['eventMethods']['close'] ?? '';
-        if ($method) {
-            $class = $info['class'];
-            \server()->log("conn#{$fd} call ws close handler '{$class}::{$method}'", [], 'debug');
-
-            /** @var WsModuleInterface $module */
-            $module = BeanFactory::getSingleton($class);
-            $module->$method($server, $fd);
+        if (!$method) {
+            return;
         }
-    }
 
-    /**
-     * @param \Throwable $e
-     * @param string     $type Like 'handshake' 'message' 'close'
-     * @throws \Throwable
-     */
-    public function error(\Throwable $e, string $type): void
-    {
-        /** @var Connection $conn */
-        $conn  = Session::mustGet();
-        $fd    = $conn->getFd();
-        $info  = $conn->getModuleInfo();
+        $class = $info['class'];
+        \server()->log("conn#{$fd} call ws close handler '{$class}::{$method}'", [], 'debug');
 
-        if ($method = $info['eventMethods']['error'] ?? '') {
-            $class = $info['class'];
-
-            \server()->log("conn#{$fd} call ws error handler {$class}::{$method}", [], 'debug');
-
-            /** @var WsModuleInterface $module */
-            $module = BeanFactory::getSingleton($class);
-            $module->$method($e, $type, $fd);
-        } else {
-            $evt = \Swoft::trigger(WsServerEvent::ON_ERROR, $type, $e);
-
-            // $server->close($fd);
-            if (!$evt->isPropagationStopped()) {
-                throw $e;
-            }
-        }
+        /** @var WsModuleInterface $module */
+        $module = BeanFactory::getSingleton($class);
+        $module->$method($server, $fd);
     }
 }
