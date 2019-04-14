@@ -13,6 +13,7 @@ use Swoft\Redis\Exception\RedisException;
 use Swoft\Redis\Pool;
 use Swoft\Redis\RedisDb;
 use Swoft\Redis\RedisEvent;
+use Swoft\Stdlib\Helper\PhpHelper;
 
 /**
  * Class Connection
@@ -495,6 +496,32 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     }
 
     /**
+     * @param callable $callback
+     *
+     * @return array
+     * @throws ContainerException
+     * @throws RedisException
+     * @throws \ReflectionException
+     */
+    public function pipeline(callable $callback): array
+    {
+        return $this->multi(\Redis::PIPELINE, $callback);
+    }
+
+    /**
+     * @param callable $callback
+     *
+     * @return array
+     * @throws ContainerException
+     * @throws RedisException
+     * @throws \ReflectionException
+     */
+    public function transaction(callable $callback): array
+    {
+        return $this->multi(\Redis::MULTI, $callback);
+    }
+
+    /**
      * @return bool
      * @throws ContainerException
      * @throws \ReflectionException
@@ -540,5 +567,51 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     private function getCountingKey(string $name): string
     {
         return \sprintf('redis.hit/req.%s', $name);
+    }
+
+    /**
+     * @param callable $callback
+     * @param bool     $reconnect
+     * @param int      $mode
+     *
+     * @return array
+     * @throws ContainerException
+     * @throws RedisException
+     * @throws \ReflectionException
+     */
+    private function multi(int $mode, callable $callback, bool $reconnect = false): array
+    {
+        $name   = ($mode == \Redis::PIPELINE) ? 'pipeline' : 'transaction';
+        $proKey = \sprintf('redis.%s', $name);
+        try {
+            Log::profileStart($proKey);
+
+            $pipeline = $this->client->multi($mode);
+            try {
+                PhpHelper::call($callback, $pipeline);
+            } catch (\Throwable $e) {
+                Log::error(
+                    \sprintf(
+                        'Redis multi error(message=%s line=%d file=%s)',
+                        $e->getMessage(),
+                        $e->getLine(),
+                        $e->getFile()
+                    )
+                );
+            }
+            $result = $pipeline->exec();
+
+            Log::profileEnd($proKey);
+        } catch (\Throwable $e) {
+            if (!$reconnect && $this->reconnect()) {
+                return $this->multi($mode, $callback, true);
+            }
+
+            throw new RedisException(
+                sprintf('Redis %s reconnect error(%s)', $name, $e->getMessage())
+            );
+        }
+
+        return $result;
     }
 }

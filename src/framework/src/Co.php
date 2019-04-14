@@ -2,7 +2,9 @@
 
 namespace Swoft;
 
+use Swoft\Console\Console;
 use Swoft\Context\Context;
+use Swoft\Log\Helper\CLog;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoole\Coroutine;
 
@@ -73,8 +75,8 @@ class Co
 
                 PhpHelper::call($callable);
             } catch (\Throwable $e) {
-                \printf(
-                    "Coroutine Exception: %s\nAt File %s line %d\nTrace:\n%s",
+                CLog::error(
+                    "Coroutine internal error: %s\nAt File %s line %d\nTrace:\n%s",
                     $e->getMessage(),
                     $e->getFile(),
                     $e->getLine(),
