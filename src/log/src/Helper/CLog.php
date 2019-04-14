@@ -58,6 +58,17 @@ class CLog
     }
 
     /**
+     * Debug message
+     *
+     * @param string $message
+     * @param array  $params
+     */
+    public static function debug(string $message, ...$params): void
+    {
+        self::$cLogger->debug(\sprintf($message, ...$params), []);
+    }
+
+    /**
      * Info message
      *
      * @param string $message

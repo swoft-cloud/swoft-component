@@ -8,7 +8,7 @@ use Swoft\Context\Context;
 use Swoft\Server\Swoole\MessageInterface;
 use Swoft\Session\Session;
 use Swoft\SwoftEvent;
-use Swoft\WebSocket\Server\Exception\Dispatcher\WsErrorDispatcher;
+use Swoft\WebSocket\Server\WsErrorDispatcher;
 use Swoft\WebSocket\Server\WsDispatcher;
 use Swoft\WebSocket\Server\Context\WsMessageContext;
 use Swoft\WebSocket\Server\WsServerEvent;

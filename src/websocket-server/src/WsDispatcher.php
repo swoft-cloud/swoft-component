@@ -123,15 +123,21 @@ class WsDispatcher
 
         \server()->log("Message: conn#{$fd} call message command handler '{$ctlClass}::{$ctlMethod}'", $body, 'debug');
 
-        $controller = BeanFactory::getBean($ctlClass);
-        $controller->$ctlMethod($data);
-        // TODO handle result...
+        $object = BeanFactory::getBean($ctlClass);
+        $params = $this->getBindParams($ctlClass, $ctlMethod, $frame, $data);
+        $result = $object->$ctlMethod(...$params);
+
+        // If result is not null, encode and replay
+        if ($result !== null) {
+            $server->push($fd, $msgParser->encode($result));
+        }
     }
 
     /**
      * Dispatch ws close handle
      * @param Server $server
      * @param int    $fd
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function close(Server $server, int $fd): void
     {
@@ -150,5 +156,49 @@ class WsDispatcher
         /** @var WsModuleInterface $module */
         $module = BeanFactory::getSingleton($class);
         $module->$method($server, $fd);
+    }
+
+    /**
+     * Get method bounded params
+     *
+     * @param string $class
+     * @param string $method
+     * @param Frame  $frame
+     * @param mixed  $data
+     * @return array
+     * @throws \ReflectionException
+     */
+    private function getBindParams(string $class, string $method, Frame $frame, $data): array
+    {
+        $classInfo = \Swoft::getReflection($class);
+        if (!isset($classInfo['methods'][$method])) {
+            return [];
+        }
+
+        // binding params
+        $bindParams   = [];
+        $methodParams = $classInfo['methods'][$method]['params'];
+
+        /**
+         * @var string          $name
+         * @var \ReflectionType $paramType
+         * @var mixed           $devVal
+         */
+        foreach ($methodParams as [$name, $paramType, $devVal]) {
+            // Defined type of the param
+            $type = $paramType->getName();
+
+            if ($name === 'data') {
+                $bindParams[] = $data;
+            } elseif ($type === Frame::class) {
+                $bindParams[] = $frame;
+            } elseif ($type === Request::class) {
+                $bindParams[] = Session::mustGet()->getRequest();
+            } else {
+                $bindParams[] = null;
+            }
+        }
+
+        return $bindParams;
     }
 }

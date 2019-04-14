@@ -1,7 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Http\Server;
 
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Error\ErrorHandlers;
 use Swoft\Error\ErrorType;
 use Swoft\Http\Message\Response;
@@ -10,6 +11,7 @@ use Swoft\Http\Server\Contract\HttpErrorHandlerInterface;
 /**
  * Class HttpErrorHandler
  * @since 2.0
+ * @Bean()
  */
 class HttpErrorDispatcher
 {

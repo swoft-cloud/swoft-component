@@ -38,6 +38,7 @@ class CLogger extends \Monolog\Logger
      */
     protected static $levels = array(
         self::INFO    => 'INFO',
+        self::DEBUG   => 'DEBUG',
         self::WARNING => 'WARNING',
         self::ERROR   => 'ERROR',
     );

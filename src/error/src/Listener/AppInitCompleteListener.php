@@ -1,10 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Error\Bootstrap\Listener;
+namespace Swoft\Error\Listener;
 
-use Swoft\Error\Annotation\Mapping\ExceptionHandlerParser;
+use Swoft\Bean\BeanFactory;
+use Swoft\Error\Annotation\Parser\ExceptionHandlerParser;
+use Swoft\Error\Contract\ErrorHandlerInterface;
 use Swoft\Error\ErrorHandlers;
-use Swoft\Error\ErrorType;
+use Swoft\Error\ErrorRegister;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
@@ -21,30 +23,21 @@ class AppInitCompleteListener implements EventHandlerInterface
 {
     /**
      * @param EventInterface $event
-     * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function handle(EventInterface $event): void
     {
-        $chain = \Swoft::getBean(ErrorHandlers::class);
+        /** @var ErrorHandlers $chain */
+        $chain = BeanFactory::getSingleton(ErrorHandlers::class);
 
-        $this->register($chain);
+        // Register error handlers
+        $count = ErrorRegister::register($chain);
 
-        CLog::info('Error manager init complete(%d handler)', $chain->count());
-    }
-
-    public function register(ErrorHandlers $chain): void
-    {
-        $handlers = ExceptionHandlerParser::getHandlers();
-
-        foreach ($handlers as $handlerClass => $exceptions) {
-            $type = ErrorType::DEF;
-
-            foreach ($exceptions as $exceptionClass) {
-                $chain->addHandler($exceptionClass, $handlerClass, $type);
-            }
-        }
-
-        ExceptionHandlerParser::clear();
+        CLog::info(
+            'Error manager init completed(%d type, %d handler, %d exception)',
+            $chain->getTypeCount(),
+            $count,
+            $chain->getCount()
+        );
     }
 }

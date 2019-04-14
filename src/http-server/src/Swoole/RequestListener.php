@@ -3,7 +3,7 @@
 namespace Swoft\Http\Server\Swoole;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Container;
+use Swoft\Bean\BeanFactory;
 use Swoft\Http\Message\Request as ServerRequest;
 use Swoft\Http\Message\Response as ServerResponse;
 use Swoft\Http\Server\HttpDispatcher;
@@ -24,6 +24,7 @@ class RequestListener implements RequestInterface
      * @param Request  $request
      * @param Response $response
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \ReflectionException
      */
     public function onRequest(Request $request, Response $response): void
     {
@@ -37,7 +38,7 @@ class RequestListener implements RequestInterface
         // return; // QPS: 2.3w -> 3.31w
 
         /* @var HttpDispatcher $dispatcher */
-        $dispatcher = Container::$instance->getSingleton('httpDispatcher');
+        $dispatcher = BeanFactory::getSingleton('httpDispatcher');
         // return; // QPS: 3.2w
         $dispatcher->dispatch($psrRequest, $psrResponse);
     }
