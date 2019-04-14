@@ -36,7 +36,7 @@
     "swoft/config": "self.version",
     "swoft/console": "self.version",
     "swoft/event": "self.version",
-    "swoft/error-handler": "self.version",
+    "swoft/error": "self.version",
     "swoft/framework": "self.version",
     "swoft/http-message": "self.version",
     "swoft/http-server": "self.version",

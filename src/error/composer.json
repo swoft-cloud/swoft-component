@@ -1,5 +1,5 @@
 {
-    "name": "swoft/error-handler",
+    "name": "swoft/error",
     "type": "library",
     "keywords": [
         "php",
@@ -14,12 +14,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Swoft\\ErrorHandler\\": "src"
+            "Swoft\\Error\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "SwoftTest\\ErrorHandler\\": "test/case"
+            "SwoftTest\\Error\\": "test/case"
         }
     },
     "repositories": [
