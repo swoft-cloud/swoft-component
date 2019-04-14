@@ -46,6 +46,16 @@ class Swoft
         return \Swoft\Server\Server::getServer();
     }
 
+    /**
+     * Get swoole server
+     *
+     * @return \Swoole\Server
+     */
+    public static function swooleServer(): \Swoole\Server
+    {
+        return self::server()->getSwooleServer();
+    }
+
     /*******************************************************************************
      * bean short methods
      ******************************************************************************/
@@ -78,9 +88,11 @@ class Swoft
 
     /**
      * @see Container::getSingleton()
+     *
      * @param string $name
+     *
      * @return mixed
-     * @throws \Throwable
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public static function getSingleton(string $name)
     {
@@ -136,6 +148,7 @@ class Swoft
      * @param string|EventInterface $event
      * @param null|mixed            $target
      * @param array                 $params
+     *
      * @return EventInterface
      */
     public static function triggerByArray($event, $target = null, array $params = []): EventInterface

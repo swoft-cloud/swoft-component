@@ -113,14 +113,18 @@ final class SwooleEvent
      * Event interface listener mapping
      */
     public const LISTENER_MAPPING = [
-        // for http server
+        // For http server
         self::REQUEST   => RequestInterface::class,
-        // for websocket server
+        // For websocket server
         self::HANDSHAKE => HandshakeInterface::class,
         self::MESSAGE   => MessageInterface::class,
+        // For tcp
         self::CLOSE     => CloseInterface::class,
         self::RECEIVE   => ReceiveInterface::class,
         self::CONNECT   => ConnectInterface::class,
+        // For task
+        self::TASK      => TaskInterface::class,
+        self::FINISH    => FinishInterface::class,
     ];
 
     /**

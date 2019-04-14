@@ -4,6 +4,7 @@ namespace Swoft\Http\Server\Annotation\Mapping;
 
 use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;
+use Doctrine\Common\Annotations\Annotation\Required;
 use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
@@ -21,6 +22,8 @@ final class Controller
 {
     /**
      * Route group prefix for the controller
+     *
+     * @Required()
      *
      * @var string
      */

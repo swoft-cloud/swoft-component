@@ -56,16 +56,16 @@ class AutoLoader extends \Swoft\SwoftComponent
         return [
             'httpRequest'     => [
                 'parsers' => [
-                    ContentType::XML  => bean(XmlRequestParser::class),
-                    ContentType::JSON => bean(JsonRequestParser::class),
+                    ContentType::XML  => \bean(XmlRequestParser::class),
+                    ContentType::JSON => \bean(JsonRequestParser::class),
                 ]
             ],
             'httpResponse'    => [
                 'format'     => Response::FORMAT_JSON,
                 'formatters' => [
-                    Response::FORMAT_HTML => bean(HtmlResponseFormatter::class),
-                    Response::FORMAT_JSON => bean(JsonResponseFormatter::class),
-                    Response::FORMAT_XML  => bean(XmlResponseFormatter::class),
+                    Response::FORMAT_HTML => \bean(HtmlResponseFormatter::class),
+                    Response::FORMAT_JSON => \bean(JsonResponseFormatter::class),
+                    Response::FORMAT_XML  => \bean(XmlResponseFormatter::class),
                 ]
             ],
             'acceptFormatter' => [
@@ -77,7 +77,7 @@ class AutoLoader extends \Swoft\SwoftComponent
             ],
             'httpServer'      => [
                 'on' => [
-                    SwooleEvent::REQUEST => bean(RequestListener::class)
+                    SwooleEvent::REQUEST => \bean(RequestListener::class)
                 ]
             ],
             'httpRouter'      => [

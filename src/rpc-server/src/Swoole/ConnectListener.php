@@ -22,11 +22,12 @@ class ConnectListener implements ConnectInterface
      * @param Server $server
      * @param int    $fd
      * @param int    $reactorId
+     *
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function onConnect(Server $server, int $fd, int $reactorId): void
     {
-        \Swoft::trigger(ServiceServerEvent::CLOSE);
-
         var_dump('connect');
+        \Swoft::trigger(ServiceServerEvent::CLOSE);
     }
 }

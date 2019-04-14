@@ -1129,12 +1129,38 @@ class ArrayHelper
     /**
      * Filter the array using the given callback.
      *
-     * @param  array  $array
-     * @param  callable  $callback
+     * @param  array    $array
+     * @param  callable $callback
+     *
      * @return array
      */
     public static function where($array, callable $callback)
     {
         return array_filter($array, $callback, ARRAY_FILTER_USE_BOTH);
+    }
+
+    /**
+     * Convert the array into a query string.
+     *
+     * @param  array $array
+     *
+     * @return string
+     */
+    public static function query(array $array): string
+    {
+        return http_build_query($array, null, '&', PHP_QUERY_RFC3986);
+    }
+
+    /**
+     * Get a subset of the items from the given array.
+     *
+     * @param  array $array
+     * @param  array $keys
+     *
+     * @return array
+     */
+    public static function only(array $array, array $keys): array
+    {
+        return array_intersect_key($array, array_flip((array)$keys));
     }
 }

@@ -6,6 +6,8 @@ namespace Swoft\Log\Handler;
 
 use Monolog\Handler\AbstractProcessingHandler;
 use Swoft\Co;
+use Swoft\Log\Helper\Log;
+use Swoft\Stdlib\Helper\JsonHelper;
 
 /**
  * Class FileHandler
@@ -43,6 +45,8 @@ class FileHandler extends AbstractProcessingHandler
      * @param array $records
      *
      * @return void
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function handleBatch(array $records): void
     {
@@ -51,18 +55,25 @@ class FileHandler extends AbstractProcessingHandler
             return;
         }
 
-        $lines = \array_column($records, 'formatted');
-
-        $this->write($lines);
+        $this->write($records);
     }
 
     /**
      * Write file
      *
      * @param array $records
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function write(array $records): void
     {
+        if (Log::getLogger()->isJson()) {
+            $records = array_map([$this, 'formatJson'], $records);
+        } else {
+            $records = \array_column($records, 'formatted');
+        }
+
         $messageText = \implode("\n", $records) . "\n";
 
         if (Co::id() <= 0) {
@@ -105,6 +116,21 @@ class FileHandler extends AbstractProcessingHandler
     }
 
     /**
+     * @param array $record
+     *
+     * @return string
+     */
+    public function formatJson(array $record): string
+    {
+        unset($record['formatted'], $record['context'], $record['extra']);
+
+        if ($record['datetime'] instanceof \DateTime) {
+            $record['datetime'] = $record['datetime']->format('Y-m-d H:i');
+        }
+        return JsonHelper::encode($record, JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
      * Create dir
      */
     private function createDir(): void
@@ -130,7 +156,7 @@ class FileHandler extends AbstractProcessingHandler
      */
     public function isHandling(array $record): bool
     {
-        if ($this->levels) {
+        if (empty($this->levels)) {
             return true;
         }
 

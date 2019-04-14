@@ -22,11 +22,12 @@ class CloseListener implements CloseInterface
      * @param Server $server
      * @param int    $fd
      * @param int    $reactorId
+     * @throws \Swoft\Bean\Exception\ContainerException*
      */
     public function onClose(Server $server, int $fd, int $reactorId): void
     {
-        \Swoft::trigger(ServiceServerEvent::CLOSE);
-        
         var_dump('close');
+
+        \Swoft::trigger(ServiceServerEvent::CLOSE);
     }
 }

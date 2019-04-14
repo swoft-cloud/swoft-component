@@ -14,29 +14,8 @@ abstract class AbstractContext implements ContextInterface
     use DataPropertyTrait;
 
     /**
-     * @return string
+     * Clear
      */
-    public function getParentId(): string
-    {
-        return $this->get('parentid', '');
-    }
-
-    /**
-     * @return string
-     */
-    public function getTraceId(): string
-    {
-        return $this->get('traceid', '');
-    }
-
-    /**
-     * @return string
-     */
-    public function getSpanId(): string
-    {
-        return $this->get('spanid', '');
-    }
-
     public function clear(): void
     {
         $this->data = [];

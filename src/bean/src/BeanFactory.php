@@ -55,6 +55,7 @@ final class BeanFactory
      * @param string $name
      *
      * @return mixed
+     * @throws ContainerException
      */
     public static function getSingleton(string $name)
     {
@@ -67,6 +68,7 @@ final class BeanFactory
      * @param string $name
      *
      * @return mixed
+     * @throws ContainerException
      */
     public static function getPrototype(string $name)
     {

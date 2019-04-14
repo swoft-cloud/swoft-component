@@ -251,7 +251,7 @@ class Database
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public function defaultConnectors()
+    public function defaultConnectors(): array
     {
         return [
             self::MYSQL => bean(MySqlConnector::class)
@@ -263,7 +263,7 @@ class Database
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public function defaultConnections()
+    public function defaultConnections(): array
     {
         return [
             self::MYSQL => \bean(MySqlConnection::class)

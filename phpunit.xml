@@ -27,6 +27,12 @@
         <testsuite name="console">
             <directory suffix="Test.php">src/console/test/case</directory>
         </testsuite>
+        <testsuite name="redis">
+            <directory suffix="Test.php">src/redis/test/case</directory>
+            <file>
+                src/redis/test/bootstrap.php
+            </file>
+        </testsuite>
         <testsuite name="db">
             <directory suffix="Test.php">src/db/test/case</directory>
             <file>
@@ -59,9 +65,6 @@
         </testsuite>
         <testsuite name="process">
             <directory suffix="Test.php">src/process/test/case</directory>
-        </testsuite>
-        <testsuite name="redis">
-            <directory suffix="Test.php">src/redis/test/case</directory>
         </testsuite>
         <testsuite name="rpc">
             <directory suffix="Test.php">src/rpc/test/case</directory>

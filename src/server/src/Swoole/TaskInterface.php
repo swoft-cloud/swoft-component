@@ -15,9 +15,11 @@ interface TaskInterface
      * Task event
      *
      * @param Server $server
-     * @param int      $taskId
-     * @param int      $srcWorkerId
-     * @param mixed    $data
+     * @param int    $taskId
+     * @param int    $srcWorkerId
+     * @param mixed  $data
+     *
+     * @return mixed
      */
-    public function onTask(Server $server, int $taskId, int $srcWorkerId, $data): void;
+//    public function onTask(Server $server,  $taskId, int $srcWorkerId, $data);
 }

@@ -9,7 +9,7 @@ use Swoft\Http\Server\Contract\HttpErrorHandlerInterface;
  * Class HttpErrorHandler
  * @since 2.0
  */
-abstract class HttpErrorHandler //implements ErrorHandlerInterface, HttpErrorHandlerInterface
+abstract class HttpErrorHandler
 {
     /**
      * @param \Throwable $e
