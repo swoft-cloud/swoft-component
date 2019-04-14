@@ -2,6 +2,7 @@
 
 namespace Swoft\Console;
 
+use Swoft\Annotation\AnnotationException;
 use Swoft\Console\Annotation\Mapping\CommandHandler;
 use Swoft\Console\Helper\DocBlock;
 use Swoft\Console\Router\Router;
@@ -80,6 +81,8 @@ final class CommandRegister
      */
     public static function addRoute(string $class, string $method, array $route): void
     {
+        self::checkClass($class);
+
         // init some keys
         $route['options']   = [];
         $route['arguments'] = [];
@@ -121,6 +124,18 @@ final class CommandRegister
         $cmdInfo['options'][$optName] = $info;
         // re-setting
         self::$commands[$class]['commands'][$method] = $cmdInfo;
+    }
+
+    /**
+     * @param string $class
+     */
+    private static function checkClass(string $class): void
+    {
+        if (!isset(self::$commands[$class])) {
+            throw new AnnotationException(
+                "The class '{$class}' must add @Command on use annotation @CommandXXX"
+            );
+        }
     }
 
     /**

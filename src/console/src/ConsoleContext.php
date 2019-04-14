@@ -24,8 +24,8 @@ class ConsoleContext extends AbstractContext
         $ctx = \Swoft::getPrototype(__CLASS__);
         $ctx->setMulti([
             'parentid' => '',
-            'spanid'   => \uniqid('', 0),
-            'traceid'  => \uniqid('', 0),
+            'spanid'   => \uniqid('', false),
+            'traceid'  => \uniqid('', false),
         ]);
 
         return $ctx;

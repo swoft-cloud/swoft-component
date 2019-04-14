@@ -30,8 +30,6 @@ class BeanProcessor extends Processor
             return false;
         }
 
-        CLog::info('Bean is beginning');
-
         $handler     = new BeanHandler();
         $definitions = $this->getDefinitions();
         $parsers     = AnnotationRegister::getParsers();

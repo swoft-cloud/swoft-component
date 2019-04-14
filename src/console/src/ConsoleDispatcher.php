@@ -99,26 +99,20 @@ class ConsoleDispatcher implements DispatcherInterface
         $methodParams = $classInfo['methods'][$method]['params'];
 
         /**
-         * @var string               $key
-         * @var \ReflectionParameter $reflectParam
+         * @var string          $name
+         * @var \ReflectionType $paramType
+         * @var mixed           $devVal
          */
-        foreach ($methodParams as $key => $reflectParam) {
-            $reflectType = $reflectParam->getType();
+        foreach ($methodParams as [, $paramType, $devVal]) {
+            // Defined type of the param
+            $type = $paramType->getName();
 
-            // undefined type of the param
-            if ($reflectType === null) {
-                $bindParams[$key] = null;
-                continue;
-            }
-
-            // defined type of the param
-            $type = $reflectType->getName();
             if ($type === Output::class) {
-                $bindParams[$key] = \output();
+                $bindParams[] = \output();
             } elseif ($type === Input::class) {
-                $bindParams[$key] = \input();
+                $bindParams[] = \input();
             } else {
-                $bindParams[$key] = null;
+                $bindParams[] = null;
             }
         }
 
