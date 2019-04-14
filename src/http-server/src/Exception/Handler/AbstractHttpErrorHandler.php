@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Http\Server\Exception;
+namespace Swoft\Http\Server\Exception\Handler;
 
 use Swoft\Error\ErrorType;
 use Swoft\Http\Server\Contract\HttpErrorHandlerInterface;

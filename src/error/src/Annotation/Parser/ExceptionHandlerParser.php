@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Error\Annotation\Mapping;
+namespace Swoft\Error\Annotation\Parser;
 
 use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;

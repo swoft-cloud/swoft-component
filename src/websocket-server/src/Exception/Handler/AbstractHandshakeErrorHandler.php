@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\WebSocket\Server\Exception;
+namespace Swoft\WebSocket\Server\Exception\Handler;
 
 use Swoft\Error\ErrorType;
 use Swoft\WebSocket\Server\Contract\HandshakeErrorHandlerInterface;

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\WebSocket\Server\Exception\Dispatcher;
+namespace Swoft\WebSocket\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Error\DefaultErrorDispatcher;
@@ -31,7 +31,7 @@ class WsErrorDispatcher
      */
     public function handshakeError(\Throwable $e, Response $response): Response
     {
-        // TODO handle it?
+        // TODO should handle it?
         if ($e instanceof WsModuleRouteException) {
             return $response
                 ->withStatus(404)

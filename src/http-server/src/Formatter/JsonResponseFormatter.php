@@ -35,7 +35,7 @@ class JsonResponseFormatter implements ResponseFormatterInterface
         $data = $response->getData();
 
         if ($data !== null && (Arr::isArrayable($data) || is_string($data))) {
-            $data    = is_string($data) ? ['data' => $data] : $data;
+            $data    = \is_string($data) ? ['data' => $data] : $data;
             $content = JsonHelper::encode($data, \JSON_UNESCAPED_UNICODE);
             return $response->withContent($content);
         }

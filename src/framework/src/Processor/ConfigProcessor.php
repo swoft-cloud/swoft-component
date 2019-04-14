@@ -17,6 +17,13 @@ class ConfigProcessor extends Processor
             return false;
         }
 
+        // Define some global constants
+        $appDebug = \env('APP_DEBUG', false);
+        \define('APP_DEBUG', (bool)$appDebug);
+
+        $sysDebug = \env('SWOFT_DEBUG', false);
+        \define('SWOFT_DEBUG', (bool)$sysDebug);
+
         return $this->application->afterConfig();
     }
 }

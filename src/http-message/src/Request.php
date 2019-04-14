@@ -4,13 +4,13 @@ namespace Swoft\Http\Message;
 
 use Psr\Http\Message\StreamInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Container;
+use Swoft\Bean\BeanFactory;
 use Swoft\Http\Message\Concern\InteractsWithInput;
 use Swoft\Http\Message\Contract\RequestParserInterface;
 use Swoft\Http\Message\Contract\ServerRequestInterface;
+use Swoft\Http\Message\Helper\HttpHelper;
 use Swoft\Http\Message\Stream\Stream;
 use Swoft\Http\Message\Uri\Uri;
-use Swoft\Http\Server\Helper\HttpHelper;
 use Swoole\Http\Request as CoRequest;
 
 /**
@@ -98,13 +98,15 @@ class Request extends PsrRequest implements ServerRequestInterface
      *
      * @param CoRequest $coRequest
      * @return Request
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public static function new(CoRequest $coRequest): self
     {
         // on enter QPS: 4.5w
         // return new self(); // QPS: 4.4w
         /** @var Request $self */
-        $self = Container::$instance->getPrototype('httpRequest');
+        $self = BeanFactory::getBean('httpRequest');
         // return $self; // QPS: 4.2w -> 4.35w
 
         // SERVER data. swoole Request->server always exists
@@ -427,6 +429,14 @@ class Request extends PsrRequest implements ServerRequestInterface
         $query    = $this->getUriQuery();
         $question = $this->getUri()->getHost() . ($this->getUriPath() === '/' ? '/?' : '?');
         return $query ? $this->url() . $question . $query : $this->url();
+    }
+
+    /**
+     * @return int
+     */
+    public function getFd(): int
+    {
+        return $this->coRequest->fd;
     }
 
     /**

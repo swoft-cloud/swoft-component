@@ -22,6 +22,7 @@ class CEchoHandler extends AbstractProcessingHandler
      */
     public const STYLES = [
         Logger::INFO    => 'green',
+        Logger::DEBUG   => 'cyan',
         Logger::WARNING => 'yellow',
         Logger::ERROR   => 'red',
     ];

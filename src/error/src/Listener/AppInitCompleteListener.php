@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Error\Bootstrap\Listener;
+namespace Swoft\Error\Listener;
 
-use Swoft\Error\Annotation\Mapping\ExceptionHandlerParser;
+use Swoft\Error\Annotation\Parser\ExceptionHandlerParser;
 use Swoft\Error\ErrorHandlers;
 use Swoft\Error\ErrorType;
 use Swoft\Event\Annotation\Mapping\Listener;

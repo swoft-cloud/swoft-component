@@ -1,14 +1,15 @@
 <?php
 
-namespace Swoft\Http\Server\Helper;
+namespace Swoft\Http\Message\Helper;
 
 use Psr\Http\Message\UploadedFileInterface;
-use Swoft\Bean\Container;
+use Swoft\Bean\BeanFactory;
 use Swoft\Http\Message\Upload\UploadedFile;
 use Swoft\Http\Message\Uri\Uri;
 
 /**
  * Class HttpHelper
+ * @since 2.0
  */
 class HttpHelper
 {
@@ -104,11 +105,12 @@ class HttpHelper
      * @param string $headerHost
      * @param array  $server
      * @return Uri
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public static function newUriByCoRequest(string $path, string $query,  string $headerHost, array &$server): Uri
     {
         /** @var Uri $uri */
-        $uri = Container::$instance->getPrototype(Uri::class);
+        $uri = BeanFactory::getPrototype(Uri::class);
         $uri = $uri->withScheme(isset($server['https']) && $server['https'] !== 'off' ? 'https' : 'http');
         $uri = $uri->withPath($path)->withQuery($query ?: $server['query_string']);
 

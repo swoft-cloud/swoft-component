@@ -14,7 +14,7 @@ use Swoft\SwoftEvent;
 use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\Context\WsHandshakeContext;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
-use Swoft\WebSocket\Server\Exception\Dispatcher\WsErrorDispatcher;
+use Swoft\WebSocket\Server\WsErrorDispatcher;
 use Swoft\WebSocket\Server\Helper\WsHelper;
 use Swoft\WebSocket\Server\WsDispatcher;
 use Swoft\WebSocket\Server\WsServerEvent;
@@ -137,11 +137,11 @@ class HandshakeListener implements HandshakeInterface
      */
     public function onOpen(Psr7Request $request, int $fd): void
     {
-        // Init fd and coId mapping
+        // Bind cid => sid(fd)
         Session::bindCo((string)$fd);
 
         $server = \server()->getSwooleServer();
-        \server()->log("Open: conn#$fd has been opened", [], 'debug');
+        \server()->log("Open: conn#{$fd} has been opened", [], 'debug');
 
         try {
             /** @var Connection $conn */
@@ -166,7 +166,7 @@ class HandshakeListener implements HandshakeInterface
             $errDispatcher = BeanFactory::getSingleton(WsErrorDispatcher::class);
             $errDispatcher->openError($e, $request);
         } finally {
-            // Delete coId from fd mapping
+            // Unbind cid => sid(fd)
             Session::unbindCo();
         }
     }

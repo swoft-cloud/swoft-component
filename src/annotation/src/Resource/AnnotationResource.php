@@ -211,7 +211,12 @@ class AnnotationResource extends Resource
 
                 // Will filtering: interfaces and traits
                 if (!\class_exists($className)) {
-                    CLog::info('Skip not exist or invalid class: %s', $className);
+                    if (\interface_exists($className)) {
+                        CLog::debug('Skip interface: %s', $className);
+                    } else {
+                        CLog::info('Skip not-exist/invalid class: %s', $className);
+                    }
+
                     continue;
                 }
 
