@@ -4,6 +4,7 @@ namespace Swoft\Http\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanEvent;
+use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Container;
 use Swoft\Co;
 use Swoft\Dispatcher;
@@ -33,6 +34,7 @@ class HttpDispatcher extends Dispatcher
      * Dispatch http request
      *
      * @param array ...$params
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function dispatch(...$params): void
     {
@@ -46,7 +48,7 @@ class HttpDispatcher extends Dispatcher
         // return;
 
         /* @var RequestHandler $requestHandler */
-        $requestHandler = Container::$instance->getPrototype(RequestHandler::class);
+        $requestHandler = BeanFactory::getPrototype(RequestHandler::class);
         $requestHandler->initialize($this->requestMiddleware(), $this->defaultMiddleware);
 
         try {
