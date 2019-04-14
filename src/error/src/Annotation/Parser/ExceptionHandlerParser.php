@@ -13,6 +13,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
  * Class ExceptionHandler
  *
  * @since 2.0
+ *
  * @Annotation
  * @Target({"METHOD"})
  * @Attributes({
@@ -32,7 +33,7 @@ class ExceptionHandlerParser extends Parser
     /**
      * Parse object
      *
-     * @param int              $type Class or Method or Property
+     * @param int              $type       Class or Method or Property
      * @param ExceptionHandler $annotation Annotation object
      *
      * @return array
