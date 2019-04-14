@@ -31,7 +31,6 @@ use Swoft\Redis\RedisEvent;
  * @method float geoDist(string $key, string $member1, string $member2, string $unit = 'm')
  * @method array geohash(string $key, string $member1, string $member2 = null, string $memberN = null)
  * @method array geopos(string $key, string $member1, string $member2 = null, string $memberN = null)
- * @method string|bool get(string $key)
  * @method int getBit(string $key, int $offset)
  * @method int getOption(string $name)
  * @method string getRange(string $key, int $start, int $end)
@@ -129,6 +128,8 @@ use Swoft\Redis\RedisEvent;
  * @method int zRemRangeByScore(string $key, float|string $start, float|string $end)
  * @method int zInterStore(string $Output, array $ZSetKeys, array $Weights = null, string $aggregateFunction = 'SUM')
  * @method int zUnionStore(string $Output, array $ZSetKeys, array $Weights = null, string $aggregateFunction = 'SUM')
+ * @method bool mset(array $keyValues)
+ * @method bool hMSet(string $key, array $keyValues)
  */
 abstract class Connection extends AbstractConnection implements ConnectionInterface
 {
@@ -254,7 +255,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
         'zremrangebyscore',
         'zinterstore',
         'zunionstore',
-
+        'hmset',
         'psubscribe',
         'multi',
         'publish',
@@ -316,6 +317,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
             'retry_interval' => $this->redisDb->getRetryInterval(),
             'password'       => $this->redisDb->getPassword(),
             'read_timeout'   => $this->redisDb->getReadTimeout(),
+            'database'       => $this->redisDb->getDatabase()
         ];
 
         $option = $this->redisDb->getOption();
@@ -352,7 +354,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     {
         try {
 
-            $lowerMethod = $method;
+            $lowerMethod = strtolower($method);
             if (!in_array($lowerMethod, $this->supportedMethods, true)) {
                 throw new RedisException(
                     sprintf('Method(%s) is not supported!', $method)
@@ -399,29 +401,97 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
         parent::release($force);
     }
 
+    /**
+     * @param string $key
+     * @param array  $keys
+     *
+     * @return array
+     * @throws ContainerException
+     * @throws RedisException
+     * @throws \ReflectionException
+     */
     public function hMGet(string $key, array $keys): array
     {
-        return [];
+        $values = $this->command('hMGet', [$key, $keys]);
+
+        $result = [];
+        foreach ($values as $key => $value) {
+            if ($value !== false) {
+                $result[$key] = $value;
+            }
+        }
+
+        $name = $this->getCountingKey(__FUNCTION__);
+        Log::counting($name, count($result), count($keys));
+
+        return $result;
     }
 
-    public function hMSet(string $key, array $keyValues): bool
-    {
-        // TODO: Implement hMSet() method.
-    }
-
+    /**
+     * @param string $key
+     * @param array  $scoreValues
+     *
+     * @return int Number of values added
+     * @throws ContainerException
+     * @throws RedisException
+     * @throws \ReflectionException
+     */
     public function zAdd(string $key, array $scoreValues): int
     {
-        // TODO: Implement zAdd() method.
+        $params[] = $key;
+        foreach ($scoreValues as $score => $value) {
+            $params[] = $score;
+            $params[] = $value;
+        }
+
+        $result = $this->command('zAdd', $params);
+
+        return $result;
     }
 
+    /**
+     * @param string $key
+     *
+     * @return bool|string If key didn't exist, FALSE is returned. Otherwise, the value
+     *
+     * @throws ContainerException
+     * @throws RedisException
+     * @throws \ReflectionException
+     */
+    public function get(string $key)
+    {
+        $result = $this->command('get', [$key]);
+
+        $hit  = ($result === false) ? 0 : 1;
+        $name = $this->getCountingKey(__FUNCTION__);
+
+        Log::counting($name, $hit, 1);
+        return $result;
+    }
+
+    /**
+     * @param array $keys
+     *
+     * @return array
+     * @throws ContainerException
+     * @throws RedisException
+     * @throws \ReflectionException
+     */
     public function mget(array $keys): array
     {
-        // TODO: Implement mget() method.
-    }
+        $result = [];
+        $values = $this->command('mget', [$keys]);
+        foreach ($values as $index => $value) {
+            if ($value !== false && isset($keys[$index])) {
+                $key          = $keys[$index];
+                $result[$key] = $value;
+            }
+        }
 
-    public function mset(array $keyValues): bool
-    {
-        // TODO: Implement mset() method.
+        $name = $this->getCountingKey(__FUNCTION__);
+        Log::counting($name, \count($result), \count($keys));
+
+        return $result;
     }
 
     /**
@@ -463,16 +533,12 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     }
 
     /**
-     * Apply prefix to the given key if necessary.
-     *
-     * @param  string $key
+     * @param string $name
      *
      * @return string
      */
-    private function applyPrefix(string $key): string
+    private function getCountingKey(string $name): string
     {
-        $prefix = (string)$this->client->getOption(\Redis::OPT_PREFIX);
-
-        return $prefix . $key;
+        return \sprintf('redis.hit/req.%s', $name);
     }
 }

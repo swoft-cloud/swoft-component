@@ -123,7 +123,12 @@ use Swoft\Redis\Exception\RedisException;
  * @method static int zRemRangeByRank(string $key, int $start, int $end)
  * @method static int zRemRangeByScore(string $key, float|string $start, float|string $end)
  * @method static int zInterStore(string $Output, array $ZSetKeys, array $Weights = null, string $aggregateFunction = 'SUM')
- * @method static int zUnionStore(string $Output, array $ZSetKeys, array $Weights = null, string $aggregateFunction = 'SUM') static
+ * @method static int zUnionStore(string $Output, array $ZSetKeys, array $Weights = null, string $aggregateFunction = 'SUM')
+ * @method static array hMGet(string $key, array $keys)
+ * @method static bool hMSet(string $key, array $keyValues)
+ * @method static int zAdd(string $key, array $scoreValues)
+ * @method static array mget(array $keys)
+ * @method static bool mset(array $keyValues)
  */
 class Redis
 {
@@ -142,7 +147,7 @@ class Redis
             /* @var Pool $redisPool */
             $redisPool  = BeanFactory::getBean($pool);
             $connection = $redisPool->getConnection();
-            
+
             $connection->setRelease(true);
             $conManager->setConnection($connection);
         } catch (\Throwable $e) {

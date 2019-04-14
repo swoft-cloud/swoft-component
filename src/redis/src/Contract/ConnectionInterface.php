@@ -30,14 +30,6 @@ interface ConnectionInterface
 
     /**
      * @param string $key
-     * @param array  $keyValues
-     *
-     * @return mixed
-     */
-    public function hMSet(string $key, array $keyValues): bool;
-
-    /**
-     * @param string $key
      * @param array  $scoreValues
      *
      * @return int
@@ -50,13 +42,6 @@ interface ConnectionInterface
      * @return array
      */
     public function mget(array $keys): array;
-
-    /**
-     * @param array $keyValues
-     *
-     * @return bool
-     */
-    public function mset(array $keyValues): bool;
 
     /**
      * Execute commands in a pipeline.
