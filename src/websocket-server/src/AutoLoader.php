@@ -7,7 +7,7 @@ use Swoft\Server\Swoole\SwooleEvent;
 use Swoft\SwoftComponent;
 use Swoft\WebSocket\Server\Router\Router;
 use Swoft\WebSocket\Server\Swoole\CloseListener;
-use Swoft\WebSocket\Server\Swoole\HandShakeListener;
+use Swoft\WebSocket\Server\Swoole\HandshakeListener;
 use Swoft\WebSocket\Server\Swoole\MessageListener;
 
 /**
@@ -66,7 +66,7 @@ class AutoLoader extends SwoftComponent
                     // Enable http handle
                     // SwooleEvent::REQUEST   => \bean(RequestListener::class),
                     // websocket
-                    SwooleEvent::HANDSHAKE => \bean(HandShakeListener::class),
+                    SwooleEvent::HANDSHAKE => \bean(HandshakeListener::class),
                     SwooleEvent::MESSAGE   => \bean(MessageListener::class),
                     SwooleEvent::CLOSE     => \bean(CloseListener::class),
                 ]

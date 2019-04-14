@@ -5,7 +5,7 @@ namespace SwoftTest\WebSocket\Server\Fixture;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\WebSocket\Server\Annotation\Mapping\OnClose;
-use Swoft\WebSocket\Server\Annotation\Mapping\OnHandShake;
+use Swoft\WebSocket\Server\Annotation\Mapping\OnHandshake;
 use Swoft\WebSocket\Server\Annotation\Mapping\OnOpen;
 use Swoft\WebSocket\Server\Annotation\Mapping\WsModule;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
@@ -60,7 +60,7 @@ class ChatModule implements WsModuleInterface
      *  - 第二个元素是response对象
      * - 可以在response设置一些自定义header,body等信息
      *
-     * @OnHandShake()
+     * @OnHandshake()
      * @param Request  $request
      * @param Response $response
      * @return array

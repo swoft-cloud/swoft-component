@@ -3,11 +3,13 @@
 namespace Swoft\WebSocket\Server\Exception\Dispatcher;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Error\DefaultErrorDispatcher;
 use Swoft\Error\ErrorHandlers;
 use Swoft\Error\ErrorType;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
-use Swoft\WebSocket\Server\Contract\HandShakeErrorHandlerInterface;
+use Swoft\WebSocket\Server\Contract\CloseErrorHandlerInterface;
+use Swoft\WebSocket\Server\Contract\HandshakeErrorHandlerInterface;
 use Swoft\WebSocket\Server\Contract\MessageErrorHandlerInterface;
 use Swoft\WebSocket\Server\Contract\OpenErrorHandlerInterface;
 use Swoft\WebSocket\Server\Exception\WsMessageRouteException;
@@ -38,12 +40,35 @@ class WsErrorDispatcher
         /** @var ErrorHandlers $handlers */
         $handlers = \Swoft::getSingleton(ErrorHandlers::class);
 
-        /** @var HandShakeErrorHandlerInterface $handler */
+        /** @var HandshakeErrorHandlerInterface $handler */
         if ($handler = $handlers->matchHandler($e, ErrorType::WS_HS)) {
             return $handler->handle($e, $response);
         }
 
         return $response->withStatus(500)->withContent($e->getMessage());
+    }
+
+    /**
+     * @param \Throwable $e
+     * @param Request $request
+     * @throws \Throwable
+     */
+    public function openError(\Throwable $e, Request $request): void
+    {
+        /** @var ErrorHandlers $handlers */
+        $handlers = \Swoft::getSingleton(ErrorHandlers::class);
+
+        /** @var OpenErrorHandlerInterface $handler */
+        if ($handler = $handlers->matchHandler($e, ErrorType::WS_OPN)) {
+            $handler->handle($e, $request);
+            return;
+        }
+
+        // No handler, use default error dispatcher
+
+        /** @var DefaultErrorDispatcher $defDispatcher */
+        $defDispatcher = \Swoft::getSingleton(DefaultErrorDispatcher::class);
+        $defDispatcher->run($e);
     }
 
     /**
@@ -72,20 +97,24 @@ class WsErrorDispatcher
 
     /**
      * @param \Throwable $e
-     * @param Request $request
+     * @param int        $fd
      * @throws \Throwable
      */
-    public function openError(\Throwable $e, Request $request): void
+    public function closeError(\Throwable $e, int $fd): void
     {
         /** @var ErrorHandlers $handlers */
         $handlers = \Swoft::getSingleton(ErrorHandlers::class);
 
-        /** @var OpenErrorHandlerInterface $handler */
-        if ($handler = $handlers->matchHandler($e, ErrorType::WS_OPN)) {
-            $handler->handle($e, $request);
+        /** @var CloseErrorHandlerInterface $handler */
+        if ($handler = $handlers->matchHandler($e, ErrorType::WS_CLS)) {
+            $handler->handle($e, $fd);
             return;
         }
 
-        // TODO ?
+        // No handler, use default error dispatcher
+
+        /** @var DefaultErrorDispatcher $defDispatcher */
+        $defDispatcher = \Swoft::getSingleton(DefaultErrorDispatcher::class);
+        $defDispatcher->run($e);
     }
 }

@@ -6,18 +6,18 @@ use Swoole\Http\Request;
 use Swoole\Http\Response;
 
 /**
- * Interface HandShakeInterface
+ * Interface HandshakeInterface
  *
  * @since 2.0
  */
-interface HandShakeInterface
+interface HandshakeInterface
 {
     /**
-     * HandShake event
+     * Ws Handshake event
      *
      * @param Request  $request
      * @param Response $response
      * @return bool
      */
-    public function onHandShake(Request $request, Response $response): bool;
+    public function onHandshake(Request $request, Response $response): bool;
 }

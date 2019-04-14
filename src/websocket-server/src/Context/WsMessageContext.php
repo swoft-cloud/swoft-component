@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\WebSocket\Server;
+namespace Swoft\WebSocket\Context;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Context\AbstractContext;

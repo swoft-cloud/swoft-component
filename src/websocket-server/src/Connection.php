@@ -81,7 +81,7 @@ class Connection implements SessionInterface
     {
         $info = \server()->getClientInfo($fd);
 
-        \server()->log("HandShake: conn#{$fd} send handshake request to {$path}, client info: ", $info, 'debug');
+        \server()->log("Handshake: conn#{$fd} send handshake request to {$path}, client info: ", $info, 'debug');
 
         $this->set(self::METADATA_KEY, [
             'fd'            => $fd,

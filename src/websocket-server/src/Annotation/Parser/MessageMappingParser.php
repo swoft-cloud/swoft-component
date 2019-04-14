@@ -9,7 +9,7 @@ use Swoft\WebSocket\Server\Annotation\Mapping\MessageMapping;
 use Swoft\WebSocket\Server\Router\RouteRegister;
 
 /**
- * Class WsHandShakeParser
+ * Class MessageMappingParser
  * @since 2.0
  * @AnnotationParser(MessageMapping::class)
  */

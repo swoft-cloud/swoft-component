@@ -3,13 +3,13 @@
 namespace Swoft\WebSocket\Server\Exception;
 
 use Swoft\Error\ErrorType;
-use Swoft\WebSocket\Server\Contract\HandShakeErrorHandlerInterface;
+use Swoft\WebSocket\Server\Contract\HandshakeErrorHandlerInterface;
 
 /**
- * Class AbstractHandShakeErrorHandler
+ * Class AbstractHandshakeErrorHandler
  * @since 2.0
  */
-abstract class AbstractHandShakeErrorHandler implements HandShakeErrorHandlerInterface
+abstract class AbstractHandshakeErrorHandler implements HandshakeErrorHandlerInterface
 {
     /**
      * @return int

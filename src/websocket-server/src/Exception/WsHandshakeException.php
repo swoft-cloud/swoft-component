@@ -3,10 +3,10 @@
 namespace Swoft\WebSocket\Server\Exception;
 
 /**
- * Class WsHandShakeException
+ * Class WsHandshakeException
  * @since 2.0
  */
-class WsHandShakeException extends WsServerException
+class WsHandshakeException extends WsServerException
 {
     // public $request;
 }

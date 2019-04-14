@@ -10,7 +10,7 @@ use Swoft\Session\Session;
 use Swoft\SwoftEvent;
 use Swoft\WebSocket\Server\Exception\Dispatcher\WsErrorDispatcher;
 use Swoft\WebSocket\Server\WsDispatcher;
-use Swoft\WebSocket\Server\WsMessageContext;
+use Swoft\WebSocket\Context\WsMessageContext;
 use Swoft\WebSocket\Server\WsServerEvent;
 use Swoole\Websocket\Frame;
 use Swoole\Websocket\Server;

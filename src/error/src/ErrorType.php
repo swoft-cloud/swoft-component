@@ -8,11 +8,12 @@ namespace Swoft\Error;
  */
 final class ErrorType
 {
-    public const WS   = 1;
-    public const WS_HS    = 1;
-    public const WS_OPN   = 1;
-    public const WS_MSG   = 1;
-    public const WS_CLS   = 1;
+    // WebSocket server
+    public const WS_HS  = 21;
+    public const WS_OPN = 22;
+    public const WS_MSG = 23;
+    public const WS_CLS = 24;
+
     public const CLI  = 2;
     public const RPC  = 3;
     public const UDP  = 4;

@@ -8,6 +8,7 @@ use Swoft\Server\Swoole\CloseInterface;
 use Swoft\Session\Session;
 use Swoft\SwoftEvent;
 use Swoft\WebSocket\Server\Connection;
+use Swoft\WebSocket\Server\Exception\Dispatcher\WsErrorDispatcher;
 use Swoft\WebSocket\Server\WsDispatcher;
 use Swoft\WebSocket\Server\WsServerEvent;
 use Swoole\Server;
@@ -62,7 +63,11 @@ class CloseListener implements CloseInterface
             \Swoft::trigger(WsServerEvent::AFTER_CLOSE, $fd, $server);
         } catch (\Throwable $e) {
             \server()->log("Close: conn#{$fd} error on handle close, ERR: " . $e->getMessage(), [], 'error');
-            \Swoft::trigger(WsServerEvent::CLOSE_ERROR, 'close', $e);
+            \Swoft::trigger(WsServerEvent::CLOSE_ERROR, $e, $fd);
+
+            /** @var WsErrorDispatcher $errDispatcher */
+            $errDispatcher = BeanFactory::getSingleton(WsErrorDispatcher::class);
+            $errDispatcher->closeError($e, $fd);
         } finally {
             // Unbind fd
             Session::unbindCo();

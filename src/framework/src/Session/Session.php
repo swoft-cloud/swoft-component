@@ -43,7 +43,7 @@ class Session
 
     /**
      * Bind current coroutine to an session
-     *  In webSocket server, will bind FD and CID relationship. (should call it on handshake ok)
+     *  In webSocket server, will bind FD and CID relationship. (should call it on handshake, message, open, close)
      *  In Http application, will bind session Id and cid relationship. (call on request)
      *
      * @param string $sid
@@ -54,7 +54,7 @@ class Session
     }
 
     /**
-     * Unbind SID and CID relationship. (should call it on close OR error)
+     * Unbind SID and CID relationship. (should call it on complete OR error)
      *
      * @return string
      */

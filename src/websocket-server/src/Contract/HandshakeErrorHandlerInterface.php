@@ -6,10 +6,10 @@ use Swoft\Error\Contract\ErrorHandlerInterface;
 use Swoft\Http\Message\Response;
 
 /**
- * Interface HandShakeErrorHandlerInterface
+ * Interface HandshakeErrorHandlerInterface
  * @since 2.0
  */
-interface HandShakeErrorHandlerInterface extends ErrorHandlerInterface
+interface HandshakeErrorHandlerInterface extends ErrorHandlerInterface
 {
     /**
      * @param \Throwable $e

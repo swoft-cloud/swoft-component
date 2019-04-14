@@ -64,19 +64,18 @@ class WsDispatcher
             $module = BeanFactory::getSingleton($class);
 
             // Call user method
-            if ($method = $info['eventMethods']['handShake'] ?? '') {
+            if ($method = $info['eventMethods']['handshake'] ?? '') {
                 return $module->$method($request, $response);
             }
 
-            // Auto handShake
+            // Auto handshake
             return [true, $response->withAddedHeader('swoft-ws-handshake', 'auto')];
         } catch (\Throwable $e) {
             \Swoft::trigger(WsServerEvent::HANDSHAKE_ERROR, $e, $request);
 
             /** @var WsErrorDispatcher $errDispatcher */
             $errDispatcher = BeanFactory::getSingleton(WsErrorDispatcher::class);
-
-            $response = $errDispatcher->handshakeError($e, $response);
+            $response      = $errDispatcher->handshakeError($e, $response);
         }
 
         return [false, $response];
@@ -152,43 +151,15 @@ class WsDispatcher
         $info = $conn->getModuleInfo();
 
         $method = $info['eventMethods']['close'] ?? '';
-        if ($method) {
-            $class = $info['class'];
-            \server()->log("conn#{$fd} call ws close handler '{$class}::{$method}'", [], 'debug');
-
-            /** @var WsModuleInterface $module */
-            $module = BeanFactory::getSingleton($class);
-            $module->$method($server, $fd);
+        if (!$method) {
+            return;
         }
-    }
 
-    /**
-     * @param \Throwable $e
-     * @param string     $type Like 'handshake' 'message' 'close'
-     * @throws \Throwable
-     */
-    public function error(\Throwable $e, string $type): void
-    {
-        /** @var Connection $conn */
-        $conn = Session::mustGet();
-        $fd   = $conn->getFd();
-        $info = $conn->getModuleInfo();
+        $class = $info['class'];
+        \server()->log("conn#{$fd} call ws close handler '{$class}::{$method}'", [], 'debug');
 
-        if ($method = $info['eventMethods']['error'] ?? '') {
-            $class = $info['class'];
-
-            \server()->log("conn#{$fd} call ws error handler {$class}::{$method}", [], 'debug');
-
-            /** @var WsModuleInterface $module */
-            $module = BeanFactory::getSingleton($class);
-            $module->$method($e, $type, $fd);
-        } else {
-            $evt = \Swoft::trigger(WsServerEvent::ON_ERROR, $type, $e);
-
-            // $server->close($fd);
-            if (!$evt->isPropagationStopped()) {
-                throw $e;
-            }
-        }
+        /** @var WsModuleInterface $module */
+        $module = BeanFactory::getSingleton($class);
+        $module->$method($server, $fd);
     }
 }
