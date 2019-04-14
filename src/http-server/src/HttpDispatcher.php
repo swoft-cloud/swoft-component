@@ -3,15 +3,11 @@
 namespace Swoft\Http\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\BeanEvent;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Container;
-use Swoft\Co;
 use Swoft\Dispatcher;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Middleware\DefaultMiddleware;
-use Swoft\Http\Server\Middleware\RequestMiddleware;
 use Swoft\Http\Server\Middleware\UserMiddleware;
 use Swoft\Http\Server\Middleware\ValidatorMiddleware;
 
@@ -34,7 +30,9 @@ class HttpDispatcher extends Dispatcher
      * Dispatch http request
      *
      * @param array ...$params
+     * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     public function dispatch(...$params): void
     {
@@ -59,13 +57,11 @@ class HttpDispatcher extends Dispatcher
             // Begin handle request, return response
             $response = $requestHandler->handle($request);
         } catch (\Throwable $e) {
-            echo json_encode($e);
-            \printf(
-                "HTTP Dispatch Error: %s\nAt %s %d\n",
-                $e->getMessage(),
-                $e->getFile(),
-                $e->getLine()
-            );
+            /** @var HttpErrorDispatcher $errDispatcher */
+            $errDispatcher = BeanFactory::getSingleton(HttpErrorDispatcher::class);
+
+            // Handle request error
+            $response = $errDispatcher->run($e, $response);
         }
 
         // Trigger after request

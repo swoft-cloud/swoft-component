@@ -12,6 +12,11 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 class ErrorHandlers
 {
     /**
+     * @var int
+     */
+    private $count = 0;
+
+    /**
      * @var array
      * [
      *  exception class => handler class,
@@ -29,6 +34,7 @@ class ErrorHandlers
      */
     public function addHandler(string $exceptionClass, string $handlerClass, int $type = ErrorType::DEF): void
     {
+        $this->count++;
         $this->handlers[$type][$exceptionClass] = $handlerClass;
     }
 
@@ -41,7 +47,7 @@ class ErrorHandlers
     public function matchHandler(\Throwable $e, int $type = ErrorType::DEF)
     {
         // No handlers found
-        if (!isset($this->handlers[$type]) || $this->count() === 0) {
+        if (!isset($this->handlers[$type]) || $this->getCount() === 0) {
             return null;
         }
 
@@ -67,9 +73,17 @@ class ErrorHandlers
     /**
      * @return int
      */
-    public function count(): int
+    public function getTypeCount(): int
     {
         return \count($this->handlers);
+    }
+
+    /**
+     * @return int
+     */
+    public function getCount(): int
+    {
+        return $this->count;
     }
 
     /**
@@ -81,5 +95,4 @@ class ErrorHandlers
     {
         $this->handlers = [];
     }
-
 }
