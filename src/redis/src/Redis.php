@@ -129,6 +129,8 @@ use Swoft\Redis\Exception\RedisException;
  * @method static int zAdd(string $key, array $scoreValues)
  * @method static array mget(array $keys)
  * @method static bool mset(array $keyValues)
+ * @method static array pipeline(callable $callback)
+ * @method static array transaction(callable $callback)
  */
 class Redis
 {
