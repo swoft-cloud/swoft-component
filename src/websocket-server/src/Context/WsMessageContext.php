@@ -23,6 +23,7 @@ class WsMessageContext extends AbstractContext
     /**
      * @param Frame $frame
      * @return WsMessageContext
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public static function new(Frame $frame): self
     {

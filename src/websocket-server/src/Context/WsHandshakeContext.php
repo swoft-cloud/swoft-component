@@ -29,6 +29,7 @@ class WsHandshakeContext extends AbstractContext
      * @param Request  $request
      * @param Response $response
      * @return WsHandshakeContext
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public static function new(Request $request, Response $response): self
     {

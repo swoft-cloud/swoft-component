@@ -27,6 +27,7 @@ class WsCloseContext extends AbstractContext
      * @param int $fd
      * @param int $reactorId
      * @return WsCloseContext
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public static function new(int $fd, int $reactorId): self
     {

@@ -31,6 +31,7 @@ class WsErrorDispatcher
      */
     public function handshakeError(\Throwable $e, Response $response): Response
     {
+        // TODO handle it?
         if ($e instanceof WsModuleRouteException) {
             return $response
                 ->withStatus(404)
