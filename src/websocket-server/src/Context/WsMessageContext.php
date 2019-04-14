@@ -1,13 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\WebSocket\Context;
+namespace Swoft\WebSocket\Server\Context;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\BeanFactory;
 use Swoft\Context\AbstractContext;
 use Swoole\WebSocket\Frame;
 
 /**
- * Class WsMessageContext
+ * Class WsMessageContext - on ws message event
  *
  * @since 2.0
  * @Bean(scope=Bean::PROTOTYPE)
@@ -21,10 +22,17 @@ class WsMessageContext extends AbstractContext
 
     /**
      * @param Frame $frame
+     * @return WsMessageContext
      */
-    public function initialize(Frame $frame): void
+    public static function new(Frame $frame): self
     {
-        $this->frame = $frame;
+        /** @var self $ctx */
+        $ctx = BeanFactory::getPrototype(__CLASS__);
+
+        // Initial properties
+        $ctx->frame = $frame;
+
+        return $ctx;
     }
 
     /**

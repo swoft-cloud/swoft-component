@@ -4,6 +4,7 @@ namespace Swoft\WebSocket\Server;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\BeanFactory;
 use Swoft\Concern\DataPropertyTrait;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
@@ -55,22 +56,26 @@ class Connection implements SessionInterface
     private $moduleInfo;
 
     /**
-     * Initialize connection object
-     *
      * @param int      $fd
      * @param Request  $request
      * @param Response $response
+     * @return Connection
      */
-    public function initialize(int $fd, Request $request, Response $response): void
+    public static function new(int $fd, Request $request, Response $response): self
     {
-        $this->fd = $fd;
+        /** @var self $sess */
+        $sess = BeanFactory::getPrototype(__CLASS__);
+
+        $sess->fd = $fd;
 
         // Init meta info
-        $this->buildMetadata($fd, $request->getUriPath());
+        $sess->buildMetadata($fd, $request->getUriPath());
 
-        $this->request   = $request;
-        $this->response  = $response;
-        $this->handshake = false;
+        $sess->request   = $request;
+        $sess->response  = $response;
+        $sess->handshake = false;
+
+        return $sess;
     }
 
     /**

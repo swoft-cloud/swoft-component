@@ -10,7 +10,7 @@ use Swoft\Session\Session;
 use Swoft\SwoftEvent;
 use Swoft\WebSocket\Server\Exception\Dispatcher\WsErrorDispatcher;
 use Swoft\WebSocket\Server\WsDispatcher;
-use Swoft\WebSocket\Context\WsMessageContext;
+use Swoft\WebSocket\Server\Context\WsMessageContext;
 use Swoft\WebSocket\Server\WsServerEvent;
 use Swoole\Websocket\Frame;
 use Swoole\Websocket\Server;
@@ -31,15 +31,15 @@ class MessageListener implements MessageInterface
      */
     public function onMessage(Server $server, Frame $frame): void
     {
-        /** @var WsMessageContext $ctx */
         $fd  = $frame->fd;
         $sid = (string)$fd;
-        $ctx = BeanFactory::getPrototype(WsMessageContext::class);
-        $ctx->initialize($frame);
+
+        /** @var WsMessageContext $ctx */
+        $ctx = WsMessageContext::new($frame);
 
         // Storage context
         Context::set($ctx);
-        // Init fd and coId mapping
+        // Bind cid => sid(fd)
         Session::bindCo($sid);
 
         /** @var WsDispatcher $dispatcher */
@@ -68,7 +68,7 @@ class MessageListener implements MessageInterface
             // Destroy
             \Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
 
-            // Delete coId from fd mapping
+            // Unbind cid => sid(fd)
             Session::unbindCo();
         }
     }

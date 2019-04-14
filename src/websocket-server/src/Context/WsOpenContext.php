@@ -4,16 +4,15 @@ namespace Swoft\WebSocket\Server\Context;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Http\Message\Request;
-use Swoft\Http\Message\Response;
 use Swoft\Context\AbstractContext;
+use Swoft\Http\Message\Request;
 
 /**
- * Class WsRequestContext - on ws handshake event
+ * Class WsOpenContext - on ws open event
  * @since 2.0
  * @Bean(scope=Bean::PROTOTYPE)
  */
-class WsHandshakeContext extends AbstractContext
+class WsOpenContext extends AbstractContext
 {
     /**
      * @var Request
@@ -21,22 +20,16 @@ class WsHandshakeContext extends AbstractContext
     private $request;
 
     /**
-     * @var Response
+     * @param Request $request
+     * @return WsOpenContext
      */
-    private $response;
-
-    /**
-     * @param Request  $request
-     * @param Response $response
-     * @return WsHandshakeContext
-     */
-    public static function new(Request $request, Response $response): self
+    public static function new(Request $request): self
     {
         /** @var self $ctx */
         $ctx = BeanFactory::getPrototype(__CLASS__);
 
-        $ctx->request  = $request;
-        $ctx->response = $response;
+        // Initial properties
+        $ctx->request = $request;
 
         return $ctx;
     }
@@ -49,7 +42,6 @@ class WsHandshakeContext extends AbstractContext
         parent::clear();
 
         $this->request = null;
-        $this->response = null;
     }
 
     /**
@@ -66,21 +58,5 @@ class WsHandshakeContext extends AbstractContext
     public function setRequest(Request $request): void
     {
         $this->request = $request;
-    }
-
-    /**
-     * @return Response
-     */
-    public function getResponse(): Response
-    {
-        return $this->response;
-    }
-
-    /**
-     * @param Response $response
-     */
-    public function setResponse(Response $response): void
-    {
-        $this->response = $response;
     }
 }

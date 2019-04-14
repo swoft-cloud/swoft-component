@@ -5,12 +5,14 @@ namespace Swoft\WebSocket\Server\Swoole;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\Co;
+use Swoft\Context\Context;
 use Swoft\Http\Message\Request as Psr7Request;
 use Swoft\Http\Message\Response as Psr7Response;
 use Swoft\Server\Swoole\HandshakeInterface;
 use Swoft\Session\Session;
 use Swoft\SwoftEvent;
 use Swoft\WebSocket\Server\Connection;
+use Swoft\WebSocket\Server\Context\WsHandshakeContext;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\Exception\Dispatcher\WsErrorDispatcher;
 use Swoft\WebSocket\Server\Helper\WsHelper;
@@ -53,18 +55,20 @@ class HandshakeListener implements HandshakeInterface
             return false;
         }
 
-        // Initialize psr7 Request and Response and metadata
+        // Initialize psr7 Request and Response
         $psr7Req = Psr7Request::new($request);
         $psr7Res = Psr7Response::new($response);
 
-        /** @var Connection $conn Initialize connection */
-        $conn = BeanFactory::getPrototype(Connection::class);
-        $conn->initialize($fd, $psr7Req, $psr7Res);
+        // Initialize connection session and context
+        $ctx  = WsHandshakeContext::new($psr7Req, $psr7Res);
+        $conn = Connection::new($fd, $psr7Req, $psr7Res);
 
-        // Bind fd
-        Session::bindCo($sid);
         // Bind connection
         Session::set($sid, $conn);
+        // Storage context
+        Context::set($ctx);
+        // Bind cid => sid(fd)
+        Session::bindCo($sid);
 
         try {
             \Swoft::trigger(WsServerEvent::HANDSHAKE_BEFORE, $fd, $request, $response);
@@ -119,7 +123,7 @@ class HandshakeListener implements HandshakeInterface
             // Destroy
             \Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
 
-            // Delete coId from fd mapping
+            // Unbind cid => sid(fd)
             Session::unbindCo();
         }
 

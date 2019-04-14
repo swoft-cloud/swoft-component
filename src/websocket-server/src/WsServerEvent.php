@@ -19,5 +19,4 @@ final class WsServerEvent
     public const MESSAGE_AFTER     = 'swoft.ws.server.message.after';
     public const AFTER_CLOSE       = 'swoft.ws.server.close.after';
     public const CLOSE_ERROR       = 'swoft.ws.server.close.error';
-    public const ON_ERROR          = 'swoft.ws.server.error';
 }

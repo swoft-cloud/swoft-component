@@ -96,18 +96,6 @@ class ChatModule implements WsModuleInterface
     }
 
     /**
-     * On error
-     *
-     * @param \Throwable $e
-     * @param int        $fd
-     */
-    public function onError(\Throwable $e, int $fd): void
-    {
-        // TODO: Implement onError() method.
-        // \server()->push($fd, 'your sent data format is invalid');
-    }
-
-    /**
      * @todo
      * @return array
      */
