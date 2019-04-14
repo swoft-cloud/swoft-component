@@ -12,6 +12,7 @@ use Swoft\Redis\Contract\ConnectionInterface;
 use Swoft\Redis\Exception\RedisException;
 use Swoft\Redis\Pool;
 use Swoft\Redis\RedisDb;
+use Swoft\Redis\RedisEvent;
 
 /**
  * Class Connection
@@ -358,15 +359,21 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
                 );
             }
 
+            // Before event
+            \Swoft::trigger(RedisEvent::BEFORE_COMMAND, null, $method, $parameters);
+
             Log::profileStart('redis.%s', $method);
             $result = $this->client->{$method}(...$parameters);
             Log::profileEnd('redis.%s', $method);
+
+            // After event
+            \Swoft::trigger(RedisEvent::AFTER_COMMAND, null, $method, $parameters, $result);
 
             // Release Connection
             $this->release();
         } catch (\Throwable $e) {
             if (!$reconnect && $this->reconnect()) {
-                $this->command($method, $parameters, true);
+                return $this->command($method, $parameters, true);
             }
 
             throw new RedisException(
