@@ -5,21 +5,22 @@ namespace Swoft\WebSocket\Server\Annotation\Parser;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\AnnotationException;
-use Swoft\WebSocket\Server\Annotation\Mapping\MessageMapping;
+use Swoft\Server\Swoole\SwooleEvent;
+use Swoft\WebSocket\Server\Annotation\Mapping\OnHandshake;
 use Swoft\WebSocket\Server\Router\RouteRegister;
 
 /**
- * Class MessageMappingParser
+ * Class OnHandshakeParser
  * @since 2.0
- * @AnnotationParser(MessageMapping::class)
+ * @AnnotationParser(OnHandshake::class)
  */
-class MessageMappingParser extends Parser
+class OnHandshakeParser extends Parser
 {
     /**
      * Parse object
      *
-     * @param int            $type Class or Method or Property
-     * @param MessageMapping $annotation Annotation object
+     * @param int         $type       Class or Method or Property
+     * @param OnHandshake $annotation Annotation object
      *
      * @return array
      * Return empty array is nothing to do!
@@ -29,10 +30,10 @@ class MessageMappingParser extends Parser
     public function parse(int $type, $annotation): array
     {
         if ($type !== self::TYPE_METHOD) {
-            throw new AnnotationException('`@MessageMapping` must be defined on class method!');
+            throw new AnnotationException('`@OnHandshake` must be defined on class method!');
         }
 
-        RouteRegister::bindCommand($this->className, $this->methodName, $annotation->getCommand());
+        RouteRegister::bindEvent($this->className, $this->methodName, SwooleEvent::HANDSHAKE);
 
         return [];
     }

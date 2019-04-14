@@ -39,9 +39,9 @@ class AnnotationProcessor extends Processor
 
         CLog::info(
             'Annotations is scanned(autoloader %d, annotation %d, parser %d)',
+            $stats['autoloader'],
             $stats['annotation'],
-            $stats['parser'],
-            $stats['autoloader']
+            $stats['parser']
         );
 
         return $this->application->afterAnnotation();

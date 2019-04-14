@@ -6,7 +6,7 @@ use Swoft\Bean\BeanFactory;
 use Swoft\Co;
 use Swoft\Exception\ContextException;
 use Swoft\Http\Server\HttpContext;
-use Swoft\WebSocket\Server\WsMessageContext;
+use Swoft\WebSocket\Server\Context\WsMessageContext;
 
 /**
  * Class Context - request context manager

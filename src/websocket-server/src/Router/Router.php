@@ -24,7 +24,7 @@ class Router implements RouterInterface
      *      'messageParser'  => message parser class,
      *      'defaultCommand' => default command,
      *      'eventMethods'   => [
-     *          'handShake' => method1, (on the moduleClass)
+     *          'handshake' => method1, (on the moduleClass)
      *          'open'      => method2,
      *          'close'     => method3,
      *      ],

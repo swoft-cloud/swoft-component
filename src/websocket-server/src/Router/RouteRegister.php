@@ -48,7 +48,7 @@ final class RouteRegister
     /**
      * @param string $moduleClass
      * @param string $method
-     * @param string $event such as: message, handShake, open, close
+     * @param string $event such as: message, handshake, open, close
      */
     public static function bindEvent(string $moduleClass, string $method, string $event): void
     {

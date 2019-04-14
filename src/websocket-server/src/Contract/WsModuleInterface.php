@@ -42,12 +42,4 @@ interface WsModuleInterface
      * @param int    $fd
      */
     public function onClose(Server $server, int $fd): void;
-
-    /**
-     * On error
-     *
-     * @param \Throwable $e
-     * @param int        $fd
-     */
-    public function onError(\Throwable $e, int $fd): void;
 }
