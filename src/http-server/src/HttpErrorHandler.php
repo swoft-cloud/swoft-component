@@ -2,7 +2,6 @@
 
 namespace Swoft\Http\Server;
 
-use Swoft\Error\ErrorHandlerInterface;
 use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Contract\HttpErrorHandlerInterface;
 
@@ -10,7 +9,7 @@ use Swoft\Http\Server\Contract\HttpErrorHandlerInterface;
  * Class HttpErrorHandler
  * @since 2.0
  */
-abstract class HttpErrorHandler implements ErrorHandlerInterface, HttpErrorHandlerInterface
+abstract class HttpErrorHandler //implements ErrorHandlerInterface, HttpErrorHandlerInterface
 {
     /**
      * @param \Throwable $e
