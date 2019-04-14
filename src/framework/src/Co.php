@@ -82,6 +82,7 @@ class Co
                     $e->getLine(),
                     $e->getTraceAsString()
                 );
+            }
 
             if ($wait) {
                 // Trigger defer
@@ -89,7 +90,6 @@ class Co
 
                 Context::getWaitGroup()->done();
             }
-        }
         });
     }
 

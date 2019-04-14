@@ -30,6 +30,6 @@ class CoroutineDestoryListener implements EventHandlerInterface
     {
         /* @var ConnectionManager $conManager */
         $conManager = BeanFactory::getBean(ConnectionManager::class);
-        $conManager->release();
+        $conManager->release(true);
     }
 }

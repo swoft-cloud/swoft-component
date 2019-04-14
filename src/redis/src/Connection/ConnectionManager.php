@@ -61,7 +61,7 @@ class ConnectionManager
                 $connection->release();
             }
         }
-
+        
         if ($final) {
             $finalKey = sprintf('%d', Co::tid());
             $this->unset($finalKey);
