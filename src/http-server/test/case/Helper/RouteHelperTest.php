@@ -8,7 +8,6 @@ use Swoft\Http\Server\Helper\RouteHelper;
 /**
  * Class RouteHelperTest
  * @package SwoftTest\Http\Server\Helper
- * @group http-router
  */
 class RouteHelperTest extends TestCase
 {
