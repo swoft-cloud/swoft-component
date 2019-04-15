@@ -1,8 +1,7 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Db\Connector;
-
+namespace Swoft\Db\Contract;
 
 /**
  * Class ConnectorInterface

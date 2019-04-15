@@ -6,7 +6,7 @@ namespace Swoft\Db\Eloquent;
 
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\Concern\BuildsQueries;
-use Swoft\Db\Connection;
+use Swoft\Db\Connection\Connection;
 use Swoft\Db\Exception\EloquentException;
 use Swoft\Db\Exception\EntityException;
 use Swoft\Db\Exception\PoolException;

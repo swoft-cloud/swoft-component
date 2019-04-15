@@ -3,7 +3,9 @@
 
 namespace Swoft\Db;
 
-use Swoft\Db\Connector\ConnectorInterface;
+use Swoft\Db\Connection\Connection;
+use Swoft\Db\Connection\MySqlConnection;
+use Swoft\Db\Contract\ConnectorInterface;
 use Swoft\Db\Connector\MySqlConnector;
 use Swoft\Exception\SessionException;
 use Swoft\Server\Swoole\ConnectInterface;

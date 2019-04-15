@@ -7,7 +7,7 @@ use Swoft\Aop\Proxy;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\Concern\HasAttributes;
 use Swoft\Db\Concern\HidesAttributes;
-use Swoft\Db\Connection;
+use Swoft\Db\Connection\Connection;
 use Swoft\Db\DB;
 use Swoft\Db\EntityRegister;
 use Swoft\Db\Exception\EloquentException;
@@ -831,7 +831,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
     {
         $pool = EntityRegister::getPool($this->getClassName());
 
-        return DB::pool($pool);
+        return DB::connection($pool);
     }
 
     /**
