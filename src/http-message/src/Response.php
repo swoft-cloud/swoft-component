@@ -383,9 +383,11 @@ class Response implements ResponseInterface
      * @return static|self
      * @throws \InvalidArgumentException
      */
-    public function withCharset($charset): self
+    public function withContentType(string $type, string $charset = ''): self
     {
-        return $this->withAddedHeader('Content-Type', sprintf('charset=%s', $charset));
+        $value = $type . ($charset ? ", charset={$charset}" : '');
+
+        return $this->withHeader('Content-Type', $value);
     }
 
     /**

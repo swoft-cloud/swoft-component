@@ -9,7 +9,7 @@ use Swoft\Console\AbstractHandler;
  * Class CommandHandler
  * @since 2.0
  * @Annotation
- * @Target({"CLASS", "METHOD"})
+ * @Target({"CLASS"})
  */
 final class CommandHandler extends AbstractHandler
 {
