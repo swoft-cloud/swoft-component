@@ -44,7 +44,7 @@ class BuilderTest extends TestCase
         };
         $cbSql = DB::table('user')->selectSub($subCb, 'c')->toSql();
 
-        $builder  = Builder::new(DB::pool(), null, null)->from('count')->select('id');
+        $builder  = Builder::new(DB::connection(), null, null)->from('count')->select('id');
         $buildSql = DB::table('user')->selectSub($builder, 'c')->toSql();
 
         $this->assertEquals($expectSql, $strSql);

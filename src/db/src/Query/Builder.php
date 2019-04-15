@@ -8,7 +8,7 @@ use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Bean\PrototypeInterface;
 use Swoft\Db\Concern\BuildsQueries;
-use Swoft\Db\Connection;
+use Swoft\Db\Connection\Connection;
 use Swoft\Db\Eloquent\Builder as EloquentBuilder;
 use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Query\Grammar\Grammar;

@@ -3,6 +3,8 @@
 
 namespace Swoft\Db\Connector;
 
+use Swoft\Db\Contract\ConnectorInterface;
+
 /**
  * Class Connector
  *

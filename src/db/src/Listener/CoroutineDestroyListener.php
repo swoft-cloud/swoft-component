@@ -4,7 +4,7 @@
 namespace Swoft\Db\Listener;
 
 
-use Swoft\Db\ConnectionManager;
+use Swoft\Db\Connection\ConnectionManager;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;

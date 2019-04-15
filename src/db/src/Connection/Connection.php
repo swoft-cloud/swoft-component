@@ -1,14 +1,16 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Db;
-
+namespace Swoft\Db\Connection;
 
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Connection\Pool\AbstractConnection;
-use Swoft\Db\Event\DbEvent;
+use Swoft\Db\Contract\ConnectionInterface;
+use Swoft\Db\Database;
+use Swoft\Db\DbEvent;
 use Swoft\Db\Exception\QueryException;
+use Swoft\Db\Pool;
 use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
 use Swoft\Db\Query\Grammar\Grammar;
@@ -694,6 +696,10 @@ class Connection extends AbstractConnection implements ConnectionInterface
         \Swoft::trigger(DbEvent::BEGIN_TRANSACTION);
     }
 
+    /**
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
     public function commit(): void
     {
         $cm = $this->getConMananger();
@@ -713,7 +719,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
 
             // Release connection
             $this->release();
-        }else{
+        } else {
             // Dec transaction
             $cm->decTransactionTransactons();
         }
@@ -776,6 +782,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param  bool $useReadPdo
      *
      * @return \PDO
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function getPdoForSelect($useReadPdo = true)
     {

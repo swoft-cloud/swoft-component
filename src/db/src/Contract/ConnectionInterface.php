@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Db;
+namespace Swoft\Db\Contract;
 
 use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
@@ -175,7 +175,7 @@ interface ConnectionInterface
     /**
      * Get the number of active transactions.
      *
-     * @return int
+     * @return void
      */
     public function transactionLevel(): void;
 

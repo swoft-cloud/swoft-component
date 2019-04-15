@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Db;
+namespace Swoft\Db\Listener;
 
-
+use Swoft\Db\Connection\ConnectionManager;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;

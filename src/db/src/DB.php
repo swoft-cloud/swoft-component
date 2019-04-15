@@ -4,6 +4,8 @@
 namespace Swoft\Db;
 
 use Swoft\Bean\BeanFactory;
+use Swoft\Db\Connection\Connection;
+use Swoft\Db\Connection\ConnectionManager;
 use Swoft\Db\Exception\PoolException;
 use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Query\Builder;
@@ -62,7 +64,7 @@ class DB
      * @return Connection
      * @throws PoolException
      */
-    public static function pool(string $name = Pool::DEFAULT_POOL): Connection
+    public static function connection(string $name = Pool::DEFAULT_POOL): Connection
     {
         try {
             $cm = bean(ConnectionManager::class);
@@ -94,7 +96,7 @@ class DB
             throw new QueryException(sprintf('Method(%s) is not exist!', $name));
         }
 
-        $connection = self::pool();
+        $connection = self::connection();
         return $connection->$name(...$arguments);
     }
 

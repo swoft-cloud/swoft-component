@@ -1,12 +1,13 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Db;
+namespace Swoft\Db\Connection;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Db\Query\Grammar\MySqlGrammar;
 use Swoft\Db\Query\Grammar\Grammar;
 use Swoft\Db\Query\Processor\MySqlProcessor;
+use Swoft\Db\Query\Processor\Processor;
 
 /**
  * Class MySqlConnection
@@ -50,7 +51,7 @@ class MySqlConnection extends Connection
     /**
      * Get the default post processor instance.
      *
-     * @return object|string|MySqlProcessor|Query\Processor\Processor
+     * @return object|string|MySqlProcessor|Processor
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
