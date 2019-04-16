@@ -71,6 +71,7 @@ if (!function_exists('config')) {
      * @param mixed  $default
      *
      * @return mixed
+     * @throws \Throwable
      */
     function config(string $key, $default = null)
     {
@@ -79,7 +80,7 @@ if (!function_exists('config')) {
         }
 
         /* @var \Swoft\Config\Config $config */
-        $config = \Swoft\Bean\Container::$instance->getSingleton('config');
+        $config = \Swoft\Bean\BeanFactory::getSingleton('config');
 
         return $config->get($key, $default);
     }

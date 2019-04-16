@@ -7,10 +7,10 @@ namespace Swoft\Stdlib\Helper;
  *
  * @since 2.0
  */
-class DirectoryHelper
+class DirectoryHelper extends FSHelper
 {
     /**
-     * Create directory
+     * Create directory with recursive
      *
      * @param string  $dir
      * @param integer $mode

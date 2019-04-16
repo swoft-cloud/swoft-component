@@ -15,7 +15,9 @@ class FileHelper extends FSHelper
      */
     public static function getSuffix(string $filename, bool $clearPoint = false): string
     {
-        $suffix = \strrchr($filename, '.');
+        if (!$suffix = \strrchr($filename, '.')) {
+            return '';
+        }
 
         return $clearPoint ? \rtrim($suffix, '.') : $suffix;
     }

@@ -30,10 +30,10 @@ class SystemHelper extends EnvHelper
     }
 
     /**
-     * run a command. It is support windows
+     * Run a command. It is support windows
      * @param string      $command
      * @param string|null $cwd
-     * @return array
+     * @return array [$code, $output, $error]
      * @throws \RuntimeException
      */
     public static function run(string $command, string $cwd = null): array
@@ -54,10 +54,10 @@ class SystemHelper extends EnvHelper
         // Nothing to push to input.
         \fclose($pipes[0]);
 
-        $output = stream_get_contents($pipes[1]);
+        $output = \stream_get_contents($pipes[1]);
         \fclose($pipes[1]);
 
-        $error = stream_get_contents($pipes[2]);
+        $error = \stream_get_contents($pipes[2]);
         \fclose($pipes[2]);
 
         // TODO: Write passphrase in pipes[3].
@@ -68,7 +68,6 @@ class SystemHelper extends EnvHelper
 
         return [$code, $output, $error];
     }
-
 
     /**
      * Method to execute a command in the sys

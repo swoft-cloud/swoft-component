@@ -181,7 +181,7 @@ abstract class Server implements ServerInterface
      * @param CoServer $server
      *
      * @return void
-     * @throws Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     public function onStart(CoServer $server): void
     {
@@ -213,7 +213,7 @@ abstract class Server implements ServerInterface
      *
      * @param CoServer $server
      *
-     * @throws Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     public function onManagerStart(CoServer $server): void
     {
@@ -230,7 +230,7 @@ abstract class Server implements ServerInterface
      *
      * @param CoServer $server
      *
-     * @throws Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     public function onManagerStop(CoServer $server): void
     {
@@ -243,7 +243,7 @@ abstract class Server implements ServerInterface
      * @param CoServer $server
      * @param int      $workerId
      *
-     * @throws Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     public function onWorkerStart(CoServer $server, int $workerId): void
     {
@@ -282,7 +282,7 @@ abstract class Server implements ServerInterface
      * @param CoServer $server
      * @param int      $workerId
      *
-     * @throws Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     public function onWorkerStop(CoServer $server, int $workerId): void
     {
@@ -302,7 +302,7 @@ abstract class Server implements ServerInterface
      * @param int      $exitCode
      * @param int      $signal
      *
-     * @throws Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     public function onWorkerError(CoServer $server, int $workerId, int $workerPid, int $exitCode, int $signal): void
     {
@@ -323,7 +323,7 @@ abstract class Server implements ServerInterface
      *
      * @param CoServer $server
      *
-     * @throws Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     public function onShutdown(CoServer $server): void
     {
@@ -333,7 +333,7 @@ abstract class Server implements ServerInterface
     /**
      * Bind swoole event and start swoole server
      * @throws ServerException
-     * @throws Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     protected function startSwoole(): void
     {
@@ -648,6 +648,7 @@ abstract class Server implements ServerInterface
      * @param string $msg
      * @param array  $data
      * @param string $type
+     * @throws \Throwable
      */
     public function log(string $msg, array $data = [], string $type = 'info'): void
     {
@@ -724,6 +725,14 @@ abstract class Server implements ServerInterface
     public function getSwooleServer()
     {
         return $this->swooleServer;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSwooleStats(): array
+    {
+        return $this->swooleServer->stats();
     }
 
     /**

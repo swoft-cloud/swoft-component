@@ -31,6 +31,15 @@ class HttpErrorDispatcher
             return $handler->handle($e, $response);
         }
 
+        // TODO: debug
+        \printf("Http Error(no handler, %s): %s\nAt File %s line %d\nTrace:\n%s",
+            \get_class($e),
+            $e->getMessage(),
+            $e->getFile(),
+            $e->getLine(),
+            $e->getTraceAsString()
+        );
+
         return $response->withStatus(500)->withContent($e->getMessage());
     }
 }
