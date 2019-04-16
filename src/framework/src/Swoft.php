@@ -135,6 +135,7 @@ class Swoft
      * @param array                 $params
      *
      * @return EventInterface
+     * @throws \Throwable
      */
     public static function trigger($event, $target = null, ...$params): EventInterface
     {
@@ -150,6 +151,7 @@ class Swoft
      * @param array                 $params
      *
      * @return EventInterface
+     * @throws \Throwable
      */
     public static function triggerByArray($event, $target = null, array $params = []): EventInterface
     {

@@ -656,7 +656,7 @@ class Router implements RouterInterface
     {
         $routes = [];
         $this->each(function (Route $route) use (&$routes) {
-            $routes[] = $route;
+            $routes[] = $route->toArray();
         });
 
         return $routes;
