@@ -485,9 +485,9 @@ class Request extends PsrRequest implements ServerRequestInterface
             return \strtoupper($method);
         }
 
-        if ($method = $this->getHeaderLine('X-Http-Method-Override')) {
-            return \strtoupper($method);
-        }
+        // if ($method = $this->getHeaderLine('X-Http-Method-Override')) {
+        //     return \strtoupper($method);
+        // }
 
         return parent::getMethod();
     }

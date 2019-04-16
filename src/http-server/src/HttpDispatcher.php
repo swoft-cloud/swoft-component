@@ -30,7 +30,6 @@ class HttpDispatcher extends Dispatcher
      * Dispatch http request
      *
      * @param array ...$params
-     * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Throwable
      */

@@ -3,7 +3,6 @@
 namespace Swoft\Console;
 
 use Swoft\Annotation\AnnotationException;
-use Swoft\Console\Annotation\Mapping\CommandHandler;
 use Swoft\Console\Helper\DocBlock;
 use Swoft\Console\Router\Router;
 use Swoft\Stdlib\Helper\Str;
@@ -36,31 +35,6 @@ final class CommandRegister
      * ]
      */
     private static $commands = [];
-
-    /**
-     * @param string $class
-     * @param string $method
-     * @param array  $info
-     */
-    public static function addHandler(string $class, string $method, array $info): void
-    {
-        // TODO WIP...
-        if ($class) {
-            return;
-        }
-
-        $info['group'] = CommandHandler::GROUP;
-        // It only one method
-        $info['commands'][$method] = [
-            'command'   => $info['command'],
-            'method'    => $method,
-            'options'   => [],
-            'arguments' => [],
-        ];
-
-        // save
-        self::$commands[$class] = $info;
-    }
 
     /**
      * @param string $class
