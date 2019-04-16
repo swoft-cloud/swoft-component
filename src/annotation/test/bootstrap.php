@@ -1,6 +1,6 @@
 <?php
 \Swoft\Annotation\AnnotationRegister::load(
     [
-        'onlyNamespace' => 'SwoftTest\Annotation',
+        'onlyNamespace' => 'SwoftTest\\Annotation\\',
     ]
 );

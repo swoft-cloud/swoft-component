@@ -80,7 +80,8 @@
       "Swoft\\Redis\\": "src/redis/src/",
       "Swoft\\Proxy\\": "src/proxy/src/",
       "Swoft\\Test\\": "src/Test/src/",
-      "Swoft\\": "src/framework/src/"
+      "Swoft\\": "src/framework/src/",
+      "SwoftTest\\Annotation\\": "src/annotation/test/case/"
     },
     "files": [
       "src/framework/src/Swoft.php",
@@ -95,7 +96,6 @@
       "SwoftTest\\Aop\\": "src/aop/test/case/",
       "SwoftTest\\Stdlib\\": "src/stdlib/test/case/",
       "SwoftTest\\Log\\": "src/log/test/case/",
-      "SwoftTest\\Annotation\\": "src/annotation/test/case/",
       "SwoftTest\\Config\\": "src/config/test/case/",
       "SwoftTest\\Auth\\": "src/auth/test/case/",
       "SwoftTest\\Bean\\": "src/bean/test/case/",

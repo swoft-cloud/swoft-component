@@ -3,6 +3,7 @@
 
 namespace SwoftTest\Annotation\Example;
 
+
 use SwoftTest\Annotation\Mapping\DemoMapping;
 
 /**
@@ -10,7 +11,7 @@ use SwoftTest\Annotation\Mapping\DemoMapping;
  *
  * @since 2.0
  *
- * @DemoMapping(name="demoName")
+ * @DemoMapping()
  */
 class DemoName
 {

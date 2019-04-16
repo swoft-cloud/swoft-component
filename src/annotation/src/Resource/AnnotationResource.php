@@ -109,7 +109,6 @@ class AnnotationResource extends Resource
         $prefixDirsPsr4 = $this->classLoader->getPrefixesPsr4();
 
         foreach ($prefixDirsPsr4 as $ns => $paths) {
-
             // Only scan namespace
             if (!empty($this->onlyNamespace) && $this->onlyNamespace != $ns) {
                 continue;
