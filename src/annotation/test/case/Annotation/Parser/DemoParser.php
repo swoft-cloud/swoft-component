@@ -1,25 +1,24 @@
 <?php declare(strict_types=1);
 
 
-namespace SwoftTest\Annotation\Parser;
+namespace SwoftTest\Annotation\Annotation\Parser;
 
 
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
-use SwoftTest\Annotation\Mapping\DemoMapping;
+use SwoftTest\Annotation\Annotation\Mapping\Demo;
 
 /**
- * Class DemoMappingParser
+ * Class DemoParser
  *
  * @since 2.0
- *
- * @AnnotationParser(annotation=DemoMapping::class)
+ * @AnnotationParser(annotation=Demo::class)
  */
-class DemoMappingParser extends Parser
+class DemoParser extends Parser
 {
     /**
-     * @param int    $type
-     * @param object $annotationObject
+     * @param int  $type
+     * @param Demo $annotationObject
      *
      * @return array
      */

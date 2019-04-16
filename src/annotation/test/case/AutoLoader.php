@@ -4,6 +4,8 @@
 namespace SwoftTest\Annotation;
 
 
+use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
+use Swoft\Annotation\AnnotationRegister;
 use Swoft\Annotation\LoaderInterface;
 
 class AutoLoader implements LoaderInterface
