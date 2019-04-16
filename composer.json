@@ -93,6 +93,10 @@
   "autoload-dev": {
     "psr-4": {
       "SwoftTest\\Aop\\": "src/aop/test/case/",
+      "SwoftTest\\Stdlib\\": "src/stdlib/test/case/",
+      "SwoftTest\\Log\\": "src/log/test/case/",
+      "SwoftTest\\Annotation\\": "src/annotation/test/case/",
+      "SwoftTest\\Config\\": "src/config/test/case/",
       "SwoftTest\\Auth\\": "src/auth/test/case/",
       "SwoftTest\\Bean\\": "src/bean/test/case/",
       "SwoftTest\\Cache\\": "src/cache/test/case/",

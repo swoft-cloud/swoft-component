@@ -76,6 +76,39 @@ class AnnotationRegister
 
     /**
      * @var array
+     *
+     * @example
+     * [
+     *     'namespace',
+     *     'namespace2',
+     * ]
+     */
+    private static $excludeNamespaces = [];
+
+    /**
+     * @var array
+     *
+     * @example
+     * [
+     *     '/xx/xxAutoLoaderFile',
+     *     'AutoLoaderFile2',
+     *     'AutoLoaderFile3',
+     * ]
+     */
+    private static $autoLoaderFiles = [];
+
+    /**
+     * @var array
+     *
+     * @example
+     * [
+     *     'xxx.php'
+     * ]
+     */
+    private static $excludeFilenames = [];
+
+    /**
+     * @var array
      */
     private static $classStats = [
         'parser'     => 0,
@@ -87,6 +120,7 @@ class AnnotationRegister
      * Load annotation class
      *
      * @param array $config
+     *
      * @throws \Doctrine\Common\Annotations\AnnotationException
      * @throws \ReflectionException
      */
@@ -115,6 +149,30 @@ class AnnotationRegister
     {
         self::$classStats['parser']++;
         self::$parsers[$annotationClass] = $parserClassName;
+    }
+
+    /**
+     * @param string $ns
+     */
+    public static function registerExcludeNs(string $ns): void
+    {
+        self::$excludeNamespaces[] = $ns;
+    }
+
+    /**
+     * @param string $file
+     */
+    public static function registerAutoLoaderFile(string $file): void
+    {
+        self::$autoLoaderFiles[] = $file;
+    }
+
+    /**
+     * @param string $filename
+     */
+    public static function registerExcludeFilename(string $filename): void
+    {
+        self::$excludeFilenames[] = $filename;
     }
 
     /**
@@ -157,6 +215,7 @@ class AnnotationRegister
 
     /**
      * @param string $namespace
+     *
      * @return LoaderInterface|null
      */
     public static function getAutoLoader(string $namespace): ?LoaderInterface

@@ -12,6 +12,12 @@
          processIsolation="false"
          stopOnFailure="false">
     <testsuites>
+        <testsuite name="annotation">
+            <directory suffix="Test.php">src/annotation/test/case</directory>
+            <file>
+                src/annotation/test/bootstrap.php
+            </file>
+        </testsuite>
         <testsuite name="aop">
             <directory suffix="Test.php">src/aop/test/case</directory>
         </testsuite>
