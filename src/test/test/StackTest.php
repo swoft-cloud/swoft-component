@@ -10,11 +10,6 @@ class StackTest extends TestCase
 {
     public function testMethod()
     {
-
-    }
-
-    public function setUp()
-    {
-
+        $this->assertTrue(true);
     }
 }

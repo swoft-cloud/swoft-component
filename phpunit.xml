@@ -56,6 +56,9 @@
         </testsuite>
         <testsuite name="http-server">
             <directory suffix="Test.php">src/http-server/test/case</directory>
+            <file>
+                src/http-server/test/bootstrap.php
+            </file>
         </testsuite>
         <testsuite name="server">
             <directory suffix="Test.php">src/server/test/case</directory>
