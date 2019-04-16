@@ -9,13 +9,13 @@ use Doctrine\Common\Annotations\Annotation\Target;
 /**
  * Class AnnotationParser
  *
+ * @since 2.0
+ *
  * @Annotation
  * @Target("CLASS")
  * @Attributes({
  *     @Attribute("annotation", type="string"),
  * })
- *
- * @since 2.0
  */
 final class AnnotationParser
 {

@@ -4,6 +4,7 @@ namespace Swoft\Annotation;
 
 /**
  * Class AutoLoader
+ *
  * @since 2.0
  */
 class AutoLoader implements LoaderInterface

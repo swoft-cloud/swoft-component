@@ -230,4 +230,28 @@ class AnnotationRegister
     {
         return self::$classStats;
     }
+
+    /**
+     * @return array
+     */
+    public static function getExcludeNamespaces(): array
+    {
+        return self::$excludeNamespaces;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getAutoLoaderFiles(): array
+    {
+        return self::$autoLoaderFiles;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getExcludeFilenames(): array
+    {
+        return self::$excludeFilenames;
+    }
 }
