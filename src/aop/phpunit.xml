@@ -2,10 +2,10 @@
 <phpunit
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="phpunit.xsd"
+        bootstrap="test/bootstrap.php"
         backupGlobals="false"
         backupStaticAttributes="false"
-        bootstrap="test/bootstrap.php"
-        colors="false"
+        colors="true"
         convertErrorsToExceptions="true"
         convertNoticesToExceptions="true"
         convertWarningsToExceptions="true"
@@ -13,7 +13,7 @@
         stopOnFailure="false">
     <testsuites>
         <testsuite name="test">
-            <directory suffix="Test.php">./test/case</directory>
+            <directory suffix="Test.php">./test/unit</directory>
         </testsuite>
     </testsuites>
     <filter>
