@@ -40,9 +40,10 @@ class DefaultMiddleware implements MiddlewareInterface
      * @param RequestHandlerInterface $handler
      *
      * @return ResponseInterface
-     * @throws \ReflectionException
-     * @throws NotFoundRouteException
      * @throws MethodNotAllowedException
+     * @throws NotFoundRouteException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -55,9 +56,10 @@ class DefaultMiddleware implements MiddlewareInterface
      * @param ServerRequestInterface|Request $request
      *
      * @return Response
-     * @throws \ReflectionException
-     * @throws NotFoundRouteException
      * @throws MethodNotAllowedException
+     * @throws NotFoundRouteException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     private function handle(ServerRequestInterface $request): Response
     {
@@ -70,9 +72,9 @@ class DefaultMiddleware implements MiddlewareInterface
         /* @var Route $route */
         [$status, , $route] = $router->match($uriPath, $method);
 
-        // Not found route
+        // Not found
         if ($status === Router::NOT_FOUND) {
-            throw new NotFoundRouteException(\sprintf('Router(%s) not founded!', $uriPath));
+            throw new NotFoundRouteException(\sprintf('Route not found(path %s)!', $uriPath));
         }
 
         // Method not allowed
@@ -81,7 +83,8 @@ class DefaultMiddleware implements MiddlewareInterface
         }
 
         // Controller and method
-        [$className, $method] = \explode('@', $route->getHandler());
+        $handlerId = $route->getHandler();
+        [$className, $method] = \explode('@', $handlerId);
 
         $pathParams = $route->getParams();
         $bindParams = $this->bindParams($className, $method, $pathParams);

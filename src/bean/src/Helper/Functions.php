@@ -7,8 +7,7 @@ if (!function_exists('bean')) {
      * @param string $name Bean name Or alias Or class name
      *
      * @return object|string
-     * @throws ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     function bean(string $name)
     {

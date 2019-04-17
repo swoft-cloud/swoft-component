@@ -4,6 +4,7 @@ namespace Swoft\Bean\Definition\Parser;
 
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\Annotation\Parser\ParserInterface;
+use Swoft\Annotation\AnnotationException;
 use Swoft\Bean\Definition\MethodInjection;
 use Swoft\Bean\Definition\ObjectDefinition;
 use Swoft\Bean\Definition\PropertyInjection;
@@ -102,24 +103,32 @@ class AnnotationObjParser extends ObjectParser
      */
     private function parseOneClassAnnotations(string $className, array $classOneAnnotations): void
     {
+        // Check class annotation tag
+        if (!isset($classOneAnnotations['annotation'])) {
+            throw new AnnotationException(
+                "Class $className must define a class annotation to resolve"
+            );
+        }
+
         // Parse class annotations
-        $classAnnotations = $classOneAnnotations['annotation'] ?? [];
+        $classAnnotations = $classOneAnnotations['annotation'];
         $reflectionClass  = $classOneAnnotations['reflection'];
 
-        $classAry         = [
+        $classAry = [
             $className,
             $reflectionClass,
             $classAnnotations
         ];
+
         $objectDefinition = $this->parseClassAnnotations($classAry);
 
         // Parse property annotations
         $propertyInjects        = [];
         $propertyAllAnnotations = $classOneAnnotations['properties'] ?? [];
         foreach ($propertyAllAnnotations as $propertyName => $propertyOneAnnotations) {
-            $proAnnotatios  = $propertyOneAnnotations['annotation'] ?? [];
-            $propertyInject = $this->parsePropertyAnnotations($classAry, $propertyName, $proAnnotatios);
-            if (!empty($propertyInject)) {
+            $proAnnotations  = $propertyOneAnnotations['annotation'] ?? [];
+            $propertyInject = $this->parsePropertyAnnotations($classAry, $propertyName, $proAnnotations);
+            if ($propertyInject) {
                 $propertyInjects[$propertyName] = $propertyInject;
             }
         }
@@ -131,12 +140,12 @@ class AnnotationObjParser extends ObjectParser
             $methodAnnotations = $methodOneAnnotations['annotation'] ?? [];
 
             $methodInject = $this->parseMethodAnnotations($classAry, $methodName, $methodAnnotations);
-            if (!empty($methodInject)) {
+            if ($methodInject) {
                 $methodInjects[$methodName] = $methodInject;
             }
         }
 
-        if (empty($objectDefinition)) {
+        if (!$objectDefinition) {
             return;
         }
 
@@ -169,7 +178,7 @@ class AnnotationObjParser extends ObjectParser
 
         $objectDefinition = null;
         foreach ($classAnnotations as $annotation) {
-            $annotationClass = get_class($annotation);
+            $annotationClass = \get_class($annotation);
             if (!isset($this->parsers[$annotationClass])) {
                 continue;
             }
@@ -182,7 +191,7 @@ class AnnotationObjParser extends ObjectParser
                 continue;
             }
 
-            if (count($data) !== 4) {
+            if (\count($data) !== 4) {
                 throw new ContainerException(sprintf('%s annotation parse must be 4 size', $annotationClass));
             }
 
@@ -265,14 +274,13 @@ class AnnotationObjParser extends ObjectParser
         $methodInject = null;
 
         foreach ($methodAnnotations as $methodAnnotation) {
-            $annotationClass = get_class($methodAnnotation);
+            $annotationClass = \get_class($methodAnnotation);
             if (!isset($this->parsers[$annotationClass])) {
                 continue;
             }
 
             $parserClassName  = $this->parsers[$annotationClass];
             $annotationParser = $this->getAnnotationParser($classAry, $parserClassName);
-
 
             $annotationParser->setMethodName($methodName);
             $data = $annotationParser->parse(Parser::TYPE_METHOD, $methodAnnotation);

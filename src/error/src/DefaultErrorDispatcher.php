@@ -53,10 +53,12 @@ class DefaultErrorDispatcher
      * @param string $file
      * @param int    $line
      * @throws \InvalidArgumentException
+     * @throws \ErrorException
      */
     public function handleError(int $num, string $str, string $file, int $line): void
     {
-        $this->handleException(new \ErrorException($str, 0, $num, $file, $line));
+        // $this->handleException(new \ErrorException($str, 0, $num, $file, $line));
+        throw new \ErrorException($str, 0, $num, $file, $line);
     }
 
     /**

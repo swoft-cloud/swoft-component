@@ -13,14 +13,6 @@ use Swoft\Console\Contract\RouterInterface;
  */
 class Router implements RouterInterface
 {
-    // Default commands
-    public const DEFAULT_METHODS = [
-        'start',
-        'reload',
-        'stop',
-        'restart',
-    ];
-
     /**
      * @var string
      */
@@ -37,6 +29,12 @@ class Router implements RouterInterface
      * @var string
      */
     private $defaultCommand = 'index';
+
+    /**
+     * The default commands. eg. ['start', 'stop']
+     * @var string[]
+     */
+    private $defaultCommands = [];
 
     /**
      * The delimiter for split group and command
@@ -87,6 +85,15 @@ class Router implements RouterInterface
     private $groups = [];
 
     /**
+     * @var array
+     * [
+     *   alias  => command ID(group:command),
+     *  'start' => 'http:start'
+     * ]
+     */
+    private $idAliases = [];
+
+    /**
      * @var array [alias => real name]
      */
     private $groupAliases = [];
@@ -120,6 +127,7 @@ class Router implements RouterInterface
      *
      * @param array $params [$route]
      * @return array
+     *
      * [
      *  status, info(array)
      * ]
@@ -128,13 +136,21 @@ class Router implements RouterInterface
     {
         $delimiter = $this->delimiter;
         $inputCmd  = \trim($params[0], "$delimiter ");
+        $noSepChar = \strpos($inputCmd, $delimiter) === false;
 
-        if (\in_array($inputCmd, self::DEFAULT_METHODS, true)) {
+        // If use command ID alias
+        if ($noSepChar && isset($this->idAliases[$inputCmd])) {
+            $inputCmd = $this->idAliases[$inputCmd];
+            // Must re-check
+            $noSepChar = \strpos($inputCmd, $delimiter) === false;
+        }
+
+        if ($noSepChar && \in_array($inputCmd, $this->defaultCommands, true)) {
             $group   = $this->defaultGroup;
             $command = $this->resolveCommandAlias($inputCmd);
 
-            // only a group name
-        } elseif (\strpos($inputCmd, $delimiter) === false) {
+            // Only a group name
+        } elseif ($noSepChar) {
             $group = $this->resolveGroupAlias($inputCmd);
 
             if (isset($this->groups[$group])) {
@@ -427,13 +443,51 @@ class Router implements RouterInterface
         $this->keyWidth = $keyWidth;
     }
 
+    /**
+     * @return int
+     */
     public function groupCount(): int
     {
         return \count($this->groups);
     }
 
+    /**
+     * @return int
+     */
     public function count(): int
     {
         return \count($this->routes);
+    }
+
+    /**
+     * @return array
+     */
+    public function getIdAliases(): array
+    {
+        return $this->idAliases;
+    }
+
+    /**
+     * @param array $idAliases
+     */
+    public function setIdAliases(array $idAliases): void
+    {
+        $this->idAliases = $idAliases;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getDefaultCommands(): array
+    {
+        return $this->defaultCommands;
+    }
+
+    /**
+     * @param array $defaultCommands
+     */
+    public function setDefaultCommands(array $defaultCommands): void
+    {
+        $this->defaultCommands = $defaultCommands;
     }
 }

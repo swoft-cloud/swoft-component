@@ -25,7 +25,7 @@ class Proxy
     {
         // Only proxy AOP class
         if (!Aop::matchClass($className)) {
-//            return $className;
+           // return $className;
         }
 
         // Ignore aop proxy

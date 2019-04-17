@@ -642,6 +642,23 @@ class Container implements ContainerInterface
     }
 
     /**
+     * Get bean names
+     *
+     * @return array
+     */
+    public function getNames(): array
+    {
+        return [
+            'session'    => \array_keys($this->sessionPool),
+            'request'    => \array_keys($this->requestPool),
+            'singleton'  => \array_keys($this->singletonPool),
+            'prototype'  => \array_keys($this->prototypePool),
+            'definition' => \array_keys($this->definitions),
+            // 'definition' => \count($this->r),
+        ];
+    }
+
+    /**
      * Initialize beans
      *
      * @throws ContainerException

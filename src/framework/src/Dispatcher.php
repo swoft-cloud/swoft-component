@@ -51,7 +51,7 @@ abstract class Dispatcher implements DispatcherInterface
             \array_merge($this->preMiddlewares, $this->middlewares, $this->afterMiddlewares) :
             \array_merge($this->preMiddlewares, $this->afterMiddlewares);
     }
-    
+
     /**
      * Pre middleware
      *
@@ -88,5 +88,13 @@ abstract class Dispatcher implements DispatcherInterface
      */
     public function after(...$params): void
     {
+    }
+
+    /**
+     * @return array
+     */
+    public function getMiddlewares(): array
+    {
+        return $this->middlewares;
     }
 }
