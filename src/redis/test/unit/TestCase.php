@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 
-namespace SwoftTest\Redis;
+namespace SwoftTest\Redis\Unit;
 
 use Swoft\Redis\Redis;
 
@@ -12,6 +12,11 @@ use Swoft\Redis\Redis;
  */
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * @param string $value
+     *
+     * @return string
+     */
     public function setKey(string $value): string
     {
         $key = uniqid();

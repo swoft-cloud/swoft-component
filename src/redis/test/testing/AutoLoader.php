@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 
-namespace SwoftTest\Redis\Command;
+namespace SwoftTest\Redis\Testing;
 
 
 use Swoft\SwoftComponent;

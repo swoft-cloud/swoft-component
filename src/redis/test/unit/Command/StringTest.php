@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
 
-namespace SwoftTest\Redis\Command;
+namespace SwoftTest\Redis\Unit\Command;
 
 
 use Swoft\Redis\Redis;
-use SwoftTest\Redis\TestCase;
+use SwoftTest\Redis\Unit\TestCase;
 
 /**
  * Class StringTest
