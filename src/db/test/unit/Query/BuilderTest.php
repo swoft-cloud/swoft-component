@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
 
-namespace SwoftTest\Db\Query;
+namespace SwoftTest\Db\Unit\Query;
 
 
 use Swoft\Db\DB;
 use Swoft\Db\Query\Builder;
-use SwoftTest\Db\TestCase;
+use SwoftTest\Db\Unit\TestCase;
 
 /**
  * Class BuilderTest

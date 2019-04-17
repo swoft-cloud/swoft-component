@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
 
-namespace SwoftTest\Db\Transaction;
+namespace SwoftTest\Db\Unit\Transaction;
 
 
 use Swoft\Db\DB;
-use SwoftTest\Db\Entity\User;
-use SwoftTest\Db\TestCase;
+use SwoftTest\Db\Testing\Entity\User;
+use SwoftTest\Db\Unit\TestCase;
 
 /**
  * Class TransactionTest

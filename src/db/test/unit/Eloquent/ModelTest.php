@@ -1,11 +1,12 @@
 <?php declare(strict_types=1);
 
 
-namespace SwoftTest\Db\Eloquent;
+namespace SwoftTest\Db\Unit\Eloquent;
 
 
-use SwoftTest\Db\Entity\User;
-use SwoftTest\Db\TestCase;
+
+use SwoftTest\Db\Testing\Entity\User;
+use SwoftTest\Db\Unit\TestCase;
 
 /**
  * Class ModelTest

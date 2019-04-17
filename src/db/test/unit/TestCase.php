@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
 
-namespace SwoftTest\Db;
+namespace SwoftTest\Db\Unit;
 
 
-use SwoftTest\Db\Entity\User;
+use SwoftTest\Db\Testing\Entity\User;
 
 /**
  * Class TestCase
