@@ -1,17 +1,27 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Annotation;
+
+namespace SwoftTest\Db\Testing;
+
+
+use Swoft\SwoftComponent;
 
 /**
  * Class AutoLoader
  *
  * @since 2.0
  */
-class AutoLoader implements LoaderInterface
+class AutoLoader extends SwoftComponent
 {
     /**
-     * Get namespace and dirs
-     *
+     * @return array
+     */
+    public function metadata(): array
+    {
+        return [];
+    }
+
+    /**
      * @return array
      */
     public function getPrefixDirs(): array

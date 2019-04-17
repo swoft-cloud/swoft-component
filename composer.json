@@ -80,7 +80,8 @@
       "Swoft\\Redis\\": "src/redis/src/",
       "Swoft\\Proxy\\": "src/proxy/src/",
       "Swoft\\Test\\": "src/Test/src/",
-      "Swoft\\": "src/framework/src/"
+      "Swoft\\": "src/framework/src/",
+      "SwoftTest\\Annotation\\": "src/annotation/test/case/"
     },
     "files": [
       "src/framework/src/Swoft.php",
@@ -92,12 +93,18 @@
   },
   "autoload-dev": {
     "psr-4": {
+      "SwoftTest\\Annotation\\Unit\\": "src/annotation/test/unit/",
+      "SwoftTest\\Annotation\\Testing\\": "src/annotation/test/testing/",
       "SwoftTest\\Aop\\": "src/aop/test/case/",
+      "SwoftTest\\Stdlib\\": "src/stdlib/test/case/",
+      "SwoftTest\\Log\\": "src/log/test/case/",
+      "SwoftTest\\Config\\": "src/config/test/case/",
       "SwoftTest\\Auth\\": "src/auth/test/case/",
       "SwoftTest\\Bean\\": "src/bean/test/case/",
       "SwoftTest\\Cache\\": "src/cache/test/case/",
       "SwoftTest\\Console\\": "src/console/test/case/",
-      "SwoftTest\\Db\\": "src/db/test/case/",
+      "SwoftTest\\Db\\Unit\\": "src/db/test/unit/",
+      "SwoftTest\\Db\\Testing\\": "src/db/test/testing/",
       "SwoftTest\\Test\\": "src/test/test/case/",
       "SwoftTest\\Event\\": "src/event/test/case/",
       "SwoftTest\\Error\\": "src/error/test/case/",
@@ -106,7 +113,8 @@
       "SwoftTest\\I18n\\": "src/i18n/test/case/",
       "SwoftTest\\Memory\\": "src/memory/test/case/",
       "SwoftTest\\Process\\": "src/process/test/case/",
-      "SwoftTest\\Redis\\": "src/redis/test/case/",
+      "SwoftTest\\Redis\\Unit\\": "src/redis/test/unit/",
+      "SwoftTest\\Redis\\Testing\\": "src/redis/test/testing/",
       "SwoftTest\\Rpc\\": "src/rpc/test/case/",
       "SwoftTest\\Rpc\\Client\\": "src/rpc-client/test/case/",
       "SwoftTest\\Rpc\\Server\\": "src/rpc-server/test/case/",

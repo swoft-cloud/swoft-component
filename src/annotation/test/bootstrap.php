@@ -1,15 +1,14 @@
 <?php
-
 // vendor at component dir
 if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
     require dirname(__DIR__) . '/vendor/autoload.php';
     // application's vendor
-} elseif (file_exists(dirname(__DIR__, 3) . '/autoload.php')) {
+} elseif (file_exists(dirname(__DIR__, 5) . '/autoload.php')) {
     /** @var \Composer\Autoload\ClassLoader $loader */
-    $loader = require dirname(__DIR__, 3) . '/autoload.php';
+    $loader = require dirname(__DIR__, 5) . '/autoload.php';
 
-    // need load test psr4 config map
-    $componentDir  = dirname(__DIR__);
+    // need load testing psr4 config map
+    $componentDir  = dirname(__DIR__, 3);
     $componentJson = $componentDir . '/composer.json';
     $composerData  = json_decode(file_get_contents($componentJson), true);
 
@@ -20,7 +19,8 @@ if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
     exit('Please run "composer install" to install the dependencies' . PHP_EOL);
 }
 
-\Swoole\Runtime::enableCoroutine();
-$application = new \Swoft\Test\TestApplication();
-$application->setBeanFile(__DIR__ . '/case/bean.php');
-$application->run();
+\Swoft\Annotation\AnnotationRegister::load(
+    [
+        'onlyNamespace' => 'SwoftTest\\Annotation\\Testing\\',
+    ]
+);
