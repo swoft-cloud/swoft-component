@@ -1,12 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Annotation;
 
-/**
- * Class AutoLoader
- *
- * @since 2.0
- */
+namespace SwoftTest\Annotation\Testing;
+
+
+use Swoft\Annotation\LoaderInterface;
+
 class AutoLoader implements LoaderInterface
 {
     /**

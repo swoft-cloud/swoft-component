@@ -11,7 +11,6 @@ use Swoft\Annotation\LoaderInterface;
 use Swoft\Stdlib\Helper\ComposerHelper;
 use Swoft\Stdlib\Helper\DirectoryHelper;
 use Swoft\Stdlib\Helper\ObjectHelper;
-use Swoft\Log\Helper\CLog;
 
 /**
  * Annotation resource
@@ -76,6 +75,13 @@ class AnnotationResource extends Resource
     private $disabledAutoLoaders = [];
 
     /**
+     * Only scan namespace. Default is scan all
+     *
+     * @var string
+     */
+    private $onlyNamespace = '';
+
+    /**
      * AnnotationResource constructor.
      *
      * @param array $config
@@ -103,13 +109,16 @@ class AnnotationResource extends Resource
         $prefixDirsPsr4 = $this->classLoader->getPrefixesPsr4();
 
         foreach ($prefixDirsPsr4 as $ns => $paths) {
-            // It is excluded psr4 prefix
-            if ($this->isExcludedPsr4Prefix($ns)) {
-                CLog::info('Exclude scan %s', $ns);
+            // Only scan namespace
+            if (!empty($this->onlyNamespace) && $this->onlyNamespace != $ns) {
                 continue;
             }
 
-            CLog::info('Scan namespace %s', $ns);
+            // It is excluded psr4 prefix
+            if ($this->isExcludedPsr4Prefix($ns)) {
+                AnnotationRegister::registerExcludeNs($ns);
+                continue;
+            }
 
             // Find package/component loader class
             foreach ($paths as $path) {
@@ -118,11 +127,8 @@ class AnnotationResource extends Resource
                     continue;
                 }
 
-                CLog::info('Auto loader is %s', $this->clearBasePath($loaderFile));
-
                 $loaderClass = $this->getAnnotationLoaderClassName($ns);
                 if (!\class_exists($loaderClass)) {
-                    CLog::warning('Auto loader(%s) is not exist class', $loaderClass);
                     continue;
                 }
 
@@ -131,6 +137,7 @@ class AnnotationResource extends Resource
 
                 // If is disable, will skip scan annotation classes
                 if ($isEnabled && $loaderObject instanceof LoaderInterface) {
+                    AnnotationRegister::registerAutoLoaderFile($loaderFile);
                     $this->loadAnnotation($loaderObject);
                 }
 
@@ -142,6 +149,7 @@ class AnnotationResource extends Resource
 
     /**
      * @param string $filePath
+     *
      * @return string
      */
     public function clearBasePath(string $filePath): string
@@ -201,7 +209,7 @@ class AnnotationResource extends Resource
 
                 // It is exclude filename
                 if (isset($this->excludedFilenames[$fileName])) {
-                    CLog::info('Exclude filename: %s', $fileName);
+                    AnnotationRegister::registerExcludeFilename($fileName);
                     continue;
                 }
 
@@ -211,12 +219,6 @@ class AnnotationResource extends Resource
 
                 // Will filtering: interfaces and traits
                 if (!\class_exists($className)) {
-                    if (\interface_exists($className)) {
-                        CLog::debug('Skip interface: %s', $className);
-                    } else {
-                        CLog::info('Skip not-exist/invalid class: %s', $className);
-                    }
-
                     continue;
                 }
 
@@ -468,5 +470,21 @@ class AnnotationResource extends Resource
     public function setBasePath(string $basePath): void
     {
         $this->basePath = $basePath;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOnlyNamespace(): string
+    {
+        return $this->onlyNamespace;
+    }
+
+    /**
+     * @param string $onlyNamespace
+     */
+    public function setOnlyNamespace(string $onlyNamespace): void
+    {
+        $this->onlyNamespace = $onlyNamespace;
     }
 }

@@ -3,7 +3,9 @@
 namespace Swoft\Annotation\Resource;
 
 /**
- * Resource interface
+ * Class ResourceInterface
+ *
+ * @since 2.0
  */
 interface ResourceInterface
 {
