@@ -93,6 +93,8 @@
   },
   "autoload-dev": {
     "psr-4": {
+      "SwoftTest\\Annotation\\Unit\\": "src/annotation/test/unit/",
+      "SwoftTest\\Annotation\\Testing\\": "src/annotation/test/testing/",
       "SwoftTest\\Aop\\": "src/aop/test/case/",
       "SwoftTest\\Stdlib\\": "src/stdlib/test/case/",
       "SwoftTest\\Log\\": "src/log/test/case/",
@@ -132,5 +134,6 @@
     }
   },
   "scripts": {
+
   }
 }

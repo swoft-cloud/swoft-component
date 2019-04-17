@@ -1,18 +1,19 @@
 <?php declare(strict_types=1);
 
 
-namespace SwoftTest\Annotation;
+namespace SwoftTest\Annotation\Testing;
 
-use SwoftTest\Annotation\Annotation\Mapping\Demo;
-use SwoftTest\Annotation\Annotation\Mapping\DemoMethod;
-use SwoftTest\Annotation\Annotation\Mapping\DemoProperty;
+
+use SwoftTest\Annotation\Testing\Annotation\Mapping\DemoClass;
+use SwoftTest\Annotation\Testing\Annotation\Mapping\DemoMethod;
+use SwoftTest\Annotation\Testing\Annotation\Mapping\DemoProperty;
 
 /**
  * Class DemoAnnotation
  *
  * @since 2.0
  *
- * @Demo(name="demoAnnotation")
+ * @DemoClass(name="demoAnnotation")
  */
 class DemoAnnotation
 {

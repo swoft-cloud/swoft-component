@@ -1,11 +1,9 @@
 <?php declare(strict_types=1);
 
 
-namespace SwoftTest\Annotation;
+namespace SwoftTest\Annotation\Testing;
 
 
-use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
-use Swoft\Annotation\AnnotationRegister;
 use Swoft\Annotation\LoaderInterface;
 
 class AutoLoader implements LoaderInterface

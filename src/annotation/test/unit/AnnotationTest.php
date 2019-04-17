@@ -1,39 +1,36 @@
 <?php declare(strict_types=1);
 
 
-namespace SwoftTest\Annotation;
+namespace SwoftTest\Annotation\Unit;
 
 
 use PHPUnit\Framework\TestCase;
 use Swoft\Annotation\AnnotationRegister;
-use SwoftTest\Annotation\Annotation\Mapping\Demo;
-use SwoftTest\Annotation\Annotation\Mapping\DemoMethod;
-use SwoftTest\Annotation\Annotation\Mapping\DemoProperty;
-use SwoftTest\Annotation\Annotation\Parser\DemoParser;
+use SwoftTest\Annotation\Testing\Annotation\Mapping\DemoClass;
+use SwoftTest\Annotation\Testing\Annotation\Mapping\DemoMethod;
+use SwoftTest\Annotation\Testing\Annotation\Mapping\DemoProperty;
+use SwoftTest\Annotation\Testing\Annotation\Parser\DemoClassParser;
+use SwoftTest\Annotation\Testing\AutoLoader;
+use SwoftTest\Annotation\Testing\DemoAnnotation;
 
-/**
- * Class AnnotationTest
- *
- * @since 2.0
- */
 class AnnotationTest extends TestCase
 {
     public function testAnnotationClass()
     {
         $annotations = AnnotationRegister::getAnnotations();
 
-        $demoAnnotation = $annotations['SwoftTest\Annotation']['SwoftTest\Annotation\DemoAnnotation'] ?? [];
+        $demoAnnotation = $annotations['SwoftTest\Annotation\Testing'][DemoAnnotation::class] ?? [];
         $this->assertTrue(!empty($demoAnnotation));
 
         $this->assertTrue(isset($demoAnnotation['reflection']));
 
         $annoClassName = [
-            Demo::class
+            DemoClass::class
         ];
 
         foreach ($demoAnnotation['annotation'] as $anno) {
             $this->assertTrue(in_array(get_class($anno), $annoClassName));
-            if ($anno instanceof Demo) {
+            if ($anno instanceof DemoClass) {
                 $this->assertEquals($anno->getName(), 'demoAnnotation');
             }
         }
@@ -42,7 +39,7 @@ class AnnotationTest extends TestCase
     public function testAnnotationProperty()
     {
         $annotations     = AnnotationRegister::getAnnotations();
-        $propAnnotations = $annotations['SwoftTest\Annotation']['SwoftTest\Annotation\DemoAnnotation']['properties'] ?? [];
+        $propAnnotations = $annotations['SwoftTest\Annotation\Testing'][DemoAnnotation::class]['properties'] ?? [];
 
         $this->assertTrue(!empty($propAnnotations));
 
@@ -60,7 +57,7 @@ class AnnotationTest extends TestCase
     public function testAnnotationMethod()
     {
         $annotations       = AnnotationRegister::getAnnotations();
-        $methodAnnotations = $annotations['SwoftTest\Annotation']['SwoftTest\Annotation\DemoAnnotation']['methods'] ?? [];
+        $methodAnnotations = $annotations['SwoftTest\Annotation\Testing'][DemoAnnotation::class]['methods'] ?? [];
 
         $this->assertTrue(!empty($methodAnnotations));
 
@@ -79,10 +76,13 @@ class AnnotationTest extends TestCase
     {
         $parsers = AnnotationRegister::getParsers();
 
-
         $parserClassName = [
-            DemoParser::class
+            DemoClassParser::class
         ];
+
+        if (empty($parsers)) {
+            $this->assertTrue(false);
+        }
 
         foreach ($parsers as $parser) {
             $this->assertTrue(in_array($parser, $parserClassName));
@@ -91,7 +91,7 @@ class AnnotationTest extends TestCase
 
     public function testAutoLoader()
     {
-        $autoLoader = AnnotationRegister::getAutoLoader('SwoftTest\\Annotation\\');
+        $autoLoader = AnnotationRegister::getAutoLoader('SwoftTest\\Annotation\\Testing\\');
         $this->assertTrue($autoLoader instanceof AutoLoader);
     }
 }

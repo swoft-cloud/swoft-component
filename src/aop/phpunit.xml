@@ -5,7 +5,7 @@
         backupGlobals="false"
         backupStaticAttributes="false"
         bootstrap="test/bootstrap.php"
-        colors="true"
+        colors="false"
         convertErrorsToExceptions="true"
         convertNoticesToExceptions="true"
         convertWarningsToExceptions="true"
@@ -18,7 +18,7 @@
     </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src/*/src</directory>
+            <directory suffix=".php">./src/*</directory>
         </whitelist>
     </filter>
 </phpunit>

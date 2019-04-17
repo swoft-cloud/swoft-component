@@ -1,30 +1,27 @@
 <?php declare(strict_types=1);
 
 
-namespace SwoftTest\Annotation\Annotation\Mapping;
+namespace SwoftTest\Annotation\Testing\Annotation\Mapping;
 
 use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;
-use Doctrine\Common\Annotations\Annotation\Required;
 use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
- * Class Demo
+ * Class DemoMethod
  *
  * @since 2.0
  *
  * @Annotation
- * @Target("CLASS")
+ * @Target("METHOD")
  * @Attributes({
  *     @Attribute("name", type="string"),
  * })
  */
-class Demo
+class DemoMethod
 {
     /**
      * @var string
-     *
-     * @Required()
      */
     private $name;
 
