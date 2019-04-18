@@ -155,9 +155,9 @@ final class BeanFactory
     /**
      * Destroy request bean
      *
-     * @param int $id
+     * @param string $id
      */
-    public static function destroyRequest(int $id): void
+    public static function destroyRequest(string $id): void
     {
         Container::getInstance()->destroyRequest($id);
     }
