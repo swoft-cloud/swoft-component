@@ -4,7 +4,6 @@
 namespace SwoftTest\Db\Unit\Eloquent;
 
 
-
 use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Unit\TestCase;
 
@@ -69,6 +68,7 @@ class ModelTest extends TestCase
         $result = $user->delete();
         $this->assertTrue($result);
     }
+
 
     /**
      * @throws \Swoft\Bean\Exception\PrototypeException
