@@ -110,6 +110,7 @@ class DB
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Connection\Pool\Exception\ConnectionPoolException
+     * @throws \Throwable
      */
     private static function getConnectionFromPool(string $name): Connection
     {
