@@ -71,19 +71,6 @@ final class BeanFactory
     }
 
     /**
-     * Get an prototype bean instance
-     *
-     * @param string $name
-     *
-     * @return mixed
-     * @throws ContainerException
-     */
-    public static function getPrototype(string $name)
-    {
-        return Container::getInstance()->getPrototype($name);
-    }
-
-    /**
      * Whether has bean
      *
      * @param string $name

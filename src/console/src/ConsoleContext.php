@@ -3,6 +3,7 @@
 namespace Swoft\Console;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
 use Swoft\Context\AbstractContext;
@@ -14,6 +15,7 @@ use Swoft\Context\AbstractContext;
  */
 class ConsoleContext extends AbstractContext
 {
+    use PrototypeTrait;
     /**
      * @return ConsoleContext
      * @throws \Throwable
@@ -21,7 +23,8 @@ class ConsoleContext extends AbstractContext
     public static function new(): self
     {
         /** @var self $ctx */
-        $ctx = \Swoft::getPrototype(__CLASS__);
+        $ctx = self::__instance();
+
         $ctx->setMulti([
             'parentid' => '',
             'spanid'   => \uniqid('', false),

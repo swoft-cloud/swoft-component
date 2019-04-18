@@ -77,9 +77,9 @@ class AnnotationResource extends Resource
     /**
      * Only scan namespace. Default is scan all
      *
-     * @var string
+     * @var array
      */
-    private $onlyNamespace = '';
+    private $onlyNamespaces = [];
 
     /**
      * AnnotationResource constructor.
@@ -109,8 +109,8 @@ class AnnotationResource extends Resource
         $prefixDirsPsr4 = $this->classLoader->getPrefixesPsr4();
 
         foreach ($prefixDirsPsr4 as $ns => $paths) {
-            // Only scan namespace
-            if (!empty($this->onlyNamespace) && $this->onlyNamespace != $ns) {
+            // Only scan namespaces
+            if (!empty($this->onlyNamespaces) && !in_array($ns, $this->onlyNamespaces, true)) {
                 continue;
             }
 
@@ -473,18 +473,18 @@ class AnnotationResource extends Resource
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getOnlyNamespace(): string
+    public function getOnlyNamespaces(): array
     {
-        return $this->onlyNamespace;
+        return $this->onlyNamespaces;
     }
 
     /**
-     * @param string $onlyNamespace
+     * @param array $onlyNamespaces
      */
-    public function setOnlyNamespace(string $onlyNamespace): void
+    public function setOnlyNamespaces(array $onlyNamespaces): void
     {
-        $this->onlyNamespace = $onlyNamespace;
+        $this->onlyNamespaces = $onlyNamespaces;
     }
 }

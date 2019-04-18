@@ -395,7 +395,9 @@ class Container implements ContainerInterface
 
     /**
      * Quick get exist singleton
+     *
      * @param string $name
+     *
      * @return object|mixed
      * @throws ContainerException
      */
@@ -417,32 +419,6 @@ class Container implements ContainerInterface
         }
 
         throw new ContainerException(\sprintf('The singleton bean "%s" is not defined', $name));
-    }
-
-    /**
-     * @param string $name
-     * @return object|mixed
-     * @throws ContainerException
-     */
-    public function getPrototype(string $name)
-    {
-        // Prototype by clone
-        if (isset($this->prototypePool[$name])) {
-            return clone $this->prototypePool[$name];
-        }
-
-        if (isset($this->aliases[$name])) {
-            $name = $this->aliases[$name];
-            return clone $this->prototypePool[$name];
-        }
-
-        $classNames = $this->classNames[$name] ?? [];
-        if ($classNames) {
-            $name = \end($classNames);
-            return $this->prototypePool[$name];
-        }
-
-        throw new ContainerException(\sprintf('The prototype bean "%s" is not defined', $name));
     }
 
     /**
@@ -486,7 +462,7 @@ class Container implements ContainerInterface
             ];
         }
 
-        $definitionObjParser = new DefinitionObjParser($definition, [], []);
+        $definitionObjParser = new DefinitionObjParser($definition, [], [], $this->aliases);
         [, $objectDefinitions] = $definitionObjParser->parseDefinitions();
 
         $this->objectDefinitions[$name] = $objectDefinitions[$name];
@@ -602,10 +578,12 @@ class Container implements ContainerInterface
      */
     private function parseAnnotations(): void
     {
-        $annotationParser = new AnnotationObjParser($this->definitions, $this->objectDefinitions, $this->classNames);
+        $annotationParser = new AnnotationObjParser(
+            $this->definitions, $this->objectDefinitions, $this->classNames, $this->aliases
+        );
         $annotationData   = $annotationParser->parseAnnotations($this->annotations, $this->parsers);
 
-        [$this->definitions, $this->objectDefinitions, $this->classNames] = $annotationData;
+        [$this->definitions, $this->objectDefinitions, $this->classNames, $this->aliases] = $annotationData;
     }
 
     /**
@@ -615,9 +593,12 @@ class Container implements ContainerInterface
      */
     private function parseDefinitions(): void
     {
-        $annotationParser = new DefinitionObjParser($this->definitions, $this->objectDefinitions, $this->classNames);
-        // collect info
-        [$this->definitions, $this->objectDefinitions, $this->classNames] = $annotationParser->parseDefinitions();
+        $annotationParser = new DefinitionObjParser(
+            $this->definitions, $this->objectDefinitions, $this->classNames, $this->aliases
+        );
+        // Collect info
+        $definitionData = $annotationParser->parseDefinitions();
+        [$this->definitions, $this->objectDefinitions, $this->classNames, $this->aliases] = $definitionData;
     }
 
     /**
@@ -712,6 +693,10 @@ class Container implements ContainerInterface
         if (!empty($classNames)) {
             $beanName = \end($classNames);
             return $this->getNewObjectDefinition($beanName);
+        }
+
+        if (isset($this->aliases[$beanName])) {
+            return $this->getNewObjectDefinition($this->aliases[$beanName]);
         }
 
         throw new ContainerException('Bean name of ' . $beanName . ' is not defined!');

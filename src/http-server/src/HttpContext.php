@@ -3,6 +3,7 @@
 namespace Swoft\Http\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Container;
 use Swoft\Context\AbstractContext;
 use Swoft\Http\Message\Request;
@@ -17,6 +18,8 @@ use Swoft\Http\Message\Response;
  */
 class HttpContext extends AbstractContext
 {
+    use PrototypeTrait;
+
     /**
      * @var Request
      */
@@ -38,8 +41,7 @@ class HttpContext extends AbstractContext
      */
     public static function new(Request $request, Response $response): self
     {
-        // $instance = self::__instance();
-        $instance = Container::$instance->getPrototype(__CLASS__);
+         $instance = self::__instance();
 
         $instance->request  = $request;
         $instance->response = $response;

@@ -4,6 +4,7 @@ namespace Swoft\WebSocket\Server\Context;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Context\AbstractContext;
 
 /**
@@ -13,6 +14,8 @@ use Swoft\Context\AbstractContext;
  */
 class WsCloseContext extends AbstractContext
 {
+    use PrototypeTrait;
+
     /**
      * @var int
      */
@@ -32,7 +35,7 @@ class WsCloseContext extends AbstractContext
     public static function new(int $fd, int $reactorId): self
     {
         /** @var self $ctx */
-        $ctx = BeanFactory::getPrototype(__CLASS__);
+        $ctx = self::__instance();
 
         // Initial properties
         $ctx->fd        = $fd;
