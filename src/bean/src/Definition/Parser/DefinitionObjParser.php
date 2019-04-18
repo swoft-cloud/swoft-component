@@ -34,7 +34,7 @@ class DefinitionObjParser extends ObjectParser
             $this->createObjectDefinition($beanName, $definition);
         }
 
-        return [$this->definitions, $this->objectDefinitions, $this->classNames];
+        return [$this->definitions, $this->objectDefinitions, $this->classNames, $this->aliases];
     }
 
     /**
@@ -73,7 +73,7 @@ class DefinitionObjParser extends ObjectParser
     {
         $className = $definition['class'] ?? '';
         if (empty($className)) {
-            throw new ContainerException(sprintf('%s key for definition must be defined', $beanName));
+            throw new ContainerException(sprintf('%s key for definition must be defined class', $beanName));
         }
 
         $objDefinition = new ObjectDefinition($beanName, $className);
@@ -185,7 +185,7 @@ class DefinitionObjParser extends ObjectParser
         $scope = $option['scope'] ?? '';
         $alias = $option['alias'] ?? '';
 
-        if (\in_array($scope, $scopes, true)) {
+        if (!empty($scope) && !\in_array($scope, $scopes, true)) {
             throw new ContainerException('Scope for definition is not undefined');
         }
 
@@ -197,6 +197,11 @@ class DefinitionObjParser extends ObjectParser
         // Update alias
         if (!empty($alias)) {
             $objDfn->setAlias($alias);
+
+            $objAlias = $objDfn->getAlias();
+            unset($this->aliases[$objAlias]);
+
+            $this->aliases[$alias] = $objDfn->getName();
         }
 
         return $objDfn;

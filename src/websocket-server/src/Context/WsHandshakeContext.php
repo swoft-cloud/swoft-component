@@ -4,6 +4,7 @@ namespace Swoft\WebSocket\Server\Context;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\Context\AbstractContext;
@@ -15,6 +16,8 @@ use Swoft\Context\AbstractContext;
  */
 class WsHandshakeContext extends AbstractContext
 {
+    use PrototypeTrait;
+
     /**
      * @var Request
      */
@@ -34,7 +37,7 @@ class WsHandshakeContext extends AbstractContext
     public static function new(Request $request, Response $response): self
     {
         /** @var self $ctx */
-        $ctx = BeanFactory::getPrototype(__CLASS__);
+        $ctx = self::__instance();
 
         $ctx->request  = $request;
         $ctx->response = $response;

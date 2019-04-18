@@ -45,7 +45,7 @@ class HttpDispatcher extends Dispatcher
         // return;
 
         /* @var RequestHandler $requestHandler */
-        $requestHandler = BeanFactory::getPrototype(RequestHandler::class);
+        $requestHandler = BeanFactory::getBean(RequestHandler::class);
         $requestHandler->initialize($this->requestMiddleware(), $this->defaultMiddleware);
 
         try {

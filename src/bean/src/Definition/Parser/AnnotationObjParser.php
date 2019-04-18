@@ -90,7 +90,7 @@ class AnnotationObjParser extends ObjectParser
             }
         }
 
-        return [$this->definitions, $this->objectDefinitions, $this->classNames];
+        return [$this->definitions, $this->objectDefinitions, $this->classNames, $this->aliases];
     }
 
     /**
@@ -106,7 +106,7 @@ class AnnotationObjParser extends ObjectParser
         // Check class annotation tag
         if (!isset($classOneAnnotations['annotation'])) {
             throw new AnnotationException(
-                "Class $className must define a class annotation to resolve"
+                sprintf('Property or method(%s) with `@xxx` must be define class annotation', $className)
             );
         }
 
@@ -126,7 +126,7 @@ class AnnotationObjParser extends ObjectParser
         $propertyInjects        = [];
         $propertyAllAnnotations = $classOneAnnotations['properties'] ?? [];
         foreach ($propertyAllAnnotations as $propertyName => $propertyOneAnnotations) {
-            $proAnnotations  = $propertyOneAnnotations['annotation'] ?? [];
+            $proAnnotations = $propertyOneAnnotations['annotation'] ?? [];
             $propertyInject = $this->parsePropertyAnnotations($classAry, $propertyName, $proAnnotations);
             if ($propertyInject) {
                 $propertyInjects[$propertyName] = $propertyInject;
@@ -159,11 +159,16 @@ class AnnotationObjParser extends ObjectParser
 
         // Object definition and class name
         $name         = $objectDefinition->getName();
+        $aliase       = $objectDefinition->getAlias();
         $classNames   = $this->classNames[$className] ?? [];
         $classNames[] = $name;
 
         $this->classNames[$className]   = array_unique($classNames);
         $this->objectDefinitions[$name] = $objectDefinition;
+
+        if (!empty($aliase)) {
+            $this->aliases[$aliase] = $name;
+        }
     }
 
     /**
@@ -301,6 +306,7 @@ class AnnotationObjParser extends ObjectParser
     /**
      * @param array $definitions
      * @param array $appendDefinitions
+     *
      * @return array
      */
     private function mergeDefinitions(array $definitions, array $appendDefinitions): array

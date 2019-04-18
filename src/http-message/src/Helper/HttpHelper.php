@@ -110,7 +110,7 @@ class HttpHelper
     public static function newUriByCoRequest(string $path, string $query,  string $headerHost, array &$server): Uri
     {
         /** @var Uri $uri */
-        $uri = BeanFactory::getPrototype(Uri::class);
+        $uri = BeanFactory::getBean(Uri::class);
         $uri = $uri->withScheme(isset($server['https']) && $server['https'] !== 'off' ? 'https' : 'http');
         $uri = $uri->withPath($path)->withQuery($query ?: $server['query_string']);
 

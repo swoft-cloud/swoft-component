@@ -3,6 +3,7 @@
 namespace Swoft\Http\Message;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Container;
 use Swoft\Http\Message\Concern\MessageTrait;
 use Swoft\Http\Message\Contract\ResponseFormatterInterface;
@@ -18,7 +19,7 @@ use Swoole\Http\Response as CoResponse;
  */
 class Response implements ResponseInterface
 {
-    use MessageTrait;
+    use MessageTrait, PrototypeTrait;
 
     /**
      * @var string
@@ -97,7 +98,8 @@ class Response implements ResponseInterface
      */
     public static function new(CoResponse $coResponse): self
     {
-        $self = Container::$instance->getPrototype('httpResponse');
+        $self = self::__instance();
+
         // $self = \bean('httpResponse');
         /** @var Response $self */
         $self->coResponse = $coResponse;
@@ -128,8 +130,9 @@ class Response implements ResponseInterface
     private $fileType = '';
 
     /**
-     * @param string $filePath like '/path/to/some.jpg'
+     * @param string $filePath    like '/path/to/some.jpg'
      * @param string $contentType like 'image/jpeg'
+     *
      * @return $this
      */
     public function file(string $filePath, string $contentType): self
@@ -162,6 +165,7 @@ class Response implements ResponseInterface
      * Quick send response
      *
      * @param self|null $response
+     *
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
@@ -292,7 +296,7 @@ class Response implements ResponseInterface
      *
      * @see getAttributes()
      *
-     * @param string $name The attribute name.
+     * @param string $name    The attribute name.
      * @param mixed  $default Default value to return if the attribute does not exist.
      *
      * @return mixed
@@ -312,7 +316,7 @@ class Response implements ResponseInterface
      *
      * @see getAttributes()
      *
-     * @param string $name The attribute name.
+     * @param string $name  The attribute name.
      * @param mixed  $value The value of the attribute.
      *
      * @return static|self
@@ -354,7 +358,8 @@ class Response implements ResponseInterface
 
     /**
      * @inheritdoc
-     * @param int    $code The 3-digit integer result code to set.
+     *
+     * @param int    $code         The 3-digit integer result code to set.
      * @param string $reasonPhrase The reason phrase to use with the
      *                             provided status code; if none is provided, implementations MAY
      *                             use the defaults as suggested in the HTTP specification.

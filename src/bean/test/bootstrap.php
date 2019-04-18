@@ -18,3 +18,25 @@ if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
 } else {
     exit('Please run "composer install" to install the dependencies' . PHP_EOL);
 }
+
+use Swoft\Annotation\AnnotationRegister;
+use Swoft\Bean\BeanFactory;
+
+AnnotationRegister::load(
+    [
+        'onlyNamespaces' => [
+            'SwoftTest\\Bean\\Testing\\',
+            'Swoft\\Bean\\',
+            'Swoft\\Annotation\\',
+        ],
+    ]
+);
+
+$definitions = require 'testing/bean.php';
+$parsers     = AnnotationRegister::getParsers();
+$annotations = AnnotationRegister::getAnnotations();
+
+BeanFactory::addDefinitions($definitions);
+BeanFactory::addAnnotations($annotations);
+BeanFactory::addParsers($parsers);
+BeanFactory::init();

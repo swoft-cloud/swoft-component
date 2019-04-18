@@ -21,6 +21,8 @@ if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
 
 \Swoft\Annotation\AnnotationRegister::load(
     [
-        'onlyNamespace' => 'SwoftTest\\Annotation\\Testing\\',
+        'onlyNamespaces' => [
+            'SwoftTest\\Annotation\\Testing\\'
+        ],
     ]
 );

@@ -5,6 +5,7 @@ namespace Swoft\WebSocket\Server;
 use Psr\Http\Message\ServerRequestInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Concern\DataPropertyTrait;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
@@ -19,7 +20,7 @@ use Swoft\WebSocket\Server\Router\Router;
  */
 class Connection implements SessionInterface
 {
-    use DataPropertyTrait;
+    use DataPropertyTrait, PrototypeTrait;
 
     private const METADATA_KEY = 'metadata';
 
@@ -59,12 +60,13 @@ class Connection implements SessionInterface
      * @param int      $fd
      * @param Request  $request
      * @param Response $response
+     *
      * @return Connection
      */
     public static function new(int $fd, Request $request, Response $response): self
     {
         /** @var self $sess */
-        $sess = BeanFactory::getPrototype(__CLASS__);
+        $sess = self::__instance();
 
         $sess->fd = $fd;
 
@@ -102,6 +104,7 @@ class Connection implements SessionInterface
      * @param string $data
      * @param int    $opcode
      * @param bool   $finish
+     *
      * @return bool
      */
     public function push(string $data, int $opcode = \WEBSOCKET_OPCODE_TEXT, bool $finish = true): bool
