@@ -185,9 +185,11 @@ class Aop implements AopInterface
      * @param string $class       Class name
      * @param string $method      Method name
      * @param array  $annotations The annotations of method
+     * @return bool
      */
-    public function match(string $beanName, string $class, string $method, array $annotations)
+    public function match(string $beanName, string $class, string $method, array $annotations): bool
     {
+        $shouldProxy = false;
         foreach ($this->aspects as $aspectClass => $aspect) {
             if (!isset($aspect['point'], $aspect['advice'])) {
                 continue;
@@ -209,8 +211,10 @@ class Aop implements AopInterface
 
             if ($includeMath && ! $excludeMath) {
                 $this->map[$class][$method][] = $aspect['advice'];
+                $shouldProxy = true;
             }
         }
+        return $shouldProxy;
     }
 
     /**
