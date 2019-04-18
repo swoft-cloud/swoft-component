@@ -3,8 +3,6 @@
 
 namespace SwoftTest\Db\Unit\Query;
 
-
-use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\DB;
@@ -20,6 +18,7 @@ use SwoftTest\Db\Unit\TestCase;
  */
 class BuilderTest extends TestCase
 {
+
     public function testSelect()
     {
         $expectSql = 'select `id`, `name` from `user`';
@@ -32,7 +31,7 @@ class BuilderTest extends TestCase
     }
 
     /**
-     * @throws ReflectionException
+     * @throws \ReflectionException
      * @throws ContainerException
      * @throws PrototypeException
      * @throws PoolException
@@ -81,7 +80,7 @@ class BuilderTest extends TestCase
     /**
      * @throws ContainerException
      * @throws PrototypeException
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     public function testSelectExpression()
     {
@@ -112,7 +111,7 @@ class BuilderTest extends TestCase
     /**
      * @throws ContainerException
      * @throws PrototypeException
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     public function testSelectSubJoinQuery()
     {
@@ -141,7 +140,7 @@ class BuilderTest extends TestCase
     /**
      * @throws ContainerException
      * @throws PrototypeException
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     public function testSelectList()
     {

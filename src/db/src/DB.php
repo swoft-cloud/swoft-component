@@ -1,5 +1,6 @@
 <?php declare(strict_types=1);
 
+
 namespace Swoft\Db;
 
 use Swoft\Bean\BeanFactory;
@@ -70,6 +71,7 @@ class DB
             if ($cm->isTransaction()) {
                 return $cm->getTransactionConnection();
             }
+
             return self::getConnectionFromPool($name);
         } catch (\Throwable $e) {
             throw new PoolException(
@@ -93,6 +95,7 @@ class DB
         if (!in_array($name, self::$passthru)) {
             throw new QueryException(sprintf('Method(%s) is not exist!', $name));
         }
+
         $connection = self::connection();
         return $connection->$name(...$arguments);
     }
@@ -115,9 +118,11 @@ class DB
         if (!$pool instanceof Pool) {
             throw new PoolException(sprintf('%s is not instance of pool', $name));
         }
+
         /* @var ConnectionManager $conManager */
         $conManager = BeanFactory::getBean(ConnectionManager::class);
         $connection = $pool->getConnection();
+
         $connection->setRelease(true);
         $conManager->setOrdinaryConnection($connection);
         return $connection;
