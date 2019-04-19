@@ -2,12 +2,14 @@
 
 namespace Swoft\Bean;
 
+use Swoft\Bean\Contract\HandlerInterface;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Reflections;
 
 /**
  * Class BeanFactory
- * @since 1.0
+ *
+ * @since 2.0
  */
 final class BeanFactory
 {

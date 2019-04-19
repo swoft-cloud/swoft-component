@@ -3,6 +3,7 @@
 
 namespace Swoft\Bean;
 
+use Swoft\Bean\Contract\HandlerInterface;
 use Swoft\Bean\Definition\ObjectDefinition;
 
 /**

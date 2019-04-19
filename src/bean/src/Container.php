@@ -4,6 +4,8 @@ namespace Swoft\Bean;
 
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Contract\ContainerInterface;
+use Swoft\Bean\Contract\HandlerInterface;
 use Swoft\Bean\Definition\ArgsInjection;
 use Swoft\Bean\Definition\MethodInjection;
 use Swoft\Bean\Definition\ObjectDefinition;
