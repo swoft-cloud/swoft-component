@@ -39,6 +39,7 @@ class SingleList extends MessageFormatter
             'keyMinWidth' => 8,
             'titleStyle'  => 'comment',
             'returned'    => false,
+            'ucFirst'     => false,
             'lastNewline' => true,
         ], $opts);
 

@@ -143,25 +143,27 @@ class ConsoleDispatcher implements DispatcherInterface
      * Before dispatch
      *
      * @param array $params
+     * @throws \Throwable
      */
     public function before(...$params): void
     {
         // TODO ... event params
         $command = $params[0];
-        \Swoft::trigger(ConsoleEvent::BEFORE_EXECUTE, $command, $params[1]);
+        \Swoft::trigger(ConsoleEvent::EXECUTE_BEFORE, $command, $params[1]);
     }
 
     /**
      * After dispatch
      *
      * @param array $params
+     * @throws \Throwable
      */
     public function after(...$params): void
     {
         // TODO ... event params
         $command = $params[0];
 
-        \Swoft::triggerByArray(ConsoleEvent::AFTER_EXECUTE, $command, [
+        \Swoft::triggerByArray(ConsoleEvent::EXECUTE_AFTER, $command, [
             'command' => $command,
         ]);
     }

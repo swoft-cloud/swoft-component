@@ -51,6 +51,17 @@ final class Command
     private $alias = '';
 
     /**
+     * Full command ID aliases.
+     *
+     * @var array
+     * [
+     *  // id alias => 'group:command'
+     *  'gen-ws' => 'gen:ws'
+     * ]
+     */
+    private $idAliases = [];
+
+    /**
      * @var bool
      */
     private $enabled = true;
@@ -94,6 +105,10 @@ final class Command
 
         if (isset($values['coroutine'])) {
             $this->coroutine = (bool)$values['coroutine'];
+        }
+
+        if (isset($values['idAliases'])) {
+            $this->idAliases = (array)$values['idAliases'];
         }
 
         if (isset($values['defaultCommand'])) {
@@ -155,5 +170,13 @@ final class Command
     public function getDefaultCommand(): string
     {
         return $this->defaultCommand;
+    }
+
+    /**
+     * @return array
+     */
+    public function getIdAliases(): array
+    {
+        return $this->idAliases;
     }
 }

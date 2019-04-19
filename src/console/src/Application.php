@@ -111,7 +111,7 @@ class Application implements ConsoleInterface
     public function run(): void
     {
         try {
-            \Swoft::trigger(ConsoleEvent::BEFORE_RUN, $this);
+            \Swoft::trigger(ConsoleEvent::RUN_BEFORE, $this);
 
             // Prepare
             $this->prepare();
@@ -125,7 +125,7 @@ class Application implements ConsoleInterface
                 $this->doRun($inputCommand);
             }
 
-            \Swoft::trigger(ConsoleEvent::AFTER_RUN, $this, $inputCommand);
+            \Swoft::trigger(ConsoleEvent::RUN_AFTER, $this, $inputCommand);
         } catch (\Throwable $e) {
             $this->handleException($e);
         }
@@ -173,6 +173,9 @@ class Application implements ConsoleInterface
             return;
         }
 
+        // Parse default options and arguments
+        $this->bindOptionsAndArguments($info);
+
         \Swoft::triggerByArray(ConsoleEvent::DISPATCH_BEFORE, $this, $info);
 
         // Call command handler
@@ -202,12 +205,69 @@ class Application implements ConsoleInterface
     }
 
     /**
+     * Bind option and argument values by route info
+     *
+     * @param array $info
+     */
+    protected function bindOptionsAndArguments(array $info): void
+    {
+        // Bind options
+        if ($opts = $info['options']) {
+            $sOpts = $this->input->getSOpts();
+            $lOpts = $this->input->getLOpts();
+
+            foreach ($opts as $name => $opt) {
+                $inputVal = $this->input->getLongOpt($name);
+
+                // Exist short
+                if (null === $inputVal && $opt['short']) {
+                    $inputVal = $this->input->getSameOpt([$name, $opt['short']]);
+                }
+
+                // Exist default value
+                if (null === $inputVal && isset($opt['default'])) {
+                    $inputVal = $opt['default'];
+                }
+
+                if (null !== $inputVal) {
+                    $sOpts[$name] = $lOpts[$name] = $inputVal;
+                }
+            }
+
+            // Save to input
+            $this->input->setLOpts($lOpts, true);
+            $this->input->setSOpts($sOpts, true);
+        }
+
+        // Bind named argument by index
+        if ($args = $info['arguments']) {
+            $index  = 0;
+            $values = $this->input->getArgs();
+
+            foreach ($args as $name => $arg) {
+                // Bind value to name
+                if (isset($values[$index])) {
+                    $values[$name] = $values[$index];
+                    // Bind default value
+                } elseif (isset($arg['default'])) {
+                    $values[$name]  = $arg['default'];
+                    $values[$index] = $arg['default'];
+                }
+
+                $index++;
+            }
+
+            $this->input->setArgs($values, true);
+        }
+    }
+
+    /**
      * @param \Throwable $e
      */
     protected function handleException(\Throwable $e): void
     {
         try {
-            $evt = \Swoft::triggerByArray(ConsoleEvent::ERROR_RUN, $this, [
+            $evt = \Swoft::triggerByArray(ConsoleEvent::RUN_ERROR, $this, [
                 'exception' => $e,
             ]);
 

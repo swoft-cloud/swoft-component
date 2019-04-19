@@ -472,7 +472,9 @@ class Router implements RouterInterface
      */
     public function setIdAliases(array $idAliases): void
     {
-        $this->idAliases = $idAliases;
+        if ($idAliases) {
+            $this->idAliases = \array_merge($this->idAliases, $idAliases);
+        }
     }
 
     /**

@@ -118,4 +118,12 @@ trait PathAliasTrait
 
         return isset(self::$aliases[$alias]);
     }
+
+    /**
+     * @return array
+     */
+    public static function getAliases(): array
+    {
+        return self::$aliases;
+    }
 }

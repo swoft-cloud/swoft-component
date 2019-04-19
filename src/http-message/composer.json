@@ -24,7 +24,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "SwoftTest\\Http\\Message\\": "test/case/"
+      "SwoftTest\\Http\\Message\\Unit\\": "test/unit/",
+      "SwoftTest\\Http\\Message\\Testing\\": "test/testing/"
     }
   },
   "repositories": {
