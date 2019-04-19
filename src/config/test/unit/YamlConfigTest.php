@@ -3,15 +3,14 @@
 
 namespace SwoftTest\Config\Unit;
 
-
 use Swoft\Config\Config;
 
 /**
- * Class PhpConfigTest
+ * Class YamlConfigTest
  *
  * @since 2.0
  */
-class PhpConfigTest extends TestCase
+class YamlConfigTest extends TestCase
 {
     /**
      * @var Config
@@ -24,7 +23,8 @@ class PhpConfigTest extends TestCase
     public function setUp()
     {
         $config = new Config();
-        $config->setPath(__DIR__ . '/../config-php');
+        $config->setPath(__DIR__ . '/../config-yaml');
+        $config->setType(Config::TYPE_YAML);
         $config->init();;
 
         $this->config = $config;

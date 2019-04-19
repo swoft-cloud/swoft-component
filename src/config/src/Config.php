@@ -7,6 +7,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Config\Exception\ConfigException;
 use Swoft\Config\Parser\ParserInterface;
 use Swoft\Config\Parser\PhpParser;
+use Swoft\Config\Parser\YamlParser;
 use Swoft\Stdlib\Collection;
 use Swoft\Stdlib\Helper\ArrayHelper;
 
@@ -202,7 +203,8 @@ class Config extends Collection
         // Set default parser
         if (empty($this->parsers)) {
             $parsers = [
-                self::TYPE_PHP => new PhpParser()
+                self::TYPE_PHP  => new PhpParser(),
+                self::TYPE_YAML => new YamlParser(),
             ];
         }
 
