@@ -1,19 +1,19 @@
 <?php declare(strict_types=1);
 
 
-namespace SwoftTest\Bean\Unit;
+namespace SwoftTest\Config\Unit;
 
 
 use PHPUnit\Framework\TestCase;
 
 /**
- * Class BeanTest
+ * Class PhpConfigTest
  *
  * @since 2.0
  */
-class BeanTest extends TestCase
+class PhpConfigTest extends TestCase
 {
-    public function testSingle()
+    public function testA()
     {
         $this->assertTrue(true);
     }

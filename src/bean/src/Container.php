@@ -315,6 +315,17 @@ class Container implements ContainerInterface
             return $this->requestPool[$id][$name];
         }
 
+        if (isset($this->aliases[$name])) {
+            return $this->getRequest($this->aliases[$name], $id);
+        }
+
+        // Class name
+        $classNames = $this->classNames[$name] ?? [];
+        if ($classNames) {
+            $name = \end($classNames);
+            return $this->getRequest($name, $id);
+        }
+
         if (!isset($this->requestDefinitions[$name])) {
             throw new ContainerException(\sprintf('Request bean(%s) is not defined', $name));
         }
@@ -336,6 +347,17 @@ class Container implements ContainerInterface
     {
         if (isset($this->sessionPool[$sid][$name])) {
             return $this->sessionPool[$sid][$name];
+        }
+
+        if (isset($this->aliases[$name])) {
+            return $this->getSession($this->aliases[$name], $sid);
+        }
+
+        // Class name
+        $classNames = $this->classNames[$name] ?? [];
+        if ($classNames) {
+            $name = \end($classNames);
+            return $this->getSession($name, $sid);
         }
 
         if (!isset($this->sessionDefinitions[$name])) {
@@ -518,9 +540,9 @@ class Container implements ContainerInterface
     /**
      * Destroy request bean
      *
-     * @param int $id
+     * @param string $id
      */
-    public function destroyRequest(int $id): void
+    public function destroyRequest(string $id): void
     {
         unset($this->requestPool[$id]);
     }
@@ -596,6 +618,7 @@ class Container implements ContainerInterface
         $annotationParser = new DefinitionObjParser(
             $this->definitions, $this->objectDefinitions, $this->classNames, $this->aliases
         );
+
         // Collect info
         $definitionData = $annotationParser->parseDefinitions();
         [$this->definitions, $this->objectDefinitions, $this->classNames, $this->aliases] = $definitionData;
@@ -637,6 +660,22 @@ class Container implements ContainerInterface
             'definition' => \array_keys($this->definitions),
             // 'definition' => \count($this->r),
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getRequestPool(): array
+    {
+        return $this->requestPool;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSessionPool(): array
+    {
+        return $this->sessionPool;
     }
 
     /**

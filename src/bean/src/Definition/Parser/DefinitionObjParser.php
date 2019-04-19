@@ -8,6 +8,7 @@ use Swoft\Bean\Definition\MethodInjection;
 use Swoft\Bean\Definition\ObjectDefinition;
 use Swoft\Bean\Definition\PropertyInjection;
 use Swoft\Bean\Exception\ContainerException;
+use SwoftTest\Bean\Testing\Definition\PrototypeClass;
 
 /**
  * Class DefinitionParser

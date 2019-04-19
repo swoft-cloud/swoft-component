@@ -14,7 +14,7 @@ use SwoftTest\Bean\Testing\InjectBean;
  *
  * @since 2.0
  *
- * @Bean(name="", scope=Bean::PROTOTYPE)
+ * @Bean(name="prototype", scope=Bean::PROTOTYPE)
  */
 class PrototypeClass extends BeanProperty
 {

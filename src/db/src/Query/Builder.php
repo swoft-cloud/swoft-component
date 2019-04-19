@@ -9,6 +9,7 @@ use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Bean\PrototypeInterface;
 use Swoft\Db\Concern\BuildsQueries;
 use Swoft\Db\Connection\Connection;
+use Swoft\Db\DB;
 use Swoft\Db\Eloquent\Builder as EloquentBuilder;
 use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Query\Grammar\Grammar;
@@ -226,19 +227,25 @@ class Builder implements PrototypeInterface
      *
      * @param mixed ...$params
      *
-     * @return Builder
      * @return PrototypeInterface|Builder
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public static function new(...$params)
     {
         /**
-         * @var Connection     $connection
-         * @var Grammar|null   $grammar
-         * @var Processor|null $processor
+         * @var Connection|null $connection
+         * @var Grammar|null    $grammar
+         * @var Processor|null  $processor
          */
-        list($connection, $grammar, $processor) = $params;
+        if (empty($params)) {
+            $connection = DB::connection();
+            $grammar    = null;
+            $processor  = null;
+        } else {
+            [$connection, $grammar, $processor] = $params;
+        }
 
         $self = self::__instance();
 
@@ -2257,10 +2264,17 @@ class Builder implements PrototypeInterface
      * Get the SQL representation of the query.
      *
      * @return string
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function toSql(): string
     {
-        return $this->grammar->compileSelect($this);
+        $sql = $this->grammar->compileSelect($this);
+
+        // Release connection
+        $this->connection->release();
+
+        return $sql;
     }
 
     /**
