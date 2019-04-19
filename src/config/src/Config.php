@@ -4,8 +4,8 @@ namespace Swoft\Config;
 
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Config\Contract\ParserInterface;
 use Swoft\Config\Exception\ConfigException;
-use Swoft\Config\Parser\ParserInterface;
 use Swoft\Config\Parser\PhpParser;
 use Swoft\Config\Parser\YamlParser;
 use Swoft\Stdlib\Collection;

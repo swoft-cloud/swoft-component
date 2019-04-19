@@ -5,7 +5,7 @@ namespace Swoft\Rpc\Client;
 
 
 use Swoft\Connection\Pool\AbstractPool;
-use Swoft\Connection\Pool\ConnectionInterface;
+use Swoft\Connection\Pool\Contract\ConnectionInterface;
 use Swoft\Rpc\Client\Exception\RpcClientException;
 
 /**
