@@ -19,6 +19,10 @@ use SwoftTest\Db\Unit\TestCase;
 class BuilderTest extends TestCase
 {
 
+    /**
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
     public function testSelect()
     {
         $expectSql = 'select `id`, `name` from `user`';
@@ -46,10 +50,13 @@ class BuilderTest extends TestCase
         $subCb = function (Builder $query) {
             return $query->select('id')->from('count');
         };
-        $cbSql = DB::table('user')->selectSub($subCb, 'c')->toSql();
+        $db    = DB::table('user');
 
-        $builder  = Builder::new()->from('count')->select('id');
+        $builder = Builder::new()->from('count')->select('id');
+        $cbSql   = $db->selectSub($subCb, 'c')->toSql();
+
         $buildSql = DB::table('user')->selectSub($builder, 'c')->toSql();
+
 
         $this->assertEquals($expectSql, $strSql);
         $this->assertEquals($expectSql, $cbSql);
@@ -57,7 +64,9 @@ class BuilderTest extends TestCase
     }
 
     /**
+     * @throws ContainerException
      * @throws PrototypeException
+     * @throws \ReflectionException
      */
     public function testSelectRaw()
     {
@@ -68,6 +77,10 @@ class BuilderTest extends TestCase
         $this->assertEquals($expectSql, $sql);
     }
 
+    /**
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
     public function testSelectBetween()
     {
         $expectSql = 'select `age` from `user` where `age` between ? and ?';
@@ -79,6 +92,7 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
+     * @throws PoolException
      * @throws PrototypeException
      * @throws \ReflectionException
      */
@@ -96,7 +110,9 @@ class BuilderTest extends TestCase
     }
 
     /**
+     * @throws ContainerException
      * @throws PrototypeException
+     * @throws \ReflectionException
      */
     public function testSelectLeftJoin()
     {
@@ -110,6 +126,7 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
+     * @throws PoolException
      * @throws PrototypeException
      * @throws \ReflectionException
      */
@@ -139,6 +156,7 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
+     * @throws PoolException
      * @throws PrototypeException
      * @throws \ReflectionException
      */
@@ -164,6 +182,10 @@ class BuilderTest extends TestCase
         $this->assertEquals($expectSql, $sql);
     }
 
+    /**
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
     public function testHaving()
     {
         $expectSql = 'select `sum(age)` as `sum_age`, `count(user_desc)` as `count_desc`, `id` from `user` ' .
@@ -193,6 +215,10 @@ class BuilderTest extends TestCase
         $this->assertEquals($expectSql, $sql3);
     }
 
+    /**
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
     public function testDistinct()
     {
         $expectSql = 'select distinct * from `user`';
@@ -200,4 +226,26 @@ class BuilderTest extends TestCase
         $this->assertEquals($expectSql, $sql);
     }
 
+    /**
+     * @throws ContainerException
+     * @throws PoolException
+     * @throws \ReflectionException
+     */
+    public function testWheres()
+    {
+        $expectSql = 'select  * from `user`';
+        $sql       = DB::table('user')
+            ->select('user.*')
+            ->whereExists(function (Builder $builder) {
+                return $builder->where('age', '>', 10);
+            })
+            ->joinWhere('count as c','user.id', '=','c.user_id' )
+            ->whereDate('create_time', '>', date('y-m-d'))
+            ->whereIntegerInRaw('c.id', [1, 4, 5])
+            // search json field user_info[1]
+            ->whereJsonContains('user_info', '1')
+            ->whereJsonLength('shop_labes','0')
+            ->get();
+        $this->assertEquals($expectSql, $sql);
+    }
 }

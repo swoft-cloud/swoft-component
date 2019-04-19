@@ -10,3 +10,4 @@ temp/
 *.lock
 .phpintel/
 .DS_Store
+test/testing/bean.php

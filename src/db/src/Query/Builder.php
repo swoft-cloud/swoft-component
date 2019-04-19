@@ -285,6 +285,7 @@ class Builder implements PrototypeInterface
      * @throws PrototypeException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function selectSub($query, string $as): self
     {
@@ -323,6 +324,7 @@ class Builder implements PrototypeInterface
      *
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function fromSub($query, string $as): self
     {
@@ -358,6 +360,7 @@ class Builder implements PrototypeInterface
      * @return array
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     protected function createSub($query): array
     {
@@ -379,6 +382,8 @@ class Builder implements PrototypeInterface
      * @param mixed $query
      *
      * @return array
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function parseSub($query): array
     {
@@ -512,6 +517,7 @@ class Builder implements PrototypeInterface
      * @throws PrototypeException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function joinSub(
         $query,
@@ -576,6 +582,7 @@ class Builder implements PrototypeInterface
      * @throws PrototypeException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function leftJoinSub($query, string $as, string $first, string $operator = null, string $second = null): self
     {
@@ -627,6 +634,7 @@ class Builder implements PrototypeInterface
      * @throws PrototypeException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function rightJoinSub(
         $query,
@@ -689,6 +697,7 @@ class Builder implements PrototypeInterface
      * @throws PrototypeException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function where($column, $operator = null, $value = null, string $boolean = 'and'): self
     {
@@ -767,6 +776,7 @@ class Builder implements PrototypeInterface
      * @return $this
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     protected function addArrayOfWheres($column, $boolean, $method = 'where'): self
     {
@@ -843,6 +853,7 @@ class Builder implements PrototypeInterface
      * @throws PrototypeException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function orWhere($column, $operator = null, $value = null): self
     {
@@ -864,6 +875,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function whereColumn($first, string $operator = null, string $second = null, string $boolean = 'and'): self
     {
@@ -903,6 +915,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function orWhereColumn($first, string $operator = null, string $second = null): self
     {
@@ -951,6 +964,7 @@ class Builder implements PrototypeInterface
      * @return $this
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function whereIn(string $column, $values, string $boolean = 'and', bool $not = false): self
     {
@@ -1002,6 +1016,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function orWhereIn(string $column, $values): self
     {
@@ -1018,6 +1033,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function whereNotIn(string $column, $values, string $boolean = 'and'): self
     {
@@ -1033,6 +1049,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function orWhereNotIn(string $column, $values): self
     {
@@ -1050,6 +1067,7 @@ class Builder implements PrototypeInterface
      * @return $this
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     protected function whereInSub(string $column, \Closure $callback, string $boolean, bool $not): self
     {
@@ -1486,6 +1504,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function whereNested(\Closure $callback, string $boolean = 'and'): self
     {
@@ -1500,6 +1519,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function forNestedWhere(): self
     {
@@ -1538,6 +1558,7 @@ class Builder implements PrototypeInterface
      * @return $this
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     protected function whereSub(string $column, string $operator, \Closure $callback, string $boolean): self
     {
@@ -1567,6 +1588,7 @@ class Builder implements PrototypeInterface
      * @return $this
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function whereExists(\Closure $callback, string $boolean = 'and', bool $not = false): self
     {
@@ -1589,6 +1611,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function orWhereExists(\Closure $callback, bool $not = false): self
     {
@@ -1604,6 +1627,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function whereNotExists(\Closure $callback, string $boolean = 'and'): self
     {
@@ -1618,6 +1642,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function orWhereNotExists(\Closure $callback): self
     {
@@ -1801,6 +1826,7 @@ class Builder implements PrototypeInterface
      * @throws PrototypeException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function dynamicWhere(string $method, array $parameters): self
     {
@@ -1850,6 +1876,7 @@ class Builder implements PrototypeInterface
      * @throws PrototypeException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     protected function addDynamic($segment, $connector, $parameters, $index): void
     {
@@ -2156,6 +2183,7 @@ class Builder implements PrototypeInterface
      * @throws PrototypeException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function forPageAfterId(int $perPage = 15, int $lastId = null, string $column = 'id'): self
     {
@@ -2194,6 +2222,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function union($query, bool $all = false): self
     {
@@ -2216,6 +2245,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function unionAll($query): self
     {
@@ -2288,6 +2318,7 @@ class Builder implements PrototypeInterface
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Db\Exception\EloquentException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function find(string $id, array $columns = ['*']): self
     {
@@ -2331,6 +2362,8 @@ class Builder implements PrototypeInterface
      *
      * @return array
      * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function runSelect(): array
     {
@@ -2417,7 +2450,9 @@ class Builder implements PrototypeInterface
      * Get a generator for the given query.
      *
      * @return \Generator
-     * @throws \Swoft\Db\Exception\QueryException
+     * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function cursor(): \Generator
     {
@@ -2440,6 +2475,7 @@ class Builder implements PrototypeInterface
      * @throws PrototypeException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function chunkById(int $count, callable $callback, $column = 'id', string $alias = null): bool
     {
@@ -2883,6 +2919,7 @@ class Builder implements PrototypeInterface
      * @throws QueryException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function insertUsing(array $columns, $query)
     {
@@ -2923,6 +2960,7 @@ class Builder implements PrototypeInterface
      * @throws QueryException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function updateOrInsert(array $attributes, array $values = [])
     {
@@ -2991,6 +3029,7 @@ class Builder implements PrototypeInterface
      * @throws QueryException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function delete($id = null)
     {
@@ -3027,6 +3066,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function newQuery(): self
     {
@@ -3039,6 +3079,7 @@ class Builder implements PrototypeInterface
      * @return static
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     protected function forSubQuery(): self
     {
