@@ -250,20 +250,22 @@ class Container
      */
     private function proxyBean(string $name, string $className, $object)
     {
-        if (!AspectCollector::hasClassname($className)) {
-            return $object;
-        }
-
         /* @var Aop $aop */
         $aop = App::getBean(Aop::class);
 
         $rc  = new \ReflectionClass($className);
         $rms = $rc->getMethods();
+
+        $shouldProxy = false;
         foreach ($rms as $rm) {
             $method      = $rm->getName();
             $annotations = Collector::$methodAnnotations[$className][$method] ?? [];
             $annotations = array_unique($annotations);
-            $aop->match($name, $className, $method, $annotations);
+            $shouldProxy |= $aop->match($name, $className, $method, $annotations);
+        }
+
+        if (! $shouldProxy) {
+            return $object;
         }
 
         $handler = new AopHandler($object);
