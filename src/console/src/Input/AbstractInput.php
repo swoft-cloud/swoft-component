@@ -128,7 +128,7 @@ abstract class AbstractInput implements InputInterface
      */
     public function setArgs(array $args, $replace = false): void
     {
-        $this->args = $replace ? $args : array_merge($this->args, $args);
+        $this->args = $replace ? $args : \array_merge($this->args, $args);
     }
 
     /**
@@ -141,9 +141,9 @@ abstract class AbstractInput implements InputInterface
     }
 
     /**
-     * get Argument
-     * @param null|int|string $name
-     * @param mixed           $default
+     * Get command argument by index or name
+     * @param int|string $name
+     * @param mixed      $default
      * @return mixed
      */
     public function getArgument($name, $default = null)
@@ -152,9 +152,9 @@ abstract class AbstractInput implements InputInterface
     }
 
     /**
-     * get Argument
-     * @param null|int|string $name
-     * @param mixed           $default
+     * Get command argument by index or name
+     * @param int|string $name
+     * @param mixed      $default
      * @return mixed
      */
     public function getArg($name, $default = null)
@@ -163,9 +163,10 @@ abstract class AbstractInput implements InputInterface
     }
 
     /**
-     * get Argument
-     * @param null|int|string $name
-     * @param mixed           $default
+     * Get command argument by index or name
+     *
+     * @param int|string $name
+     * @param mixed      $default
      * @return mixed
      */
     public function get($name, $default = null)
@@ -174,7 +175,8 @@ abstract class AbstractInput implements InputInterface
     }
 
     /**
-     * get a required argument
+     * Get a required argument
+     *
      * @param int|string $name argument index
      * @return mixed
      * @throws \InvalidArgumentException
@@ -189,7 +191,7 @@ abstract class AbstractInput implements InputInterface
     }
 
     /**
-     * get first argument
+     * Get first argument
      * @param string $default
      * @return string
      */
@@ -199,7 +201,7 @@ abstract class AbstractInput implements InputInterface
     }
 
     /**
-     * get second argument
+     * Get second argument
      * @param string $default
      * @return string
      */
@@ -221,7 +223,7 @@ abstract class AbstractInput implements InputInterface
     }
 
     /**
-     * get same args value
+     * Get same args value
      * eg: des description
      *
      * ```php
@@ -254,7 +256,7 @@ abstract class AbstractInput implements InputInterface
     }
 
     /**
-     * clear args
+     * Clear args
      */
     public function clearArgs(): void
     {
@@ -266,10 +268,10 @@ abstract class AbstractInput implements InputInterface
      ***********************************************************************************/
 
     /**
-     * get (long/short)opt value
+     * Get (long/short) option value
      * eg: -e dev --name sam
      * @param string $name
-     * @param null   $default
+     * @param mixed  $default
      * @return bool|mixed|null
      */
     public function getOpt(string $name, $default = null)
@@ -283,7 +285,7 @@ abstract class AbstractInput implements InputInterface
     }
 
     /**
-     * alias of the getOpt()
+     * Alias of the getOpt()
      * @param string $name
      * @param mixed  $default
      * @return mixed
@@ -294,7 +296,7 @@ abstract class AbstractInput implements InputInterface
     }
 
     /**
-     * get a required argument
+     * Get a required argument
      * @param string $name
      * @return mixed
      * @throws \InvalidArgumentException
@@ -309,7 +311,8 @@ abstract class AbstractInput implements InputInterface
     }
 
     /**
-     * get (long/short)opt value(bool)
+     * Get (long/short) option value(bool)
+     *
      * eg: -h --help
      * @param string $name
      * @param bool   $default

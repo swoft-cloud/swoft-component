@@ -40,7 +40,7 @@ abstract class AbstractFlag
     private $type = 'value';
 
     /**
-     * The option default value
+     * The option/argument default value
      *
      * @var mixed
      */
@@ -92,7 +92,7 @@ abstract class AbstractFlag
      */
     public function getDesc(): string
     {
-        return $this->desc;
+        return $this->desc ? \ucfirst($this->desc) : '';
     }
 
     /**

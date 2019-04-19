@@ -131,7 +131,9 @@ final class CommandRegister
         foreach (self::$commands as $class => $mapping) {
             $names = [];
             $group = $mapping['group'];
-            // set group name aliases
+            // Set ID aliases
+            $router->setIdAliases($mapping['idAliases']);
+            // Set group name aliases
             $router->setGroupAliases($group, $mapping['aliases']);
 
             $refInfo = \Swoft::getReflection($class);
@@ -159,7 +161,7 @@ final class CommandRegister
                 $route['desc']    = \ucfirst($cmdDesc);
                 $route['example'] = $cmdExam;
                 $route['options'] = self::mergeOptions($grpOpts, $route['options']);
-                // append group option
+                // Append group option
                 $route['enabled']   = $mapping['enabled'];
                 $route['coroutine'] = $mapping['coroutine'];
 

@@ -95,21 +95,23 @@ class Show
      */
     public static function liteBlock($messages, $type = 'MESSAGE', string $style = Style::NORMAL, $quit = false): int
     {
+        $fmtType  = '';
         $messages = \is_array($messages) ? \array_values($messages) : [$messages];
-
-        // add type
-        if ($type) {
-            $type = \sprintf('[%s]', \strtoupper($type));
-        }
 
         $text  = \implode(\PHP_EOL, $messages);
         $color = static::getStyle();
 
-        if ($type && \is_string($style) && $color->hasStyle($style)) {
-            $type = \sprintf('<%s>%s</%s> ', $style, $type, $style);
+        // add type
+        if ($type) {
+            $fmtType = \sprintf('[%s]', $upType = \strtoupper($type));
+
+            // add style
+            if ($style && $color->hasStyle($style)) {
+                $fmtType = \sprintf('<%s>[%s]</%s> ', $style, $upType, $style);
+            }
         }
 
-        return self::write($type . $text, true, $quit);
+        return self::write($fmtType . $text, true, $quit);
     }
 
     /**
@@ -151,7 +153,9 @@ class Show
             $style = self::$blockMethods[$method];
 
             if (0 === \strpos($method, 'lite')) {
-                return self::liteBlock($msg, $style === 'primary' ? 'IMPORTANT' : $style, $style, $quit);
+                $type = \substr($method, 4);
+
+                return self::liteBlock($msg, $type === 'primary' ? 'IMPORTANT' : $type, $style, $quit);
             }
 
             return self::block($msg, $style === 'primary' ? 'IMPORTANT' : $style, $style, $quit);

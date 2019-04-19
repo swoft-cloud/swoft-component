@@ -22,7 +22,7 @@ class CommandParser extends Parser
     /**
      * Parse object
      *
-     * @param int     $type Class or Method or Property
+     * @param int     $type       Class or Method or Property
      * @param Command $annotation Annotation object
      *
      * @return array
@@ -39,14 +39,16 @@ class CommandParser extends Parser
         $class = $this->className;
         $group = $annotation->getName() ?: Str::getClassName($class, 'Command');
 
-        // add group for the command controller
+        // Add group for the command controller
         CommandRegister::addGroup($class, $group, [
-            'group'     => $group,
-            'desc'      => $annotation->getDesc(),
-            'alias'     => $annotation->getAlias(),
-            'aliases'   => $annotation->getAliases(),
-            'enabled'   => $annotation->isEnabled(),
-            'coroutine' => $annotation->isCoroutine(),
+            'group'          => $group,
+            'desc'           => $annotation->getDesc(),
+            'alias'          => $annotation->getAlias(),
+            'aliases'        => $annotation->getAliases(),
+            'enabled'        => $annotation->isEnabled(),
+            'coroutine'      => $annotation->isCoroutine(),
+            'idAliases'      => $annotation->getIdAliases(),
+            'defaultCommand' => $annotation->getDefaultCommand(),
         ]);
 
         return [$class, $class, Bean::SINGLETON, ''];

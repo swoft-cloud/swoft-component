@@ -190,8 +190,11 @@ trait RenderHelpInfoTrait
 
             $keyWidth = Arr::getKeyMaxWidth($arguments);
             foreach ($arguments as $name => $meta) {
-                Console::writef('  <info>%s</info> %s   %s', Str::padRight($name, $keyWidth), $meta['type'],
-                    $meta['desc']);
+                Console::writef(
+                    '  <info>%s</info> %s   %s',
+                    Str::padRight($name, $keyWidth), $meta['type'],
+                    $meta['desc']
+                );
             }
 
             Console::writeln('');
@@ -232,13 +235,20 @@ trait RenderHelpInfoTrait
                 $newOpts[$key] = $meta;
             }
 
-            // Render
+            $maxLen++;
+
+            // Render options
             foreach ($newOpts as $key => $meta) {
                 if ($hasShort && false === \strpos($key, ',')) { // has short and key is long
                     $key = '    ' . $key;
                 }
 
-                Console::writef('  %s    %s', Str::padRight($key, $maxLen), $meta['desc']);
+                Console::writef(
+                    '  %s    %s%s',
+                    Str::padRight($key, $maxLen),
+                    $meta['desc'],
+                    $this->renderDefaultValue($meta['default'])
+                );
             }
         }
 
@@ -248,5 +258,30 @@ trait RenderHelpInfoTrait
         }
 
         Console::flushBuffer();
+    }
+
+    /**
+     * @param mixed $defVal
+     * @return string
+     */
+    private function renderDefaultValue($defVal): string
+    {
+        if (null === $defVal) {
+            return '';
+        }
+
+        $text = ' (defaults: <mga>';
+
+        if (\is_bool($defVal)) {
+            $text .= $defVal ? 'True' : 'False';
+        } elseif (\is_scalar($defVal)) {
+            $text .=  $defVal;
+        } elseif (\is_array($defVal)) {
+            $text .=  \implode(', ', $defVal);
+        } else {
+            $text .= $defVal;
+        }
+
+        return $text . '</mga>)';
     }
 }
