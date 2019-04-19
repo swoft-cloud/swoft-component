@@ -71,19 +71,6 @@ final class BeanFactory
     }
 
     /**
-     * Get an prototype bean instance
-     *
-     * @param string $name
-     *
-     * @return mixed
-     * @throws ContainerException
-     */
-    public static function getPrototype(string $name)
-    {
-        return Container::getInstance()->getPrototype($name);
-    }
-
-    /**
      * Whether has bean
      *
      * @param string $name
@@ -168,9 +155,9 @@ final class BeanFactory
     /**
      * Destroy request bean
      *
-     * @param int $id
+     * @param string $id
      */
-    public static function destroyRequest(int $id): void
+    public static function destroyRequest(string $id): void
     {
         Container::getInstance()->destroyRequest($id);
     }

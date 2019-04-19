@@ -68,17 +68,33 @@ class ObjectParser
     protected $classNames = [];
 
     /**
+     * All alias
+     *
+     * @var array
+     *
+     * @example
+     * [
+     *     'alias' => 'beanName',
+     *     'alias' => 'beanName',
+     *     'alias' => 'beanName'
+     * ]
+     */
+    protected $aliases = [];
+
+    /**
      * ObjectParser constructor.
      *
      * @param array $definitions
      * @param array $objectDefinitions
      * @param array $classNames
+     * @param array $aliases
      */
-    public function __construct(array $definitions, array $objectDefinitions, array $classNames)
+    public function __construct(array $definitions, array $objectDefinitions, array $classNames, array $aliases)
     {
         $this->definitions       = $definitions;
         $this->objectDefinitions = $objectDefinitions;
         $this->classNames        = $classNames;
+        $this->aliases           = $aliases;
     }
 
     /**

@@ -4,6 +4,7 @@ namespace Swoft\WebSocket\Server\Context;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Context\AbstractContext;
 use Swoole\WebSocket\Frame;
 
@@ -15,6 +16,8 @@ use Swoole\WebSocket\Frame;
  */
 class WsMessageContext extends AbstractContext
 {
+    use PrototypeTrait;
+
     /**
      * @var Frame
      */
@@ -22,13 +25,15 @@ class WsMessageContext extends AbstractContext
 
     /**
      * @param Frame $frame
+     *
      * @return WsMessageContext
      * @throws \Swoft\Bean\Exception\ContainerException
      */
     public static function new(Frame $frame): self
     {
         /** @var self $ctx */
-        $ctx = BeanFactory::getPrototype(__CLASS__);
+        $ctx = self::__instance();
+
 
         // Initial properties
         $ctx->frame = $frame;

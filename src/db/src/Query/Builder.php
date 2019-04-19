@@ -8,7 +8,8 @@ use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Bean\PrototypeInterface;
 use Swoft\Db\Concern\BuildsQueries;
-use Swoft\Db\Connection;
+use Swoft\Db\Connection\Connection;
+use Swoft\Db\DB;
 use Swoft\Db\Eloquent\Builder as EloquentBuilder;
 use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Query\Grammar\Grammar;
@@ -226,19 +227,25 @@ class Builder implements PrototypeInterface
      *
      * @param mixed ...$params
      *
-     * @return Builder
      * @return PrototypeInterface|Builder
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public static function new(...$params)
     {
         /**
-         * @var Connection     $connection
-         * @var Grammar|null   $grammar
-         * @var Processor|null $processor
+         * @var Connection|null $connection
+         * @var Grammar|null    $grammar
+         * @var Processor|null  $processor
          */
-        list($connection, $grammar, $processor) = $params;
+        if (empty($params)) {
+            $connection = DB::connection();
+            $grammar    = null;
+            $processor  = null;
+        } else {
+            [$connection, $grammar, $processor] = $params;
+        }
 
         $self = self::__instance();
 
@@ -252,7 +259,7 @@ class Builder implements PrototypeInterface
     /**
      * Set the columns to be selected.
      *
-     * @param  string ...$columns
+     * @param string ...$columns
      *
      * @return static
      */
@@ -270,13 +277,14 @@ class Builder implements PrototypeInterface
     /**
      * Add a subselect expression to the query.
      *
-     * @param  \Closure|static|string $query
-     * @param  string                 $as
+     * @param \Closure|static|string $query
+     * @param string                 $as
      *
      * @return static
      *
-     * @throws \InvalidArgumentException
      * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function selectSub($query, string $as): self
     {
@@ -308,13 +316,13 @@ class Builder implements PrototypeInterface
     /**
      * Makes "from" fetch from a subquery.
      *
-     * @param  \Closure|static|string $query
-     * @param  string                 $as
+     * @param \Closure|static|string $query
+     * @param string                 $as
      *
      * @return static
      *
-     * @throws \InvalidArgumentException
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function fromSub($query, string $as): self
     {
@@ -326,8 +334,8 @@ class Builder implements PrototypeInterface
     /**
      * Add a raw from clause to the query.
      *
-     * @param  string $expression
-     * @param  array  $bindings
+     * @param string $expression
+     * @param array  $bindings
      *
      * @return static
      *
@@ -345,10 +353,11 @@ class Builder implements PrototypeInterface
     /**
      * Creates a subquery and parse it.
      *
-     * @param  \Closure|static|string $query
+     * @param \Closure|static|string $query
      *
      * @return array
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function createSub($query): array
     {
@@ -367,7 +376,7 @@ class Builder implements PrototypeInterface
     /**
      * Parse the subquery into SQL and bindings.
      *
-     * @param  mixed $query
+     * @param mixed $query
      *
      * @return array
      */
@@ -385,7 +394,7 @@ class Builder implements PrototypeInterface
     /**
      * Add a new select column to the query.
      *
-     * @param  array $column
+     * @param array $column
      *
      * @return static
      */
@@ -411,7 +420,7 @@ class Builder implements PrototypeInterface
     /**
      * Set the table which the query is targeting.
      *
-     * @param  string $table
+     * @param string $table
      *
      * @return static
      */
@@ -425,12 +434,12 @@ class Builder implements PrototypeInterface
     /**
      * Add a join clause to the query.
      *
-     * @param  string|Expression $table
-     * @param  \Closure|string   $first
-     * @param  string|null       $operator
-     * @param  string|null       $second
-     * @param  string            $type
-     * @param  bool              $where
+     * @param string|Expression $table
+     * @param \Closure|string   $first
+     * @param string|null       $operator
+     * @param string|null       $second
+     * @param string            $type
+     * @param bool              $where
      *
      * @return static
      * @throws PrototypeException
@@ -473,11 +482,11 @@ class Builder implements PrototypeInterface
     /**
      * Add a "join where" clause to the query.
      *
-     * @param  string          $table
-     * @param  \Closure|string $first
-     * @param  string          $operator
-     * @param  string          $second
-     * @param  string          $type
+     * @param string          $table
+     * @param \Closure|string $first
+     * @param string          $operator
+     * @param string          $second
+     * @param string          $type
      *
      * @return static
      * @throws PrototypeException
@@ -490,18 +499,19 @@ class Builder implements PrototypeInterface
     /**
      * Add a subquery join clause to the query.
      *
-     * @param  \Closure|static|string $query
-     * @param  string                 $as
-     * @param  \Closure|string        $first
-     * @param  string|null            $operator
-     * @param  string|null            $second
-     * @param  string                 $type
-     * @param  bool                   $where
+     * @param \Closure|static|string $query
+     * @param string                 $as
+     * @param \Closure|string        $first
+     * @param string|null            $operator
+     * @param string|null            $second
+     * @param string                 $type
+     * @param bool                   $where
      *
      * @return static|static
      *
-     * @throws \InvalidArgumentException
      * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function joinSub(
         $query,
@@ -524,10 +534,10 @@ class Builder implements PrototypeInterface
     /**
      * Add a left join to the query.
      *
-     * @param  string          $table
-     * @param  \Closure|string $first
-     * @param  string|null     $operator
-     * @param  string|null     $second
+     * @param string          $table
+     * @param \Closure|string $first
+     * @param string|null     $operator
+     * @param string|null     $second
      *
      * @return static
      * @throws PrototypeException
@@ -540,10 +550,10 @@ class Builder implements PrototypeInterface
     /**
      * Add a "join where" clause to the query.
      *
-     * @param  string $table
-     * @param  string $first
-     * @param  string $operator
-     * @param  string $second
+     * @param string $table
+     * @param string $first
+     * @param string $operator
+     * @param string $second
      *
      * @return static
      * @throws PrototypeException
@@ -556,15 +566,16 @@ class Builder implements PrototypeInterface
     /**
      * Add a subquery left join to the query.
      *
-     * @param  \Closure|static|string $query
-     * @param  string                 $as
-     * @param  string                 $first
-     * @param  string|null            $operator
-     * @param  string|null            $second
+     * @param \Closure|static|string $query
+     * @param string                 $as
+     * @param string                 $first
+     * @param string|null            $operator
+     * @param string|null            $second
      *
      * @return static
      * @throws PrototypeException
-     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function leftJoinSub($query, string $as, string $first, string $operator = null, string $second = null): self
     {
@@ -574,10 +585,10 @@ class Builder implements PrototypeInterface
     /**
      * Add a right join to the query.
      *
-     * @param  string          $table
-     * @param  \Closure|string $first
-     * @param  string|null     $operator
-     * @param  string|null     $second
+     * @param string          $table
+     * @param \Closure|string $first
+     * @param string|null     $operator
+     * @param string|null     $second
      *
      * @return static
      * @throws PrototypeException
@@ -590,10 +601,10 @@ class Builder implements PrototypeInterface
     /**
      * Add a "right join where" clause to the query.
      *
-     * @param  string $table
-     * @param  string $first
-     * @param  string $operator
-     * @param  string $second
+     * @param string $table
+     * @param string $first
+     * @param string $operator
+     * @param string $second
      *
      * @return static
      * @throws PrototypeException
@@ -606,14 +617,16 @@ class Builder implements PrototypeInterface
     /**
      * Add a subquery right join to the query.
      *
-     * @param  \Closure|static|string $query
-     * @param  string                 $as
-     * @param  string                 $first
-     * @param  string|null            $operator
-     * @param  string|null            $second
+     * @param \Closure|static|string $query
+     * @param string                 $as
+     * @param string                 $first
+     * @param string|null            $operator
+     * @param string|null            $second
      *
      * @return static
      * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function rightJoinSub(
         $query,
@@ -628,10 +641,10 @@ class Builder implements PrototypeInterface
     /**
      * Add a "cross join" clause to the query.
      *
-     * @param  string               $table
-     * @param  \Closure|string|null $first
-     * @param  string|null          $operator
-     * @param  string|null          $second
+     * @param string               $table
+     * @param \Closure|string|null $first
+     * @param string|null          $operator
+     * @param string|null          $second
      *
      * @return static
      * @throws PrototypeException
@@ -650,8 +663,8 @@ class Builder implements PrototypeInterface
     /**
      * Merge an array of where clauses and bindings.
      *
-     * @param  array $wheres
-     * @param  array $bindings
+     * @param array $wheres
+     * @param array $bindings
      *
      * @return void
      */
@@ -667,13 +680,15 @@ class Builder implements PrototypeInterface
     /**
      * Add a basic where clause to the query.
      *
-     * @param  string|array|\Closure $column
-     * @param  mixed                 $operator
-     * @param  mixed                 $value
-     * @param  string                $boolean
+     * @param string|array|\Closure $column
+     * @param mixed                 $operator
+     * @param mixed                 $value
+     * @param string                $boolean
      *
      * @return $this
      * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function where($column, $operator = null, $value = null, string $boolean = 'and'): self
     {
@@ -745,9 +760,9 @@ class Builder implements PrototypeInterface
     /**
      * Add an array of where clauses to the query.
      *
-     * @param  array  $column
-     * @param  string $boolean
-     * @param  string $method
+     * @param array  $column
+     * @param string $boolean
+     * @param string $method
      *
      * @return $this
      * @throws \ReflectionException
@@ -769,9 +784,9 @@ class Builder implements PrototypeInterface
     /**
      * Prepare the value and operator for a where clause.
      *
-     * @param  string $value
-     * @param  string $operator
-     * @param  bool   $useDefault
+     * @param string $value
+     * @param string $operator
+     * @param bool   $useDefault
      *
      * @return array
      *
@@ -793,8 +808,8 @@ class Builder implements PrototypeInterface
      *
      * Prevents using Null values with invalid operators.
      *
-     * @param  string $operator
-     * @param  mixed  $value
+     * @param string $operator
+     * @param mixed  $value
      *
      * @return bool
      */
@@ -807,7 +822,7 @@ class Builder implements PrototypeInterface
     /**
      * Determine if the given operator is supported.
      *
-     * @param  string $operator
+     * @param string $operator
      *
      * @return bool
      */
@@ -820,12 +835,14 @@ class Builder implements PrototypeInterface
     /**
      * Add an "or where" clause to the query.
      *
-     * @param  string|array|\Closure $column
-     * @param  mixed                 $operator
-     * @param  mixed                 $value
+     * @param string|array|\Closure $column
+     * @param mixed                 $operator
+     * @param mixed                 $value
      *
      * @return static
      * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function orWhere($column, $operator = null, $value = null): self
     {
@@ -839,13 +856,14 @@ class Builder implements PrototypeInterface
     /**
      * Add a "where" clause comparing two columns to the query.
      *
-     * @param  string|array $first
-     * @param  string|null  $operator
-     * @param  string|null  $second
-     * @param  string|null  $boolean
+     * @param string|array $first
+     * @param string|null  $operator
+     * @param string|null  $second
+     * @param string|null  $boolean
      *
      * @return static
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function whereColumn($first, string $operator = null, string $second = null, string $boolean = 'and'): self
     {
@@ -878,12 +896,13 @@ class Builder implements PrototypeInterface
     /**
      * Add an "or where" clause comparing two columns to the query.
      *
-     * @param  string|array $first
-     * @param  string|null  $operator
-     * @param  string|null  $second
+     * @param string|array $first
+     * @param string|null  $operator
+     * @param string|null  $second
      *
      * @return static
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function orWhereColumn($first, string $operator = null, string $second = null): self
     {
@@ -893,9 +912,9 @@ class Builder implements PrototypeInterface
     /**
      * Add a raw where clause to the query.
      *
-     * @param  string $sql
-     * @param  array  $bindings
-     * @param  string $boolean
+     * @param string $sql
+     * @param array  $bindings
+     * @param string $boolean
      *
      * @return $this
      */
@@ -911,8 +930,8 @@ class Builder implements PrototypeInterface
     /**
      * Add a raw or where clause to the query.
      *
-     * @param  string $sql
-     * @param  array  $bindings
+     * @param string $sql
+     * @param array  $bindings
      *
      * @return static
      */
@@ -924,10 +943,10 @@ class Builder implements PrototypeInterface
     /**
      * Add a "where in" clause to the query.
      *
-     * @param  string $column
-     * @param  mixed  $values
-     * @param  string $boolean
-     * @param  bool   $not
+     * @param string $column
+     * @param mixed  $values
+     * @param string $boolean
+     * @param bool   $not
      *
      * @return $this
      * @throws \ReflectionException
@@ -977,8 +996,8 @@ class Builder implements PrototypeInterface
     /**
      * Add an "or where in" clause to the query.
      *
-     * @param  string $column
-     * @param  mixed  $values
+     * @param string $column
+     * @param mixed  $values
      *
      * @return static
      * @throws \ReflectionException
@@ -992,9 +1011,9 @@ class Builder implements PrototypeInterface
     /**
      * Add a "where not in" clause to the query.
      *
-     * @param  string $column
-     * @param  mixed  $values
-     * @param  string $boolean
+     * @param string $column
+     * @param mixed  $values
+     * @param string $boolean
      *
      * @return static
      * @throws \ReflectionException
@@ -1008,8 +1027,8 @@ class Builder implements PrototypeInterface
     /**
      * Add an "or where not in" clause to the query.
      *
-     * @param  string $column
-     * @param  mixed  $values
+     * @param string $column
+     * @param mixed  $values
      *
      * @return static
      * @throws \ReflectionException
@@ -1023,10 +1042,10 @@ class Builder implements PrototypeInterface
     /**
      * Add a where in with a sub-select to the query.
      *
-     * @param  string   $column
-     * @param  \Closure $callback
-     * @param  string   $boolean
-     * @param  bool     $not
+     * @param string   $column
+     * @param \Closure $callback
+     * @param string   $boolean
+     * @param bool     $not
      *
      * @return $this
      * @throws \ReflectionException
@@ -1051,10 +1070,10 @@ class Builder implements PrototypeInterface
     /**
      * Add an external sub-select to the query.
      *
-     * @param  string        $column
-     * @param  static|static $query
-     * @param  string        $boolean
-     * @param  bool          $not
+     * @param string        $column
+     * @param static|static $query
+     * @param string        $boolean
+     * @param bool          $not
      *
      * @return $this
      */
@@ -1072,10 +1091,10 @@ class Builder implements PrototypeInterface
     /**
      * Add a "where in raw" clause for integer values to the query.
      *
-     * @param  string          $column
-     * @param  Arrayable|array $values
-     * @param  string          $boolean
-     * @param  bool            $not
+     * @param string          $column
+     * @param Arrayable|array $values
+     * @param string          $boolean
+     * @param bool            $not
      *
      * @return $this
      */
@@ -1099,9 +1118,9 @@ class Builder implements PrototypeInterface
     /**
      * Add a "where not in raw" clause for integer values to the query.
      *
-     * @param  string          $column
-     * @param  Arrayable|array $values
-     * @param  string          $boolean
+     * @param string          $column
+     * @param Arrayable|array $values
+     * @param string          $boolean
      *
      * @return $this
      */
@@ -1113,9 +1132,9 @@ class Builder implements PrototypeInterface
     /**
      * Add a "where null" clause to the query.
      *
-     * @param  string $column
-     * @param  string $boolean
-     * @param  bool   $not
+     * @param string $column
+     * @param string $boolean
+     * @param bool   $not
      *
      * @return $this
      */
@@ -1131,7 +1150,7 @@ class Builder implements PrototypeInterface
     /**
      * Add an "or where null" clause to the query.
      *
-     * @param  string $column
+     * @param string $column
      *
      * @return static
      */
@@ -1143,8 +1162,8 @@ class Builder implements PrototypeInterface
     /**
      * Add a "where not null" clause to the query.
      *
-     * @param  string $column
-     * @param  string $boolean
+     * @param string $column
+     * @param string $boolean
      *
      * @return static
      */
@@ -1156,10 +1175,10 @@ class Builder implements PrototypeInterface
     /**
      * Add a where between statement to the query.
      *
-     * @param  string $column
-     * @param  array  $values
-     * @param  string $boolean
-     * @param  bool   $not
+     * @param string $column
+     * @param array  $values
+     * @param string $boolean
+     * @param bool   $not
      *
      * @return $this
      */
@@ -1177,8 +1196,8 @@ class Builder implements PrototypeInterface
     /**
      * Add an or where between statement to the query.
      *
-     * @param  string $column
-     * @param  array  $values
+     * @param string $column
+     * @param array  $values
      *
      * @return static
      */
@@ -1190,9 +1209,9 @@ class Builder implements PrototypeInterface
     /**
      * Add a where not between statement to the query.
      *
-     * @param  string $column
-     * @param  array  $values
-     * @param  string $boolean
+     * @param string $column
+     * @param array  $values
+     * @param string $boolean
      *
      * @return static
      */
@@ -1204,8 +1223,8 @@ class Builder implements PrototypeInterface
     /**
      * Add an or where not between statement to the query.
      *
-     * @param  string $column
-     * @param  array  $values
+     * @param string $column
+     * @param array  $values
      *
      * @return static
      */
@@ -1217,7 +1236,7 @@ class Builder implements PrototypeInterface
     /**
      * Add an "or where not null" clause to the query.
      *
-     * @param  string $column
+     * @param string $column
      *
      * @return static
      */
@@ -1229,14 +1248,14 @@ class Builder implements PrototypeInterface
     /**
      * Add a "where date" statement to the query.
      *
-     * @param  string                    $column
-     * @param  string                    $operator
-     * @param  \DateTimeInterface|string $value
-     * @param  string                    $boolean
+     * @param string                    $column
+     * @param string                    $operator
+     * @param \DateTimeInterface|string $value
+     * @param string                    $boolean
      *
      * @return static
      */
-    public function whereDate(string $column, $operator,  $value = null, string $boolean = 'and'): self
+    public function whereDate(string $column, $operator, $value = null, string $boolean = 'and'): self
     {
         [$value, $operator] = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2
@@ -1252,9 +1271,9 @@ class Builder implements PrototypeInterface
     /**
      * Add an "or where date" statement to the query.
      *
-     * @param  string                    $column
-     * @param  string                    $operator
-     * @param  \DateTimeInterface|string $value
+     * @param string                    $column
+     * @param string                    $operator
+     * @param \DateTimeInterface|string $value
      *
      * @return static
      */
@@ -1270,10 +1289,10 @@ class Builder implements PrototypeInterface
     /**
      * Add a "where time" statement to the query.
      *
-     * @param  string                    $column
-     * @param  string                    $operator
-     * @param  \DateTimeInterface|string $value
-     * @param  string                    $boolean
+     * @param string                    $column
+     * @param string                    $operator
+     * @param \DateTimeInterface|string $value
+     * @param string                    $boolean
      *
      * @return static
      */
@@ -1293,9 +1312,9 @@ class Builder implements PrototypeInterface
     /**
      * Add an "or where time" statement to the query.
      *
-     * @param  string                    $column
-     * @param  string                    $operator
-     * @param  \DateTimeInterface|string $value
+     * @param string                    $column
+     * @param string                    $operator
+     * @param \DateTimeInterface|string $value
      *
      * @return static
      */
@@ -1311,10 +1330,10 @@ class Builder implements PrototypeInterface
     /**
      * Add a "where day" statement to the query.
      *
-     * @param  string                    $column
-     * @param  string                    $operator
-     * @param  \DateTimeInterface|string $value
-     * @param  string                    $boolean
+     * @param string                    $column
+     * @param string                    $operator
+     * @param \DateTimeInterface|string $value
+     * @param string                    $boolean
      *
      * @return static|static
      */
@@ -1334,9 +1353,9 @@ class Builder implements PrototypeInterface
     /**
      * Add an "or where day" statement to the query.
      *
-     * @param  string                    $column
-     * @param  string                    $operator
-     * @param  \DateTimeInterface|string $value
+     * @param string                    $column
+     * @param string                    $operator
+     * @param \DateTimeInterface|string $value
      *
      * @return static
      */
@@ -1352,10 +1371,10 @@ class Builder implements PrototypeInterface
     /**
      * Add a "where month" statement to the query.
      *
-     * @param  string                    $column
-     * @param  string                    $operator
-     * @param  \DateTimeInterface|string $value
-     * @param  string                    $boolean
+     * @param string                    $column
+     * @param string                    $operator
+     * @param \DateTimeInterface|string $value
+     * @param string                    $boolean
      *
      * @return static
      */
@@ -1375,9 +1394,9 @@ class Builder implements PrototypeInterface
     /**
      * Add an "or where month" statement to the query.
      *
-     * @param  string                    $column
-     * @param  string                    $operator
-     * @param  \DateTimeInterface|string $value
+     * @param string                    $column
+     * @param string                    $operator
+     * @param \DateTimeInterface|string $value
      *
      * @return static
      */
@@ -1393,10 +1412,10 @@ class Builder implements PrototypeInterface
     /**
      * Add a "where year" statement to the query.
      *
-     * @param  string                        $column
-     * @param  string                        $operator
-     * @param  \DateTimeInterface|string|int $value
-     * @param  string                        $boolean
+     * @param string                        $column
+     * @param string                        $operator
+     * @param \DateTimeInterface|string|int $value
+     * @param string                        $boolean
      *
      * @return static
      */
@@ -1416,9 +1435,9 @@ class Builder implements PrototypeInterface
     /**
      * Add an "or where year" statement to the query.
      *
-     * @param  string                        $column
-     * @param  string                        $operator
-     * @param  \DateTimeInterface|string|int $value
+     * @param string                        $column
+     * @param string                        $operator
+     * @param \DateTimeInterface|string|int $value
      *
      * @return static
      */
@@ -1434,11 +1453,11 @@ class Builder implements PrototypeInterface
     /**
      * Add a date based (year, month, day, time) statement to the query.
      *
-     * @param  string $type
-     * @param  string $column
-     * @param  string $operator
-     * @param  mixed  $value
-     * @param  string $boolean
+     * @param string $type
+     * @param string $column
+     * @param string $operator
+     * @param mixed  $value
+     * @param string $boolean
      *
      * @return $this
      */
@@ -1461,8 +1480,8 @@ class Builder implements PrototypeInterface
     /**
      * Add a nested where statement to the query.
      *
-     * @param  \Closure $callback
-     * @param  string   $boolean
+     * @param \Closure $callback
+     * @param string   $boolean
      *
      * @return static
      * @throws \ReflectionException
@@ -1490,8 +1509,8 @@ class Builder implements PrototypeInterface
     /**
      * Add another query builder as a nested where to the query builder.
      *
-     * @param  static $query
-     * @param  string $boolean
+     * @param static $query
+     * @param string $boolean
      *
      * @return $this
      */
@@ -1511,16 +1530,16 @@ class Builder implements PrototypeInterface
     /**
      * Add a full sub-select to the query.
      *
-     * @param  string   $column
-     * @param  string   $operator
-     * @param  \Closure $callback
-     * @param  string   $boolean
+     * @param string   $column
+     * @param string   $operator
+     * @param \Closure $callback
+     * @param string   $boolean
      *
      * @return $this
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    protected function whereSub(string $column, string $operator, \Closure $callback,string $boolean): self
+    protected function whereSub(string $column, string $operator, \Closure $callback, string $boolean): self
     {
         $type = 'Sub';
 
@@ -1541,9 +1560,9 @@ class Builder implements PrototypeInterface
     /**
      * Add an exists clause to the query.
      *
-     * @param  \Closure $callback
-     * @param  string   $boolean
-     * @param  bool     $not
+     * @param \Closure $callback
+     * @param string   $boolean
+     * @param bool     $not
      *
      * @return $this
      * @throws \ReflectionException
@@ -1564,8 +1583,8 @@ class Builder implements PrototypeInterface
     /**
      * Add an or exists clause to the query.
      *
-     * @param  \Closure $callback
-     * @param  bool     $not
+     * @param \Closure $callback
+     * @param bool     $not
      *
      * @return static
      * @throws \ReflectionException
@@ -1579,8 +1598,8 @@ class Builder implements PrototypeInterface
     /**
      * Add a where not exists clause to the query.
      *
-     * @param  \Closure $callback
-     * @param  string   $boolean
+     * @param \Closure $callback
+     * @param string   $boolean
      *
      * @return static
      * @throws \ReflectionException
@@ -1594,7 +1613,7 @@ class Builder implements PrototypeInterface
     /**
      * Add a where not exists clause to the query.
      *
-     * @param  \Closure $callback
+     * @param \Closure $callback
      *
      * @return static
      * @throws \ReflectionException
@@ -1608,9 +1627,9 @@ class Builder implements PrototypeInterface
     /**
      * Add an exists clause to the query.
      *
-     * @param  Builder $query
-     * @param  string  $boolean
-     * @param  bool    $not
+     * @param Builder $query
+     * @param string  $boolean
+     * @param bool    $not
      *
      * @return $this
      */
@@ -1628,10 +1647,10 @@ class Builder implements PrototypeInterface
     /**
      * Adds a where condition using row values.
      *
-     * @param  array  $columns
-     * @param  string $operator
-     * @param  array  $values
-     * @param  string $boolean
+     * @param array  $columns
+     * @param string $operator
+     * @param array  $values
+     * @param string $boolean
      *
      * @return $this
      */
@@ -1653,9 +1672,9 @@ class Builder implements PrototypeInterface
     /**
      * Adds a or where condition using row values.
      *
-     * @param  array  $columns
-     * @param  string $operator
-     * @param  array  $values
+     * @param array  $columns
+     * @param string $operator
+     * @param array  $values
      *
      * @return $this
      */
@@ -1667,10 +1686,10 @@ class Builder implements PrototypeInterface
     /**
      * Add a "where JSON contains" clause to the query.
      *
-     * @param  string $column
-     * @param  mixed  $value
-     * @param  string $boolean
-     * @param  bool   $not
+     * @param string $column
+     * @param mixed  $value
+     * @param string $boolean
+     * @param bool   $not
      *
      * @return $this
      */
@@ -1690,8 +1709,8 @@ class Builder implements PrototypeInterface
     /**
      * Add a "or where JSON contains" clause to the query.
      *
-     * @param  string $column
-     * @param  mixed  $value
+     * @param string $column
+     * @param mixed  $value
      *
      * @return $this
      */
@@ -1703,9 +1722,9 @@ class Builder implements PrototypeInterface
     /**
      * Add a "where JSON not contains" clause to the query.
      *
-     * @param  string $column
-     * @param  mixed  $value
-     * @param  string $boolean
+     * @param string $column
+     * @param mixed  $value
+     * @param string $boolean
      *
      * @return $this
      */
@@ -1717,8 +1736,8 @@ class Builder implements PrototypeInterface
     /**
      * Add a "or where JSON not contains" clause to the query.
      *
-     * @param  string $column
-     * @param  mixed  $value
+     * @param string $column
+     * @param mixed  $value
      *
      * @return $this
      */
@@ -1730,10 +1749,10 @@ class Builder implements PrototypeInterface
     /**
      * Add a "where JSON length" clause to the query.
      *
-     * @param  string $column
-     * @param  mixed  $operator
-     * @param  mixed  $value
-     * @param  string $boolean
+     * @param string $column
+     * @param mixed  $operator
+     * @param mixed  $value
+     * @param string $boolean
      *
      * @return $this
      */
@@ -1757,9 +1776,9 @@ class Builder implements PrototypeInterface
     /**
      * Add a "or where JSON length" clause to the query.
      *
-     * @param  string $column
-     * @param  mixed  $operator
-     * @param  mixed  $value
+     * @param string $column
+     * @param mixed  $operator
+     * @param mixed  $value
      *
      * @return $this
      */
@@ -1775,11 +1794,13 @@ class Builder implements PrototypeInterface
     /**
      * Handles dynamic "where" clauses to the query.
      *
-     * @param  string $method
-     * @param  array  $parameters
+     * @param string $method
+     * @param array  $parameters
      *
      * @return $this
      * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function dynamicWhere(string $method, array $parameters): self
     {
@@ -1820,13 +1841,15 @@ class Builder implements PrototypeInterface
     /**
      * Add a single dynamic where clause statement to the query.
      *
-     * @param  string $segment
-     * @param  string $connector
-     * @param  array  $parameters
-     * @param  int    $index
+     * @param string $segment
+     * @param string $connector
+     * @param array  $parameters
+     * @param int    $index
      *
-     * @return void
+     *
      * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function addDynamic($segment, $connector, $parameters, $index): void
     {
@@ -1841,7 +1864,7 @@ class Builder implements PrototypeInterface
     /**
      * Add a "group by" clause to the query.
      *
-     * @param  array ...$groups
+     * @param array ...$groups
      *
      * @return $this
      */
@@ -1860,10 +1883,10 @@ class Builder implements PrototypeInterface
     /**
      * Add a "having" clause to the query.
      *
-     * @param  string      $column
-     * @param  string|null $operator
-     * @param  string|null $value
-     * @param  string      $boolean
+     * @param string      $column
+     * @param string|null $operator
+     * @param string|null $value
+     * @param string      $boolean
      *
      * @return $this
      */
@@ -1897,9 +1920,9 @@ class Builder implements PrototypeInterface
     /**
      * Add a "or having" clause to the query.
      *
-     * @param  string      $column
-     * @param  string|null $operator
-     * @param  string|null $value
+     * @param string      $column
+     * @param string|null $operator
+     * @param string|null $value
      *
      * @return static
      */
@@ -1915,10 +1938,10 @@ class Builder implements PrototypeInterface
     /**
      * Add a "having between " clause to the query.
      *
-     * @param  string $column
-     * @param  array  $values
-     * @param  string $boolean
-     * @param  bool   $not
+     * @param string $column
+     * @param array  $values
+     * @param string $boolean
+     * @param bool   $not
      *
      * @return static|static
      */
@@ -1936,9 +1959,9 @@ class Builder implements PrototypeInterface
     /**
      * Add a raw having clause to the query.
      *
-     * @param  string $sql
-     * @param  array  $bindings
-     * @param  string $boolean
+     * @param string $sql
+     * @param array  $bindings
+     * @param string $boolean
      *
      * @return $this
      */
@@ -1956,8 +1979,8 @@ class Builder implements PrototypeInterface
     /**
      * Add a raw or having clause to the query.
      *
-     * @param  string $sql
-     * @param  array  $bindings
+     * @param string $sql
+     * @param array  $bindings
      *
      * @return static|static
      */
@@ -1969,8 +1992,8 @@ class Builder implements PrototypeInterface
     /**
      * Add an "order by" clause to the query.
      *
-     * @param  string $column
-     * @param  string $direction
+     * @param string $column
+     * @param string $direction
      *
      * @return $this
      */
@@ -1987,7 +2010,7 @@ class Builder implements PrototypeInterface
     /**
      * Add a descending "order by" clause to the query.
      *
-     * @param  string $column
+     * @param string $column
      *
      * @return $this
      */
@@ -1999,7 +2022,7 @@ class Builder implements PrototypeInterface
     /**
      * Add an "order by" clause for a timestamp to the query.
      *
-     * @param  string $column
+     * @param string $column
      *
      * @return static
      */
@@ -2011,7 +2034,7 @@ class Builder implements PrototypeInterface
     /**
      * Add an "order by" clause for a timestamp to the query.
      *
-     * @param  string $column
+     * @param string $column
      *
      * @return static
      */
@@ -2023,7 +2046,7 @@ class Builder implements PrototypeInterface
     /**
      * Put the query's results in random order.
      *
-     * @param  string $seed
+     * @param string $seed
      *
      * @return $this
      */
@@ -2035,8 +2058,8 @@ class Builder implements PrototypeInterface
     /**
      * Add a raw "order by" clause to the query.
      *
-     * @param  string $sql
-     * @param  array  $bindings
+     * @param string $sql
+     * @param array  $bindings
      *
      * @return $this
      */
@@ -2054,7 +2077,7 @@ class Builder implements PrototypeInterface
     /**
      * Alias to set the "offset" value of the query.
      *
-     * @param  int $value
+     * @param int $value
      *
      * @return static
      */
@@ -2066,7 +2089,7 @@ class Builder implements PrototypeInterface
     /**
      * Set the "offset" value of the query.
      *
-     * @param  int $value
+     * @param int $value
      *
      * @return $this
      */
@@ -2082,7 +2105,7 @@ class Builder implements PrototypeInterface
     /**
      * Alias to set the "limit" value of the query.
      *
-     * @param  int $value
+     * @param int $value
      *
      * @return static|Builder
      */
@@ -2094,7 +2117,7 @@ class Builder implements PrototypeInterface
     /**
      * Set the "limit" value of the query.
      *
-     * @param  int $value
+     * @param int $value
      *
      * @return $this
      */
@@ -2112,8 +2135,8 @@ class Builder implements PrototypeInterface
     /**
      * Set the limit and offset for a given page.
      *
-     * @param  int $page
-     * @param  int $perPage
+     * @param int $page
+     * @param int $perPage
      *
      * @return static
      */
@@ -2125,12 +2148,14 @@ class Builder implements PrototypeInterface
     /**
      * Constrain the query to the next "page" of results after a given ID.
      *
-     * @param  int      $perPage
-     * @param  int|null $lastId
-     * @param  string   $column
+     * @param int      $perPage
+     * @param int|null $lastId
+     * @param string   $column
      *
      * @return static
      * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function forPageAfterId(int $perPage = 15, int $lastId = null, string $column = 'id'): self
     {
@@ -2147,7 +2172,7 @@ class Builder implements PrototypeInterface
     /**
      * Get an array with all orders with a given column removed.
      *
-     * @param  string $column
+     * @param string $column
      *
      * @return array
      */
@@ -2163,8 +2188,8 @@ class Builder implements PrototypeInterface
     /**
      * Add a union statement to the query.
      *
-     * @param  static|\Closure $query
-     * @param  bool            $all
+     * @param static|\Closure $query
+     * @param bool            $all
      *
      * @return static
      * @throws \ReflectionException
@@ -2186,7 +2211,7 @@ class Builder implements PrototypeInterface
     /**
      * Add a union all statement to the query.
      *
-     * @param  static|\Closure $query
+     * @param static|\Closure $query
      *
      * @return static
      * @throws \ReflectionException
@@ -2200,7 +2225,7 @@ class Builder implements PrototypeInterface
     /**
      * Lock the selected rows in the table.
      *
-     * @param  string|bool $value
+     * @param string|bool $value
      *
      * @return $this
      */
@@ -2239,20 +2264,29 @@ class Builder implements PrototypeInterface
      * Get the SQL representation of the query.
      *
      * @return string
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function toSql(): string
     {
-        return $this->grammar->compileSelect($this);
+        $sql = $this->grammar->compileSelect($this);
+
+        // Release connection
+        $this->connection->release();
+
+        return $sql;
     }
 
     /**
      * Execute a query for a single record by ID.
      *
-     * @param  string   $id
-     * @param  array $columns
+     * @param string $id
+     * @param array  $columns
      *
      * @return static
      * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Db\Exception\EloquentException
      */
     public function find(string $id, array $columns = ['*']): self
@@ -2263,7 +2297,7 @@ class Builder implements PrototypeInterface
     /**
      * Get a single column's value from the first result of a query.
      *
-     * @param  string $column
+     * @param string $column
      *
      * @return mixed
      * @throws PrototypeException
@@ -2279,7 +2313,7 @@ class Builder implements PrototypeInterface
     /**
      * Execute the query as a "select" statement.
      *
-     * @param  array $columns
+     * @param array $columns
      *
      * @return Collection
      */
@@ -2306,10 +2340,10 @@ class Builder implements PrototypeInterface
     /**
      * Paginate the given query into a simple paginator.
      *
-     * @param  int      $perPage
-     * @param  array    $columns
-     * @param  string   $pageName
-     * @param  int|null $page
+     * @param int      $perPage
+     * @param array    $columns
+     * @param string   $pageName
+     * @param int|null $page
      *
      * @return array
      */
@@ -2325,7 +2359,7 @@ class Builder implements PrototypeInterface
     /**
      * Get the count of the total records for the paginator.
      *
-     * @param  array $columns
+     * @param array $columns
      *
      * @return int
      */
@@ -2350,7 +2384,7 @@ class Builder implements PrototypeInterface
     /**
      * Run a pagination count query.
      *
-     * @param  array $columns
+     * @param array $columns
      *
      * @return array
      */
@@ -2367,7 +2401,7 @@ class Builder implements PrototypeInterface
     /**
      * Remove the column aliases since they will break count queries.
      *
-     * @param  array $columns
+     * @param array $columns
      *
      * @return array
      */
@@ -2397,13 +2431,15 @@ class Builder implements PrototypeInterface
     /**
      * Chunk the results of a query by comparing numeric IDs.
      *
-     * @param  int         $count
-     * @param  callable    $callback
-     * @param  string      $column
-     * @param  string|null $alias
+     * @param int         $count
+     * @param callable    $callback
+     * @param string      $column
+     * @param string|null $alias
      *
      * @return bool
      * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function chunkById(int $count, callable $callback, $column = 'id', string $alias = null): bool
     {
@@ -2457,8 +2493,8 @@ class Builder implements PrototypeInterface
     /**
      * Get an array with the values of a given column.
      *
-     * @param  string      $column
-     * @param  string|null $key
+     * @param string      $column
+     * @param string|null $key
      *
      * @return Collection
      */
@@ -2495,7 +2531,7 @@ class Builder implements PrototypeInterface
     /**
      * Strip off the table name or alias from a column identifier.
      *
-     * @param  string $column
+     * @param string $column
      *
      * @return string|null
      */
@@ -2507,9 +2543,9 @@ class Builder implements PrototypeInterface
     /**
      * Retrieve column values from rows represented as objects.
      *
-     * @param  array  $queryResult
-     * @param  string $column
-     * @param  string $key
+     * @param array  $queryResult
+     * @param string $column
+     * @param string $key
      *
      * @return Collection
      */
@@ -2533,9 +2569,9 @@ class Builder implements PrototypeInterface
     /**
      * Retrieve column values from rows represented as arrays.
      *
-     * @param  array  $queryResult
-     * @param  string $column
-     * @param  string $key
+     * @param array  $queryResult
+     * @param string $column
+     * @param string $key
      *
      * @return Collection
      */
@@ -2559,8 +2595,8 @@ class Builder implements PrototypeInterface
     /**
      * Concatenate values of a given column as a string.
      *
-     * @param  string $column
-     * @param  string $glue
+     * @param string $column
+     * @param string $glue
      *
      * @return string
      */
@@ -2607,7 +2643,7 @@ class Builder implements PrototypeInterface
     /**
      * Retrieve the "count" result of the query.
      *
-     * @param  string $columns
+     * @param string $columns
      *
      * @return int
      */
@@ -2619,7 +2655,7 @@ class Builder implements PrototypeInterface
     /**
      * Retrieve the minimum value of a given column.
      *
-     * @param  string $column
+     * @param string $column
      *
      * @return array
      */
@@ -2631,7 +2667,7 @@ class Builder implements PrototypeInterface
     /**
      * Retrieve the maximum value of a given column.
      *
-     * @param  string $column
+     * @param string $column
      *
      * @return array
      */
@@ -2643,7 +2679,7 @@ class Builder implements PrototypeInterface
     /**
      * Retrieve the sum of the values of a given column.
      *
-     * @param  string $column
+     * @param string $column
      *
      * @return mixed
      */
@@ -2657,7 +2693,7 @@ class Builder implements PrototypeInterface
     /**
      * Retrieve the average of the values of a given column.
      *
-     * @param  string $column
+     * @param string $column
      *
      * @return array
      */
@@ -2669,7 +2705,7 @@ class Builder implements PrototypeInterface
     /**
      * Alias for the "avg" method.
      *
-     * @param  string $column
+     * @param string $column
      *
      * @return array
      */
@@ -2681,8 +2717,8 @@ class Builder implements PrototypeInterface
     /**
      * Execute an aggregate function on the database.
      *
-     * @param  string $function
-     * @param  array  $columns
+     * @param string $function
+     * @param array  $columns
      *
      * @return array
      */
@@ -2703,8 +2739,8 @@ class Builder implements PrototypeInterface
     /**
      * Execute a numeric aggregate function on the database.
      *
-     * @param  string $function
-     * @param  array  $columns
+     * @param string $function
+     * @param array  $columns
      *
      * @return float|int
      */
@@ -2733,8 +2769,8 @@ class Builder implements PrototypeInterface
     /**
      * Set the aggregate property without running the query.
      *
-     * @param  string $function
-     * @param  array  $columns
+     * @param string $function
+     * @param array  $columns
      *
      * @return $this
      */
@@ -2756,8 +2792,8 @@ class Builder implements PrototypeInterface
      *
      * After running the callback, the columns are reset to the original value.
      *
-     * @param  array    $columns
-     * @param  callable $callback
+     * @param array    $columns
+     * @param callable $callback
      *
      * @return mixed
      */
@@ -2779,7 +2815,7 @@ class Builder implements PrototypeInterface
     /**
      * Insert a new record into the database.
      *
-     * @param  array $values
+     * @param array $values
      *
      * @return bool
      * @throws QueryException
@@ -2821,8 +2857,8 @@ class Builder implements PrototypeInterface
     /**
      * Insert a new record and get the value of the primary key.
      *
-     * @param  array       $values
-     * @param  string|null $sequence
+     * @param array       $values
+     * @param string|null $sequence
      *
      * @return string
      * @throws QueryException
@@ -2840,12 +2876,13 @@ class Builder implements PrototypeInterface
     /**
      * Insert new records into the table using a subquery.
      *
-     * @param  array                  $columns
-     * @param  \Closure|static|string $query
+     * @param array                  $columns
+     * @param \Closure|static|string $query
      *
      * @return bool
-     * @throws PrototypeException
      * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function insertUsing(array $columns, $query)
     {
@@ -2860,7 +2897,7 @@ class Builder implements PrototypeInterface
     /**
      * Update a record in the database.
      *
-     * @param  array $values
+     * @param array $values
      *
      * @return int
      * @throws QueryException
@@ -2878,12 +2915,14 @@ class Builder implements PrototypeInterface
     /**
      * Insert or update a record matching the attributes, and fill it with values.
      *
-     * @param  array $attributes
-     * @param  array $values
+     * @param array $attributes
+     * @param array $values
      *
      * @return bool
      * @throws PrototypeException
      * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function updateOrInsert(array $attributes, array $values = [])
     {
@@ -2897,9 +2936,9 @@ class Builder implements PrototypeInterface
     /**
      * Increment a column's value by a given amount.
      *
-     * @param  string    $column
-     * @param  float|int $amount
-     * @param  array     $extra
+     * @param string    $column
+     * @param float|int $amount
+     * @param array     $extra
      *
      * @return int
      * @throws QueryException
@@ -2921,9 +2960,9 @@ class Builder implements PrototypeInterface
     /**
      * Decrement a column's value by a given amount.
      *
-     * @param  string    $column
-     * @param  float|int $amount
-     * @param  array     $extra
+     * @param string    $column
+     * @param float|int $amount
+     * @param array     $extra
      *
      * @return int
      * @throws QueryException
@@ -2945,11 +2984,13 @@ class Builder implements PrototypeInterface
     /**
      * Delete a record from the database.
      *
-     * @param  mixed $id
+     * @param mixed $id
      *
      * @return int
-     * @throws QueryException
      * @throws PrototypeException
+     * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function delete($id = null)
     {
@@ -3007,7 +3048,7 @@ class Builder implements PrototypeInterface
     /**
      * Create a raw database expression.
      *
-     * @param  mixed $value
+     * @param mixed $value
      *
      * @return Expression
      * @throws PrototypeException
@@ -3040,8 +3081,8 @@ class Builder implements PrototypeInterface
     /**
      * Set the bindings on the query builder.
      *
-     * @param  array  $bindings
-     * @param  string $type
+     * @param array  $bindings
+     * @param string $type
      *
      * @return $this
      *
@@ -3061,8 +3102,8 @@ class Builder implements PrototypeInterface
     /**
      * Add a binding to the query.
      *
-     * @param  mixed  $value
-     * @param  string $type
+     * @param mixed  $value
+     * @param string $type
      *
      * @return $this
      *
@@ -3086,7 +3127,7 @@ class Builder implements PrototypeInterface
     /**
      * Merge an array of bindings into our bindings.
      *
-     * @param  Builder $query
+     * @param Builder $query
      *
      * @return $this
      */
@@ -3100,7 +3141,7 @@ class Builder implements PrototypeInterface
     /**
      * Remove all of the expressions from a list of bindings.
      *
-     * @param  array $bindings
+     * @param array $bindings
      *
      * @return array
      */
@@ -3156,7 +3197,7 @@ class Builder implements PrototypeInterface
     /**
      * Clone the query without the given properties.
      *
-     * @param  array $properties
+     * @param array $properties
      *
      * @return static
      */
@@ -3173,7 +3214,7 @@ class Builder implements PrototypeInterface
     /**
      * Clone the query without the given bindings.
      *
-     * @param  array $except
+     * @param array $except
      *
      * @return static
      */

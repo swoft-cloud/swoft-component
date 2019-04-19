@@ -4,6 +4,7 @@ namespace Swoft\Http\Message\Uri;
 
 use Psr\Http\Message\UriInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Container;
 
 /**
@@ -15,6 +16,8 @@ use Swoft\Bean\Container;
  */
 class Uri implements UriInterface
 {
+    use PrototypeTrait;
+
     /**
      * Absolute http and https URIs require a host per RFC 7230 Section 2.7
      * but in generic URIs the host can be empty. So for http(s) URIs
@@ -128,12 +131,14 @@ class Uri implements UriInterface
      * @param string $uri
      *
      * @param array  $params
+     *
      * @return Uri
      */
     public static function new(string $uri = '', array $params = []): self
     {
         /** @var Uri $instance */
-        $instance = Container::$instance->getPrototype(__CLASS__);
+        $instance = self::__instance();
+
         // Save some params
         $instance->params = $params;
 
@@ -459,8 +464,8 @@ class Uri implements UriInterface
      * A value of null will set the query string key without a value, e.g. "key"
      * instead of "key=value".
      *
-     * @param UriInterface $uri URI to use as a base.
-     * @param string       $key Key to set.
+     * @param UriInterface $uri   URI to use as a base.
+     * @param string       $key   Key to set.
      * @param string|null  $value Value to set
      *
      * @return UriInterface

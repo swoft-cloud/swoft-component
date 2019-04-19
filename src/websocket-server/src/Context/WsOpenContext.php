@@ -4,6 +4,7 @@ namespace Swoft\WebSocket\Server\Context;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Context\AbstractContext;
 use Swoft\Http\Message\Request;
 
@@ -14,6 +15,8 @@ use Swoft\Http\Message\Request;
  */
 class WsOpenContext extends AbstractContext
 {
+    use PrototypeTrait;
+
     /**
      * @var Request
      */
@@ -26,7 +29,7 @@ class WsOpenContext extends AbstractContext
     public static function new(Request $request): self
     {
         /** @var self $ctx */
-        $ctx = BeanFactory::getPrototype(__CLASS__);
+        $ctx = self::__instance();
 
         // Initial properties
         $ctx->request = $request;

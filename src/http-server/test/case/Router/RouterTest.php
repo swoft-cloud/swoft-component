@@ -8,8 +8,8 @@ use Swoft\Http\Server\Router\Router;
 
 /**
  * Class RouterTest
- * @package SwoftTest\Http\Server\Router
- * @group http-router
+ *
+ * @since 2.0
  */
 class RouterTest extends TestCase
 {

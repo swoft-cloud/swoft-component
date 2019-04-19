@@ -3,7 +3,9 @@
 namespace Swoft\Annotation;
 
 /**
- * Class loader interface
+ * Class LoaderInterface
+ *
+ * @since 2.0
  */
 interface LoaderInterface
 {
