@@ -4,7 +4,7 @@
 namespace SwoftTest\Aop\Testing;
 
 
-use Swoft\Annotation\LoaderInterface;
+use Swoft\Annotation\Contract\LoaderInterface;
 
 /**
  * Class AutoLoader

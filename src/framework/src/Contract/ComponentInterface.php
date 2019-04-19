@@ -2,7 +2,7 @@
 
 namespace Swoft\Contract;
 
-use Swoft\Annotation\LoaderInterface;
+use Swoft\Annotation\Contract\LoaderInterface;
 
 /**
  * Interface ComponentInterface
