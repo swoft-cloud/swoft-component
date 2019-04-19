@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Connection\Pool;
+namespace Swoft\Connection\Pool\Contract;
 
 /**
  * Class PoolInterface

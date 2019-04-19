@@ -7,7 +7,6 @@ namespace Swoft\Db\Query;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\PrototypeException;
-use Swoft\Bean\PrototypeInterface;
 use Swoft\Db\Exception\QueryException;
 
 /**

@@ -1,9 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Aop;
+
+namespace Swoft\Aop\Concern;
+
+use Swoft\Aop\Aop;
+use Swoft\Aop\AspectHandler;
 
 /**
- * Trait AopTrait
+ * Class AopTrait
  *
  * @since 2.0
  */

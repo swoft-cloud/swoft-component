@@ -2,6 +2,8 @@
 
 namespace Swoft\Annotation\Resource;
 
+use Swoft\Annotation\Contract\ResourceInterface;
+
 /**
  * Class Resource
  *

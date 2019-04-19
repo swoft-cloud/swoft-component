@@ -4,7 +4,7 @@ namespace Swoft\Error\Annotation\Parser;
 
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
-use Swoft\Annotation\AnnotationException;
+use Swoft\Annotation\Exception\AnnotationException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Error\Annotation\Mapping\ExceptionHandler;
 use Swoft\Error\ErrorRegister;

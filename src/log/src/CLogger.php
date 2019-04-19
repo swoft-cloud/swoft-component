@@ -3,7 +3,7 @@
 
 namespace Swoft\Log;
 
-use Swoft\Bean\HandlerInterface;
+use Monolog\Handler\HandlerInterface;
 
 /**
  * Console logger

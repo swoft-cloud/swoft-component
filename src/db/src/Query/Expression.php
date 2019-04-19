@@ -5,7 +5,7 @@ namespace Swoft\Db\Query;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\PrototypeInterface;
+use Swoft\Bean\Contract\PrototypeInterface;
 
 /**
  * Class Expression

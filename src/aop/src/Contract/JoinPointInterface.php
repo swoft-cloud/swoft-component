@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Aop\Point;
+namespace Swoft\Aop\Contract;
+
 
 /**
  * Class JoinPointInterface

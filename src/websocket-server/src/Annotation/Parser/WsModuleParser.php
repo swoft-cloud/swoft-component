@@ -1,16 +1,9 @@
 <?php declare(strict_types=1);
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-04
- * Time: 16:46
- */
-
 namespace Swoft\WebSocket\Server\Annotation\Parser;
 
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
-use Swoft\Annotation\AnnotationException;
+use Swoft\Annotation\Exception\AnnotationException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\WebSocket\Server\Annotation\Mapping\WsModule;
 use Swoft\WebSocket\Server\MessageParser\RawTextParser;
