@@ -3,8 +3,9 @@
 
 namespace Swoft\Connection\Pool;
 
+use Swoft\Connection\Pool\Contract\ConnectionInterface;
+use Swoft\Connection\Pool\Contract\PoolInterface;
 use Swoft\Connection\Pool\Exception\ConnectionPoolException;
-use Swoole\Coroutine;
 use Swoole\Coroutine\Channel;
 
 /**

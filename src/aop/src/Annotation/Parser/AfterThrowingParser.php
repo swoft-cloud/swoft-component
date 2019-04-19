@@ -5,7 +5,7 @@ namespace Swoft\Aop\Annotation\Parser;
 
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
-use Swoft\Annotation\AnnotationException;
+use Swoft\Annotation\Exception\AnnotationException;
 use Swoft\Aop\Annotation\Mapping\AfterThrowing;
 use Swoft\Aop\AspectRegister;
 

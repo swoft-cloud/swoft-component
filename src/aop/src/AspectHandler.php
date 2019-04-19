@@ -3,6 +3,7 @@
 
 namespace Swoft\Aop;
 
+use Swoft\Aop\Concern\AopTrait;
 use Swoft\Aop\Point\JoinPoint;
 use Swoft\Aop\Point\ProceedingJoinPoint;
 use Swoft\Bean\Annotation\Mapping\Bean;

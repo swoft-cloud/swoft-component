@@ -3,6 +3,9 @@
 
 namespace Swoft\Connection\Pool;
 
+use Swoft\Connection\Pool\Contract\ConnectionInterface;
+use Swoft\Connection\Pool\Contract\PoolInterface;
+
 /**
  * Class AbstractConnection
  *

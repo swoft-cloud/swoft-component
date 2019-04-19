@@ -2,7 +2,7 @@
 
 namespace Swoft\Console;
 
-use Swoft\Annotation\AnnotationException;
+use Swoft\Annotation\Exception\AnnotationException;
 use Swoft\Console\Helper\DocBlock;
 use Swoft\Console\Router\Router;
 use Swoft\Stdlib\Helper\Str;

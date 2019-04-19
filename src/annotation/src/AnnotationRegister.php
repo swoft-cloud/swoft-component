@@ -3,6 +3,7 @@
 namespace Swoft\Annotation;
 
 use Swoft\Annotation\Resource\AnnotationResource;
+use Swoft\Annotation\Contract\LoaderInterface;
 
 /**
  * Annotation register

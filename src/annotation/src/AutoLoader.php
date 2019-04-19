@@ -2,6 +2,8 @@
 
 namespace Swoft\Annotation;
 
+use Swoft\Annotation\Contract\LoaderInterface;
+
 /**
  * Class AutoLoader
  *

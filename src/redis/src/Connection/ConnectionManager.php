@@ -6,7 +6,7 @@ namespace Swoft\Redis\Connection;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Co;
 use Swoft\Concern\DataPropertyTrait;
-use Swoft\Connection\Pool\ConnectionInterface;
+use Swoft\Connection\Pool\Contract\ConnectionInterface;
 
 /**
  * Class ConnectionManager
