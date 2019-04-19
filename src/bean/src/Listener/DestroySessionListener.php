@@ -24,8 +24,8 @@ class DestroySessionListener implements EventHandlerInterface
      */
     public function handle(EventInterface $event): void
     {
-        $id = (int)$event->getParam(0, 0);
-        if ($id === 0) {
+        $id = (string)$event->getParam(0, '');
+        if (!empty($id)) {
             return;
         }
 
