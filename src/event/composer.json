@@ -20,7 +20,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "SwoftTest\\Event\\": "test/case/"
+      "SwoftTest\\Event\\Unit\\": "test/unit/",
+      "SwoftTest\\Event\\Testing\\": "test/testing/"
     }
   },
   "require-dev": {

@@ -17,7 +17,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "SwoftTest\\Tcp\\Server\\": "test/case/"
+      "SwoftTest\\Tcp\\Server\\Unit\\": "test/unit/",
+      "SwoftTest\\Tcp\\Server\\Testing\\": "test/testing/"
     }
   },
   "repositories": {

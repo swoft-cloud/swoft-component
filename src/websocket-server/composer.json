@@ -19,7 +19,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "SwoftTest\\WebSocket\\Server\\": "test/case/"
+      "SwoftTest\\WebSocket\\Server\\Unit\\": "test/unit/",
+      "SwoftTest\\WebSocket\\Server\\Testing\\": "test/testing/"
     }
   },
   "repositories": {
