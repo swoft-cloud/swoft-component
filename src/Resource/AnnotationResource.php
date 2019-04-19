@@ -7,10 +7,10 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\AnnotationRegister;
-use Swoft\Annotation\LoaderInterface;
 use Swoft\Stdlib\Helper\ComposerHelper;
 use Swoft\Stdlib\Helper\DirectoryHelper;
 use Swoft\Stdlib\Helper\ObjectHelper;
+use Swoft\Annotation\Contract\LoaderInterface;
 
 /**
  * Annotation resource
