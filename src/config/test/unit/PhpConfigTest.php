@@ -4,7 +4,7 @@
 namespace SwoftTest\Config\Unit;
 
 
-use PHPUnit\Framework\TestCase;
+use Swoft\Config\Config;
 
 /**
  * Class PhpConfigTest
@@ -13,8 +13,94 @@ use PHPUnit\Framework\TestCase;
  */
 class PhpConfigTest extends TestCase
 {
-    public function testA()
+    /**
+     * @var Config
+     */
+    private $config;
+
+    /**
+     * Set up
+     */
+    public function setUp()
     {
-        $this->assertTrue(true);
+        $config = new Config();
+        $config->setPath(__DIR__ . '/../config-php');
+        $config->init();;
+
+        $this->config = $config;
+    }
+
+    public function testData()
+    {
+        $data = $this->config->getIterator()->getArrayCopy();
+        var_dump($data);
+
+        $this->assertEquals($data, $this->getConfigData());
+    }
+
+    public function testGet()
+    {
+        $value2 = $this->config->get('key2');
+        $this->assertEquals($value2, 'value2');
+
+        $value2 = $this->config->get('key.key2');
+        $this->assertEquals($value2, 'value2');
+
+        $dbUser = $this->config->get('db.user');
+
+        $this->assertEquals($dbUser, 'db');
+
+        $defaultUser = $this->config->get('db.user.key', 'defaultUser');
+
+        $this->assertEquals($defaultUser, 'defaultUser');
+    }
+
+    public function testOffsetGet()
+    {
+        $value2 = $this->config->offsetGet('key2');
+        $this->assertEquals($value2, 'value2');
+
+        $value2 = $this->config->offsetGet('key.key2');
+        $this->assertEquals($value2, 'value2');
+
+        $dbUser = $this->config->offsetGet('db.user');
+
+        $this->assertEquals($dbUser, 'db');
+    }
+
+    public function testOffsetExists()
+    {
+        $result = $this->config->offsetExists('db.user.key');
+        $this->assertFalse($result);
+
+        $result = $this->config->offsetExists('db.user');
+        $this->assertTrue($result);
+    }
+
+    /**
+     * @expectedException Swoft\Config\Exception\ConfigException
+     * @throws \Swoft\Config\Exception\ConfigException
+     */
+    public function testForget()
+    {
+        $this->config->forget('');
+    }
+
+    /**
+     * @expectedException Swoft\Config\Exception\ConfigException
+     * @throws \Swoft\Config\Exception\ConfigException
+     */
+    public function testOffsetUnset()
+    {
+        $this->config->offsetUnset('');
+    }
+
+    /**
+     * @expectedException Swoft\Config\Exception\ConfigException
+     * @throws \Swoft\Config\Exception\ConfigException
+     */
+    public function testOffsetSett()
+    {
+        $this->config->offsetSet('key', 'value');
     }
 }
