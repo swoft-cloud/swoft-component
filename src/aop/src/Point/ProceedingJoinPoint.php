@@ -3,6 +3,8 @@
 
 namespace Swoft\Aop\Point;
 
+use Swoft\Aop\Contract\ProceedingJoinPointInterface;
+
 /**
  * Class ProceedingJoinPoint
  *

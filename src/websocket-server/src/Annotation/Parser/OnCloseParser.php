@@ -4,7 +4,7 @@ namespace Swoft\WebSocket\Server\Annotation\Parser;
 
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
-use Swoft\Annotation\AnnotationException;
+use Swoft\Annotation\Exception\AnnotationException;
 use Swoft\Server\Swoole\SwooleEvent;
 use Swoft\WebSocket\Server\Annotation\Mapping\OnClose;
 use Swoft\WebSocket\Server\Router\RouteRegister;

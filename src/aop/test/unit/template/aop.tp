@@ -4,7 +4,7 @@ namespace SwoftTest\Aop\Testing;
 
 class AopClass_proxy_id extends \SwoftTest\Aop\Testing\AopClass
 {
-    use \Swoft\Aop\AopTrait;
+    use \Swoft\Aop\Concern\AopTrait;
     public function getOriginalClassName() : string
     {
         return 'SwoftTest\\Aop\\Testing\\AopClass';

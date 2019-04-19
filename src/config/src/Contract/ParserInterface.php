@@ -1,6 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Config\Parser;
+
+namespace Swoft\Config\Contract;
+
 
 use Swoft\Config\Config;
 

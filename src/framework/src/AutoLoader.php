@@ -33,8 +33,7 @@ class AutoLoader extends AnnotationAutoLoader implements DefinitionInterface
      * Core bean definition
      *
      * @return array
-     * @throws Bean\Exception\ContainerException
-     * @throws \ReflectionException
+     * @throws \Throwable
      */
     public function coreBean(): array
     {

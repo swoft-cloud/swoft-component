@@ -48,6 +48,7 @@ class AopTest extends TestCase
         $proxyCode = \sprintf('<?php %s %s', \PHP_EOL, $proxyCode);
 
         $tpFile  = __DIR__ . '/template/aop.tp';
+
         $codeMd5 = md5($proxyCode);
         $tpMd5   = md5(file_get_contents($tpFile));
 

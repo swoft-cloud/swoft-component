@@ -4,7 +4,7 @@ namespace Swoft\Http\Server\Annotation\Parser;
 
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
-use Swoft\Annotation\AnnotationException;
+use Swoft\Annotation\Exception\AnnotationException;
 use Swoft\Http\Server\Annotation\Mapping\RequestMapping;
 use Swoft\Http\Server\Router\RouteRegister;
 

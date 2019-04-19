@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Connection\Pool;
+namespace Swoft\Connection\Pool\Contract;
+
 
 /**
  * Class ConnectionInterface
@@ -25,11 +26,11 @@ interface ConnectionInterface
      *
      * @return int
      */
-    public function getId(): int ;
+    public function getId(): int;
 
     /**
      * Release connection
-     * 
+     *
      * @param bool $force
      */
     public function release(bool $force = false): void;
@@ -47,6 +48,4 @@ interface ConnectionInterface
      * @param bool $release
      */
     public function setRelease(bool $release): void;
-
-
 }

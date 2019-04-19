@@ -54,9 +54,17 @@ class PhpParser extends Parser
                 continue;
             }
 
+            $dirKey = \str_replace([$path, '/'], ['', '.'], $splFileInfo->getPath());
+            $dirKey = \ltrim($dirKey, '.');
+
             // Other config
-            list($key) = explode('.', $fileName);
-            $otherConfig[$key] = require $filePath;
+            [$key] = explode('.', $fileName);
+            if (!empty($dirKey)) {
+                $key = sprintf('%s.%s', $dirKey, $key);
+            }
+
+            $data = require $filePath;
+            ArrayHelper::set($otherConfig, $key, $data);
         }
 
         return ArrayHelper::merge($baseConfig, $otherConfig);

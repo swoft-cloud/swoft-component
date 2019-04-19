@@ -5,7 +5,7 @@ namespace Swoft\Db;
 
 
 use Swoft\Connection\Pool\AbstractPool;
-use Swoft\Connection\Pool\ConnectionInterface;
+use Swoft\Connection\Pool\Contract\ConnectionInterface;
 
 /**
  * Class Pool

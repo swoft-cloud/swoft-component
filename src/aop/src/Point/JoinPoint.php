@@ -4,6 +4,7 @@
 namespace Swoft\Aop\Point;
 
 use Swoft\Aop\AspectHandler;
+use Swoft\Aop\Contract\JoinPointInterface;
 
 /**
  * Class JoinPoint

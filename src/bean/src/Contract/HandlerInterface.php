@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Bean;
+namespace Swoft\Bean\Contract;
 
 use Swoft\Bean\Definition\ObjectDefinition;
 

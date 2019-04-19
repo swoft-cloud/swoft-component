@@ -4,8 +4,10 @@ namespace Swoft\Config;
 
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Config\Parser\ParserInterface;
+use Swoft\Config\Contract\ParserInterface;
+use Swoft\Config\Exception\ConfigException;
 use Swoft\Config\Parser\PhpParser;
+use Swoft\Config\Parser\YamlParser;
 use Swoft\Stdlib\Collection;
 use Swoft\Stdlib\Helper\ArrayHelper;
 
@@ -86,6 +88,50 @@ class Config extends Collection
     }
 
     /**
+     * Get value
+     *
+     * @param mixed $key
+     *
+     * @return mixed
+     */
+    public function offsetGet($key)
+    {
+        return ArrayHelper::get($this->items, $key);
+    }
+
+    /**
+     * @param mixed $key
+     * @param mixed $value
+     *
+     * @throws ConfigException
+     */
+    public function offsetSet($key, $value): void
+    {
+        throw new ConfigException('Config is not supported offsetSet!');
+    }
+
+    /**
+     * @param string $key
+     *
+     * @throws ConfigException
+     */
+    public function offsetUnset($key): void
+    {
+        throw new ConfigException('Config is not supported offsetUnset!');
+    }
+
+    /**
+     * @param array|string $keys
+     *
+     * @return Collection
+     * @throws ConfigException
+     */
+    public function forget($keys): Collection
+    {
+        throw new ConfigException('Config is not supported forget!');
+    }
+
+    /**
      * @return string
      */
     public function getBase(): string
@@ -114,6 +160,38 @@ class Config extends Collection
     }
 
     /**
+     * @param string $base
+     */
+    public function setBase(string $base): void
+    {
+        $this->base = $base;
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setType(string $type): void
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * @param string $path
+     */
+    public function setPath(string $path): void
+    {
+        $this->path = $path;
+    }
+
+    /**
+     * @param array $parsers
+     */
+    public function setParsers(array $parsers): void
+    {
+        $this->parsers = $parsers;
+    }
+
+    /**
      * Get parse resourcers
      *
      * @return array
@@ -125,7 +203,8 @@ class Config extends Collection
         // Set default parser
         if (empty($this->parsers)) {
             $parsers = [
-                self::TYPE_PHP => new PhpParser()
+                self::TYPE_PHP  => new PhpParser(),
+                self::TYPE_YAML => new YamlParser(),
             ];
         }
 
