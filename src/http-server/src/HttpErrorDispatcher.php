@@ -18,8 +18,10 @@ class HttpErrorDispatcher
     /**
      * @param \Throwable $e
      * @param Response   $response
+     *
      * @return Response
-     * @throws \Throwable
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function run(\Throwable $e, Response $response): Response
     {

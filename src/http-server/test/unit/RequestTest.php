@@ -3,8 +3,6 @@
 
 namespace SwoftTest\Http\Server\Unit;
 
-use SwoftTest\Db\Unit\TestCase;
-
 /**
  * Class RequestTest
  *
@@ -14,6 +12,7 @@ class RequestTest extends TestCase
 {
     public function testA()
     {
-        $this->assertTrue(true);
+        $response = $this->mockServer->request('get', '/request/common');
+        $response->assertSuccess();
     }
 }

@@ -1,8 +1,7 @@
 <?php declare(strict_types=1);
 
 
-namespace SwoftTest\Http\Server\Unit\Server;
-
+namespace Swoft\Test\Http;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
@@ -101,7 +100,7 @@ class MockRequest extends Request
 
         $instance->cookie = $cookies;
         $instance->header = Arr::merge($header, self::defaultHeaders());
-        $instance->server = Arr::merge($header, self::defaultServers());
+        $instance->server = Arr::merge($server, self::defaultServers());
 
         if ($server['request_method'] == self::GET) {
             $instance->get = $params;
@@ -238,41 +237,3 @@ class MockRequest extends Request
         ];
     }
 }
-
-
-//["fd"]=>
-//  int(1)
-//  ["streamId"]=>
-//  int(0)
-//  ["header"]=>
-//  array(3) {
-//    ["user-agent"]=>
-//    string(11) "curl/7.29.0"
-//    ["host"]=>
-//    string(15) "127.0.0.1:18306"
-//    ["accept"]=>
-//    string(3) "*/*"
-//  }
-//  ["server"]=>
-//  array(10) {
-//    ["request_method"]=>
-//    string(3) "GET"
-//    ["request_uri"]=>
-//    string(10) "/redis/str"
-//    ["path_info"]=>
-//    string(10) "/redis/str"
-//    ["request_time"]=>
-//    int(1555679772)
-//    ["request_time_float"]=>
-//    float(1555679772.5043)
-//    ["server_port"]=>
-//    int(18306)
-//    ["remote_port"]=>
-//    int(56984)
-//    ["remote_addr"]=>
-//    string(9) "127.0.0.1"
-//    ["master_time"]=>
-//    int(1555679772)
-//    ["server_protocol"]=>
-//    string(8) "HTTP/1.1"
-//  }

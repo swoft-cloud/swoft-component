@@ -41,8 +41,9 @@ class ErrorHandlers
     /**
      * @param \Throwable $e
      * @param int        $type
+     *
      * @return mixed|null
-     * @throws \Throwable
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function matchHandler(\Throwable $e, int $type = ErrorType::DEF)
     {

@@ -31,7 +31,13 @@ class HttpDispatcher extends Dispatcher
      *
      * @param array ...$params
      * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Throwable
+     */
+
+    /**
+     * @param mixed ...$params
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function dispatch(...$params): void
     {
