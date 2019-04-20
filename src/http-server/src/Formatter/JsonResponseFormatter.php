@@ -29,8 +29,8 @@ class JsonResponseFormatter implements ResponseFormatterInterface
     public function format(Response $response): Response
     {
         $response = $response
-            ->withoutHeader('Content-Type')
-            ->withAddedHeader('Content-Type', ContentType::JSON);
+            ->withoutHeader(ContentType::KEY)
+            ->withAddedHeader(ContentType::KEY, ContentType::JSON);
 
         $data = $response->getData();
 

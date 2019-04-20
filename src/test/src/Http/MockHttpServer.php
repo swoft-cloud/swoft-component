@@ -26,6 +26,7 @@ class MockHttpServer
      * @param array  $params
      * @param array  $headers
      * @param array  $cookies
+     * @param array  $ext
      *
      * @return MockResponse
      * @throws \ReflectionException
@@ -36,7 +37,8 @@ class MockHttpServer
         string $uri,
         array $params = [],
         array $headers = [],
-        array $cookies = []
+        array $cookies = [],
+        array $ext = []
     ): MockResponse {
 
         $servers = [
@@ -48,6 +50,8 @@ class MockHttpServer
         $request  = MockRequest::new($servers, $headers, $cookies, $params);
         $response = MockResponse::new();
 
+        $content = $ext['content'] ?? '';
+        $request->setContent($content);
         $response = $this->onRequest($request, $response);
         $response = $response->getCoResponse();
 

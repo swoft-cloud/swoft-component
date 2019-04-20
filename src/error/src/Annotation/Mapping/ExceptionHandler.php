@@ -11,6 +11,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
  * Class ExceptionHandler
  *
  * @since 2.0
+ *
  * @Annotation
  * @Target({"CLASS"})
  * @Attributes({

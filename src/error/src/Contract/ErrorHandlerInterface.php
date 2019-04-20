@@ -3,9 +3,9 @@
 namespace Swoft\Error\Contract;
 
 /**
- * Interface ErrorHandlerInterface
+ * Class ErrorHandlerInterface
  *
- * @since 1.0
+ * @since 2.0
  */
 interface ErrorHandlerInterface
 {

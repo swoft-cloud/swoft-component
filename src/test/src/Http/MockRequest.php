@@ -20,14 +20,19 @@ class MockRequest extends Request
     use PrototypeTrait;
 
     /**
-     * Get
+     * GET
      */
     const GET = 'GET';
 
     /**
-     * Post
+     * POST
      */
     const POST = 'POST';
+
+    /**
+     * PUT
+     */
+    const PUT = 'PUT';
 
     /**
      * @var int
@@ -86,7 +91,7 @@ class MockRequest extends Request
 
     /**
      * @param array $server
-     * @param array $header
+     * @param array $headers
      * @param array $cookies
      * @param array $params
      *
@@ -94,13 +99,13 @@ class MockRequest extends Request
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public static function new(array $server, array $header, array $cookies, array $params): self
+    public static function new(array $server, array $headers, array $cookies, array $params): self
     {
         $instance = self::__instance();
 
         $instance->cookie = $cookies;
-        $instance->header = Arr::merge($header, self::defaultHeaders());
-        $instance->server = Arr::merge($server, self::defaultServers());
+        $instance->header = Arr::merge(self::defaultHeaders(), $headers);
+        $instance->server = Arr::merge(self::defaultServers(), $server);
 
         if ($server['request_method'] == self::GET) {
             $instance->get = $params;

@@ -25,7 +25,7 @@ class Request extends PsrRequest implements ServerRequestInterface
 
     public const CONTENT_HTML = 'text/html';
     public const CONTENT_JSON = 'application/json';
-    public const CONTENT_XML  = 'application/xml';
+    public const CONTENT_XML = 'application/xml';
 
     private const METHOD_OVERRIDE_KEY = '_method';
 
@@ -97,6 +97,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      * Create Psr server request from swoole request
      *
      * @param CoRequest $coRequest
+     *
      * @return Request
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
@@ -115,7 +116,7 @@ class Request extends PsrRequest implements ServerRequestInterface
         // return $self; // QPS: 3.7w -> 4.2w
 
         // Set headers
-        $self->setHeadersFromSwoole($headers = $coRequest->header ?: []);
+        $self->initializeHeaders($headers = $coRequest->header ?: []);
         // return $self; // QPS: 3.4w -> 3.6w
 
         // Optimize: Don't create stream, init on first fetch
@@ -223,7 +224,7 @@ class Request extends PsrRequest implements ServerRequestInterface
     /**
      * add param
      *
-     * @param string $name the name of param
+     * @param string $name  the name of param
      * @param mixed  $value the value of param
      *
      * @return static
@@ -316,7 +317,7 @@ class Request extends PsrRequest implements ServerRequestInterface
     /**
      * add parser body
      *
-     * @param string $name the name of param
+     * @param string $name  the name of param
      * @param mixed  $value the value of param
      *
      * @return static
@@ -360,7 +361,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      * @inheritdoc
      * @see getAttributes()
      *
-     * @param string $name The attribute name.
+     * @param string $name    The attribute name.
      * @param mixed  $default Default value to return if the attribute does not exist.
      *
      * @return mixed
@@ -375,7 +376,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      *
      * @see getAttributes()
      *
-     * @param string $name The attribute name.
+     * @param string $name  The attribute name.
      * @param mixed  $value The value of the attribute.
      *
      * @return static
@@ -551,8 +552,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      */
     private function parseRawBody(string $content)
     {
-        $contentTypes = $this->getHeader('Content-Type');
-
+        $contentTypes = $this->getHeader(ContentType::KEY);
         foreach ($contentTypes as $contentType) {
             $parser = $this->parsers[$contentType] ?? null;
             if ($parser && $parser instanceof RequestParserInterface) {

@@ -46,9 +46,6 @@ class HttpDispatcher extends Dispatcher
          * @var Response $response
          */
         [$request, $response] = $params;
-        // return; // QPS: 3.14w
-        // $response->send(); // QPS: 2.43w
-        // return;
 
         /* @var RequestHandler $requestHandler */
         $requestHandler = BeanFactory::getBean(RequestHandler::class);
@@ -57,9 +54,6 @@ class HttpDispatcher extends Dispatcher
         try {
             // Trigger before handle event
             \Swoft::trigger(HttpServerEvent::BEFORE_REQUEST, null, $request, $response);
-            // $response->send();
-            // return;
-            // Begin handle request, return response
             $response = $requestHandler->handle($request);
         } catch (\Throwable $e) {
             /** @var HttpErrorDispatcher $errDispatcher */

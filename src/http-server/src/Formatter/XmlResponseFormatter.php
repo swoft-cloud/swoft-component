@@ -29,13 +29,13 @@ class XmlResponseFormatter implements ResponseFormatterInterface
      */
     public function format(Response $response): Response
     {
-        $response = $response->withoutHeader('Content-Type')
-            ->withAddedHeader('Content-Type', ContentType::XML);
+        $response = $response->withoutHeader(ContentType::KEY)
+            ->withAddedHeader(ContentType::KEY, ContentType::XML);
 
         $data = $response->getData();
 
         if ($data !== null) {
-            $data = !is_array($data) ? [$data => $data] : $data;
+            $data    = !is_array($data) ? [$data => $data] : $data;
             $content = XmlHelper::encode($data);
             return $response->withContent($content);
         }

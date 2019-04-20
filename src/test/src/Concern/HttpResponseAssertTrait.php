@@ -38,7 +38,7 @@ trait HttpResponseAssertTrait
      *
      * @return HttpResponseAssertTrait
      */
-    public function assertStatus(int $status): self
+    public function assertEqualStatus(int $status): self
     {
         Assert::assertTrue($status == $this->status);
 
@@ -51,7 +51,7 @@ trait HttpResponseAssertTrait
      *
      * @return HttpResponseAssertTrait
      */
-    public function assertHeader(string $key, string $values): self
+    public function assertEqualHeader(string $key, string $values): self
     {
         Assert::assertTrue(isset($this->header[$key]));
 

@@ -6,7 +6,9 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 
 /**
  * Class ErrorHandlers
+ *
  * @since 2.0
+ *
  * @Bean()
  */
 class ErrorHandlers
