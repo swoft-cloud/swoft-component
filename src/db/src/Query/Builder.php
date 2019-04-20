@@ -2646,6 +2646,8 @@ class Builder implements PrototypeInterface
      *
      * @return bool
      * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function exists(): bool
     {
@@ -2670,6 +2672,8 @@ class Builder implements PrototypeInterface
      *
      * @return bool
      * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function doesntExist(): bool
     {
@@ -2856,6 +2860,9 @@ class Builder implements PrototypeInterface
      * @return bool
      * @throws QueryException
      * @throws PrototypeException
+     * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function insert(array $values)
     {
@@ -2897,8 +2904,10 @@ class Builder implements PrototypeInterface
      * @param string|null $sequence
      *
      * @return string
-     * @throws QueryException
      * @throws PrototypeException
+     * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function insertGetId(array $values, string $sequence = null): string
     {
@@ -2939,6 +2948,8 @@ class Builder implements PrototypeInterface
      * @return int
      * @throws QueryException
      * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function update(array $values)
     {
@@ -2981,6 +2992,8 @@ class Builder implements PrototypeInterface
      * @return int
      * @throws QueryException
      * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function increment(string $column, $amount = 1, array $extra = [])
     {
@@ -3005,6 +3018,8 @@ class Builder implements PrototypeInterface
      * @return int
      * @throws QueryException
      * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function decrement(string $column, $amount = 1, array $extra = [])
     {
@@ -3052,6 +3067,8 @@ class Builder implements PrototypeInterface
      *
      * @return void
      * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function truncate()
     {

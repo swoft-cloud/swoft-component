@@ -18,8 +18,8 @@ class Processor
     /**
      * Process the results of a "select" query.
      *
-     * @param  Builder $query
-     * @param  array   $results
+     * @param Builder $query
+     * @param array   $results
      *
      * @return array
      */
@@ -31,12 +31,14 @@ class Processor
     /**
      * Process an  "insert get ID" query.
      *
-     * @param  Builder $query
-     * @param  string  $sql
-     * @param  array   $values
-     * @param  string  $sequence
+     * @param Builder $query
+     * @param string  $sql
+     * @param array   $values
+     * @param string  $sequence
      *
      * @return string
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Db\Exception\QueryException
      */
     public function processInsertGetId(Builder $query, $sql, $values, $sequence = null): string
@@ -51,7 +53,7 @@ class Processor
     /**
      * Process the results of a column listing query.
      *
-     * @param  array $results
+     * @param array $results
      *
      * @return array
      */

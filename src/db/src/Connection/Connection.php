@@ -6,6 +6,7 @@ namespace Swoft\Db\Connection;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Connection\Pool\AbstractConnection;
+use Swoft\Connection\Pool\AbstractPool;
 use Swoft\Db\Contract\ConnectionInterface;
 use Swoft\Db\Database;
 use Swoft\Db\DbEvent;
@@ -87,8 +88,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param Pool     $pool
      * @param Database $database
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     public function initialize(Pool $pool, Database $database)
     {
@@ -119,8 +119,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * Set the query post processor to the default implementation.
      *
      * @return void
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     public function useDefaultPostProcessor()
     {
@@ -131,8 +130,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * Get the default post processor instance.
      *
      * @return Processor
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     protected function getDefaultPostProcessor()
     {
@@ -204,6 +202,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
         }
     }
 
+    /**
+     * @return int
+     */
     public function getLastTime(): int
     {
         return time();
@@ -306,7 +307,10 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * Get a new query builder instance.
      *
      * @return Builder
-     * @throws PrototypeException
+     * @return \Swoft\Bean\PrototypeInterface|Builder
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function query()
     {
@@ -320,7 +324,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return Builder
      *
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\PoolException
      */
     public function table($table): Builder
     {
@@ -349,6 +355,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return mixed
      * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function selectOne($query, $bindings = [], $useReadPdo = true)
     {
@@ -366,6 +374,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return array
      * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function select(string $query, array $bindings = [], bool $useReadPdo = true): array
     {
@@ -393,6 +403,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return \Generator
      * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function cursor(string $query, array $bindings = [], bool $useReadPdo = true): \Generator
     {
@@ -428,6 +440,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return bool
      * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function insert(string $query, array $bindings = []): bool
     {
@@ -442,6 +456,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return int
      * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function update(string $query, array $bindings = []): int
     {
@@ -456,6 +472,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return int
      * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function delete(string $query, array $bindings = []): int
     {
@@ -470,6 +488,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return bool
      * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function statement(string $query, array $bindings = []): bool
     {
@@ -490,6 +510,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return int
      * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function affectingStatement(string $query, array $bindings = []): int
     {
@@ -513,6 +535,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return bool
      * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function unprepared(string $query): bool
     {
@@ -665,11 +689,22 @@ class Connection extends AbstractConnection implements ConnectionInterface
         return $statement;
     }
 
+    /**
+     * @param \Closure $callback
+     *
+     * @return array
+     */
     public function pretend(\Closure $callback): array
     {
         return [];
     }
 
+    /**
+     * @param \Closure $callback
+     * @param int      $attempts
+     *
+     * @return mixed|void
+     */
     public function transaction(\Closure $callback, $attempts = 1)
     {
 
@@ -680,6 +715,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     public function beginTransaction(): void
     {
@@ -699,6 +735,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     public function commit(): void
     {
@@ -732,6 +769,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     public function rollBack(int $toLevel = null): void
     {
@@ -760,6 +798,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     public function forceRollBack(int $toLevel = null): void
     {

@@ -963,6 +963,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
     {
         $first = $this->first();
 
+        var_dump($this->pluck($value)->all());
         if (is_array($first) || is_object($first)) {
             return implode($glue, $this->pluck($value)->all());
         }
