@@ -19,12 +19,6 @@ if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
     exit('Please run "composer install" to install the dependencies' . PHP_EOL);
 }
 
-// Composer autoload
-$autoloadFile = dirname(__DIR__) . '/vendor/autoload.php';
-if (file_exists($autoloadFile)) {
-    require_once $autoloadFile;
-}
-
 \Swoole\Runtime::enableCoroutine();
 $application = new \Swoft\Test\TestApplication();
 $application->setBeanFile(__DIR__ . '/testing/bean.php');
