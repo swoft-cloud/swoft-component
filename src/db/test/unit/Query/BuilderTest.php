@@ -19,6 +19,10 @@ use SwoftTest\Db\Unit\TestCase;
 class BuilderTest extends TestCase
 {
 
+    /**
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
     public function testSelect()
     {
         $expectSql = 'select `id`, `name` from `user`';
@@ -46,10 +50,13 @@ class BuilderTest extends TestCase
         $subCb = function (Builder $query) {
             return $query->select('id')->from('count');
         };
-        $cbSql = DB::table('user')->selectSub($subCb, 'c')->toSql();
+        $db    = DB::table('user');
 
-        $builder  = Builder::new()->from('count')->select('id');
+        $builder = Builder::new()->from('count')->select('id');
+        $cbSql   = $db->selectSub($subCb, 'c')->toSql();
+
         $buildSql = DB::table('user')->selectSub($builder, 'c')->toSql();
+
 
         $this->assertEquals($expectSql, $strSql);
         $this->assertEquals($expectSql, $cbSql);
@@ -57,7 +64,9 @@ class BuilderTest extends TestCase
     }
 
     /**
+     * @throws ContainerException
      * @throws PrototypeException
+     * @throws \ReflectionException
      */
     public function testSelectRaw()
     {
@@ -68,6 +77,10 @@ class BuilderTest extends TestCase
         $this->assertEquals($expectSql, $sql);
     }
 
+    /**
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
     public function testSelectBetween()
     {
         $expectSql = 'select `age` from `user` where `age` between ? and ?';
@@ -79,6 +92,7 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
+     * @throws PoolException
      * @throws PrototypeException
      * @throws \ReflectionException
      */
@@ -96,7 +110,9 @@ class BuilderTest extends TestCase
     }
 
     /**
+     * @throws ContainerException
      * @throws PrototypeException
+     * @throws \ReflectionException
      */
     public function testSelectLeftJoin()
     {
@@ -110,6 +126,7 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
+     * @throws PoolException
      * @throws PrototypeException
      * @throws \ReflectionException
      */
@@ -119,16 +136,17 @@ class BuilderTest extends TestCase
             'select `age` from `user` where `age` between ? and ?' .
             ') as `user` on `user`.`id` = `count`.`user_id` where `id` < ?';
 
+        $connection = Builder::new();
         // Example1
-        $user = DB::table('user')->select('age')->whereBetween('age', [18, 25]);
-        $sql  = DB::table('count')
+        $user = $connection->newQuery()->from('user')->select('age')->whereBetween('age', [18, 25]);
+        $sql  = $connection->newQuery()->from('count')
             ->where('id', '<', 200)
             ->joinSub($user, 'user', 'user.id', '=', "count.user_id")
             ->toSql();
 
         // Example2
         $user1 = 'select `age` from `user` where `age` between ? and ?';
-        $sql1  = DB::table('count')
+        $sql1  = $connection->newQuery()->from('count')
             ->where('id', '<', 200)
             ->joinSub($user1, 'user', 'user.id', '=', "count.user_id")
             ->toSql();
@@ -139,24 +157,30 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
+     * @throws PoolException
      * @throws PrototypeException
      * @throws \ReflectionException
      */
     public function testSelectList()
     {
-        $expectSql = 'select * from `count` where `name` like ? and `id` > ? and (`age` = ?) ' .
+        $expectSql = 'select * from `user` where `name` like ? and `id` > ? and (`age` = ?) ' .
             'or `user_desc` between ? and ? ' .
             'and (exists (select `user_id` from `count` where `user_id` between ? and ?))';
         $where     = [
             'age' => 18
         ];
-        $sql       = DB::table('count')
+        $sql       = DB::table('user')
             ->where('name', "like", "lit%")
             ->where('id', '>', 1000)
             ->where($where)
             ->whereBetween('user_desc', [1, 5], 'or', false)
             ->where(function (Builder $builder) {
-                $count = DB::table('count')->select('user_id')->whereBetween('user_id', [1, 5]);
+                $count = $builder
+                    ->newQuery()
+                    ->from('count')
+                    ->select('user_id')
+                    ->whereBetween('user_id', [1, 5]);
+
                 $builder->addWhereExistsQuery($count);
             })
             ->toSql();
@@ -164,26 +188,35 @@ class BuilderTest extends TestCase
         $this->assertEquals($expectSql, $sql);
     }
 
+    /**
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
     public function testHaving()
     {
         $expectSql = 'select `sum(age)` as `sum_age`, `count(user_desc)` as `count_desc`, `id` from `user` ' .
             'group by `user_desc` ' .
             'having `count_desc` = ? or `sum_age` > ?';
 
-        $db = DB::table('user')
+
+        $sql1 = DB::table('user')
             ->select('sum(age) as sum_age')
             ->addSelect(['count(user_desc) as count_desc', 'id'])
-            ->groupBy('user_desc');
-
-        $sql1 = (clone $db)
+            ->groupBy('user_desc')
             ->having('count_desc', "1")
             ->having('sum_age', '>', "1", 'or')
             ->toSql();
-        $sql2 = (clone $db)
+        $sql2 = DB::table('user')
+            ->select('sum(age) as sum_age')
+            ->addSelect(['count(user_desc) as count_desc', 'id'])
+            ->groupBy('user_desc')
             ->having('count_desc', "1")
             ->orHaving('sum_age', '>', "1")
             ->toSql();
-        $sql3 = (clone $db)
+        $sql3 = DB::table('user')
+            ->select('sum(age) as sum_age')
+            ->addSelect(['count(user_desc) as count_desc', 'id'])
+            ->groupBy('user_desc')
             ->having('count_desc', "1")
             ->havingRaw("`sum_age` > ?", ["1"], 'or')
             ->toSql();
@@ -193,6 +226,10 @@ class BuilderTest extends TestCase
         $this->assertEquals($expectSql, $sql3);
     }
 
+    /**
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
     public function testDistinct()
     {
         $expectSql = 'select distinct * from `user`';
@@ -200,4 +237,323 @@ class BuilderTest extends TestCase
         $this->assertEquals($expectSql, $sql);
     }
 
+    /**
+     * @throws ContainerException
+     * @throws PoolException
+     * @throws PrototypeException
+     * @throws \ReflectionException
+     */
+    public function testWheres()
+    {
+        $expectSql = 'select `user`.* from `user` ' .
+            'inner join `count` as `c` on `user`.`id` = ? ' .
+            'where exists (select * where `age` > ?) ' .
+            'and date(`create_time`) > ? ' .
+            'and year(`birthday`) = ? ' .
+            'and month(`update_time`) = ? ' .
+            'and day(`now`) < ? ' .
+            'and `c`.`id` in (1, 4, 5) ' .
+            'and json_contains(`user_info`, ?) ' .
+            'and json_length(`shop_label`) = ? ' .
+            'and (`user_account` is not null ' .
+            'and time(`user_time`) = ? ' .
+            'and (`a`, `d`) = (?, ?))';;
+        $sql = DB::table('user')
+            ->select('user.*')
+            ->whereExists(function (Builder $builder) {
+                return $builder->where('age', '>', 10);
+            })
+            ->joinWhere('count as c', 'user.id', '=', 'c.user_id')
+            ->whereDate('create_time', '>', date('y-m-d'))
+            ->whereYear('birthday', '=', date('Y'))
+            ->whereMonth('update_time', date('m'))
+            ->whereDay('now', '<', date('d'))
+            ->whereIntegerInRaw('c.id', [1, 4, 5])
+            // Search json field user_info[1]
+            ->whereJsonContains('user_info', '1')
+            ->whereJsonLength('shop_label', '0')
+            // Add a nested where statement to the query.
+            ->whereNested(function (Builder $builder) {
+                $builder->whereNotNull('user_account');
+
+                $builder->whereTime('user_time', time())
+                    // Result (`a`, `d`) = (?, ?))
+                    ->whereRowValues(['a', 'd'], '=', [1, 3]);
+            })
+            ->toSql();
+        $this->assertEquals($expectSql, $sql);
+    }
+
+    /**
+     * @throws ContainerException
+     * @throws PoolException
+     * @throws \ReflectionException
+     */
+    public function testOrWheres()
+    {
+        $expectSql = 'select * from `user` ' .
+            'where `user_desc` between ? and ? ' .
+            'or exists (select * from (select * from `user`) as `user`) ' .
+            'or not exists (select * from count order by `id` desc, `name` asc) ' .
+            'or date(`create_time`) > ? ' .
+            'or json_contains(`user_info`, ?) ' .
+            'or json_length(`shop_label`) = ? ' .
+            'or day(`now`) < ? ' .
+            'or `user_info` is not null ' .
+            'or `id` not in (?, ?, ?) ' .
+            'or year(`birthday`) = ? ' .
+            'or `user_desc` not between ? and ? ' .
+            'or st_distance(point(`lng`, `lat`), point(?, ?) ) * 111195 as distance ' .
+            'having `distance` < ? ' .
+            'order by `distance` desc';
+        $sql       = DB::table('user')
+            //  = whereBetween('user_desc', [1, 5], 'or' )
+            ->orWhereBetween('user_desc', [1, 5])
+            //  = whereExists($callback, 'or' )
+            ->orWhereExists(function (Builder $builder) {
+                $newQuery = $builder->newQuery()->from('user');
+                return $builder->fromSub($newQuery, 'user');
+            })
+            ->orWhereNotExists(function (Builder $builder) {
+                return $builder->fromRaw('count')->orderByDesc('id')->orderByRaw('`name` asc');
+            })
+            //  = whereDate('create_time', '>', date('d'), 'or') ....
+            ->orWhereDate('create_time', '>', date('y-m-d'))
+            ->orWhereJsonContains('user_info', '1')
+            ->orWhereJsonLength('shop_label', '0')
+            ->orWhereDay('now', '<', new \DateTime('2013-03-29T04:13:35-0600'))
+            ->orWhereNotNull('user_info')
+            ->orWhereNotIn('id', [1, 4, 6])
+            ->orWhereYear('birthday', '=', '1996')
+            ->orWhereNotBetween('user_desc', [2, 6])
+            ->orWhereRaw('st_distance(point(`lng`, `lat`), point(?, ?) ) * 111195 as distance', [117.069, 35.86])
+            ->having('distance', '<', '50')
+            ->orderBy('distance', 'desc')
+            ->toSql();
+        $this->assertEquals($expectSql, $sql);
+    }
+
+    /**
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
+    public function testSelectShareLock()
+    {
+        $expectSql = 'select * from `user` lock in share mode';
+        $sql       = DB::table('user')
+            ->sharedLock()
+            ->toSql();;
+        $this->assertEquals($expectSql, $sql);
+    }
+
+    /**
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
+    public function testSelectWriteLock()
+    {
+        $expectSql = 'select * from `user` for update';
+        $sql       = DB::table('user')
+            ->lock()
+            ->toSql();
+
+        $sql1 = DB::table('user')
+            ->lockForUpdate()
+            ->toSql();
+
+        $sql2 = DB::raw($expectSql);
+
+        $this->assertEquals($expectSql, $sql);
+        $this->assertEquals($expectSql, $sql1);
+        $this->assertEquals($expectSql, $sql2);
+    }
+
+    /**
+     * @throws ContainerException
+     * @throws \ReflectionException
+     */
+    public function testForceIndex()
+    {
+        $expectSql = 'select `id`, `name` from `user` force index(`idx_user`)';
+
+        $sql = DB::table('')
+            ->select('id', 'name')
+            ->fromRaw('`user` force index(`idx_user`)')
+            ->toSql();
+
+        $this->assertEquals($expectSql, $sql);
+    }
+
+    /**
+     * @throws ContainerException
+     * @throws PoolException
+     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Db\Exception\EloquentException
+     * @throws \Swoft\Db\Exception\QueryException
+     */
+    public function testInset()
+    {
+        $insertUpdate = DB::table('user')->updateOrInsert(
+            [
+                'id' => 22,
+            ],
+            [
+                'name' => 'sakuraovq' . mt_rand(1, 100)
+            ]
+        );
+        $first        = $this->getFirstId();
+        $inc          = DB::table('user')->where('id', $first)->increment('age', 3);
+        $dec          = DB::table('user')->where('id', $first)->decrement('age', 2);
+
+        $insert = DB::table('user')->insert([
+            'name'     => 'sakuraovq' . mt_rand(1, 100),
+            'password' => md5((string)mt_rand(1, 100)),
+        ]);
+
+        // sync subQuery data to table
+        $using = Builder::new()->from('user')->insertUsing(['name', 'age'], function (Builder $builder) {
+            return $builder->from('user')
+                ->select('name', 'age')
+                ->where('age', '>', 1);
+        });
+        // get insert id
+        $id = DB::table('user')->insertGetId([
+            'age'  => 18,
+            'name' => 'Sakura',
+        ]);
+        $this->assertIsString($id);
+        $this->assertTrue($using);
+        $this->assertTrue($insert);
+        $this->assertTrue($insertUpdate);
+        $this->assertIsInt($inc);
+        $this->assertIsInt($dec);
+        $this->assertIsInt($first);
+    }
+
+    /**
+     * @throws ContainerException
+     * @throws PoolException
+     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Db\Exception\EloquentException
+     * @throws \Swoft\Db\Exception\QueryException
+     */
+    public function testUpdate()
+    {
+        $id     = $this->getFirstId();
+        $update = DB::table('user')->where('id', $id)->update(['age' => 18, 'name' => 'ovo' . mt_rand(22, 33)]);
+        // random update
+        $update1 = DB::table('user')->inRandomOrder()->limit(1)->update([
+            'age'  => mt_rand(22, 33),
+            'name' => 'rd' . substr(uniqid(), mt_rand(3, 10))
+        ]);
+        $delete  = DB::table('user')->delete($id);
+        $doesNot = DB::table('user')->where('id', $id)->doesntExist();
+
+        $this->assertTrue($doesNot);
+        $this->assertEquals($delete, 1);
+        $this->assertEquals($update1, 1);
+        $this->assertIsInt($update);
+    }
+
+    /**
+     * @throws ContainerException
+     * @throws PoolException
+     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Db\Exception\QueryException
+     */
+    public function testDelete()
+    {
+        $id         = mt_rand(2333333, 223333333333);
+        $deleteNull = DB::table('user')->delete($id);
+
+        $deleteRange = Builder::new()
+            ->from('user')
+            ->whereBetween('age', [0, 18])
+            ->delete();
+
+        $deleteRegexp = DB::table('user')
+            ->where('name', 'regexp', '[a-z]{' . mt_rand(6, 9) . ',20}')
+            ->delete();
+
+        $orderByDel = DB::table('user')
+            ->limit(1)
+            ->orderBy('id')
+            ->delete();
+
+        $this->assertIsInt($deleteRange);
+        $this->assertIsInt($orderByDel);
+        $this->assertIsInt($deleteRegexp);
+        $this->assertEquals($deleteNull, 0);
+    }
+
+    /**
+     * @throws ContainerException
+     * @throws PoolException
+     * @throws PrototypeException
+     * @throws \ReflectionException
+     */
+    public function testCrossJoin()
+    {
+        $expectSql = 'select * from `user` cross join `count` on `count`.`user_id` = `user`.`id`';
+        $sql       = Builder::new()
+            ->from('user')
+            ->crossJoin('count', 'count.user_id', '=', 'user.id')
+            ->toSql();
+
+        $this->assertEquals($expectSql, $sql);
+    }
+
+    /**
+     * @throws ContainerException
+     * @throws PoolException
+     * @throws \ReflectionException
+     */
+    public function testUnionSelect()
+    {
+        $expectSql = '(select * from `user`) union all (select * from `user`) union (select * from `user`)';
+        $sql       = Builder::new()
+            ->from('user')
+            ->unionAll(function (Builder $builder) {
+                $builder->from('user');
+            })
+            ->union(Builder::new()->from('user'))
+            ->toSql();
+
+        $this->assertEquals($expectSql, $sql);
+    }
+
+    /**
+     * @throws PrototypeException
+     * @throws \Swoft\Db\Exception\EloquentException
+     */
+    public function testEach()
+    {
+        // You must specify an orderBy clause when using this function.
+        // Traverse through all data and take 4 pieces at a time
+        $res = DB::table('user')->orderBy('id')->each(function ($result) {
+            // use data to do something...
+            if ($result) {
+                // return false once .. break 'each' traverse
+                return false;
+            }
+            return true;
+        }, 4);
+
+        $this->assertIsBool($res);
+    }
+
+    /**
+     * get first line `id`
+     *
+     * @return int
+     * @throws PrototypeException
+     * @throws \Swoft\Db\Exception\EloquentException
+     */
+    public function getFirstId(): int
+    {
+        return DB::table('user')->first(['id'])->id;
+    }
 }

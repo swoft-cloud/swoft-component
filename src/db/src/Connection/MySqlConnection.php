@@ -36,8 +36,7 @@ class MySqlConnection extends Connection
      * Get the default query grammar instance.
      *
      * @return MySqlGrammar
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     protected function getDefaultQueryGrammar(): Grammar
     {
@@ -52,8 +51,7 @@ class MySqlConnection extends Connection
      * Get the default post processor instance.
      *
      * @return object|string|MySqlProcessor|Processor
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Throwable
      */
     protected function getDefaultPostProcessor()
     {
