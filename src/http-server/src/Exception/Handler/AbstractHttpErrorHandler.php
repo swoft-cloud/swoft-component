@@ -7,6 +7,7 @@ use Swoft\Http\Server\Contract\HttpErrorHandlerInterface;
 
 /**
  * Class AbstractHttpErrorHandler
+ *
  * @since 2.0
  */
 abstract class AbstractHttpErrorHandler implements HttpErrorHandlerInterface

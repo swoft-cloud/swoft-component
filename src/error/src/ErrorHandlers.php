@@ -6,7 +6,9 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 
 /**
  * Class ErrorHandlers
+ *
  * @since 2.0
+ *
  * @Bean()
  */
 class ErrorHandlers
@@ -41,8 +43,9 @@ class ErrorHandlers
     /**
      * @param \Throwable $e
      * @param int        $type
+     *
      * @return mixed|null
-     * @throws \Throwable
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function matchHandler(\Throwable $e, int $type = ErrorType::DEF)
     {

@@ -177,7 +177,7 @@ trait MessageTrait
      * immutability of the message, and MUST return an instance that has the
      * new and/or updated header and value.
      *
-     * @param string          $name Case-insensitive header field name.
+     * @param string          $name  Case-insensitive header field name.
      * @param string|string[] $value Header value(s).
      *
      * @return static
@@ -205,7 +205,8 @@ trait MessageTrait
 
     /**
      * @see MessageInterface::withAddedHeader()
-     * @param string          $name Case-insensitive header field name to add.
+     *
+     * @param string          $name  Case-insensitive header field name to add.
      * @param string|string[] $value Header value(s).
      *
      * @return static
@@ -247,7 +248,7 @@ trait MessageTrait
 
             if (isset($new->headerNames[$normalized])) {
                 $headerName = $new->headerNames[$normalized];
-                $oldValues = $new->headers[$headerName];
+                $oldValues  = $new->headers[$headerName];
                 // re-save
                 $new->headers[$headerName] = \array_merge($oldValues, $value);
                 continue;
@@ -349,7 +350,7 @@ trait MessageTrait
 
             if (isset($this->headerNames[$normalized])) {
                 $headerName = $this->headerNames[$normalized];
-                $oldValues = $this->headers[$headerName];
+                $oldValues  = $this->headers[$headerName];
                 // re-save
                 $this->headers[$headerName] = \array_merge($oldValues, $value);
                 continue;
@@ -364,9 +365,11 @@ trait MessageTrait
     /**
      * @param array $headers [name => value string]
      */
-    protected function setHeadersFromSwoole(array $headers): void
+    protected function initializeHeaders(array $headers): void
     {
         foreach ($headers as $name => $value) {
+            $name = \strtolower($name);
+
             $this->headers[$name]     = [$value];
             $this->headerNames[$name] = $name;
         }

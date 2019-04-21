@@ -23,10 +23,29 @@ class Request extends PsrRequest implements ServerRequestInterface
 {
     use InteractsWithInput;
 
-    public const CONTENT_HTML = 'text/html';
-    public const CONTENT_JSON = 'application/json';
-    public const CONTENT_XML  = 'application/xml';
+    /**
+     * Router attribute
+     */
+    public const ROUTER_ATTRIBUTE = 'swoftRouterHandler';
 
+    /**
+     * Html
+     */
+    public const CONTENT_HTML = 'text/html';
+
+    /**
+     * Json
+     */
+    public const CONTENT_JSON = 'application/json';
+
+    /**
+     * Xml
+     */
+    public const CONTENT_XML = 'application/xml';
+
+    /**
+     * Method key
+     */
     private const METHOD_OVERRIDE_KEY = '_method';
 
     /**
@@ -97,32 +116,23 @@ class Request extends PsrRequest implements ServerRequestInterface
      * Create Psr server request from swoole request
      *
      * @param CoRequest $coRequest
+     *
      * @return Request
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
     public static function new(CoRequest $coRequest): self
     {
-        // on enter QPS: 4.5w
-        // return new self(); // QPS: 4.4w
         /** @var Request $self */
         $self = BeanFactory::getBean('httpRequest');
-        // return $self; // QPS: 4.2w -> 4.35w
 
-        // SERVER data. swoole Request->server always exists
-        // $serverParams = \array_change_key_case($coRequest->server, \CASE_UPPER);
         $serverParams = \array_merge(self::DEFAULT_SERVER, $coRequest->server);
-        // return $self; // QPS: 3.7w -> 4.2w
 
         // Set headers
-        $self->setHeadersFromSwoole($headers = $coRequest->header ?: []);
-        // return $self; // QPS: 3.4w -> 3.6w
+        $self->initializeHeaders($headers = $coRequest->header ?: []);
 
-        // Optimize: Don't create stream, init on first fetch
-        // $self->body = Stream::new($content);
-        $self->method    = $serverParams['request_method'];
-        $self->coRequest = $coRequest;
-
+        $self->method        = $serverParams['request_method'];
+        $self->coRequest     = $coRequest;
         $self->queryParams   = $coRequest->get ?: [];
         $self->cookieParams  = $coRequest->cookie ?: [];
         $self->serverParams  = $serverParams;
@@ -132,8 +142,6 @@ class Request extends PsrRequest implements ServerRequestInterface
         // save
         $self->uriPath  = $parts[0];
         $self->uriQuery = $parts[1] ?? $serverParams['query_string'];
-
-        // return $self; // QPS: 3.3w -> 3.45w
 
         /** @var Uri $uri */
         $self->uri = Uri::new('', [
@@ -146,14 +154,13 @@ class Request extends PsrRequest implements ServerRequestInterface
             'server_addr' => $serverParams['server_addr'],
             'server_port' => $serverParams['server_port'],
         ]);
-        // return $self; // QPS: 2.45w -> 3.35w
 
         // Update host by Uri info
         if (!isset($headers['host'])) {
             $self->updateHostByUri();
         }
 
-        return $self; // QPS: 2.44w -> 3.3w
+        return $self;
     }
 
     /**
@@ -223,7 +230,7 @@ class Request extends PsrRequest implements ServerRequestInterface
     /**
      * add param
      *
-     * @param string $name the name of param
+     * @param string $name  the name of param
      * @param mixed  $value the value of param
      *
      * @return static
@@ -299,8 +306,8 @@ class Request extends PsrRequest implements ServerRequestInterface
     public function getParsedBody()
     {
         // Need init
-        if (null === $this->parsedBody) {
-            $parsedBody = $coRequest->post ?? [];
+        if ($this->parsedBody === null) {
+            $parsedBody = $this->coRequest->post ?? [];
 
             // Parse body
             if (!$parsedBody && !$this->isGet()) {
@@ -316,7 +323,7 @@ class Request extends PsrRequest implements ServerRequestInterface
     /**
      * add parser body
      *
-     * @param string $name the name of param
+     * @param string $name  the name of param
      * @param mixed  $value the value of param
      *
      * @return static
@@ -360,7 +367,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      * @inheritdoc
      * @see getAttributes()
      *
-     * @param string $name The attribute name.
+     * @param string $name    The attribute name.
      * @param mixed  $default Default value to return if the attribute does not exist.
      *
      * @return mixed
@@ -375,7 +382,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      *
      * @see getAttributes()
      *
-     * @param string $name The attribute name.
+     * @param string $name  The attribute name.
      * @param mixed  $value The value of the attribute.
      *
      * @return static
@@ -485,10 +492,6 @@ class Request extends PsrRequest implements ServerRequestInterface
             return \strtoupper($method);
         }
 
-        // if ($method = $this->getHeaderLine('X-Http-Method-Override')) {
-        //     return \strtoupper($method);
-        // }
-
         return parent::getMethod();
     }
 
@@ -551,8 +554,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      */
     private function parseRawBody(string $content)
     {
-        $contentTypes = $this->getHeader('Content-Type');
-
+        $contentTypes = $this->getHeader(ContentType::KEY);
         foreach ($contentTypes as $contentType) {
             $parser = $this->parsers[$contentType] ?? null;
             if ($parser && $parser instanceof RequestParserInterface) {

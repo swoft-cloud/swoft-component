@@ -10,7 +10,9 @@ use Swoft\Http\Server\Contract\HttpErrorHandlerInterface;
 
 /**
  * Class HttpErrorHandler
+ *
  * @since 2.0
+ *
  * @Bean()
  */
 class HttpErrorDispatcher
@@ -18,8 +20,10 @@ class HttpErrorDispatcher
     /**
      * @param \Throwable $e
      * @param Response   $response
+     *
      * @return Response
-     * @throws \Throwable
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function run(\Throwable $e, Response $response): Response
     {
@@ -30,7 +34,7 @@ class HttpErrorDispatcher
         if ($handler = $handlers->matchHandler($e, ErrorType::HTTP)) {
             return $handler->handle($e, $response);
         }
-
+        
         // TODO: debug
         \printf("Http Error(no handler, %s): %s\nAt File %s line %d\nTrace:\n%s",
             \get_class($e),

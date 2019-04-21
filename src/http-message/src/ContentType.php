@@ -4,17 +4,21 @@ namespace Swoft\Http\Message;
 
 /**
  * Class ContentType
- * @package Swoft\Http\Message
+ *
+ * @since 2.0
  */
 final class ContentType
 {
-    public const KEY = 'Content-Type';
+    /**
+     * Content key
+     */
+    public const KEY = 'content-type';
 
     // Commonly used content types
     public const HTML = 'text/html';
     public const TEXT = 'text/plain';
     public const JSON = 'application/json';
-    public const XML  = 'application/xml';
+    public const XML = 'application/xml';
     public const FORM = 'application/x-www-form-urlencoded';
 
     // Content types mapping

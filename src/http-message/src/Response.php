@@ -90,11 +90,23 @@ class Response implements ResponseInterface
     protected $cookies = [];
 
     /**
+     * @var string
+     */
+    private $filePath = '';
+
+    /**
+     * @var string
+     */
+    private $fileType = '';
+
+    /**
      * Create response replace of constructor
      *
      * @param CoResponse $coResponse
      *
-     * @return static|Response
+     * @return Response
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public static function new(CoResponse $coResponse): self
     {
@@ -122,12 +134,6 @@ class Response implements ResponseInterface
 
         return $response;
     }
-
-    /** @var string */
-    private $filePath = '';
-
-    /** @var string */
-    private $fileType = '';
 
     /**
      * @param string $filePath    like '/path/to/some.jpg'

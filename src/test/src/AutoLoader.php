@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
 
-namespace SwoftTest\Http\Server\Testing;
+namespace Swoft\Test;
 
 
 use Swoft\SwoftComponent;
 
-/**
+/***
  * Class AutoLoader
  *
  * @since 2.0

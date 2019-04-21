@@ -124,7 +124,7 @@ class Swoft
      * @param array                 $params
      *
      * @return EventInterface
-     * @throws \Throwable
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public static function trigger($event, $target = null, ...$params): EventInterface
     {

@@ -28,18 +28,11 @@ class RequestListener implements RequestInterface
      */
     public function onRequest(Request $request, Response $response): void
     {
-        // $response->end('<h1>Hello Swoole. </h1>');
-        // \Swoft::trigger('some.event');
-        // return;
-
         $psrRequest  = ServerRequest::new($request);
-        // return; // QPS: 2.3w -> 3.32w
         $psrResponse = ServerResponse::new($response);
-        // return; // QPS: 2.3w -> 3.31w
 
         /* @var HttpDispatcher $dispatcher */
         $dispatcher = BeanFactory::getSingleton('httpDispatcher');
-        // return; // QPS: 3.2w
         $dispatcher->dispatch($psrRequest, $psrResponse);
     }
 }

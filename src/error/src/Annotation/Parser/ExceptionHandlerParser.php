@@ -24,9 +24,11 @@ class ExceptionHandlerParser extends Parser
      * @param ExceptionHandler $annotation Annotation object
      *
      * @return array
+     *
      * Return empty array is nothing to do!
      * When class type return [$beanName, $className, $scope, $alias] is to inject bean
      * When property type return [$propertyValue, $isRef] is to reference value
+     * @throws AnnotationException
      */
     public function parse(int $type, $annotation): array
     {
