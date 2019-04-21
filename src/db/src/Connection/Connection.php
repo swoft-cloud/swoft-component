@@ -6,7 +6,6 @@ namespace Swoft\Db\Connection;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Connection\Pool\AbstractConnection;
-use Swoft\Connection\Pool\AbstractPool;
 use Swoft\Db\Contract\ConnectionInterface;
 use Swoft\Db\Database;
 use Swoft\Db\DbEvent;
