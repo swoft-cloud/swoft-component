@@ -23,10 +23,29 @@ class Request extends PsrRequest implements ServerRequestInterface
 {
     use InteractsWithInput;
 
+    /**
+     * Router attribute
+     */
+    public const ROUTER_ATTRIBUTE = 'swoftRouterHandler';
+
+    /**
+     * Html
+     */
     public const CONTENT_HTML = 'text/html';
+
+    /**
+     * Json
+     */
     public const CONTENT_JSON = 'application/json';
+
+    /**
+     * Xml
+     */
     public const CONTENT_XML = 'application/xml';
 
+    /**
+     * Method key
+     */
     private const METHOD_OVERRIDE_KEY = '_method';
 
     /**
@@ -472,10 +491,6 @@ class Request extends PsrRequest implements ServerRequestInterface
         if ($method = $this->post(self::METHOD_OVERRIDE_KEY)) {
             return \strtoupper($method);
         }
-
-        // if ($method = $this->getHeaderLine('X-Http-Method-Override')) {
-        //     return \strtoupper($method);
-        // }
 
         return parent::getMethod();
     }

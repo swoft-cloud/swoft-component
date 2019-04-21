@@ -11,13 +11,13 @@ use Doctrine\Common\Annotations\Annotation\Target;
 /**
  * Class Middleware
  *
+ * @since 2.0
+ *
  * @Annotation
- * @Target({"CLASS", "METHOD"})
+ * @Target({"CLASS", "METHOD", "ANNOTATION"})
  * @Attributes({
  *     @Attribute("name", type="string"),
  * })
- *
- * @since 2.0
  */
 final class Middleware
 {

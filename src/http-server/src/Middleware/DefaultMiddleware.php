@@ -66,11 +66,8 @@ class DefaultMiddleware implements MiddlewareInterface
         $method  = $request->getMethod();
         $uriPath = $request->getUriPath();
 
-        /** @var Router $router */
-        $router = Container::$instance->getSingleton('httpRouter');
-
         /* @var Route $route */
-        [$status, , $route] = $router->match($uriPath, $method);
+        [$status, , $route] = $request->getAttribute(Request::ROUTER_ATTRIBUTE);
 
         // Not found
         if ($status === Router::NOT_FOUND) {

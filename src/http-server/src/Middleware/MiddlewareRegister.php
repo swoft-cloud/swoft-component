@@ -36,6 +36,21 @@ class MiddlewareRegister
     private static $middlewares = [];
 
     /**
+     * @var array
+     *
+     * @example
+     * [
+     *      'className' => [
+     *          'methodName' => [
+     *              'middlewareName',
+     *              'middlewareName',
+     *          ]
+     *      ]
+     * ]
+     */
+    private static $handlerMiddlewares = [];
+
+    /**
      * Register controller middleware
      *
      * @param string $name      middleware name
@@ -45,10 +60,10 @@ class MiddlewareRegister
      */
     public static function registerByClassName(string $name, string $className): void
     {
-        $groupMiddlewares   = self::$middlewares[$className]['controller'] ?? [];
-        $groupMiddlewares[] = $name;
+        $middlewares   = self::$middlewares[$className]['controller'] ?? [];
+        $middlewares[] = $name;
 
-        self::$middlewares[$className]['controller'] = \array_unique($groupMiddlewares);
+        self::$middlewares[$className]['controller'] = \array_unique($middlewares);
     }
 
     /**
@@ -62,17 +77,45 @@ class MiddlewareRegister
      */
     public static function registerByMethodName(string $name, string $className, string $methodName): void
     {
-        $groupMiddlewares   = self::$middlewares[$className]['action'][$methodName] ?? [];
-        $groupMiddlewares[] = $name;
+        $middlewares   = self::$middlewares[$className]['methods'][$methodName] ?? [];
+        $middlewares[] = $name;
 
-        self::$middlewares[$className]['methods'][$methodName] = \array_unique($groupMiddlewares);
+        self::$middlewares[$className]['methods'][$methodName] = \array_unique($middlewares);
     }
 
     /**
+     * Register handler middleware
+     */
+    public static function register(): void
+    {
+        foreach (self::$middlewares as $className => $middlewares) {
+            $controllerMiddlewares = $middlewares['controller'] ?? [];
+            $methodMiddlewares     = $middlewares['methods'] ?? [];
+
+            foreach ($methodMiddlewares as $methodName => $oneMethodMiddlewares) {
+                if (!empty($oneMethodMiddlewares) || !empty($oneMethodMiddlewares)) {
+                    $allMiddlewares = array_merge($controllerMiddlewares, $oneMethodMiddlewares);
+
+                    self::$handlerMiddlewares[$className][$methodName] = array_unique($allMiddlewares);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param string $className
+     * @param string $methodName
+     *
      * @return array
      */
-    public static function getMiddlewares(): array
+    public static function getMiddlewares(string $className, string $methodName): array
     {
-        return self::$middlewares;
+        $middlewares = self::$handlerMiddlewares[$className][$methodName] ?? [];
+        if (!empty($middlewares)) {
+            return $middlewares;
+        }
+
+        $middlewares = self::$middlewares[$className]['controller'] ?? [];
+        return $middlewares;
     }
 }

@@ -62,6 +62,18 @@ trait HttpResponseAssertTrait
     }
 
     /**
+     * @param array $headers
+     *
+     * @return HttpResponseAssertTrait
+     */
+    public function assertEqualHeaders(array $headers): self
+    {
+        Assert::assertEquals($this->getHeader(), $headers);
+
+        return $this;
+    }
+
+    /**
      * @param string $key
      * @param string $value
      *

@@ -73,7 +73,6 @@ class HttpDispatcher extends Dispatcher
     public function preMiddleware(): array
     {
         return [
-            // RequestMiddleware::class
         ];
     }
 
