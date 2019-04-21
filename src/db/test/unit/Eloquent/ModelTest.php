@@ -91,10 +91,13 @@ class ModelTest extends TestCase
         $updateBeforeAge = $res1->getAge();
         // update by id
         $updateByWhereId = User::where('id', 1)->increment('age', 1);
-        $updateByModel   = User::find(1)->decrement('age',222);
+        $updateByModel   = User::find(1)->decrement('age', 2);
+        $updateByModel2  = User::find(1)->increment('age', 1);
 
         $this->assertEquals(1, $updateByWhereId);
         $this->assertEquals(1, $updateByModel);
+        $this->assertEquals(1, $updateByModel2);
+
 
         /* @var User $updateAfter */
         $updateAfter = User::find(1);
