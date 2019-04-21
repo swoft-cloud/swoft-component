@@ -41,17 +41,9 @@ class MockHttpServer
         array $ext = []
     ): MockResponse {
 
-        $servers = [
-            'request_method' => $method,
-            'request_uri'    => $uri,
-            'path_info'      => $uri,
-        ];
-
-        $request  = MockRequest::new($servers, $headers, $cookies, $params);
+        $request  = $this->mockRequest($method, $uri, $params, $headers, $cookies, $ext);
         $response = MockResponse::new();
 
-        $content = $ext['content'] ?? '';
-        $request->setContent($content);
         $response = $this->onRequest($request, $response);
         $response = $response->getCoResponse();
 
@@ -59,6 +51,40 @@ class MockHttpServer
             throw new \RuntimeException('Mock request return is not MockResponse');
         }
         return $response;
+    }
+
+    /**
+     * @param string $method
+     * @param string $uri
+     * @param array  $params
+     * @param array  $headers
+     * @param array  $cookies
+     * @param array  $ext
+     *
+     * @return Request
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function mockRequest(
+        string $method,
+        string $uri,
+        array $params = [],
+        array $headers = [],
+        array $cookies = [],
+        array $ext = []
+    ): Request {
+        $servers = [
+            'request_method' => $method,
+            'request_uri'    => $uri,
+            'path_info'      => $uri,
+        ];
+
+        $request = MockRequest::new($servers, $headers, $cookies, $params);
+
+        $content = $ext['content'] ?? '';
+        $request->setContent($content);
+
+        return $request;
     }
 
     /**

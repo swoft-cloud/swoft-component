@@ -104,26 +104,16 @@ class Request extends PsrRequest implements ServerRequestInterface
      */
     public static function new(CoRequest $coRequest): self
     {
-        // on enter QPS: 4.5w
-        // return new self(); // QPS: 4.4w
         /** @var Request $self */
         $self = BeanFactory::getBean('httpRequest');
-        // return $self; // QPS: 4.2w -> 4.35w
 
-        // SERVER data. swoole Request->server always exists
-        // $serverParams = \array_change_key_case($coRequest->server, \CASE_UPPER);
         $serverParams = \array_merge(self::DEFAULT_SERVER, $coRequest->server);
-        // return $self; // QPS: 3.7w -> 4.2w
 
         // Set headers
         $self->initializeHeaders($headers = $coRequest->header ?: []);
-        // return $self; // QPS: 3.4w -> 3.6w
 
-        // Optimize: Don't create stream, init on first fetch
-        // $self->body = Stream::new($content);
-        $self->method    = $serverParams['request_method'];
-        $self->coRequest = $coRequest;
-
+        $self->method        = $serverParams['request_method'];
+        $self->coRequest     = $coRequest;
         $self->queryParams   = $coRequest->get ?: [];
         $self->cookieParams  = $coRequest->cookie ?: [];
         $self->serverParams  = $serverParams;
@@ -133,8 +123,6 @@ class Request extends PsrRequest implements ServerRequestInterface
         // save
         $self->uriPath  = $parts[0];
         $self->uriQuery = $parts[1] ?? $serverParams['query_string'];
-
-        // return $self; // QPS: 3.3w -> 3.45w
 
         /** @var Uri $uri */
         $self->uri = Uri::new('', [
@@ -147,14 +135,13 @@ class Request extends PsrRequest implements ServerRequestInterface
             'server_addr' => $serverParams['server_addr'],
             'server_port' => $serverParams['server_port'],
         ]);
-        // return $self; // QPS: 2.45w -> 3.35w
 
         // Update host by Uri info
         if (!isset($headers['host'])) {
             $self->updateHostByUri();
         }
 
-        return $self; // QPS: 2.44w -> 3.3w
+        return $self;
     }
 
     /**
@@ -300,8 +287,8 @@ class Request extends PsrRequest implements ServerRequestInterface
     public function getParsedBody()
     {
         // Need init
-        if (null === $this->parsedBody) {
-            $parsedBody = $coRequest->post ?? [];
+        if ($this->parsedBody === null) {
+            $parsedBody = $this->coRequest->post ?? [];
 
             // Parse body
             if (!$parsedBody && !$this->isGet()) {

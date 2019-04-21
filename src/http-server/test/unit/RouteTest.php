@@ -94,7 +94,6 @@ class RouteTest extends TestCase
             'content' => JsonHelper::encode($data, JSON_UNESCAPED_UNICODE)
         ];
         $response = $this->mockServer->request(MockRequest::POST, '/testRoute/parser', [], $headers, [], $ext);
-        var_dump($response->getContent());
         $response->assertEqualJson($data);
     }
 

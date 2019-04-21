@@ -94,6 +94,22 @@ trait InteractsWithInput
     }
 
     /**
+     * Retrieve a get item from the request
+     *
+     * @param null|string $key
+     * @param null|mixed  $default
+     *
+     * @return array|string|mixed
+     */
+    public function get(string $key = '', $default = null)
+    {
+        if (!$key) {
+            return $this->queryParams;
+        }
+        return $this->queryParams[$key] ?? $default;
+    }
+
+    /**
      * Retrieve a input item from the request
      *
      * @param null|string $key
