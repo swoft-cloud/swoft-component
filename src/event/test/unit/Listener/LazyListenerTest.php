@@ -1,12 +1,6 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-01-19
- * Time: 22:50
- */
+<?php declare(strict_types=1);
 
-namespace SwoftTest\Event\Listener;
+namespace SwoftTest\Event\Unit\Listener;
 
 use PHPUnit\Framework\TestCase;
 use Swoft\Event\Event;
@@ -15,7 +9,6 @@ use Swoft\Event\Listener\LazyListener;
 
 /**
  * Class LazyListenerTest
- * @package SwoftTest\Event\Listener
  */
 class LazyListenerTest extends TestCase
 {

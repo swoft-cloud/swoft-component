@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace SwoftTest\WebSocket\Server\Fixture\Chat;
+namespace SwoftTest\WebSocket\Server\Testing\Chat;
 
 use Swoft\WebSocket\Server\Annotation\Mapping\MessageMapping;
 use Swoft\WebSocket\Server\Annotation\Mapping\WsController;
-use SwoftTest\WebSocket\Server\Fixture\ChatModule;
+use SwoftTest\WebSocket\Server\Testing\ChatModule;
 
 /**
  * Class ChatController
