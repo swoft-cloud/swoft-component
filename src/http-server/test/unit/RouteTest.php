@@ -77,7 +77,7 @@ class RouteTest extends TestCase
         $ext      = [
             'content' => '<xml><name><![CDATA[swoft]]></name><desc><![CDATA[framework]]></desc></xml>'
         ];
-        $response = $this->mockServer->request(MockRequest::POST, '/testRoute/parser', [], $headers, [], $ext);
+        $response = $this->mockServer->request(MockRequest::POST, '/testRest', [], $headers, [], $ext);
         $response->assertEqualJson($data);
 
 

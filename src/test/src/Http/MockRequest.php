@@ -35,6 +35,11 @@ class MockRequest extends Request
     const PUT = 'PUT';
 
     /**
+     * DELETE
+     */
+    const DELETE = 'DELETE';
+
+    /**
      * @var int
      */
     public $fd = 1;

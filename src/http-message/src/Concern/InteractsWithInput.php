@@ -103,7 +103,9 @@ trait InteractsWithInput
      */
     public function input(string $key = '', $default = null)
     {
-        $inputs = \array_merge($this->getParsedBody(), $this->getQueryParams());
+        $parsedBody = $this->getParsedBody();
+        $parsedBody = is_array($parsedBody) ? $parsedBody : [];
+        $inputs     = \array_merge($parsedBody, $this->getQueryParams());
 
         if (!$key) {
             return $inputs;
