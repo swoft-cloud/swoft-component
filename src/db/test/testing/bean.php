@@ -5,8 +5,8 @@ return [
         'path' => __DIR__ . '/../config',
     ],
     'db'     => [
-        'dsn'      => 'mysql:dbname=swoft;host=127.0.0.1',
+        'dsn'      => 'mysql:dbname=test;host=172.17.0.1',
         'username' => 'root',
-        'password' => '123456',
+        'password' => 'swoft123456',
     ],
 ];
