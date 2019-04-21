@@ -51,6 +51,10 @@ class ModelTest extends TestCase
 
         $result3 = User::new($attributes)->save();
         $this->assertTrue($result3);
+
+        /* @var User $user */
+        $user = User::create($attributes);
+        $this->assertIsObject($user);
     }
 
     /**
@@ -69,6 +73,63 @@ class ModelTest extends TestCase
         $this->assertTrue($result);
     }
 
+    public function testUpdateByWhere()
+    {
+        /** @var User $res1 * */
+        $res1 = User::updateOrCreate(['id' => 1], ['age' => 18, 'name' => 'sakuraovq']);
+
+        $wheres   = [
+            'name' => 'sakuraovq',
+            ['id', '>=', 2]
+        ];
+        $orWheres = [
+            ['name', 'like', '%s%']
+        ];
+        $result   = User::where($wheres)->orWhere($orWheres)->update(['name' => 'sakuraovq' . mt_rand(1, 10)]);
+        $this->assertGreaterThan(0, $result);
+
+        $updateBeforeAge = $res1->getAge();
+        // update by id
+        $updateByWhereId = User::where('id', 1)->increment('age', 1);
+        $updateByModel   = User::find(1)->decrement('age',222);
+
+        $this->assertEquals(1, $updateByWhereId);
+        $this->assertEquals(1, $updateByModel);
+
+        /* @var User $updateAfter */
+        $updateAfter = User::find(1);
+        $this->assertEquals($updateBeforeAge, $updateAfter->getAge());
+    }
+
+    public function testBatchDelete()
+    {
+        /* @var User $res1 */
+        $res1 = User::updateOrCreate(['id' => 1], ['age' => 18]);
+
+        /* @var User $res2 */
+        $res2 = User::updateOrCreate(['id' => 2], ['age' => 18]);
+
+        $result = User::whereIn('id', [$res1->getId(), $res2->getId()])->delete();
+        $this->assertEquals(2, $result);
+
+
+        /* @var User $res3 */
+        $res3 = User::updateOrCreate(['id' => 5], ['age' => 18, 'name' => 'sakura']);
+
+        $wheres    = [
+            'age' => 18,
+            ['id', '>=', 2]
+        ];
+        $orWheres  = [
+            ['name', 'like', '%s%']
+        ];
+        $expectSql = 'select * from `user` where (`age` = ? and `id` >= ?) or (`name` like ?)';
+        $this->assertEquals($expectSql, User::where($wheres)->orWhere($orWheres)->toSql());
+
+        $resultDelete = User::where($wheres)->orWhere($orWheres)->delete();
+
+        $this->assertGreaterThan(0, $resultDelete);
+    }
 
     /**
      * @throws \Swoft\Bean\Exception\PrototypeException
