@@ -289,6 +289,7 @@ class EventManager implements EventManagerInterface
         }
 
         // Initial value
+        $event->setName($name);
         $event->setParams($args);
         $event->setTarget($target);
         $event->stopPropagation(false);

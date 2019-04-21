@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace SwoftTest\WebSocket\Server\Fixture;
+namespace SwoftTest\WebSocket\Server\Testing;
 
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
@@ -10,8 +10,8 @@ use Swoft\WebSocket\Server\Annotation\Mapping\OnOpen;
 use Swoft\WebSocket\Server\Annotation\Mapping\WsModule;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\MessageParser\JsonParser;
-use SwoftTest\WebSocket\Server\Fixture\Chat\ChatController;
-use SwoftTest\WebSocket\Server\Fixture\Chat\UserController;
+use SwoftTest\WebSocket\Server\Testing\Chat\ChatController;
+use SwoftTest\WebSocket\Server\Testing\Chat\UserController;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
 

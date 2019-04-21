@@ -10,8 +10,8 @@ use Swoft\Session\Session;
 use Swoft\SwoftEvent;
 use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\Context\WsCloseContext;
-use Swoft\WebSocket\Server\WsErrorDispatcher;
 use Swoft\WebSocket\Server\WsDispatcher;
+use Swoft\WebSocket\Server\WsErrorDispatcher;
 use Swoft\WebSocket\Server\WsServerEvent;
 use Swoole\Server;
 

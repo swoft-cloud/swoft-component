@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 namespace Swoft\WebSocket\Server\Annotation\Parser;
 
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
@@ -19,7 +20,7 @@ class WsControllerParser extends Parser
     /**
      * Parse object
      *
-     * @param int          $type Class or Method or Property
+     * @param int          $type       Class or Method or Property
      * @param WsController $annotation Annotation object
      *
      * @return array

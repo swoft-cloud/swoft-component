@@ -3,11 +3,10 @@
 namespace Swoft\WebSocket\Server\Context;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Context\AbstractContext;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
-use Swoft\Context\AbstractContext;
 
 /**
  * Class WsRequestContext - on ws handshake event
@@ -52,7 +51,7 @@ class WsHandshakeContext extends AbstractContext
     {
         parent::clear();
 
-        $this->request = null;
+        $this->request  = null;
         $this->response = null;
     }
 

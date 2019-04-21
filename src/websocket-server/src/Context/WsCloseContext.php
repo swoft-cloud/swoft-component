@@ -3,7 +3,6 @@
 namespace Swoft\WebSocket\Server\Context;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Context\AbstractContext;
 

@@ -15,7 +15,7 @@ use Swoft\Event\EventInterface;
 use Swoft\Stdlib\Helper\PhpHelper;
 
 /**
- * Class LazyListener - 将callable包装成对象
+ * Class LazyListener - Wrap callable into an object
  * @package Swoft\Event\Listener
  * @since 2.0
  */
