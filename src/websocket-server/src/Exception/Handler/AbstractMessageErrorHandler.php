@@ -2,7 +2,6 @@
 
 namespace Swoft\WebSocket\Server\Exception\Handler;
 
-use Swoole\Websocket\Frame;
 use Swoft\Error\ErrorType;
 use Swoft\WebSocket\Server\Contract\MessageErrorHandlerInterface;
 

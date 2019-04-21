@@ -7,22 +7,16 @@ use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Event\Annotation\Mapping\Listener;
-use Swoft\Event\Manager\EventManager;
+use Swoft\Event\ListenerRegister;
 
 /**
  * Class ListenerParser
  * @since 2.0
- * @package Swoft\Event\Annotation\Parser
  *
  * @AnnotationParser(Listener::class)
  */
 class ListenerParser extends Parser
 {
-    /**
-     * @var array
-     */
-    private static $listeners = [];
-
     /**
      * @param int      $type
      * @param Listener $annotation
@@ -37,30 +31,11 @@ class ListenerParser extends Parser
         }
 
         // collect listeners
-        self::$listeners[$this->className] = [
+        ListenerRegister::addListener($this->className, [
             // event name => listener priority
             $annotation->getEvent() => $annotation->getPriority()
-        ];
+        ]);
 
         return [$this->className, $this->className, Bean::SINGLETON, ''];
-    }
-
-    /**
-     * Register collected event listeners to EventManager
-     *
-     * @param EventManager $em
-     * @return int
-     */
-    public static function addListeners(EventManager $em): int
-    {
-        foreach (self::$listeners as $listener=> $eventInfo) {
-            $em->addListener($listener, $eventInfo);
-        }
-
-        $count = \count(self::$listeners);
-        // Clear data
-        self::$listeners = [];
-
-        return $count;
     }
 }

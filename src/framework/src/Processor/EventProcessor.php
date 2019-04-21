@@ -1,9 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Processor;
 
-use Swoft\Event\Annotation\Parser\ListenerParser;
-use Swoft\Event\Annotation\Parser\SubscriberParser;
+use Swoft\Event\ListenerRegister;
 use Swoft\Event\Manager\EventManager;
 use Swoft\Log\Helper\CLog;
 use Swoft\SwoftEvent;
@@ -27,11 +26,9 @@ class EventProcessor extends Processor
             return false;
         }
 
-        /** @var EventManager $em */
-        $em = \bean('eventManager');
-
-        $count1 = ListenerParser::addListeners($em);
-        $count2 = SubscriberParser::addSubscribers($em);
+        /** @var EventManager $eventManager */
+        $eventManager = \bean('eventManager');
+        [$count1, $count2] = ListenerRegister::register($eventManager);
 
         CLog::info('Event manager initialized(%d listener, %d subscriber)', $count1, $count2);
 

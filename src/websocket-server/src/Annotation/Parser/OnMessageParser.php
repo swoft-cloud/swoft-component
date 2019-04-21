@@ -19,7 +19,7 @@ class OnMessageParser extends Parser
     /**
      * Parse object
      *
-     * @param int       $type Class or Method or Property
+     * @param int       $type       Class or Method or Property
      * @param OnMessage $annotation Annotation object
      *
      * @return array
