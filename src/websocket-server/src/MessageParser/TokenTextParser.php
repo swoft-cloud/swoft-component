@@ -25,9 +25,9 @@ class TokenTextParser implements MessageParserInterface
     /**
      * Decode data to array.
      * @param string $data
-     * Format like:
+     *  Format like:
      *  'login:message body data'
-     * =>
+     *  =>
      *  cmd: 'login'
      *  body: 'message body data'
      * @return array

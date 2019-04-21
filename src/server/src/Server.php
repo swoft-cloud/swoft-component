@@ -648,7 +648,6 @@ abstract class Server implements ServerInterface
      * @param string $msg
      * @param array  $data
      * @param string $type
-     * @throws \Throwable
      */
     public function log(string $msg, array $data = [], string $type = 'info'): void
     {
@@ -656,11 +655,12 @@ abstract class Server implements ServerInterface
             return;
         }
 
-        if (\config('debug')) {
+        if ($this->debug) {
             $tid = Swoft\Co::tid();
             $cid = Swoft\Co::id();
+            $wid = $this->getPid('workerId');
 
-            Console::log("[TID:$tid, CID:$cid] " . $msg, $data, $type);
+            Console::log("[WorkerId:$wid, TID:$tid, CID:$cid] " . $msg, $data, $type);
         }
     }
 

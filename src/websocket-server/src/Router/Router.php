@@ -97,10 +97,10 @@ class Router implements RouterInterface
      * @param string $path
      * @param string $route like 'home.index'
      * @return array
-     * [
-     *  status,
-     *  [controllerClass, method]
-     * ]
+     *                      [
+     *                      status,
+     *                      [controllerClass, method]
+     *                      ]
      */
     public function matchCommand(string $path, string $route): array
     {

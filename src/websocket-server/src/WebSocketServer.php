@@ -53,12 +53,12 @@ class WebSocketServer extends Server
     /**
      * @param int    $fd
      * @param string $data Data for send to client. NOTICE: max size is 2M.
-     * @param int    $opcode
-     *  text:   WEBSOCKET_OPCODE_TEXT   = 1
-     *  binary: WEBSOCKET_OPCODE_BINARY = 2
-     *  close:  WEBSOCKET_OPCODE_CLOSE  = 8
-     *  ping:   WEBSOCKET_OPCODE_PING   = 9
-     *  pong:   WEBSOCKET_OPCODE_PONG   = 10
+     * @param int    $opcode WebSocket opcode value
+     *                     text:   WEBSOCKET_OPCODE_TEXT   = 1
+     *                     binary: WEBSOCKET_OPCODE_BINARY = 2
+     *                     close:  WEBSOCKET_OPCODE_CLOSE  = 8
+     *                     ping:   WEBSOCKET_OPCODE_PING   = 9
+     *                     pong:   WEBSOCKET_OPCODE_PONG   = 10
      * @param bool   $finish
      * @return bool
      */
@@ -71,7 +71,7 @@ class WebSocketServer extends Server
      * Send a message to the specified user
      * @param int    $receiver The receiver fd
      * @param string $data
-     * @param int    $sender The sender fd
+     * @param int    $sender   The sender fd
      * @param int    $opcode
      * @param bool   $finish
      * @return bool
@@ -128,10 +128,10 @@ class WebSocketServer extends Server
 
     /**
      * Broadcast message to all user, but will exclude sender
-     * @param string $data Message data
-     * @param int    $sender Sender FD
+     * @param string $data      Message data
+     * @param int    $sender    Sender FD
      * @param int[]  $receivers Designated receivers(FD list)
-     * @param int[]  $excluded The receivers to be excluded
+     * @param int[]  $excluded  The receivers to be excluded
      * @return int Return send count
      */
     public function broadcast(string $data, array $receivers = [], array $excluded = [], int $sender = 0): int

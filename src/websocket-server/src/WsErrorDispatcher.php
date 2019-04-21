@@ -51,7 +51,7 @@ class WsErrorDispatcher
 
     /**
      * @param \Throwable $e
-     * @param Request $request
+     * @param Request    $request
      * @throws \Throwable
      */
     public function openError(\Throwable $e, Request $request): void

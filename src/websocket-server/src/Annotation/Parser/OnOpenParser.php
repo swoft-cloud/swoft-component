@@ -19,7 +19,7 @@ class OnOpenParser extends Parser
     /**
      * Parse object
      *
-     * @param int    $type Class or Method or Property
+     * @param int    $type       Class or Method or Property
      * @param OnOpen $annotation Annotation object
      *
      * @return array

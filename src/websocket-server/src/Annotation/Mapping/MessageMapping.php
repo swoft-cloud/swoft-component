@@ -10,7 +10,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
 /**
  * Class MessageMapping - Use for mark websocket message request command handler method
  *
- * @since 2.0
+ * @since   2.0
  * @package Swoft\WebSocket\Server\Annotation\Mapping
  *
  * @Annotation

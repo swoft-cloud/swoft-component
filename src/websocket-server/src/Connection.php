@@ -4,7 +4,6 @@ namespace Swoft\WebSocket\Server;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Concern\DataPropertyTrait;
 use Swoft\Http\Message\Request;

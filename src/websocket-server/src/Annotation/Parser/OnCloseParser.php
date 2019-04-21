@@ -19,7 +19,7 @@ class OnCloseParser extends Parser
     /**
      * Parse object
      *
-     * @param int     $type Class or Method or Property
+     * @param int     $type       Class or Method or Property
      * @param OnClose $annotation Annotation object
      *
      * @return array

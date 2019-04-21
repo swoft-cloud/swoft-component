@@ -3,7 +3,6 @@
 namespace Swoft\WebSocket\Server\Contract;
 
 use Swoft\Error\Contract\ErrorHandlerInterface;
-use Swoole\WebSocket\Frame;
 
 /**
  * Interface CloseErrorHandlerInterface

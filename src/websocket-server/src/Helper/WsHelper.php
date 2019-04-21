@@ -7,7 +7,7 @@ use Swoole\Http\Response;
 
 /**
  * Class WsHelper
- * @since 2.0
+ * @since   2.0
  * @package Swoft\WebSocket\Server\Helper
  */
 class WsHelper
