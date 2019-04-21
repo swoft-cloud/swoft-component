@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
-namespace SwoftTest\Http\Server;
-
+namespace SwoftTest\Http\Server\Testing;
 
 use Swoft\SwoftComponent;
 

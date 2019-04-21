@@ -1,13 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace SwoftTest\Event\Listener;
+namespace SwoftTest\Event\Unit\Listener;
 
 use PHPUnit\Framework\TestCase;
 use Swoft\Event\Listener\ListenerQueue;
 
 /**
  * Class ListenerQueueTest
- * @package SwoftTest\Event\Listener
  */
 class ListenerQueueTest extends TestCase
 {

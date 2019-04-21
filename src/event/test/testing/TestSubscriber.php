@@ -1,12 +1,6 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2129-12-12
- * Time: 22:51
- */
+<?php declare(strict_types=1);
 
-namespace SwoftTest\Event\Fixture;
+namespace SwoftTest\Event\Testing;
 
 use Swoft\Event\Annotation\Mapping\Subscriber;
 use Swoft\Event\EventInterface;
@@ -15,7 +9,6 @@ use Swoft\Event\Listener\ListenerPriority;
 
 /**
  * Class TestSubscriber
- * @package SwoftTest\Event\Fixture
  * @Subscriber()
  */
 class TestSubscriber implements EventSubscriberInterface
