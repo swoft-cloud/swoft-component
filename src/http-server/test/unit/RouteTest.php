@@ -63,6 +63,10 @@ class RouteTest extends TestCase
         $response->assertEqualHeader(ContentType::KEY, ContentType::XML);
     }
 
+    /**
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
     public function testRequestContentParser()
     {
         $data = [
@@ -76,8 +80,9 @@ class RouteTest extends TestCase
 
         $ext      = [
             'content' => '<xml><name><![CDATA[swoft]]></name><desc><![CDATA[framework]]></desc></xml>'
+
         ];
-        $response = $this->mockServer->request(MockRequest::POST, '/testRest', [], $headers, [], $ext);
+        $response = $this->mockServer->request(MockRequest::POST, '/testRoute/parser', [], $headers, [], $ext);
         $response->assertEqualJson($data);
 
 
@@ -89,9 +94,14 @@ class RouteTest extends TestCase
             'content' => JsonHelper::encode($data, JSON_UNESCAPED_UNICODE)
         ];
         $response = $this->mockServer->request(MockRequest::POST, '/testRoute/parser', [], $headers, [], $ext);
+        var_dump($response->getContent());
         $response->assertEqualJson($data);
     }
 
+    /**
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
     public function testMethod()
     {
         $response = $this->mockServer->request(MockRequest::POST, '/testRoute/method');
@@ -101,9 +111,13 @@ class RouteTest extends TestCase
         $response->assertEqualJson(['data' => 'post']);
     }
 
+    /**
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
     public function testNotSupportedMethod()
     {
         $response = $this->mockServer->request(MockRequest::GET, '/testRoute/method');
-        $response->assertEqualContent('Route not found(path /testRoute/method)!');
+        $response->assertContainContent('Route not found(path /testRoute/method)!');
     }
 }

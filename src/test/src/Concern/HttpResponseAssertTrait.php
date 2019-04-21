@@ -94,6 +94,17 @@ trait HttpResponseAssertTrait
      *
      * @return HttpResponseAssertTrait
      */
+    public function assertContainContent(string $content): self
+    {
+        Assert::assertTrue(\strpos($this->content, $content) !== false);
+        return $this;
+    }
+
+    /**
+     * @param string $content
+     *
+     * @return HttpResponseAssertTrait
+     */
     public function assertNotEqualContent(string $content): self
     {
         Assert::assertNotEquals($content, $this->content);
