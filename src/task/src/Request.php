@@ -83,7 +83,7 @@ class Request implements RequestInterface
      * @throws ContainerException
      * @throws TaskException
      */
-    public static function new(Server $server, SwooleTask $task): self
+    public static function new(Server $server = null, SwooleTask $task = null): self
     {
         $instance = self::__instance();
 

@@ -3,6 +3,8 @@
 
 namespace SwoftTest\Task\Unit;
 
+use Swoft\Test\Task\MockTaskServer;
+
 /**
  * Class TestCase
  *
@@ -10,5 +12,16 @@ namespace SwoftTest\Task\Unit;
  */
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
-    
+    /**
+     * @var MockTaskServer
+     */
+    protected $mockTaskServer;
+
+    /**
+     * Server
+     */
+    public function setUp()
+    {
+        $this->mockTaskServer = new MockTaskServer();
+    }
 }
