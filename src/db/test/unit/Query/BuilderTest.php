@@ -410,19 +410,19 @@ class BuilderTest extends TestCase
             'password' => md5((string)mt_rand(1, 100)),
         ]);
 
-        // sync subQuery data to table
-        $using = Builder::new()->from('user')->insertUsing(['name', 'age'], function (Builder $builder) {
-            return $builder->from('user')
-                ->select('name', 'age')
-                ->where('age', '>', 1);
-        });
+//        // sync subQuery data to table
+//        $using = Builder::new()->from('user')->insertUsing(['name', 'age'], function (Builder $builder) {
+//            return $builder->from('user')
+//                ->select('name', 'age')
+//                ->where('age', '>', 1);
+//        });
         // get insert id
         $id = DB::table('user')->insertGetId([
             'age'  => 18,
             'name' => 'Sakura',
         ]);
         $this->assertIsString($id);
-        $this->assertTrue($using);
+//        $this->assertTrue($using);
         $this->assertTrue($insert);
         $this->assertTrue($insertUpdate);
         $this->assertIsInt($inc);

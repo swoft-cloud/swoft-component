@@ -40,7 +40,7 @@ use Swoft\Stdlib\Helper\Str;
  * @method static Builder findOrNew($id, array $columns = ['*'])
  * @method static Builder firstOrNew(array $attributes, array $values = [])
  * @method static Builder firstOrCreate(array $attributes, array $values = [])
- * @method static Builder updateOrCreate(array $attributes, array $values = [])
+ * @method static static updateOrCreate(array $attributes, array $values = [])
  * @method static bool updateOrInsert(array $attributes, array $values = [])
  * @method static Builder firstOrFail(array $columns = ['*'])
  * @method static Builder firstOr(array $columns = ['*'], \Closure $callback = null)

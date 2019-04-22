@@ -7,6 +7,7 @@ use Swoft\Stdlib\Helper\Str;
 
 /**
  * Class StringHelperTest
+ *
  * @since 2.0
  */
 class StringHelperTest extends TestCase
