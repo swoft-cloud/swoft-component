@@ -12,7 +12,7 @@ use Swoft\Db\Exception\EntityException;
 use Swoft\Db\Exception\PoolException;
 use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Query\Builder as QueryBuilder;
-use Swoft\Stdlib\Arrayable;
+use Swoft\Stdlib\Contract\Arrayable;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\PhpHelper;
 

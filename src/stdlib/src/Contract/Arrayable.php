@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Stdlib;
+
+namespace Swoft\Stdlib\Contract;
 
 /**
  * Interface Arrayable

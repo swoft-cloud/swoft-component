@@ -5,7 +5,7 @@
 
 #binName="sh $(basename $0)"
 binName="./$(basename $0)"
-components="annotation aop bean config connection-pool console db error framework http-message http-server
+components="annotation aop bean config connection-pool console  error framework http-message http-server
   log proxy redis rpc rpc-client rpc-server server stdlib task tcp-server websocket-server"
 
 if [[ -z "$1" ]] || [[ "$1" == "-h" ]]; then

@@ -18,7 +18,6 @@ use SwoftTest\Db\Unit\TestCase;
  */
 class BuilderTest extends TestCase
 {
-
     /**
      * @throws ContainerException
      * @throws \ReflectionException
