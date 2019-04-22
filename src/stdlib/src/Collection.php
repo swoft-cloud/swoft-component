@@ -5,6 +5,8 @@ namespace Swoft\Stdlib;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\PrototypeException;
+use Swoft\Stdlib\Contract\Arrayable;
+use Swoft\Stdlib\Contract\Jsonable;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\ArrayHelper;
 

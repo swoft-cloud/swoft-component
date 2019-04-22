@@ -71,7 +71,7 @@ if (!function_exists('config')) {
      * @param mixed  $default
      *
      * @return mixed
-     * @throws \Throwable
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     function config(string $key, $default = null)
     {
