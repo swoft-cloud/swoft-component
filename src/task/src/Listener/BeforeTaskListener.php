@@ -9,6 +9,7 @@ use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Log\Helper\Log;
+use Swoft\Server\Swoole\SwooleEvent;
 use Swoft\Task\Request;
 use Swoft\Task\Response;
 use Swoft\Task\TaskContext;
@@ -41,9 +42,7 @@ class BeforeTaskListener implements EventHandlerInterface
         if (Log::getLogger()->isEnable()) {
             $uri  = sprintf('%s::%s', $request->getName(), $request->getMethod());
             $data = [
-                'traceid'     => $context->getTraceId(),
-                'spanid'      => $context->getTraceId(),
-                'parentid'    => $context->getTraceId(),
+                'event'       => SwooleEvent::TASK,
                 'uri'         => $uri,
                 'requestTime' => microtime(true),
             ];

@@ -87,7 +87,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param Pool     $pool
      * @param Database $database
      *
-     * @throws \Throwable
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function initialize(Pool $pool, Database $database)
     {
@@ -118,7 +119,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * Set the query post processor to the default implementation.
      *
      * @return void
-     * @throws \Throwable
+     * @return object|string|Processor
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function useDefaultPostProcessor()
     {
@@ -129,7 +132,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * Get the default post processor instance.
      *
      * @return Processor
-     * @throws \Throwable
+     * @return object|string|Processor
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function getDefaultPostProcessor()
     {
@@ -306,7 +311,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * Get a new query builder instance.
      *
      * @return Builder
-     * @return \Swoft\Bean\PrototypeInterface|Builder
+     * @return Builder
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Db\Exception\PoolException

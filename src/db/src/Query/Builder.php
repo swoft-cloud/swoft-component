@@ -14,8 +14,8 @@ use Swoft\Db\Eloquent\Builder as EloquentBuilder;
 use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Query\Grammar\Grammar;
 use Swoft\Db\Query\Processor\Processor;
-use Swoft\Stdlib\Arrayable;
 use Swoft\Stdlib\Collection;
+use Swoft\Stdlib\Contract\Arrayable;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\Str;
 

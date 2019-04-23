@@ -151,6 +151,20 @@ abstract class Server implements ServerInterface
     private $debug = false;
 
     /**
+     * Server id
+     *
+     * @var string
+     */
+    private $id = '';
+
+    /**
+     * Server unique id
+     *
+     * @var string
+     */
+    private $uniqid = '';
+
+    /**
      * Server constructor
      */
     public function __construct()
@@ -164,7 +178,7 @@ abstract class Server implements ServerInterface
      */
     public function init(): void
     {
-        // Do something ...
+        $this->uniqid = uniqid();
     }
 
     /**
@@ -530,7 +544,7 @@ abstract class Server implements ServerInterface
     /**
      * @return \Swoft\Server\Server|\Swoft\Http\Server\HttpServer|\Swoft\WebSocket\Server\WebSocketServer
      */
-    public static function getServer(): Server
+    public static function getServer(): ?Server
     {
         return self::$server;
     }
@@ -828,5 +842,21 @@ abstract class Server implements ServerInterface
             SwooleEvent::WORKER_STOP   => [$this, 'onWorkerStop'],
             SwooleEvent::WORKER_ERROR  => [$this, 'onWorkerError'],
         ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUniqid(): string
+    {
+        return $this->uniqid;
     }
 }

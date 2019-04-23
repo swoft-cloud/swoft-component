@@ -13,7 +13,7 @@ class AutoLoader extends SwoftComponent
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public function coreBean(): array
+    public function beans(): array
     {
         return [
             'db'      => [

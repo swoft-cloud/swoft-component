@@ -5,8 +5,8 @@ namespace Swoft\Db\Eloquent;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Db\Exception\EntityException;
-use Swoft\Stdlib\Arrayable;
 use Swoft\Stdlib\Collection as BaseCollection;
+use Swoft\Stdlib\Contract\Arrayable;
 use Swoft\Stdlib\Helper\Arr;
 
 /**

@@ -80,7 +80,7 @@ class BeanProcessor extends Processor
                 continue;
             }
 
-            $definitions = ArrayHelper::merge($definitions, $autoLoader->coreBean());
+            $definitions = ArrayHelper::merge($definitions, $autoLoader->beans());
         }
 
         // Bean definitions

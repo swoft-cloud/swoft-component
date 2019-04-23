@@ -2,8 +2,8 @@
 
 namespace Swoft\Stdlib\Helper;
 
-use Swoft\Stdlib\Arrayable;
 use Swoft\Stdlib\Collection;
+use Swoft\Stdlib\Contract\Arrayable;
 
 /**
  * Array helper

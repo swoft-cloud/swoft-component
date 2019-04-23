@@ -127,9 +127,10 @@
       "SwoftTest\\Rpc\\Client\\Unit\\": "src/rpc-client/test/unit/",
       "SwoftTest\\Rpc\\Server\\Unit\\": "src/rpc-server/test/unit/",
       "SwoftTest\\Task\\Unit\\": "src/task/test/unit/",
+      "SwoftTest\\Task\\Testing\\": "src/task/test/testing/",
       "SwoftTest\\Proxy\\Unit\\": "src/proxy/test/unit/",
       "SwoftTest\\Trace\\Unit\\": "src/trace/test/unit/",
-      "SwoftTest\\WebSocket\\Server\\Unit\\": "src/websocket-server/test/unit/",
+      "SwoftTest\\Connection\\Pool\\Unit\\": "src/connection-pool/test/unit/",
       "SwoftTest\\WebSocket\\Server\\Testing\\": "src/websocket-server/test/testing/"
     }
   },

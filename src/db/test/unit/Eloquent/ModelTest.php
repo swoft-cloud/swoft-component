@@ -32,7 +32,8 @@ class ModelTest extends TestCase
         $this->assertTrue($result);
 
         // Insert id
-        $this->assertGreaterThan(1, $user->getId());
+
+        $this->assertTrue($user->getId() >= 1);
 
         $user2 = User::new();
         $user2->setAge(100);
@@ -75,7 +76,6 @@ class ModelTest extends TestCase
 
     public function testUpdateByWhere()
     {
-        /** @var User $res1 * */
         $res1 = User::updateOrCreate(['id' => 1], ['age' => 18, 'name' => 'sakuraovq']);
 
         $wheres   = [

@@ -3,7 +3,6 @@
 
 namespace Swoft\Task;
 
-use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\JsonHelper;
 use Swoft\Task\Exception\TaskException;
 
@@ -30,7 +29,7 @@ class Packet
             'name'   => $name,
             'method' => $method,
             'params' => $params,
-            'ext'    => Arr::merge(self::defaultExt(), $ext),
+            'ext'    => $ext,
         ];
 
         return JsonHelper::encode($data, JSON_UNESCAPED_UNICODE);
@@ -110,17 +109,5 @@ class Packet
         $errorMessage = $data['message'] ?? '';
 
         return [null, $errorCode, $errorMessage];
-    }
-
-    /**
-     * @return array
-     */
-    private static function defaultExt(): array
-    {
-        return [
-            'traceid'  => \context()->getTraceId(),
-            'spanid'   => \context()->getSpanId(),
-            'parentid' => \context()->getParentId(),
-        ];
     }
 }

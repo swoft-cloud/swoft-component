@@ -20,5 +20,5 @@ interface DefinitionInterface
      *  ]
      * ]
      */
-    public function coreBean(): array;
+    public function beans(): array;
 }

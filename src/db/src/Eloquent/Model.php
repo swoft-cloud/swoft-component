@@ -15,11 +15,11 @@ use Swoft\Db\Exception\EntityException;
 use Swoft\Db\Exception\PoolException;
 use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Query\Builder as QueryBuilder;
-use Swoft\Stdlib\Arrayable;
+use Swoft\Stdlib\Contract\Arrayable;
+use Swoft\Stdlib\Contract\Jsonable;
 use Swoft\Stdlib\Helper\JsonHelper;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoft\Stdlib\Helper\Str;
-use Swoft\Stdlib\Jsonable;
 
 /**
  * Class Model
@@ -40,7 +40,7 @@ use Swoft\Stdlib\Jsonable;
  * @method static Builder findOrNew($id, array $columns = ['*'])
  * @method static Builder firstOrNew(array $attributes, array $values = [])
  * @method static Builder firstOrCreate(array $attributes, array $values = [])
- * @method static Builder updateOrCreate(array $attributes, array $values = [])
+ * @method static static updateOrCreate(array $attributes, array $values = [])
  * @method static bool updateOrInsert(array $attributes, array $values = [])
  * @method static Builder firstOrFail(array $columns = ['*'])
  * @method static Builder firstOr(array $columns = ['*'], \Closure $callback = null)

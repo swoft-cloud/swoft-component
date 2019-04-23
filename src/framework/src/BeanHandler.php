@@ -110,6 +110,7 @@ class BeanHandler extends Handler
      * @param $value
      *
      * @return mixed|string
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function getReferenceValue($value)
     {
