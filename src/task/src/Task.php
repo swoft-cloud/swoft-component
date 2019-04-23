@@ -4,6 +4,7 @@
 namespace Swoft\Task;
 
 
+use Swoft\Server\Server;
 use Swoft\Task\Exception\TaskException;
 
 class Task
@@ -144,6 +145,12 @@ class Task
      */
     public static function getUniqid(int $taskId): string
     {
-        return sprintf('task-%d', $taskId);
+        $server = Server::getServer();
+        if (empty($server)) {
+            return sprintf('unit-%d', $taskId);
+        }
+
+        $serverUniqid = Server::getServer()->getUniqid();
+        return sprintf('%s-%d', $serverUniqid, $taskId);
     }
 }

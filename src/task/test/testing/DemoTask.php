@@ -3,6 +3,7 @@
 
 namespace SwoftTest\Task\Testing;
 
+use Swoft\Context\Context;
 use Swoft\Task\Annotation\Mapping\Task;
 use Swoft\Task\Annotation\Mapping\TaskMapping;
 use Swoft\Task\Exception\TaskException;
@@ -57,5 +58,27 @@ class DemoTask
     public function method3(string $name, int $count, string $type = 'type'): array
     {
         throw new TaskException('ExceptionTest');
+    }
+
+    /**
+     * @param string $name
+     * @param int    $count
+     *
+     * @return array
+     *
+     * @TaskMapping(name="method6")
+     */
+    public function method6(string $name, int $count): array
+    {
+        $request = \context()->getRequest();
+        
+        return [
+            $request->getTaskUniqid(),
+            $request->getTaskId(),
+            $request->getType(),
+            $request->getName(),
+            $request->getMethod(),
+            $request->getParams(),
+        ];
     }
 }

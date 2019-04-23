@@ -39,6 +39,11 @@ class Request implements RequestInterface
     private $taskId;
 
     /**
+     * @var string
+     */
+    private $taskUniqid = '';
+
+    /**
      * @var int
      */
     private $srcWorkerId;
@@ -92,6 +97,7 @@ class Request implements RequestInterface
         $instance->srcWorkerId = $task->worker_id;
         $instance->data        = $task->data;
         $instance->task        = $task;
+        $instance->taskUniqid  = Task::getUniqid($task->id);
 
         [
             $instance->type,
@@ -185,6 +191,14 @@ class Request implements RequestInterface
     public function getType(): string
     {
         return $this->type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTaskUniqid(): string
+    {
+        return $this->taskUniqid;
     }
 
     /**

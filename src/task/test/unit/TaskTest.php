@@ -86,4 +86,27 @@ class TaskTest extends TestCase
 
         \Swoole\Event::wait();
     }
+
+    /**
+     * @throws TaskException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function testContext()
+    {
+        $data = [
+            'unit-1',
+            1,
+            'co',
+            'demoTestTask',
+            'method6',
+            [
+                'name',
+                18306
+            ],
+        ];
+
+        $result = $this->mockTaskServer->co('demoTestTask', 'method6', ['name', 18306]);
+        $this->assertEquals($data, $result);
+    }
 }

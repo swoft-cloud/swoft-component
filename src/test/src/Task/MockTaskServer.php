@@ -40,6 +40,7 @@ class MockTaskServer
     {
         $server     = null;
         $task       = new SwooleTask();
+        $task->id   = 1;
         $task->data = Packet::pack(Task::CO, $name, $method, $params, $ext);
 
         $request = MockRequest::new($server, $task);

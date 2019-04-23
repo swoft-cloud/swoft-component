@@ -19,4 +19,19 @@ class TaskEvent
      * After task
      */
     public const AFTER_TASK = 'swoft.task.task.after';
+
+    /**
+     * Finish event
+     */
+    public const FINISH = 'swoft.task.finish';
+
+    /**
+     * Before task
+     */
+    public const BEFORE_FINISH = 'swoft.task.finish.after';
+
+    /**
+     * After finish
+     */
+    public const AFTER_FINISH = 'swoft.task.finish.after';
 }

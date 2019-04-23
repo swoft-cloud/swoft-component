@@ -10,19 +10,17 @@ use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Log\Helper\Log;
 use Swoft\Server\Swoole\SwooleEvent;
-use Swoft\Task\Request;
-use Swoft\Task\Response;
-use Swoft\Task\TaskContext;
+use Swoft\Task\FinishContext;
 use Swoft\Task\TaskEvent;
 
 /**
- * Class BeforeTaskListener
+ * Class BeforeFinishListener
  *
  * @since 2.0
  *
- * @Listener(event=TaskEvent::BEFORE_TASK)
+ * @Listener(TaskEvent::BEFORE_FINISH)
  */
-class BeforeTaskListener implements EventHandlerInterface
+class BeforeFinishListener implements EventHandlerInterface
 {
     /**
      * @param EventInterface $event
@@ -32,22 +30,19 @@ class BeforeTaskListener implements EventHandlerInterface
      */
     public function handle(EventInterface $event): void
     {
-        /**
-         * @var Request  $request
-         * @var Response $response
-         */
-        [$request, $response] = $event->getParams();
-        $context = TaskContext::new($request, $response);
+        list($server, $taskId, $data) = $event->getParams();
+
+        $context = FinishContext::new($server, $taskId, $data);
 
         if (Log::getLogger()->isEnable()) {
-            $uri  = sprintf('%s::%s', $request->getName(), $request->getMethod());
             $data = [
-                'event'       => SwooleEvent::TASK,
-                'uri'         => $uri,
+                'event'       => SwooleEvent::FINISH,
+                'uri'         => $context->getTaskUniqid(),
                 'requestTime' => microtime(true),
             ];
             $context->setMulti($data);
         }
+
         Context::set($context);
     }
 }
