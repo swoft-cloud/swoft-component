@@ -13,6 +13,10 @@ use Swoft\Stdlib\Helper\Sys;
  */
 class PharCompiler
 {
+    public const ON_ADD   = 'add';
+    public const ON_SKIP  = 'skip';
+    public const ON_ERROR = 'error';
+
     /** @var array */
     private static $supportedSignatureTypes = [
         \Phar::SHA512 => 1,
@@ -64,7 +68,7 @@ class PharCompiler
     /**
      * @var array Want to exclude directory/file name list
      * [
-     *  '/test/', // exclude all contains '/test/' path
+     *  '/test', // exclude all contains '/test/' path
      * ]
      */
     private $excludes = [];
@@ -77,10 +81,7 @@ class PharCompiler
     /**
      * @var \Closure[] Some events. if you want to get some info on packing.
      */
-    private $events = [
-        'add'   => '',
-        'error' => '',
-    ];
+    private $events = [];
 
     /**
      * @var \Closure Maybe you not want strip all files.
@@ -249,7 +250,7 @@ class PharCompiler
     {
         $list = [];
         foreach ((array)$patterns as $pattern) {
-            $list[] = '/' . \trim($pattern, '/') . '/';
+            $list[] = '/' . \trim($pattern, '/');
         }
 
         $this->excludes = \array_merge($this->excludes, $list);
@@ -373,8 +374,10 @@ class PharCompiler
 
         if ($this->key) {
             $privateKey = '';
+            /** @noinspection PhpComposerExtensionStubsInspection */
             \openssl_pkey_export($this->key, $privateKey);
             $phar->setSignatureAlgorithm(\Phar::OPENSSL, $privateKey);
+            /** @noinspection PhpComposerExtensionStubsInspection */
             $keyDetails = \openssl_pkey_get_details($this->key);
             \file_put_contents($pharFile . '.pubkey', $keyDetails['key']);
         } else {
@@ -483,16 +486,18 @@ class PharCompiler
      */
     private function packFile(\Phar $phar, \SplFileInfo $file): void
     {
+        $filePath = $file->getPathname();
+
         // skip error
-        if (!\file_exists($file)) {
-            $this->reportError("File $file is not exists!");
+        if (!\file_exists($filePath)) {
+            $this->fire('error', "File $filePath is not exists!");
             return;
         }
 
         $this->counter++;
         $path    = $this->getRelativeFilePath($file);
         $strip   = $this->stripComments;
-        $content = \file_get_contents($file);
+        $content = \file_get_contents($filePath);
 
         // clear php file comments
         if ($strip && \strpos($path, '.php')) {
@@ -516,9 +521,7 @@ class PharCompiler
             ], $content);
         }
 
-        if ($cb = $this->events['add']) {
-            $cb($path, $this->counter);
-        }
+        $this->fire(self::ON_ADD, $path, $this->counter);
 
         $phar->addFromString($path, $content);
     }
@@ -533,10 +536,7 @@ class PharCompiler
             $path    = $this->basePath . '/' . $this->cliIndex;
             $content = \preg_replace('{^#!/usr/bin/env php\s*}', '', \file_get_contents($path));
 
-            if ($cb = $this->events['add']) {
-                $cb($this->cliIndex, $this->counter);
-            }
-
+            $this->fire(self::ON_ADD, $this->cliIndex, $this->counter);
             $phar->addFromString($this->cliIndex, trim($content) . \PHP_EOL);
         }
 
@@ -544,9 +544,7 @@ class PharCompiler
             $this->counter++;
             $path = $this->basePath . '/' . $this->webIndex;
 
-            if ($cb = $this->events['add']) {
-                $cb($this->webIndex, $this->counter);
-            }
+            $this->fire(self::ON_ADD, $this->webIndex, $this->counter);
 
             $content = \file_get_contents($path);
             $phar->addFromString($this->webIndex, \trim($content) . \PHP_EOL);
@@ -614,6 +612,7 @@ EOF;
         if (!$this->fileFilter) {
             $this->fileFilter = function (\SplFileInfo $file) {
                 $name = $file->getFilename();
+                $path = FSHelper::formatPath($file->getPathname());
 
                 // Skip hidden files and directories.
                 if (\strpos($name, '.') === 0) {
@@ -622,10 +621,9 @@ EOF;
 
                 // Skip exclude directories.
                 if ($file->isDir()) {
-                    $path = FSHelper::formatPath($file->getPathname());
-
                     foreach ($this->excludes as $exclude) {
-                        if (\stripos($path, $exclude)) {
+                        if (\strpos($path, $exclude) > 0) {
+                            $this->fire(self::ON_SKIP, $path, false);
                             return false;
                         }
                     }
@@ -635,10 +633,12 @@ EOF;
                 // File ext check
                 if ($this->suffixes) {
                     foreach ($this->suffixes as $suffix) {
-                        if (\stripos($name, $suffix)) {
+                        if (\stripos($name, $suffix) !== false) {
                             return true;
                         }
                     }
+
+                    $this->fire(self::ON_SKIP, $path, true);
                     return false;
                 }
 
@@ -730,7 +730,7 @@ EOF;
      * @param  \SplFileInfo $file
      * @return string
      */
-    private function getRelativeFilePath($file): string
+    private function getRelativeFilePath(\SplFileInfo $file): string
     {
         $realPath   = $file->getRealPath();
         $pathPrefix = $this->basePath . \DIRECTORY_SEPARATOR;
@@ -742,12 +742,14 @@ EOF;
     }
 
     /**
-     * @param string $error
+     * @param string $event
+     * @param array  $args
      */
-    private function reportError($error): void
+    private function fire(string $event, ...$args): void
     {
-        if ($cb = $this->events['error']) {
-            $cb($error);
+        if (isset($this->events[$event])) {
+            $cb = $this->events[$event];
+            $cb(...$args);
         }
     }
 
@@ -766,7 +768,7 @@ EOF;
      */
     public function onAdd(\Closure $onAdd): void
     {
-        $this->events['add'] = $onAdd;
+        $this->on(self::ON_ADD, $onAdd);
     }
 
     /**
@@ -774,7 +776,7 @@ EOF;
      */
     public function onError(\Closure $onError): void
     {
-        $this->events['error'] = $onError;
+        $this->on(self::ON_ERROR, $onError);
     }
 
     /**
@@ -824,7 +826,6 @@ EOF;
     public function setCliIndex(string $cliIndex): self
     {
         $this->cliIndex = $cliIndex;
-
         return $this;
     }
 
@@ -869,7 +870,6 @@ EOF;
     public function setVersionFile(string $versionFile): PharCompiler
     {
         $this->versionFile = $versionFile;
-
         return $this;
     }
 
@@ -888,7 +888,6 @@ EOF;
     public function setLastCommit(string $lastCommit): PharCompiler
     {
         $this->lastCommit = $lastCommit;
-
         return $this;
     }
 
@@ -907,7 +906,6 @@ EOF;
     public function setLastVersion(string $lastVersion): PharCompiler
     {
         $this->lastVersion = $lastVersion;
-
         return $this;
     }
 
