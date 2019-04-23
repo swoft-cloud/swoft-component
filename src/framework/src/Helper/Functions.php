@@ -1,4 +1,11 @@
 <?php
+
+use \Swoft\Context\ContextInterface;
+use Swoft\Http\Server\HttpContext;
+use Swoft\Rpc\Server\ServiceContext;
+use Swoft\Task\FinishContext;
+use Swoft\Task\TaskContext;
+
 if (!function_exists('env')) {
     /**
      * Gets the value of an environment variable.
@@ -104,7 +111,7 @@ if (!function_exists('context')) {
     /**
      * Get current context
      *
-     * @return \Swoft\Context\ContextInterface|\Swoft\Http\Server\HttpContext|\Swoft\Rpc\Server\ServiceContext|\Swoft\Task\TaskContext
+     * @return ContextInterface|HttpContext|ServiceContext|TaskContext|FinishContext
      */
     function context(): \Swoft\Context\ContextInterface
     {

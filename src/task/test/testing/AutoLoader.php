@@ -1,11 +1,9 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Rpc\Client;
+namespace SwoftTest\Task\Testing;
 
 
-use Swoft\Rpc\Packet;
-use Swoft\Rpc\Packet\JsonPacket;
 use Swoft\SwoftComponent;
 
 /**
@@ -16,6 +14,8 @@ use Swoft\SwoftComponent;
 class AutoLoader extends SwoftComponent
 {
     /**
+     * Get namespace and dirs
+     *
      * @return array
      */
     public function getPrefixDirs(): array
@@ -31,17 +31,5 @@ class AutoLoader extends SwoftComponent
     public function metadata(): array
     {
         return [];
-    }
-
-    /**
-     * @return array
-     */
-    public function beans(): array
-    {
-        return [
-            'rpcClientPacket' => [
-                'class' => Packet::class
-            ]
-        ];
     }
 }

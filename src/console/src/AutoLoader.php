@@ -47,7 +47,7 @@ final class AutoLoader extends SwoftComponent
     /**
      * {@inheritDoc}
      */
-    public function coreBean(): array
+    public function beans(): array
     {
         return [
             'cliApp'    => [

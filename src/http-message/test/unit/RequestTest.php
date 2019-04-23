@@ -1,14 +1,14 @@
 <?php declare(strict_types=1);
 
 
-namespace SwoftTest\Test;
+namespace SwoftTest\Http\Message\Unit;
 
 
 use PHPUnit\Framework\TestCase;
 
-class StackTest extends TestCase
+class RequestTest extends TestCase
 {
-    public function testMethod()
+    public function testA()
     {
         $this->assertTrue(true);
     }
