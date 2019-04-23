@@ -41,7 +41,7 @@ class AutoLoader extends SwoftComponent
     /**
      * @return array
      */
-    public function coreBean(): array
+    public function beans(): array
     {
         return [
             'tcpServer' => [

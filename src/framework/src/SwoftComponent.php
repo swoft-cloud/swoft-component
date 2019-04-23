@@ -46,7 +46,7 @@ abstract class SwoftComponent implements ComponentInterface
     /**
      * @return array
      */
-    public function coreBean(): array
+    public function beans(): array
     {
         return [];
     }

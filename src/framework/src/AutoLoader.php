@@ -35,7 +35,7 @@ class AutoLoader extends AnnotationAutoLoader implements DefinitionInterface
      * @return array
      * @throws \Throwable
      */
-    public function coreBean(): array
+    public function beans(): array
     {
         return [
             'config'             => [
