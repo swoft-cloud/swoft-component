@@ -4,8 +4,10 @@
 namespace SwoftTest\Db\Unit\Eloquent;
 
 
+use Swoft\Db\DB;
 use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Unit\TestCase;
+use Swoole\Event;
 
 /**
  * Class ModelTest
@@ -53,7 +55,6 @@ class ModelTest extends TestCase
         $result3 = User::new($attributes)->save();
         $this->assertTrue($result3);
 
-        /* @var User $user */
         $user = User::create($attributes);
         $this->assertIsObject($user);
     }
@@ -98,7 +99,6 @@ class ModelTest extends TestCase
         $this->assertEquals(1, $updateByModel);
         $this->assertEquals(1, $updateByModel2);
 
-
         /* @var User $updateAfter */
         $updateAfter = User::find(1);
         $this->assertEquals($updateBeforeAge, $updateAfter->getAge());
@@ -109,7 +109,6 @@ class ModelTest extends TestCase
         /* @var User $res1 */
         $res1 = User::updateOrCreate(['id' => 1], ['age' => 18]);
 
-        /* @var User $res2 */
         $res2 = User::updateOrCreate(['id' => 2], ['age' => 18]);
 
         $result = User::whereIn('id', [$res1->getId(), $res2->getId()])->delete();
@@ -184,5 +183,31 @@ class ModelTest extends TestCase
         /* @var User $user */
         $user = User::find($id);
         $this->assertEquals($uiName, $user->getName());
+    }
+
+    public function testModelSelect()
+    {
+        \sgo(function () {
+            // Delete only left 20 rows
+            $resCount = DB::selectOne('select count(*) as `count` from `user`')->count;
+            DB::delete('delete A FROM `user` A INNER JOIN (SELECT ID FROM `user` B limit ?) B
+on A.id=B.id;', [$resCount - 20]);
+
+            $afterCount = DB::selectOne('select count(*) as `count` from `user`')->count;
+            $this->assertEquals(20, $afterCount);
+        });
+
+        foreach (User::query()->cursor() as $user) {
+            /* @var User $user */
+            $this->assertGreaterThan(0, $user->getId());
+        }
+
+        // query all, each 10 strips
+        User::query()->chunk(10, function ($users) {
+            /* @var User $user */
+            foreach ($users as $user) {
+                //var_dump($user->getId());
+            }
+        });
     }
 }

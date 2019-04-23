@@ -15,6 +15,7 @@ use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
 use Swoft\Db\Query\Grammar\Grammar;
 use Swoft\Db\Query\Processor\Processor;
+use Swoft\Log\Helper\Log;
 
 /**
  * Class Connection
@@ -144,7 +145,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Set the query post processor used by the connection.
      *
-     * @param  Processor $processor
+     * @param Processor $processor
      *
      * @return $this
      */
@@ -296,7 +297,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Set the table prefix in use by the connection.
      *
-     * @param  string $prefix
+     * @param string $prefix
      *
      * @return static
      */
@@ -544,7 +545,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      */
     public function unprepared(string $query): bool
     {
-        return $this->run($query, [], function ($query) {
+        return (bool)$this->run($query, [], function ($query) {
 
             $change = $this->getPdo()->exec($query);
 
@@ -580,9 +581,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Run a SQL statement and log its execution context.
      *
-     * @param  string   $query
-     * @param  array    $bindings
-     * @param  \Closure $callback
+     * @param string   $query
+     * @param array    $bindings
+     * @param \Closure $callback
      *
      * @return mixed
      *
@@ -608,10 +609,10 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Run a SQL statement.
      *
-     * @param  string   $query
-     * @param  array    $bindings
-     * @param  \Closure $callback
-     * @param  bool     $reconnect
+     * @param string   $query
+     * @param array    $bindings
+     * @param \Closure $callback
+     * @param bool     $reconnect
      *
      * @return mixed
      *
@@ -679,7 +680,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Configure the PDO prepared statement.
      *
-     * @param  \PDOStatement $statement
+     * @param \PDOStatement $statement
      *
      * @return \PDOStatement
      */
@@ -822,7 +823,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Get the PDO connection to use for a select query.
      *
-     * @param  bool $useReadPdo
+     * @param bool $useReadPdo
      *
      * @return \PDO
      * @throws \ReflectionException
@@ -869,8 +870,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Bind values to their parameters in the given statement.
      *
-     * @param  \PDOStatement $statement
-     * @param  array         $bindings
+     * @param \PDOStatement $statement
+     * @param array         $bindings
      *
      * @return void
      */
@@ -887,7 +888,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Perform a rollback within the database.
      *
-     * @param  int $toLevel
+     * @param int $toLevel
      *
      * @return void
      * @throws \ReflectionException

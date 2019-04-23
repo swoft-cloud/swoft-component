@@ -3,14 +3,17 @@
 
 namespace Swoft\Db\Concern;
 
-
-use mysql_xdevapi\Exception;
 use Swoft\Db\EntityRegister;
 use Swoft\Db\Exception\EloquentException;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Stdlib\Helper\Str;
 
+/**
+ * Trait HasAttributes
+ *
+ * @package Swoft\Db\Concern
+ */
 trait HasAttributes
 {
     /**
@@ -38,6 +41,7 @@ trait HasAttributes
      * Convert the model's attributes to an array.
      *
      * @return array
+     * @throws EloquentException
      */
     public function attributesToArray()
     {
@@ -65,7 +69,7 @@ trait HasAttributes
     /**
      * Get an attribute array of all arrayable values.
      *
-     * @param  array $values
+     * @param array $values
      *
      * @return array
      */
@@ -85,9 +89,11 @@ trait HasAttributes
     /**
      * Get an attribute from the model.
      *
-     * @param  string $key
+     * @param string $key
      *
      * @return array
+     * @throws EloquentException
+     * @throws \BadMethodCallException
      */
     public function getAttribute(string $key): array
     {
@@ -107,7 +113,7 @@ trait HasAttributes
     /**
      * Determine if a get mutator exists for an attribute.
      *
-     * @param  string $key
+     * @param string $key
      *
      * @return bool
      */
@@ -119,8 +125,8 @@ trait HasAttributes
     /**
      * Get the value of an attribute using its mutator.
      *
-     * @param  string $key
-     * @param  mixed  $value
+     * @param string $key
+     * @param mixed  $value
      *
      * @return mixed
      */
@@ -132,10 +138,11 @@ trait HasAttributes
     /**
      * Set a given attribute on the model.
      *
-     * @param  string $key
-     * @param  mixed  $value
+     * @param string $key
+     * @param        $value
      *
-     * @return mixed
+     * @return HasAttributes
+     * @throws EloquentException
      */
     public function setAttribute(string $key, $value): self
     {
@@ -153,7 +160,7 @@ trait HasAttributes
     /**
      * Determine if a set mutator exists for an attribute.
      *
-     * @param  string $key
+     * @param string $key
      *
      * @return bool
      */
@@ -165,8 +172,8 @@ trait HasAttributes
     /**
      * Set the value of an attribute using its mutator.
      *
-     * @param  string $key
-     * @param  mixed  $value
+     * @param string $key
+     * @param mixed  $value
      *
      * @return mixed
      */
@@ -178,8 +185,8 @@ trait HasAttributes
     /**
      * Set a given JSON attribute on the model.
      *
-     * @param  string $key
-     * @param  mixed  $value
+     * @param string $key
+     * @param mixed  $value
      *
      * @return $this
      */
@@ -197,9 +204,9 @@ trait HasAttributes
     /**
      * Get an array attribute with the given key and value set.
      *
-     * @param  string $path
-     * @param  string $key
-     * @param  mixed  $value
+     * @param string $path
+     * @param string $key
+     * @param mixed  $value
      *
      * @return array
      */
@@ -214,7 +221,7 @@ trait HasAttributes
     /**
      * Get an array attribute or return an empty array if it is not set.
      *
-     * @param  string $key
+     * @param string $key
      *
      * @return array
      */
@@ -227,7 +234,7 @@ trait HasAttributes
     /**
      * Encode the given value as JSON.
      *
-     * @param  mixed $value
+     * @param mixed $value
      *
      * @return string
      */
@@ -239,8 +246,8 @@ trait HasAttributes
     /**
      * Decode the given JSON back into an array or object.
      *
-     * @param  string $value
-     * @param  bool   $asObject
+     * @param string $value
+     * @param bool   $asObject
      *
      * @return mixed
      */
@@ -252,7 +259,7 @@ trait HasAttributes
     /**
      * Decode the given float.
      *
-     * @param  mixed $value
+     * @param mixed $value
      *
      * @return mixed
      */
@@ -303,10 +310,11 @@ trait HasAttributes
     /**
      * Set the array of model attributes. No checking is done.
      *
-     * @param  array $attributes
-     * @param  bool  $sync
+     * @param array $attributes
+     * @param bool  $sync
      *
      * @return $this
+     * @throws EloquentException
      */
     public function setRawAttributes(array $attributes, $sync = false)
     {
@@ -328,8 +336,8 @@ trait HasAttributes
     /**
      * Get the model's original attribute values.
      *
-     * @param  string|null $key
-     * @param  mixed       $default
+     * @param string|null $key
+     * @param mixed       $default
      *
      * @return mixed|array
      */
@@ -341,9 +349,10 @@ trait HasAttributes
     /**
      * Get a subset of the model's attributes.
      *
-     * @param  array $attributes
+     * @param array $attributes
      *
      * @return array
+     * @throws EloquentException
      */
     public function only(array $attributes)
     {
@@ -371,7 +380,7 @@ trait HasAttributes
     /**
      * Sync a single original attribute with its current value.
      *
-     * @param  string $attribute
+     * @param string $attribute
      *
      * @return $this
      */
@@ -383,7 +392,7 @@ trait HasAttributes
     /**
      * Sync multiple original attribute with their current values.
      *
-     * @param  array|string $attributes
+     * @param array|string $attributes
      *
      * @return $this
      */
@@ -413,7 +422,7 @@ trait HasAttributes
     /**
      * Determine if the model or given attribute(s) have been modified.
      *
-     * @param  array|string|null $attributes
+     * @param array|string|null $attributes
      *
      * @return bool
      */
@@ -427,7 +436,7 @@ trait HasAttributes
     /**
      * Determine if the model or given attribute(s) have remained the same.
      *
-     * @param  array|string|null $attributes
+     * @param array|string|null $attributes
      *
      * @return bool
      */
@@ -439,7 +448,7 @@ trait HasAttributes
     /**
      * Determine if the model or given attribute(s) have been modified.
      *
-     * @param  array|string|null $attributes
+     * @param array|string|null $attributes
      *
      * @return bool
      */
@@ -453,8 +462,8 @@ trait HasAttributes
     /**
      * Determine if the given attributes were changed.
      *
-     * @param  array             $changes
-     * @param  array|string|null $attributes
+     * @param array             $changes
+     * @param array|string|null $attributes
      *
      * @return bool
      */
@@ -500,8 +509,8 @@ trait HasAttributes
     /**
      * Determine if the new and old values for a given key are equivalent.
      *
-     * @param  string $key
-     * @param  mixed  $current
+     * @param string $key
+     * @param mixed  $current
      *
      * @return bool
      */

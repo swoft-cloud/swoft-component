@@ -19,7 +19,7 @@ use Swoft\Db\Query\Expression;
  *
  * @method static Builder table($table);
  * @method static Expression raw($value)
- * @method static mixed selectOne($query, $bindings = [], $useReadPdo = true)
+ * @method static mixed selectOne(string $query, $bindings = [], $useReadPdo = true)
  * @method static array select(string $query, array $bindings = [], bool $useReadPdo = true)
  * @method static \Generator cursor(string $query, array $bindings = [], bool $useReadPdo = true)
  * @method static bool insert(string $query, array $bindings = [])
