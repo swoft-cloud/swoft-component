@@ -4,7 +4,7 @@ namespace Swoft\Config\Annotation\Parser;
 
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
-use Swoft\Config\Annotation\Config;
+use Swoft\Config\Annotation\Mapping\Config;
 
 /**
  * Class ConfigParser
