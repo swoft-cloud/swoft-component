@@ -393,6 +393,12 @@ class BuilderTest extends TestCase
      */
     public function testInset()
     {
+        $raw = DB::insert(
+            'INSERT INTO `user` ( `name`, `age`, `password`, `user_desc`)VALUES( ?, ?, ?,?);',
+            ["sakura", "23", "34asdfasdf", "XX"]
+        );
+        $this->assertTrue($raw);
+
         $insertUpdate = DB::table('user')->updateOrInsert(
             [
                 'id' => 22,
@@ -410,19 +416,21 @@ class BuilderTest extends TestCase
             'password' => md5((string)mt_rand(1, 100)),
         ]);
 
-//        // sync subQuery data to table
-//        $using = Builder::new()->from('user')->insertUsing(['name', 'age'], function (Builder $builder) {
-//            return $builder->from('user')
-//                ->select('name', 'age')
-//                ->where('age', '>', 1);
-//        });
+        // sync subQuery data to table
+        $using = Builder::new()->from('user')->insertUsing(['name', 'age'], function (Builder $builder) {
+            return $builder->from('user')
+                ->select('name', 'age')
+                // close sync
+                ->where('id', 0);
+        });
         // get insert id
         $id = DB::table('user')->insertGetId([
             'age'  => 18,
             'name' => 'Sakura',
         ]);
+
         $this->assertIsString($id);
-//        $this->assertTrue($using);
+        $this->assertTrue($using);
         $this->assertTrue($insert);
         $this->assertTrue($insertUpdate);
         $this->assertIsInt($inc);
@@ -450,6 +458,9 @@ class BuilderTest extends TestCase
         $delete  = DB::table('user')->delete($id);
         $doesNot = DB::table('user')->where('id', $id)->doesntExist();
 
+        $res = DB::update('update `user` set `age` = ? where `id` = ?', [23, $this->getFirstId()]);
+
+        $this->assertEquals($res, 1);
         $this->assertTrue($doesNot);
         $this->assertEquals($delete, 1);
         $this->assertEquals($update1, 1);
@@ -477,11 +488,13 @@ class BuilderTest extends TestCase
             ->where('name', 'regexp', '[a-z]{' . mt_rand(6, 9) . ',20}')
             ->delete();
 
-        $orderByDel = DB::table('user')
+        $orderByDel   = DB::table('user')
             ->limit(1)
             ->orderBy('id')
             ->delete();
+        $deleteMethod = DB::delete('delete from `user` where id = ?', [$this->getFirstId()]);
 
+        $this->assertEquals($deleteMethod, 1);
         $this->assertIsInt($deleteRange);
         $this->assertIsInt($orderByDel);
         $this->assertIsInt($deleteRegexp);
@@ -542,6 +555,26 @@ class BuilderTest extends TestCase
         }, 4);
 
         $this->assertIsBool($res);
+    }
+
+    public function testDBClass()
+    {
+        $expectSql = 'select * from `user` where `id` = ?';
+
+        $sql = Builder::new()->from('user')->where('id', '0')->toSql();
+        $this->assertEquals($expectSql, $sql);
+
+        // Single strip
+        $res = DB::selectOne($sql, [$this->getFirstId()]);
+        $this->assertIsInt($res->id);
+
+        // Multiple strips
+        $select = DB::select($expectSql, [$this->getFirstId()]);
+        $this->assertIsArray($select);
+
+        // NOTE:: DDL , return bool
+        $unprepared = DB::unprepared('DROP TRIGGER IF EXISTS `sync_to_item_table`');
+        $this->assertIsBool($unprepared);
     }
 
     /**

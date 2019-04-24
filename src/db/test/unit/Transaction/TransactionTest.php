@@ -152,4 +152,18 @@ class TransactionTest extends TestCase
         $this->assertNotEquals($name, $user->getName());
         $this->assertNotEquals($name2, $user2->getName());
     }
+
+    public function testTransaction()
+    {
+        $id  = $this->addRecord();
+        $id2 = $this->addRecord();
+
+        echo "testTransaction update id $id $id2" . \PHP_EOL;
+        DB::beginTransaction();
+        $result = User::updateOrInsert(['id' => $id], ['name' => 'sakura1']);
+        $this->assertTrue($result);
+        $result2 = User::updateOrInsert(['id' => $id2], ['name' => 'sakura2']);
+        $this->assertTrue($result2);
+        DB::commit();
+    }
 }
