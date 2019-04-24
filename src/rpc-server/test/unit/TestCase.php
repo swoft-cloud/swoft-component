@@ -3,6 +3,8 @@
 
 namespace SwoftTest\Rpc\Server\Unit;
 
+use Swoft\Test\Rpc\MockRpcServer;
+
 /**
  * Class TestCase
  *
@@ -10,5 +12,16 @@ namespace SwoftTest\Rpc\Server\Unit;
  */
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * @var MockRpcServer
+     */
+    protected $mockRpcServer;
 
+    /**
+     * Set up
+     */
+    public function setUp()
+    {
+        $this->mockRpcServer = new MockRpcServer();
+    }
 }

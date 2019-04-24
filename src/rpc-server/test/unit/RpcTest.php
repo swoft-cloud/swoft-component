@@ -3,6 +3,8 @@
 
 namespace SwoftTest\Rpc\Server\Unit;
 
+use SwoftTest\Rpc\Server\Testing\Lib\DemoInterface;
+
 /**
  * Class RpcTest
  *
@@ -10,8 +12,24 @@ namespace SwoftTest\Rpc\Server\Unit;
  */
 class RpcTest extends TestCase
 {
-    public function testA()
+    /**
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Rpc\Exception\RpcException
+     */
+    public function testGetList()
     {
-        $this->assertTrue(true);
+        $list = [
+            'name' => 'list',
+            'list' => [
+                'id'   => 12,
+                'type' => 'type2',
+                'name' => 'name'
+            ]
+        ];
+
+        $response = $this->mockRpcServer->call(DemoInterface::class, 'getList', [12, 'type2']);
+        $response->assertSuccess();
+        $response->assertEqualJsonResult($list);
     }
 }
