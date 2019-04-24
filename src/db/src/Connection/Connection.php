@@ -15,7 +15,6 @@ use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
 use Swoft\Db\Query\Grammar\Grammar;
 use Swoft\Db\Query\Processor\Processor;
-use Swoft\Log\Helper\Log;
 
 /**
  * Class Connection
