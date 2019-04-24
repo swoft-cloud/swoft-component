@@ -6,13 +6,13 @@ namespace SwoftTest\Component\Testing\Aop;
 use Swoft\Bean\Annotation\Mapping\Bean;
 
 /**
- * Class DemoAop
+ * Class ExecutionAop
  *
  * @since 2.0
  *
- * @Bean("testDemoAop")
+ * @Bean()
  */
-class DemoAop
+class ExecutionAop
 {
     /**
      * @return string
