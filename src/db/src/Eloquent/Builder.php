@@ -4,6 +4,7 @@
 namespace Swoft\Db\Eloquent;
 
 
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\Concern\BuildsQueries;
 use Swoft\Db\Connection\Connection;
@@ -181,7 +182,7 @@ class Builder
     /**
      * Create a new EloquentException query builder instance.
      *
-     * @param  QueryBuilder $query
+     * @param QueryBuilder $query
      *
      * @return void
      */
@@ -193,7 +194,7 @@ class Builder
     /**
      * Create and return an un-saved model instance.
      *
-     * @param  array $attributes
+     * @param array $attributes
      *
      * @return Model
      * @throws EloquentException
@@ -209,9 +210,11 @@ class Builder
      * @param $id
      *
      * @return $this|Builder
+     * @throws ContainerException
      * @throws EntityException
-     * @throws PrototypeException
      * @throws PoolException
+     * @throws PrototypeException
+     * @throws \ReflectionException
      */
     public function whereKey($id)
     {
@@ -228,9 +231,11 @@ class Builder
      * @param $id
      *
      * @return $this|Builder
+     * @throws ContainerException
      * @throws EntityException
-     * @throws PrototypeException
      * @throws PoolException
+     * @throws PrototypeException
+     * @throws \ReflectionException
      */
     public function whereKeyNot($id)
     {
@@ -246,15 +251,17 @@ class Builder
     /**
      * Add a basic where clause to the query.
      *
-     * @param  string|array|\Closure $column
-     * @param  mixed                 $operator
-     * @param  mixed                 $value
-     * @param  string                $boolean
+     * @param string|array|\Closure $column
+     * @param mixed                 $operator
+     * @param mixed                 $value
+     * @param string                $boolean
      *
      * @return $this
      * @throws EntityException
+     * @throws PoolException
      * @throws PrototypeException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws \ReflectionException
      */
     public function where($column, $operator = null, $value = null, string $boolean = 'and')
     {
@@ -272,14 +279,16 @@ class Builder
     /**
      * Add an "or where" clause to the query.
      *
-     * @param  \Closure|array|string $column
-     * @param  mixed                 $operator
-     * @param  mixed                 $value
+     * @param \Closure|array|string $column
+     * @param mixed                 $operator
+     * @param mixed                 $value
      *
-     * @return $this|static
+     * @return Builder
+     * @throws ContainerException
      * @throws EntityException
+     * @throws PoolException
      * @throws PrototypeException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws \ReflectionException
      */
     public function orWhere($column, $operator = null, $value = null)
     {
@@ -293,7 +302,7 @@ class Builder
     /**
      * Add an "order by" clause for a timestamp to the query.
      *
-     * @param  string $column
+     * @param string $column
      *
      * @return $this
      */
@@ -307,7 +316,7 @@ class Builder
     /**
      * Add an "order by" clause for a timestamp to the query.
      *
-     * @param  string $column
+     * @param string $column
      *
      * @return $this
      */
@@ -321,7 +330,7 @@ class Builder
     /**
      * Create a collection of models from plain arrays.
      *
-     * @param  array $items
+     * @param array $items
      *
      * @return Collection
      * @throws EloquentException
@@ -339,13 +348,15 @@ class Builder
     /**
      * Create a collection of models from a raw query.
      *
-     * @param  string $query
-     * @param  array  $bindings
+     * @param string $query
+     * @param array  $bindings
      *
      * @return Collection
+     * @throws ContainerException
      * @throws EloquentException
-     * @throws QueryException
      * @throws PrototypeException
+     * @throws QueryException
+     * @throws \ReflectionException
      */
     public function fromQuery(string $query, array $bindings = [])
     {
@@ -357,14 +368,16 @@ class Builder
     /**
      * Find a model by its primary key.
      *
-     * @param  mixed $id
-     * @param  array $columns
+     * @param mixed $id
+     * @param array $columns
      *
-     * @return Collection|Model
+     * @return null|object|Builder|Collection|Model
+     * @throws ContainerException
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
      * @throws PrototypeException
+     * @throws \ReflectionException
      */
     public function find($id, array $columns = ['*'])
     {
@@ -378,13 +391,16 @@ class Builder
     /**
      * Find multiple models by their primary keys.
      *
-     * @param  Arrayable|array $ids
-     * @param  array           $columns
+     * @param Arrayable|array $ids
+     * @param array           $columns
      *
      * @return Collection
+     * @throws ContainerException
+     * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
      * @throws PrototypeException
+     * @throws \ReflectionException
      */
     public function findMany(array $ids, array $columns = ['*'])
     {
@@ -398,14 +414,16 @@ class Builder
     /**
      * Find a model by its primary key or throw an exception.
      *
-     * @param  mixed $id
-     * @param  array $columns
+     * @param mixed $id
+     * @param array $columns
      *
-     * @return Model|Collection|static|static[]
+     * @return null|object|Builder|Collection|Model
+     * @throws ContainerException
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
      * @throws PrototypeException
+     * @throws \ReflectionException
      */
     public function findOrFail($id, array $columns = ['*'])
     {
@@ -425,14 +443,16 @@ class Builder
     /**
      * Find a model by its primary key or return fresh model instance.
      *
-     * @param  mixed $id
-     * @param  array $columns
+     * @param mixed $id
+     * @param array $columns
      *
-     * @return Model|static
+     * @return null|object|Builder|Collection|Model
+     * @throws ContainerException
      * @throws EloquentException
      * @throws EntityException
-     * @throws PrototypeException
      * @throws PoolException
+     * @throws PrototypeException
+     * @throws \ReflectionException
      */
     public function findOrNew($id, array $columns = ['*'])
     {
@@ -446,14 +466,16 @@ class Builder
     /**
      * Get the first record matching the attributes or instantiate it.
      *
-     * @param  array $attributes
-     * @param  array $values
+     * @param array $attributes
+     * @param array $values
      *
-     * @return Model|static
+     * @return null|object|Builder|Model
+     * @throws ContainerException
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
      * @throws PrototypeException
+     * @throws \ReflectionException
      */
     public function firstOrNew(array $attributes, array $values = [])
     {
@@ -467,15 +489,17 @@ class Builder
     /**
      * Get the first record matching the attributes or create it.
      *
-     * @param  array $attributes
-     * @param  array $values
+     * @param array $attributes
+     * @param array $values
      *
-     * @return Model|static
+     * @return null|object|Builder|Model
+     * @throws ContainerException
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
      * @throws PrototypeException
      * @throws QueryException
+     * @throws \ReflectionException
      */
     public function firstOrCreate(array $attributes, array $values = [])
     {
@@ -492,15 +516,17 @@ class Builder
     /**
      * Create or update a record matching the attributes, and fill it with values.
      *
-     * @param  array $attributes
-     * @param  array $values
+     * @param array $attributes
+     * @param array $values
      *
-     * @return Model|static
+     * @return null|object|Builder|Model
+     * @throws ContainerException
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
      * @throws PrototypeException
      * @throws QueryException
+     * @throws \ReflectionException
      */
     public function updateOrCreate(array $attributes, array $values = [])
     {
@@ -512,7 +538,7 @@ class Builder
     /**
      * Execute the query and get the first result or throw an exception.
      *
-     * @param  array $columns
+     * @param array $columns
      *
      * @return Model|static
      *
@@ -532,8 +558,8 @@ class Builder
     /**
      * Execute the query and get the first result or call a callback.
      *
-     * @param  \Closure|array $columns
-     * @param  \Closure|null  $callback
+     * @param \Closure|array $columns
+     * @param \Closure|null  $callback
      *
      * @return Model|static|mixed
      * @throws EloquentException
@@ -557,7 +583,7 @@ class Builder
     /**
      * Get a single column's value from the first result of a query.
      *
-     * @param  string $column
+     * @param string $column
      *
      * @return mixed
      * @throws EloquentException
@@ -575,7 +601,7 @@ class Builder
     /**
      * Execute the query as a "select" statement.
      *
-     * @param  array $columns
+     * @param array $columns
      *
      * @return Collection
      * @throws EloquentException
@@ -592,7 +618,7 @@ class Builder
     /**
      * Get the hydrated models without eager loading.
      *
-     * @param  array $columns
+     * @param array $columns
      *
      * @return Model[]|static[]
      * @throws EloquentException
@@ -609,7 +635,9 @@ class Builder
      * Get a generator for the given query.
      *
      * @return \Generator
+     * @throws ContainerException
      * @throws QueryException
+     * @throws \ReflectionException
      */
     public function cursor()
     {
@@ -621,12 +649,13 @@ class Builder
     /**
      * Chunk the results of a query by comparing numeric IDs.
      *
-     * @param  int         $count
-     * @param  callable    $callback
-     * @param  string|null $column
-     * @param  string|null $alias
+     * @param int         $count
+     * @param callable    $callback
+     * @param string|null $column
+     * @param string|null $alias
      *
      * @return bool
+     * @throws EloquentException
      * @throws EntityException
      * @throws PrototypeException
      */
@@ -683,8 +712,8 @@ class Builder
     /**
      * Get an array with the values of a given column.
      *
-     * @param  string      $column
-     * @param  string|null $key
+     * @param string      $column
+     * @param string|null $key
      *
      * @return \Swoft\Stdlib\Collection
      */
@@ -700,14 +729,16 @@ class Builder
     /**
      * Save a new model and return the instance.
      *
-     * @param  array $attributes
+     * @param array $attributes
      *
-     * @return Model|$this
+     * @return Model
+     * @throws ContainerException
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
      * @throws PrototypeException
      * @throws QueryException
+     * @throws \ReflectionException
      */
     public function create(array $attributes = [])
     {
@@ -719,11 +750,13 @@ class Builder
     /**
      * Update a record in the database.
      *
-     * @param  array $values
+     * @param array $values
      *
      * @return int
+     * @throws ContainerException
      * @throws PrototypeException
      * @throws QueryException
+     * @throws \ReflectionException
      */
     public function update(array $values)
     {
@@ -733,13 +766,15 @@ class Builder
     /**
      * Increment a column's value by a given amount.
      *
-     * @param  string    $column
-     * @param  float|int $amount
-     * @param  array     $extra
+     * @param string    $column
+     * @param float|int $amount
+     * @param array     $extra
      *
      * @return int
+     * @throws ContainerException
      * @throws PrototypeException
      * @throws QueryException
+     * @throws \ReflectionException
      */
     public function increment(string $column, $amount = 1, array $extra = [])
     {
@@ -751,13 +786,15 @@ class Builder
     /**
      * Decrement a column's value by a given amount.
      *
-     * @param  string    $column
-     * @param  float|int $amount
-     * @param  array     $extra
+     * @param string    $column
+     * @param float|int $amount
+     * @param array     $extra
      *
      * @return int
+     * @throws ContainerException
      * @throws PrototypeException
      * @throws QueryException
+     * @throws \ReflectionException
      */
     public function decrement($column, $amount = 1, array $extra = [])
     {
@@ -769,9 +806,12 @@ class Builder
     /**
      * Delete a record from the database.
      *
-     * @return mixed
+     * @return int|mixed
+     * @throws ContainerException
+     * @throws PoolException
      * @throws PrototypeException
      * @throws QueryException
+     * @throws \ReflectionException
      */
     public function delete()
     {
@@ -787,9 +827,12 @@ class Builder
      *
      * Since we do not apply scopes here, the row will actually be deleted.
      *
-     * @return mixed
+     * @return int
+     * @throws ContainerException
+     * @throws PoolException
      * @throws PrototypeException
      * @throws QueryException
+     * @throws \ReflectionException
      */
     public function forceDelete()
     {
@@ -799,7 +842,7 @@ class Builder
     /**
      * Register a replacement for the default delete function.
      *
-     * @param  \Closure $callback
+     * @param \Closure $callback
      *
      * @return void
      */
@@ -814,7 +857,7 @@ class Builder
      * @param array $attributes
      *
      * @return Model
-     * @throws \Swoft\Db\Exception\EloquentException
+     * @throws EloquentException
      */
     public function newModelInstance($attributes = [])
     {
@@ -834,7 +877,7 @@ class Builder
     /**
      * Set the underlying query builder instance.
      *
-     * @param  QueryBuilder $query
+     * @param QueryBuilder $query
      *
      * @return $this
      */
@@ -868,7 +911,7 @@ class Builder
     /**
      * Set a model instance for the model being queried.
      *
-     * @param  Model $model
+     * @param Model $model
      *
      * @return $this
      * @throws EntityException
@@ -885,7 +928,7 @@ class Builder
     /**
      * Qualify the given column name by the model's table.
      *
-     * @param  string $column
+     * @param string $column
      *
      * @return string
      * @throws EntityException
@@ -898,7 +941,7 @@ class Builder
     /**
      * Get the given macro by name.
      *
-     * @param  string $name
+     * @param string $name
      *
      * @return \Closure
      */
@@ -910,8 +953,8 @@ class Builder
     /**
      * Dynamically handle calls into the query instance.
      *
-     * @param  string $method
-     * @param  array  $parameters
+     * @param string $method
+     * @param array  $parameters
      *
      * @return mixed
      */
