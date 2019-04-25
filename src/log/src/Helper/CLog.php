@@ -65,7 +65,9 @@ class CLog
      */
     public static function debug(string $message, ...$params): void
     {
-        self::$cLogger->debug(\sprintf($message, ...$params), []);
+        if(SWOFT_DEBUG){
+            self::$cLogger->debug(\sprintf($message, ...$params), []);
+        }
     }
 
     /**

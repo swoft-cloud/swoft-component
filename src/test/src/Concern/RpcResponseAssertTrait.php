@@ -40,7 +40,7 @@ trait RpcResponseAssertTrait
             return;
         }
 
-        $errorCode = $error['code'] ?? 0;
+        $errorCode = $error->getCode();
         Assert::assertEquals($code, $errorCode);
     }
 
@@ -55,8 +55,23 @@ trait RpcResponseAssertTrait
             return;
         }
 
-        $errorMessage = $error['message'] ?? 0;
+        $errorMessage = $error->getMessage();
         Assert::assertEquals($message, $errorMessage);
+    }
+
+    /**
+     * @param string $message
+     */
+    public function assertContainErrorMessage(string $message): void
+    {
+        $error = $this->returnResponse->getError();
+        if ($error === null) {
+            Assert::assertTrue(false);
+            return;
+        }
+
+        $errorMessage = $error->getMessage();
+        Assert::assertTrue(\strpos($errorMessage, $message) !== false);
     }
 
     /**
@@ -65,5 +80,13 @@ trait RpcResponseAssertTrait
     public function assertEqualJsonResult(array $data): void
     {
         Assert::assertEquals($data, $this->returnResponse->getResult());
+    }
+
+    /**
+     * @param mixed $result
+     */
+    public function assertEqualResult($result): void
+    {
+        Assert::assertEquals($result, $this->returnResponse->getResult());
     }
 }

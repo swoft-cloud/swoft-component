@@ -3,17 +3,18 @@
 
 namespace SwoftTest\Rpc\Server\Testing;
 
+
 use Swoft\Rpc\Server\Annotation\Mapping\Service;
 use SwoftTest\Rpc\Server\Testing\Lib\DemoInterface;
 
 /**
- * Class DemoService
+ * Class DemoServiceV2
  *
  * @since 2.0
  *
- * @Service()
+ * @Service(version="1.1")
  */
-class DemoService implements DemoInterface
+class DemoServiceV2 implements DemoInterface
 {
     /**
      * @param int    $uid
@@ -29,7 +30,8 @@ class DemoService implements DemoInterface
                 'id'   => $uid,
                 'type' => $type,
                 'name' => 'name'
-            ]
+            ],
+            'v'=> '1.1'
         ];
     }
 
@@ -45,7 +47,8 @@ class DemoService implements DemoInterface
             'item' => [
                 'id'   => $uid,
                 'name' => 'name'
-            ]
+            ],
+            'v'=> '1.1'
         ];
     }
 
@@ -68,6 +71,6 @@ class DemoService implements DemoInterface
      */
     public function error(): bool
     {
-        throw new \Exception('error message', 324231);
+        throw new \Exception('error message 1.1', 324231);
     }
 }

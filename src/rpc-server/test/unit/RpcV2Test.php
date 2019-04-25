@@ -5,12 +5,7 @@ namespace SwoftTest\Rpc\Server\Unit;
 
 use SwoftTest\Rpc\Server\Testing\Lib\DemoInterface;
 
-/**
- * Class RpcTest
- *
- * @since 2.0
- */
-class RpcTest extends TestCase
+class RpcV2Test extends TestCase
 {
     /**
      * @throws \ReflectionException
@@ -25,10 +20,11 @@ class RpcTest extends TestCase
                 'id'   => 12,
                 'type' => 'type2',
                 'name' => 'name'
-            ]
+            ],
+            'v'=> '1.1'
         ];
 
-        $response = $this->mockRpcServer->call(DemoInterface::class, 'getList', [12, 'type2']);
+        $response = $this->mockRpcServer->call(DemoInterface::class, 'getList', [12, 'type2'], [], '1.1');
         $response->assertSuccess();
         $response->assertEqualJsonResult($list);
     }
@@ -45,10 +41,11 @@ class RpcTest extends TestCase
             'item' => [
                 'id'   => 12,
                 'name' => 'name'
-            ]
+            ],
+            'v'=> '1.1'
         ];
 
-        $response = $this->mockRpcServer->call(DemoInterface::class, 'getInfo', [12]);
+        $response = $this->mockRpcServer->call(DemoInterface::class, 'getInfo', [12], [], '1.1');
         $response->assertSuccess();
         $response->assertEqualJsonResult($info);
     }
@@ -60,11 +57,11 @@ class RpcTest extends TestCase
      */
     public function testGetDelete()
     {
-        $response = $this->mockRpcServer->call(DemoInterface::class, 'delete', [12]);
+        $response = $this->mockRpcServer->call(DemoInterface::class, 'delete', [12], [], '1.1');
         $response->assertSuccess();
         $response->assertEqualResult(false);
 
-        $response = $this->mockRpcServer->call(DemoInterface::class, 'delete', [122]);
+        $response = $this->mockRpcServer->call(DemoInterface::class, 'delete', [122], [], '1.1');
         $response->assertSuccess();
         $response->assertEqualResult(true);
     }
@@ -76,7 +73,7 @@ class RpcTest extends TestCase
      */
     public function testCallErro()
     {
-        $response = $this->mockRpcServer->call(DemoInterface::class, 'delete', []);
+        $response = $this->mockRpcServer->call(DemoInterface::class, 'delete', [], [], '1.1');
         $response->assertFail();
         $response->assertErrorCode(0);
         $response->assertContainErrorMessage('Too few arguments to function');
@@ -87,11 +84,12 @@ class RpcTest extends TestCase
      * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Rpc\Exception\RpcException
      */
-    public function testException(){
+    public function testException()
+    {
 
-        $response = $this->mockRpcServer->call(DemoInterface::class, 'error', []);
+        $response = $this->mockRpcServer->call(DemoInterface::class, 'error', [], [], '1.1');
         $response->assertFail();
         $response->assertErrorCode(324231);
-        $response->assertErrorMessage('error message');
+        $response->assertErrorMessage('error message 1.1');
     }
 }
