@@ -30,12 +30,13 @@ class Router implements RouterInterface
      * @param string $className
      * @param string $taskName
      * @param string $mappingName
+     * @param string $methodName
      */
-    public function addRoute(string $className, string $taskName, string $mappingName): void
+    public function addRoute(string $className, string $taskName, string $mappingName, string $methodName): void
     {
         $route = $this->getRoute($taskName, $mappingName);
 
-        $this->routes[$route] = $className;
+        $this->routes[$route] = [$className, $methodName];
     }
 
     /**
@@ -52,7 +53,7 @@ class Router implements RouterInterface
             return [self::FOUND, $this->routes[$route]];
         }
 
-        return [self::NOT_FOUND, ''];
+        return [self::NOT_FOUND, []];
     }
 
     /**

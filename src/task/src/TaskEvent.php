@@ -21,14 +21,14 @@ class TaskEvent
     public const AFTER_TASK = 'swoft.task.task.after';
 
     /**
+     * Before task
+     */
+    public const BEFORE_FINISH = 'swoft.task.finish.before';
+
+    /**
      * Finish event
      */
     public const FINISH = 'swoft.task.finish';
-
-    /**
-     * Before task
-     */
-    public const BEFORE_FINISH = 'swoft.task.finish.after';
 
     /**
      * After finish

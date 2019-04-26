@@ -4,6 +4,7 @@
 namespace Swoft\Task\Swoole;
 
 
+use function foo\func;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Server\Swoole\FinishInterface;
 use Swoft\Task\TaskEvent;
@@ -22,18 +23,18 @@ class FinishListener implements FinishInterface
      * @param Server $server
      * @param int    $taskId
      * @param string $data
-     *
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function onFinish(Server $server, int $taskId, string $data): void
     {
-        // Before finish
-        \Swoft::trigger(TaskEvent::BEFORE_FINISH, null, $server, $taskId, $data);
+        \go(function () use ($server, $taskId, $data) {
+            // Before finish
+            \Swoft::trigger(TaskEvent::BEFORE_FINISH, null, $server, $taskId, $data);
 
-        // Do finish
-        \Swoft::trigger(TaskEvent::FINISH);
+            // Do finish
+            \Swoft::trigger(TaskEvent::FINISH);
 
-        // After finish
-        \Swoft::trigger(TaskEvent::AFTER_FINISH);
+            // After finish
+            \Swoft::trigger(TaskEvent::AFTER_FINISH);
+        });
     }
 }

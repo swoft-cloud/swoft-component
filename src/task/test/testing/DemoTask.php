@@ -71,7 +71,7 @@ class DemoTask
     public function method6(string $name, int $count): array
     {
         $request = \context()->getRequest();
-        
+
         return [
             $request->getTaskUniqid(),
             $request->getTaskId(),
@@ -80,5 +80,27 @@ class DemoTask
             $request->getMethod(),
             $request->getParams(),
         ];
+    }
+
+    /**
+     * @TaskMapping()
+     *
+     * @return array
+     */
+    public function notMapping(): array
+    {
+        return [
+            'notMapping'
+        ];
+    }
+
+    /**
+     * @TaskMapping()
+     *
+     * @return bool
+     */
+    public function booReturn(): bool
+    {
+        return true;
     }
 }

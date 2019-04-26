@@ -53,7 +53,7 @@ class Task
      * @param int      $dstWorkerId
      * @param callable $fallback
      *
-     * @return int Task id
+     * @return string Task unique id
      * @throws TaskException
      */
     public static function async(
@@ -63,7 +63,7 @@ class Task
         array $ext = [],
         int $dstWorkerId = -1,
         callable $fallback = null
-    ): int {
+    ): string {
         $data   = Packet::pack(self::ASYNC, $name, $method, $params, $ext);
         $result = \Swoft::swooleServer()->task($data, $dstWorkerId, $fallback);
         if ($result === false) {
@@ -72,7 +72,7 @@ class Task
             );
         }
 
-        return (int)$result;
+        return self::getUniqid($result);
     }
 
     /**

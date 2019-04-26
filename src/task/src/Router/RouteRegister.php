@@ -40,6 +40,11 @@ class RouteRegister
      */
     public static function registerByMethodName(string $className, string $methodName, string $mappingName): void
     {
+        // Fix empty name
+        if (empty($mappingName)) {
+            $mappingName = $methodName;
+        }
+
         self::$tasks[$className]['mapping'][$methodName] = [
             'name'   => $mappingName,
             'method' => $methodName
@@ -66,7 +71,7 @@ class RouteRegister
                     continue;
                 }
 
-                $router->addRoute($className, $name, $mappingName);
+                $router->addRoute($className, $name, $mappingName, $methodName);
             }
         }
     }

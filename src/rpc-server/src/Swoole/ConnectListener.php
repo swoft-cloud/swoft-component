@@ -27,7 +27,13 @@ class ConnectListener implements ConnectInterface
      */
     public function onConnect(Server $server, int $fd, int $reactorId): void
     {
-        var_dump('connect');
-        \Swoft::trigger(ServiceServerEvent::CLOSE);
+        // Before connect
+        \Swoft::trigger(ServiceServerEvent::BEFORE_CONNECT);
+
+        // Connect event
+        \Swoft::trigger(ServiceServerEvent::CONNECT);
+
+        // After connect
+        \Swoft::trigger(ServiceServerEvent::AFTER_CONNECT);
     }
 }
