@@ -25,32 +25,32 @@ class Response implements ResponseInterface
     /**
      * @var Server
      */
-    private $server;
+    protected $server;
 
     /**
      * @var int
      */
-    private $fd = 0;
+    protected $fd = 0;
 
     /**
      * @var int
      */
-    private $reactorId = 0;
+    protected $reactorId = 0;
 
     /**
      * @var string
      */
-    private $content = '';
+    protected $content = '';
 
     /**
      * @var mixed
      */
-    private $data;
+    protected $data;
 
     /**
      * @var Error
      */
-    private $error;
+    protected $error;
 
     /**
      * @param Server $server
@@ -61,7 +61,7 @@ class Response implements ResponseInterface
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public static function new(Server $server, int $fd, int $reactorId): Response
+    public static function new(Server $server = null, int $fd = null, int $reactorId = null): self
     {
         $instance = self::__instance();
 
@@ -79,10 +79,8 @@ class Response implements ResponseInterface
      */
     public function withError(Error $error): ResponseInterface
     {
-        $clone = clone $this;
-
-        $clone->error = $error;
-        return $clone;
+        $this->error = $error;
+        return $this;
     }
 
     /**
@@ -92,10 +90,8 @@ class Response implements ResponseInterface
      */
     public function withData($data): ResponseInterface
     {
-        $clone = clone $this;
-
-        $clone->data = $data;
-        return $clone;
+        $this->data = $data;
+        return $this;
     }
 
     /**
@@ -105,10 +101,9 @@ class Response implements ResponseInterface
      */
     public function withContent(string $content): ResponseInterface
     {
-        $clone = clone $this;
+        $this->content = $content;
 
-        $clone->content = $content;
-        return $clone;
+        return $this;
     }
 
     /**
@@ -152,7 +147,7 @@ class Response implements ResponseInterface
      * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Rpc\Exception\RpcException
      */
-    private function prepare(): void
+    protected function prepare(): void
     {
         /* @var Packet $packet */
         $packet = \bean('rpcServerPacket');

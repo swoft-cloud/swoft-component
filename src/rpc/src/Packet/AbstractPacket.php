@@ -40,6 +40,11 @@ abstract class AbstractPacket implements PacketInterface
      */
     protected function addPackageEof(string $string): string
     {
+        // Fix mock server null
+        if (empty($this->packet)) {
+            return $string;
+        }
+
         if ($this->packet->isOpenEofCheck() || $this->packet->isOpenEofSplit()) {
             $string .= $this->packet->getPackageEof();
         }

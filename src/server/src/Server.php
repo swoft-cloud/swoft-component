@@ -346,8 +346,9 @@ abstract class Server implements ServerInterface
 
     /**
      * Bind swoole event and start swoole server
+     *
      * @throws ServerException
-     * @throws \Throwable
+     * @throws Swoft\Bean\Exception\ContainerException
      */
     protected function startSwoole(): void
     {
