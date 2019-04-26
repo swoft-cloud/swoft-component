@@ -109,4 +109,26 @@ class TaskTest extends TestCase
         $result = $this->mockTaskServer->co('demoTestTask', 'method6', ['name', 18306]);
         $this->assertEquals($data, $result);
     }
+
+    /**
+     * @throws TaskException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function testNotMapping()
+    {
+        $result = $this->mockTaskServer->co('demoTestTask', 'notMapping', []);
+        $this->assertEquals($result, ['notMapping']);
+    }
+
+    /**
+     * @throws TaskException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function testBooReturn()
+    {
+        $result = $this->mockTaskServer->co('demoTestTask', 'booReturn', []);
+        $this->assertTrue($result);
+    }
 }

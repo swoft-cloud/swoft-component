@@ -27,7 +27,7 @@ class TaskMapping
      *
      * @Required()
      */
-    private $name;
+    private $name = '';
 
     /**
      * TaskMapping constructor.

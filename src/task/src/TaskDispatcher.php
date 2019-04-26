@@ -59,21 +59,22 @@ class TaskDispatcher
         $router = BeanFactory::getBean('taskRouter');
 
         $match = $router->match($name, $method);
-        [$status, $className] = $match;
+        [$status, $handler] = $match;
 
-        if ($status != Router::FOUND) {
+        if ($status != Router::FOUND || empty($handler)) {
             throw new TaskException(
                 sprintf('Task(name=%s method=%s) is not exist!', $name, $method)
             );
         }
 
+        [$className, $methodName] = $handler;
         $object = BeanFactory::getBean($className);
-        if (!method_exists($object, $method)) {
+        if (!method_exists($object, $methodName)) {
             throw new TaskException(
                 sprintf('Task(name=%s method=%s) is not exist!', $name, $method)
             );
         }
 
-        return PhpHelper::call([$object, $method], ... $params);
+        return PhpHelper::call([$object, $methodName], ... $params);
     }
 }

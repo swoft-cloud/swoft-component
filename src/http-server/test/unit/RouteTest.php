@@ -117,6 +117,6 @@ class RouteTest extends TestCase
     public function testNotSupportedMethod()
     {
         $response = $this->mockServer->request(MockRequest::GET, '/testRoute/method');
-        $response->assertContainContent('Route not found(path /testRoute/method)!');
+        $response->assertContainContent('Route not found');
     }
 }
