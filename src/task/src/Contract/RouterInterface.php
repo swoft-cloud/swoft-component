@@ -14,8 +14,9 @@ interface RouterInterface extends \Swoft\Contract\RouterInterface
      * @param string $className
      * @param string $taskName
      * @param string $mappingName
+     * @param string $methodName
      */
-    public function addRoute(string $className, string $taskName, string $mappingName): void;
+    public function addRoute(string $className, string $taskName, string $mappingName, string $methodName): void;
 
     /**
      * @param string $taskName

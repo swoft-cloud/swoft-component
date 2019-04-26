@@ -18,9 +18,7 @@ class AutoLoader extends SwoftComponent
         return [
             'db'      => [
                 'class'    => Database::class,
-                'dsn'      => 'mysql:dbname=test;host=172.17.0.1',
-                'username' => 'root',
-                'password' => 'swoft123456',
+                'dsn'      => 'mysql:dbname=dbname;host=127.0.0.1',
             ],
             'db.pool' => [
                 'class'    => Pool::class,
