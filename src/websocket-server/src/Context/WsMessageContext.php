@@ -5,6 +5,7 @@ namespace Swoft\WebSocket\Server\Context;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Context\AbstractContext;
+use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 use Swoole\WebSocket\Frame;
 
 /**
@@ -23,9 +24,15 @@ class WsMessageContext extends AbstractContext
     private $frame;
 
     /**
+     * @var MessageParserInterface
+     */
+    private $parser;
+
+    /**
      * @param Frame $frame
      *
      * @return WsMessageContext
+     * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
     public static function new(Frame $frame): self
@@ -64,5 +71,22 @@ class WsMessageContext extends AbstractContext
         parent::clear();
 
         $this->frame = null;
+        $this->parser = null;
+    }
+
+    /**
+     * @return MessageParserInterface
+     */
+    public function getParser(): MessageParserInterface
+    {
+        return $this->parser;
+    }
+
+    /**
+     * @param MessageParserInterface $parser
+     */
+    public function setParser(MessageParserInterface $parser): void
+    {
+        $this->parser = $parser;
     }
 }

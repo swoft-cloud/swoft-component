@@ -284,6 +284,21 @@ class StringHelper
     }
 
     /**
+     * @param string $prefix
+     * @param bool   $moreEntropy
+     *
+     * @return string
+     */
+    public static function uniqID(string $prefix = '', bool $moreEntropy = false): string
+    {
+        if (false === $moreEntropy) {
+            return \uniqid($prefix, false);
+        }
+
+        return \str_replace('.', '', \uniqid($prefix, true));
+    }
+
+    /**
      * Generate a more truly "random" alpha-numeric string.
      *
      * @param  int $length

@@ -4,6 +4,7 @@ namespace Swoft\WebSocket\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
+use Swoft\Context\Context;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\Session\Session;
@@ -101,6 +102,9 @@ class WsDispatcher
         if (!$msgParser) {
             throw new WsMessageException("message parser bean '$parseClass' is not exists");
         }
+
+        // Set parser to context
+        Context::mustGet()->setParser($msgParser);
 
         try {
             $body = $msgParser->decode($frame->data);

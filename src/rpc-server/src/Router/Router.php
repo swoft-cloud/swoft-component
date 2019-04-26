@@ -63,6 +63,14 @@ class Router implements RouterInterface
      */
     private function getRoute(string $interface, string $version): string
     {
-        return sprintf('%s@%s', $interface, $version);
+        return \sprintf('%s@%s', $interface, $version);
+    }
+
+    /**
+     * @return array
+     */
+    public function getRoutes(): array
+    {
+        return $this->routes;
     }
 }

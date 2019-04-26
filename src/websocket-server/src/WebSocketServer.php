@@ -20,7 +20,9 @@ class WebSocketServer extends Server
 
     /**
      * Start swoole server
+     *
      * @throws \Swoft\Server\Exception\ServerException
+     * @throws \Throwable
      */
     public function start(): void
     {
