@@ -68,6 +68,7 @@ class AutoLoader extends \Swoft\SwoftComponent
             'acceptFormatter' => [
                 'formats' => [
                     ContentType::JSON => Response::FORMAT_JSON,
+                    ContentType::HTML => Response::FORMAT_HTML,
                     ContentType::XML  => Response::FORMAT_XML,
                 ]
             ],

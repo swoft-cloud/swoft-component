@@ -6,6 +6,8 @@ namespace Swoft\Rpc\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Dispatcher;
+use Swoft\Log\Debug;
+use Swoft\Rpc\Error;
 use Swoft\Rpc\Server\Middleware\DefaultMiddleware;
 
 /**
@@ -23,7 +25,10 @@ class ServiceDispatcher extends Dispatcher
     protected $defaultMiddleware = DefaultMiddleware::class;
 
     /**
-     * @param array ...$params
+     * @param array $params
+     *
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function dispatch(...$params)
     {
@@ -39,13 +44,12 @@ class ServiceDispatcher extends Dispatcher
             $handler  = ServiceHandler::new($this->requestMiddleware(), $this->defaultMiddleware);
             $response = $handler->handle($request);
         } catch (\Throwable $e) {
-            echo json_encode($e);
-            \printf(
-                "HTTP Dispatch Error: %s\nAt %s %d\n",
-                $e->getMessage(),
-                $e->getFile(),
-                $e->getLine()
+            Debug::log(
+                \sprintf("RPC Server Error: %s\nAt %s %d\n", $e->getMessage(), $e->getFile(), $e->getLine())
             );
+
+            $error    = Error::new($e->getCode(), $e->getMessage(), null);
+            $response = $response->withError($error);
         }
 
         \Swoft::trigger(ServiceServerEvent::AFTER_RECEIVE, null, $response);

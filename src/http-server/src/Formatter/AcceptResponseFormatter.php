@@ -39,6 +39,11 @@ class AcceptResponseFormatter implements ResponseFormatterInterface
         $request = \context()->getRequest();
         $accepts = $request->getHeader('accept');
 
+        // Fix empty bug
+        if(empty($accepts)){
+            return $response;
+        }
+
         $acceptType = \current($accepts);
         foreach ($this->formats as $contentType => $formatType) {
             if (\strpos($acceptType, $contentType) === 0) {

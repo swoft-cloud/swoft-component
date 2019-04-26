@@ -43,7 +43,7 @@ class HttpServerCommand extends BaseServerCommand
         // Check if it has started
         if ($server->isRunning()) {
             $masterPid = $server->getPid();
-            \output()->writeln("<error>The server have been running!(PID: {$masterPid})</error>");
+            \output()->writeln("<error>The HTTP server have been running!(PID: {$masterPid})</error>");
             return;
         }
 
@@ -84,7 +84,7 @@ class HttpServerCommand extends BaseServerCommand
 
         Show::panel($panel);
 
-        \output()->writef('<success>Server start success !</success>');
+        \output()->writef('<success>HTTP server start success !</success>');
 
         // Start the server
         $server->start();
@@ -106,7 +106,7 @@ class HttpServerCommand extends BaseServerCommand
 
         // Check if it has started
         if (!$server->isRunning()) {
-            \output()->writeln('<error>The server is not running! cannot reload</error>');
+            \output()->writeln('<error>The HTTP server is not running! cannot reload</error>');
             return;
         }
 
@@ -121,7 +121,7 @@ class HttpServerCommand extends BaseServerCommand
             return;
         }
 
-        \output()->writef('<success>Server %s reload success</success>', $script);
+        \output()->writef('<success>HTTP server %s reload success</success>', $script);
     }
 
     /**
@@ -138,7 +138,7 @@ class HttpServerCommand extends BaseServerCommand
 
         // Check if it has started
         if (!$server->isRunning()) {
-            \output()->writeln('<error>The server is not running! cannot stop.</error>');
+            \output()->writeln('<error>The HTTP server is not running! cannot stop.</error>');
             return;
         }
 
@@ -167,7 +167,7 @@ class HttpServerCommand extends BaseServerCommand
             $server->stop();
         }
 
-        \output()->writef('<success>Server reload success !</success>');
+        \output()->writef('<success>Server HTTP reload success !</success>');
         $server->restart();
     }
 

@@ -7,6 +7,7 @@ use Swoft\Aop\Concern\AopTrait;
 use Swoft\Aop\Point\JoinPoint;
 use Swoft\Aop\Point\ProceedingJoinPoint;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Reflections;
 
 /**
@@ -53,9 +54,16 @@ class AspectHandler
     private $aspect;
 
     /**
+     * @var \Throwable
+     */
+    private $throwable;
+
+    /**
      * Invoke aspect
      *
      * @return mixed
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Throwable
      */
     public function invokeAspect()
@@ -63,14 +71,21 @@ class AspectHandler
         $around = $this->aspect['around'] ?? [];
         $after  = $this->aspect['after'] ?? [];
         $afRetn = $this->aspect['afterReturning'] ?? [];
+        $afThw  = $this->aspect['afterThrowing'] ?? [];
+
 
         $result = null;
-        if (!empty($around)) {
-            // Invoke around advice
-            $result = $this->invokeAdvice($around);
-        } else {
-            // Invoke target and before advice
-            $result = $this->invokeTarget();
+        try {
+            if (!empty($around)) {
+                // Invoke around advice
+                $result = $this->invokeAdvice($around);
+            } else {
+                // Invoke target and before advice
+                $result = $this->invokeTarget();
+            }
+
+        } catch (\Throwable $e) {
+            $this->throwable = $e;
         }
 
         // Invoke after advice
@@ -78,9 +93,18 @@ class AspectHandler
             $this->invokeAdvice($after);
         }
 
-        // Invoke afterReturning advice
-        if (!empty($afRetn)) {
-            $result = $this->invokeAdvice($afRetn);
+        // Invoke afterThrowing Or afterReturn
+        if (!empty($this->throwable)) {
+            if (!empty($afThw)) {
+                // Invoke afterThrowing advice
+                return $this->invokeAdvice($afThw, $this->throwable);
+            }
+            throw $this->throwable;
+        } else {
+            // Invoke afterReturning advice
+            if (!empty($afRetn)) {
+                $result = $this->invokeAdvice($afRetn, null, $result);
+            }
         }
 
         return $result;
@@ -106,23 +130,17 @@ class AspectHandler
 
         // Invoke next aspect
         if (!empty($this->aspects)) {
-            return $this->nextHandler()->invokeAspect();
+            $nextAspect      = $this->nextHandler();
+            $result          = $nextAspect->invokeAspect();
+            $this->throwable = $nextAspect->throwable;
+
+            return $result;
         }
 
-        $result = null;
-        $args   = empty($params) ? $this->args : $params;
-        try {
-            // Invoke target
-            $result = $this->target->__invokeTarget($this->methodName, $args);
-        } catch (\Throwable $e) {
-            if (!empty($afThw)) {
-                // Invoke afterThrowing advice
-                return $this->invokeAdvice($afThw);
-            }
-            throw $e;
-        }
+        $args = empty($params) ? $this->args : $params;
 
-        return $result;
+        // Invoke target
+        return $this->target->__invokeTarget($this->methodName, $args);
     }
 
     /**
@@ -198,6 +216,10 @@ class AspectHandler
             if ($type === ProceedingJoinPoint::class) {
                 $aspectArgs[] = $this->getProceedingJoinPoint($catch, $return);
                 continue;
+            }
+
+            if ($type == \Throwable::class) {
+                $aspectArgs[] = $catch;
             }
 
             $aspectArgs[] = null;

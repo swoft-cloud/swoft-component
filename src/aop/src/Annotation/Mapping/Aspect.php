@@ -21,7 +21,7 @@ final class Aspect
 {
     /**
      * Default order
-     * Default is execute at last
+     * Default is execute at last. The smaller is first to execute.
      *
      * @var int
      */

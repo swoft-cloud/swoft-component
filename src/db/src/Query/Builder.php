@@ -261,7 +261,7 @@ class Builder implements PrototypeInterface
      *
      * @param string ...$columns
      *
-     * @return static
+     * @return Builder
      */
     public function select(string ...$columns): self
     {
@@ -2460,7 +2460,7 @@ class Builder implements PrototypeInterface
             $this->columns = ['*'];
         }
 
-        yield $this->connection->cursor($this->toSql(), $this->getBindings(), !$this->useWritePdo);
+        return $this->connection->cursor($this->toSql(), $this->getBindings(), !$this->useWritePdo);
     }
 
     /**

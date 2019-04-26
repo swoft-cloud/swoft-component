@@ -4,10 +4,18 @@
 namespace Swoft\Rpc\Server;
 
 
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Server;
 use Swoole\Server as SwooleServer;
-use Swoft\Server\Exception\ServerException;
 
+/**
+ * Class ServiceServer
+ *
+ * @since 2.0
+ *
+ * @Bean(name="rpcServer")
+ */
 class ServiceServer extends Server
 {
     /**
@@ -36,6 +44,8 @@ class ServiceServer extends Server
      * Start server
      *
      * @throws ServerException
+     * @throws ServerException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function start(): void
     {

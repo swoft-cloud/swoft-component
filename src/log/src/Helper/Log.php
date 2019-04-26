@@ -32,7 +32,11 @@ class Log
      */
     public static function debug(string $message, ...$params): bool
     {
-        return self::getLogger()->debug(\sprintf($message, ...$params));
+        if (APP_DEBUG) {
+            return self::getLogger()->debug(\sprintf($message, ...$params));
+        }
+        
+        return true;
     }
 
     /**

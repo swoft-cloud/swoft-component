@@ -1,17 +1,14 @@
 <?php declare(strict_types=1);
 
 
-namespace SwoftTest\Test;
-
-
-use PHPUnit\Framework\TestCase;
+namespace SwoftTest\Rpc\Client\Unit;
 
 /**
- * Class ConfigTest
+ * Class RpcTest
  *
  * @since 2.0
  */
-class ConfigTest extends TestCase
+class RpcTest extends TestCase
 {
     public function testA()
     {

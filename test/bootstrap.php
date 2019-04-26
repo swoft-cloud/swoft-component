@@ -22,5 +22,5 @@ if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
 
 \Swoole\Runtime::enableCoroutine();
 $application = new \Swoft\Test\TestApplication();
-$application->setBeanFile(__DIR__ . '/case/bean.php');
+$application->setBeanFile(__DIR__ . '/testing/bean.php');
 $application->run();

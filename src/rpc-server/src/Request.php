@@ -24,54 +24,54 @@ class Request implements RequestInterface
     /**
      * @var string
      */
-    private $version = '';
+    protected $version = '';
 
     /**
      * @var string
      */
-    private $interface = '';
+    protected $interface = '';
 
     /**
      * @var string
      */
-    private $method = '';
+    protected $method = '';
 
     /**
      * @var array
      */
-    private $params = [];
+    protected $params = [];
 
     /**
      * @var array
      */
-    private $ext = [];
+    protected $ext = [];
 
     /**
      * Raw data
      *
      * @var string
      */
-    private $data = '';
+    protected $data = '';
 
     /**
      * @var Server
      */
-    private $server;
+    protected $server;
 
     /**
      * @var int
      */
-    private $fd = 0;
+    protected $fd = 0;
 
     /**
      * @var int
      */
-    private $reactorId = 0;
+    protected $reactorId = 0;
 
     /**
      * @var float
      */
-    private $requestTime = 0;
+    protected $requestTime = 0;
 
     /**
      * @param Server $server
@@ -84,8 +84,12 @@ class Request implements RequestInterface
      * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Rpc\Exception\RpcException
      */
-    public static function new(Server $server, int $fd, int $reactorId, string $data): Request
-    {
+    public static function new(
+        Server $server = null,
+        int $fd = null,
+        int $reactorId = null,
+        string $data = null
+    ): self {
         $instance = self::__instance();
 
         /* @var Packet $packet */
