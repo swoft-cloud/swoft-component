@@ -96,7 +96,7 @@ class DefaultMiddleware implements MiddlewareInterface
         }
 
         $response = \context()->getResponse();
-        return $response->setData($data);
+        return $response->withData($data);
     }
 
     /**
