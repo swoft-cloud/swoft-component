@@ -37,7 +37,7 @@ trait HidesAttributes
     /**
      * Set the hidden attributes for the model.
      *
-     * @param  array $hidden
+     * @param array $hidden
      *
      * @return $this
      */
@@ -51,13 +51,16 @@ trait HidesAttributes
     /**
      * Add hidden attributes for the model.
      *
-     * @param  array $attributes
+     * @param array $attributes
      *
      * @return void
      */
     public function addHidden(array $attributes)
     {
-        $this->hidden = array_merge($this->hidden, $attributes);
+        $this->visible = \array_diff($this->visible, $attributes);
+
+        $this->hidden = \array_unique(\array_merge($this->hidden, $attributes));
+
     }
 
     /**
@@ -73,7 +76,7 @@ trait HidesAttributes
     /**
      * Set the visible attributes for the model.
      *
-     * @param  array $visible
+     * @param array $visible
      *
      * @return $this
      */
@@ -87,29 +90,27 @@ trait HidesAttributes
     /**
      * Add visible attributes for the model.
      *
-     * @param  array $attributes
+     * @param array $attributes
      *
      * @return void
      */
     public function addVisible(array $attributes): void
     {
-        $this->visible = array_merge($this->visible, $attributes);
+        $this->hidden  = \array_diff($this->hidden, $attributes);
+
+        $this->visible = \array_unique(\array_merge($this->visible, $attributes));
     }
 
     /**
      * Make the given, typically hidden, attributes visible.
      *
-     * @param  array $attributes
+     * @param array $attributes
      *
      * @return self
      */
     public function makeVisible(array $attributes): self
     {
-        $this->hidden = array_diff($this->hidden, $attributes);
-
-        if (!empty($this->visible)) {
-            $this->addVisible($attributes);
-        }
+        $this->addVisible($attributes);
 
         return $this;
     }
@@ -117,15 +118,13 @@ trait HidesAttributes
     /**
      * Make the given, typically visible, attributes hidden.
      *
-     * @param  array $attributes
+     * @param array $attributes
      *
      * @return $this
      */
     public function makeHidden(array $attributes): self
     {
-        $this->visible = array_diff($this->visible, $attributes);
-
-        $this->hidden = array_unique(array_merge($this->hidden, $attributes));
+        $this->addHidden($attributes);
 
         return $this;
     }

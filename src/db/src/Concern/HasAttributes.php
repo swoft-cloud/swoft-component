@@ -47,8 +47,10 @@ trait HasAttributes
     {
         $attributes = [];
         foreach ($this->getArrayableAttributes() as $key => $value) {
-            [$pro, $value] = $this->getAttribute($key);
-            $attributes[$pro] = $value;
+            [$pro, $value] = $this->getArrayableItem($key);
+            if ($value !== 0) {
+                $attributes[$pro] = $value;
+            }
         }
 
         return $attributes;
@@ -62,28 +64,29 @@ trait HasAttributes
      */
     protected function getArrayableAttributes()
     {
-        return $this->getArrayableItems($this->attributes);
+        return $this->attributes;
     }
-
 
     /**
      * Get an attribute array of all arrayable values.
      *
-     * @param array $values
+     * @param $key
      *
      * @return array
+     * @throws EloquentException
      */
-    protected function getArrayableItems(array $values)
+    protected function getArrayableItem($key)
     {
-        if (count($this->getVisible()) > 0) {
-            $values = array_intersect_key($values, array_flip($this->getVisible()));
-        }
+        [$pro, $hidden, $value] = $this->getHiddenAttribute($key);
+        // hidden status
+        $hiddenStatus = $hidden || \in_array($key, $this->getHidden()) || \in_array($pro, $this->getHidden());
+        // visible status
+        $visibleStatus = \in_array($key, $this->getVisible()) || \in_array($pro, $this->getVisible());
 
-        if (count($this->getHidden()) > 0) {
-            $values = array_diff_key($values, array_flip($this->getHidden()));
+        if ($hiddenStatus === true && $visibleStatus === false) {
+            return [0, 0];
         }
-
-        return $values;
+        return [$pro, $value];
     }
 
     /**
@@ -108,6 +111,30 @@ trait HasAttributes
 
         $value = $this->{$getter}();
         return [$pro, $value];
+    }
+
+    /**
+     * Get an not hidden attribute from the model.
+     *
+     * @param string $key
+     *
+     * @return array
+     * @throws EloquentException
+     * @throws \BadMethodCallException
+     */
+    public function getHiddenAttribute(string $key): array
+    {
+        [$attrName, , $hidden, $pro] = $this->getMappingByColumn($key);
+        $getter = sprintf('get%s', ucfirst($attrName));
+
+        if (!method_exists($this, $getter)) {
+            throw new \BadMethodCallException(
+                sprintf('%s method(%s) is not exist!', static::class, $getter)
+            );
+        }
+
+        $value = $this->{$getter}();
+        return [$pro, $hidden, $value];
     }
 
     /**

@@ -187,19 +187,28 @@ class ModelTest extends TestCase
 
     public function testModelSelect()
     {
-        \sgo(function () {
-            // Delete only left 20 rows
-            $resCount = DB::selectOne('select count(*) as `count` from `user`')->count;
-            DB::delete('delete A FROM `user` A INNER JOIN (SELECT ID FROM `user` B limit ?) B
+        $uUser = User::updateOrCreate(['id' => 22], ['name' => "sakura", 'age' => 18]);
+
+        $user  = User::find(22);
+        $user->addHidden(['age']);
+        $user->addVisible(['password']);
+        $user->addHidden(['password']);
+        $user->addVisible(['age']);
+        $user->addVisible(['pwd']);
+
+        $this->assertArrayHasKey('pwd', $user->toArray());
+        // Delete only left 20 rows
+        $resCount = DB::selectOne('select count(*) as `count` from `user`')->count;
+        DB::delete('delete A FROM `user` A INNER JOIN (SELECT ID FROM `user` B limit ?) B
 on A.id=B.id;', [$resCount - 20]);
 
-            $afterCount = DB::selectOne('select count(*) as `count` from `user`')->count;
-            $this->assertEquals(20, $afterCount);
-        });
+        DB::selectOne('select count(*) as `count` from `user`')->count;
 
         foreach (User::query()->cursor() as $user) {
             /* @var User $user */
             $this->assertGreaterThan(0, $user->getId());
+//            var_dump($user->toArray());
+//            $this->assertArrayNotHasKey('password', $user->toArray());
         }
 
         // query all, each 10 strips
@@ -209,5 +218,7 @@ on A.id=B.id;', [$resCount - 20]);
                 //var_dump($user->getId());
             }
         });
+
+
     }
 }
