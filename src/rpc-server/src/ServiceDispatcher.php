@@ -50,7 +50,7 @@ class ServiceDispatcher extends Dispatcher
             );
 
             $error    = Error::new($e->getCode(), $e->getMessage(), null);
-            $response = $response->withError($error);
+            $response = $response->setError($error);
         }
 
         \Swoft::trigger(ServiceServerEvent::AFTER_RECEIVE, null, $response);

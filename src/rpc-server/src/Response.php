@@ -77,7 +77,7 @@ class Response implements ResponseInterface
      *
      * @return ResponseInterface
      */
-    public function withError(Error $error): ResponseInterface
+    public function setError(Error $error): ResponseInterface
     {
         $this->error = $error;
         return $this;
@@ -88,7 +88,7 @@ class Response implements ResponseInterface
      *
      * @return ResponseInterface
      */
-    public function withData($data): ResponseInterface
+    public function setData($data): ResponseInterface
     {
         $this->data = $data;
         return $this;
@@ -99,7 +99,7 @@ class Response implements ResponseInterface
      *
      * @return ResponseInterface
      */
-    public function withContent(string $content): ResponseInterface
+    public function setContent(string $content): ResponseInterface
     {
         $this->content = $content;
 
@@ -140,6 +140,14 @@ class Response implements ResponseInterface
     public function getReactorId(): int
     {
         return $this->reactorId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getData()
+    {
+        return $this->data;
     }
 
     /**

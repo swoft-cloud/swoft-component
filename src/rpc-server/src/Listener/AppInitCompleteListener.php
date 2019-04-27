@@ -8,6 +8,7 @@ use Swoft\Bean\BeanFactory;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
+use Swoft\Rpc\Server\Middleware\MiddlewareRegister;
 use Swoft\Rpc\Server\Router\Router;
 use Swoft\Rpc\Server\Router\RouteRegister;
 use Swoft\SwoftEvent;
@@ -32,6 +33,10 @@ class AppInitCompleteListener implements EventHandlerInterface
         /* @var Router $router */
         $router = BeanFactory::getBean('serviceRouter');
 
+        // Register router
         RouteRegister::registerRoutes($router);
+
+        // Register middleware
+        MiddlewareRegister::register();
     }
 }

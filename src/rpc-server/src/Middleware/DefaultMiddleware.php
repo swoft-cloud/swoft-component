@@ -82,6 +82,6 @@ class DefaultMiddleware implements MiddlewareInterface
         $data = PhpHelper::call([$object, $method], ...$params);
 
         $response = \context()->getResponse();
-        return $response->withData($data);
+        return $response->setData($data);
     }
 }
