@@ -64,7 +64,7 @@ class ListTest extends TestCase
         $value = __METHOD__;
         Redis::del($this->getListKey());
         \sgo(function () use ($value) {
-            sleep(1);
+            sleep(0.2);
             Redis::lPush($this->getListKey(), $value, $value, $value);
         });
         // 阻塞等待

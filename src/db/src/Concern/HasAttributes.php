@@ -70,12 +70,12 @@ trait HasAttributes
     /**
      * Get an attribute array of all arrayable values.
      *
-     * @param $key
+     * @param string $key
      *
      * @return array
      * @throws EloquentException
      */
-    protected function getArrayableItem($key)
+    protected function getArrayableItem(string $key)
     {
         [$pro, $hidden, $value] = $this->getHiddenAttribute($key);
         // hidden status
