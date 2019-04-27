@@ -23,6 +23,7 @@ class RpcMdTest extends TestCase
             'ClassMd2'  => 'ClassMd2',
             'ClassMd3'  => 'ClassMd3',
             'ClassMd'   => 'ClassMd',
+            'userMd'    => 'userMd'
         ];
         $response = $this->mockRpcServer->call(DemoInterface::class, 'getList', [12, 'type2'], [], '1.3');
         $this->assertEquals($data, $response->getData());
@@ -41,6 +42,7 @@ class RpcMdTest extends TestCase
             'ClassMd2'  => 'ClassMd2',
             'ClassMd3'  => 'ClassMd3',
             'ClassMd'   => 'ClassMd',
+            'userMd'    => 'userMd'
         ];
         $response = $this->mockRpcServer->call(DemoInterface::class, 'getInfo', [12], [], '1.3');
         $this->assertEquals($data, $response->getData());
