@@ -22,6 +22,11 @@ class Request implements RequestInterface
     use PrototypeTrait;
 
     /**
+     * Router handler attribute
+     */
+    public const ROUTER_ATTRIBUTE = 'swoftRouterHandler';
+
+    /**
      * @var string
      */
     protected $version = '';
@@ -72,6 +77,17 @@ class Request implements RequestInterface
      * @var float
      */
     protected $requestTime = 0;
+
+    /**
+     * @var array
+     *
+     * @example
+     * [
+     *    'key' => value,
+     *    'key' => value,
+     * ]
+     */
+    protected $attributes = [];
 
     /**
      * @param Server $server
@@ -210,5 +226,25 @@ class Request implements RequestInterface
     public function getRequestTime(): float
     {
         return $this->requestTime;
+    }
+
+    /**
+     * @param string $key
+     * @param mixed  $value
+     */
+    public function setAttribute(string $key, $value): void
+    {
+        $this->attributes[$key] = $value;
+    }
+
+    /**
+     * @param string $key
+     * @param null   $default
+     *
+     * @return mixed
+     */
+    public function getAttribute(string $key, $default = null)
+    {
+        return $this->attributes[$key] ?? $default;
     }
 }
