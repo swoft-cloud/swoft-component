@@ -48,7 +48,7 @@ trait HasAttributes
         $attributes = [];
         foreach ($this->getArrayableAttributes() as $key => $value) {
             [$pro, $value] = $this->getArrayableItem($key);
-            if ($value !== 0) {
+            if ($value !== false) {
                 $attributes[$pro] = $value;
             }
         }
@@ -84,7 +84,7 @@ trait HasAttributes
         $visibleStatus = \in_array($key, $this->getVisible()) || \in_array($pro, $this->getVisible());
 
         if ($hiddenStatus === true && $visibleStatus === false) {
-            return [0, 0];
+            return [$key, false];
         }
         return [$pro, $value];
     }
