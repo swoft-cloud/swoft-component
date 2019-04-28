@@ -27,17 +27,20 @@ abstract class Dispatcher implements DispatcherInterface
     /**
      * @var array
      */
-    private $preMiddlewares = [];
+    protected $preMiddlewares = [];
 
     /**
      * @var array
      */
-    private $afterMiddlewares = [];
+    protected $afterMiddlewares = [];
 
+    /**
+     * Init
+     */
     public function init(): void
     {
-        $this->preMiddlewares   = $this->preMiddleware();
-        $this->afterMiddlewares = $this->afterMiddleware();
+        $this->preMiddlewares   = array_merge($this->preMiddleware(), $this->preMiddlewares);
+        $this->afterMiddlewares = array_merge($this->afterMiddleware(), $this->afterMiddlewares);
     }
 
     /**

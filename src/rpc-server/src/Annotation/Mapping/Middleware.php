@@ -14,7 +14,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
  * @since 2.0
  *
  * @Annotation
- * @Target({"CLASS", "METHOD"})
+ * @Target({"CLASS", "METHOD", "ANNOTATION"})
  * @Attributes({
  *     @Attribute("name", type="string"),
  * })

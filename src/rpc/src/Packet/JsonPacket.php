@@ -111,7 +111,10 @@ class JsonPacket extends AbstractPacket
         if ($code === null) {
             $data['result'] = $result;
 
-            return JsonHelper::encode($data, JSON_UNESCAPED_UNICODE);
+            $string = JsonHelper::encode($data, JSON_UNESCAPED_UNICODE);
+            $string = $this->addPackageEof($string);
+
+            return $string;
         }
 
         $error = [
@@ -125,7 +128,10 @@ class JsonPacket extends AbstractPacket
 
         $data['error'] = $error;
 
-        return JsonHelper::encode($data, JSON_UNESCAPED_UNICODE);
+        $string = JsonHelper::encode($data, JSON_UNESCAPED_UNICODE);
+        $string = $this->addPackageEof($string);
+
+        return $string;
     }
 
     /**

@@ -24,7 +24,7 @@ class Middlewares
     /**
      * Middlewares
      *
-     * @var array
+     * @var Middleware[]
      *
      * @Required()
      */
@@ -46,7 +46,7 @@ class Middlewares
     }
 
     /**
-     * @return array
+     * @return Middleware[]
      */
     public function getMiddlewares(): array
     {

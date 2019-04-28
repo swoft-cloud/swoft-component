@@ -106,4 +106,14 @@ class Co
     {
         return Coroutine::writeFile($filename, $data, $flags);
     }
+
+    /**
+     * @param string $filename
+     *
+     * @return string
+     */
+    public static function readFile(string $filename): string
+    {
+        return Coroutine::readFile($filename);
+    }
 }

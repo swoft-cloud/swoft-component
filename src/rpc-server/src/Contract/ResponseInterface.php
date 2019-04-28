@@ -20,21 +20,21 @@ interface ResponseInterface
      *
      * @return ResponseInterface
      */
-    public function withError(Error $error): ResponseInterface;
+    public function setError(Error $error): ResponseInterface;
 
     /**
      * @param $data
      *
      * @return ResponseInterface
      */
-    public function withData($data): ResponseInterface;
+    public function setData($data): ResponseInterface;
 
     /**
      * @param string $content
      *
      * @return ResponseInterface
      */
-    public function withContent(string $content): ResponseInterface;
+    public function setContent(string $content): ResponseInterface;
 
     /**
      * @return bool
@@ -55,4 +55,9 @@ interface ResponseInterface
      * @return int
      */
     public function getReactorId(): int;
+
+    /**
+     * @return mixed
+     */
+    public function getData();
 }

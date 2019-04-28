@@ -77,4 +77,18 @@ interface RequestInterface
      * @return float
      */
     public function getRequestTime(): float;
+
+    /**
+     * @param string $key
+     * @param mixed  $value
+     */
+    public function setAttribute(string $key, $value): void;
+
+    /**
+     * @param string $key
+     * @param mixed  $default
+     *
+     * @return mixed
+     */
+    public function getAttribute(string $key, $default = null);
 }

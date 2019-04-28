@@ -42,9 +42,8 @@ trait ServiceTrait
         $connection->setRelease(true);
         $packet = $connection->getPacket();
 
-        $ext = [
-            
-        ];
+        // Ext data
+        $ext = $connection->getClient()->getExtender()->getExt();
 
         $protocol = Protocol::new($version, $interfaceClass, $methodName, $params, $ext);
         $data     = $packet->encode($protocol);
@@ -57,6 +56,7 @@ trait ServiceTrait
 
         $result = $connection->recv();
         $connection->release();
+
         $response = $packet->decodeResponse($result);
 
         if ($response->getError() !== null) {
