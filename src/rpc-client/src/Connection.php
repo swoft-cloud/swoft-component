@@ -117,7 +117,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      */
     public function recv(): string
     {
-        return $this->connection->recv();
+        return $this->connection->recv((float)-1);
     }
 
     /**

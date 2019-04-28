@@ -56,6 +56,7 @@ trait ServiceTrait
 
         $result = $connection->recv();
         $connection->release();
+
         $response = $packet->decodeResponse($result);
 
         if ($response->getError() !== null) {

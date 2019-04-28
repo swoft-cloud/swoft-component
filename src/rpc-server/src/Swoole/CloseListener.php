@@ -28,10 +28,10 @@ class CloseListener implements CloseInterface
     public function onClose(Server $server, int $fd, int $reactorId): void
     {
         // Before close
-        \Swoft::trigger(ServiceServerEvent::BEFORE_CLOSE);
+        \Swoft::trigger(ServiceServerEvent::BEFORE_CLOSE, null, $server, $fd, $reactorId);
 
         // Close event
-        \Swoft::trigger(ServiceServerEvent::CLOSE, null, $server, $fd, $reactorId);
+        \Swoft::trigger(ServiceServerEvent::CLOSE);
 
         // After close
         \Swoft::trigger(ServiceServerEvent::AFTER_CLOSE);
