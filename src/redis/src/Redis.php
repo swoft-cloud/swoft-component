@@ -98,7 +98,7 @@ use Swoft\Redis\Exception\RedisException;
  * @method static int zLexCount(string $key, int $min, int $max)
  * @method static array zRange(string $key, int $start, int $end, bool $withscores = null)
  * @method static array zRangeByLex(string $key, int $min, int $max, int $offset = null, int $limit = null)
- * @method static array zRangeByScore(string $key, int $start, int $end, array $options = [])
+ * @method static array zRangeByScore(string $key, string $start, string $end, array $options = [])
  * @method static int zRank(string $key, string $member)
  * @method static array zRemRangeByLex(string $key, int $min, int $max)
  * @method static array zRevRange(string $key, int $start, int $end, bool $withscore = null)
