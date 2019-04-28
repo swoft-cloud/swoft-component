@@ -421,6 +421,16 @@ class PharCompiler
             $phar->compressFiles($this->compressMode);
         }
 
+        // Default meta information
+        // $metaData = array(
+        //     'Author'      => 'Inhere <in.@lange.demon.co.uk>',
+        //     'Description' => 'PHP Class for working with Matrix numbers',
+        //     'Copyright'   => 'Mark Baker (c) 2013-' . date('Y'),
+        //     'Timestamp'   => time(),
+        //     'Version'     => '0.1.0',
+        //     'Date'        => date('Y-m-d')
+        // );
+        // $phar->setMetadata($metaData);
         $phar->stopBuffering();
         unset($phar);
 
