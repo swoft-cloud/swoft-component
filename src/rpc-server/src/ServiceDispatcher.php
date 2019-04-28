@@ -9,6 +9,7 @@ use Swoft\Dispatcher;
 use Swoft\Log\Debug;
 use Swoft\Rpc\Error;
 use Swoft\Rpc\Server\Middleware\DefaultMiddleware;
+use Swoft\Rpc\Server\Middleware\UserMiddleware;
 
 /**
  * Class ServiceDispatcher
@@ -49,7 +50,7 @@ class ServiceDispatcher extends Dispatcher
             );
 
             $error    = Error::new($e->getCode(), $e->getMessage(), null);
-            $response = $response->withError($error);
+            $response = $response->setError($error);
         }
 
         \Swoft::trigger(ServiceServerEvent::AFTER_RECEIVE, null, $response);
@@ -71,7 +72,7 @@ class ServiceDispatcher extends Dispatcher
     public function afterMiddleware(): array
     {
         return [
-
+            UserMiddleware::class
         ];
     }
 }

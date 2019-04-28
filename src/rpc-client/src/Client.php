@@ -4,8 +4,12 @@
 namespace Swoft\Rpc\Client;
 
 
+use Swoft\Bean\BeanFactory;
+use Swoft\Rpc\Client\Contract\ExtenderInterface;
+use Swoft\Rpc\Client\Contract\ProviderInterface;
 use Swoft\Rpc\Client\Exception\RpcClientException;
 use Swoft\Rpc\Contract\PacketInterface;
+use Swoft\Stdlib\Helper\Arr;
 
 /**
  * Class Client
@@ -40,8 +44,14 @@ class Client
      */
     protected $packet;
 
+    /**
+     * @var ExtenderInterface
+     */
     protected $extender;
 
+    /**
+     * @var ProviderInterface
+     */
     protected $provider;
 
     /**
@@ -81,7 +91,7 @@ class Client
      */
     public function getSetting(): array
     {
-        return $this->setting;
+        return Arr::merge($this->defaultSetting(), $this->setting);
     }
 
     /**
@@ -96,5 +106,38 @@ class Client
             );
         }
         return $this->packet;
+    }
+
+    /**
+     * @return ExtenderInterface
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function getExtender(): ExtenderInterface
+    {
+        if (!empty($this->extender) && $this->extender instanceof ExtenderInterface) {
+            return $this->extender;
+        }
+        return BeanFactory::getBean('rpcClientExtender');
+    }
+
+    /**
+     * @return ProviderInterface
+     */
+    public function getProvider(): ?ProviderInterface
+    {
+        return $this->provider;
+    }
+
+    /**
+     * @return array
+     */
+    private function defaultSetting(): array
+    {
+        return [
+            'open_eof_check' => true,
+            'open_eof_split' => true,
+            'package_eof'    => "\r\n\r\n",
+        ];
     }
 }

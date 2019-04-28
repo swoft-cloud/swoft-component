@@ -12,6 +12,7 @@ use Swoft\Rpc\Server\Contract\RequestHandlerInterface;
 use Swoft\Rpc\Server\Contract\RequestInterface;
 use Swoft\Rpc\Server\Contract\ResponseInterface;
 use Swoft\Rpc\Server\Exception\RpcServerException;
+use Swoft\Rpc\Server\Request;
 use Swoft\Rpc\Server\Router\Router;
 use Swoft\Stdlib\Helper\PhpHelper;
 
@@ -53,10 +54,8 @@ class DefaultMiddleware implements MiddlewareInterface
         $method    = $request->getMethod();
         $params    = $request->getParams();
 
-        /* @var Router $router */
-        $router = BeanFactory::getBean('serviceRouter');
 
-        [$status, $className] = $router->match($version, $interface);
+        [$status, $className] = $request->getAttribute(Request::ROUTER_ATTRIBUTE);
 
         if ($status != Router::FOUND) {
             throw new RpcServerException(
@@ -83,6 +82,6 @@ class DefaultMiddleware implements MiddlewareInterface
         $data = PhpHelper::call([$object, $method], ...$params);
 
         $response = \context()->getResponse();
-        return $response->withData($data);
+        return $response->setData($data);
     }
 }

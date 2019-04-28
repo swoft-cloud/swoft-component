@@ -37,12 +37,12 @@ class Packet implements PacketInterface
     /**
      * @var bool
      */
-    private $openEofCheck = false;
+    private $openEofCheck = true;
 
     /**
      * @var string
      */
-    private $packageEof = '';
+    private $packageEof = "\r\n\r\n";
 
     /**
      * @var bool

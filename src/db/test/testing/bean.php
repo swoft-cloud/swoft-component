@@ -10,3 +10,4 @@ return [
         'password' => 'swoft123456',
     ],
 ];
+

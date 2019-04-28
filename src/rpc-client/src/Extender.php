@@ -4,12 +4,15 @@
 namespace Swoft\Rpc\Client;
 
 
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Rpc\Client\Contract\ExtenderInterface;
 
 /**
  * Class Extender
  *
  * @since 2.0
+ *
+ * @Bean(name="rpcClientExtender")
  */
 class Extender implements ExtenderInterface
 {
@@ -18,6 +21,10 @@ class Extender implements ExtenderInterface
      */
     public function getExt(): array
     {
-
+        return [
+            \context()->get('traceid', ''),
+            \context()->get('spanid', ''),
+            \context()->get('parentid', ''),
+        ];
     }
 }

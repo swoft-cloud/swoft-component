@@ -7,6 +7,7 @@ namespace Swoft\Rpc\Server;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Server;
+use Swoft\Stdlib\Helper\Arr;
 use Swoole\Server as SwooleServer;
 
 /**
@@ -51,5 +52,18 @@ class ServiceServer extends Server
     {
         $this->swooleServer = new SwooleServer($this->host, $this->port, $this->mode, $this->type);
         $this->startSwoole();
+    }
+
+    /**
+     * @return array
+     */
+    public function defaultSetting(): array
+    {
+        $setting = [
+            'open_eof_check' => true,
+            'package_eof'    => "\r\n\r\n",
+        ];
+
+        return Arr::merge(parent::defaultSetting(), $setting);
     }
 }

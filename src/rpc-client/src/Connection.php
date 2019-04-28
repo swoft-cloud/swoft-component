@@ -8,8 +8,10 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Connection\Pool\AbstractConnection;
 use Swoft\Rpc\Client\Contract\ConnectionInterface;
+use Swoft\Rpc\Client\Contract\ProviderInterface;
 use Swoft\Rpc\Client\Exception\RpcClientException;
 use Swoft\Rpc\Contract\PacketInterface;
+use Swoft\Stdlib\Helper\JsonHelper;
 use Swoole\Coroutine\Client;
 use Swoft\Rpc\Client\Client as RpcClient;
 
@@ -59,8 +61,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     {
         $connection = new Client(SWOOLE_SOCK_TCP);
 
-        $host    = $this->client->getHost();
-        $port    = $this->client->getPort();
+        [$host, $port] = $this->getHostPort();
         $setting = $this->client->getSetting();
 
         if (!empty($setting)) {
@@ -76,9 +77,12 @@ class Connection extends AbstractConnection implements ConnectionInterface
         $this->connection = $connection;
     }
 
+    /**
+     * @return bool
+     */
     public function reconnect(): bool
     {
-
+        return false;
     }
 
     /**
@@ -88,6 +92,14 @@ class Connection extends AbstractConnection implements ConnectionInterface
     public function getPacket(): PacketInterface
     {
         return $this->client->getPacket();
+    }
+
+    /**
+     * @return \Swoft\Rpc\Client\Client
+     */
+    public function getClient(): \Swoft\Rpc\Client\Client
+    {
+        return $this->client;
     }
 
     /**
@@ -105,11 +117,45 @@ class Connection extends AbstractConnection implements ConnectionInterface
      */
     public function recv(): string
     {
-        return $this->connection->recv();
+        return $this->connection->recv((float)-1);
     }
 
+    /**
+     * @return int
+     */
     public function getLastTime(): int
     {
         return time();
+    }
+
+    /**
+     * @return array
+     * @throws RpcClientException
+     */
+    private function getHostPort(): array
+    {
+        $provider = $this->client->getProvider();
+        if (empty($provider) || !$provider instanceof ProviderInterface || empty($provider->getList())) {
+            return [$this->client->getHost(), $this->client->getPort()];
+        }
+
+        $list = $provider->getList();
+        if (!is_array($list)) {
+            throw new RpcClientException(
+                \sprintf('Provider(%s) return format is error!', JsonHelper::encode($list))
+            );
+        }
+        $randKey  = array_rand($list, 1);
+        $hostPort = \explode(':', $list[$randKey]);
+
+        if (\count($hostPort) < 2) {
+            throw new RpcClientException(
+                \sprintf('Provider(%s) return format is error!', JsonHelper::encode($hostPort))
+            );
+        }
+
+        [$host, $port] = $hostPort;
+
+        return [$host, $port];
     }
 }

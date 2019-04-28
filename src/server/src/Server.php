@@ -14,6 +14,7 @@ use Swoft\Stdlib\Helper\Str;
 use Swoft\Stdlib\Helper\Sys;
 use Swoole\Process;
 use Swoole\Server as CoServer;
+use Swoft\Stdlib\Helper\Arr;
 
 /**
  * Class Server
@@ -70,12 +71,7 @@ abstract class Server implements ServerInterface
      * @link https://wiki.swoole.com/wiki/page/274.html
      * @var array
      */
-    protected $setting = [
-        'daemonize'       => 0,
-        'worker_num'      => 1,
-        // If > 0, must listen event: task, finish
-        'task_worker_num' => 0
-    ];
+    protected $setting = [];
 
     /**
      * Pid file
@@ -500,7 +496,7 @@ abstract class Server implements ServerInterface
      */
     public function getSetting(): array
     {
-        return $this->setting;
+        return Arr::merge($this->defaultSetting(), $this->setting);
     }
 
     /**
@@ -862,5 +858,19 @@ abstract class Server implements ServerInterface
     public function getUniqid(): string
     {
         return $this->uniqid;
+    }
+
+    /**
+     * @return array
+     */
+    protected function defaultSetting(): array
+    {
+        return [
+            'daemonize'       => 0,
+            'worker_num'      => 1,
+
+            // If > 0, must listen event: task, finish
+            'task_worker_num' => 0
+        ];
     }
 }
