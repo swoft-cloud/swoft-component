@@ -4,6 +4,7 @@ namespace Swoft;
 
 use Swoft\Console\Console;
 use Swoft\Context\Context;
+use Swoft\Log\Debug;
 use Swoft\Log\Helper\CLog;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoole\Coroutine;
@@ -75,7 +76,7 @@ class Co
 
                 PhpHelper::call($callable);
             } catch (\Throwable $e) {
-                CLog::error(
+                Debug::log(
                     "Coroutine internal error: %s\nAt File %s line %d\nTrace:\n%s",
                     $e->getMessage(),
                     $e->getFile(),
@@ -108,6 +109,8 @@ class Co
     }
 
     /**
+     * Read file
+     *
      * @param string $filename
      *
      * @return string
@@ -115,5 +118,42 @@ class Co
     public static function readFile(string $filename): string
     {
         return Coroutine::readFile($filename);
+    }
+
+    /**
+     * Multi request
+     *
+     * @param array $requests
+     * @param float $timeout
+     *
+     * @return array
+     * @throws Bean\Exception\ContainerException
+     * @throws \ReflectionException
+     */
+    public static function multi(array $requests, float $timeout = 0): array
+    {
+        $count   = \count($requests);
+        $channel = new Coroutine\Channel($count);
+
+        foreach ($requests as $key => $callback) {
+            \sgo(function () use ($key, $channel, $callback) {
+                $data = PhpHelper::call($callback);
+                $channel->push([$key, $data]);
+            });
+        }
+
+        $response = [];
+        while ($count > 0) {
+            $result = $channel->pop($timeout);
+            if ($result === false) {
+                Debug::log('Co::multi request fail!');
+            }
+            [$key, $value] = $result;
+            $response[$key] = $value;
+
+            $count--;
+        }
+
+        return $response;
     }
 }
