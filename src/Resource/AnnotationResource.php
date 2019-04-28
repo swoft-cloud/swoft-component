@@ -149,7 +149,7 @@ class AnnotationResource extends Resource
                 // If is disable, will skip scan annotation classes
                 if ($isEnabled && $loaderObject instanceof LoaderInterface) {
                     AnnotationRegister::registerAutoLoaderFile($loaderFile);
-                    $this->notify('addLoaderClass', $this->clearBasePath($loaderFile));
+                    $this->notify('addLoaderClass', $loaderClass);
                     $this->loadAnnotation($loaderObject);
                 }
 
