@@ -189,13 +189,16 @@ class ModelTest extends TestCase
     {
         $uUser = User::updateOrCreate(['id' => 22], ['name' => "sakura", 'age' => 18]);
 
-        $user  = User::find(22);
+        $user = User::find(22);
         $user->addHidden(['age']);
         $user->addVisible(['password']);
         $user->addHidden(['password']);
         $user->addVisible(['age']);
         $user->addVisible(['pwd']);
 
+        DB::transaction(function () {
+
+        });
         $this->assertArrayHasKey('pwd', $user->toArray());
         // Delete only left 20 rows
         $resCount = DB::selectOne('select count(*) as `count` from `user`')->count;

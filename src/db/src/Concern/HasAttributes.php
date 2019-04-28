@@ -348,8 +348,13 @@ trait HasAttributes
         $this->attributes = $attributes;
 
         foreach ($attributes as $key => $value) {
-            [, $type] = $this->getMappingByColumn($key);
-
+            $column = EntityRegister::getReverseMappingByColumn($this->getClassName(), $key);
+            // not found this key column annotation
+            if (empty($column)) {
+                unset($this->attributes[$key]);
+                continue;
+            }
+            $type = $column['type'];
             $this->setAttribute($key, ObjectHelper::parseParamType($type, $value));
         }
 
