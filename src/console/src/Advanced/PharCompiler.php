@@ -68,7 +68,7 @@ class PharCompiler
     /**
      * @var array Want to exclude directory/file name list
      * [
-     *  '/test', // exclude all contains '/test/' path
+     *  '/test/', // exclude all contains '/test/' path
      * ]
      */
     private $excludes = [];
@@ -250,7 +250,7 @@ class PharCompiler
     {
         $list = [];
         foreach ((array)$patterns as $pattern) {
-            $list[] = '/' . \trim($pattern, '/');
+            $list[] = '/' . \trim($pattern, '/') . '/';
         }
 
         $this->excludes = \array_merge($this->excludes, $list);
@@ -265,7 +265,7 @@ class PharCompiler
     {
         $list = [];
         foreach ((array)$patterns as $pattern) {
-            $list[] = '/' . \ltrim($pattern, '/');
+            $list[] = '/' . \ltrim($pattern, '/') . '/';
         }
 
         $this->excludes = \array_merge($this->excludes, $list);
@@ -632,7 +632,7 @@ EOF;
                 // Skip exclude directories.
                 if ($file->isDir()) {
                     foreach ($this->excludes as $exclude) {
-                        if (\strpos($path, $exclude) > 0) {
+                        if (\strpos($path . '/', $exclude) > 0) {
                             $this->fire(self::ON_SKIP, $path, false);
                             return false;
                         }

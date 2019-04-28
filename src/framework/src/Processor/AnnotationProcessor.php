@@ -31,6 +31,7 @@ class AnnotationProcessor extends Processor
         // Find AutoLoader classes. Parse and collect annotations.
         AnnotationRegister::load([
             'basePath'             => $app->getBasePath(),
+            'notifyHandler'        => [$this, 'notifyHandler'],
             'disabledAutoLoaders'  => $app->getDisabledAutoLoaders(),
             'disabledPsr4Prefixes' => $app->getDisabledPsr4Prefixes(),
         ]);
@@ -45,5 +46,31 @@ class AnnotationProcessor extends Processor
         );
 
         return $this->application->afterAnnotation();
+    }
+
+    /**
+     * @param string $type
+     * @param string $target
+     * @see \Swoft\Annotation\Resource\AnnotationResource::load()
+     */
+    public function notifyHandler(string $type, $target): void
+    {
+        switch ($type) {
+            case 'excludeNs':
+                CLog::debug('Exclude namespace %s', $target);
+                break;
+            case 'noLoaderFile':
+                CLog::debug('No autoloader on %s', $target);
+                break;
+            case 'noLoaderClass':
+                CLog::debug('Autoloader class not exist %s', $target);
+                break;
+            case 'findLoaderClass':
+                CLog::debug('Find autoloader %s', $target);
+                break;
+            case 'addLoaderClass':
+                CLog::debug('Parse autoloader %s', $target);
+                break;
+        }
     }
 }

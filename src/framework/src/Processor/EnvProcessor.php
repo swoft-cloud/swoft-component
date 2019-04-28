@@ -26,11 +26,11 @@ class EnvProcessor extends Processor
 
         $envFile = $this->application->getEnvFile();
         $envFile = \alias($envFile);
-        $path    = dirname($envFile);
-        $env     = basename($envFile);
+        $path    = \dirname($envFile);
+        $env     = \basename($envFile);
 
         if (!\file_exists($envFile)) {
-            CLog::warning('Env file(%s) is not exist! Skip load it', $envFile);
+            CLog::warning('Env file(%s) is not exist! skip load it', $envFile);
             return true;
         }
 
@@ -39,6 +39,11 @@ class EnvProcessor extends Processor
         $dotenv->load();
 
         CLog::info('Env file(%s) is loaded', $envFile);
+
+        // Define some global constants
+        \define('APP_DEBUG', (int)\env('APP_DEBUG', 0));
+        \define('SWOFT_DEBUG', (int)\env('SWOFT_DEBUG', 0));
+
         return $this->application->afterEvent();
     }
 }
