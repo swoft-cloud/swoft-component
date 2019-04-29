@@ -40,6 +40,11 @@ class AnnotationResource extends Resource
     private $basePath = '';
 
     /**
+     * @var callable
+     */
+    private $notifyHandler;
+
+    /**
      * @var string
      */
     private $loaderClassSuffix = 'php';
@@ -110,13 +115,15 @@ class AnnotationResource extends Resource
 
         foreach ($prefixDirsPsr4 as $ns => $paths) {
             // Only scan namespaces
-            if (!empty($this->onlyNamespaces) && !in_array($ns, $this->onlyNamespaces, true)) {
+            if ($this->onlyNamespaces && !\in_array($ns, $this->onlyNamespaces, true)) {
+                $this->notify('excludeNs', $ns);
                 continue;
             }
 
             // It is excluded psr4 prefix
             if ($this->isExcludedPsr4Prefix($ns)) {
                 AnnotationRegister::registerExcludeNs($ns);
+                $this->notify('excludeNs', $ns);
                 continue;
             }
 
@@ -124,20 +131,25 @@ class AnnotationResource extends Resource
             foreach ($paths as $path) {
                 $loaderFile = $this->getAnnotationClassLoaderFile($path);
                 if (!\file_exists($loaderFile)) {
+                    $this->notify('noLoaderFile', $this->clearBasePath($path), $loaderFile);
                     continue;
                 }
 
                 $loaderClass = $this->getAnnotationLoaderClassName($ns);
                 if (!\class_exists($loaderClass)) {
+                    $this->notify('noLoaderClass', $loaderClass);
                     continue;
                 }
 
                 $loaderObject = new $loaderClass();
                 $isEnabled    = !isset($this->disabledAutoLoaders[$loaderClass]);
 
+                $this->notify('findLoaderClass', $this->clearBasePath($loaderFile));
+
                 // If is disable, will skip scan annotation classes
                 if ($isEnabled && $loaderObject instanceof LoaderInterface) {
                     AnnotationRegister::registerAutoLoaderFile($loaderFile);
+                    $this->notify('addLoaderClass', $loaderClass);
                     $this->loadAnnotation($loaderObject);
                 }
 
@@ -486,5 +498,26 @@ class AnnotationResource extends Resource
     public function setOnlyNamespaces(array $onlyNamespaces): void
     {
         $this->onlyNamespaces = $onlyNamespaces;
+    }
+
+    /**
+     * Notify operation
+     *
+     * @param string $type
+     * @param        $target
+     */
+    public function notify(string $type, ...$target): void
+    {
+        if ($this->notifyHandler) {
+            ($this->notifyHandler)($type, ...$target);
+        }
+    }
+
+    /**
+     * @param callable $notifyHandler
+     */
+    public function setNotifyHandler($notifyHandler): void
+    {
+        $this->notifyHandler = $notifyHandler;
     }
 }

@@ -10,8 +10,6 @@ use Swoft\Console\Output\Output;
 use Swoft\Console\Router\Router;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\ObjectHelper;
-use function input;
-use function output;
 
 /**
  * Class Application
@@ -89,19 +87,19 @@ class Application implements ConsoleInterface
             'name'        => $this->getName(),
             'description' => $this->getDescription(),
             // 'group' => self::getName(),
-            'workDir'     => input()->getPwd(),
+            'workDir'     => \input()->getPwd(),
             'script'      => $script, // bin/app
             'binFile'     => $script,
-            'command'     => input()->getCommand(), // demo OR home:test
-            'fullCmd'     => input()->getFullCommand(),
-            'fullCommand' => input()->getFullCommand(),
+            'command'     => \input()->getCommand(), // demo OR home:test
+            'fullCmd'     => \input()->getFullCommand(),
+            'fullCommand' => \input()->getFullCommand(),
         ];
     }
 
     protected function prepare(): void
     {
-        $this->input  = input();
-        $this->output = output();
+        $this->input  = \input();
+        $this->output = \output();
 
         // load builtin comments vars
         $this->setCommentsVars($this->commentsVars());
@@ -276,10 +274,10 @@ class Application implements ConsoleInterface
             // Don't want to continue processing
             if (!$evt->isPropagationStopped()) {
                 // Ensure no buffer
-                output()->clearBuffer();
-                output()->flush();
-                output()->writef(
-                    "<error>%s: %s</error>\nAt %s line <cyan>%d</cyan>\nTrace:\n%s",
+                \output()->clearBuffer();
+                \output()->flush();
+                \output()->writef(
+                    "<error>(CONSOLE)%s: %s</error>\nAt %s line <cyan>%d</cyan>\n<comment>Code Trace:</comment>\n%s",
                     \get_class($e),
                     $e->getMessage(),
                     $e->getFile(),

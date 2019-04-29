@@ -17,7 +17,7 @@ class PhpHelper
      *
      * @return mixed
      */
-    public static function call(callable $cb, ...$args)
+    public static function call($cb, ...$args)
     {
         if (\is_string($cb)) {
             // className::method
@@ -48,7 +48,7 @@ class PhpHelper
      *
      * @return mixed
      */
-    public static function callByArray(callable $cb, array $args = [])
+    public static function callByArray($cb, array $args = [])
     {
         return self::call($cb, ...$args);
     }
@@ -56,7 +56,9 @@ class PhpHelper
 
     /**
      * dump vars
+     *
      * @param array ...$args
+     *
      * @return string
      */
     public static function dumpVars(...$args): string
@@ -70,7 +72,9 @@ class PhpHelper
 
     /**
      * print vars
+     *
      * @param array ...$args
+     *
      * @return string
      */
     public static function printVars(...$args): string
@@ -86,6 +90,7 @@ class PhpHelper
 
     /**
      * @param mixed $var
+     *
      * @return string
      */
     public static function exportVar($var): string

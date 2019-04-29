@@ -10,6 +10,7 @@ use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Helper\ServerHelper;
 use Swoft\Server\Swoole\SwooleEvent;
 use Swoft\Stdlib\Helper\Dir;
+use Swoft\Stdlib\Helper\Str;
 use Swoft\Stdlib\Helper\Sys;
 use Swoole\Process;
 use Swoole\Server as CoServer;
@@ -142,9 +143,11 @@ abstract class Server implements ServerInterface
     protected $swooleServer;
 
     /**
-     * @var bool
+     * Debug level
+     *
+     * @var integer
      */
-    private $debug = false;
+    private $debug = 0;
 
     /**
      * Server id
@@ -174,7 +177,7 @@ abstract class Server implements ServerInterface
      */
     public function init(): void
     {
-        $this->uniqid = uniqid();
+        $this->uniqid = Str::uniqID('', true);
     }
 
     /**
@@ -666,7 +669,7 @@ abstract class Server implements ServerInterface
             return;
         }
 
-        if ($this->debug) {
+        if ($this->debug > 0) {
             $tid = Swoft\Co::tid();
             $cid = Swoft\Co::id();
             $wid = $this->getPid('workerId');
@@ -751,15 +754,15 @@ abstract class Server implements ServerInterface
      */
     public function isDebug(): bool
     {
-        return $this->debug;
+        return $this->debug > 0;
     }
 
     /**
-     * @param bool $debug
+     * @param int $debug
      */
     public function setDebug($debug): void
     {
-        $this->debug = (bool)$debug;
+        $this->debug = (int)$debug;
     }
 
     /**
