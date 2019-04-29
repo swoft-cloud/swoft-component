@@ -2777,7 +2777,7 @@ class Builder implements PrototypeInterface
             return array_change_key_case((array)$results[0])['aggregate'];
         }
 
-        return [];
+        return null;
     }
 
     /**
