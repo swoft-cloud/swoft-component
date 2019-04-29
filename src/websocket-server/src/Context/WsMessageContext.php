@@ -6,6 +6,8 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Context\AbstractContext;
 use Swoft\WebSocket\Server\Contract\MessageParserInterface;
+use Swoft\WebSocket\Server\Message\Request;
+use Swoft\WebSocket\Server\Message\Response;
 use Swoole\WebSocket\Frame;
 
 /**
@@ -19,29 +21,36 @@ class WsMessageContext extends AbstractContext
     use PrototypeTrait;
 
     /**
-     * @var Frame
-     */
-    private $frame;
-
-    /**
      * @var MessageParserInterface
      */
     private $parser;
 
     /**
-     * @param Frame $frame
+     * @var Request
+     */
+    private $request;
+
+    /**
+     * @var Response
+     */
+    private $response;
+
+    /**
+     * @param Request  $request
+     * @param Response $response
      *
      * @return WsMessageContext
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public static function new(Frame $frame): self
+    public static function new(Request $request, Response $response): self
     {
         /** @var self $ctx */
         $ctx = self::__instance();
 
         // Initial properties
-        $ctx->frame = $frame;
+        $ctx->request  = $request;
+        $ctx->response = $response;
 
         return $ctx;
     }
@@ -51,7 +60,7 @@ class WsMessageContext extends AbstractContext
      */
     public function getFd(): int
     {
-        return $this->frame->fd;
+        return $this->request->getFd();
     }
 
     /**
@@ -59,7 +68,7 @@ class WsMessageContext extends AbstractContext
      */
     public function getFrame(): Frame
     {
-        return $this->frame;
+        return $this->request->getFrame();
     }
 
     /**
@@ -69,8 +78,41 @@ class WsMessageContext extends AbstractContext
     {
         parent::clear();
 
-        $this->frame = null;
-        $this->parser = null;
+        $this->parser   = null;
+        $this->request  = null;
+        $this->response = null;
+    }
+
+    /**
+     * @return Request
+     */
+    public function getRequest(): Request
+    {
+        return $this->request;
+    }
+
+    /**
+     * @param Request $request
+     */
+    public function setRequest(Request $request): void
+    {
+        $this->request = $request;
+    }
+
+    /**
+     * @return Response
+     */
+    public function getResponse(): Response
+    {
+        return $this->response;
+    }
+
+    /**
+     * @param Response $response
+     */
+    public function setResponse(Response $response): void
+    {
+        $this->response = $response;
     }
 
     /**

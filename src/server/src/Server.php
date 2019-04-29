@@ -347,6 +347,14 @@ abstract class Server implements ServerInterface
     }
 
     /**
+     * @param int $port
+     */
+    public function setPort($port): void
+    {
+        $this->port = (int)$port;
+    }
+
+    /**
      * Bind swoole event and start swoole server
      *
      * @throws ServerException

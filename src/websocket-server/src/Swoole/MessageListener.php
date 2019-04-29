@@ -9,6 +9,8 @@ use Swoft\Server\Swoole\MessageInterface;
 use Swoft\Session\Session;
 use Swoft\SwoftEvent;
 use Swoft\WebSocket\Server\Context\WsMessageContext;
+use Swoft\WebSocket\Server\Message\Request;
+use Swoft\WebSocket\Server\Message\Response;
 use Swoft\WebSocket\Server\WsErrorDispatcher;
 use Swoft\WebSocket\Server\WsMessageDispatcher;
 use Swoft\WebSocket\Server\WsServerEvent;
@@ -35,8 +37,10 @@ class MessageListener implements MessageInterface
         $fd  = $frame->fd;
         $sid = (string)$fd;
 
+        $req = Request::new($frame);
+        $res = Response::new($fd);
         /** @var WsMessageContext $ctx */
-        $ctx = WsMessageContext::new($frame);
+        $ctx = WsMessageContext::new($req, $res);
 
         // Storage context
         Context::set($ctx);
