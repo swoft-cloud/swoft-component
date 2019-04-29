@@ -4,13 +4,14 @@ use Swoft\Db\Database;
 use Swoft\Db\Pool;
 
 return [
-    'config' => [
+    'config'   => [
         'path' => __DIR__ . '/../config',
     ],
-    'db'     => [
-        'dns'      => 'mysql:dbname=swoft;host=127.0.0.1',
+    'db'       => [
+        'class'    => Database::class,
+        'dsn'      => 'mysql:dbname=swoft;host=127.0.0.1',
         'username' => 'root',
-        'password' => '123456',
+        'password' => '123456'
     ],
     'db2'      => [
         'class'  => Database::class,
@@ -19,7 +20,7 @@ return [
                 'dsn'      => 'mysql:dbname=swoft;host=127.0.0.1',
                 'username' => 'root',
                 'password' => '123456',
-            ]
+            ],
         ],
         'reads'  => [
             [

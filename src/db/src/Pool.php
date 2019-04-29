@@ -30,6 +30,7 @@ class Pool extends AbstractPool
      * Create connection
      *
      * @return ConnectionInterface
+     * @throws Exception\DbException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */

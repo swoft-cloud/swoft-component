@@ -110,6 +110,7 @@ class Database
      * @param Pool $pool
      *
      * @return Connection
+     * @throws DbException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
@@ -194,6 +195,7 @@ class Database
      * Get connector
      *
      * @return ConnectorInterface
+     * @throws DbException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
@@ -214,6 +216,7 @@ class Database
      * Get connection
      *
      * @return Connection
+     * @throws DbException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
@@ -232,20 +235,21 @@ class Database
 
     /**
      * @return string
+     * @throws DbException
      */
     public function getDriver()
     {
         $dns = $this->dsn;
         if (empty($dns)) {
             $writes = $this->getWrites();
-            $dns    = $writes[0]['dns'] ?? '';
+            $dns    = $writes[0]['dsn'] ?? '';
         }
 
         if (($pos = strpos($dns, ':')) !== false) {
             return strtolower(substr($dns, 0, $pos));
         }
 
-        throw new DbException('Driver parse error by dns(%s)', $dns);
+        throw new DbException(sprintf('Driver parse error by dsn(%s)', $dns));
     }
 
     /**

@@ -4,6 +4,7 @@
 namespace SwoftTest\Db\Unit\Eloquent;
 
 
+use PhpParser\ErrorHandler\Collecting;
 use Swoft\Db\DB;
 use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Unit\TestCase;
@@ -273,11 +274,14 @@ on A.id=B.id;', [$resCount - 20]);
 
     public function testSkip()
     {
+
         $users = User::skip(10)->take(5)->get();
 
-        /* @var $user User */
         foreach ($users as $user) {
+            /* @var $user User */
             $this->assertIsInt($user->getId());
         }
+        $this->assertInstanceOf('Swoft\Db\Eloquent\Collection', $users);
+
     }
 }

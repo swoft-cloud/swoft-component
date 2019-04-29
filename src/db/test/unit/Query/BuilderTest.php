@@ -9,6 +9,7 @@ use Swoft\Db\DB;
 use Swoft\Db\Exception\PoolException;
 use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
+use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Unit\TestCase;
 
 /**
@@ -563,10 +564,12 @@ class BuilderTest extends TestCase
 
         $sql = Builder::new()->from('user')->where('id', '0')->toSql();
         $this->assertEquals($expectSql, $sql);
-
+        // flush db
+        DB::table('user')->truncate();
         // Single strip
         $res = DB::selectOne($sql, [$this->getFirstId()]);
         $this->assertIsInt($res->id);
+
 
         // Multiple strips
         $select = DB::select($expectSql, [$this->getFirstId()]);
@@ -586,14 +589,18 @@ class BuilderTest extends TestCase
      */
     public function getFirstId(): int
     {
-        return DB::table('user')->first(['id'])->id;
+        $res = DB::table('user')->first(['id']);
+        if (empty($res)) {
+            return User::updateOrCreate(['id' => 22], ['age' => 18, 'name' => 'sakuraovq'])->getId();
+        }
+        return $res->id;
     }
 
-//    public function testPool()
-//    {
-//        $res = $this->getFirstId();
-//
-//
-//        var_dump($res);
-//    }
+    public function testPool()
+    {
+        $id  = $this->getFirstId();
+        $res = DB::connection('db.pool2')->query()->from('user')->where('id', $id)->get();
+
+        $this->assertIsArray($res->toArray());
+    }
 }
