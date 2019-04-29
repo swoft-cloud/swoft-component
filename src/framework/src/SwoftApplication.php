@@ -74,6 +74,11 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     protected $runtimePath = '@base/runtime';
 
     /**
+     * @var string
+     */
+    protected $resourcePath = '@base/resource';
+
+    /**
      * @var ApplicationProcessor
      */
     private $processor;
@@ -422,6 +427,22 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     }
 
     /**
+     * @return string
+     */
+    public function getResourcePath(): string
+    {
+        return $this->resourcePath;
+    }
+
+    /**
+     * @param string $resourcePath
+     */
+    public function setResourcePath(string $resourcePath): void
+    {
+        $this->resourcePath = $resourcePath;
+    }
+
+    /**
      * Init console logger
      */
     private function initCLogger(): void
@@ -438,15 +459,17 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
      */
     private function setSystemAlias(): void
     {
-        $basePath    = $this->getBasePath();
-        $appPath     = $this->getAppPath();
-        $configPath  = $this->getConfigPath();
-        $runtimePath = $this->getRuntimePath();
+        $basePath     = $this->getBasePath();
+        $appPath      = $this->getAppPath();
+        $configPath   = $this->getConfigPath();
+        $runtimePath  = $this->getRuntimePath();
+        $resourcePath = $this->getResourcePath();
 
         \Swoft::setAlias('@base', $basePath);
         \Swoft::setAlias('@app', $appPath);
         \Swoft::setAlias('@config', $configPath);
         \Swoft::setAlias('@runtime', $runtimePath);
+        \Swoft::setAlias('@resource', $resourcePath);
 
         CLog::info('Set alias @base=%s', $basePath);
         CLog::info('Set alias @app=%s', $appPath);
