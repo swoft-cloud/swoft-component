@@ -239,17 +239,17 @@ class Database
      */
     public function getDriver()
     {
-        $dns = $this->dsn;
-        if (empty($dns)) {
+        $dsn = $this->dsn;
+        if (empty($dsn)) {
             $writes = $this->getWrites();
-            $dns    = $writes[0]['dsn'] ?? '';
+            $dsn    = $writes[0]['dsn'] ?? '';
         }
 
-        if (($pos = strpos($dns, ':')) !== false) {
-            return strtolower(substr($dns, 0, $pos));
+        if (($pos = strpos($dsn, ':')) !== false) {
+            return strtolower(substr($dsn, 0, $pos));
         }
 
-        throw new DbException(sprintf('Driver parse error by dsn(%s)', $dns));
+        throw new DbException(sprintf('Driver parse error by dsn(%s)', $dsn));
     }
 
     /**
