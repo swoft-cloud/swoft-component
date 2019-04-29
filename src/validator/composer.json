@@ -26,7 +26,7 @@
   "autoload-dev": {
     "psr-4": {
       "SwoftTest\\Validator\\Unit\\": "test/unit",
-      "SwoftTest\\Validator\\Testing\\": "test/testing",
+      "SwoftTest\\Validator\\Testing\\": "test/testing"
     }
   },
   "repositories": {
