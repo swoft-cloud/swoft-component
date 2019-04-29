@@ -4,7 +4,9 @@
 namespace Swoft\Validator;
 
 
-class Validator
+use Swoft\SwoftComponent;
+
+class Validator extends SwoftComponent
 {
 
 }

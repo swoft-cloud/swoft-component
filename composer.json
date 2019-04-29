@@ -53,6 +53,8 @@
     "swoft/task": "self.version",
     "swoft/redis": "self.version",
     "swoft/proxy": "self.version",
+    "swoft/i18n": "self.version",
+    "swoft/validator": "self.version",
     "swoft/test": "self.version"
   },
   "autoload": {
@@ -131,8 +133,8 @@
       "SwoftTest\\Rpc\\Server\\Testing\\": "src/rpc-server/test/testing/",
       "SwoftTest\\Task\\Unit\\": "src/task/test/unit/",
       "SwoftTest\\Task\\Testing\\": "src/task/test/testing/",
-      "SwoftTest\\I18n\\Testing": "src/i18n/test/testing",
-      "SwoftTest\\I18n\\Unit": "src/i18n/test/unit",
+      "SwoftTest\\I18n\\Testing\\": "src/i18n/test/testing",
+      "SwoftTest\\I18n\\Unit\\": "src/i18n/test/unit",
       "SwoftTest\\Validator\\Unit\\": "src/validator/test/unit",
       "SwoftTest\\Validator\\Testing\\": "src/validator/test/testing",
       "SwoftTest\\Proxy\\Unit\\": "src/proxy/test/unit/",
