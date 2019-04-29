@@ -267,8 +267,8 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     {
         return [
             new EnvProcessor($this),
-            new AnnotationProcessor($this),
             new ConfigProcessor($this),
+            new AnnotationProcessor($this),
             new BeanProcessor($this),
             new EventProcessor($this),
             new ConsoleProcessor($this),
