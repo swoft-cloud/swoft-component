@@ -1,10 +1,4 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2018-12-13
- * Time: 23:49
- */
+<?php declare(strict_types=1);
 
 namespace Swoft\Http\Server\Router;
 

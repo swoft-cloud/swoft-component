@@ -168,6 +168,9 @@ abstract class Server implements ServerInterface
      */
     public function __construct()
     {
+        // Init default settings
+        $this->setting = $this->defaultSetting();
+
         // Init
         $this->init();
     }

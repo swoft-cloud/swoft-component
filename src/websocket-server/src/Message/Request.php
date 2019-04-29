@@ -40,6 +40,22 @@ class Request implements ResponseInterface
     }
 
     /**
+     * @return int
+     */
+    public function getFd(): int
+    {
+        return $this->frame->fd;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOpcode(): int
+    {
+        return $this->frame->opcode;
+    }
+
+    /**
      * @return Frame
      */
     public function getFrame(): Frame

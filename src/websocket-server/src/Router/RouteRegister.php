@@ -14,7 +14,8 @@ final class RouteRegister
      * @var array
      * [
      *  module class => [
-     *      path => '/chat',
+     *      path => '/chat/{id}',
+     *      params => ['id' => '\d+'],
      *      controllers => ['class1', 'class2'],
      *  ]
      * ]

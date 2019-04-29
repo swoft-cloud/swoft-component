@@ -40,7 +40,6 @@ class WsMessageContext extends AbstractContext
         /** @var self $ctx */
         $ctx = self::__instance();
 
-
         // Initial properties
         $ctx->frame = $frame;
 

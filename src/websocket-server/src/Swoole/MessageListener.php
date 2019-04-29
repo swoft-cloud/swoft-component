@@ -9,8 +9,8 @@ use Swoft\Server\Swoole\MessageInterface;
 use Swoft\Session\Session;
 use Swoft\SwoftEvent;
 use Swoft\WebSocket\Server\Context\WsMessageContext;
-use Swoft\WebSocket\Server\WsDispatcher;
 use Swoft\WebSocket\Server\WsErrorDispatcher;
+use Swoft\WebSocket\Server\WsMessageDispatcher;
 use Swoft\WebSocket\Server\WsServerEvent;
 use Swoole\Websocket\Frame;
 use Swoole\Websocket\Server;
@@ -27,6 +27,7 @@ class MessageListener implements MessageInterface
     /**
      * @param Server $server
      * @param Frame  $frame
+     *
      * @throws \Throwable
      */
     public function onMessage(Server $server, Frame $frame): void
@@ -42,15 +43,15 @@ class MessageListener implements MessageInterface
         // Bind cid => sid(fd)
         Session::bindCo($sid);
 
-        /** @var WsDispatcher $dispatcher */
-        $dispatcher = BeanFactory::getSingleton('wsDispatcher');
+        /** @var WsMessageDispatcher $dispatcher */
+        $dispatcher = BeanFactory::getSingleton('wsMsgDispatcher');
 
         try {
             \server()->log("Message: conn#{$fd} received message: {$frame->data}", [], 'debug');
             \Swoft::trigger(WsServerEvent::MESSAGE_BEFORE, $fd, $server, $frame);
 
             // Parse and dispatch message
-            $dispatcher->message($server, $frame);
+            $dispatcher->dispatch($server, $frame);
 
             \Swoft::trigger(WsServerEvent::MESSAGE_AFTER, $fd, $server, $frame);
         } catch (\Throwable $e) {
