@@ -8,7 +8,7 @@ namespace Swoft\Db\Exception;
  *
  * @since 2.0
  */
-class QueryException extends \Exception
+class QueryException extends DbException
 {
 
 }

@@ -8,7 +8,7 @@ namespace Swoft\Db\Exception;
  *
  * @since 2.0
  */
-class PoolException extends \Exception
+class PoolException extends DbException
 {
 
 }

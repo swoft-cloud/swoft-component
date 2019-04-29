@@ -202,26 +202,82 @@ class ModelTest extends TestCase
         $this->assertArrayHasKey('pwd', $user->toArray());
         // Delete only left 20 rows
         $resCount = DB::selectOne('select count(*) as `count` from `user`')->count;
-        DB::delete('delete A FROM `user` A INNER JOIN (SELECT ID FROM `user` B limit ?) B
+        if ($resCount - 20 > 0) {
+            DB::delete('delete A FROM `user` A INNER JOIN (SELECT ID FROM `user` B limit ?) B
 on A.id=B.id;', [$resCount - 20]);
-
-        DB::selectOne('select count(*) as `count` from `user`')->count;
-
+            $res = DB::selectOne('select count(*) as `count` from `user`')->count;
+            $this->assertEquals(20, $res);
+        }
         foreach (User::query()->cursor() as $user) {
             /* @var User $user */
             $this->assertGreaterThan(0, $user->getId());
-//            var_dump($user->toArray());
-//            $this->assertArrayNotHasKey('password', $user->toArray());
         }
 
         // query all, each 10 strips
         User::query()->chunk(10, function ($users) {
-            /* @var User $user */
             foreach ($users as $user) {
-                //var_dump($user->getId());
+                /* @var User $user */
+                $this->assertIsInt($user->getId());
             }
         });
+    }
 
+    public function testPick()
+    {
+        $result   = User::pluck('name', 'age');
+        $dbResult = DB::table('user')->pluck('name', 'age');
 
+        $this->assertEquals($result, $dbResult);
+
+        foreach ($result as $age => $name) {
+            $this->assertIsInt($age);
+            $this->assertIsString($name);
+        }
+    }
+
+    public function testImplode()
+    {
+        $ageString = DB::table('user')->where('age', '>', 18)->implode('age', ',');
+
+        $this->assertEquals($ageString, User::where('age', '>', 18)->implode('age', ','));
+    }
+
+    public function testAggregate()
+    {
+        $result = DB::table('user')->max('age');;
+        $this->assertEquals($result, User::query()->max('age'));
+
+        $result1 = User::query()->min('age');
+        $this->assertEquals($result1, DB::table('user')->min('age'));
+
+        $result2 = User::query()->average('age');
+        $this->assertEquals($result2, DB::table('user')->average('age'));
+
+        $result3 = User::query()->avg('age');
+        $this->assertEquals($result3, DB::table('user')->avg('age'));
+        $this->assertEquals($result2, $result3);
+
+        $result4 = User::query()->count();
+        $this->assertEquals($result4, DB::table('user')->count());
+
+        // sql = select max(`id`) as id from `user` group by user_desc
+        $res = User::query()->selectRaw('max(`id`) as id')->groupBy('user_desc')->get();
+
+        /* @var $v User */
+        foreach ($res as $v) {
+            $this->assertGreaterThan(0, $v->getId());
+        }
+        $ages = array_column($res->toArray(), 'id');
+        $this->assertIsArray($ages);
+    }
+
+    public function testSkip()
+    {
+        $users = User::skip(10)->take(5)->get();
+
+        /* @var $user User */
+        foreach ($users as $user) {
+            $this->assertIsInt($user->getId());
+        }
     }
 }

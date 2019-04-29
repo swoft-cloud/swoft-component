@@ -588,4 +588,12 @@ class BuilderTest extends TestCase
     {
         return DB::table('user')->first(['id'])->id;
     }
+
+//    public function testPool()
+//    {
+//        $res = $this->getFirstId();
+//
+//
+//        var_dump($res);
+//    }
 }

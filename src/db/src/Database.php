@@ -5,8 +5,9 @@ namespace Swoft\Db;
 
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\Connection\MySqlConnection;
-use Swoft\Db\Contract\ConnectorInterface;
 use Swoft\Db\Connector\MySqlConnector;
+use Swoft\Db\Contract\ConnectorInterface;
+use Swoft\Db\Exception\DbException;
 use Swoft\Exception\SessionException;
 use Swoft\Server\Swoole\ConnectInterface;
 use Swoft\Stdlib\Helper\Arr;
@@ -229,7 +230,6 @@ class Database
         return $connection;
     }
 
-
     /**
      * @return string
      */
@@ -245,7 +245,7 @@ class Database
             return strtolower(substr($dns, 0, $pos));
         }
 
-        throw new SessionException('Driver parse error by dns(%s)', $dns);
+        throw new DbException('Driver parse error by dns(%s)', $dns);
     }
 
     /**

@@ -13,7 +13,7 @@ use Swoft\Db\Eloquent\Model;
  *
  * @since 2.0
  *
- * @Entity(table="user",pool="db.pool")
+ * @Entity(table="user")
  */
 class User extends Model
 {

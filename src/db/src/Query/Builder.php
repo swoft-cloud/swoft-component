@@ -2571,9 +2571,13 @@ class Builder implements PrototypeInterface
      *
      * @return string|null
      */
-    protected function stripTableForPluck(string $column): ?string
+    protected function stripTableForPluck(?string $column): ?string
     {
-        return is_null($column) ? $column : end(preg_split('~\.| ~', $column));
+        if (is_null($column)) {
+            return $column;
+        }
+        $split = preg_split('~\.| ~', $column);
+        return end($split);
     }
 
     /**
@@ -2697,9 +2701,9 @@ class Builder implements PrototypeInterface
      *
      * @param string $column
      *
-     * @return array
+     * @return mixed
      */
-    public function min(string $column): array
+    public function min(string $column)
     {
         return $this->aggregate(__FUNCTION__, [$column]);
     }
@@ -2709,9 +2713,9 @@ class Builder implements PrototypeInterface
      *
      * @param string $column
      *
-     * @return array
+     * @return mixed
      */
-    public function max(string $column): array
+    public function max(string $column)
     {
         return $this->aggregate(__FUNCTION__, [$column]);
     }
@@ -2735,9 +2739,9 @@ class Builder implements PrototypeInterface
      *
      * @param string $column
      *
-     * @return array
+     * @return mixed
      */
-    public function avg($column): array
+    public function avg($column)
     {
         return $this->aggregate(__FUNCTION__, [$column]);
     }
@@ -2747,9 +2751,9 @@ class Builder implements PrototypeInterface
      *
      * @param string $column
      *
-     * @return array
+     * @return mixed
      */
-    public function average(string $column): array
+    public function average(string $column)
     {
         return $this->avg($column);
     }
@@ -2760,9 +2764,9 @@ class Builder implements PrototypeInterface
      * @param string $function
      * @param array  $columns
      *
-     * @return array
+     * @return mixed
      */
-    public function aggregate(string $function, array $columns = ['*']): array
+    public function aggregate(string $function, array $columns = ['*'])
     {
         $results = $this->cloneWithout($this->unions ? [] : ['columns'])
             ->cloneWithoutBindings($this->unions ? [] : ['select'])

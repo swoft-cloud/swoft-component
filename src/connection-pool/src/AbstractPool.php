@@ -180,7 +180,7 @@ abstract class AbstractPool implements PoolInterface
             $this->count--;
 
             throw new ConnectionPoolException(
-                sprintf('Create connection error(%s)', $e->getMessage())
+                sprintf('Create connection error(%s) file %s line %d', $e->getMessage(), $e->getFile(), $e->getLine())
             );
         }
 
