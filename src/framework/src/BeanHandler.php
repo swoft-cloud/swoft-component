@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft;
-
 
 use Swoft\Aop\Aop;
 use Swoft\Aop\Proxy;
@@ -111,6 +109,7 @@ class BeanHandler extends Handler
      *
      * @return mixed|string
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \ReflectionException
      */
     public function getReferenceValue($value)
     {
@@ -122,6 +121,7 @@ class BeanHandler extends Handler
             $value = \implode('.', $values);
         }
 
-        return \config($value);
+        /** @see \Swoft\Config\Config::get() */
+        return \Swoft::getBean('config')->get($value);
     }
 }
