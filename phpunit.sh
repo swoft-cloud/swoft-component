@@ -5,7 +5,7 @@
 
 #binName="sh $(basename $0)"
 binName="./$(basename $0)"
-components="annotation aop bean config connection-pool console db error framework http-message http-server
+components="component annotation aop bean config connection-pool console db error framework http-message http-server
   log proxy redis rpc rpc-client rpc-server server stdlib task tcp-server websocket-server"
 
 if [[ -z "$1" ]] || [[ "$1" == "-h" ]]; then
@@ -36,9 +36,15 @@ echo ${components}
 # php run.php -c src/annotation/phpunit.xml
 # set -ex
 for lbName in ${components} ; do
-    echo "======> Testing the component【${lbName}】"
-    echo "> php run.php -c src/${lbName}/phpunit.xml"
-    php run.php -c src/${lbName}/phpunit.xml
+    if [ $lbName == "component" ]; then
+        echo "======> Testing the【component】"
+        echo "> php run.php -c phpunit.xml"
+        php run.php -c phpunit.xml
+    else
+        echo "======> Testing the component【${lbName}】"
+        echo "> php run.php -c src/${lbName}/phpunit.xml"
+        php run.php -c src/${lbName}/phpunit.xml
+    fi
 done
 
 echo "Completed!"

@@ -40,10 +40,6 @@ class EnvProcessor extends Processor
 
         CLog::info('Env file(%s) is loaded', $envFile);
 
-        // Define some global constants
-        \define('APP_DEBUG', (int)\env('APP_DEBUG', 0));
-        \define('SWOFT_DEBUG', (int)\env('SWOFT_DEBUG', 0));
-
         return $this->application->afterEvent();
     }
 }

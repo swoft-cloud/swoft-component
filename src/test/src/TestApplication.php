@@ -25,8 +25,8 @@ class TestApplication extends SwoftApplication
     {
         return [
             new EnvProcessor($this),
-            new AnnotationProcessor($this),
             new ConfigProcessor($this),
+            new AnnotationProcessor($this),
             new BeanProcessor($this),
             new EventProcessor($this)
         ];
