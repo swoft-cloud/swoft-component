@@ -18,7 +18,7 @@ trait HttpResponseAssertTrait
      */
     public function assertSuccess(): self
     {
-        Assert::assertTrue($this->status == self::STATUS_SUCCESS);
+        Assert::assertEquals($this->status, self::STATUS_SUCCESS);
 
         return $this;
     }
@@ -28,7 +28,7 @@ trait HttpResponseAssertTrait
      */
     public function assertFail(): self
     {
-        Assert::assertTrue($this->status != self::STATUS_SUCCESS);
+        Assert::assertNotEquals($this->status, self::STATUS_SUCCESS);
 
         return $this;
     }
@@ -40,7 +40,7 @@ trait HttpResponseAssertTrait
      */
     public function assertEqualStatus(int $status): self
     {
-        Assert::assertTrue($status == $this->status);
+        Assert::assertEquals($status, $this->status);
 
         return $this;
     }
@@ -108,7 +108,8 @@ trait HttpResponseAssertTrait
      */
     public function assertContainContent(string $content): self
     {
-        Assert::assertTrue(\strpos($this->content, $content) !== false);
+        $contains = \strpos($this->content, $content) !== false;
+        Assert::assertTrue($contains);
         return $this;
     }
 
