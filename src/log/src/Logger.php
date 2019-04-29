@@ -239,10 +239,12 @@ class Logger extends \Monolog\Logger
             $this->pushlogs[$cid][] = "$key=" . \json_encode($val);
         } elseif (\is_bool($val)) {
             $this->pushlogs[$cid][] = "$key=" . \var_export($val, true);
-        } elseif (\is_string($val) || is_numeric($val)) {
+        } elseif (\is_string($val)) {
             $this->pushlogs[$cid][] = "$key=" . \urlencode($val);
         } elseif (null === $val) {
             $this->pushlogs[$cid][] = "$key=";
+        } else {
+            $this->pushlogs[$cid][] = "$key=$val";
         }
     }
 
