@@ -110,12 +110,13 @@ use Swoft\Stdlib\Helper\PhpHelper;
  * @method bool exists()
  * @method bool doesntExist()
  * @method string count(string $columns = '*')
- * @method array min(string $column)
- * @method array max(string $column)
- * @method array sum(string $column)
- * @method array avg($column)
- * @method array average(string $column)
+ * @method mixed min(string $column)
+ * @method mixed max(string $column)
+ * @method mixed sum(string $column)
+ * @method mixed avg($column)
+ * @method mixed average(string $column)
  * @method Connection getConnection()
+ * @method string implode(string $column, string $glue = '')
  *
  */
 class Builder
@@ -175,6 +176,8 @@ class Builder
         'avg',
         'average',
         'sum',
+        'implode',
+        'pluck',
         'getConnection',
         'updateOrInsert'
     ];
@@ -707,23 +710,6 @@ class Builder
         if (empty($this->query->orders) && empty($this->query->unionOrders)) {
             $this->orderBy($this->model->getQualifiedKeyName(), 'asc');
         }
-    }
-
-    /**
-     * Get an array with the values of a given column.
-     *
-     * @param string      $column
-     * @param string|null $key
-     *
-     * @return \Swoft\Stdlib\Collection
-     */
-    public function pluck(string $column, string $key = null)
-    {
-        $results = $this->toBase()->pluck($column, $key);
-
-        return $results->map(function ($value) use ($column) {
-            return $this->model->newFromBuilder([$column => $value])->{$column};
-        });
     }
 
     /**

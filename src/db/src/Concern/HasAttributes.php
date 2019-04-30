@@ -48,7 +48,7 @@ trait HasAttributes
         $attributes = [];
         foreach ($this->getArrayableAttributes() as $key => $value) {
             [$pro, $value] = $this->getArrayableItem($key);
-            if ($value !== false) {
+            if ($pro !== false) {
                 $attributes[$pro] = $value;
             }
         }
@@ -84,7 +84,7 @@ trait HasAttributes
         $visibleStatus = \in_array($key, $this->getVisible()) || \in_array($pro, $this->getVisible());
 
         if ($hiddenStatus === true && $visibleStatus === false) {
-            return [$key, false];
+            return [false, false];
         }
         return [$pro, $value];
     }
@@ -348,8 +348,13 @@ trait HasAttributes
         $this->attributes = $attributes;
 
         foreach ($attributes as $key => $value) {
-            [, $type] = $this->getMappingByColumn($key);
-
+            $column = EntityRegister::getReverseMappingByColumn($this->getClassName(), $key);
+            // not found this key column annotation
+            if (empty($column)) {
+                unset($this->attributes[$key]);
+                continue;
+            }
+            $type = $column['type'];
             $this->setAttribute($key, ObjectHelper::parseParamType($type, $value));
         }
 
