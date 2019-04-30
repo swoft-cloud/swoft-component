@@ -53,7 +53,6 @@ use Swoft\Stdlib\Helper\Str;
  * @method static void enforceOrderBy()
  * @method static Collection pluck(string $column, string $key = null)
  * @method static static create(array $attributes = [])
- *
  * @method static Builder select(string ...$columns)
  * @method static Builder selectSub(\Closure|QueryBuilder|string $query, string $as)
  * @method static Builder selectRaw(string $expression, array $bindings = [])
@@ -131,6 +130,7 @@ use Swoft\Stdlib\Helper\Str;
  * @method static Builder inRandomOrder(string $seed = '')
  * @method static Builder orderByRaw(string $sql, array $bindings = [])
  * @method static Builder skip(int $value)
+ * @method static string  implode(string $column, string $glue = '')
  * @method static Builder offset(int $value)
  * @method static Builder take(int $value)
  * @method static Builder limit(int $value)
