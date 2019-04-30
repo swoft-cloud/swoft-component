@@ -10,6 +10,7 @@ use Swoft\Http\Message\Response;
 
 /**
  * Class WsRequestContext - on ws handshake event
+ *
  * @since 2.0
  * @Bean(scope=Bean::PROTOTYPE)
  */
@@ -30,8 +31,10 @@ class WsHandshakeContext extends AbstractContext
     /**
      * @param Request  $request
      * @param Response $response
+     *
      * @return WsHandshakeContext
      * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \ReflectionException
      */
     public static function new(Request $request, Response $response): self
     {

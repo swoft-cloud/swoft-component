@@ -4,6 +4,7 @@ namespace Swoft\WebSocket\Server\MessageParser;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\WebSocket\Server\Contract\MessageParserInterface;
+use Swoft\WebSocket\Server\Message\Message;
 
 /**
  * Class TokenTextParser
@@ -14,25 +15,31 @@ class TokenTextParser implements MessageParserInterface
 {
     /**
      * Encode data to string.
-     * @param mixed $data
+     *
+     * @param Message $message
+     *
      * @return string
      */
-    public function encode($data): string
+    public function encode(Message $message): string
     {
-        return (string)$data;
+        return $message->toString();
     }
 
     /**
-     * Decode data to array.
+     * Decode data to array
+     *
      * @param string $data
      *  Format like:
      *  'login:message body data'
      *  =>
      *  cmd: 'login'
      *  body: 'message body data'
-     * @return array
+     *
+     * @return Message
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
-    public function decode(string $data): array
+    public function decode(string $data): Message
     {
         // use default message command
         $cmd = '';
@@ -43,9 +50,6 @@ class TokenTextParser implements MessageParserInterface
             $body = $data;
         }
 
-        return [
-            'cmd'  => $cmd,
-            'data' => $body,
-        ];
+        return Message::new($cmd, $body);
     }
 }

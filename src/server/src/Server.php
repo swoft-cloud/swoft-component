@@ -168,6 +168,9 @@ abstract class Server implements ServerInterface
      */
     public function __construct()
     {
+        // Init default settings
+        $this->setting = $this->defaultSetting();
+
         // Init
         $this->init();
     }
@@ -452,6 +455,14 @@ abstract class Server implements ServerInterface
     }
 
     /**
+     * @param string $host
+     */
+    public function setHost(string $host): void
+    {
+        $this->host = $host;
+    }
+
+    /**
      * @return int
      */
     public function getPort(): int
@@ -460,11 +471,31 @@ abstract class Server implements ServerInterface
     }
 
     /**
+     * @param int $port
+     */
+    public function setPort(int $port): void
+    {
+        $this->port = $port;
+    }
+
+    /**
      * @return int
      */
     public function getMode(): int
     {
         return $this->mode;
+    }
+
+    /**
+     * @param int $mode
+     */
+    public function setMode(int $mode): void
+    {
+        if (!isset(self::MODE_LIST[$mode])) {
+            throw new \InvalidArgumentException('invalid server mode value: ' . $mode);
+        }
+
+        $this->mode = $mode;
     }
 
     /**
@@ -484,6 +515,18 @@ abstract class Server implements ServerInterface
     }
 
     /**
+     * @param int $type
+     */
+    public function setType(int $type): void
+    {
+        if (!isset(self::TYPE_LIST[$type])) {
+            throw new \InvalidArgumentException('invalid server type value: ' . $type);
+        }
+
+        $this->type = $type;
+    }
+
+    /**
      * @return string
      */
     public function getTypeName(): string
@@ -496,7 +539,7 @@ abstract class Server implements ServerInterface
      */
     public function getSetting(): array
     {
-        return Arr::merge($this->defaultSetting(), $this->setting);
+        return $this->setting;
     }
 
     /**
