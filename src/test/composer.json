@@ -10,7 +10,7 @@
   "description": "micro-service framework base on swoole",
   "license": "Apache-2.0",
   "require": {
-    "swoft/framework": "^2.0"
+    "swoft/framework": "dev-master"
   },
   "autoload": {
     "psr-4": {
