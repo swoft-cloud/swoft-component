@@ -3,6 +3,8 @@
 namespace Swoft\Annotation\Annotation\Parser;
 
 
+use PhpDocReader\PhpDocReader;
+
 /**
  * Class Parser
  *
