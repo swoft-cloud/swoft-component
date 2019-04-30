@@ -147,7 +147,6 @@
   },
   "extra": {
     "branch-alias": {
-      "2.0.x-dev": "2.0-dev"
     }
   },
   "repositories": {

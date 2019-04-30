@@ -5,8 +5,9 @@ namespace Swoft\Db;
 
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\Connection\MySqlConnection;
-use Swoft\Db\Contract\ConnectorInterface;
 use Swoft\Db\Connector\MySqlConnector;
+use Swoft\Db\Contract\ConnectorInterface;
+use Swoft\Db\Exception\DbException;
 use Swoft\Exception\SessionException;
 use Swoft\Server\Swoole\ConnectInterface;
 use Swoft\Stdlib\Helper\Arr;
@@ -109,6 +110,7 @@ class Database
      * @param Pool $pool
      *
      * @return Connection
+     * @throws DbException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
@@ -193,6 +195,7 @@ class Database
      * Get connector
      *
      * @return ConnectorInterface
+     * @throws DbException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
@@ -213,6 +216,7 @@ class Database
      * Get connection
      *
      * @return Connection
+     * @throws DbException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      */
@@ -229,23 +233,23 @@ class Database
         return $connection;
     }
 
-
     /**
      * @return string
+     * @throws DbException
      */
     public function getDriver()
     {
-        $dns = $this->dsn;
-        if (empty($dns)) {
+        $dsn = $this->dsn;
+        if (empty($dsn)) {
             $writes = $this->getWrites();
-            $dns    = $writes[0]['dns'] ?? '';
+            $dsn    = $writes[0]['dsn'] ?? '';
         }
 
-        if (($pos = strpos($dns, ':')) !== false) {
-            return strtolower(substr($dns, 0, $pos));
+        if (($pos = strpos($dsn, ':')) !== false) {
+            return strtolower(substr($dsn, 0, $pos));
         }
 
-        throw new SessionException('Driver parse error by dns(%s)', $dns);
+        throw new DbException(sprintf('Driver parse error by dsn(%s)', $dsn));
     }
 
     /**

@@ -1,4 +1,5 @@
 <?php
+
 go(function () {
     try {
         global $argc, $argv;
@@ -7,5 +8,4 @@ go(function () {
             var_dump($e->getMessage());
     }
 });
-
 \Swoole\Event::wait();

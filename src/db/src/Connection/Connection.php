@@ -239,7 +239,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     private function createPdo()
     {
         $writes = $this->database->getWrites();
-        $write  = $writes[0];
+        $write  = $writes[array_rand($writes)];
 
         $this->pdo = $this->database->getConnector()->connect($write);
     }
@@ -254,7 +254,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     {
         $reads = $this->database->getReads();
         if (!empty($reads)) {
-            $read          = $reads[0];
+            $read          = $reads[array_rand($reads)];
             $this->readPdo = $this->database->getConnector()->connect($read);
         }
     }

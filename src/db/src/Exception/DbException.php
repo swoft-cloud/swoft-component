@@ -4,11 +4,11 @@
 namespace Swoft\Db\Exception;
 
 /**
- * Class EloquentException
+ * Class DbException
  *
  * @since 2.0
  */
-class EloquentException extends DbException
+class DbException extends \Exception
 {
 
 }
