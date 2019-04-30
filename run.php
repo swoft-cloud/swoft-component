@@ -1,4 +1,5 @@
 <?php
+
 go(function () {
     try {
         global $argc, $argv;

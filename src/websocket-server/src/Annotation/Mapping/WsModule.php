@@ -76,7 +76,7 @@ final class WsModule
     {
         if (isset($values['value'])) {
             $this->path = (string)$values['value'];
-        } elseif (isset($values['name'])) {
+        } elseif (isset($values['path'])) {
             $this->path = (string)$values['path'];
         }
 

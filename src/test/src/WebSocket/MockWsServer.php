@@ -5,12 +5,12 @@ namespace Swoft\Test\WebSocket;
 use Swoft\Bean\Annotation\Mapping\Bean;
 
 /**
- * Class MockWSServer
+ * Class MockWsServer
  *
  * @since 2.0
  * @Bean()
  */
-class MockWSServer
+class MockWsServer
 {
 
 }

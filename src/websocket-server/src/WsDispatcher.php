@@ -4,21 +4,12 @@ namespace Swoft\WebSocket\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Context\Context;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\Session\Session;
-use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
-use Swoft\WebSocket\Server\Exception\WsMessageException;
-use Swoft\WebSocket\Server\Exception\WsMessageParseException;
-use Swoft\WebSocket\Server\Exception\WsMessageRouteException;
 use Swoft\WebSocket\Server\Exception\WsModuleRouteException;
-use Swoft\WebSocket\Server\Message\Message;
-use Swoft\WebSocket\Server\MessageParser\RawTextParser;
-use Swoft\WebSocket\Server\Message\Response as MessageResponse;
 use Swoft\WebSocket\Server\Router\Router;
-use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
 
 /**
@@ -75,8 +66,10 @@ class WsDispatcher
 
     /**
      * Dispatch ws close handle
+     *
      * @param Server $server
      * @param int    $fd
+     *
      * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function close(Server $server, int $fd): void

@@ -70,6 +70,8 @@ class Router implements RouterInterface
     public function addModule(string $path, array $info = []): void
     {
         $path = WsHelper::formatPath($path);
+        // Re-set path
+        $info['path'] = $path;
 
         // Exist path var. eg: "/users/{id}"
         if (!$this->enableDynamicRoute || \strpos($path, '{') === false) {
@@ -150,7 +152,7 @@ class Router implements RouterInterface
                     $params[$pathVars[$index]] = $value;
                 }
 
-                $module['params'] = $params;
+                $module['routeParams'] = $params;
                 return $module;
             }
         }
