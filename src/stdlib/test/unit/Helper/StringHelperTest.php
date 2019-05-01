@@ -20,4 +20,10 @@ class StringHelperTest extends TestCase
         $name = Str::getClassName('App\Http\Controller\UserController', '');
         $this->assertSame('App\Http\Controller\UserController', $name);
     }
+
+    public function testRmPharPrefix(): void
+    {
+        $path = Str::rmPharPrefix('phar:///path/to/some.phar/vendor/composer');
+        $this->assertSame('/vendor/composer', $path);
+    }
 }
