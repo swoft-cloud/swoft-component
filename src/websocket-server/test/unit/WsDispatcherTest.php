@@ -2,13 +2,16 @@
 
 namespace SwoftTest\WebSocket\Server\Unit;
 
-use Swoft\Test\BaseTestCase;
+use PHPUnit\Framework\TestCase;
+use Swoft\Test\Concern\CommonTestAssertTrait;
 
 /**
  * Class WsDispatcherTest
  */
-class WsDispatcherTest extends BaseTestCase
+class WsDispatcherTest extends TestCase
 {
+    use CommonTestAssertTrait;
+
     // ------------------------------- unit tests -------------------------------
     public function test()
     {

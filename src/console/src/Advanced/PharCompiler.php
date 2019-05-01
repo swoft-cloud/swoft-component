@@ -500,40 +500,55 @@ class PharCompiler
 
         // skip error
         if (!\file_exists($filePath)) {
-            $this->fire('error', "File $filePath is not exists!");
+            $this->fire(self::ON_ERROR, "File $filePath is not exists!");
             return;
         }
 
+        $strip = $this->stripComments;
+        $path  = $this->getRelativeFilePath($file);
+
         $this->counter++;
-        $path    = $this->getRelativeFilePath($file);
-        $strip   = $this->stripComments;
-        $content = \file_get_contents($filePath);
+        $this->fire(self::ON_ADD, $path, $this->counter);
 
         // clear php file comments
         if ($strip && \strpos($path, '.php')) {
             $filter = $this->stripFilter;
 
-            if (!$filter || ($filter && $filter($file))) {
-                $content = $this->stripWhitespace($content);
+            if (!$filter || $filter($file)) {
+                $content = $this->stripWhitespace(\file_get_contents($filePath));
+
+                // add content to phar
+                $phar->addFromString(
+                    $path,
+                    $this->addVersionInfo($content) . "\n// added by phar pack"
+                );
+                return;
             }
         }
 
         // have versionFile
         if ($path === $this->versionFile) {
-            $content = \str_replace([
-                '{@package_last_commit}',
-                '{@package_last_version}',
-                '{@release_date}',
-            ], [
-                $this->lastCommit,
-                $this->lastVersion,
-                $this->versionDate->format('Y-m-d H:i:s')
-            ], $content);
+            $content = \file_get_contents($filePath);
+
+            $phar->addFromString($path, $this->addVersionInfo($content));
+            return;
         }
 
-        $this->fire(self::ON_ADD, $path, $this->counter);
+        // add file to phar
+        $phar->addFile($filePath, $path);
+    }
 
-        $phar->addFromString($path, $content);
+    private function addVersionInfo(string $content): string
+    {
+        return \str_replace([
+            '{@package_last_commit}',
+            '{@package_last_version}',
+            '{@release_date}',
+        ], [
+            $this->lastCommit,
+            $this->lastVersion,
+            $this->versionDate->format('Y-m-d H:i:s')
+        ], $content);
     }
 
     /**

@@ -163,6 +163,10 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
     protected function beforeInit(): void
     {
+        // Check phar env
+        if (!\defined('IN_PHAR')) {
+            \define('IN_PHAR', false);
+        }
     }
 
     protected function init(): void
@@ -171,7 +175,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
     protected function afterInit(): void
     {
-        if (\defined('IN_PHAR') && \IN_PHAR) {
+        if (\IN_PHAR) {
             $this->setRuntimePath(Str::rmPharPrefix($this->runtimePath));
         }
 
@@ -183,12 +187,12 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     {
         $filePath = ComposerHelper::getClassLoader()->findFile(static::class);
 
-        // If run in phar package.
-        if (\defined('IN_PHAR') && \IN_PHAR) {
-            $this->basePath = \dirname($filePath, 2);
-        } else {
-            $this->basePath = \dirname(\realpath($filePath), 2);
+        // If run in phar package
+        if (\IN_PHAR) {
+            $filePath = Str::rmPharPrefix($filePath);
         }
+
+        $this->basePath = \dirname(\realpath($filePath), 2);
     }
 
     /**
