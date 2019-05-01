@@ -24,6 +24,15 @@ class StringHelperTest extends TestCase
     public function testRmPharPrefix(): void
     {
         $path = Str::rmPharPrefix('phar:///path/to/some.phar/vendor/composer');
-        $this->assertSame('/vendor/composer', $path);
+        $this->assertSame('/path/to/vendor/composer', $path);
+
+        $path = Str::rmPharPrefix('phar:///path/to/some.phar/vendor/composer/');
+        $this->assertSame('/path/to/vendor/composer/', $path);
+
+        $path = Str::rmPharPrefix('phar:///path/to/some.phar/vendor/composer/.env');
+        $this->assertSame('/path/to/vendor/composer/.env', $path);
+
+        $path = Str::rmPharPrefix('/vendor/composer/.env');
+        $this->assertSame('/vendor/composer/.env', $path);
     }
 }
