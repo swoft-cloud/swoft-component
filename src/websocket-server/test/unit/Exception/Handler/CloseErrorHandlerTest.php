@@ -2,14 +2,14 @@
 
 namespace SwoftTest\WebSocket\Server\Unit\Exception\Handler;
 
-use Swoft\Test\BaseTestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class CloseErrorHandlerTest
  *
  * @since 2.0
  */
-class CloseErrorHandlerTest extends BaseTestCase
+class CloseErrorHandlerTest extends TestCase
 {
     public function testCloseError(): void
     {

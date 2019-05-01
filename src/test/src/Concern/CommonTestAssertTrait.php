@@ -1,16 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Test;
+namespace Swoft\Test\Concern;
 
 use PHPUnit\Framework\Assert;
-use PHPUnit\Framework\TestCase;
 
 /**
- * Class BaseTestCase
+ * Class CommonTestAssertTrait
  *
  * @since 2.0
  */
-abstract class BaseTestCase extends TestCase
+trait CommonTestAssertTrait
 {
     /**
      * @param string $haystack
