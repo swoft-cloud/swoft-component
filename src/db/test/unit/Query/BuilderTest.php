@@ -578,6 +578,13 @@ class BuilderTest extends TestCase
         // NOTE:: DDL , return bool
         $unprepared = DB::unprepared('DROP TRIGGER IF EXISTS `sync_to_item_table`');
         $this->assertIsBool($unprepared);
+
+        $sql = 'select * from `user`';
+        $res = DB::cursor($sql);
+        foreach ($res as $user) {
+            $this->assertIsString($user->name);
+        }
+        //DB::statement('drop table `count`');
     }
 
     /**
