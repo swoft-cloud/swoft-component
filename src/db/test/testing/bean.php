@@ -18,7 +18,7 @@ return [
             \PDO::ATTR_CASE => \PDO::CASE_NATURAL,
         ],
         'config'   => [
-            'collation' => 'utf8mb4_general_ci',
+            'collation' => 'utf8mb4_unicode_ci',
             'strict'    => false,
             'timezone'  => '+8:00',
             'modes'     => 'NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES',

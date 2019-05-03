@@ -28,6 +28,7 @@ class BuilderTest extends TestCase
     {
         $expectSql = 'select `id`, `name` from `user`';
 
+        DB::connection()->query()->from('xxx');
         $sql  = DB::table('user')->select(...['id', 'name'])->toSql();
         $sql2 = DB::table('user')->select('id', 'name')->toSql();
 
@@ -360,6 +361,9 @@ class BuilderTest extends TestCase
 
         $sql1 = DB::table('user')
             ->lockForUpdate()
+            ->where(function () {
+
+            })
             ->toSql();
 
         $sql2 = DB::raw($expectSql);
@@ -418,6 +422,25 @@ class BuilderTest extends TestCase
             'password' => md5((string)mt_rand(1, 100)),
         ]);
 
+        $insert = DB::table('user')->insert([
+            [
+                'name'     => 'sakuraovq' . mt_rand(1, 100),
+                'password' => md5((string)mt_rand(1, 100)),
+            ],
+            [
+                'name'     => 'sakuraovq' . mt_rand(1, 100),
+                'password' => md5((string)mt_rand(1, 100)),
+            ],
+            [
+                'name'     => 'sakuraovq' . mt_rand(1, 100),
+                'password' => md5((string)mt_rand(1, 100)),
+            ],
+            [
+                'name'     => 'sakuraovq' . mt_rand(1, 100),
+                'password' => md5((string)mt_rand(1, 100)),
+            ]
+        ]);
+
         // sync subQuery data to table
         $using = Builder::new()->from('user')->insertUsing(['name', 'age'], function (Builder $builder) {
             return $builder->from('user')
@@ -427,8 +450,12 @@ class BuilderTest extends TestCase
         });
         // get insert id
         $id = DB::table('user')->insertGetId([
-            'age'  => 18,
-            'name' => 'Sakura',
+            'age'       => 18,
+            'name'      => 'Sakura',
+            'test_json' => json_encode([
+                'age'  => 18,
+                'name' => 'Sakura',
+            ]),
         ]);
 
         $this->assertIsString($id);
@@ -637,15 +664,31 @@ class BuilderTest extends TestCase
 
     public function testSelectChinese()
     {
-        $name = '郑哈哈哈哈哈' . mt_rand(1, 1000);
+        $name = '哈哈哈哈哈' . mt_rand(1, 1000);
 
         $user   = User::updateOrCreate(['id' => 22], ['age' => 18, 'name' => $name]);
         $result = DB::table('user')->find((string)$user->getId());
 
         $this->assertEquals($name, $result->name);
 
+
         DB::table('user')->where('id', $user->getId())->update(['name' => $name]);
         $result1 = DB::table('user')->find((string)$user->getId());
+
         $this->assertEquals($name, $result1->name);
+    }
+
+    public function testExpUpdate()
+    {
+        $id  = DB::table('user')->insertGetId(
+            ['name' => 'dayle@example.com111', 'age' => 0]
+        );
+        $res = DB::table('user')->where('id', $id)->update(
+            [
+                'age'  => Expression::new('age + 1'),
+                'name' => 'updated',
+            ]
+        );
+        $this->assertEquals(true, $res);
     }
 }

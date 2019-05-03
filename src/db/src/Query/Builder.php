@@ -1917,7 +1917,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function having(string $column, string $operator = null, string $value = null, string $boolean = 'and'): self
+    public function having(string $column, $operator = null, $value = null, string $boolean = 'and'): self
     {
         $type = 'Basic';
 
@@ -1953,7 +1953,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      */
-    public function orHaving(string $column, string $operator = null, string $value = null): self
+    public function orHaving(string $column, $operator = null, $value = null): self
     {
         [$value, $operator] = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2
