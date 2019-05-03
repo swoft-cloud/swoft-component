@@ -70,7 +70,7 @@ class DoubleType extends Type
     /**
      * @return double|null
      */
-    public function getDefault(): ?double
+    public function getDefault()
     {
         if ($this->default === null) {
             return null;
