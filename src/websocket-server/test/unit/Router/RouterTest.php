@@ -2,7 +2,8 @@
 
 namespace SwoftTest\WebSocket\Server\Unit\Router;
 
-use Swoft\Test\BaseTestCase;
+use PHPUnit\Framework\TestCase;
+use Swoft\Test\Concern\CommonTestAssertTrait;
 use Swoft\WebSocket\Server\Router\Router;
 
 /**
@@ -10,8 +11,10 @@ use Swoft\WebSocket\Server\Router\Router;
  *
  * @since 2.0
  */
-class RouterTest extends BaseTestCase
+class RouterTest extends TestCase
 {
+    use CommonTestAssertTrait;
+
     /**
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
@@ -74,7 +77,6 @@ class RouterTest extends BaseTestCase
         $this->assertSame('/users/{id}', $info['path']);
 
         $router->setEnableDynamicRoute(true);
-
 
         $this->assertTrue($router->isEnableDynamicRoute());
         $router->setEnableDynamicRoute(false);

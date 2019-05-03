@@ -2,7 +2,7 @@
 
 namespace SwoftTest\WebSocket\Server\Unit\Helper;
 
-use Swoft\Test\BaseTestCase;
+use PHPUnit\Framework\TestCase;
 use Swoft\WebSocket\Server\Helper\WsHelper;
 
 /**
@@ -10,7 +10,7 @@ use Swoft\WebSocket\Server\Helper\WsHelper;
  *
  * @since 2.0
  */
-class WsHelperTest extends BaseTestCase
+class WsHelperTest extends TestCase
 {
     public function testFormatPath(): void
     {
