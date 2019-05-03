@@ -2313,14 +2313,14 @@ class Builder implements PrototypeInterface
      * @param string $id
      * @param array  $columns
      *
-     * @return static
+     * @return null|object|\Swoft\Db\Eloquent\Model|Builder
      * @throws PrototypeException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Db\Exception\EloquentException
      * @throws \Swoft\Db\Exception\PoolException
      */
-    public function find(string $id, array $columns = ['*']): self
+    public function find(string $id, array $columns = ['*'])
     {
         return $this->where('id', '=', $id)->first($columns);
     }

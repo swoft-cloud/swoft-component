@@ -9,6 +9,7 @@ use Swoft\Db\DB;
 use Swoft\Db\Exception\PoolException;
 use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
+use Swoft\Stdlib\Collection;
 use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Unit\TestCase;
 
@@ -608,6 +609,43 @@ class BuilderTest extends TestCase
         $id  = $this->getFirstId();
         $res = DB::connection('db.pool2')->query()->from('user')->where('id', $id)->get();
 
+        foreach ($res as $v) {
+            $this->assertInstanceOf('stdClass', $v);
+        }
         $this->assertIsArray($res->toArray());
+    }
+
+    public function testGetValue()
+    {
+        $id = DB::table('user')->from('user')->where('id', $this->getFirstId())->value('id');
+        $this->assertGreaterThan(0, $id);
+    }
+
+    public function testChunk()
+    {
+        $this->getFirstId();
+        DB::table('user')->orderBy('id')->chunk(100, function (\Swoft\Stdlib\Collection $users) {
+            $this->assertIsArray($users->toArray());
+            return false;
+        });
+
+        $users = DB::table('user')->cursor();
+        foreach ($users as $user) {
+            $this->assertIsString($user->name);
+        }
+    }
+
+    public function testSelectChinese()
+    {
+        $name = '郑哈哈哈哈哈' . mt_rand(1, 1000);
+
+        $user   = User::updateOrCreate(['id' => 22], ['age' => 18, 'name' => $name]);
+        $result = DB::table('user')->find((string)$user->getId());
+
+        $this->assertEquals($name, $result->name);
+
+        DB::table('user')->where('id', $user->getId())->update(['name' => $name]);
+        $result1 = DB::table('user')->find((string)$user->getId());
+        $this->assertEquals($name, $result1->name);
     }
 }
