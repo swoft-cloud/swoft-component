@@ -69,11 +69,7 @@ class FloatType extends Type
      */
     public function getDefault(): ?float
     {
-        if ($this->default === null) {
-            return null;
-        }
-
-        return (float)$this->default;
+        return $this->default;
     }
 
     /**

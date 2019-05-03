@@ -4,6 +4,33 @@
 namespace Swoft\Validator\Annotation\Parser;
 
 
-class ValidateParser
+use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
+use Swoft\Annotation\Annotation\Parser\Parser;
+use Swoft\Validator\Annotation\Mapping\Validate;
+use Swoft\Validator\ValidateRegister;
+
+/**
+ * Class ValidateParser
+ *
+ * @since 2.0
+ *
+ * @AnnotationParser(Validate::class)
+ */
+class ValidateParser extends Parser
 {
+    /**
+     * @param int      $type
+     * @param Validate $annotationObject
+     *
+     * @return array
+     */
+    public function parse(int $type, $annotationObject): array
+    {
+        $validator = $annotationObject->getValidator();
+        $fields    = $annotationObject->getFields();
+        $params    = $annotationObject->getParams();
+
+        ValidateRegister::registerValidate($this->className, $this->methodName, $validator, $fields, $params, '');
+        return [];
+    }
 }

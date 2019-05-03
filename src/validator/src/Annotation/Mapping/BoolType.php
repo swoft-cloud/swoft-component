@@ -70,16 +70,9 @@ class BoolType extends Type
     /**
      * @return bool|null
      */
-    public function getDefault(): ?bool
+    public function getDefault()
     {
-        if ($this->default === null) {
-            return null;
-        }
-
-        if ($default == 'true') {
-            return true;
-        }
-        return false;
+        return $this->default;
     }
 
     /**

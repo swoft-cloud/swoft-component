@@ -4,6 +4,7 @@
 namespace Swoft\Validator;
 
 use Swoft\Validator\Annotation\Mapping\Type;
+use Swoft\Validator\Contract\ValidatorInterface;
 use Swoft\Validator\Exception\ValidatorException;
 
 /**
@@ -14,6 +15,16 @@ use Swoft\Validator\Exception\ValidatorException;
 class ValidatorRegister
 {
     /**
+     * Default
+     */
+    public const TYPE_DEFAULT = 1;
+
+    /**
+     * User
+     */
+    public const TYPE_USER = 2;
+
+    /**
      * @var array
      *
      * @example
@@ -21,6 +32,7 @@ class ValidatorRegister
      *     'className' => [
      *         'name' => '',
      *         'class' => '',
+     *         'type' => 1,
      *         'properties' => [
      *            'propName' => [
      *                 'type' => XxxType(),
@@ -34,6 +46,7 @@ class ValidatorRegister
      *     'className' => [
      *         'name' => '',
      *         'class' => '',
+     *         'type' => 2,
      *         'properties' => [
      *            'propName' => [
      *                 'type' => XxxType(),
@@ -49,15 +62,37 @@ class ValidatorRegister
     private static $validators = [];
 
     /**
+     * @var array
+     * @example
+     * [
+     *     'className' => 'validateName'
+     * ]
+     */
+    private static $validatorClasses = [];
+
+    /**
      * @param string $className
      * @param string $validatorName
+     *
+     * @throws \ReflectionException
      */
     public static function registerValidator(string $className, string $validatorName): void
     {
-        self::$validators[$className] = [
+        $reflectClass = new \ReflectionClass($className);
+        $interfaces   = $reflectClass->getInterfaces();
+
+        $type = self::TYPE_DEFAULT;
+        if (in_array(ValidatorInterface::class, $interfaces)) {
+            $type = self::TYPE_USER;
+        }
+
+        self::$validators[$validatorName] = [
             'name'  => $validatorName,
-            'class' => $className
+            'class' => $className,
+            'type'  => $type,
         ];
+
+        self::$validatorClasses[$className] = $validatorName;
     }
 
     /**
@@ -69,31 +104,57 @@ class ValidatorRegister
      */
     public static function registerValidatorItem(string $className, string $propertyName, $objAnnotation): void
     {
-        if (!isset(self::$validators[$className])) {
+        if (!isset(self::$validatorClasses[$className])) {
             throw new ValidatorException(
                 sprintf('%s must be define class `@Validate()`', get_class($objAnnotation))
             );
         }
 
-        $type = self::$validators[$className]['properties'][$propertyName]['type']??[];
-        if(!empty($type) && $objAnnotation instanceof Type){
+        $validateName = self::$validatorClasses[$className];
+
+        $type = self::$validators[$validateName]['properties'][$propertyName]['type'] ?? [];
+        if (!empty($type) && $objAnnotation instanceof Type) {
             throw new ValidatorException(
                 \sprintf('Only one `@XxxType` can be defined(propterty=%s)!', $propertyName)
             );
         }
 
-        if($objAnnotation instanceof Type){
-            self::$validators[$className]['properties'][$propertyName]['type'] = $objAnnotation;
+        if ($objAnnotation instanceof Type) {
+            self::$validators[$validateName]['properties'][$propertyName]['type'] = $objAnnotation;
         }
 
-        self::$validators[$className]['properties'][$propertyName]['annotations'][] = $objAnnotation;
+        self::$validators[$validateName]['properties'][$propertyName]['annotations'][] = $objAnnotation;
     }
 
     /**
+     * @throws ValidatorException
+     */
+    public static function checkValidators()
+    {
+        foreach (self::$validators as $className => $values) {
+            if ($values['type'] == self::TYPE_USER) {
+                continue;
+            }
+
+            $properties = $values['properties'] ?? [];
+            foreach ($properties as $propName => $propValues) {
+                $type = $propValues['type'] ?? null;
+                if (empty($type)) {
+                    throw new ValidatorException(
+                        \sprintf('Property(%s->%s) must be define `@XxxType`', $className, $propName)
+                    );
+                }
+            }
+        }
+    }
+
+    /**
+     * @param string $validateName
+     *
      * @return array
      */
-    public static function getValidators(): array
+    public static function getValidator(string $validateName): array
     {
-        return self::$validators;
+        return self::$validators[$validateName] ?? [];
     }
 }

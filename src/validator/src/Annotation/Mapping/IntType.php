@@ -6,6 +6,7 @@ namespace Swoft\Validator\Annotation\Mapping;
 use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;
 use Doctrine\Common\Annotations\Annotation\Target;
+
 /**
  * Class IntType
  *
@@ -68,7 +69,7 @@ class IntType extends Type
      */
     public function getDefault(): ?int
     {
-        return (int)$this->default;
+        return $this->default;
     }
 
     /**

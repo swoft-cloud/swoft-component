@@ -69,7 +69,7 @@ class StringType extends Type
      */
     public function getDefault(): ?string
     {
-        return (string)$this->default;
+        return $this->default;
     }
 
     /**

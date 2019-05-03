@@ -92,7 +92,7 @@ class ValidatorHelper
      */
     public static function validateMobile(string $value): bool
     {
-        if (!\preg_match(self::$emailPattern, $value)) {
+        if (!\preg_match(self::$mobilePattern, $value)) {
             return false;
         }
 
