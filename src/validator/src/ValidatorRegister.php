@@ -3,7 +3,7 @@
 
 namespace Swoft\Validator;
 
-use hxh\components\Validate;
+use Swoft\Validator\Annotation\Mapping\Type;
 use Swoft\Validator\Exception\ValidatorException;
 
 /**
@@ -23,8 +23,11 @@ class ValidatorRegister
      *         'class' => '',
      *         'properties' => [
      *            'propName' => [
-     *                 'type' => 'int/string',
-     *                 'annotation' => AnnotationObject(Email/Max/Min)
+     *                 'type' => XxxType(),
+     *                 'annotations' => [
+     *                     AnnotationObject(Email/Max/Min),
+     *                     AnnotationObject(Email/Max/Min),
+     *                 ]
      *            ],
      *         ]
      *     ],
@@ -33,8 +36,11 @@ class ValidatorRegister
      *         'class' => '',
      *         'properties' => [
      *            'propName' => [
-     *                 'type' => 'int/string',
-     *                 'annotation' => AnnotationObject(Email/Max/Min)
+     *                 'type' => XxxType(),
+     *                 'annotations' => [
+     *                     AnnotationObject(Email/Max/Min),
+     *                     AnnotationObject(Email/Max/Min),
+     *                 ]
      *            ],
      *         ]
      *     ],
@@ -60,7 +66,6 @@ class ValidatorRegister
      * @param object $objAnnotation
      *
      * @throws ValidatorException
-     * @throws \ReflectionException
      */
     public static function registerValidatorItem(string $className, string $propertyName, $objAnnotation): void
     {
@@ -70,14 +75,18 @@ class ValidatorRegister
             );
         }
 
-        // Get property document type
-        $type = Validator::getPropertyType($className, $propertyName);
+        $type = self::$validators[$className]['properties'][$propertyName]['type']??[];
+        if(!empty($type) && $objAnnotation instanceof Type){
+            throw new ValidatorException(
+                \sprintf('Only one `@XxxType` can be defined(propterty=%s)!', $propertyName)
+            );
+        }
 
-        // Save record
-        self::$validators[$className]['properties'][$propertyName] = [
-            'type'       => $type,
-            'annotation' => $objAnnotation,
-        ];
+        if($objAnnotation instanceof Type){
+            self::$validators[$className]['properties'][$propertyName]['type'] = $objAnnotation;
+        }
+
+        self::$validators[$className]['properties'][$propertyName]['annotations'][] = $objAnnotation;
     }
 
     /**
