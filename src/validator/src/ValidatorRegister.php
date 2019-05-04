@@ -35,7 +35,10 @@ class ValidatorRegister
      *         'type' => 1,
      *         'properties' => [
      *            'propName' => [
-     *                 'type' => XxxType(),
+     *                 'type' => [
+     *                      'default' => '11',
+     *                      'annotation' => XxxType(),
+     *                  ],
      *                 'annotations' => [
      *                     AnnotationObject(Email/Max/Min),
      *                     AnnotationObject(Email/Max/Min),
@@ -49,7 +52,10 @@ class ValidatorRegister
      *         'type' => 2,
      *         'properties' => [
      *            'propName' => [
-     *                 'type' => XxxType(),
+     *                 'type' => [
+     *                      'default' => '11',
+     *                      'annotation' => XxxType(),
+     *                  ],
      *                 'annotations' => [
      *                     AnnotationObject(Email/Max/Min),
      *                     AnnotationObject(Email/Max/Min),
@@ -121,14 +127,15 @@ class ValidatorRegister
         }
 
         if ($objAnnotation instanceof Type) {
-            $relectionClass = new \ReflectionClass($className);
-            $defaultProp    = $relectionClass->getProperty($propertyName);
+            $rc          = new \ReflectionClass($className);
+            $defaultProp = $rc->getProperty($propertyName);
             $defaultProp->setAccessible(true);
 
             $default = $defaultProp->getValue(new $className());
 
             self::$validators[$validateName]['properties'][$propertyName]['type']['default']    = $default;
             self::$validators[$validateName]['properties'][$propertyName]['type']['annotation'] = $objAnnotation;
+            return;
         }
 
         self::$validators[$validateName]['properties'][$propertyName]['annotations'][] = $objAnnotation;

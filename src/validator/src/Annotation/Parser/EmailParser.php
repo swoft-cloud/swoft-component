@@ -4,13 +4,17 @@
 namespace Swoft\Validator\Annotation\Parser;
 
 
+use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Validator\ValidatorRegister;
+use Swoft\Validator\Annotation\Mapping\Email;
 
 /**
  * Class EmailParser
  *
  * @since 2.0
+ *
+ * @AnnotationParser(annotation=Email::class)
  */
 class EmailParser extends Parser
 {

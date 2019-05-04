@@ -83,7 +83,7 @@ class Validator
             /* @var StringType|IntType|BoolType|FloatType $type */
             $type        = $property['type']['annotation'] ?? null;
             $default     = $property['type']['default'] ?? null;
-            $annotations = $properties['annotations'] ?? [];
+            $annotations = $property['annotations'] ?? [];
             if ($type === null) {
                 continue;
             }
