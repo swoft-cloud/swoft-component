@@ -5,9 +5,20 @@ namespace Swoft\Validator;
 
 use Swoft\Validator\Annotation\Mapping\ArrayType;
 use Swoft\Validator\Annotation\Mapping\BoolType;
+use Swoft\Validator\Annotation\Mapping\Email;
+use Swoft\Validator\Annotation\Mapping\Enum;
 use Swoft\Validator\Annotation\Mapping\FloatType;
 use Swoft\Validator\Annotation\Mapping\IntType;
+use Swoft\Validator\Annotation\Mapping\Ip;
+use Swoft\Validator\Annotation\Mapping\Length;
+use Swoft\Validator\Annotation\Mapping\Max;
+use Swoft\Validator\Annotation\Mapping\Min;
+use Swoft\Validator\Annotation\Mapping\Mobile;
+use Swoft\Validator\Annotation\Mapping\NotEmpty;
+use Swoft\Validator\Annotation\Mapping\Pattern;
+use Swoft\Validator\Annotation\Mapping\Range;
 use Swoft\Validator\Annotation\Mapping\StringType;
+use Swoft\Validator\Concern\ValidateItemTrait;
 use Swoft\Validator\Exception\ValidatorException;
 
 /**
@@ -17,6 +28,8 @@ use Swoft\Validator\Exception\ValidatorException;
  */
 class Validator
 {
+    use ValidateItemTrait;
+
     /**
      * @param array  $data
      * @param string $className
@@ -56,7 +69,7 @@ class Validator
      *
      * @throws ValidatorException
      */
-    private static function validateDefaultValidator(array &$data, array $validator, array $fields): void
+    protected static function validateDefaultValidator(array &$data, array $validator, array $fields): void
     {
         $properties = $validator['properties'] ?? [];
 
@@ -65,10 +78,21 @@ class Validator
                 continue;
             }
 
+            /* @var StringType|IntType|BoolType|FloatType $type */
             $type        = $property['type'] ?? null;
             $annotations = $properties['annotations'] ?? [];
-            if ($type !== null) {
-                self::validateDefaultItem($data, $propName, $type);
+            if ($type === null) {
+                continue;
+            }
+
+            $name     = $type->getName();
+            $propName = (empty($name)) ? $propName : $name;
+
+            $isDefault = self::validateDefaultItem($data, $propName, $type);
+
+            // Has set default value
+            if ($isDefault) {
+                continue;
             }
 
             foreach ($annotations as $annotation) {
@@ -82,187 +106,60 @@ class Validator
      * @param string $propName
      * @param object $item
      *
+     * @return bool
      * @throws ValidatorException
      */
-    private static function validateDefaultItem(array &$data, string $propName, $item)
+    protected static function validateDefaultItem(array &$data, string $propName, $item): bool
     {
+        $result    = false;
         $itemClass = get_class($item);
         switch ($itemClass) {
             case ArrayType::class:
-
                 break;
             case BoolType::class:
-                self::validateBoolType($data, $propName, $item);
+                $result = self::validateBoolType($data, $propName, $item);
                 break;
             case FloatType::class:
-                self::validateFloatType($data, $propName, $item);
+                $result = self::validateFloatType($data, $propName, $item);
                 break;
             case IntType::class:
-                self::validateIntType($data, $propName, $item);
-
+                $result = self::validateIntType($data, $propName, $item);
                 break;
             case StringType::class:
-                self::validateStringType($data, $propName, $item);
+                $result = self::validateStringType($data, $propName, $item);
+                break;
+            case Email::class:
+                self::validateEmail($data, $propName, $item);
+                break;
+            case Enum::class:
+                self::validateEnum($data, $propName, $item);
+                break;
+            case Ip::class:
+                self::validateIp($data, $propName, $item);
+                break;
+            case Length::class:
+                self::validateLength($data, $propName, $item);
+                break;
+            case Max::class:
+                self::validateMax($data, $propName, $item);
+                break;
+            case Min::class:
+                self::validateMin($data, $propName, $item);
+                break;
+            case Mobile::class:
+                self::validateMobile($data, $propName, $item);
+                break;
+            case NotEmpty::class:
+                self::validateNotEmpty($data, $propName, $item);
+                break;
+            case Pattern::class:
+                self::validatePattern($data, $propName, $item);
+                break;
+            case Range::class:
+                self::validateRange($data, $propName, $item);
                 break;
         }
-    }
 
-    /**
-     * @param array  $data
-     * @param string $propertyName
-     * @param object $item
-     *
-     * @throws ValidatorException
-     */
-    private static function validateBoolType(array &$data, string $propertyName, $item): void
-    {
-        if (!$item instanceof BoolType) {
-            return;
-        }
-
-        $name    = $item->getName();
-        $message = $item->getMessage();
-        $default = $item->getDefault();
-
-        $checkName = (empty($name)) ? $propertyName : $name;
-
-        if (!isset($data[$checkName]) && $default !== null) {
-            if ($default == 'true') {
-                $data[$checkName] = true;
-            } elseif ($default == 'false') {
-                $data[$checkName] = false;
-            } else {
-                $data[$checkName] = false;
-            }
-
-            return;
-        }
-
-        if (!isset($data[$checkName]) && $default === null) {
-            $message = (empty($message)) ? \sprintf('Param(%s) must exist!', $checkName) : $message;
-            throw new ValidatorException($message);
-        }
-
-        $value = $data[$checkName];
-        if (is_bool($value)) {
-            return;
-        }
-
-        $message = (empty($message)) ? \sprintf('Param(%s) must bool!', $checkName) : $message;
-        throw new ValidatorException($message);
-    }
-
-    /**
-     * @param array  $data
-     * @param string $propertyName
-     * @param object $item
-     *
-     * @throws ValidatorException
-     */
-    private static function validateFloatType(array &$data, string $propertyName, $item): void
-    {
-        if (!$item instanceof FloatType) {
-            return;
-        }
-
-        $name    = $item->getName();
-        $message = $item->getMessage();
-        $default = $item->getDefault();
-
-        $checkName = (empty($name)) ? $propertyName : $name;
-
-        if (!isset($data[$checkName]) && $default !== null) {
-            $data[$checkName] = (float)$default;
-            return;
-        }
-
-        if (!isset($data[$checkName]) && $default === null) {
-            $message = (empty($message)) ? \sprintf('Param(%s) must exist!', $checkName) : $message;
-            throw new ValidatorException($message);
-        }
-
-        $value = $data[$checkName];
-        if (is_float($value)) {
-            return;
-        }
-
-        $message = (empty($message)) ? \sprintf('Param(%s) must float!', $checkName) : $message;
-        throw new ValidatorException($message);
-    }
-
-    /**
-     * @param array  $data
-     * @param string $propertyName
-     * @param object $item
-     *
-     * @throws ValidatorException
-     */
-    private static function validateIntType(array &$data, string $propertyName, $item): void
-    {
-        if (!$item instanceof IntType) {
-            return;
-        }
-
-        $name    = $item->getName();
-        $message = $item->getMessage();
-        $default = $item->getDefault();
-
-        $checkName = (empty($name)) ? $propertyName : $name;
-
-        if (!isset($data[$checkName]) && $default !== null) {
-            $data[$checkName] = (int)$default;
-            return;
-        }
-
-        if (!isset($data[$checkName]) && $default === null) {
-            $message = (empty($message)) ? \sprintf('Param(%s) must exist!', $checkName) : $message;
-            throw new ValidatorException($message);
-        }
-
-        $value = $data[$checkName];
-        if (is_int($value)) {
-            return;
-        }
-
-        $message = (empty($message)) ? \sprintf('Param(%s) must int!', $checkName) : $message;
-        throw new ValidatorException($message);
-    }
-
-    /**
-     * @param array  $data
-     * @param string $propertyName
-     * @param object $item
-     *
-     * @throws ValidatorException
-     */
-    private static function validateStringType(array &$data, string $propertyName, $item): void
-    {
-        if (!$item instanceof StringType) {
-            return;
-        }
-
-        $name    = $item->getName();
-        $message = $item->getMessage();
-        $default = $item->getDefault();
-
-        $checkName = (empty($name)) ? $propertyName : $name;
-
-        if (!isset($data[$checkName]) && $default !== null) {
-            $data[$checkName] = (string)$default;
-            return;
-        }
-
-        if (!isset($data[$checkName]) && $default === null) {
-            $message = (empty($message)) ? \sprintf('Param(%s) must exist!', $checkName) : $message;
-            throw new ValidatorException($message);
-        }
-
-        $value = $data[$checkName];
-        if (is_string($value)) {
-            return;
-        }
-
-        $message = (empty($message)) ? \sprintf('Param(%s) must string!', $checkName) : $message;
-        throw new ValidatorException($message);
+        return $result;
     }
 }
