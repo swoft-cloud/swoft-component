@@ -13,7 +13,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
  * @since 2.0
  *
  * @Annotation
- * @Target("CLASS")
+ * @Target("METHOD")
  * @Attributes({
  *     @Attribute("validator", type="string"),
  *     @Attribute("fields", type="array"),

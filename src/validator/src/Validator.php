@@ -3,6 +3,7 @@
 
 namespace Swoft\Validator;
 
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Validator\Annotation\Mapping\ArrayType;
 use Swoft\Validator\Annotation\Mapping\BoolType;
 use Swoft\Validator\Annotation\Mapping\Email;
@@ -25,6 +26,8 @@ use Swoft\Validator\Exception\ValidatorException;
  * Class Validator
  *
  * @since 2.0
+ *
+ * @Bean()
  */
 class Validator
 {
@@ -38,17 +41,17 @@ class Validator
      * @return array
      * @throws ValidatorException
      */
-    public static function validate(array $data, string $className, string $method): array
+    public static function validate(array &$data, string $className, string $method): array
     {
         $validates = ValidateRegister::getValidates($className, $method);
         if (empty($validates)) {
             return $data;
         }
 
-        $fields = $validates['fields'] ?? [];
-        foreach ($validates as $validateName) {
+        foreach ($validates as $validateName => $validate) {
             $validator = ValidatorRegister::getValidator($validateName);
             $type      = $validator['type'];
+            $fields    = $validate['fields'] ?? [];
 
             // User validator
             if ($type == ValidatorRegister::TYPE_USER) {
@@ -72,14 +75,14 @@ class Validator
     protected static function validateDefaultValidator(array &$data, array $validator, array $fields): void
     {
         $properties = $validator['properties'] ?? [];
-
         foreach ($properties as $propName => $property) {
             if (!empty($fields) && !in_array($propName, $fields)) {
                 continue;
             }
 
             /* @var StringType|IntType|BoolType|FloatType $type */
-            $type        = $property['type'] ?? null;
+            $type        = $property['type']['annotation'] ?? null;
+            $default     = $property['type']['default'] ?? null;
             $annotations = $properties['annotations'] ?? [];
             if ($type === null) {
                 continue;
@@ -88,7 +91,7 @@ class Validator
             $name     = $type->getName();
             $propName = (empty($name)) ? $propName : $name;
 
-            $isDefault = self::validateDefaultItem($data, $propName, $type);
+            $isDefault = self::validateDefaultItem($data, $propName, $type, $default);
 
             // Has set default value
             if ($isDefault) {
@@ -105,28 +108,30 @@ class Validator
      * @param array  $data
      * @param string $propName
      * @param object $item
+     * @param mixed  $default
      *
      * @return bool
      * @throws ValidatorException
      */
-    protected static function validateDefaultItem(array &$data, string $propName, $item): bool
+    protected static function validateDefaultItem(array &$data, string $propName, $item, $default = null): bool
     {
         $result    = false;
         $itemClass = get_class($item);
         switch ($itemClass) {
             case ArrayType::class:
+                $result = self::validateArrayType($data, $propName, $item, $default);
                 break;
             case BoolType::class:
-                $result = self::validateBoolType($data, $propName, $item);
+                $result = self::validateBoolType($data, $propName, $item, $default);
                 break;
             case FloatType::class:
-                $result = self::validateFloatType($data, $propName, $item);
+                $result = self::validateFloatType($data, $propName, $item, $default);
                 break;
             case IntType::class:
-                $result = self::validateIntType($data, $propName, $item);
+                $result = self::validateIntType($data, $propName, $item, $default);
                 break;
             case StringType::class:
-                $result = self::validateStringType($data, $propName, $item);
+                $result = self::validateStringType($data, $propName, $item, $default);
                 break;
             case Email::class:
                 self::validateEmail($data, $propName, $item);

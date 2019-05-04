@@ -26,11 +26,6 @@ class IntType extends Type
     private $message = '';
 
     /**
-     * @var int|null
-     */
-    private $default;
-
-    /**
      * @var string
      */
     private $name = '';
@@ -48,9 +43,6 @@ class IntType extends Type
         if (isset($values['message'])) {
             $this->message = $values['message'];
         }
-        if (isset($values['default'])) {
-            $this->default = $values['default'];
-        }
         if (isset($values['name'])) {
             $this->name = $values['name'];
         }
@@ -62,14 +54,6 @@ class IntType extends Type
     public function getMessage(): string
     {
         return $this->message;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getDefault(): ?int
-    {
-        return $this->default;
     }
 
     /**

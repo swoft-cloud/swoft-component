@@ -26,11 +26,6 @@ class BoolType extends Type
     private $message = '';
 
     /**
-     * @var bool|null
-     */
-    private $default;
-
-    /**
      * @var string
      */
     private $name = '';
@@ -48,12 +43,6 @@ class BoolType extends Type
         if (isset($values['message'])) {
             $this->message = $values['message'];
         }
-        if (isset($values['default'])) {
-            $this->default = $values['default'];
-        }
-        if (isset($values['default'])) {
-            $this->default = $values['default'];
-        }
         if (isset($values['name'])) {
             $this->name = $values['name'];
         }
@@ -65,14 +54,6 @@ class BoolType extends Type
     public function getMessage(): string
     {
         return $this->message;
-    }
-
-    /**
-     * @return bool|null
-     */
-    public function getDefault()
-    {
-        return $this->default;
     }
 
     /**

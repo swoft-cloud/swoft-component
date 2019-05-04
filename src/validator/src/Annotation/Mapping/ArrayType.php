@@ -26,6 +26,11 @@ class ArrayType extends Type
     private $message = '';
 
     /**
+     * @var string
+     */
+    private $name = '';
+
+    /**
      * ArrayType constructor.
      *
      * @param array $values
@@ -38,6 +43,9 @@ class ArrayType extends Type
         if (isset($values['message'])) {
             $this->message = $values['message'];
         }
+        if (isset($values['name'])) {
+            $this->name = $values['name'];
+        }
     }
 
     /**
@@ -46,5 +54,13 @@ class ArrayType extends Type
     public function getMessage(): string
     {
         return $this->message;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
     }
 }

@@ -24,7 +24,7 @@ class StringTypeParser extends Parser
      *
      * @return array
      * @throws \Swoft\Validator\Exception\ValidatorException
-     */
+     * @throws \ReflectionException     */
     public function parse(int $type, $annotationObject): array
     {
         if ($type != self::TYPE_PROPERTY) {

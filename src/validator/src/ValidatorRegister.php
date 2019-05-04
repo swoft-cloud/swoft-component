@@ -101,6 +101,7 @@ class ValidatorRegister
      * @param object $objAnnotation
      *
      * @throws ValidatorException
+     * @throws \ReflectionException
      */
     public static function registerValidatorItem(string $className, string $propertyName, $objAnnotation): void
     {
@@ -120,7 +121,14 @@ class ValidatorRegister
         }
 
         if ($objAnnotation instanceof Type) {
-            self::$validators[$validateName]['properties'][$propertyName]['type'] = $objAnnotation;
+            $relectionClass = new \ReflectionClass($className);
+            $defaultProp    = $relectionClass->getProperty($propertyName);
+            $defaultProp->setAccessible(true);
+
+            $default = $defaultProp->getValue(new $className());
+
+            self::$validators[$validateName]['properties'][$propertyName]['type']['default']    = $default;
+            self::$validators[$validateName]['properties'][$propertyName]['type']['annotation'] = $objAnnotation;
         }
 
         self::$validators[$validateName]['properties'][$propertyName]['annotations'][] = $objAnnotation;

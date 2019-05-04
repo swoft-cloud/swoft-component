@@ -10,6 +10,12 @@ use Swoft\Validator\Annotation\Mapping\FloatType;
 use Swoft\Validator\Annotation\Mapping\IntType;
 use Swoft\Validator\Annotation\Mapping\Ip;
 use Swoft\Validator\Annotation\Mapping\Length;
+use Swoft\Validator\Annotation\Mapping\Max;
+use Swoft\Validator\Annotation\Mapping\Min;
+use Swoft\Validator\Annotation\Mapping\Mobile;
+use Swoft\Validator\Annotation\Mapping\NotEmpty;
+use Swoft\Validator\Annotation\Mapping\Pattern;
+use Swoft\Validator\Annotation\Mapping\Range;
 use Swoft\Validator\Annotation\Mapping\StringType;
 use Swoft\Validator\Exception\ValidatorException;
 use Swoft\Validator\Helper\ValidatorHelper;
@@ -25,31 +31,59 @@ trait ValidateItemTrait
      * @param array  $data
      * @param string $propertyName
      * @param object $item
+     * @param mixed  $default
      *
      * @return bool
      *
      * @throws ValidatorException
      */
-    protected static function validateBoolType(array &$data, string $propertyName, $item): bool
+    protected static function validateArrayType(array &$data, string $propertyName, $item, $default): bool
     {
         /* @var BoolType $item */
         $message = $item->getMessage();
-        $default = $item->getDefault();
 
         if (!isset($data[$propertyName]) && $default !== null) {
-            if ($default == 'true') {
-                $data[$propertyName] = true;
-            } elseif ($default == 'false') {
-                $data[$propertyName] = false;
-            } else {
-                $data[$propertyName] = false;
-            }
+            $data[$propertyName] = (array)$default;
 
             return true;
         }
 
         if (!isset($data[$propertyName]) && $default === null) {
-            $message = (empty($message)) ? \sprintf('Param(%s) must exist!', $propertyName) : $message;
+            $message = (empty($message)) ? \sprintf('%s must exist!', $propertyName) : $message;
+            throw new ValidatorException($message);
+        }
+
+        $value = $data[$propertyName];
+        if (\is_array($value)) {
+            return false;
+        }
+
+        $message = (empty($message)) ? \sprintf('%s must bool!', $propertyName) : $message;
+        throw new ValidatorException($message);
+    }
+
+    /**
+     * @param array  $data
+     * @param string $propertyName
+     * @param object $item
+     * @param mixed  $default
+     *
+     * @return bool
+     *
+     * @throws ValidatorException
+     */
+    protected static function validateBoolType(array &$data, string $propertyName, $item, $default): bool
+    {
+        /* @var BoolType $item */
+        $message = $item->getMessage();
+        if (!isset($data[$propertyName]) && $default !== null) {
+            $data[$propertyName] = (bool)$default;
+
+            return true;
+        }
+
+        if (!isset($data[$propertyName]) && $default === null) {
+            $message = (empty($message)) ? \sprintf('%s must exist!', $propertyName) : $message;
             throw new ValidatorException($message);
         }
 
@@ -58,7 +92,7 @@ trait ValidateItemTrait
             return false;
         }
 
-        $message = (empty($message)) ? \sprintf('Param(%s) must bool!', $propertyName) : $message;
+        $message = (empty($message)) ? \sprintf('%s must bool!', $propertyName) : $message;
         throw new ValidatorException($message);
     }
 
@@ -66,15 +100,15 @@ trait ValidateItemTrait
      * @param array  $data
      * @param string $propertyName
      * @param object $item
+     * @param mixed  $default
      *
      * @return bool
      * @throws ValidatorException
      */
-    protected static function validateFloatType(array &$data, string $propertyName, $item): bool
+    protected static function validateFloatType(array &$data, string $propertyName, $item, $default): bool
     {
         /* @var FloatType $item */
         $message = $item->getMessage();
-        $default = $item->getDefault();
 
         if (!isset($data[$propertyName]) && $default !== null) {
             $data[$propertyName] = (float)$default;
@@ -82,7 +116,7 @@ trait ValidateItemTrait
         }
 
         if (!isset($data[$propertyName]) && $default === null) {
-            $message = (empty($message)) ? \sprintf('Param(%s) must exist!', $propertyName) : $message;
+            $message = (empty($message)) ? \sprintf('%s must exist!', $propertyName) : $message;
             throw new ValidatorException($message);
         }
 
@@ -91,7 +125,7 @@ trait ValidateItemTrait
             return false;
         }
 
-        $message = (empty($message)) ? \sprintf('Param(%s) must float!', $propertyName) : $message;
+        $message = (empty($message)) ? \sprintf('%s must float!', $propertyName) : $message;
         throw new ValidatorException($message);
     }
 
@@ -99,15 +133,15 @@ trait ValidateItemTrait
      * @param array  $data
      * @param string $propertyName
      * @param object $item
+     * @param mixed  $default
      *
      * @return bool
      * @throws ValidatorException
      */
-    protected static function validateIntType(array &$data, string $propertyName, $item): bool
+    protected static function validateIntType(array &$data, string $propertyName, $item, $default): bool
     {
         /* @var IntType $item */
         $message = $item->getMessage();
-        $default = $item->getDefault();
 
         if (!isset($data[$propertyName]) && $default !== null) {
             $data[$propertyName] = (int)$default;
@@ -115,7 +149,7 @@ trait ValidateItemTrait
         }
 
         if (!isset($data[$propertyName]) && $default === null) {
-            $message = (empty($message)) ? \sprintf('Param(%s) must exist!', $propertyName) : $message;
+            $message = (empty($message)) ? \sprintf('%s must exist!', $propertyName) : $message;
             throw new ValidatorException($message);
         }
 
@@ -124,7 +158,7 @@ trait ValidateItemTrait
             return false;
         }
 
-        $message = (empty($message)) ? \sprintf('Param(%s) must int!', $propertyName) : $message;
+        $message = (empty($message)) ? \sprintf('%s must int!', $propertyName) : $message;
         throw new ValidatorException($message);
     }
 
@@ -132,23 +166,22 @@ trait ValidateItemTrait
      * @param array  $data
      * @param string $propertyName
      * @param object $item
+     * @param mixed  $default
      *
      * @return bool
      * @throws ValidatorException
      */
-    protected static function validateStringType(array &$data, string $propertyName, $item): bool
+    protected static function validateStringType(array &$data, string $propertyName, $item, $default): bool
     {
         /* @var StringType $item */
         $message = $item->getMessage();
-        $default = $item->getDefault();
-
         if (!isset($data[$propertyName]) && $default !== null) {
             $data[$propertyName] = (string)$default;
             return true;
         }
 
         if (!isset($data[$propertyName]) && $default === null) {
-            $message = (empty($message)) ? \sprintf('Param(%s) must exist!', $propertyName) : $message;
+            $message = (empty($message)) ? \sprintf('%s must exist!', $propertyName) : $message;
             throw new ValidatorException($message);
         }
 
@@ -157,7 +190,7 @@ trait ValidateItemTrait
             return false;
         }
 
-        $message = (empty($message)) ? \sprintf('Param(%s) must string!', $propertyName) : $message;
+        $message = (empty($message)) ? \sprintf('%s must string!', $propertyName) : $message;
         throw new ValidatorException($message);
     }
 
@@ -243,7 +276,6 @@ trait ValidateItemTrait
             return;
         }
 
-        /* @var Ip $item */
         $message = $item->getMessage();
         $message = (empty($message)) ? \sprintf('%s is invalid length(min=%d, max=%d)', $propertyName, $min,
             $max) : $message;
@@ -251,39 +283,134 @@ trait ValidateItemTrait
         throw new ValidatorException($message);
     }
 
+    /**
+     * @param array  $data
+     * @param string $propertyName
+     * @param object $item
+     *
+     * @throws ValidatorException
+     */
     protected static function validateMax(array &$data, string $propertyName, $item): void
     {
-        /* @var StringType $item */
+        /* @var Max $item */
+        $max   = $item->getValue();
+        $value = $data[$propertyName];
+        if ($value <= $max) {
+            return;
+        }
 
+        $message = $item->getMessage();
+        $message = (empty($message)) ? \sprintf('%s is too big(max=%d)', $propertyName, $max) : $message;
+
+        throw new ValidatorException($message);
     }
 
+    /**
+     * @param array  $data
+     * @param string $propertyName
+     * @param object $item
+     *
+     * @throws ValidatorException
+     */
     protected static function validateMin(array &$data, string $propertyName, $item): void
     {
-        /* @var StringType $item */
+        /* @var Min $item */
+        $min   = $item->getValue();
+        $value = $data[$propertyName];
+        if ($value >= $min) {
+            return;
+        }
+
+        $message = $item->getMessage();
+        $message = (empty($message)) ? \sprintf('%s is too small(min=%d)', $propertyName, $min) : $message;
+
+        throw new ValidatorException($message);
 
     }
 
+    /**
+     * @param array  $data
+     * @param string $propertyName
+     * @param object $item
+     *
+     * @throws ValidatorException
+     */
     protected static function validateMobile(array &$data, string $propertyName, $item): void
     {
-        /* @var StringType $item */
+        /* @var Mobile $item */
+        $value = $data[$propertyName];
+        if (ValidatorHelper::validateMobile($value)) {
+            return;
+        }
 
+        $message = $item->getMessage();
+        $message = (empty($message)) ? \sprintf('%s is invalid mobile!', $propertyName) : $message;
+        throw new ValidatorException($message);
     }
 
+    /**
+     * @param array  $data
+     * @param string $propertyName
+     * @param object $item
+     *
+     * @throws ValidatorException
+     */
     protected static function validateNotEmpty(array &$data, string $propertyName, $item): void
     {
-        /* @var StringType $item */
+        /* @var NotEmpty $item */
+        $value = $data[$propertyName];
+        if (!empty($value)) {
+            return;
+        }
 
+        $message = $item->getMessage();
+        $message = (empty($message)) ? \sprintf('%s can not be empty!', $propertyName) : $message;
+        throw new ValidatorException($message);
     }
 
+    /**
+     * @param array  $data
+     * @param string $propertyName
+     * @param object $item
+     *
+     * @throws ValidatorException
+     */
     protected static function validatePattern(array &$data, string $propertyName, $item): void
     {
-        /* @var StringType $item */
+        /* @var Pattern $item */
+        $regex = $item->getRegex();
+        $value = $data[$propertyName];
+        if (ValidatorHelper::validatePattern($value, $regex)) {
+            return;
+        }
 
+        $message = $item->getMessage();
+        $message = (empty($message)) ? \sprintf('%s is invalid pattern!', $propertyName) : $message;
+        throw new ValidatorException($message);
     }
 
+    /**
+     * @param array  $data
+     * @param string $propertyName
+     * @param object $item
+     *
+     * @throws ValidatorException
+     */
     protected static function validateRange(array &$data, string $propertyName, $item): void
     {
-        /* @var StringType $item */
+        /* @var Range $item */
+        $min = $item->getMin();
+        $max = $item->getMax();
 
+        $value = $data[$propertyName];
+        if (ValidatorHelper::validateRange($value, $min, $max)) {
+            return;
+        }
+
+        $message = $item->getMessage();
+        $message = (empty($message)) ? \sprintf('%s is invalid range(min=%d, max=%d)', $propertyName, $min,
+            $max) : $message;
+
+        throw new ValidatorException($message);
     }
 }

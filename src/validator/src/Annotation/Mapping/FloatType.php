@@ -26,11 +26,6 @@ class FloatType extends Type
     private $message = '';
 
     /**
-     * @var float|null
-     */
-    private $default;
-
-    /**
      * @var string
      */
     private $name = '';
@@ -48,9 +43,6 @@ class FloatType extends Type
         if (isset($values['message'])) {
             $this->message = $values['message'];
         }
-        if (isset($values['default'])) {
-            $this->default = $values['default'];
-        }
         if (isset($values['name'])) {
             $this->name = $values['name'];
         }
@@ -62,14 +54,6 @@ class FloatType extends Type
     public function getMessage(): string
     {
         return $this->message;
-    }
-
-    /**
-     * @return float|null
-     */
-    public function getDefault(): ?float
-    {
-        return $this->default;
     }
 
     /**

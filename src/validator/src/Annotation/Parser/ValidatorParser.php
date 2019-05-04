@@ -24,6 +24,7 @@ class ValidatorParser extends Parser
      * @param Validator $annotationObject
      *
      * @return array
+     * @throws \ReflectionException
      */
     public function parse(int $type, $annotationObject): array
     {
@@ -33,7 +34,7 @@ class ValidatorParser extends Parser
             $beanName = $name;
         }
 
-        ValidatorRegister::registerValidator($this->className, $name);
+        ValidatorRegister::registerValidator($this->className, $beanName);
 
         return [$beanName, $this->className, Bean::SINGLETON, ''];
     }

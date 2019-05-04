@@ -26,11 +26,6 @@ class StringType extends Type
     private $message = '';
 
     /**
-     * @var string|null
-     */
-    private $default;
-
-    /**
      * @var string
      */
     private $name = '';
@@ -48,9 +43,6 @@ class StringType extends Type
         if (isset($values['message'])) {
             $this->message = $values['message'];
         }
-        if (isset($values['default'])) {
-            $this->default = $values['default'];
-        }
         if (isset($values['name'])) {
             $this->name = $values['name'];
         }
@@ -62,14 +54,6 @@ class StringType extends Type
     public function getMessage(): string
     {
         return $this->message;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getDefault(): ?string
-    {
-        return $this->default;
     }
 
     /**
