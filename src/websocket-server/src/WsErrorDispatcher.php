@@ -18,6 +18,7 @@ use Swoole\WebSocket\Frame;
 
 /**
  * Class WsErrorDispatcher
+ *
  * @since 2.0
  * @Bean()
  */
@@ -26,6 +27,7 @@ class WsErrorDispatcher
     /**
      * @param \Throwable $e
      * @param Response   $response
+     *
      * @return Response
      * @throws \Throwable
      */
@@ -52,6 +54,7 @@ class WsErrorDispatcher
     /**
      * @param \Throwable $e
      * @param Request    $request
+     *
      * @throws \Throwable
      */
     public function openError(\Throwable $e, Request $request): void
@@ -75,6 +78,7 @@ class WsErrorDispatcher
     /**
      * @param \Throwable $e
      * @param Frame      $frame
+     *
      * @throws \Throwable
      */
     public function messageError(\Throwable $e, Frame $frame): void
@@ -99,6 +103,7 @@ class WsErrorDispatcher
     /**
      * @param \Throwable $e
      * @param int        $fd
+     *
      * @throws \Throwable
      */
     public function closeError(\Throwable $e, int $fd): void

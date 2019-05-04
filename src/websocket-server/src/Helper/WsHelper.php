@@ -7,6 +7,7 @@ use Swoole\Http\Response;
 
 /**
  * Class WsHelper
+ *
  * @since   2.0
  * @package Swoft\WebSocket\Server\Helper
  */
@@ -18,6 +19,7 @@ class WsHelper
 
     /**
      * WebSocket data opcode types
+     *
      * @see \WEBSOCKET_OPCODE_TEXT
      */
     public const OPCODE_TEXT   = 0x01;
@@ -28,7 +30,9 @@ class WsHelper
 
     /**
      * Generate WebSocket sign.(for server)
+     *
      * @param string $key
+     *
      * @return string
      */
     public static function genSign(string $key): string
@@ -38,16 +42,18 @@ class WsHelper
 
     /**
      * @param string $secWSKey 'sec-websocket-key: xxxx'
+     *
      * @return bool
      */
     public static function isInvalidSecKey(string $secWSKey): bool
     {
-        return 0 === \preg_match(self::KEY_PATTEN, $secWSKey) ||
-            16 !== \strlen(\base64_decode($secWSKey));
+        return 0 === \preg_match(self::KEY_PATTEN, $secWSKey)
+            || 16 !== \strlen(\base64_decode($secWSKey));
     }
 
     /**
      * @param string $secWSKey
+     *
      * @return array
      */
     public static function handshakeHeaders(string $secWSKey): array
@@ -63,6 +69,7 @@ class WsHelper
     /**
      * @param Request  $request
      * @param Response $response
+     *
      * @return bool
      */
     public static function fastHandshake(Request $request, Response $response): bool
@@ -95,29 +102,13 @@ class WsHelper
 
     /**
      * @param string $path
+     *
      * @return string
      */
     public static function formatPath(string $path): string
     {
-        $path = \rtrim($path, '/ ');
+        $path = '/' . \trim($path, '/ ');
 
         return $path ?: '/';
-    }
-
-    /**
-     * @param int    $fd
-     * @param string $prefix
-     * @return string (length is 32)
-     * @throws \Exception
-     */
-    public static function generateId(int $fd, string $prefix = ''): string
-    {
-        // 参照 mongoDb ID: Time + Machine + PID + INC
-        return $prefix .
-            \date('YmdHis') .
-            \hash('crc32', \php_uname()) .
-            \str_pad(\dechex(\getmypid()), 4, 0, STR_PAD_LEFT) .
-            \str_pad(\dechex($fd), 6, 0, STR_PAD_LEFT);
-        // \dechex(\random_int(2000000, 16000000));
     }
 }

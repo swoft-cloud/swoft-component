@@ -2,6 +2,11 @@
 
 > 日期时间都是大概的时间点
 
+## 2019.04.29
+
+- ws server 模块路由支持变量(@inhere)
+- ws server message 调度逻辑调整(@inhere)
+
 ## 2019.04.14
 
 - 完成错误处理组件(@inhere)

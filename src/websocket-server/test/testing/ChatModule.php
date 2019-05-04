@@ -20,7 +20,7 @@ use Swoole\WebSocket\Server;
  * @since 2.0
  *
  * @WsModule(
- *     path="/chat",
+ *     path="/ws-test/chat",
  *     messageParser=JsonParser::class,
  *     controllers={UserController::class, ChatController::class}
  * )
@@ -36,16 +36,6 @@ class ChatModule implements WsModuleInterface
      * @var string
      */
     protected $defaultCommand = 'default';
-
-    /**
-     * command handlers map
-     * @var array
-     * handler is a method name in ws controller, or is a class implement MessageHandlerInterface
-     * [
-     *   'command name' => 'callback handler'
-     * ]
-     */
-    private $handlers = [];
 
     public function init(): void
     {
@@ -152,13 +142,4 @@ class ChatModule implements WsModuleInterface
     {
         return $this->options;
     }
-
-    /**
-     * @return array
-     */
-    public function getHandlers(): array
-    {
-        return $this->handlers;
-    }
-
 }

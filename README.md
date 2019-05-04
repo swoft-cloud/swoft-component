@@ -16,10 +16,10 @@ git subtree add --prefix=src/[folder] [repository] [ref] --squash
 
 > Note that `--squash` option is required.
 
-e.g. Add [swoft/pipeline](https://github.com/swoft-cloud/swoft-pipeline) component as a Sub Repository,
+e.g. Add [swoft/config](https://github.com/swoft-cloud/swoft-config) component as a Sub Repository,
 
 ```php
-git subtree add --prefix=src/pipeline git@github.com:swoft-cloud/swoft-pipeline master --squash
+git subtree add --prefix=src/config git@github.com:swoft-cloud/swoft-config master --squash
 ```
 
 ### Commit changes
@@ -34,17 +34,17 @@ git subtree push --prefix=src/[folder] [repository] [ref] --squash
 
 > Note that `--squash` option is required.
 
-e.g. Add [swoft/pipeline](https://github.com/swoft-cloud/swoft-pipeline) component as a Sub Repository
+e.g. Add [swoft/config](https://github.com/swoft-cloud/swoft-config) component as a Sub Repository
 
 ```bash
-git subtree push --prefix=src/pipeline git@github.com:swoft-cloud/swoft-pipeline master --squash
+git subtree push --prefix=src/config git@github.com:swoft-cloud/swoft-config master --squash
 ```
 
 > Tips:
 > You could use `remote` to instead of `[repository]` property for easier to use.
-> e.g. Add `Remote` first, `git remote add -f pipeline git@github.com:swoft-cloud/swoft-pipeline.git`,
-> after this, you could use `pipeline` instead of `[repository]`,
-> for example `git subtree push --prefix=src/pipeline pipeline master --squash`
+> e.g. Add `Remote` first, `git remote add -f config git@github.com:swoft-cloud/swoft-config.git`,
+> after this, you could use `config` instead of `[repository]`,
+> for example `git subtree push --prefix=src/config config master --squash`
 
 ### Release a new version of component
 
@@ -60,24 +60,39 @@ git subtree pull --prefix=src/[folder] [repository] [ref] --squash
 
 > Note that `--squash` option is required.
 
-e.g. Pull [swoft/pipeline](https://github.com/swoft-cloud/swoft-pipeline) repository into `src/pipeline`
+e.g. Pull [swoft/config](https://github.com/swoft-cloud/swoft-config) repository into `src/config`
 
 ```bash
-git subtree pull --prefix=src/pipeline git@github.com:swoft-cloud/swoft-pipeline master --squash
+git subtree pull --prefix=src/config git@github.com:swoft-cloud/swoft-config master --squash
 ```
 
 ## Unit Tests
 
+Quick run tests for component:
+
 ```bash
-phpunit
-// output coverage. require xdebug ext
-phpunit --coverage-text
-// output coverage without xdebug
-phpdbg -dauto_globals_jit=Off -qrr /usr/local/bin/phpunit --coverage-text
+// For all components
+./phpunit.sh all
+// For multi components
+./phpunit.sh db event
+// For one component
+./phpunit.sh event
 ```
 
-only tests an special component:
+Only tests an special component:
 
 ```bash
-php run.php --testsuite event
+php run.php -c src/event/phpunit.xml
+php run.php -c src/event/phpunit.xml --filter testAddModule
+```
+
+Output coverage data(TODO):
+
+```bash
+// output coverage. require xdebug ext
+phpunit --coverage-text
+
+// output coverage without xdebug
+phpdbg -dauto_globals_jit=Off -qrr /usr/local/bin/phpunit --coverage-text
+phpdbg -dauto_globals_jit=Off -qrr run.php --coverage-text -c src/event/phpunit.xml
 ```

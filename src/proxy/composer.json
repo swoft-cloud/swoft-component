@@ -20,7 +20,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "SwoftTest\\Proxy\\": "test/case"
+            "SwoftTest\\Proxy\\Unit\\": "test/unit",
+            "SwoftTest\\Proxy\\Testing\\": "test/testing"
         }
     },
     "repositories": [

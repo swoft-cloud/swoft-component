@@ -28,6 +28,7 @@ class WsModuleParser extends Parser
      * Return empty array is nothing to do!
      * When class type return [$beanName, $className, $scope, $alias, $size] is to inject bean
      * When property type return [$propertyValue, $isRef] is to reference value
+     * @throws AnnotationException
      */
     public function parse(int $type, $ann): array
     {
@@ -40,6 +41,7 @@ class WsModuleParser extends Parser
         RouteRegister::bindModule($class, [
             'path'           => $ann->getPath(),
             'name'           => $ann->getName(),
+            'params'         => $ann->getParams(),
             'class'          => $class,
             'eventMethods'   => [],
             'controllers'    => $ann->getControllers(),

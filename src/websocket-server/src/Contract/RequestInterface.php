@@ -9,5 +9,8 @@ namespace Swoft\WebSocket\Server\Contract;
  */
 interface RequestInterface
 {
-
+    /**
+     * @return int
+     */
+    public function getFd(): int;
 }

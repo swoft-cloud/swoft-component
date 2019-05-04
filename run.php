@@ -5,7 +5,8 @@ go(function () {
         global $argc, $argv;
         require '../../bin/phpunit';
     } catch (Throwable $e) {
-            var_dump($e->getMessage());
+        var_dump($e->getMessage());
     }
 });
+
 \Swoole\Event::wait();

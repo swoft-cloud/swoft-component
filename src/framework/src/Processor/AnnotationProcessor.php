@@ -24,8 +24,6 @@ class AnnotationProcessor extends Processor
             return false;
         }
 
-        CLog::info('Annotation load is beginning');
-
         $app = $this->application;
 
         // Find AutoLoader classes. Parse and collect annotations.
