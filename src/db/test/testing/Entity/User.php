@@ -18,7 +18,7 @@ use Swoft\Db\Eloquent\Model;
 class User extends Model
 {
     /**
-     * @Id()
+     * @Id(incrementing=true)
      *
      * @Column(name="id", prop="id")
      * @var int|null

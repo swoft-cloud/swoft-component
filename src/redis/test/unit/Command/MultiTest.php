@@ -32,7 +32,7 @@ class MultiTest extends TestCase
 
     public function testTransaction()
     {
-        $count  = 10;
+        $count  = 2;
         $result = Redis::transaction(function (\Redis $redis) use ($count) {
             for ($i = 0; $i < $count; $i++) {
                 $key = "key:$i";
@@ -40,6 +40,20 @@ class MultiTest extends TestCase
                 $redis->get($key);
             }
         });
+
+        /**
+        array(4) {
+        [0]=>
+        bool(true)
+        [1]=>
+        int(0)
+        [2]=>
+        bool(true)
+        [3]=>
+        int(1)
+        }
+
+         */
 
         $this->assertEquals(\count($result), $count * 2);
 

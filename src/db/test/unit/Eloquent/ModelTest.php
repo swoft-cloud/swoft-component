@@ -26,7 +26,7 @@ class ModelTest extends TestCase
      */
     public function testSave()
     {
-        $user = User::new();
+        $user = new User;
         $user->setAge(mt_rand(1, 100));
         $user->setUserDesc('desc');
 
@@ -53,6 +53,21 @@ class ModelTest extends TestCase
             'user_desc' => 'u desc'
         ];
 
+        $batch = User::insert([
+            [
+                'name'      => uniqid(),
+                'password'  => md5(uniqid()),
+                'age'       => mt_rand(1, 100),
+                'user_desc' => 'u desc'
+            ],
+            [
+                'name'      => uniqid(),
+                'password'  => md5(uniqid()),
+                'age'       => mt_rand(1, 100),
+                'user_desc' => 'u desc'
+            ]
+        ]);
+        $this->assertTrue($batch);
         $result3 = User::new($attributes)->save();
         $this->assertTrue($result3);
 
@@ -80,6 +95,8 @@ class ModelTest extends TestCase
     {
         $res1 = User::updateOrCreate(['id' => 1], ['age' => 18, 'name' => 'sakuraovq']);
 
+
+        User::updateOrInsert(['id' => 1], ['age' => 18, 'name' => 'sakuraovq']);
         $wheres   = [
             'name' => 'sakuraovq',
             ['id', '>=', 2]
@@ -282,6 +299,19 @@ on A.id=B.id;', [$resCount - 20]);
             $this->assertIsInt($user->getId());
         }
         $this->assertInstanceOf('Swoft\Db\Eloquent\Collection', $users);
+    }
 
+    public function testWheres()
+    {
+        $expectSql = 'select * from `user` where (`name` = ? and `status` >= ? or `money` > ?)';
+
+        $wheres = [
+            'name' => 'sakuraovq',
+            ['status', '>=', 2],
+            ['money', '>', 0, 'or']
+        ];
+        $sql    = User::where($wheres)->toSql();
+
+        $this->assertEquals($expectSql, $sql);
     }
 }
