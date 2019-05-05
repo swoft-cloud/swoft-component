@@ -7,7 +7,7 @@ use Swoft\Validator\Annotation\Mapping\IsBool;
 use Swoft\Validator\Annotation\Mapping\Email;
 use Swoft\Validator\Annotation\Mapping\Enum;
 use Swoft\Validator\Annotation\Mapping\IsFloat;
-use Swoft\Validator\Annotation\Mapping\IntType;
+use Swoft\Validator\Annotation\Mapping\IsInt;
 use Swoft\Validator\Annotation\Mapping\Ip;
 use Swoft\Validator\Annotation\Mapping\Length;
 use Swoft\Validator\Annotation\Mapping\Max;
@@ -16,7 +16,7 @@ use Swoft\Validator\Annotation\Mapping\Mobile;
 use Swoft\Validator\Annotation\Mapping\NotEmpty;
 use Swoft\Validator\Annotation\Mapping\Pattern;
 use Swoft\Validator\Annotation\Mapping\Range;
-use Swoft\Validator\Annotation\Mapping\StringType;
+use Swoft\Validator\Annotation\Mapping\IsString;
 use Swoft\Validator\Exception\ValidatorException;
 use Swoft\Validator\Helper\ValidatorHelper;
 
@@ -140,7 +140,7 @@ trait ValidateItemTrait
      */
     protected static function validateIsInt(array &$data, string $propertyName, $item, $default): bool
     {
-        /* @var IntType $item */
+        /* @var IsInt $item */
         $message = $item->getMessage();
 
         if (!isset($data[$propertyName]) && $default !== null) {
@@ -173,7 +173,7 @@ trait ValidateItemTrait
      */
     protected static function validateIsString(array &$data, string $propertyName, $item, $default): bool
     {
-        /* @var StringType $item */
+        /* @var IsString $item */
         $message = $item->getMessage();
         if (!isset($data[$propertyName]) && $default !== null) {
             $data[$propertyName] = (string)$default;

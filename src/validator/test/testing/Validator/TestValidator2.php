@@ -5,7 +5,7 @@ namespace SwoftTest\Validator\Testing\Validator;
 
 use Swoft\Validator\Annotation\Mapping\Email;
 use Swoft\Validator\Annotation\Mapping\Enum;
-use Swoft\Validator\Annotation\Mapping\IntType;
+use Swoft\Validator\Annotation\Mapping\IsInt;
 use Swoft\Validator\Annotation\Mapping\Ip;
 use Swoft\Validator\Annotation\Mapping\Length;
 use Swoft\Validator\Annotation\Mapping\Max;
@@ -14,7 +14,7 @@ use Swoft\Validator\Annotation\Mapping\Mobile;
 use Swoft\Validator\Annotation\Mapping\NotEmpty;
 use Swoft\Validator\Annotation\Mapping\Pattern;
 use Swoft\Validator\Annotation\Mapping\Range;
-use Swoft\Validator\Annotation\Mapping\StringType;
+use Swoft\Validator\Annotation\Mapping\IsString;
 use Swoft\Validator\Annotation\Mapping\Validator;
 
 /**
@@ -27,7 +27,7 @@ use Swoft\Validator\Annotation\Mapping\Validator;
 class TestValidator2
 {
     /**
-     * @StringType()
+     * @IsString()
      * @Email(message="email messsage")
      *
      * @var string
@@ -35,7 +35,7 @@ class TestValidator2
     protected $email;
 
     /**
-     * @StringType()
+     * @IsString()
      * @Enum(values={2,4,6}, message="enum message")
      *
      * @var int
@@ -43,7 +43,7 @@ class TestValidator2
     protected $enum;
 
     /**
-     * @StringType()
+     * @IsString()
      * @Ip(message="ip message")
      *
      * @var string
@@ -51,7 +51,7 @@ class TestValidator2
     protected $ip;
 
     /**
-     * @StringType()
+     * @IsString()
      * @Length(min=2, max=12, message="length message")
      *
      * @var string
@@ -59,7 +59,7 @@ class TestValidator2
     protected $length;
 
     /**
-     * @IntType()
+     * @IsInt()
      * @Max(value=12, message="max message")
      *
      * @var int
@@ -67,7 +67,7 @@ class TestValidator2
     protected $max;
 
     /**
-     * @IntType()
+     * @IsInt()
      * @Min(value=1, message="min message")
      *
      * @var int
@@ -75,7 +75,7 @@ class TestValidator2
     protected $min;
 
     /**
-     * @StringType()
+     * @IsString()
      * @Mobile(message="mobile message")
      *
      * @var string
@@ -83,7 +83,7 @@ class TestValidator2
     protected $mobile;
 
     /**
-     * @StringType()
+     * @IsString()
      * @NotEmpty(message="not empty message")
      *
      * @var string
@@ -91,7 +91,7 @@ class TestValidator2
     protected $notEmpty;
 
     /**
-     * @StringType()
+     * @IsString()
      * @Pattern(regex="*swoft*")
      *
      * @var string
@@ -99,7 +99,7 @@ class TestValidator2
     protected $pattern;
 
     /**
-     * @IntType()
+     * @IsInt()
      * @Range(min=10, max=99, message="range message")
      *
      * @var int

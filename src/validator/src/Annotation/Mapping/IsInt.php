@@ -8,7 +8,7 @@ use Doctrine\Common\Annotations\Annotation\Attributes;
 use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
- * Class IntType
+ * Class IsInt
  *
  * @since 2.0
  *
@@ -18,7 +18,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
  *     @Attribute("message", type="string")
  * })
  */
-class IntType extends Type
+class IsInt extends Type
 {
     /**
      * @var string

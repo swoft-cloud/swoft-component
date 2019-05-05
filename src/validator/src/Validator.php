@@ -9,7 +9,7 @@ use Swoft\Validator\Annotation\Mapping\IsBool;
 use Swoft\Validator\Annotation\Mapping\Email;
 use Swoft\Validator\Annotation\Mapping\Enum;
 use Swoft\Validator\Annotation\Mapping\IsFloat;
-use Swoft\Validator\Annotation\Mapping\IntType;
+use Swoft\Validator\Annotation\Mapping\IsInt;
 use Swoft\Validator\Annotation\Mapping\Ip;
 use Swoft\Validator\Annotation\Mapping\Length;
 use Swoft\Validator\Annotation\Mapping\Max;
@@ -18,7 +18,7 @@ use Swoft\Validator\Annotation\Mapping\Mobile;
 use Swoft\Validator\Annotation\Mapping\NotEmpty;
 use Swoft\Validator\Annotation\Mapping\Pattern;
 use Swoft\Validator\Annotation\Mapping\Range;
-use Swoft\Validator\Annotation\Mapping\StringType;
+use Swoft\Validator\Annotation\Mapping\IsString;
 use Swoft\Validator\Concern\ValidateItemTrait;
 use Swoft\Validator\Exception\ValidatorException;
 
@@ -80,7 +80,7 @@ class Validator
                 continue;
             }
 
-            /* @var StringType|IntType|IsBool|IsFloat $type */
+            /* @var IsString|IsInt|IsBool|IsFloat $type */
             $type        = $property['type']['annotation'] ?? null;
             $default     = $property['type']['default'] ?? null;
             $annotations = $property['annotations'] ?? [];
@@ -127,10 +127,10 @@ class Validator
             case IsFloat::class:
                 $result = self::validateIsFloat($data, $propName, $item, $default);
                 break;
-            case IntType::class:
+            case IsInt::class:
                 $result = self::validateIsInt($data, $propName, $item, $default);
                 break;
-            case StringType::class:
+            case IsString::class:
                 $result = self::validateIsString($data, $propName, $item, $default);
                 break;
             case Email::class:

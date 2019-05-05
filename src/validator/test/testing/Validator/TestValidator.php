@@ -7,8 +7,8 @@ use Swoft\Validator\Annotation\Mapping\IsArray;
 use Swoft\Validator\Annotation\Mapping\Validator;
 use Swoft\Validator\Annotation\Mapping\IsBool;
 use Swoft\Validator\Annotation\Mapping\IsFloat;
-use Swoft\Validator\Annotation\Mapping\IntType;
-use Swoft\Validator\Annotation\Mapping\StringType;
+use Swoft\Validator\Annotation\Mapping\IsInt;
+use Swoft\Validator\Annotation\Mapping\IsString;
 
 /**
  * Class TestValidator
@@ -27,14 +27,14 @@ class TestValidator
     protected $array;
 
     /**
-     * @StringType()
+     * @IsString()
      *
      * @var string
      */
     protected $string;
 
     /**
-     * @IntType()
+     * @IsInt()
      *
      * @var int
      */
@@ -64,14 +64,14 @@ class TestValidator
     protected $arrayMessage;
 
     /**
-     * @StringType(message="string message")
+     * @IsString(message="string message")
      *
      * @var string
      */
     protected $stringMessage;
 
     /**
-     * @IntType(message="int message")
+     * @IsInt(message="int message")
      *
      * @var int
      */
@@ -99,14 +99,14 @@ class TestValidator
     protected $arrayDefault = [];
 
     /**
-     * @StringType()
+     * @IsString()
      *
      * @var string
      */
     protected $stringDefault = '';
 
     /**
-     * @IntType()
+     * @IsInt()
      *
      * @var int
      */

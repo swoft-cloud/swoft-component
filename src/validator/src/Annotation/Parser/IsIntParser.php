@@ -3,28 +3,29 @@
 
 namespace Swoft\Validator\Annotation\Parser;
 
-
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
+use Swoft\Validator\Exception\ValidatorException;
 use Swoft\Validator\ValidatorRegister;
-use Swoft\Validator\Annotation\Mapping\StringType;
+use Swoft\Validator\Annotation\Mapping\IsInt;
 
 /**
- * Class StringTypeParser
+ * Class IsIntParser
  *
  * @since 2.0
  *
- * @AnnotationParser(StringType::class)
+ * @AnnotationParser(IsInt::class)
  */
-class StringTypeParser extends Parser
+class IsIntParser extends Parser
 {
     /**
      * @param int    $type
      * @param object $annotationObject
      *
      * @return array
-     * @throws \Swoft\Validator\Exception\ValidatorException
-     * @throws \ReflectionException     */
+     * @throws ValidatorException
+     * @throws \ReflectionException
+     */
     public function parse(int $type, $annotationObject): array
     {
         if ($type != self::TYPE_PROPERTY) {
