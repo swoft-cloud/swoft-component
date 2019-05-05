@@ -28,7 +28,7 @@ final class CommandMapping
     private $name = '';
 
     /**
-     * Command name alias
+     * Command name alias(es), multi by ',' split.
      *
      * @var string
      */
