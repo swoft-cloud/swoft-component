@@ -73,8 +73,8 @@ class MySqlConnector extends AbstractConnector
     /**
      * Set the timezone on the connection.
      *
-     * @param  \PDO  $connection
-     * @param  array $config
+     * @param \PDO  $connection
+     * @param array $config
      *
      * @return void
      */
@@ -83,14 +83,14 @@ class MySqlConnector extends AbstractConnector
         $config   = $config['config'];
         $timezone = $config['timezone'] ?? '';
         if (!empty($timezone)) {
-            $connection->prepare(sprintf('set time_zone="%s"', $timezone), $timezone)->execute();
+            $connection->prepare(sprintf('set time_zone="%s"', $timezone))->execute();
         }
     }
 
     /**
      * Determine if the given configuration array has a UNIX socket value.
      *
-     * @param  array $config
+     * @param array $config
      *
      * @return bool
      */
@@ -102,7 +102,7 @@ class MySqlConnector extends AbstractConnector
     /**
      * Get the DSN string for a socket configuration.
      *
-     * @param  array $config
+     * @param array $config
      *
      * @return string
      */
@@ -114,17 +114,19 @@ class MySqlConnector extends AbstractConnector
     /**
      * Set the modes for the connection.
      *
-     * @param  \PDO  $connection
-     * @param  array $config
+     * @param \PDO  $connection
+     * @param array $config
      *
      * @return void
      */
     protected function setModes(\PDO $connection, array $config): void
     {
-        $modes  = $config['modes'] ?? [];
         $config = $config['config'];
+        $modes  = $config['modes'] ?? [];
         if (!empty($modes)) {
-            $modes = implode(',', $modes);
+            if (!is_scalar($modes)) {
+                $modes = implode(',', $modes);
+            }
             $connection->prepare(sprintf('set session sql_mode="%s"', $modes))->execute();
             return;
         }
@@ -141,7 +143,7 @@ class MySqlConnector extends AbstractConnector
     /**
      * Get the query to enable strict mode.
      *
-     * @param  \PDO $connection
+     * @param \PDO $connection
      *
      * @return string
      */

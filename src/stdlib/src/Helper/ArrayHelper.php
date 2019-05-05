@@ -1148,7 +1148,7 @@ class ArrayHelper
      */
     public static function query(array $array): string
     {
-        return http_build_query($array, null, '&', PHP_QUERY_RFC3986);
+        return http_build_query($array, '', '&', PHP_QUERY_RFC3986);
     }
 
     /**

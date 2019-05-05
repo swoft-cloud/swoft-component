@@ -5,6 +5,7 @@ namespace SwoftTest\Redis\Unit\Command;
 
 
 use Swoft\Redis\Redis;
+use Swoft\Redis\RedisDb;
 use SwoftTest\Redis\Unit\TestCase;
 
 /**
@@ -26,6 +27,9 @@ class StringTest extends TestCase
 
         $getTtl = Redis::ttl($ttlKey);
         $this->assertGreaterThan($ttl / 2, $getTtl);
+
+        Redis::set($key, json_encode(['a']), 111);
+        Redis::get($key);
     }
 
     public function testGet()

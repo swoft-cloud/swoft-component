@@ -158,7 +158,6 @@ class TransactionTest extends TestCase
         $id  = $this->addRecord();
         $id2 = $this->addRecord();
 
-        echo "testTransaction update id $id $id2" . \PHP_EOL;
         DB::beginTransaction();
         $result = User::updateOrInsert(['id' => $id], ['name' => 'sakura1']);
         $this->assertTrue($result);

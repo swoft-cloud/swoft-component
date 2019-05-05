@@ -14,15 +14,15 @@ interface ConnectorInterface
      * @param array $config
      * @param array $option
      *
-     * @return \Redis
+     * @return Object
      */
-    public function connect(array $config, array $option): \Redis;
+    public function connect(array $config, array $option);
 
     /**
      * @param array $config
      * @param array $option
      *
-     * @return \RedisCluster
+     * @return Object
      */
-    public function connectToCluster(array $config, array $option): \RedisCluster;
+    public function connectToCluster(array $config, array $option);
 }
