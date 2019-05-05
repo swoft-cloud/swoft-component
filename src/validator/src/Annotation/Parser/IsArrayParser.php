@@ -4,27 +4,28 @@
 namespace Swoft\Validator\Annotation\Parser;
 
 
-use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
+use Swoft\Validator\Exception\ValidatorException;
 use Swoft\Validator\ValidatorRegister;
-use Swoft\Validator\Annotation\Mapping\BoolType;
+use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
+use Swoft\Validator\Annotation\Mapping\IsArray;
 
 /**
- * Class BoolTypeParser
+ * Class IsArrayParser
  *
  * @since 2.0
  *
- * @AnnotationParser(BoolType::class)
+ * @AnnotationParser(IsArray::class)
  */
-class BoolTypeParser extends Parser
+class IsArrayParser extends Parser
 {
     /**
      * @param int    $type
      * @param object $annotationObject
      *
      * @return array
-     * @throws \Swoft\Validator\Exception\ValidatorException
      * @throws \ReflectionException
+     * @throws ValidatorException
      */
     public function parse(int $type, $annotationObject): array
     {

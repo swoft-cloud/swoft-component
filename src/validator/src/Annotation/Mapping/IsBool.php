@@ -8,7 +8,7 @@ use Doctrine\Common\Annotations\Annotation\Attributes;
 use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
- * Class FloatType
+ * Class IsBool
  *
  * @since 2.0
  *
@@ -18,7 +18,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
  *     @Attribute("message", type="string")
  * })
  */
-class FloatType extends Type
+class IsBool extends Type
 {
     /**
      * @var string
@@ -31,7 +31,7 @@ class FloatType extends Type
     private $name = '';
 
     /**
-     * FloatType constructor.
+     * BoolType constructor.
      *
      * @param array $values
      */

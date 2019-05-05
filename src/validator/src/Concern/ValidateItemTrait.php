@@ -3,10 +3,10 @@
 
 namespace Swoft\Validator\Concern;
 
-use Swoft\Validator\Annotation\Mapping\BoolType;
+use Swoft\Validator\Annotation\Mapping\IsBool;
 use Swoft\Validator\Annotation\Mapping\Email;
 use Swoft\Validator\Annotation\Mapping\Enum;
-use Swoft\Validator\Annotation\Mapping\FloatType;
+use Swoft\Validator\Annotation\Mapping\IsFloat;
 use Swoft\Validator\Annotation\Mapping\IntType;
 use Swoft\Validator\Annotation\Mapping\Ip;
 use Swoft\Validator\Annotation\Mapping\Length;
@@ -37,9 +37,9 @@ trait ValidateItemTrait
      *
      * @throws ValidatorException
      */
-    protected static function validateArrayType(array &$data, string $propertyName, $item, $default): bool
+    protected static function validateIsArray(array &$data, string $propertyName, $item, $default): bool
     {
-        /* @var BoolType $item */
+        /* @var IsBool $item */
         $message = $item->getMessage();
 
         if (!isset($data[$propertyName]) && $default !== null) {
@@ -72,9 +72,9 @@ trait ValidateItemTrait
      *
      * @throws ValidatorException
      */
-    protected static function validateBoolType(array &$data, string $propertyName, $item, $default): bool
+    protected static function validateIsBool(array &$data, string $propertyName, $item, $default): bool
     {
-        /* @var BoolType $item */
+        /* @var IsBool $item */
         $message = $item->getMessage();
         if (!isset($data[$propertyName]) && $default !== null) {
             $data[$propertyName] = (bool)$default;
@@ -105,9 +105,9 @@ trait ValidateItemTrait
      * @return bool
      * @throws ValidatorException
      */
-    protected static function validateFloatType(array &$data, string $propertyName, $item, $default): bool
+    protected static function validateIsFloat(array &$data, string $propertyName, $item, $default): bool
     {
-        /* @var FloatType $item */
+        /* @var IsFloat $item */
         $message = $item->getMessage();
 
         if (!isset($data[$propertyName]) && $default !== null) {
@@ -138,7 +138,7 @@ trait ValidateItemTrait
      * @return bool
      * @throws ValidatorException
      */
-    protected static function validateIntType(array &$data, string $propertyName, $item, $default): bool
+    protected static function validateIsInt(array &$data, string $propertyName, $item, $default): bool
     {
         /* @var IntType $item */
         $message = $item->getMessage();
@@ -171,7 +171,7 @@ trait ValidateItemTrait
      * @return bool
      * @throws ValidatorException
      */
-    protected static function validateStringType(array &$data, string $propertyName, $item, $default): bool
+    protected static function validateIsString(array &$data, string $propertyName, $item, $default): bool
     {
         /* @var StringType $item */
         $message = $item->getMessage();

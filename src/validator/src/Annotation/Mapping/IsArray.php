@@ -8,7 +8,7 @@ use Doctrine\Common\Annotations\Annotation\Attributes;
 use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
- * Class ArrayType
+ * Class IsArray
  *
  * @since 2.0
  *
@@ -18,7 +18,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
  *     @Attribute("message", type="string")
  * })
  */
-class ArrayType extends Type
+class IsArray extends Type
 {
     /**
      * @var string

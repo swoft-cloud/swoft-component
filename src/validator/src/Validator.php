@@ -4,11 +4,11 @@
 namespace Swoft\Validator;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Validator\Annotation\Mapping\ArrayType;
-use Swoft\Validator\Annotation\Mapping\BoolType;
+use Swoft\Validator\Annotation\Mapping\IsArray;
+use Swoft\Validator\Annotation\Mapping\IsBool;
 use Swoft\Validator\Annotation\Mapping\Email;
 use Swoft\Validator\Annotation\Mapping\Enum;
-use Swoft\Validator\Annotation\Mapping\FloatType;
+use Swoft\Validator\Annotation\Mapping\IsFloat;
 use Swoft\Validator\Annotation\Mapping\IntType;
 use Swoft\Validator\Annotation\Mapping\Ip;
 use Swoft\Validator\Annotation\Mapping\Length;
@@ -80,7 +80,7 @@ class Validator
                 continue;
             }
 
-            /* @var StringType|IntType|BoolType|FloatType $type */
+            /* @var StringType|IntType|IsBool|IsFloat $type */
             $type        = $property['type']['annotation'] ?? null;
             $default     = $property['type']['default'] ?? null;
             $annotations = $property['annotations'] ?? [];
@@ -118,20 +118,20 @@ class Validator
         $result    = false;
         $itemClass = get_class($item);
         switch ($itemClass) {
-            case ArrayType::class:
-                $result = self::validateArrayType($data, $propName, $item, $default);
+            case IsArray::class:
+                $result = self::validateIsArray($data, $propName, $item, $default);
                 break;
-            case BoolType::class:
-                $result = self::validateBoolType($data, $propName, $item, $default);
+            case IsBool::class:
+                $result = self::validateIsBool($data, $propName, $item, $default);
                 break;
-            case FloatType::class:
-                $result = self::validateFloatType($data, $propName, $item, $default);
+            case IsFloat::class:
+                $result = self::validateIsFloat($data, $propName, $item, $default);
                 break;
             case IntType::class:
-                $result = self::validateIntType($data, $propName, $item, $default);
+                $result = self::validateIsInt($data, $propName, $item, $default);
                 break;
             case StringType::class:
-                $result = self::validateStringType($data, $propName, $item, $default);
+                $result = self::validateIsString($data, $propName, $item, $default);
                 break;
             case Email::class:
                 self::validateEmail($data, $propName, $item);

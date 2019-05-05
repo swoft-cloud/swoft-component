@@ -3,13 +3,13 @@
 
 namespace SwoftTest\Validator\Testing\Validator;
 
-use Swoft\Validator\Annotation\Mapping\ArrayType;
+use Swoft\Validator\Annotation\Mapping\IsArray;
 use Swoft\Validator\Annotation\Mapping\Validator;
-
-use Swoft\Validator\Annotation\Mapping\BoolType;
-use Swoft\Validator\Annotation\Mapping\FloatType;
+use Swoft\Validator\Annotation\Mapping\IsBool;
+use Swoft\Validator\Annotation\Mapping\IsFloat;
 use Swoft\Validator\Annotation\Mapping\IntType;
 use Swoft\Validator\Annotation\Mapping\StringType;
+
 /**
  * Class TestValidator
  *
@@ -20,7 +20,7 @@ use Swoft\Validator\Annotation\Mapping\StringType;
 class TestValidator
 {
     /**
-     * @ArrayType()
+     * @IsArray()
      *
      * @var array
      */
@@ -41,7 +41,7 @@ class TestValidator
     protected $int;
 
     /**
-     * @BoolType()
+     * @IsBool()
      *
      * @var int
      */
@@ -49,7 +49,7 @@ class TestValidator
 
 
     /**
-     * @FloatType()
+     * @IsFloat()
      *
      * @var int
      */
@@ -57,7 +57,7 @@ class TestValidator
 
 
     /**
-     * @ArrayType(message="array message")
+     * @IsArray(message="array message")
      *
      * @var array
      */
@@ -78,21 +78,21 @@ class TestValidator
     protected $intMessage;
 
     /**
-     * @BoolType(message="bool message")
+     * @IsBool(message="bool message")
      *
      * @var int
      */
     protected $boolMessage;
 
     /**
-     * @FloatType(message="float message")
+     * @IsFloat(message="float message")
      *
      * @var int
      */
     protected $floatMessage;
 
     /**
-     * @ArrayType()
+     * @IsArray()
      *
      * @var array
      */
@@ -113,7 +113,7 @@ class TestValidator
     protected $intDefault = 0;
 
     /**
-     * @BoolType()
+     * @IsBool()
      *
      * @var int
      */
@@ -121,7 +121,7 @@ class TestValidator
 
 
     /**
-     * @FloatType()
+     * @IsFloat()
      *
      * @var int
      */
