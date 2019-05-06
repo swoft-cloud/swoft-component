@@ -38,7 +38,7 @@ echo ""
 # php run.php -c src/annotation/phpunit.xml
 # set -ex
 for lbName in ${components} ; do
-    if [[ ${lbName} == "component" ]]; then
+    if [[ "${lbName}" == "component" ]]; then
         echo "======> Testing the【component】"
         echo "> php run.php -c phpunit.xml"
         php run.php -c phpunit.xml
