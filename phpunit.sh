@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/bash
 #
 # Tool for run unit test for swoft components
 #
@@ -26,7 +26,7 @@ if [[ -z "$1" ]] || [[ "$1" == "-h" ]]; then
 fi
 
 # for one or multi component
-if [[ "$1" != "all" ]]; then
+if [ "$1" != "all" ]; then
     components=$@
 fi
 
@@ -38,12 +38,12 @@ echo ""
 # php run.php -c src/annotation/phpunit.xml
 # set -ex
 for lbName in ${components} ; do
-    if [[ ${lbName} == "component" ]]; then
+    if [ "${lbName}" == "component" ]; then
         echo "======> Testing the【component】"
         echo "> php run.php -c phpunit.xml"
         php run.php -c phpunit.xml
     else
-        if [[ ! -d "src/${lbName}" ]]; then
+        if [ ! -d "src/${lbName}" ]; then
             echo "!! Skip invalid component: ${lbName}"
         else
           echo "======> Testing the component【${lbName}】"
