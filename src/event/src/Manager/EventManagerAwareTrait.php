@@ -10,6 +10,8 @@
 
 namespace Swoft\Event\Manager;
 
+use InvalidArgumentException;
+use function method_exists;
 use Swoft\Event\EventInterface;
 
 /**
@@ -27,7 +29,7 @@ trait EventManagerAwareTrait
     /**
      * @param bool $createIfNotExists
      * @return EventManager|EventManagerInterface
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function getEventManager($createIfNotExists = true)
     {
@@ -45,7 +47,7 @@ trait EventManagerAwareTrait
     {
         $this->eventManager = $eventManager;
 
-        if (\method_exists($this, 'attachDefaultListeners')) {
+        if (method_exists($this, 'attachDefaultListeners')) {
             $this->attachDefaultListeners($eventManager);
         }
     }

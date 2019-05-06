@@ -10,22 +10,34 @@
 
 namespace Swoft\Event\Listener;
 
+use Closure;
+use function count;
+use Countable;
+use function is_object;
+use IteratorAggregate;
+use const PHP_INT_MAX;
+use SplObjectStorage;
+use SplPriorityQueue;
+use stdClass;
+use Traversable;
+
 /**
  * Class ListenerQueue - Listener queue management class for an event
+ *
  * @package Swoft\Event\Listener
  * @since 2.0
  */
-class ListenerQueue implements \IteratorAggregate, \Countable
+class ListenerQueue implements IteratorAggregate, Countable
 {
     /**
      * Object store - listener instance store
-     * @var \SplObjectStorage
+     * @var SplObjectStorage
      */
     private $store;
 
     /**
      * Priority queue
-     * @var \SplPriorityQueue
+     * @var SplPriorityQueue
      */
     private $queue;
 
@@ -33,24 +45,26 @@ class ListenerQueue implements \IteratorAggregate, \Countable
      * 计数器。设定最大值为 PHP_INT_MAX
      * @var int
      */
-    private $counter = \PHP_INT_MAX;
+    private $counter = PHP_INT_MAX;
 
     public function __construct()
     {
-        $this->store = new \SplObjectStorage();
-        $this->queue = new \SplPriorityQueue();
+        $this->store = new SplObjectStorage();
+        $this->queue = new SplPriorityQueue();
     }
 
     /**
      * Add a listener, support add callback(string|array)
-     * @param \Closure|callable|\stdClass|mixed $listener
-     * @param integer                           $priority
+     *
+     * @param Closure|callable|stdClass|mixed $listener
+     * @param integer                         $priority
+     *
      * @return $this
      */
     public function add($listener, $priority): self
     {
         // transfer to object. like string/array
-        if (!\is_object($listener)) {
+        if (!is_object($listener)) {
             $listener = new LazyListener($listener);
         }
 
@@ -77,7 +91,7 @@ class ListenerQueue implements \IteratorAggregate, \Countable
             $this->store->detach($listener);
             $this->store->rewind();
 
-            $queue = new \SplPriorityQueue();
+            $queue = new SplPriorityQueue();
 
             foreach ($this->store as $otherListener) {
                 // Priority information @see self::add(). It like `[priority, counter value]`
@@ -157,9 +171,9 @@ class ListenerQueue implements \IteratorAggregate, \Countable
 
     /**
      * Get the inner queue with its cursor on top of the heap.
-     * @return  \SplPriorityQueue  The inner queue.
+     * @return  SplPriorityQueue  The inner queue.
      */
-    public function getIterator(): \Traversable
+    public function getIterator(): Traversable
     {
         // SplPriorityQueue queue is a heap.
         $queue = clone $this->queue;
@@ -177,7 +191,7 @@ class ListenerQueue implements \IteratorAggregate, \Countable
      */
     public function count(): int
     {
-        return \count($this->queue);
+        return count($this->queue);
     }
 
     /**

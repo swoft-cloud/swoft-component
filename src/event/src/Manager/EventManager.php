@@ -10,9 +10,24 @@
 
 namespace Swoft\Event\Manager;
 
+use function array_keys;
+use function class_exists;
+use Closure;
+use function count;
+use InvalidArgumentException;
+use function is_callable;
+use function is_int;
+use function is_numeric;
+use function is_object;
+use function is_string;
+use function method_exists;
+use function strpos;
+use function strrpos;
+use function substr;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Event\{Event, EventHandlerInterface, EventInterface, EventSubscriberInterface};
 use Swoft\Event\Listener\{LazyListener, ListenerPriority, ListenerQueue};
+use function trim;
 
 /**
  * Class EventManager
@@ -60,7 +75,7 @@ class EventManager implements EventManagerInterface
 
     /**
      * EventManager constructor.
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct()
     {
@@ -126,10 +141,10 @@ class EventManager implements EventManagerInterface
             $this->listenedEvents[$name] = 1;
 
             // only handler method name
-            if (\is_string($conf)) {
+            if (is_string($conf)) {
                 $queue->add(new LazyListener([$object, $conf]), $priority);
                 // with priority ['onPost', ListenerPriority::LOW]
-            } elseif (\is_string($conf[0])) {
+            } elseif (is_string($conf[0])) {
                 $queue->add(new LazyListener([$object, $conf[0]]), $conf[1] ?? $priority);
             }
         }
@@ -137,7 +152,7 @@ class EventManager implements EventManagerInterface
 
     /**
      * Add a listener and associate it to one (multiple) event
-     * @param \Closure|callback|mixed $listener listener
+     * @param Closure|callback|mixed $listener listener
      * @param array|string|int        $definition Event name, priority setting
      * Allowed:
      *     $definition = [
@@ -158,8 +173,8 @@ class EventManager implements EventManagerInterface
     public function addListener($listener, $definition = null): bool
     {
         // ensure $listener is a object.
-        if (!\is_object($listener)) {
-            if (\is_string($listener) && \class_exists($listener)) {
+        if (!is_object($listener)) {
+            if (is_string($listener) && class_exists($listener)) {
                 $listener = new $listener;
 
                 // like 'function' OR '[object, method]'
@@ -170,10 +185,10 @@ class EventManager implements EventManagerInterface
 
         $defaultPriority = ListenerPriority::NORMAL;
 
-        if (\is_numeric($definition)) { // is priority value
+        if (is_numeric($definition)) { // is priority value
             $defaultPriority = (int)$definition;
             $definition      = null;
-        } elseif (\is_string($definition)) { // It an event name
+        } elseif (is_string($definition)) { // It an event name
             $definition = [$definition => $defaultPriority];
         } elseif ($definition instanceof EventInterface) { // Is an event object, take the name
             $definition = [$definition->getName() => $defaultPriority];
@@ -186,8 +201,8 @@ class EventManager implements EventManagerInterface
 
         if ($definition) {
             foreach ($definition as $name => $priority) {
-                if (\is_int($name)) {
-                    if (!$priority || !\is_string($priority)) {
+                if (is_int($name)) {
+                    if (!$priority || !is_string($priority)) {
                         continue;
                     }
 
@@ -195,7 +210,7 @@ class EventManager implements EventManagerInterface
                     $priority = $defaultPriority;
                 }
 
-                if (!$name = \trim($name, '. ')) {
+                if (!$name = trim($name, '. ')) {
                     continue;
                 }
 
@@ -215,7 +230,7 @@ class EventManager implements EventManagerInterface
 
     /**
      * {@inheritDoc}
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function triggerEvent(EventInterface $event): EventInterface
     {
@@ -226,7 +241,7 @@ class EventManager implements EventManagerInterface
      * @param array $events
      * @param array $args
      * @return array
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function triggerBatch(array $events, array $args = []): array
     {
@@ -246,16 +261,16 @@ class EventManager implements EventManagerInterface
      * @param  mixed|string          $target It is object or string.
      * @param  array|mixed           $args
      * @return EventInterface
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function trigger($event, $target = null, array $args = []): EventInterface
     {
-        if ($isString = \is_string($event)) {
-            $name = \trim($event);
+        if ($isString = is_string($event)) {
+            $name = trim($event);
         } elseif ($event instanceof EventInterface) {
-            $name = \trim($event->getName());
+            $name = trim($event->getName());
         } else {
-            throw new \InvalidArgumentException('Invalid event params for trigger event handler');
+            throw new InvalidArgumentException('Invalid event params for trigger event handler');
         }
 
         $shouldCall = [];
@@ -267,9 +282,9 @@ class EventManager implements EventManagerInterface
 
         // $list = \explode('.', $name);
         // Like 'app.db.query' => prefix: 'app.db'
-        if ($pos = \strrpos($name, '.')) {
-            $prefix = \substr($name, 0, $pos);
-            $method = \substr($name, $pos + 1);
+        if ($pos = strrpos($name, '.')) {
+            $prefix = substr($name, 0, $pos);
+            $method = substr($name, $pos + 1);
 
             // Have a wildcards listener. eg 'app.db.*'
             $wildcardEvent = $prefix . '.*';
@@ -433,7 +448,7 @@ class EventManager implements EventManagerInterface
             $event = $event->getName();
         }
 
-        return isset($this->listeners[$event]) ? \count($this->listeners[$event]) : 0;
+        return isset($this->listeners[$event]) ? count($this->listeners[$event]) : 0;
     }
 
     /**
@@ -501,7 +516,7 @@ class EventManager implements EventManagerInterface
      */
     public function getListenedEvents(bool $onlyName = true): array
     {
-        return $onlyName ? \array_keys($this->listenedEvents) : $this->listenedEvents;
+        return $onlyName ? array_keys($this->listenedEvents) : $this->listenedEvents;
     }
 
     /*******************************************************************************
@@ -513,7 +528,7 @@ class EventManager implements EventManagerInterface
      * @param EventInterface|string $event event name
      * @param array                 $params
      * @return $this
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function addEvent($event, array $params = []): self
     {
@@ -532,7 +547,7 @@ class EventManager implements EventManagerInterface
      * @param string|EventInterface $event
      * @param array                 $params
      * @return $this
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function setEvent($event, array $params = []): self
     {
@@ -595,7 +610,7 @@ class EventManager implements EventManagerInterface
 
     /**
      * @param array $events
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function setEvents(array $events): void
     {
@@ -634,7 +649,7 @@ class EventManager implements EventManagerInterface
      */
     public function countEvents(): int
     {
-        return \count($this->events);
+        return count($this->events);
     }
 
     /**
@@ -662,7 +677,7 @@ class EventManager implements EventManagerInterface
     {
         // $handled = false;
         $name     = $event->getName();
-        $callable = false === \strpos($name, '.');
+        $callable = false === strpos($name, '.');
 
         // 循环调用监听器，处理事件
         foreach ($listeners as $listener) {
@@ -670,17 +685,17 @@ class EventManager implements EventManagerInterface
                 break;
             }
 
-            if (\is_object($listener)) {
+            if (is_object($listener)) {
                 if ($listener instanceof EventHandlerInterface) {
                     $listener->handle($event);
-                } elseif ($method && \method_exists($listener, $method)) {
+                } elseif ($method && method_exists($listener, $method)) {
                     $listener->$method($event);
-                } elseif ($callable && \method_exists($listener, $name)) {
+                } elseif ($callable && method_exists($listener, $name)) {
                     $listener->$name($event);
-                } elseif (\method_exists($listener, '__invoke')) {
+                } elseif (method_exists($listener, '__invoke')) {
                     $listener($event);
                 }
-            } elseif (\is_callable($listener)) {
+            } elseif (is_callable($listener)) {
                 $listener($event);
             }
         }

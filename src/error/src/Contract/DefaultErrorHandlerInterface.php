@@ -2,6 +2,8 @@
 
 namespace Swoft\Error\Contract;
 
+use Throwable;
+
 /**
  * Interface DefaultErrorHandlerInterface
  *
@@ -10,8 +12,8 @@ namespace Swoft\Error\Contract;
 interface DefaultErrorHandlerInterface extends ErrorHandlerInterface
 {
     /**
-     * @param \Throwable $e
+     * @param Throwable $e
      * @return void
      */
-    public function handle(\Throwable $e): void;
+    public function handle(Throwable $e): void;
 }

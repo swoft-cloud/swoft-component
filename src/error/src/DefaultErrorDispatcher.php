@@ -2,8 +2,15 @@
 
 namespace Swoft\Error;
 
+use function error_get_last;
+use ErrorException;
+use InvalidArgumentException;
+use function register_shutdown_function;
+use function set_error_handler;
+use function set_exception_handler;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Error\Contract\DefaultErrorHandlerInterface;
+use Throwable;
 
 /**
  * Class DefaultErrorDispatcher
@@ -31,14 +38,14 @@ class DefaultErrorDispatcher
 
     /**
      * Register system error handle
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function registerErrorHandle(): void
     {
-        \set_error_handler([$this, 'handleError']);
-        \set_exception_handler([$this, 'handleException']);
-        \register_shutdown_function(function () {
-            if (!$e = \error_get_last()) {
+        set_error_handler([$this, 'handleError']);
+        set_exception_handler([$this, 'handleException']);
+        register_shutdown_function(function () {
+            if (!$e = error_get_last()) {
                 return;
             }
 
@@ -52,29 +59,29 @@ class DefaultErrorDispatcher
      * @param string $str
      * @param string $file
      * @param int    $line
-     * @throws \InvalidArgumentException
-     * @throws \ErrorException
+     * @throws InvalidArgumentException
+     * @throws ErrorException
      */
     public function handleError(int $num, string $str, string $file, int $line): void
     {
         // $this->handleException(new \ErrorException($str, 0, $num, $file, $line));
-        throw new \ErrorException($str, 0, $num, $file, $line);
+        throw new ErrorException($str, 0, $num, $file, $line);
     }
 
     /**
      * Running exception handling
-     * @param \Throwable $e
-     * @throws \InvalidArgumentException
+     * @param Throwable $e
+     * @throws InvalidArgumentException
      */
-    public function handleException(\Throwable $e): void
+    public function handleException(Throwable $e): void
     {
         $this->defaultHandler->handle($e);
     }
 
     /**
-     * @param \Throwable $e
+     * @param Throwable $e
      */
-    public function run(\Throwable $e): void
+    public function run(Throwable $e): void
     {
         $this->defaultHandler->handle($e);
     }

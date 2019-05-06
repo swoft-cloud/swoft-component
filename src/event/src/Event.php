@@ -10,11 +10,21 @@
 
 namespace Swoft\Event;
 
+use function array_merge;
+use ArrayAccess;
+use InvalidArgumentException;
+use Serializable;
+use function serialize;
+use function strlen;
+use function trim;
+use function unserialize;
+
 /**
  * Class Event
+ *
  * @since 2.0
  */
-class Event implements EventInterface, \ArrayAccess, \Serializable
+class Event implements EventInterface, ArrayAccess, Serializable
 {
     /**
      * @var string Event name
@@ -50,7 +60,7 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
     /**
      * @param string $name
      * @param array  $params
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct(string $name = '', array $params = [])
     {
@@ -66,14 +76,14 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
     /**
      * @param string $name
      * @return string
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function checkName(string $name): string
     {
-        $name = \trim($name, '. ');
+        $name = trim($name, '. ');
 
-        if (!$name || \strlen($name) > 64) {
-            throw new \InvalidArgumentException('Setup the name cannot be a empty string of not more than 64 characters!');
+        if (!$name || strlen($name) > 64) {
+            throw new InvalidArgumentException('Setup the name cannot be a empty string of not more than 64 characters!');
         }
 
         return $name;
@@ -89,7 +99,7 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
 
     /**
      * {@inheritdoc}
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function setName(string $name): void
     {
@@ -111,7 +121,7 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
      */
     public function addParams(array $params): self
     {
-        $this->params = \array_merge($this->params, $params);
+        $this->params = array_merge($this->params, $params);
 
         return $this;
     }
@@ -142,7 +152,7 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
      * @param string $name
      * @param mixed  $value
      * @return $this
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function addParam($name, $value): self
     {
@@ -157,13 +167,13 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
      * set a argument
      * @param string $name
      * @param mixed  $value
-     * @throws  \InvalidArgumentException  If the argument name is null.
+     * @throws  InvalidArgumentException  If the argument name is null.
      * @return $this
      */
     public function setParam($name, $value): self
     {
         if (null === $name) {
-            throw new \InvalidArgumentException('The argument name cannot be null.');
+            throw new InvalidArgumentException('The argument name cannot be null.');
         }
 
         $this->params[$name] = $value;
@@ -242,7 +252,7 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
      */
     public function serialize(): string
     {
-        return \serialize([$this->name, $this->params, $this->stopPropagation]);
+        return serialize([$this->name, $this->params, $this->stopPropagation]);
     }
 
     /**
@@ -256,7 +266,7 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
             $this->name,
             $this->params,
             $this->stopPropagation
-        ] = \unserialize($serialized, ['allowed_classes' => false]);
+        ] = unserialize($serialized, ['allowed_classes' => false]);
     }
 
     /**
@@ -284,7 +294,7 @@ class Event implements EventInterface, \ArrayAccess, \Serializable
      * @param   string $name The argument name.
      * @param   mixed  $value The argument value.
      * @return  void
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function offsetSet($name, $value): void
     {
