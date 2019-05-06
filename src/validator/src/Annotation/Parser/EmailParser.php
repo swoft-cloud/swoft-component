@@ -4,8 +4,10 @@
 namespace Swoft\Validator\Annotation\Parser;
 
 
+use ReflectionException;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
+use Swoft\Validator\Exception\ValidatorException;
 use Swoft\Validator\ValidatorRegister;
 use Swoft\Validator\Annotation\Mapping\Email;
 
@@ -23,8 +25,8 @@ class EmailParser extends Parser
      * @param object $annotationObject
      *
      * @return array
-     * @throws \ReflectionException
-     * @throws \Swoft\Validator\Exception\ValidatorException
+     * @throws ReflectionException
+     * @throws ValidatorException
      */
     public function parse(int $type, $annotationObject): array
     {

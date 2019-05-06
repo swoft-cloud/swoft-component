@@ -3,6 +3,8 @@
 
 namespace Swoft\Validator\Concern;
 
+use function is_array;
+use function sprintf;
 use Swoft\Validator\Annotation\Mapping\IsBool;
 use Swoft\Validator\Annotation\Mapping\Email;
 use Swoft\Validator\Annotation\Mapping\Enum;
@@ -49,16 +51,16 @@ trait ValidateItemTrait
         }
 
         if (!isset($data[$propertyName]) && $default === null) {
-            $message = (empty($message)) ? \sprintf('%s must exist!', $propertyName) : $message;
+            $message = (empty($message)) ? sprintf('%s must exist!', $propertyName) : $message;
             throw new ValidatorException($message);
         }
 
         $value = $data[$propertyName];
-        if (\is_array($value)) {
+        if (is_array($value)) {
             return false;
         }
 
-        $message = (empty($message)) ? \sprintf('%s must bool!', $propertyName) : $message;
+        $message = (empty($message)) ? sprintf('%s must bool!', $propertyName) : $message;
         throw new ValidatorException($message);
     }
 
@@ -83,7 +85,7 @@ trait ValidateItemTrait
         }
 
         if (!isset($data[$propertyName]) && $default === null) {
-            $message = (empty($message)) ? \sprintf('%s must exist!', $propertyName) : $message;
+            $message = (empty($message)) ? sprintf('%s must exist!', $propertyName) : $message;
             throw new ValidatorException($message);
         }
 
@@ -92,7 +94,7 @@ trait ValidateItemTrait
             return false;
         }
 
-        $message = (empty($message)) ? \sprintf('%s must bool!', $propertyName) : $message;
+        $message = (empty($message)) ? sprintf('%s must bool!', $propertyName) : $message;
         throw new ValidatorException($message);
     }
 
@@ -116,7 +118,7 @@ trait ValidateItemTrait
         }
 
         if (!isset($data[$propertyName]) && $default === null) {
-            $message = (empty($message)) ? \sprintf('%s must exist!', $propertyName) : $message;
+            $message = (empty($message)) ? sprintf('%s must exist!', $propertyName) : $message;
             throw new ValidatorException($message);
         }
 
@@ -125,7 +127,7 @@ trait ValidateItemTrait
             return false;
         }
 
-        $message = (empty($message)) ? \sprintf('%s must float!', $propertyName) : $message;
+        $message = (empty($message)) ? sprintf('%s must float!', $propertyName) : $message;
         throw new ValidatorException($message);
     }
 
@@ -149,7 +151,7 @@ trait ValidateItemTrait
         }
 
         if (!isset($data[$propertyName]) && $default === null) {
-            $message = (empty($message)) ? \sprintf('%s must exist!', $propertyName) : $message;
+            $message = (empty($message)) ? sprintf('%s must exist!', $propertyName) : $message;
             throw new ValidatorException($message);
         }
 
@@ -158,7 +160,7 @@ trait ValidateItemTrait
             return false;
         }
 
-        $message = (empty($message)) ? \sprintf('%s must int!', $propertyName) : $message;
+        $message = (empty($message)) ? sprintf('%s must int!', $propertyName) : $message;
         throw new ValidatorException($message);
     }
 
@@ -181,7 +183,7 @@ trait ValidateItemTrait
         }
 
         if (!isset($data[$propertyName]) && $default === null) {
-            $message = (empty($message)) ? \sprintf('%s must exist!', $propertyName) : $message;
+            $message = (empty($message)) ? sprintf('%s must exist!', $propertyName) : $message;
             throw new ValidatorException($message);
         }
 
@@ -190,7 +192,7 @@ trait ValidateItemTrait
             return false;
         }
 
-        $message = (empty($message)) ? \sprintf('%s must string!', $propertyName) : $message;
+        $message = (empty($message)) ? sprintf('%s must string!', $propertyName) : $message;
         throw new ValidatorException($message);
     }
 
@@ -210,7 +212,7 @@ trait ValidateItemTrait
 
         /* @var Email $item */
         $message = $item->getMessage();
-        $message = (empty($message)) ? \sprintf('%s must be a email', $propertyName) : $message;
+        $message = (empty($message)) ? sprintf('%s must be a email', $propertyName) : $message;
 
         throw new ValidatorException($message);
     }
@@ -232,7 +234,7 @@ trait ValidateItemTrait
         }
 
         $message = $item->getMessage();
-        $message = (empty($message)) ? \sprintf('%s is invalid enum', $propertyName) : $message;
+        $message = (empty($message)) ? sprintf('%s is invalid enum', $propertyName) : $message;
 
         throw new ValidatorException($message);
     }
@@ -253,7 +255,7 @@ trait ValidateItemTrait
 
         /* @var Ip $item */
         $message = $item->getMessage();
-        $message = (empty($message)) ? \sprintf('%s is invalid ip', $propertyName) : $message;
+        $message = (empty($message)) ? sprintf('%s is invalid ip', $propertyName) : $message;
 
         throw new ValidatorException($message);
     }
@@ -277,7 +279,7 @@ trait ValidateItemTrait
         }
 
         $message = $item->getMessage();
-        $message = (empty($message)) ? \sprintf('%s is invalid length(min=%d, max=%d)', $propertyName, $min,
+        $message = (empty($message)) ? sprintf('%s is invalid length(min=%d, max=%d)', $propertyName, $min,
             $max) : $message;
 
         throw new ValidatorException($message);
@@ -300,7 +302,7 @@ trait ValidateItemTrait
         }
 
         $message = $item->getMessage();
-        $message = (empty($message)) ? \sprintf('%s is too big(max=%d)', $propertyName, $max) : $message;
+        $message = (empty($message)) ? sprintf('%s is too big(max=%d)', $propertyName, $max) : $message;
 
         throw new ValidatorException($message);
     }
@@ -322,7 +324,7 @@ trait ValidateItemTrait
         }
 
         $message = $item->getMessage();
-        $message = (empty($message)) ? \sprintf('%s is too small(min=%d)', $propertyName, $min) : $message;
+        $message = (empty($message)) ? sprintf('%s is too small(min=%d)', $propertyName, $min) : $message;
 
         throw new ValidatorException($message);
 
@@ -344,7 +346,7 @@ trait ValidateItemTrait
         }
 
         $message = $item->getMessage();
-        $message = (empty($message)) ? \sprintf('%s is invalid mobile!', $propertyName) : $message;
+        $message = (empty($message)) ? sprintf('%s is invalid mobile!', $propertyName) : $message;
         throw new ValidatorException($message);
     }
 
@@ -364,7 +366,7 @@ trait ValidateItemTrait
         }
 
         $message = $item->getMessage();
-        $message = (empty($message)) ? \sprintf('%s can not be empty!', $propertyName) : $message;
+        $message = (empty($message)) ? sprintf('%s can not be empty!', $propertyName) : $message;
         throw new ValidatorException($message);
     }
 
@@ -385,7 +387,7 @@ trait ValidateItemTrait
         }
 
         $message = $item->getMessage();
-        $message = (empty($message)) ? \sprintf('%s is invalid pattern!', $propertyName) : $message;
+        $message = (empty($message)) ? sprintf('%s is invalid pattern!', $propertyName) : $message;
         throw new ValidatorException($message);
     }
 
@@ -408,7 +410,7 @@ trait ValidateItemTrait
         }
 
         $message = $item->getMessage();
-        $message = (empty($message)) ? \sprintf('%s is invalid range(min=%d, max=%d)', $propertyName, $min,
+        $message = (empty($message)) ? sprintf('%s is invalid range(min=%d, max=%d)', $propertyName, $min,
             $max) : $message;
 
         throw new ValidatorException($message);

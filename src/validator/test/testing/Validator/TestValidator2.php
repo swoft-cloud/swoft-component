@@ -35,7 +35,7 @@ class TestValidator2
     protected $email;
 
     /**
-     * @IsString()
+     * @IsInt()
      * @Enum(values={2,4,6}, message="enum message")
      *
      * @var int
@@ -92,7 +92,7 @@ class TestValidator2
 
     /**
      * @IsString()
-     * @Pattern(regex="*swoft*")
+     * @Pattern(regex="*swoft*", message="pattern message")
      *
      * @var string
      */

@@ -3,6 +3,9 @@
 
 namespace Swoft\Validator;
 
+use ReflectionClass;
+use ReflectionException;
+use function sprintf;
 use Swoft\Validator\Annotation\Mapping\Type;
 use Swoft\Validator\Contract\ValidatorInterface;
 use Swoft\Validator\Exception\ValidatorException;
@@ -80,11 +83,11 @@ class ValidatorRegister
      * @param string $className
      * @param string $validatorName
      *
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function registerValidator(string $className, string $validatorName): void
     {
-        $reflectClass = new \ReflectionClass($className);
+        $reflectClass = new ReflectionClass($className);
         $interfaces   = $reflectClass->getInterfaces();
 
         $type = self::TYPE_DEFAULT;
@@ -107,7 +110,7 @@ class ValidatorRegister
      * @param object $objAnnotation
      *
      * @throws ValidatorException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function registerValidatorItem(string $className, string $propertyName, $objAnnotation): void
     {
@@ -122,12 +125,12 @@ class ValidatorRegister
         $type = self::$validators[$validateName]['properties'][$propertyName]['type'] ?? [];
         if (!empty($type) && $objAnnotation instanceof Type) {
             throw new ValidatorException(
-                \sprintf('Only one `@XxxType` can be defined(propterty=%s)!', $propertyName)
+                sprintf('Only one `@XxxType` can be defined(propterty=%s)!', $propertyName)
             );
         }
 
         if ($objAnnotation instanceof Type) {
-            $rc          = new \ReflectionClass($className);
+            $rc          = new ReflectionClass($className);
             $defaultProp = $rc->getProperty($propertyName);
             $defaultProp->setAccessible(true);
 
@@ -156,7 +159,7 @@ class ValidatorRegister
                 $type = $propValues['type'] ?? null;
                 if (empty($type)) {
                     throw new ValidatorException(
-                        \sprintf('Property(%s->%s) must be define `@XxxType`', $className, $propName)
+                        sprintf('Property(%s->%s) must be define `@XxxType`', $className, $propName)
                     );
                 }
             }

@@ -4,6 +4,7 @@
 namespace Swoft\Validator\Annotation\Parser;
 
 
+use ReflectionException;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Bean\Annotation\Mapping\Bean;
@@ -24,7 +25,7 @@ class ValidatorParser extends Parser
      * @param Validator $annotationObject
      *
      * @return array
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function parse(int $type, $annotationObject): array
     {

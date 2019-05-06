@@ -3,6 +3,10 @@
 
 namespace Swoft\Validator\Helper;
 
+use function in_array;
+use function mb_strlen;
+use function preg_match;
+
 /**
  * Class ValidatorHelper
  *
@@ -32,7 +36,7 @@ class ValidatorHelper
      */
     public static function validateEmail(string $value): bool
     {
-        if (!\preg_match(self::$emailPattern, $value)) {
+        if (!preg_match(self::$emailPattern, $value)) {
             return false;
         }
 
@@ -47,7 +51,7 @@ class ValidatorHelper
      */
     public static function validateEnum($value, array $values): bool
     {
-        if (\in_array($value, $values)) {
+        if (in_array($value, $values)) {
             return true;
         }
 
@@ -61,7 +65,7 @@ class ValidatorHelper
      */
     public static function validateIp(string $value): bool
     {
-        if (!\preg_match(self::$ipPattern, $value)) {
+        if (!preg_match(self::$ipPattern, $value)) {
             return false;
         }
 
@@ -77,7 +81,7 @@ class ValidatorHelper
      */
     public static function validatelength(string $value, int $min, int $max): bool
     {
-        $length = \mb_strlen($value);
+        $length = mb_strlen($value);
         if ($length < $min || $length > $max) {
             return false;
         }
@@ -92,7 +96,7 @@ class ValidatorHelper
      */
     public static function validateMobile(string $value): bool
     {
-        if (!\preg_match(self::$mobilePattern, $value)) {
+        if (!preg_match(self::$mobilePattern, $value)) {
             return false;
         }
 
@@ -107,7 +111,7 @@ class ValidatorHelper
      */
     public static function validatePattern(string $value, string $regex): bool
     {
-        if (!\preg_match($regex, $value)) {
+        if (!preg_match($regex, $value)) {
             return false;
         }
 

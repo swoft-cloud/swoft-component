@@ -8,6 +8,7 @@ use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\SwoftEvent;
+use Swoft\Validator\Exception\ValidatorException;
 use Swoft\Validator\ValidatorRegister;
 
 /**
@@ -22,7 +23,7 @@ class AppInitCompleteListener implements EventHandlerInterface
     /**
      * @param EventInterface $event
      *
-     * @throws \Swoft\Validator\Exception\ValidatorException
+     * @throws ValidatorException
      */
     public function handle(EventInterface $event): void
     {

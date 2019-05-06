@@ -4,6 +4,7 @@
 namespace Swoft\Validator\Annotation\Parser;
 
 
+use ReflectionException;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Validator\Exception\ValidatorException;
 use Swoft\Validator\ValidatorRegister;
@@ -25,7 +26,7 @@ class IsBoolParser extends Parser
      *
      * @return array
      * @throws ValidatorException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function parse(int $type, $annotationObject): array
     {
