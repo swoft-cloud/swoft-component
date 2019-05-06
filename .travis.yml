@@ -9,7 +9,9 @@ services:
   - redis
 
 before_install:
-  - mysql -e 'CREATE TABLE `user` (
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS test;
+    USE test;
+    CREATE TABLE `user` (
     `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
     `name` varchar(20) CHARACTER SET utf8mb4 NOT NULL DEFAULT '',
     `age` int(11) NOT NULL DEFAULT '0',
