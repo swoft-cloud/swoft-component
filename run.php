@@ -1,12 +1,19 @@
 <?php
 
+use Swoole\Event;
+
 go(function () {
     try {
         global $argc, $argv;
         require '../../bin/phpunit';
     } catch (Throwable $e) {
-        var_dump($e->getMessage());
+        printf(
+            '%s At file=%s line=%d' . PHP_EOL,
+            $e->getMessage(),
+            $e->getFile(),
+            $e->getLine()
+        );
     }
 });
 
-\Swoole\Event::wait();
+Event::wait();

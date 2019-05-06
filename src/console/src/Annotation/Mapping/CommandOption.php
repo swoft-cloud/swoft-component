@@ -7,6 +7,7 @@ use Doctrine\Common\Annotations\Annotation\Attributes;
 use Doctrine\Common\Annotations\Annotation\Target;
 use Swoft\Console\Input\AbstractFlag;
 use Swoft\Stdlib\Helper\Str;
+use function trim;
 
 /**
  * Class CommandOption
@@ -37,7 +38,7 @@ final class CommandOption extends AbstractFlag
         parent::__construct($values);
 
         if (!empty($values['short'])) {
-            $this->short = \trim((string)$values['short'], '- ');
+            $this->short = trim((string)$values['short'], '- ');
         }
     }
 

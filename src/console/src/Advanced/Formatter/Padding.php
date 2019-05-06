@@ -2,10 +2,14 @@
 
 namespace Swoft\Console\Advanced\Formatter;
 
+use function array_merge;
+use function str_pad;
 use Swoft\Console\Advanced\MessageFormatter;
 use Swoft\Console\Console;
 use Swoft\Stdlib\Helper\Arr;
 use Toolkit\Cli\ColorTag;
+use function trim;
+use function ucfirst;
 
 /**
  * Class Padding
@@ -32,8 +36,8 @@ class Padding extends MessageFormatter
             return;
         }
 
-        $string = $title ? ColorTag::wrap(\ucfirst($title), 'comment') . ":\n" : '';
-        $opts   = \array_merge([
+        $string = $title ? ColorTag::wrap(ucfirst($title), 'comment') . ":\n" : '';
+        $opts   = array_merge([
             'char'       => '.',
             'indent'     => '  ',
             'padding'    => 10,
@@ -45,9 +49,9 @@ class Padding extends MessageFormatter
 
         foreach ($data as $label => $value) {
             $value  = ColorTag::wrap((string)$value, $opts['valueStyle']);
-            $string .= $opts['indent'] . \str_pad($label, $paddingLen, $opts['char']) . " $value\n";
+            $string .= $opts['indent'] . str_pad($label, $paddingLen, $opts['char']) . " $value\n";
         }
 
-        Console::write(\trim($string));
+        Console::write(trim($string));
     }
 }

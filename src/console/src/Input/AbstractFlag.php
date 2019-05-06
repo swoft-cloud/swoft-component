@@ -2,7 +2,10 @@
 
 namespace Swoft\Console\Input;
 
+use function strtoupper;
 use Swoft\Console\Annotation\Mapping\Command;
+use function trim;
+use function ucfirst;
 
 /**
  * Class AbstractFlag
@@ -60,10 +63,10 @@ abstract class AbstractFlag
         }
 
         // clear space and '-'
-        $this->name = \trim($this->name, '- ');
+        $this->name = trim($this->name, '- ');
 
         if (!empty($values['desc'])) {
-            $this->desc = \trim((string)$values['desc']);
+            $this->desc = trim((string)$values['desc']);
         }
 
         if (isset($values['mode'])) {
@@ -92,7 +95,7 @@ abstract class AbstractFlag
      */
     public function getDesc(): string
     {
-        return $this->desc ? \ucfirst($this->desc) : '';
+        return $this->desc ? ucfirst($this->desc) : '';
     }
 
     /**
@@ -110,7 +113,7 @@ abstract class AbstractFlag
     public function getType(bool $upper = true): string
     {
         if ($this->type) {
-            return $upper ? \strtoupper($this->type) : $this->type;
+            return $upper ? strtoupper($this->type) : $this->type;
         }
 
         return '';

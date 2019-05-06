@@ -2,9 +2,16 @@
 
 namespace Swoft\Console\Advanced\Formatter;
 
+use function array_merge;
+use function implode;
+use function is_array;
+use function is_string;
+use const PHP_EOL;
 use Swoft\Console\Advanced\MessageFormatter;
 use Swoft\Console\Helper\FormatUtil;
 use Swoft\Console\Helper\Show;
+use function trim;
+use function ucfirst;
 
 /**
  * Class HelpPanel
@@ -60,7 +67,7 @@ class HelpPanel extends MessageFormatter
         $option = [
             'indentDes' => '  ',
         ];
-        $config = \array_merge([
+        $config = array_merge([
             'description' => '',
             'usage'       => '',
 
@@ -78,7 +85,7 @@ class HelpPanel extends MessageFormatter
 
         // some option for show.
         if (isset($config['_opts'])) {
-            $option = \array_merge($option, $config['_opts']);
+            $option = array_merge($option, $config['_opts']);
             unset($config['_opts']);
         }
 
@@ -95,10 +102,10 @@ class HelpPanel extends MessageFormatter
             }
 
             // if $value is array, translate array to string
-            if (\is_array($value)) {
+            if (is_array($value)) {
                 // is natural key ['text1', 'text2'](like usage,examples)
                 if (isset($value[0])) {
-                    $value = \implode(\PHP_EOL . '  ', $value);
+                    $value = implode(PHP_EOL . '  ', $value);
 
                     // is key-value [ 'key1' => 'text1', 'key2' => 'text2']
                 } else {
@@ -110,15 +117,15 @@ class HelpPanel extends MessageFormatter
                 }
             }
 
-            if (\is_string($value)) {
-                $value   = \trim($value);
-                $section = \ucfirst($section);
+            if (is_string($value)) {
+                $value   = trim($value);
+                $section = ucfirst($section);
                 $parts[] = "<comment>$section</comment>:\n  {$value}\n";
             }
         }
 
         if ($parts) {
-            Show::write(\implode("\n", $parts), false);
+            Show::write(implode("\n", $parts), false);
         }
     }
 }

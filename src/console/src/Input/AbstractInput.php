@@ -8,7 +8,13 @@
 
 namespace Swoft\Console\Input;
 
+use function array_merge;
+use function getcwd;
+use InvalidArgumentException;
+use function is_bool;
+use function is_int;
 use Swoft\Console\Contract\InputInterface;
+use function trim;
 
 /**
  * Class AbstractInput
@@ -91,8 +97,8 @@ abstract class AbstractInput implements InputInterface
 
         foreach ($this->args as $key => $value) {
             if ($key === 0) {
-                $this->command = \trim($value);
-            } elseif (\is_int($key)) {
+                $this->command = trim($value);
+            } elseif (is_int($key)) {
                 $newArgs[] = $value;
             } else {
                 $newArgs[$key] = $value;
@@ -128,7 +134,7 @@ abstract class AbstractInput implements InputInterface
      */
     public function setArgs(array $args, $replace = false): void
     {
-        $this->args = $replace ? $args : \array_merge($this->args, $args);
+        $this->args = $replace ? $args : array_merge($this->args, $args);
     }
 
     /**
@@ -179,7 +185,7 @@ abstract class AbstractInput implements InputInterface
      *
      * @param int|string $name argument index
      * @return mixed
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function getRequiredArg($name)
     {
@@ -187,7 +193,7 @@ abstract class AbstractInput implements InputInterface
             return $this->args[$name];
         }
 
-        throw new \InvalidArgumentException("The argument '{$name}' is required");
+        throw new InvalidArgumentException("The argument '{$name}' is required");
     }
 
     /**
@@ -299,12 +305,12 @@ abstract class AbstractInput implements InputInterface
      * Get a required argument
      * @param string $name
      * @return mixed
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function getRequiredOpt(string $name)
     {
         if (null === ($val = $this->getOpt($name))) {
-            throw new \InvalidArgumentException("The option '{$name}' is required");
+            throw new InvalidArgumentException("The option '{$name}' is required");
         }
 
         return $val;
@@ -371,7 +377,7 @@ abstract class AbstractInput implements InputInterface
      */
     public function getOpts(): array
     {
-        return \array_merge($this->sOpts, $this->lOpts);
+        return array_merge($this->sOpts, $this->lOpts);
     }
 
     /**
@@ -428,7 +434,7 @@ abstract class AbstractInput implements InputInterface
     {
         $val = $this->sOpt($name);
 
-        return \is_bool($val) ? $val : (bool)$default;
+        return is_bool($val) ? $val : (bool)$default;
     }
 
     /**
@@ -462,7 +468,7 @@ abstract class AbstractInput implements InputInterface
      */
     public function setSOpts(array $sOpts, bool $replace = false): void
     {
-        $this->sOpts = $replace ? $sOpts : \array_merge($this->sOpts, $sOpts);
+        $this->sOpts = $replace ? $sOpts : array_merge($this->sOpts, $sOpts);
     }
 
     /**
@@ -516,7 +522,7 @@ abstract class AbstractInput implements InputInterface
     {
         $val = $this->lOpt($name);
 
-        return \is_bool($val) ? $val : (bool)$default;
+        return is_bool($val) ? $val : (bool)$default;
     }
 
     /**
@@ -550,7 +556,7 @@ abstract class AbstractInput implements InputInterface
      */
     public function setLOpts(array $lOpts, bool $replace = false): void
     {
-        $this->lOpts = $replace ? $lOpts : \array_merge($this->lOpts, $lOpts);
+        $this->lOpts = $replace ? $lOpts : array_merge($this->lOpts, $lOpts);
     }
 
     /**
@@ -571,7 +577,7 @@ abstract class AbstractInput implements InputInterface
     public function getPwd(): string
     {
         if (!$this->pwd) {
-            $this->pwd = \getcwd();
+            $this->pwd = getcwd();
         }
 
         return $this->pwd;

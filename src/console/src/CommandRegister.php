@@ -2,10 +2,15 @@
 
 namespace Swoft\Console;
 
+use function array_merge;
+use ReflectionException;
+use function strlen;
+use Swoft;
 use Swoft\Annotation\Exception\AnnotationException;
 use Swoft\Console\Helper\DocBlock;
 use Swoft\Console\Router\Router;
 use Swoft\Stdlib\Helper\Str;
+use function ucfirst;
 
 /**
  * Class CommandRegister
@@ -114,7 +119,7 @@ final class CommandRegister
 
     /**
      * @param Router $router
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function register(Router $router): void
     {
@@ -136,7 +141,7 @@ final class CommandRegister
             // Set group name aliases
             $router->setGroupAliases($group, $mapping['aliases']);
 
-            $refInfo = \Swoft::getReflection($class);
+            $refInfo = Swoft::getReflection($class);
             $mhdInfo = $refInfo['methods'] ?? [];
             $grpOpts = $mapping['options'] ?? [];
 
@@ -145,7 +150,7 @@ final class CommandRegister
                 $cmdDesc = $route['desc'];
                 $command = $route['command'];
 
-                $idLen = \strlen($group . $command);
+                $idLen = strlen($group . $command);
                 if ($idLen > $maxLen) {
                     $maxLen = $idLen;
                 }
@@ -158,7 +163,7 @@ final class CommandRegister
                 }
 
                 $route['group']   = $group;
-                $route['desc']    = \ucfirst($cmdDesc);
+                $route['desc']    = ucfirst($cmdDesc);
                 $route['example'] = $cmdExam;
                 $route['options'] = self::mergeOptions($grpOpts, $route['options']);
                 // Append group option
@@ -179,7 +184,7 @@ final class CommandRegister
 
             $groups[$group] = [
                 'names'   => $names,
-                'desc'    => \ucfirst($groupDesc),
+                'desc'    => ucfirst($groupDesc),
                 'class'   => $class,
                 'alias'   => $mapping['alias'],
                 'aliases' => $mapping['aliases'],
@@ -202,7 +207,7 @@ final class CommandRegister
     private static function mergeOptions(array $grpOptions, array $cmdOptions): array
     {
         if ($grpOptions) {
-            return \array_merge($grpOptions, $cmdOptions);
+            return array_merge($grpOptions, $cmdOptions);
         }
 
         return $cmdOptions;
