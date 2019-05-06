@@ -56,7 +56,6 @@ class Validator
         }
         foreach ($validates as $validateName => $validate) {
             $validator = ValidatorRegister::getValidator($validateName);
-
             $type      = $validator['type'];
             $fields    = $validate['fields'] ?? [];
             $params    = $validate['params'] ?? [];

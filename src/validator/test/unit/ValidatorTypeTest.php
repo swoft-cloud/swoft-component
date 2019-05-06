@@ -5,6 +5,7 @@ namespace SwoftTest\Validator\Unit;
 
 
 use PHPUnit\Framework\TestCase;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Validator\Validator;
 use SwoftTest\Validator\Testing\ValidateDemo;
 use Swoft\Validator\Exception\ValidatorException;
@@ -152,5 +153,31 @@ class ValidatorTypeTest extends TestCase
             'floatDefault'  => 1.0,
         ];
         $this->assertEquals($data, $result);
+    }
+
+    /**
+     * @throws ValidatorException
+     * @throws \ReflectionException
+     * @throws ContainerException
+     */
+    public function testName(){
+        $data = [];
+        $result = Validator::validate($data, ValidateDemo::class, 'testName');
+        $this->assertEquals($result, ['swoftName' => 'swoft']);
+    }
+
+    /**
+     * @expectedException Swoft\Validator\Exception\ValidatorException
+     * @expectedExceptionMessage swoftName must string!
+     *
+     * @throws ContainerException
+     * @throws ValidatorException
+     * @throws \ReflectionException
+     */
+    public function testFailName(){
+        $data = [
+            'swoftName' => 12
+        ];
+        Validator::validate($data, ValidateDemo::class, 'testName');
     }
 }

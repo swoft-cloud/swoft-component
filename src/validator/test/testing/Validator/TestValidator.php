@@ -126,4 +126,11 @@ class TestValidator
      * @var int
      */
     protected $floatDefault = 1.0;
+
+    /**
+     * @IsString(name="swoftName")
+     *
+     * @var string
+     */
+    protected $name = 'swoft';
 }

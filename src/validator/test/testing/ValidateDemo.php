@@ -125,4 +125,12 @@ class ValidateDemo
     {
         return false;
     }
+
+    /**
+     * @Validate(validator=TestValidator::class, fields={"name"})
+     */
+    public function testName()
+    {
+
+    }
 }
