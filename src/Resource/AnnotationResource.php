@@ -11,6 +11,7 @@ use Swoft\Stdlib\Helper\ComposerHelper;
 use Swoft\Stdlib\Helper\DirectoryHelper;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Annotation\Contract\LoaderInterface;
+use Swoft\Stdlib\Helper\Str;
 
 /**
  * Annotation resource
@@ -167,7 +168,9 @@ class AnnotationResource extends Resource
     public function clearBasePath(string $filePath): string
     {
         if ($this->basePath) {
-            return \str_replace($this->basePath, '{project}', $filePath);
+            $basePath = (\IN_PHAR ? 'phar://' : '') . $this->basePath;
+
+            return \str_replace($basePath, '{PROJECT}', $filePath);
         }
 
         return $filePath;
@@ -375,6 +378,7 @@ class AnnotationResource extends Resource
     private function registerParser(string $parserClassName, AnnotationParser $annotationParser): void
     {
         $annotationClass = $annotationParser->getAnnotation();
+
         AnnotationRegister::registerParser($annotationClass, $parserClassName);
     }
 
@@ -401,12 +405,9 @@ class AnnotationResource extends Resource
      */
     private function getAnnotationClassLoaderFile(string $path): string
     {
-        return \sprintf(
-            '%s/%s.%s',
-            \realpath($path),
-            $this->loaderClassName,
-            $this->loaderClassSuffix
-        );
+        $path = \IN_PHAR ? $path : (string)\realpath($path);
+
+        return \sprintf('%s/%s.%s', $path, $this->loaderClassName, $this->loaderClassSuffix);
     }
 
     /**
