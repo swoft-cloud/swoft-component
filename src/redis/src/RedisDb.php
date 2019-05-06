@@ -76,7 +76,6 @@ class RedisDb
      * [
      *     'serializer ' => Redis::SERIALIZER_PHP/Redis::SERIALIZER_NONE/Redis::SERIALIZER_IGBINARY,
      *     'prefix' => 'xxx',
-     *     'read_time' => 3
      * ]
      */
     private $option = [];

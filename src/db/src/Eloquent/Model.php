@@ -133,6 +133,8 @@ use Swoft\Stdlib\Helper\Str;
  * @method static string  implode(string $column, string $glue = '')
  * @method static Builder offset(int $value)
  * @method static Builder take(int $value)
+ * @method static string  insertGetId(array $values, string $sequence = null)
+ * @method static bool    insert(array $values)
  * @method static Builder limit(int $value)
  * @method static Builder forPage(int $page, int $perPage = 15)
  */

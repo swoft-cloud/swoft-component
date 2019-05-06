@@ -38,14 +38,17 @@ class PhpRedisConnector implements ConnectorInterface
             $client->select($config['database']);
         }
 
+        if (!empty($config['read_timeout'])) {
+            $client->setOption(\Redis::OPT_READ_TIMEOUT, $config['read_timeout']);
+        }
+
         if (!empty($option['prefix'])) {
             $client->setOption(\Redis::OPT_PREFIX, $option['prefix']);
         }
 
-        if (!empty($option['read_timeout'])) {
-            $client->setOption(\Redis::OPT_READ_TIMEOUT, $option['read_timeout']);
+        if (!empty($option['serializer'])) {
+            $client->setOption(\Redis::OPT_SERIALIZER, (string)$option['serializer']);
         }
-
         return $client;
     }
 
@@ -60,8 +63,8 @@ class PhpRedisConnector implements ConnectorInterface
     {
         $servers     = array_map([$this, 'buildClusterConnectionString'], $config);
         $servers     = array_values($servers);
-        $timeout     = $option['timeout'] ?? 0;
         $readTimeout = $option['read_timeout'] ?? 0;
+        $timeout     = $option['timeout'] ?? 0;
         $persistent  = $option['persistent'] ?? false;
 
         $redisCluster = new \RedisCluster(null, $servers, $timeout, $readTimeout, $persistent);
@@ -71,7 +74,7 @@ class PhpRedisConnector implements ConnectorInterface
     /**
      * Build a single cluster seed string from array.
      *
-     * @param  array $server
+     * @param array $server
      *
      * @return string
      */
@@ -92,8 +95,8 @@ class PhpRedisConnector implements ConnectorInterface
     /**
      * Establish a connection with the Redis host.
      *
-     * @param  \Redis $client
-     * @param  array  $config
+     * @param \Redis $client
+     * @param array  $config
      *
      * @return void
      * @throws RedisException

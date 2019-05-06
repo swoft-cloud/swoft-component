@@ -726,9 +726,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
         $cm = $this->getConMananger();
 
         // Begin transaction
-        if (!$cm->isTransaction()) {
-            $this->createTransaction($cm);
-        }
+        $this->createTransaction($cm);
 
         // Inc transactions
         $cm->incTransactionTransactons();

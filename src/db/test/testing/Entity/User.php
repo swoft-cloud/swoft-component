@@ -13,12 +13,12 @@ use Swoft\Db\Eloquent\Model;
  *
  * @since 2.0
  *
- * @Entity(table="user",pool="db.pool2")
+ * @Entity(table="user",pool="db.pool")
  */
 class User extends Model
 {
     /**
-     * @Id()
+     * @Id(incrementing=true)
      *
      * @Column(name="id", prop="id")
      * @var int|null

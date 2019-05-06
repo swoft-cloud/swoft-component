@@ -13,6 +13,7 @@ use Swoft\Redis\Exception\RedisException;
 use Swoft\Redis\Pool;
 use Swoft\Redis\RedisDb;
 use Swoft\Redis\RedisEvent;
+use Swoft\Stdlib\Helper\ArrayHelper;
 use Swoft\Stdlib\Helper\PhpHelper;
 
 /**
@@ -333,7 +334,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      */
     public function createClusterClient(): void
     {
-        $config = [];
+        $config = $this->redisDb->getClusters();
         $option = $this->redisDb->getOption();
 
         $this->client = $this->redisDb->getConnector()->connectToCluster($config, $option);
@@ -342,9 +343,9 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     /**
      * Run a command against the Redis database.
      *
-     * @param  string $method
-     * @param  array  $parameters
-     * @param bool    $reconnect
+     * @param string $method
+     * @param array  $parameters
+     * @param bool   $reconnect
      *
      * @return mixed
      * @throws RedisException
@@ -546,8 +547,8 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     /**
      * Pass other method calls down to the underlying client.
      *
-     * @param  string $method
-     * @param  array  $parameters
+     * @param string $method
+     * @param array  $parameters
      *
      * @return mixed
      * @throws RedisException

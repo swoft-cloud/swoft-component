@@ -9,6 +9,7 @@ use Swoft\Db\DB;
 use Swoft\Db\Exception\PoolException;
 use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
+use Swoft\Stdlib\Collection;
 use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Unit\TestCase;
 
@@ -27,6 +28,7 @@ class BuilderTest extends TestCase
     {
         $expectSql = 'select `id`, `name` from `user`';
 
+        DB::connection()->query()->from('xxx');
         $sql  = DB::table('user')->select(...['id', 'name'])->toSql();
         $sql2 = DB::table('user')->select('id', 'name')->toSql();
 
@@ -359,6 +361,9 @@ class BuilderTest extends TestCase
 
         $sql1 = DB::table('user')
             ->lockForUpdate()
+            ->where(function () {
+
+            })
             ->toSql();
 
         $sql2 = DB::raw($expectSql);
@@ -417,6 +422,25 @@ class BuilderTest extends TestCase
             'password' => md5((string)mt_rand(1, 100)),
         ]);
 
+        $insert = DB::table('user')->insert([
+            [
+                'name'     => 'sakuraovq' . mt_rand(1, 100),
+                'password' => md5((string)mt_rand(1, 100)),
+            ],
+            [
+                'name'     => 'sakuraovq' . mt_rand(1, 100),
+                'password' => md5((string)mt_rand(1, 100)),
+            ],
+            [
+                'name'     => 'sakuraovq' . mt_rand(1, 100),
+                'password' => md5((string)mt_rand(1, 100)),
+            ],
+            [
+                'name'     => 'sakuraovq' . mt_rand(1, 100),
+                'password' => md5((string)mt_rand(1, 100)),
+            ]
+        ]);
+
         // sync subQuery data to table
         $using = Builder::new()->from('user')->insertUsing(['name', 'age'], function (Builder $builder) {
             return $builder->from('user')
@@ -426,8 +450,12 @@ class BuilderTest extends TestCase
         });
         // get insert id
         $id = DB::table('user')->insertGetId([
-            'age'  => 18,
-            'name' => 'Sakura',
+            'age'       => 18,
+            'name'      => 'Sakura',
+            'test_json' => json_encode([
+                'age'  => 18,
+                'name' => 'Sakura',
+            ]),
         ]);
 
         $this->assertIsString($id);
@@ -578,6 +606,13 @@ class BuilderTest extends TestCase
         // NOTE:: DDL , return bool
         $unprepared = DB::unprepared('DROP TRIGGER IF EXISTS `sync_to_item_table`');
         $this->assertIsBool($unprepared);
+
+        $sql = 'select * from `user`';
+        $res = DB::cursor($sql);
+        foreach ($res as $user) {
+            $this->assertIsString($user->name);
+        }
+        //DB::statement('drop table `count`');
     }
 
     /**
@@ -601,6 +636,59 @@ class BuilderTest extends TestCase
         $id  = $this->getFirstId();
         $res = DB::connection('db.pool2')->query()->from('user')->where('id', $id)->get();
 
+        foreach ($res as $v) {
+            $this->assertInstanceOf('stdClass', $v);
+        }
         $this->assertIsArray($res->toArray());
+    }
+
+    public function testGetValue()
+    {
+        $id = DB::table('user')->from('user')->where('id', $this->getFirstId())->value('id');
+        $this->assertGreaterThan(0, $id);
+    }
+
+    public function testChunk()
+    {
+        $this->getFirstId();
+        DB::table('user')->orderBy('id')->chunk(100, function (\Swoft\Stdlib\Collection $users) {
+            $this->assertIsArray($users->toArray());
+            return false;
+        });
+
+        $users = DB::table('user')->cursor();
+        foreach ($users as $user) {
+            $this->assertIsString($user->name);
+        }
+    }
+
+    public function testSelectChinese()
+    {
+        $name = '哈哈哈哈哈' . mt_rand(1, 1000);
+
+        $user   = User::updateOrCreate(['id' => 22], ['age' => 18, 'name' => $name]);
+        $result = DB::table('user')->find((string)$user->getId());
+
+        $this->assertEquals($name, $result->name);
+
+
+        DB::table('user')->where('id', $user->getId())->update(['name' => $name]);
+        $result1 = DB::table('user')->find((string)$user->getId());
+
+        $this->assertEquals($name, $result1->name);
+    }
+
+    public function testExpUpdate()
+    {
+        $id  = DB::table('user')->insertGetId(
+            ['name' => 'dayle@example.com111', 'age' => 0]
+        );
+        $res = DB::table('user')->where('id', $id)->update(
+            [
+                'age'  => Expression::new('age + 1'),
+                'name' => 'updated',
+            ]
+        );
+        $this->assertEquals(true, $res);
     }
 }
