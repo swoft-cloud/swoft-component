@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/bash
 #
 # Tool for run unit test for swoft components
 #
@@ -26,7 +26,7 @@ if [[ -z "$1" ]] || [[ "$1" == "-h" ]]; then
 fi
 
 # for one or multi component
-if [[ "$1" != "all" ]]; then
+if [ "$1" != "all" ]; then
     components=$@
 fi
 
