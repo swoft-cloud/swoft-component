@@ -24,7 +24,8 @@
     "symfony/yaml": "^4.2",
     "toolkit/cli-utils": "^1.0",
     "monolog/monolog": "^1.24",
-    "nikic/php-parser": "~4.2"
+    "nikic/php-parser": "~4.2",
+    "phpunit/phpunit": "^7.5"
   },
   "require-dev": {
     "swoft/swoole-ide-helper": "dev-master"
