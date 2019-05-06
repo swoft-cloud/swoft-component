@@ -1,10 +1,12 @@
 <?php
 // vendor at component dir
+use Composer\Autoload\ClassLoader;
+
 if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
     require dirname(__DIR__) . '/vendor/autoload.php';
     // application's vendor
 } elseif (file_exists(dirname(__DIR__, 5) . '/autoload.php')) {
-    /** @var \Composer\Autoload\ClassLoader $loader */
+    /** @var ClassLoader $loader */
     $loader = require dirname(__DIR__, 5) . '/autoload.php';
 
     // need load testing psr4 config map

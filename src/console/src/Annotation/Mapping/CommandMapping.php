@@ -6,6 +6,7 @@ use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;
 use Doctrine\Common\Annotations\Annotation\Target;
 use Swoft\Stdlib\Helper\Str;
+use function trim;
 
 /**
  * The annotation of command mapping
@@ -28,7 +29,7 @@ final class CommandMapping
     private $name = '';
 
     /**
-     * Command name alias
+     * Command name alias(es), multi by ',' split.
      *
      * @var string
      */
@@ -62,11 +63,11 @@ final class CommandMapping
         }
 
         if (isset($values['alias'])) {
-            $this->alias = \trim((string)$values['alias']);
+            $this->alias = trim((string)$values['alias']);
         }
 
         if (isset($values['desc'])) {
-            $this->desc = \trim((string)$values['desc']);
+            $this->desc = trim((string)$values['desc']);
         }
 
         if (isset($values['usage'])) {

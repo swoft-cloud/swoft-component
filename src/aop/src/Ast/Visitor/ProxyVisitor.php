@@ -109,10 +109,17 @@ class ProxyVisitor extends Visitor
 
         // Parse new class node
         if ($node instanceof Node\Stmt\Class_) {
+
+            // Fix such as '\Xxxx' class bug
+            $extendClass = $this->originalClassName;
+            if (strpos($extendClass, '\\') !== 0) {
+                $extendClass = '\\' . $extendClass;
+            }
+
             $newClassNodes = [
                 'flags'   => $node->flags,
                 'stmts'   => $node->stmts,
-                'extends' => new Node\Name('\\' . $this->originalClassName),
+                'extends' => new Node\Name($extendClass),
             ];
 
             return new Node\Stmt\Class_($this->proxyName, $newClassNodes);

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace SwoftTest\Console\Fixture;
+namespace SwoftTest\Console\Testing;
 
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Annotation\Mapping\CommandArgument;
@@ -18,7 +18,7 @@ use Swoft\Console\Annotation\Mapping\CommandOption;
  *     "comm2",
  *     short="b",
  *     desc="option description 2",
- *     mode=Command::OPT_REQUIRED|Command::OPT_BOOLEAN
+ *     mode=Command::OPT_REQUIRED
  * )
  */
 class DemoCommand

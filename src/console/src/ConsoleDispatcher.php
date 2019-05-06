@@ -2,6 +2,11 @@
 
 namespace Swoft\Console;
 
+use function get_class;
+use function get_parent_class;
+use ReflectionException;
+use ReflectionType;
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Co;
 use Swoft\Console\Input\Input;
@@ -11,6 +16,7 @@ use Swoft\Contract\DispatcherInterface;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoft\SwoftEvent;
 use Swoole\Event;
+use Throwable;
 
 /**
  * Class ConsoleDispatcher
@@ -22,8 +28,8 @@ class ConsoleDispatcher implements DispatcherInterface
     /**
      * @param array $params
      * @return void
-     * @throws \ReflectionException
-     * @throws \Throwable
+     * @throws ReflectionException
+     * @throws Throwable
      */
     public function dispatch(...$params): void
     {
@@ -33,11 +39,11 @@ class ConsoleDispatcher implements DispatcherInterface
 
         // Bind method params
         $bindParams = $this->getBindParams($className, $method);
-        $beanObject = \Swoft::getSingleton($className);
+        $beanObject = Swoft::getSingleton($className);
 
         // Blocking running
         if (!$route['coroutine']) {
-            $this->before(\get_parent_class($beanObject), $method);
+            $this->before(get_parent_class($beanObject), $method);
             PhpHelper::call([$beanObject, $method], ...$bindParams);
             $this->after($method);
             return;
@@ -55,27 +61,27 @@ class ConsoleDispatcher implements DispatcherInterface
      * @param object $beanObject
      * @param string $method
      * @param array  $bindParams
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function executeByCo($beanObject, string $method, array $bindParams): void
     {
         try {
             Context::set($ctx = ConsoleContext::new());
 
-            $this->before($method, \get_class($beanObject));
+            $this->before($method, get_class($beanObject));
 
             PhpHelper::call([$beanObject, $method], ...$bindParams);
 
             $this->after($method);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // TODO: throw error
             throw $e;
         } finally {
             // Defer
-            \Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
+            Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
 
             // Destroy
-            \Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
+            Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
         }
     }
 
@@ -85,11 +91,11 @@ class ConsoleDispatcher implements DispatcherInterface
      * @param string $class
      * @param string $method
      * @return array
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     private function getBindParams(string $class, string $method): array
     {
-        $classInfo = \Swoft::getReflection($class);
+        $classInfo = Swoft::getReflection($class);
         if (!isset($classInfo['methods'][$method])) {
             return [];
         }
@@ -100,7 +106,7 @@ class ConsoleDispatcher implements DispatcherInterface
 
         /**
          * @var string          $name
-         * @var \ReflectionType $paramType
+         * @var ReflectionType $paramType
          * @var mixed           $devVal
          */
         foreach ($methodParams as [, $paramType, $devVal]) {
@@ -143,27 +149,27 @@ class ConsoleDispatcher implements DispatcherInterface
      * Before dispatch
      *
      * @param array $params
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function before(...$params): void
     {
         // TODO ... event params
         $command = $params[0];
-        \Swoft::trigger(ConsoleEvent::EXECUTE_BEFORE, $command, $params[1]);
+        Swoft::trigger(ConsoleEvent::EXECUTE_BEFORE, $command, $params[1]);
     }
 
     /**
      * After dispatch
      *
      * @param array $params
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function after(...$params): void
     {
         // TODO ... event params
         $command = $params[0];
 
-        \Swoft::triggerByArray(ConsoleEvent::EXECUTE_AFTER, $command, [
+        Swoft::triggerByArray(ConsoleEvent::EXECUTE_AFTER, $command, [
             'command' => $command,
         ]);
     }

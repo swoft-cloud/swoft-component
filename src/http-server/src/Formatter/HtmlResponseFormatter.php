@@ -37,7 +37,7 @@ class HtmlResponseFormatter implements ResponseFormatterInterface
 
         if ($data !== null && (Arr::isArrayable($data) || is_string($data))) {
             $data    = \is_string($data) ? ['data' => $data] : $data;
-            $content = JsonHelper::encode($data, \JSON_UNESCAPED_UNICODE);
+            $content = JsonHelper::encode($data);
             return $response->withContent($content);
         }
 

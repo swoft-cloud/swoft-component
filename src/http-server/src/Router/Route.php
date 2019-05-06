@@ -1,8 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Http\Server\Router;
-
-use Swoft\Http\Server\Contract\RouterInterface;
 
 /**
  * Class Route

@@ -2,6 +2,7 @@
 
 namespace SwoftTest\Event\Unit;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Swoft\Event\Event;
 
@@ -80,10 +81,10 @@ class EventTest extends TestCase
     {
         $e = new Event();
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $e->setName('');
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $e->setParam(null, 'val');
     }
 }

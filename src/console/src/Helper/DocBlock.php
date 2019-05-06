@@ -2,8 +2,21 @@
 
 namespace Swoft\Console\Helper;
 
+use function array_merge;
+use function in_array;
+use function is_array;
+use function preg_match;
+use const PREG_OFFSET_CAPTURE;
+use function preg_replace;
+use function preg_split;
+use const PREG_SPLIT_NO_EMPTY;
+use function str_replace;
+use function substr;
+use function trim;
+
 /**
  * Class DocBlockHelper
+ *
  * @since 1.0
  */
 class DocBlock
@@ -24,11 +37,11 @@ class DocBlock
      */
     public static function getTags(string $comment, array $options = [], array $defaults = []): array
     {
-        if (!$comment = \trim($comment, "/ \n")) {
+        if (!$comment = trim($comment, "/ \n")) {
             return [];
         }
 
-        $options = \array_merge([
+        $options = array_merge([
             'allow'   => [], // only allowed tags
             'ignore'  => ['param', 'return'], // ignore tags
             'default' => 'description', // default tag name, first line text will attach to it.
@@ -38,34 +51,34 @@ class DocBlock
         $ignored = (array)$options['ignore'];
         $default = (string)$options['default'];
 
-        $comment = \str_replace("\r\n", "\n", $comment);
+        $comment = str_replace("\r\n", "\n", $comment);
         $comment = "@{$default} \n" .
-            \str_replace("\r", '',
-                \trim(\preg_replace('/^\s*\**( |\t)?/m', '', $comment))
+            str_replace("\r", '',
+                trim(preg_replace('/^\s*\**( |\t)?/m', '', $comment))
             );
 
         $tags  = [];
-        $parts = \preg_split('/^\s*@/m', $comment, -1, \PREG_SPLIT_NO_EMPTY);
+        $parts = preg_split('/^\s*@/m', $comment, -1, PREG_SPLIT_NO_EMPTY);
 
         foreach ($parts as $part) {
-            if (\preg_match('/^(\w+)(.*)/ms', \trim($part), $matches)) {
+            if (preg_match('/^(\w+)(.*)/ms', trim($part), $matches)) {
                 $name = $matches[1];
-                if (!$name || \in_array($name, $ignored, true)) {
+                if (!$name || in_array($name, $ignored, true)) {
                     continue;
                 }
 
-                if (!$value = \trim($matches[2])) {
+                if (!$value = trim($matches[2])) {
                     continue;
                 }
 
                 // always allow default tag
-                if ($default !== $name && $allow && !\in_array($name, $allow, true)) {
+                if ($default !== $name && $allow && !in_array($name, $allow, true)) {
                     continue;
                 }
 
                 if (!isset($tags[$name])) {
                     $tags[$name] = $value;
-                } elseif (\is_array($tags[$name])) {
+                } elseif (is_array($tags[$name])) {
                     $tags[$name][] = $value;
                 } else {
                     $tags[$name] = [$tags[$name], $value];
@@ -73,7 +86,7 @@ class DocBlock
             }
         }
 
-        return $defaults ? \array_merge($defaults, $tags) : $tags;
+        return $defaults ? array_merge($defaults, $tags) : $tags;
     }
 
     /**
@@ -83,10 +96,10 @@ class DocBlock
      */
     public static function firstLine(string $comment): string
     {
-        $docLines = \preg_split('~\R~u', $comment);
+        $docLines = preg_split('~\R~u', $comment);
 
         if (isset($docLines[1])) {
-            return \trim($docLines[1], "/\t *");
+            return trim($docLines[1], "/\t *");
         }
 
         return '';
@@ -100,10 +113,10 @@ class DocBlock
      */
     public static function description(string $comment): string
     {
-        $comment = \str_replace("\r", '', \trim(\preg_replace('/^\s*\**( |\t)?/m', '', trim($comment, '/'))));
+        $comment = str_replace("\r", '', trim(preg_replace('/^\s*\**( |\t)?/m', '', trim($comment, '/'))));
 
-        if (\preg_match('/^\s*@\w+/m', $comment, $matches, \PREG_OFFSET_CAPTURE)) {
-            $comment = \trim(\substr($comment, 0, $matches[0][1]));
+        if (preg_match('/^\s*@\w+/m', $comment, $matches, PREG_OFFSET_CAPTURE)) {
+            $comment = trim(substr($comment, 0, $matches[0][1]));
         }
 
         return $comment;

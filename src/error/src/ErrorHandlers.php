@@ -2,7 +2,12 @@
 
 namespace Swoft\Error;
 
+use function count;
+use function get_class;
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
+use Throwable;
 
 /**
  * Class ErrorHandlers
@@ -41,31 +46,31 @@ class ErrorHandlers
     }
 
     /**
-     * @param \Throwable $e
+     * @param Throwable $e
      * @param int        $type
      *
      * @return mixed|null
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ContainerException
      */
-    public function matchHandler(\Throwable $e, int $type = ErrorType::DEF)
+    public function matchHandler(Throwable $e, int $type = ErrorType::DEF)
     {
         // No handlers found
         if (!isset($this->handlers[$type]) || $this->getCount() === 0) {
             return null;
         }
 
-        $errClass = \get_class($e);
+        $errClass = get_class($e);
         $handlers = $this->handlers[$type];
 
         if (isset($handlers[$errClass])) {
-            return \Swoft::getSingleton($handlers[$errClass]);
+            return Swoft::getSingleton($handlers[$errClass]);
         }
 
         $handler = null;
 
         foreach ($handlers as $exceptionClass => $handlerClass) {
             if ($e instanceof $exceptionClass) {
-                $handler = \Swoft::getSingleton($handlerClass);
+                $handler = Swoft::getSingleton($handlerClass);
                 break;
             }
         }
@@ -78,7 +83,7 @@ class ErrorHandlers
      */
     public function getTypeCount(): int
     {
-        return \count($this->handlers);
+        return count($this->handlers);
     }
 
     /**

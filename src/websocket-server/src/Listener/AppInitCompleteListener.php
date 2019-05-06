@@ -2,6 +2,9 @@
 
 namespace Swoft\WebSocket\Server\Listener;
 
+use function bean;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
@@ -20,15 +23,15 @@ class AppInitCompleteListener implements EventHandlerInterface
 {
     /**
      * @param EventInterface $event
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function handle(EventInterface $event): void
     {
         // Register WebSocket routes
 
         /** @var Router $router */
-        $router = \bean('wsRouter');
+        $router = bean('wsRouter');
 
         RouteRegister::registerTo($router);
 

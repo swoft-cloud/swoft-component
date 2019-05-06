@@ -2,6 +2,7 @@
 
 namespace Swoft\Console\Advanced;
 
+use RuntimeException;
 use Swoft\Console\Console;
 use Swoft\Console\Contract\FormatterInterface;
 use Swoft\Stdlib\Helper\ObjectHelper;
@@ -55,7 +56,7 @@ abstract class MessageFormatter implements FormatterInterface
      */
     public function format(): string
     {
-        throw new \RuntimeException('Please implement the method on sub-class');
+        throw new RuntimeException('Please implement the method on sub-class');
     }
 
     /**

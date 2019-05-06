@@ -2,6 +2,10 @@
 
 namespace Swoft\Event;
 
+use function count;
+use RuntimeException;
+use Swoft;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Event\Manager\EventManager;
 
 /**
@@ -41,15 +45,15 @@ final class ListenerRegister
     /**
      * @param EventManager $em
      * @return array
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ContainerException
      */
     public static function register(EventManager $em): array
     {
         foreach (self::$listeners as $className => $eventInfo) {
-            $listener = \Swoft::getSingleton($className);
+            $listener = Swoft::getSingleton($className);
 
             if (!$listener instanceof EventHandlerInterface) {
-                throw new \RuntimeException(
+                throw new RuntimeException(
                     "The event listener class '{$className}' must be instanceof EventHandlerInterface"
                 );
             }
@@ -58,9 +62,9 @@ final class ListenerRegister
         }
 
         foreach (self::$subscribers as $className) {
-            $subscriber = \Swoft::getSingleton($className);
+            $subscriber = Swoft::getSingleton($className);
             if (!$subscriber instanceof EventSubscriberInterface) {
-                throw new \RuntimeException(
+                throw new RuntimeException(
                     "The event subscriber class '{$className}' must be instanceof EventSubscriberInterface"
                 );
             }
@@ -68,8 +72,8 @@ final class ListenerRegister
             $em->addSubscriber($subscriber);
         }
 
-        $count1 = \count(self::$listeners);
-        $count2  = \count(self::$subscribers);
+        $count1 = count(self::$listeners);
+        $count2  = count(self::$subscribers);
         // Clear data
         self::$listeners = self::$subscribers = [];
 

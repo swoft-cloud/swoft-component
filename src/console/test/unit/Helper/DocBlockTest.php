@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace SwoftTest\Console\Helper;
+namespace SwoftTest\Console\Unit\Helper;
 
 use PHPUnit\Framework\TestCase;
 use Swoft\Console\Helper\DocBlock;

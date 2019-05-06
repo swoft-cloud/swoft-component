@@ -2,6 +2,7 @@
 
 namespace Swoft\WebSocket\Server\Router;
 
+use function array_merge;
 use Swoft\Stdlib\Helper\Str;
 
 /**
@@ -14,7 +15,8 @@ final class RouteRegister
      * @var array
      * [
      *  module class => [
-     *      path => '/chat',
+     *      path => '/chat/{id}',
+     *      params => ['id' => '\d+'],
      *      controllers => ['class1', 'class2'],
      *  ]
      * ]
@@ -39,7 +41,7 @@ final class RouteRegister
     public static function bindModule(string $class, array $option): void
     {
         if (isset(self::$modules[$class])) {
-            self::$modules[$class] = \array_merge(self::$modules[$class], $option);
+            self::$modules[$class] = array_merge(self::$modules[$class], $option);
         } else {
             self::$modules[$class] = $option;
         }

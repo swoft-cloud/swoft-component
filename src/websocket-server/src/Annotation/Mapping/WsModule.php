@@ -40,6 +40,13 @@ final class WsModule
     private $name = '';
 
     /**
+     * Routing path params binding. eg. {"id"="\d+"}
+     *
+     * @var array
+     */
+    private $params = [];
+
+    /**
      * Message controllers of the module
      *
      * @var string[]
@@ -69,12 +76,16 @@ final class WsModule
     {
         if (isset($values['value'])) {
             $this->path = (string)$values['value'];
-        } elseif (isset($values['name'])) {
+        } elseif (isset($values['path'])) {
             $this->path = (string)$values['path'];
         }
 
         if (isset($values['name'])) {
             $this->name = (string)$values['name'];
+        }
+
+        if (isset($values['params'])) {
+            $this->params = (array)$values['params'];
         }
 
         if (isset($values['controllers'])) {
@@ -128,5 +139,13 @@ final class WsModule
     public function getControllers(): array
     {
         return $this->controllers;
+    }
+
+    /**
+     * @return array
+     */
+    public function getParams(): array
+    {
+        return $this->params;
     }
 }

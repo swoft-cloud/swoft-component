@@ -1,11 +1,14 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Test\Concern;
-
 
 use PHPUnit\Framework\Assert;
 
+/**
+ * Trait RpcResponseAssertTrait
+ *
+ * @since 2.0
+ */
 trait RpcResponseAssertTrait
 {
     /**

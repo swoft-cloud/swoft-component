@@ -1,4 +1,5 @@
 #!/bin/sh
+
 git pull --no-edit
 echo 'unavailable!'
 exit

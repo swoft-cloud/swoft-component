@@ -2,6 +2,8 @@
 
 namespace Swoft\Console\Advanced\Progress;
 
+use Generator;
+use function printf;
 use Swoft\Console\Advanced\NotifyMessage;
 use Swoft\Console\Console;
 use Toolkit\Cli\Cli;
@@ -15,9 +17,9 @@ class DynamicText extends NotifyMessage
     /**
      * @param string $doneMsg
      * @param string $fixedMsg
-     * @return \Generator
+     * @return Generator
      */
-    public static function gen(string $doneMsg, string $fixedMsg = ''): \Generator
+    public static function gen(string $doneMsg, string $fixedMsg = ''): Generator
     {
         $counter  = 0;
         $finished = false;
@@ -44,7 +46,7 @@ class DynamicText extends NotifyMessage
                 $finished = true;
             }
 
-            \printf($template, $msg);
+            printf($template, $msg);
 
             if ($finished) {
                 echo "\n";

@@ -18,4 +18,4 @@ REPO=$1
 set -ex
 
 # run command
-git subtree add --prefix=src/${REPO} git@github.com:swoft-cloud/swoft-${REPO}.git 2.0 --squash
+git subtree add --prefix=src/${REPO} git@github.com:swoft-cloud/swoft-${REPO}.git master --squash

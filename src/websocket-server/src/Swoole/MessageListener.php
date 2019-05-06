@@ -2,6 +2,7 @@
 
 namespace Swoft\WebSocket\Server\Swoole;
 
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\Context\Context;
@@ -9,11 +10,14 @@ use Swoft\Server\Swoole\MessageInterface;
 use Swoft\Session\Session;
 use Swoft\SwoftEvent;
 use Swoft\WebSocket\Server\Context\WsMessageContext;
-use Swoft\WebSocket\Server\WsDispatcher;
+use Swoft\WebSocket\Server\Message\Request;
+use Swoft\WebSocket\Server\Message\Response;
 use Swoft\WebSocket\Server\WsErrorDispatcher;
+use Swoft\WebSocket\Server\WsMessageDispatcher;
 use Swoft\WebSocket\Server\WsServerEvent;
 use Swoole\Websocket\Frame;
 use Swoole\Websocket\Server;
+use Throwable;
 
 /**
  * Class MessageListener
@@ -27,34 +31,37 @@ class MessageListener implements MessageInterface
     /**
      * @param Server $server
      * @param Frame  $frame
-     * @throws \Throwable
+     *
+     * @throws Throwable
      */
     public function onMessage(Server $server, Frame $frame): void
     {
         $fd  = $frame->fd;
         $sid = (string)$fd;
 
+        $req = Request::new($frame);
+        $res = Response::new($fd);
         /** @var WsMessageContext $ctx */
-        $ctx = WsMessageContext::new($frame);
+        $ctx = WsMessageContext::new($req, $res);
 
         // Storage context
         Context::set($ctx);
         // Bind cid => sid(fd)
         Session::bindCo($sid);
 
-        /** @var WsDispatcher $dispatcher */
-        $dispatcher = BeanFactory::getSingleton('wsDispatcher');
+        /** @var WsMessageDispatcher $dispatcher */
+        $dispatcher = BeanFactory::getSingleton('wsMsgDispatcher');
 
         try {
             \server()->log("Message: conn#{$fd} received message: {$frame->data}", [], 'debug');
-            \Swoft::trigger(WsServerEvent::MESSAGE_BEFORE, $fd, $server, $frame);
+            Swoft::trigger(WsServerEvent::MESSAGE_BEFORE, $fd, $server, $frame);
 
             // Parse and dispatch message
-            $dispatcher->message($server, $frame);
+            $dispatcher->dispatch($server, $frame);
 
-            \Swoft::trigger(WsServerEvent::MESSAGE_AFTER, $fd, $server, $frame);
-        } catch (\Throwable $e) {
-            \Swoft::trigger(WsServerEvent::HANDSHAKE_ERROR, $e, $frame);
+            Swoft::trigger(WsServerEvent::MESSAGE_AFTER, $fd, $server, $frame);
+        } catch (Throwable $e) {
+            Swoft::trigger(WsServerEvent::HANDSHAKE_ERROR, $e, $frame);
 
             \server()->log("Message: conn#{$fd} error: " . $e->getMessage(), [], 'error');
 
@@ -63,10 +70,10 @@ class MessageListener implements MessageInterface
             $errDispatcher->messageError($e, $frame);
         } finally {
             // Defer
-            \Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
+            Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
 
             // Destroy
-            \Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
+            Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
 
             // Unbind cid => sid(fd)
             Session::unbindCo();

@@ -2,8 +2,17 @@
 
 namespace Swoft\Console\Input;
 
+use function array_map;
+use function array_shift;
+use function fgets;
+use function fwrite;
+use function implode;
+use function preg_match;
+use const STDIN;
+use const STDOUT;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Toolkit\Cli\Flags;
+use function trim;
 
 /**
  * Class Input - The input information. by parse global var $argv.
@@ -16,7 +25,7 @@ class Input extends AbstractInput
     /**
      * @var resource
      */
-    protected $inputStream = \STDIN;
+    protected $inputStream = STDIN;
 
     /**
      * Input constructor.
@@ -31,8 +40,8 @@ class Input extends AbstractInput
 
         $this->pwd        = $this->getPwd();
         $this->tokens     = $args;
-        $this->script     = \array_shift($args);
-        $this->fullScript = \implode(' ', $args);
+        $this->script     = array_shift($args);
+        $this->fullScript = implode(' ', $args);
 
         if ($parsing) {
             // list($this->args, $this->sOpts, $this->lOpts) = InputParser::fromArgv($args);
@@ -48,8 +57,8 @@ class Input extends AbstractInput
      */
     public function toString(): string
     {
-        $tokens = \array_map(function ($token) {
-            if (\preg_match('{^(-[^=]+=)(.+)}', $token, $match)) {
+        $tokens = array_map(function ($token) {
+            if (preg_match('{^(-[^=]+=)(.+)}', $token, $match)) {
                 return $match[1] . Flags::escapeToken($match[2]);
             }
 
@@ -60,7 +69,7 @@ class Input extends AbstractInput
             return $token;
         }, $this->tokens);
 
-        return \implode(' ', $tokens);
+        return implode(' ', $tokens);
     }
 
     /**
@@ -72,10 +81,10 @@ class Input extends AbstractInput
     public function read(string $question = '', bool $nl = false): string
     {
         if ($question) {
-            \fwrite(\STDOUT, $question . ($nl ? "\n" : ''));
+            fwrite(STDOUT, $question . ($nl ? "\n" : ''));
         }
 
-        return \trim(\fgets($this->inputStream));
+        return trim(fgets($this->inputStream));
     }
 
     /***********************************************************************************

@@ -2,6 +2,9 @@
 
 namespace Swoft\Console\Advanced\Formatter;
 
+use function array_merge;
+use function ceil;
+use function str_pad;
 use Swoft\Console\Advanced\MessageFormatter;
 use Swoft\Console\Helper\Show;
 use Swoft\Stdlib\Helper\Str;
@@ -18,7 +21,7 @@ class Title extends MessageFormatter
      */
     public static function show(string $title, array $opts = []): void
     {
-        $opts = \array_merge([
+        $opts = array_merge([
             'width'      => 80,
             'char'       => self::CHAR_EQUAL,
             'titlePos'   => self::POS_LEFT,
@@ -40,15 +43,15 @@ class Title extends MessageFormatter
         if ($tLength >= $width) {
             $titleIndent = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         } elseif ($opts['titlePos'] === self::POS_RIGHT) {
-            $titleIndent = Str::pad(self::CHAR_SPACE, \ceil($width - $tLength) + $indent, self::CHAR_SPACE);
+            $titleIndent = Str::pad(self::CHAR_SPACE, ceil($width - $tLength) + $indent, self::CHAR_SPACE);
         } elseif ($opts['titlePos'] === self::POS_MIDDLE) {
-            $titleIndent = Str::pad(self::CHAR_SPACE, \ceil(($width - $tLength) / 2) + $indent, self::CHAR_SPACE);
+            $titleIndent = Str::pad(self::CHAR_SPACE, ceil(($width - $tLength) / 2) + $indent, self::CHAR_SPACE);
         } else {
             $titleIndent = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         }
 
         $titleLine = "$titleIndent<bold>$title</bold>\n";
-        $border    = $indentStr . \str_pad($char, $width, $char);
+        $border    = $indentStr . str_pad($char, $width, $char);
 
         Show::write($titleLine . $border);
     }

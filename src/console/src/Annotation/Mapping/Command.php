@@ -6,6 +6,7 @@ use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;
 use Doctrine\Common\Annotations\Annotation\Target;
 use Swoft\Stdlib\Helper\Str;
+use function trim;
 
 /**
  * The annotation of command controller
@@ -92,11 +93,11 @@ final class Command
         }
 
         if (isset($values['alias'])) {
-            $this->alias = \trim((string)$values['alias']);
+            $this->alias = trim((string)$values['alias']);
         }
 
         if (!empty($values['desc'])) {
-            $this->desc = \trim((string)$values['desc']);
+            $this->desc = trim((string)$values['desc']);
         }
 
         if (isset($values['enabled'])) {
@@ -112,7 +113,7 @@ final class Command
         }
 
         if (isset($values['defaultCommand'])) {
-            $this->defaultCommand = \trim($values['defaultCommand']);
+            $this->defaultCommand = trim($values['defaultCommand']);
         }
     }
 

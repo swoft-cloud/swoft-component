@@ -50,12 +50,12 @@ class ListTest extends TestCase
 
     public function testInsert()
     {
+        Redis::del($this->getListKey());
         $value = 'yes';
-        Redis::lPushx($this->getListKey(), 1);
+        Redis::lPush($this->getListKey(), $value);
         Redis::lInsert($this->getListKey(), "BEFORE", '1', $value);
 
         $list = Redis::lRange($this->getListKey(), 0, -1);
-        Redis::del($this->getListKey());
         $this->assertTrue(in_array($value, $list));
     }
 

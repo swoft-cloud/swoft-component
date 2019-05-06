@@ -2,8 +2,11 @@
 
 namespace Swoft\Console\Advanced;
 
+use RuntimeException;
+
 /**
  * Class NotifyMessage - Notifier like progress, spinner ....
+ *
  * @since 2.0
  * @link https://github.com/wp-cli/php-cli-tools/tree/master/lib/cli
  */
@@ -30,6 +33,6 @@ class NotifyMessage
 
     public function display(): void
     {
-        throw new \RuntimeException('Please implement the method on sub-class');
+        throw new RuntimeException('Please implement the method on sub-class');
     }
 }

@@ -4,6 +4,7 @@ namespace Swoft\WebSocket\Server\Contract;
 
 use Swoft\Error\Contract\ErrorHandlerInterface;
 use Swoole\WebSocket\Frame;
+use Throwable;
 
 /**
  * Interface MessageErrorHandlerInterface
@@ -12,8 +13,8 @@ use Swoole\WebSocket\Frame;
 interface MessageErrorHandlerInterface extends ErrorHandlerInterface
 {
     /**
-     * @param \Throwable $e
+     * @param Throwable $e
      * @param Frame      $frame
      */
-    public function handle(\Throwable $e, Frame $frame): void;
+    public function handle(Throwable $e, Frame $frame): void;
 }

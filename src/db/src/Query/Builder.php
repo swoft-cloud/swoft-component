@@ -1917,7 +1917,7 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function having(string $column, string $operator = null, string $value = null, string $boolean = 'and'): self
+    public function having(string $column, $operator = null, $value = null, string $boolean = 'and'): self
     {
         $type = 'Basic';
 
@@ -1953,7 +1953,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      */
-    public function orHaving(string $column, string $operator = null, string $value = null): self
+    public function orHaving(string $column, $operator = null, $value = null): self
     {
         [$value, $operator] = $this->prepareValueAndOperator(
             $value, $operator, func_num_args() === 2
@@ -2313,14 +2313,14 @@ class Builder implements PrototypeInterface
      * @param string $id
      * @param array  $columns
      *
-     * @return static
+     * @return null|object|\Swoft\Db\Eloquent\Model|Builder
      * @throws PrototypeException
      * @throws \ReflectionException
      * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Db\Exception\EloquentException
      * @throws \Swoft\Db\Exception\PoolException
      */
-    public function find(string $id, array $columns = ['*']): self
+    public function find(string $id, array $columns = ['*'])
     {
         return $this->where('id', '=', $id)->first($columns);
     }

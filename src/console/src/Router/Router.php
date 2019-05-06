@@ -2,8 +2,18 @@
 
 namespace Swoft\Console\Router;
 
+use function array_keys;
+use function array_merge;
+use function count;
+use function explode;
+use function in_array;
+use function ksort;
+use function sort;
+use function sprintf;
+use function strpos;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Console\Contract\RouterInterface;
+use function trim;
 
 /**
  * Class Router
@@ -135,17 +145,17 @@ class Router implements RouterInterface
     public function match(...$params): array
     {
         $delimiter = $this->delimiter;
-        $inputCmd  = \trim($params[0], "$delimiter ");
-        $noSepChar = \strpos($inputCmd, $delimiter) === false;
+        $inputCmd  = trim($params[0], "$delimiter ");
+        $noSepChar = strpos($inputCmd, $delimiter) === false;
 
         // If use command ID alias
         if ($noSepChar && isset($this->idAliases[$inputCmd])) {
             $inputCmd = $this->idAliases[$inputCmd];
             // Must re-check
-            $noSepChar = \strpos($inputCmd, $delimiter) === false;
+            $noSepChar = strpos($inputCmd, $delimiter) === false;
         }
 
-        if ($noSepChar && \in_array($inputCmd, $this->defaultCommands, true)) {
+        if ($noSepChar && in_array($inputCmd, $this->defaultCommands, true)) {
             $group   = $this->defaultGroup;
             $command = $this->resolveCommandAlias($inputCmd);
 
@@ -159,9 +169,9 @@ class Router implements RouterInterface
 
             return [self::NOT_FOUND];
         } else {
-            $nameList = \explode($delimiter, $inputCmd, 2);
+            $nameList = explode($delimiter, $inputCmd, 2);
 
-            if (\count($nameList) === 2) {
+            if (count($nameList) === 2) {
                 [$group, $command] = $nameList;
                 // resolve command alias
                 $command = $this->resolveCommandAlias($command);
@@ -198,11 +208,11 @@ class Router implements RouterInterface
     public function sortedEach(callable $grpFunc, callable $cmdFunc = null): void
     {
         $groups = $this->groups;
-        \ksort($groups);
+        ksort($groups);
 
         foreach ($groups as $group => $info) {
             $names = $info['names'];
-            \sort($names);
+            sort($names);
             unset($info['names']);
 
             // call group handle func
@@ -275,7 +285,7 @@ class Router implements RouterInterface
     public function buildCommandID(string $group, string $command): string
     {
         if ($group) {
-            return \sprintf('%s%s%s', $group, $this->delimiter, $command);
+            return sprintf('%s%s%s', $group, $this->delimiter, $command);
         }
 
         return $command;
@@ -349,7 +359,7 @@ class Router implements RouterInterface
      */
     public function getAllNames(): array
     {
-        return \array_merge(\array_keys($this->getGroupAliases()), \array_keys($this->groups));
+        return array_merge(array_keys($this->getGroupAliases()), array_keys($this->groups));
     }
 
     /**
@@ -448,7 +458,7 @@ class Router implements RouterInterface
      */
     public function groupCount(): int
     {
-        return \count($this->groups);
+        return count($this->groups);
     }
 
     /**
@@ -456,7 +466,7 @@ class Router implements RouterInterface
      */
     public function count(): int
     {
-        return \count($this->routes);
+        return count($this->routes);
     }
 
     /**
@@ -473,7 +483,7 @@ class Router implements RouterInterface
     public function setIdAliases(array $idAliases): void
     {
         if ($idAliases) {
-            $this->idAliases = \array_merge($this->idAliases, $idAliases);
+            $this->idAliases = array_merge($this->idAliases, $idAliases);
         }
     }
 

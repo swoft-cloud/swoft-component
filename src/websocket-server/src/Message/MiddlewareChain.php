@@ -2,12 +2,22 @@
 
 namespace Swoft\WebSocket\Server\Message;
 
+use function class_exists;
+use InvalidArgumentException;
+use function is_callable;
+use function is_string;
+use ReflectionException;
+use RuntimeException;
+use SplDoublyLinkedList;
+use SplStack;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\WebSocket\Server\Contract\MessageHandlerInterface;
 use Swoft\WebSocket\Server\Contract\MiddlewareInterface;
 use Swoft\WebSocket\Server\Contract\RequestInterface;
 use Swoft\WebSocket\Server\Contract\ResponseInterface;
+use UnexpectedValueException;
 
 /**
  * Class MiddlewareChain
@@ -19,7 +29,7 @@ class MiddlewareChain implements MessageHandlerInterface
 {
     use PrototypeTrait;
 
-    /** @var \SplStack */
+    /** @var SplStack */
     private $stack;
 
     /** @var bool */
@@ -32,8 +42,8 @@ class MiddlewareChain implements MessageHandlerInterface
      * @param MiddlewareInterface $coreHandler
      *
      * @return MiddlewareChain
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function new(MiddlewareInterface $coreHandler): self
     {
@@ -51,7 +61,7 @@ class MiddlewareChain implements MessageHandlerInterface
      * @param MiddlewareInterface[] ...$middleware
      *
      * @return $this
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function use(...$middleware): self
     {
@@ -67,7 +77,7 @@ class MiddlewareChain implements MessageHandlerInterface
      *                                 2. A Handler object
      *
      * @return $this
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function add(...$middlewareList): self
     {
@@ -82,12 +92,12 @@ class MiddlewareChain implements MessageHandlerInterface
      * @param MiddlewareInterface $middleware
      *
      * @return self
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function middle(MiddlewareInterface $middleware): self
     {
         if ($this->locked) {
-            throw new \RuntimeException('Middleware can’t be added once the stack is dequeuing');
+            throw new RuntimeException('Middleware can’t be added once the stack is dequeuing');
         }
 
         if (null === $this->stack) {
@@ -106,14 +116,14 @@ class MiddlewareChain implements MessageHandlerInterface
      * @param RequestInterface $request
      *
      * @return ResponseInterface
-     * @throws \UnexpectedValueException
-     * @throws \RuntimeException
-     * @throws \InvalidArgumentException
+     * @throws UnexpectedValueException
+     * @throws RuntimeException
+     * @throws InvalidArgumentException
      */
     public function callStack(RequestInterface $request): ResponseInterface
     {
         if ($this->locked) {
-            throw new \RuntimeException('Middleware stack can’t be start once the stack is dequeuing');
+            throw new RuntimeException('Middleware stack can’t be start once the stack is dequeuing');
         }
 
         if (null === $this->stack) {
@@ -135,8 +145,8 @@ class MiddlewareChain implements MessageHandlerInterface
      *
      * @internal
      * {@inheritDoc}
-     * @throws \UnexpectedValueException
-     * @throws \InvalidArgumentException
+     * @throws UnexpectedValueException
+     * @throws InvalidArgumentException
      */
     public function handle(RequestInterface $request): ResponseInterface
     {
@@ -148,21 +158,21 @@ class MiddlewareChain implements MessageHandlerInterface
         $middleware = $this->stack->shift();
 
         // if is a class name
-        if (\is_string($middleware) && \class_exists($middleware)) {
+        if (is_string($middleware) && class_exists($middleware)) {
             $middleware = new $middleware;
         }
 
         if ($middleware instanceof MiddlewareInterface) {
             /** @var MessageHandlerInterface $this */
             $response = $middleware->process($request, $this);
-        } elseif (\is_callable($middleware)) {
+        } elseif (is_callable($middleware)) {
             $response = $middleware($request, $this);
         } else {
-            throw new \InvalidArgumentException('The middleware is not a callable.');
+            throw new InvalidArgumentException('The middleware is not a callable.');
         }
 
         if (!$response instanceof ResponseInterface) {
-            throw new \UnexpectedValueException(
+            throw new UnexpectedValueException(
                 'Middleware must return object and instance of \Psr\Http\Message\ResponseInterface'
             );
         }
@@ -173,16 +183,16 @@ class MiddlewareChain implements MessageHandlerInterface
     /**
      * @param callable|null $kernel
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     protected function prepareStack(callable $kernel = null): void
     {
         if (null !== $this->stack) {
-            throw new \RuntimeException('MiddlewareStack can only be seeded once.');
+            throw new RuntimeException('MiddlewareStack can only be seeded once.');
         }
 
-        $this->stack = new \SplStack;
-        $this->stack->setIteratorMode(\SplDoublyLinkedList::IT_MODE_LIFO | \SplDoublyLinkedList::IT_MODE_KEEP);
+        $this->stack = new SplStack;
+        $this->stack->setIteratorMode(SplDoublyLinkedList::IT_MODE_LIFO | SplDoublyLinkedList::IT_MODE_KEEP);
 
         if ($kernel) {
             $this->stack[] = $kernel;
@@ -198,9 +208,9 @@ class MiddlewareChain implements MessageHandlerInterface
     }
 
     /**
-     * @return \SplStack
+     * @return SplStack
      */
-    public function getStack(): \SplStack
+    public function getStack(): SplStack
     {
         return $this->stack;
     }
