@@ -143,7 +143,7 @@ class ValidatorTypeTest extends TestCase
     public function testDefault()
     {
         $data = [];
-        Validator::validate($data, ValidateDemo::class, 'testTypeDefault');
+        $data = Validator::validate($data, ValidateDemo::class, 'testTypeDefault');
 
         $result = [
             'arrayDefault'  => [],
