@@ -2,16 +2,24 @@
 
 namespace Swoft\WebSocket\Server\Command;
 
+use function bean;
+use function input;
+use function output;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Annotation\Mapping\CommandMapping;
 use Swoft\Console\Annotation\Mapping\CommandOption;
 use Swoft\Console\Helper\Show;
-use Swoft\Helper\EnvHelper;
+// use Swoft\Helper\EnvHelper;
 use Swoft\Server\Command\BaseServerCommand;
+use Swoft\Server\Exception\ServerException;
 use Swoft\WebSocket\Server\WebSocketServer;
+use Throwable;
 
 /**
  * Class WsServerCommand
+ *
  * @Command("ws",
  *     coroutine=false,
  *     alias="ws-server,wsserver,websocket",
@@ -30,9 +38,10 @@ class WsServerCommand extends BaseServerCommand
      *  {fullCommand}
      *  {fullCommand} -d  Start server on background
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Server\Exception\ServerException
+     * @throws ContainerException
+     * @throws ReflectionException
+     * @throws ServerException
+     * @throws Throwable
      */
     public function start(): void
     {
@@ -41,7 +50,7 @@ class WsServerCommand extends BaseServerCommand
         // Check if it has started
         if ($server->isRunning()) {
             $masterPid = $server->getPid();
-            \output()->writeln("<error>The server have been running!(PID: {$masterPid})</error>");
+            output()->writeln("<error>The server have been running!(PID: {$masterPid})</error>");
             return;
         }
 
@@ -75,7 +84,7 @@ class WsServerCommand extends BaseServerCommand
             ],
         ]);
 
-        \output()->writef('<success>Server start success !</success>');
+        output()->writef('<success>Server start success !</success>');
 
         // Start the server
         $server->start();
@@ -87,21 +96,21 @@ class WsServerCommand extends BaseServerCommand
      * @CommandMapping(usage="{fullCommand} [-t]")
      * @CommandOption("t", desc="Only to reload task processes, default to reload worker and task")
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function reload(): void
     {
         $server = $this->createServer();
-        $script = \input()->getScript();
+        $script = input()->getScript();
 
         // Check if it has started
         if (!$server->isRunning()) {
-            \output()->writeln('<error>The server is not running! cannot reload</error>');
+            output()->writeln('<error>The server is not running! cannot reload</error>');
             return;
         }
 
-        \output()->writef('<info>Server %s is reloading</info>', $script);
+        output()->writef('<info>Server %s is reloading</info>', $script);
 
         if ($reloadTask = input()->hasOpt('t')) {
             Show::notice('Will only reload task worker');
@@ -112,7 +121,7 @@ class WsServerCommand extends BaseServerCommand
             return;
         }
 
-        \output()->writef('<success>Server %s reload success</success>', $script);
+        output()->writef('<success>Server %s reload success</success>', $script);
     }
 
     /**
@@ -120,8 +129,8 @@ class WsServerCommand extends BaseServerCommand
      *
      * @CommandMapping()
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function stop(): void
     {
@@ -129,7 +138,7 @@ class WsServerCommand extends BaseServerCommand
 
         // Check if it has started
         if (!$server->isRunning()) {
-            \output()->writeln('<error>The server is not running! cannot stop.</error>');
+            output()->writeln('<error>The server is not running! cannot stop.</error>');
             return;
         }
 
@@ -146,8 +155,8 @@ class WsServerCommand extends BaseServerCommand
      * @example
      * {fullCommand}
      * {fullCommand} -d
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function restart(): void
     {
@@ -159,8 +168,8 @@ class WsServerCommand extends BaseServerCommand
 
     /**
      * @return WebSocketServer
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     private function createServer(): WebSocketServer
     {
@@ -170,7 +179,7 @@ class WsServerCommand extends BaseServerCommand
         // http server初始化
         $script = input()->getScript();
 
-        $server = \bean('wsServer');
+        $server = bean('wsServer');
         $server->setScriptFile($script);
 
         return $server;

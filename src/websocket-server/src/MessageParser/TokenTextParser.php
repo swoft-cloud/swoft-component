@@ -2,9 +2,14 @@
 
 namespace Swoft\WebSocket\Server\MessageParser;
 
+use function explode;
+use ReflectionException;
+use function strpos;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 use Swoft\WebSocket\Server\Message\Message;
+use function trim;
 
 /**
  * Class TokenTextParser
@@ -36,16 +41,16 @@ class TokenTextParser implements MessageParserInterface
      *  body: 'message body data'
      *
      * @return Message
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function decode(string $data): Message
     {
         // use default message command
         $cmd = '';
-        if (\strpos($data, ':')) {
-            [$cmd, $body] = \explode(':', $data, 2);
-            $cmd = \trim($cmd);
+        if (strpos($data, ':')) {
+            [$cmd, $body] = explode(':', $data, 2);
+            $cmd = trim($cmd);
         } else {
             $body = $data;
         }

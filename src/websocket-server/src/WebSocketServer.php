@@ -2,10 +2,17 @@
 
 namespace Swoft\WebSocket\Server;
 
+use function array_flip;
+use function array_shift;
+use function count;
+use function end;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Server;
 use Swoft\Server\Swoole\SwooleEvent;
 use Swoole\Websocket\Frame;
+use Throwable;
+use const WEBSOCKET_OPCODE_TEXT;
 
 /**
  * Class WebSocketServer
@@ -21,8 +28,8 @@ class WebSocketServer extends Server
     /**
      * Start swoole server
      *
-     * @throws \Swoft\Server\Exception\ServerException
-     * @throws \Throwable
+     * @throws ServerException
+     * @throws Throwable
      */
     public function start(): void
     {
@@ -64,7 +71,7 @@ class WebSocketServer extends Server
      * @param bool   $finish
      * @return bool
      */
-    public function push(int $fd, string $data, int $opcode = \WEBSOCKET_OPCODE_TEXT, bool $finish = true): bool
+    public function push(int $fd, string $data, int $opcode = WEBSOCKET_OPCODE_TEXT, bool $finish = true): bool
     {
         return $this->sendTo($fd, $data, 0, $opcode, $finish);
     }
@@ -82,7 +89,7 @@ class WebSocketServer extends Server
         int $receiver,
         string $data,
         int $sender = 0,
-        int $opcode = \WEBSOCKET_OPCODE_TEXT,
+        int $opcode = WEBSOCKET_OPCODE_TEXT,
         bool $finish = true
     ): bool {
         if (!$this->swooleServer->isEstablished($receiver)) {
@@ -114,8 +121,8 @@ class WebSocketServer extends Server
         $excluded  = (array)$excluded;
 
         // Only one receiver
-        if (1 === \count($receivers)) {
-            $ok = $this->sendTo((int)\array_shift($receivers), $data, $sender);
+        if (1 === count($receivers)) {
+            $ok = $this->sendTo((int)array_shift($receivers), $data, $sender);
             return $ok ? 1 : 0;
         }
 
@@ -143,8 +150,8 @@ class WebSocketServer extends Server
         }
 
         // Only one receiver
-        if (1 === \count($receivers)) {
-            $ok = $this->sendTo((int)\array_shift($receivers), $data, $sender);
+        if (1 === count($receivers)) {
+            $ok = $this->sendTo((int)array_shift($receivers), $data, $sender);
             return $ok ? 1 : 0;
         }
 
@@ -212,7 +219,7 @@ class WebSocketServer extends Server
         }
 
         // To special users
-        $excluded = $excluded ? (array)\array_flip($excluded) : [];
+        $excluded = $excluded ? (array)array_flip($excluded) : [];
 
         $this->log("(broadcast)The #{$fromUser} send the message to everyone except some people. Data: {$data}");
 
@@ -260,7 +267,7 @@ class WebSocketServer extends Server
 
         while (true) {
             $fdList = (array)$this->swooleServer->getClientList($startFd, $pageSize);
-            if (($num = \count($fdList)) === 0) {
+            if (($num = count($fdList)) === 0) {
                 break;
             }
 
@@ -279,7 +286,7 @@ class WebSocketServer extends Server
             }
 
             // Get start fd for next page.
-            $startFd = \end($fdList);
+            $startFd = end($fdList);
         }
 
         return $count;
@@ -320,6 +327,6 @@ class WebSocketServer extends Server
      */
     public function count(): int
     {
-        return \count($this->swooleServer->connections);
+        return count($this->swooleServer->connections);
     }
 }

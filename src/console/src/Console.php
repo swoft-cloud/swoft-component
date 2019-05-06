@@ -248,8 +248,9 @@ class Console
             }
         }
 
+        $jsonFlags  = \JSON_UNESCAPED_SLASHES | \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE;
         $optString  = $userOpts ? ' ' . \implode(' ', $userOpts) : '';
-        $dataString = $data ? \PHP_EOL . \json_encode($data, \JSON_UNESCAPED_SLASHES | \JSON_PRETTY_PRINT) : '';
+        $dataString = $data ? \PHP_EOL . \json_encode($data, $jsonFlags) : '';
 
         self::writef('%s [%s]%s %s %s', \date('Y/m/d H:i:s'), $type, $optString, \trim($msg), $dataString);
     }

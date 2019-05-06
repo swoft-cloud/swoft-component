@@ -2,6 +2,9 @@
 
 namespace Swoft\WebSocket\Server;
 
+use ReflectionException;
+use ReflectionType;
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\Context\Context;
@@ -18,6 +21,7 @@ use Swoft\WebSocket\Server\MessageParser\RawTextParser;
 use Swoft\WebSocket\Server\Router\Router;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
+use Throwable;
 
 /**
  * Class WsMessageDispatcher
@@ -34,7 +38,7 @@ class WsMessageDispatcher
      * @param Server $server
      * @param Frame  $frame
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function dispatch(Server $server, Frame $frame): void
     {
@@ -65,7 +69,7 @@ class WsMessageDispatcher
 
         try {
             $msg = $parser->decode($frame->data);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw new WsMessageParseException("parse message error '{$e->getMessage()}", 500, $e);
         }
 
@@ -76,7 +80,7 @@ class WsMessageDispatcher
         $cmdId = $msg->getCmd() ?: $info['defaultCommand'];
 
         /** @var Router $router */
-        $router = \Swoft::getBean('wsRouter');
+        $router = Swoft::getBean('wsRouter');
 
         [$status, $handler] = $router->matchCommand($info['path'], $cmdId);
         if ($status === Router::NOT_FOUND) {
@@ -109,11 +113,11 @@ class WsMessageDispatcher
      * @param Frame  $frame
      * @param mixed  $data
      * @return array
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     private function getBindParams(string $class, string $method, Frame $frame, $data): array
     {
-        $classInfo = \Swoft::getReflection($class);
+        $classInfo = Swoft::getReflection($class);
         if (!isset($classInfo['methods'][$method])) {
             return [];
         }
@@ -124,7 +128,7 @@ class WsMessageDispatcher
 
         /**
          * @var string          $name
-         * @var \ReflectionType $paramType
+         * @var ReflectionType $paramType
          * @var mixed           $devVal
          */
         foreach ($methodParams as [$name, $paramType, $devVal]) {

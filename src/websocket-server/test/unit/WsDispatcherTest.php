@@ -13,7 +13,7 @@ class WsDispatcherTest extends TestCase
     use CommonTestAssertTrait;
 
     // ------------------------------- unit tests -------------------------------
-    public function test()
+    public function test(): void
     {
 
     }

@@ -34,8 +34,9 @@ final class Config
         if (isset($values['value'])) {
             $this->key = $values['value'];
         }
-        if (isset($values['name'])) {
-            $this->key = $values['name'];
+
+        if (isset($values['key'])) {
+            $this->key = $values['key'];
         }
     }
 

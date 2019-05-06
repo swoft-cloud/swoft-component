@@ -2,7 +2,9 @@
 
 namespace Swoft\WebSocket\Server;
 
+use function microtime;
 use Psr\Http\Message\ServerRequestInterface;
+use function server;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Concern\DataPropertyTrait;
@@ -11,6 +13,7 @@ use Swoft\Http\Message\Response;
 use Swoft\Session\SessionInterface;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\Router\Router;
+use const WEBSOCKET_OPCODE_TEXT;
 
 /**
  * Class Connection
@@ -61,6 +64,8 @@ class Connection implements SessionInterface
      * @param Response $response
      *
      * @return Connection
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public static function new(int $fd, Request $request, Response $response): self
     {
@@ -85,9 +90,9 @@ class Connection implements SessionInterface
      */
     private function buildMetadata(int $fd, string $path): void
     {
-        $info = \server()->getClientInfo($fd);
+        $info = server()->getClientInfo($fd);
 
-        \server()->log("Handshake: conn#{$fd} send handshake request to {$path}, client info: ", $info, 'debug');
+        server()->log("Handshake: conn#{$fd} send handshake request to {$path}, client info: ", $info, 'debug');
 
         $this->set(self::METADATA_KEY, [
             'fd'            => $fd,
@@ -95,7 +100,7 @@ class Connection implements SessionInterface
             'port'          => $info['remote_port'],
             'path'          => $path,
             'connectTime'   => $info['connect_time'],
-            'handshakeTime' => \microtime(true),
+            'handshakeTime' => microtime(true),
         ]);
     }
 
@@ -106,9 +111,9 @@ class Connection implements SessionInterface
      *
      * @return bool
      */
-    public function push(string $data, int $opcode = \WEBSOCKET_OPCODE_TEXT, bool $finish = true): bool
+    public function push(string $data, int $opcode = WEBSOCKET_OPCODE_TEXT, bool $finish = true): bool
     {
-        return \server()->push($this->fd, $data, $opcode, $finish);
+        return server()->push($this->fd, $data, $opcode, $finish);
     }
 
     /**

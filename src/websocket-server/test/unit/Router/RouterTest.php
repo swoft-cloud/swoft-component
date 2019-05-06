@@ -2,7 +2,10 @@
 
 namespace SwoftTest\WebSocket\Server\Unit\Router;
 
+use function bean;
 use PHPUnit\Framework\TestCase;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Test\Concern\CommonTestAssertTrait;
 use Swoft\WebSocket\Server\Router\Router;
 
@@ -16,13 +19,13 @@ class RouterTest extends TestCase
     use CommonTestAssertTrait;
 
     /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function testRouter(): void
     {
         /** @var Router $router */
-        $router = \bean('wsRouter');
+        $router = bean('wsRouter');
 
         $this->assertFalse($router->isEnableDynamicRoute());
         $this->assertTrue($router->hasModule('/ws-test/chat'));
@@ -34,13 +37,13 @@ class RouterTest extends TestCase
     }
 
     /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function testAddModule(): void
     {
         /** @var Router $router */
-        $router = \bean('wsRouter');
+        $router = bean('wsRouter');
 
         $this->assertFalse($router->hasModule('/new-test'));
         // add new module

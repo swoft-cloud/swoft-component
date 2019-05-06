@@ -2,11 +2,14 @@
 
 namespace Swoft\WebSocket\Server\Exception;
 
+use RuntimeException;
+
 /**
  * Class WsServerException
+ *
  * @since 2.0
  */
-class WsServerException extends \RuntimeException
+class WsServerException extends RuntimeException
 {
     /**
      * @param string $message

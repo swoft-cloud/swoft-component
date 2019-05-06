@@ -2,10 +2,13 @@
 
 namespace Swoft\WebSocket\Server\Message;
 
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\WebSocket\Server\Contract\ResponseInterface;
 use Swoft\WebSocket\Server\WebSocketServer;
+use const WEBSOCKET_OPCODE_TEXT;
 
 /**
  * Class Response
@@ -67,14 +70,14 @@ class Response implements ResponseInterface
      *          ping:   WEBSOCKET_OPCODE_PING   = 9
      *          pong:   WEBSOCKET_OPCODE_PONG   = 10
      */
-    private $opcode = \WEBSOCKET_OPCODE_TEXT;
+    private $opcode = WEBSOCKET_OPCODE_TEXT;
 
     /**
      * @param int $sender
      *
      * @return Response
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function new(int $sender = -1): self
     {

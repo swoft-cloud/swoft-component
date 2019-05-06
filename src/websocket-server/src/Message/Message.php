@@ -2,8 +2,12 @@
 
 namespace Swoft\WebSocket\Server\Message;
 
+use function is_scalar;
+use JsonSerializable;
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\JsonHelper;
 
 /**
@@ -12,7 +16,7 @@ use Swoft\Stdlib\Helper\JsonHelper;
  * @since 2.0
  * @Bean(scope=Bean::PROTOTYPE)
  */
-class Message implements \JsonSerializable
+class Message implements JsonSerializable
 {
     use PrototypeTrait;
 
@@ -35,8 +39,8 @@ class Message implements \JsonSerializable
      * @param mixed  $data
      *
      * @return Message
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function new(string $cmd, $data): self
     {
@@ -66,7 +70,7 @@ class Message implements \JsonSerializable
      */
     public function toString(): string
     {
-        if (\is_scalar($this->data)) {
+        if (is_scalar($this->data)) {
             return (string)$this->data;
         }
 

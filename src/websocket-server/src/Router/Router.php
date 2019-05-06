@@ -2,9 +2,16 @@
 
 namespace Swoft\WebSocket\Server\Router;
 
+use function array_shift;
+use function count;
+use function preg_match;
+use function preg_match_all;
+use function strpos;
+use function strtr;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Contract\RouterInterface;
 use Swoft\WebSocket\Server\Helper\WsHelper;
+use function trim;
 
 /**
  * Class Router
@@ -74,7 +81,7 @@ class Router implements RouterInterface
         $info['path'] = $path;
 
         // Exist path var. eg: "/users/{id}"
-        if (!$this->enableDynamicRoute || \strpos($path, '{') === false) {
+        if (!$this->enableDynamicRoute || strpos($path, '{') === false) {
             $info['regex'] = '';
 
             // Add module
@@ -84,7 +91,7 @@ class Router implements RouterInterface
         $params = $info['params'] ?? [];
 
         // Parse the parameters and replace them with the corresponding regular
-        if (\preg_match_all('#\{([a-zA-Z_][\w-]*)\}#', $path, $m)) {
+        if (preg_match_all('#\{([a-zA-Z_][\w-]*)\}#', $path, $m)) {
             /** @var array[] $m */
             $pairs = [];
 
@@ -95,7 +102,7 @@ class Router implements RouterInterface
             }
 
             $info['vars']  = $m[1];
-            $info['regex'] = \strtr($path, $pairs);
+            $info['regex'] = strtr($path, $pairs);
         }
 
         // Add module
@@ -142,12 +149,12 @@ class Router implements RouterInterface
             }
 
             // Regex match
-            if (\preg_match($pathRegex, $path, $matches)) {
+            if (preg_match($pathRegex, $path, $matches)) {
                 $params   = [];
                 $pathVars = $module['vars'];
 
                 // First is full match.
-                \array_shift($matches);
+                array_shift($matches);
                 foreach ($matches as $index => $value) {
                     $params[$pathVars[$index]] = $value;
                 }
@@ -177,7 +184,7 @@ class Router implements RouterInterface
             return [self::NOT_FOUND, null];
         }
 
-        $route = \trim($route) ?: $this->modules[$path]['defaultCommand'];
+        $route = trim($route) ?: $this->modules[$path]['defaultCommand'];
 
         if (isset($this->commands[$path][$route])) {
             return [self::FOUND, $this->commands[$path][$route]];
@@ -217,7 +224,7 @@ class Router implements RouterInterface
      */
     public function getModuleCount(): int
     {
-        return \count($this->modules);
+        return count($this->modules);
     }
 
     /**

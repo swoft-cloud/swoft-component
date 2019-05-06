@@ -4,7 +4,6 @@ namespace Swoft\Http\Message;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Container;
 use Swoft\Http\Message\Concern\MessageTrait;
 use Swoft\Http\Message\Contract\ResponseFormatterInterface;
 use Swoft\Http\Message\Contract\ResponseInterface;
@@ -389,10 +388,10 @@ class Response implements ResponseInterface
     /**
      * Return an instance with the specified charset content type.
      *
-     * @param $charset
+     * @param string $type
+     * @param string $charset
      *
      * @return static|self
-     * @throws \InvalidArgumentException
      */
     public function withContentType(string $type, string $charset = ''): self
     {
@@ -435,5 +434,110 @@ class Response implements ResponseInterface
     public function setCharset(string $charset): void
     {
         $this->charset = $charset;
+    }
+
+    /*******************************************************************************
+     * Status check
+     ******************************************************************************/
+
+    /**
+     * Is this response empty?
+     * Note: This method is not part of the PSR-7 standard.
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return \in_array($this->getStatusCode(), [204, 205, 304], true);
+    }
+
+    /**
+     * Is this response informational?
+     * Note: This method is not part of the PSR-7 standard.
+     * @return bool
+     */
+    public function isInformational(): bool
+    {
+        return $this->getStatusCode() >= 100 && $this->getStatusCode() < 200;
+    }
+
+    /**
+     * Is this response OK?
+     * Note: This method is not part of the PSR-7 standard.
+     * @return bool
+     */
+    public function isOk(): bool
+    {
+        return $this->getStatusCode() === 200;
+    }
+
+    /**
+     * Is this response successful?
+     * Note: This method is not part of the PSR-7 standard.
+     * @return bool
+     */
+    public function isSuccessful(): bool
+    {
+        return $this->getStatusCode() >= 200 && $this->getStatusCode() < 300;
+    }
+
+    /**
+     * Is this response a redirect?
+     * Note: This method is not part of the PSR-7 standard.
+     * @return bool
+     */
+    public function isRedirect(): bool
+    {
+        return \in_array($this->getStatusCode(), [301, 302, 303, 307], true);
+    }
+
+    /**
+     * Is this response a redirection?
+     * Note: This method is not part of the PSR-7 standard.
+     * @return bool
+     */
+    public function isRedirection(): bool
+    {
+        return $this->getStatusCode() >= 300 && $this->getStatusCode() < 400;
+    }
+
+    /**
+     * Is this response forbidden?
+     * Note: This method is not part of the PSR-7 standard.
+     * @return bool
+     * @api
+     */
+    public function isForbidden(): bool
+    {
+        return $this->getStatusCode() === 403;
+    }
+
+    /**
+     * Is this response not Found?
+     * Note: This method is not part of the PSR-7 standard.
+     * @return bool
+     */
+    public function isNotFound(): bool
+    {
+        return $this->getStatusCode() === 404;
+    }
+
+    /**
+     * Is this response a client error?
+     * Note: This method is not part of the PSR-7 standard.
+     * @return bool
+     */
+    public function isClientError(): bool
+    {
+        return $this->getStatusCode() >= 400 && $this->getStatusCode() < 500;
+    }
+
+    /**
+     * Is this response a server error?
+     * Note: This method is not part of the PSR-7 standard.
+     * @return bool
+     */
+    public function isServerError(): bool
+    {
+        return $this->getStatusCode() >= 500 && $this->getStatusCode() < 600;
     }
 }

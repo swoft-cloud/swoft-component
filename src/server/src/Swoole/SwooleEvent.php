@@ -17,7 +17,7 @@ final class SwooleEvent
     /**
      * Shutdown
      */
-    public const SHUTDOWN = 'shutDown';
+    public const SHUTDOWN = 'shutdown';
 
     /**
      * WorkerStart
