@@ -2,8 +2,11 @@
 
 namespace Swoft\WebSocket\Server;
 
+use InvalidArgumentException;
+use function sprintf;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\Session\Session;
@@ -11,6 +14,7 @@ use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\Exception\WsModuleRouteException;
 use Swoft\WebSocket\Server\Router\Router;
 use Swoole\WebSocket\Server;
+use Throwable;
 
 /**
  * Class WsDispatcher
@@ -27,9 +31,9 @@ class WsDispatcher
      * @param Response $response
      *
      * @return array eg. [status, response]
-     * @throws \Swoft\WebSocket\Server\Exception\WsModuleRouteException
-     * @throws \InvalidArgumentException
-     * @throws \Throwable
+     * @throws WsModuleRouteException
+     * @throws InvalidArgumentException
+     * @throws Throwable
      */
     public function handshake(Request $request, Response $response): array
     {
@@ -41,7 +45,7 @@ class WsDispatcher
         $path = $request->getUriPath();
 
         if (!$info = $router->match($path)) {
-            throw new WsModuleRouteException(\sprintf(
+            throw new WsModuleRouteException(sprintf(
                 'The requested websocket route path "%s" is not exist!',
                 $path
             ));
@@ -70,7 +74,7 @@ class WsDispatcher
      * @param Server $server
      * @param int    $fd
      *
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ContainerException
      */
     public function close(Server $server, int $fd): void
     {

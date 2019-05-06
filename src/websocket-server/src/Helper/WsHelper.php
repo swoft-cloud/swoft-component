@@ -2,8 +2,14 @@
 
 namespace Swoft\WebSocket\Server\Helper;
 
+use function base64_decode;
+use function base64_encode;
+use function preg_match;
+use function sha1;
+use function strlen;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
+use function trim;
 
 /**
  * Class WsHelper
@@ -37,7 +43,7 @@ class WsHelper
      */
     public static function genSign(string $key): string
     {
-        return \base64_encode(\sha1(\trim($key) . self::SIGN_KEY, true));
+        return base64_encode(sha1(trim($key) . self::SIGN_KEY, true));
     }
 
     /**
@@ -47,8 +53,8 @@ class WsHelper
      */
     public static function isInvalidSecKey(string $secWSKey): bool
     {
-        return 0 === \preg_match(self::KEY_PATTEN, $secWSKey)
-            || 16 !== \strlen(\base64_decode($secWSKey));
+        return 0 === preg_match(self::KEY_PATTEN, $secWSKey)
+            || 16 !== strlen(base64_decode($secWSKey));
     }
 
     /**
@@ -107,7 +113,7 @@ class WsHelper
      */
     public static function formatPath(string $path): string
     {
-        $path = '/' . \trim($path, '/ ');
+        $path = '/' . trim($path, '/ ');
 
         return $path ?: '/';
     }

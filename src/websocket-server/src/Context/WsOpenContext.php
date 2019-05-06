@@ -23,7 +23,10 @@ class WsOpenContext extends AbstractContext
 
     /**
      * @param Request $request
+     *
      * @return WsOpenContext
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public static function new(Request $request): self
     {

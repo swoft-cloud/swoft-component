@@ -2,6 +2,7 @@
 
 namespace Swoft\WebSocket\Server\Swoole;
 
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\Context\Context;
@@ -16,6 +17,7 @@ use Swoft\WebSocket\Server\WsMessageDispatcher;
 use Swoft\WebSocket\Server\WsServerEvent;
 use Swoole\Websocket\Frame;
 use Swoole\Websocket\Server;
+use Throwable;
 
 /**
  * Class MessageListener
@@ -30,7 +32,7 @@ class MessageListener implements MessageInterface
      * @param Server $server
      * @param Frame  $frame
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function onMessage(Server $server, Frame $frame): void
     {
@@ -52,14 +54,14 @@ class MessageListener implements MessageInterface
 
         try {
             \server()->log("Message: conn#{$fd} received message: {$frame->data}", [], 'debug');
-            \Swoft::trigger(WsServerEvent::MESSAGE_BEFORE, $fd, $server, $frame);
+            Swoft::trigger(WsServerEvent::MESSAGE_BEFORE, $fd, $server, $frame);
 
             // Parse and dispatch message
             $dispatcher->dispatch($server, $frame);
 
-            \Swoft::trigger(WsServerEvent::MESSAGE_AFTER, $fd, $server, $frame);
-        } catch (\Throwable $e) {
-            \Swoft::trigger(WsServerEvent::HANDSHAKE_ERROR, $e, $frame);
+            Swoft::trigger(WsServerEvent::MESSAGE_AFTER, $fd, $server, $frame);
+        } catch (Throwable $e) {
+            Swoft::trigger(WsServerEvent::HANDSHAKE_ERROR, $e, $frame);
 
             \server()->log("Message: conn#{$fd} error: " . $e->getMessage(), [], 'error');
 
@@ -68,10 +70,10 @@ class MessageListener implements MessageInterface
             $errDispatcher->messageError($e, $frame);
         } finally {
             // Defer
-            \Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
+            Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
 
             // Destroy
-            \Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
+            Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
 
             // Unbind cid => sid(fd)
             Session::unbindCo();

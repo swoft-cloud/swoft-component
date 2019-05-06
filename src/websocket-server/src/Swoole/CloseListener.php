@@ -2,6 +2,7 @@
 
 namespace Swoft\WebSocket\Server\Swoole;
 
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\Context\Context;
@@ -14,6 +15,7 @@ use Swoft\WebSocket\Server\WsDispatcher;
 use Swoft\WebSocket\Server\WsErrorDispatcher;
 use Swoft\WebSocket\Server\WsServerEvent;
 use Swoole\Server;
+use Throwable;
 
 /**
  * Class CloseListener
@@ -29,7 +31,7 @@ class CloseListener implements CloseInterface
      * @param Server|\Swoole\WebSocket\Server $server
      * @param int                             $fd
      * @param int                             $reactorId
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function onClose(Server $server, int $fd, int $reactorId): void
     {
@@ -67,23 +69,23 @@ class CloseListener implements CloseInterface
             }
 
             // Call on close callback
-            \Swoft::trigger(WsServerEvent::AFTER_CLOSE, $fd, $server);
-        } catch (\Throwable $e) {
+            Swoft::trigger(WsServerEvent::AFTER_CLOSE, $fd, $server);
+        } catch (Throwable $e) {
             \server()->log("Close: conn#{$fd} error on handle close, ERR: " . $e->getMessage(), [], 'error');
-            \Swoft::trigger(WsServerEvent::CLOSE_ERROR, $e, $fd);
+            Swoft::trigger(WsServerEvent::CLOSE_ERROR, $e, $fd);
 
             /** @var WsErrorDispatcher $errDispatcher */
             $errDispatcher = BeanFactory::getSingleton(WsErrorDispatcher::class);
             $errDispatcher->closeError($e, $fd);
         } finally {
             // Defer
-            \Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
+            Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
 
             // Destroy
-            \Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
+            Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
 
             // Remove connection
-            \Swoft::trigger(SwoftEvent::SESSION_COMPLETE, $sid);
+            Swoft::trigger(SwoftEvent::SESSION_COMPLETE, $sid);
 
             // Unbind cid => sid(fd)
             Session::unbindCo();

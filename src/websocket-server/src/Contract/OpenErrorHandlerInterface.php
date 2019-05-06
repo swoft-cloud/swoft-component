@@ -4,6 +4,7 @@ namespace Swoft\WebSocket\Server\Contract;
 
 use Swoft\Error\Contract\ErrorHandlerInterface;
 use Swoft\Http\Message\Request;
+use Throwable;
 
 /**
  * Interface OpenErrorHandlerInterface
@@ -12,9 +13,9 @@ use Swoft\Http\Message\Request;
 interface OpenErrorHandlerInterface extends ErrorHandlerInterface
 {
     /**
-     * @param \Throwable $e
+     * @param Throwable $e
      * @param Request    $request
      * @return void
      */
-    public function handle(\Throwable $e, Request $request): void;
+    public function handle(Throwable $e, Request $request): void;
 }
