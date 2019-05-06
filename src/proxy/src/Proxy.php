@@ -9,6 +9,8 @@ use Swoft\Proxy\Ast\Visitor\Visitor;
 use Swoft\Proxy\Contract\VisitorInterface;
 use Swoft\Proxy\Exception\ProxyException;
 use Swoft\Stdlib\Helper\Sys;
+use SwoftTest\Validator\Testing\ValidateUser;
+use SwoftTest\Validator\Testing\Validator\UserValidator;
 
 class Proxy
 {

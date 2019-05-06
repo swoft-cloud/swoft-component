@@ -3,7 +3,11 @@
 
 namespace Swoft\Validator;
 
+use ReflectionException;
+use function sprintf;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Validator\Annotation\Mapping\IsArray;
 use Swoft\Validator\Annotation\Mapping\IsBool;
 use Swoft\Validator\Annotation\Mapping\Email;
@@ -20,6 +24,7 @@ use Swoft\Validator\Annotation\Mapping\Pattern;
 use Swoft\Validator\Annotation\Mapping\Range;
 use Swoft\Validator\Annotation\Mapping\IsString;
 use Swoft\Validator\Concern\ValidateItemTrait;
+use Swoft\Validator\Contract\ValidatorInterface;
 use Swoft\Validator\Exception\ValidatorException;
 
 /**
@@ -40,22 +45,25 @@ class Validator
      *
      * @return array
      * @throws ValidatorException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
-    public static function validate(array &$data, string $className, string $method): array
+    public static function validate(array $data, string $className, string $method): array
     {
         $validates = ValidateRegister::getValidates($className, $method);
         if (empty($validates)) {
             return $data;
         }
-
         foreach ($validates as $validateName => $validate) {
             $validator = ValidatorRegister::getValidator($validateName);
+
             $type      = $validator['type'];
             $fields    = $validate['fields'] ?? [];
+            $params    = $validate['params'] ?? [];
 
             // User validator
             if ($type == ValidatorRegister::TYPE_USER) {
-
+                self::validateUserValidator($validateName, $data, $params);
                 continue;
             }
 
@@ -166,5 +174,34 @@ class Validator
         }
 
         return $result;
+    }
+
+    /**
+     * @param string $validateName
+     * @param array  $data
+     * @param array  $params
+     *
+     * @throws ValidatorException
+     * @throws ReflectionException
+     * @throws ContainerException
+     */
+    protected static function validateUserValidator(string $validateName, array &$data, array $params): void
+    {
+        $validator = BeanFactory::getBean($validateName);
+        if (!$validator instanceof ValidatorInterface) {
+            throw new ValidatorException(
+                sprintf('User validator(%s) must instance of ValidatorInterface', $validateName)
+            );
+        }
+
+        $result = $validator->validate($data, $params);
+
+        if ($result) {
+            return;
+        }
+
+        throw new ValidatorException(
+            sprintf('User validator(%s) must invalid!', $validateName)
+        );
     }
 }

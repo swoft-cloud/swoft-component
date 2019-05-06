@@ -12,11 +12,9 @@ interface ValidatorInterface
 {
     /**
      * @param array  $data
-     * @param array  $fields
      * @param array  $params
-     * @param string $message
      *
      * @return bool
      */
-    public function validate(array $data, array $fields, array $params, string $message): bool;
+    public function validate(array &$data, array $params): bool;
 }

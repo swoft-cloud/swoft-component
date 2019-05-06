@@ -88,7 +88,7 @@ class ValidatorRegister
     public static function registerValidator(string $className, string $validatorName): void
     {
         $reflectClass = new ReflectionClass($className);
-        $interfaces   = $reflectClass->getInterfaces();
+        $interfaces   = $reflectClass->getInterfaceNames();
 
         $type = self::TYPE_DEFAULT;
         if (in_array(ValidatorInterface::class, $interfaces)) {
