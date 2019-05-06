@@ -1,31 +1,35 @@
 <?php declare(strict_types=1);
 
+use Swoft\Console\Input\Input;
+use Swoft\Console\Output\Output;
+use Swoft\Console\Style\Style;
+
 if (!function_exists('input')) {
     /**
-     * @return \Swoft\Console\Input\Input
+     * @return Input
      */
-    function input(): \Swoft\Console\Input\Input
+    function input(): Input
     {
-        return \Swoft::getSingleton(\Swoft\Console\Input\Input::class);
+        return Swoft::getSingleton(Input::class);
     }
 }
 
 if (!function_exists('output')) {
     /**
-     * @return \Swoft\Console\Output\Output
+     * @return Output
      */
-    function output(): \Swoft\Console\Output\Output
+    function output(): Output
     {
-        return \Swoft::getSingleton(\Swoft\Console\Output\Output::class);
+        return Swoft::getSingleton(Output::class);
     }
 }
 
 if (!function_exists('style')) {
     /**
-     * @return \Swoft\Console\Style\Style
+     * @return Style
      */
-    function style(): \Swoft\Console\Style\Style
+    function style(): Style
     {
-        return \Swoft::getSingleton(\Swoft\Console\Style\Style::class);
+        return Swoft::getSingleton(Style::class);
     }
 }

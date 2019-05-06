@@ -2,6 +2,22 @@
 
 namespace Swoft\Console\Concern;
 
+use function implode;
+use function input;
+use function is_array;
+use function is_bool;
+use function is_scalar;
+use function ksort;
+use function ltrim;
+use const PHP_EOL;
+use const PHP_VERSION;
+use ReflectionException;
+use function sort;
+use function sprintf;
+use function strlen;
+use function strpos;
+use Swoft;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Console\Console;
 use Swoft\Console\Helper\FormatUtil;
 use Swoft\Console\Helper\Show;
@@ -9,6 +25,8 @@ use Swoft\Console\Output\Output;
 use Swoft\Console\Router\Router;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\Str;
+use const SWOOLE_VERSION;
+use function trim;
 
 /**
  * Trait RenderHelpInfoTrait
@@ -30,12 +48,12 @@ trait RenderHelpInfoTrait
         $output->writef('%s%s', $appDesc, $appVer ? " (Version: <info>$appVer</info>)" : '');
 
         // Version information
-        $phpVersion    = \PHP_VERSION;
-        $swoftVersion  = \Swoft::VERSION;
-        $swooleVersion = \SWOOLE_VERSION;
+        $phpVersion    = PHP_VERSION;
+        $swoftVersion  = Swoft::VERSION;
+        $swooleVersion = SWOOLE_VERSION;
 
         // Display logo
-        $output->colored('  ' . \ltrim(\Swoft::FONT_LOGO));
+        $output->colored('  ' . ltrim(Swoft::FONT_LOGO));
 
         // Display some information
         $output->writef(
@@ -48,17 +66,17 @@ trait RenderHelpInfoTrait
      * Display command list of the application
      *
      * @param bool $showLogo
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     protected function showApplicationHelp(bool $showLogo = true): void
     {
         // show logo
         if ($showLogo) {
-            Console::colored(\Swoft::FONT_LOGO, 'cyan');
+            Console::colored(Swoft::FONT_LOGO, 'cyan');
         }
 
-        $script = \input()->getScriptName();
+        $script = input()->getScriptName();
         // Global options
         $globalOptions = self::$globalOptions;
         // Append expand option
@@ -68,7 +86,7 @@ trait RenderHelpInfoTrait
         $appDesc = $this->getDescription();
 
         Console::startBuffer();
-        Console::writeln(\sprintf("%s%s\n", $appDesc, $appVer ? " (Version: <info>$appVer</info>)" : ''));
+        Console::writeln(sprintf("%s%s\n", $appDesc, $appVer ? " (Version: <info>$appVer</info>)" : ''));
 
         Show::mList([
             'Usage:'   => "$script <info>COMMAND</info> [arg0 arg1 arg2 ...] [--opt -v -h ...]",
@@ -78,8 +96,8 @@ trait RenderHelpInfoTrait
         ]);
 
         /* @var Router $router */
-        $router   = \Swoft::getBean('cliRouter');
-        $expand   = \input()->getBoolOpt('expand');
+        $router   = Swoft::getBean('cliRouter');
+        $expand   = input()->getBoolOpt('expand');
         $keyWidth = $router->getKeyWidth($expand ? 2 : -4);
 
         Console::writeln('<comment>Available Commands:</comment>');
@@ -113,14 +131,14 @@ trait RenderHelpInfoTrait
      *
      * @param string $group Group name
      * @param array  $info Some base info of the group
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     protected function showGroupHelp(string $group, array $info = []): void
     {
         /* @var Router $router */
-        $router = \Swoft::getBean('cliRouter');
-        $script = \input()->getScriptName();
+        $router = Swoft::getBean('cliRouter');
+        $script = input()->getScriptName();
 
         if (!$info) {
             $info = $router->getGroupInfo($group);
@@ -128,12 +146,12 @@ trait RenderHelpInfoTrait
 
         // $class = $groupInfo['class'];
         $names = $info['names'];
-        \sort($names);
+        sort($names);
         $keyWidth  = $router->getKeyWidth(-4);
-        $groupName = \sprintf('%s%s', $group, $info['alias'] ? " (alias: <cyan>{$info['alias']}</cyan>)" : '');
+        $groupName = sprintf('%s%s', $group, $info['alias'] ? " (alias: <cyan>{$info['alias']}</cyan>)" : '');
 
         Console::startBuffer();
-        Console::writeln($info['desc'] . \PHP_EOL);
+        Console::writeln($info['desc'] . PHP_EOL);
         Console::writeln("<comment>Group:</comment> $groupName");
 
         Show::mList([
@@ -172,12 +190,12 @@ trait RenderHelpInfoTrait
      */
     protected function showCommandHelp(array $info): void
     {
-        $script = \input()->getScriptName();
+        $script = input()->getScriptName();
 
         Console::startBuffer();
-        Console::writeln($info['desc'] . \PHP_EOL);
+        Console::writeln($info['desc'] . PHP_EOL);
         Show::mList([
-            'Usage:'          => \sprintf('%s %s [arg ...] [--opt ...]', $script, $info['cmdId']),
+            'Usage:'          => sprintf('%s %s [arg ...] [--opt ...]', $script, $info['cmdId']),
             'Global Options:' => FormatUtil::alignOptions(self::$globalOptions),
         ], [
             'sepChar' => '   ',
@@ -202,7 +220,7 @@ trait RenderHelpInfoTrait
 
         // Command options
         if ($options = $info['options']) {
-            \ksort($options);
+            ksort($options);
             Console::writeln('<comment>Options:</comment>');
 
             $maxLen   = 0;
@@ -210,13 +228,13 @@ trait RenderHelpInfoTrait
             $hasShort = false;
 
             foreach ($options as $name => $meta) {
-                if (($len = \strlen($name)) === 0) {
+                if (($len = strlen($name)) === 0) {
                     continue;
                 }
 
                 $typeName = $meta['type'] === 'BOOL' ? '' : $meta['type'];
                 if ($len === 1) {
-                    $key = \sprintf('-<info>%s</info> %s', $name, $typeName);
+                    $key = sprintf('-<info>%s</info> %s', $name, $typeName);
                 } else {
                     $shortMark = '';
                     if ($meta['short']) {
@@ -224,10 +242,10 @@ trait RenderHelpInfoTrait
                         $shortMark = '-' . $meta['short'] . ', ';
                     }
 
-                    $key = \sprintf('<info>%s--%s</info> %s', $shortMark, $name, $typeName);
+                    $key = sprintf('<info>%s--%s</info> %s', $shortMark, $name, $typeName);
                 }
 
-                $kenLen = \strlen($key);
+                $kenLen = strlen($key);
                 if ($kenLen > $maxLen) {
                     $maxLen = $kenLen;
                 }
@@ -239,7 +257,7 @@ trait RenderHelpInfoTrait
 
             // Render options
             foreach ($newOpts as $key => $meta) {
-                if ($hasShort && false === \strpos($key, ',')) { // has short and key is long
+                if ($hasShort && false === strpos($key, ',')) { // has short and key is long
                     $key = '    ' . $key;
                 }
 
@@ -252,7 +270,7 @@ trait RenderHelpInfoTrait
             }
         }
 
-        if ($example = \trim($info['example'] ?? '', "* \n")) {
+        if ($example = trim($info['example'] ?? '', "* \n")) {
             $vars = $this->getCommentsVars();
             Console::writef("\n<comment>Example:</comment>\n  %s", $this->parseCommentsVars($example, $vars));
         }
@@ -272,12 +290,12 @@ trait RenderHelpInfoTrait
 
         $text = ' (defaults: <mga>';
 
-        if (\is_bool($defVal)) {
+        if (is_bool($defVal)) {
             $text .= $defVal ? 'True' : 'False';
-        } elseif (\is_scalar($defVal)) {
+        } elseif (is_scalar($defVal)) {
             $text .=  $defVal;
-        } elseif (\is_array($defVal)) {
-            $text .=  \implode(', ', $defVal);
+        } elseif (is_array($defVal)) {
+            $text .=  implode(', ', $defVal);
         } else {
             $text .= $defVal;
         }

@@ -2,6 +2,11 @@
 
 namespace Swoft\Console\Helper;
 
+use Closure;
+use RuntimeException;
+use function sprintf;
+use const STDIN;
+use function strtolower;
 use Swoft\Console\Advanced\Interact\Checkbox;
 use Swoft\Console\Advanced\Interact\Choose;
 use Swoft\Console\Advanced\Interact\Confirm;
@@ -9,6 +14,7 @@ use Swoft\Console\Advanced\Interact\LimitedAsk;
 use Swoft\Console\Advanced\Interact\Password;
 use Swoft\Console\Advanced\Interact\Question;
 use Swoft\Console\Console;
+use function trim;
 
 /**
  * Class Interact
@@ -32,9 +38,9 @@ class Interact extends Show
             self::write($message, $nl);
         }
 
-        $stream = $opts['stream'] ?? \STDIN;
+        $stream = $opts['stream'] ?? STDIN;
 
-        return \trim(fgets($stream));
+        return trim(fgets($stream));
     }
 
     /**
@@ -166,11 +172,11 @@ class Interact extends Show
 
         if ($default !== null) {
             $defMsg = $default ? 'yes' : 'no';
-            $mark   = \sprintf(' [yes|no](default <cyan>%s</cyan>): ', $defMsg);
+            $mark   = sprintf(' [yes|no](default <cyan>%s</cyan>): ', $defMsg);
         }
 
         if ($answer = Console::readFirst($mark)) {
-            $answer = \strtolower($answer);
+            $answer = strtolower($answer);
 
             if ($answer === 'y') {
                 return true;
@@ -191,10 +197,10 @@ class Interact extends Show
      * alias of the `question()`
      * @param string   $question question message
      * @param string   $default default value
-     * @param \Closure $validator The validate callback. It must return bool.
+     * @param Closure $validator The validate callback. It must return bool.
      * @return string|null
      */
-    public static function ask(string $question, string $default = '', \Closure $validator = null): ?string
+    public static function ask(string $question, string $default = '', Closure $validator = null): ?string
     {
         return self::question($question, $default, $validator);
     }
@@ -204,10 +210,10 @@ class Interact extends Show
      * @see Question::ask()
      * @param string        $question
      * @param string        $default
-     * @param \Closure|null $validator Validator, must return bool.
+     * @param Closure|null $validator Validator, must return bool.
      * @return string
      */
-    public static function question(string $question, string $default = '', \Closure $validator = null): string
+    public static function question(string $question, string $default = '', Closure $validator = null): string
     {
         return Question::ask($question, $default, $validator);
     }
@@ -217,14 +223,14 @@ class Interact extends Show
      * @see LimitedAsk::ask()
      * @param string   $question 问题
      * @param string   $default 默认值
-     * @param \Closure $validator (默认验证输入是否为空)自定义回调验证输入是否符合要求; 验证成功返回true 否则 可返回错误消息
+     * @param Closure $validator (默认验证输入是否为空)自定义回调验证输入是否符合要求; 验证成功返回true 否则 可返回错误消息
      * @param int      $times Allow input times
      * @return string
      */
     public static function limitedAsk(
         string $question,
         string $default = '',
-        \Closure $validator = null,
+        Closure $validator = null,
         int $times = 3
     ): string {
         return LimitedAsk::ask($question, $default, $validator, $times);
@@ -242,7 +248,7 @@ class Interact extends Show
      * @return string
      * @link https://stackoverflow.com/questions/187736/command-line-password-prompt-in-php
      * @link http://www.sitepoint.com/blogs/2009/05/01/interactive-cli-password-prompt-in-php
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public static function promptSilent(string $prompt = 'Enter Password:'): string
     {
@@ -253,7 +259,7 @@ class Interact extends Show
      * alias of the method `promptSilent()`
      * @param string $prompt
      * @return string
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public static function askHiddenInput(string $prompt = 'Enter Password:'): string
     {
@@ -264,7 +270,7 @@ class Interact extends Show
      * alias of the method `promptSilent()`
      * @param string $prompt
      * @return string
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public static function askPassword(string $prompt = 'Enter Password:'): string
     {

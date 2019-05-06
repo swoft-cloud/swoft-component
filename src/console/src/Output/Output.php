@@ -2,6 +2,8 @@
 
 namespace Swoft\Console\Output;
 
+use const STDERR;
+use const STDOUT;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Console\Concern\FormatOutputAwareTrait;
 use Swoft\Console\Console;
@@ -22,13 +24,13 @@ class Output implements OutputInterface
      * 正常输出流
      * Property outStream.
      */
-    protected $outputStream = \STDOUT;
+    protected $outputStream = STDOUT;
 
     /**
      * 错误输出流
      * Property errorStream.
      */
-    protected $errorStream = \STDERR;
+    protected $errorStream = STDERR;
 
     /**
      * 控制台窗口(字体/背景)颜色添加处理

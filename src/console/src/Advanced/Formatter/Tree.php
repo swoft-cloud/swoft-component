@@ -2,6 +2,10 @@
 
 namespace Swoft\Console\Advanced\Formatter;
 
+use function array_merge;
+use function is_array;
+use function is_scalar;
+use function str_pad;
 use Swoft\Console\Advanced\MessageFormatter;
 use Swoft\Console\Console;
 use Swoft\Console\Helper\FormatUtil;
@@ -33,7 +37,7 @@ class Tree extends MessageFormatter
 
         if ($started) {
             $started = 0;
-            $opts    = \array_merge([
+            $opts    = array_merge([
                 // 'char' => Cli::isSupportColor() ? '─' : '-', // ——
                 'char'        => '-',
                 'prefix'      => Cli::isSupportColor() ? '├' : '|',
@@ -47,12 +51,12 @@ class Tree extends MessageFormatter
         }
 
         foreach ($data as $key => $value) {
-            if (\is_scalar($value)) {
+            if (is_scalar($value)) {
                 $counter++;
-                $leftString = $opts['leftPadding'] . \str_pad($opts['prefix'], $opts['_level'] + 1, $opts['char']);
+                $leftString = $opts['leftPadding'] . str_pad($opts['prefix'], $opts['_level'] + 1, $opts['char']);
 
                 Console::write($leftString . ' ' . FormatUtil::typeToString($value));
-            } elseif (\is_array($value)) {
+            } elseif (is_array($value)) {
                 $newOpts             = $opts;
                 $newOpts['_is_main'] = false;
                 $newOpts['_level']++;

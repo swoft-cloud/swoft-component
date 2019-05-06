@@ -2,6 +2,7 @@
 
 namespace Swoft\Console\Advanced\Formatter;
 
+use function implode;
 use Swoft\Console\Advanced\MessageFormatter;
 use Swoft\Console\Console;
 
@@ -50,6 +51,6 @@ class MultiList extends MessageFormatter
             $stringList[] = SingleList::show($list, $title, $opts);
         }
 
-        Console::write(\implode("\n", $stringList), $lastNewline);
+        Console::write(implode("\n", $stringList), $lastNewline);
     }
 }

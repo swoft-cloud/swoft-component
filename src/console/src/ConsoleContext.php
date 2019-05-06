@@ -2,11 +2,14 @@
 
 namespace Swoft\Console;
 
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
 use Swoft\Context\AbstractContext;
+use Throwable;
+use function uniqid;
 
 /**
  * Class ConsoleContext
@@ -18,7 +21,7 @@ class ConsoleContext extends AbstractContext
     use PrototypeTrait;
     /**
      * @return ConsoleContext
-     * @throws \Throwable
+     * @throws Throwable
      */
     public static function new(): self
     {
@@ -27,8 +30,8 @@ class ConsoleContext extends AbstractContext
 
         $ctx->setMulti([
             'parentid' => '',
-            'spanid'   => \uniqid('', false),
-            'traceid'  => \uniqid('', false),
+            'spanid'   => uniqid('', false),
+            'traceid'  => uniqid('', false),
         ]);
 
         return $ctx;
@@ -36,19 +39,19 @@ class ConsoleContext extends AbstractContext
 
     /**
      * @return Input
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function getInput(): Input
     {
-        return \Swoft::getSingleton('input');
+        return Swoft::getSingleton('input');
     }
 
     /**
      * @return Output
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function getOutput(): Output
     {
-        return \Swoft::getSingleton('output');
+        return Swoft::getSingleton('output');
     }
 }

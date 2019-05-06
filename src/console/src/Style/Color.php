@@ -2,10 +2,20 @@
 
 namespace Swoft\Console\Style;
 
+use function array_key_exists;
+use function array_keys;
+use function count;
+use function explode;
+use function implode;
+use InvalidArgumentException;
+use RuntimeException;
+use function str_replace;
+
 /**
  * Class Color
  * - fg unset 39
  * - bg unset 49
+ *
  * @package Swoft\Console\Style
  */
 class Color
@@ -81,7 +91,7 @@ class Color
      * @param array  $options
      * @param bool   $extra
      * @return Color
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function make($fg = '', $bg = '', array $options = [], bool $extra = false): Color
     {
@@ -93,20 +103,20 @@ class Color
      *
      * @param string $string e.g 'fg=white;bg=black;options=bold,underscore;extra=1'
      * @return static
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
     public static function makeByString($string)
     {
         $fg      = $bg = '';
         $extra   = false;
         $options = [];
-        $parts   = \explode(';', \str_replace(' ', '', $string));
+        $parts   = explode(';', str_replace(' ', '', $string));
 
         foreach ($parts as $part) {
-            $subParts = \explode('=', $part);
+            $subParts = explode('=', $part);
 
-            if (\count($subParts) < 2) {
+            if (count($subParts) < 2) {
                 continue;
             }
 
@@ -121,10 +131,10 @@ class Color
                     $extra = (bool)$subParts[1];
                     break;
                 case 'options':
-                    $options = \explode(',', $subParts[1]);
+                    $options = explode(',', $subParts[1]);
                     break;
                 default:
-                    throw new \RuntimeException('Invalid option');
+                    throw new RuntimeException('Invalid option');
                     break;
             }
         }
@@ -138,16 +148,16 @@ class Color
      * @param string $bg Background color.  e.g 'black'
      * @param array  $options Style options. e.g ['bold', 'underscore']
      * @param bool   $extra
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function __construct($fg = '', $bg = '', array $options = [], bool $extra = false)
     {
         if ($fg) {
-            if (false === \array_key_exists($fg, static::$knownColors)) {
-                throw new \InvalidArgumentException(
+            if (false === array_key_exists($fg, static::$knownColors)) {
+                throw new InvalidArgumentException(
                     sprintf('Invalid foreground color "%1$s" [%2$s]',
                         $fg,
-                        \implode(', ', $this->getKnownColors())
+                        implode(', ', $this->getKnownColors())
                     )
                 );
             }
@@ -156,11 +166,11 @@ class Color
         }
 
         if ($bg) {
-            if (false === \array_key_exists($bg, static::$knownColors)) {
-                throw new \InvalidArgumentException(
+            if (false === array_key_exists($bg, static::$knownColors)) {
+                throw new InvalidArgumentException(
                     sprintf('Invalid background color "%1$s" [%2$s]',
                         $bg,
-                        \implode(', ', $this->getKnownColors())
+                        implode(', ', $this->getKnownColors())
                     )
                 );
             }
@@ -169,11 +179,11 @@ class Color
         }
 
         foreach ($options as $option) {
-            if (false === \array_key_exists($option, static::$knownOptions)) {
-                throw new \InvalidArgumentException(
+            if (false === array_key_exists($option, static::$knownOptions)) {
+                throw new InvalidArgumentException(
                     sprintf('Invalid option "%1$s" [%2$s]',
                         $option,
-                        \implode(', ', $this->getKnownOptions())
+                        implode(', ', $this->getKnownOptions())
                     )
                 );
             }
@@ -209,7 +219,7 @@ class Color
             $values[] = static::$knownOptions[$option];
         }
 
-        return \implode(';', $values);
+        return implode(';', $values);
     }
 
     /**
@@ -219,7 +229,7 @@ class Color
      */
     public function getKnownColors(bool $onlyName = true): array
     {
-        return $onlyName ? \array_keys(static::$knownColors) : static::$knownColors;
+        return $onlyName ? array_keys(static::$knownColors) : static::$knownColors;
     }
 
     /**
@@ -229,6 +239,6 @@ class Color
      */
     public function getKnownOptions(bool $onlyName = true): array
     {
-        return $onlyName ? \array_keys(static::$knownOptions) : static::$knownOptions;
+        return $onlyName ? array_keys(static::$knownOptions) : static::$knownOptions;
     }
 }

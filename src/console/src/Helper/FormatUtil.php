@@ -2,9 +2,31 @@
 
 namespace Swoft\Console\Helper;
 
+use function array_keys;
+use function array_merge;
+use function count;
+use function date;
+use function explode;
+use function floor;
+use function gettype;
+use function implode;
+use function is_array;
+use function is_bool;
+use function is_int;
+use function is_numeric;
+use function is_scalar;
+use function rtrim;
+use function sprintf;
+use function str_pad;
+use function str_repeat;
+use function str_replace;
+use function strpos;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\Sys;
 use Toolkit\Cli\ColorTag;
+use function trim;
+use function ucfirst;
+use function wordwrap;
 
 /**
  * Class FormatUtil - refer from inhere/console
@@ -22,7 +44,7 @@ final class FormatUtil
             return '(Null)';
         }
 
-        if (\is_bool($val)) {
+        if (is_bool($val)) {
             return $val ? '(True)' : '(False)';
         }
 
@@ -42,8 +64,8 @@ final class FormatUtil
         }
 
         $new       = '';
-        $list      = \explode("\n", $string);
-        $indentStr = \str_repeat($indentChar ?: ' ', $indent);
+        $list      = explode("\n", $string);
+        $indentStr = str_repeat($indentChar ?: ' ', $indent);
 
         foreach ($list as $value) {
             $new .= $indentStr . trim($value) . "\n";
@@ -89,8 +111,8 @@ final class FormatUtil
             $width = $size[0];
         }
 
-        $pad   = \str_repeat(' ', $indent);
-        $lines = \explode("\n", \wordwrap($text, $width - $indent, "\n", true));
+        $pad   = str_repeat(' ', $indent);
+        $lines = explode("\n", wordwrap($text, $width - $indent, "\n", true));
         $first = true;
 
         foreach ($lines as $i => $line) {
@@ -101,7 +123,7 @@ final class FormatUtil
             $lines[$i] = $pad . $line;
         }
 
-        return $pad . '  ' . \implode("\n", $lines);
+        return $pad . '  ' . implode("\n", $lines);
     }
 
     /**
@@ -110,8 +132,9 @@ final class FormatUtil
      */
     public static function alignOptions(array $options): array
     {
+        $optKeys = array_keys($options);
         // e.g '-h, --help'
-        $hasShort = (bool)\strpos(\implode(\array_keys($options), ''), ',');
+        $hasShort = (bool)strpos(implode('', $optKeys), ',');
 
         if (!$hasShort) {
             return $options;
@@ -119,15 +142,15 @@ final class FormatUtil
 
         $formatted = [];
         foreach ($options as $name => $des) {
-            if (!$name = \trim($name, ', ')) {
+            if (!$name = trim($name, ', ')) {
                 continue;
             }
 
-            if (!\strpos($name, ',')) {
+            if (!strpos($name, ',')) {
                 // padding length equals to '-h, '
                 $name = '    ' . $name;
             } else {
-                $name = \str_replace([' ', ','], ['', ', '], $name);
+                $name = str_replace([' ', ','], ['', ', '], $name);
             }
 
             $formatted[$name] = $des;
@@ -146,18 +169,18 @@ final class FormatUtil
     public static function memoryUsage($memory): string
     {
         if ($memory >= 1024 * 1024 * 1024) {
-            return \sprintf('%.2f Gb', $memory / 1024 / 1024 / 1024);
+            return sprintf('%.2f Gb', $memory / 1024 / 1024 / 1024);
         }
 
         if ($memory >= 1024 * 1024) {
-            return \sprintf('%.2f Mb', $memory / 1024 / 1024);
+            return sprintf('%.2f Mb', $memory / 1024 / 1024);
         }
 
         if ($memory >= 1024) {
-            return \sprintf('%.2f Kb', $memory / 1024);
+            return sprintf('%.2f Kb', $memory / 1024);
         }
 
-        return \sprintf('%d B', $memory);
+        return sprintf('%d B', $memory);
     }
 
     /**
@@ -183,17 +206,17 @@ final class FormatUtil
             if ($secs >= $format[0]) {
                 $next = $timeFormats[$index + 1] ?? false;
 
-                if (($next && $secs < $next[0]) || $index === \count($timeFormats) - 1) {
-                    if (2 === \count($format)) {
+                if (($next && $secs < $next[0]) || $index === count($timeFormats) - 1) {
+                    if (2 === count($format)) {
                         return $format[1];
                     }
 
-                    return \floor($secs / $format[2]) . ' ' . $format[1];
+                    return floor($secs / $format[2]) . ' ' . $format[1];
                 }
             }
         }
 
-        return \date('Y-m-d H:i:s', $secs);
+        return date('Y-m-d H:i:s', $secs);
     }
 
     /**
@@ -209,7 +232,7 @@ final class FormatUtil
     public static function spliceKeyValue(array $data, array $opts = []): string
     {
         $text = '';
-        $opts = \array_merge([
+        $opts = array_merge([
             'leftChar'    => '',   // e.g '  ', ' * '
             'sepChar'     => ' ',  // e.g ' | ' OUT: key | value
             'keyStyle'    => '',   // e.g 'info','comment'
@@ -219,7 +242,7 @@ final class FormatUtil
             'ucFirst'     => true,  // upper first char
         ], $opts);
 
-        if (!\is_numeric($opts['keyMaxWidth'])) {
+        if (!is_numeric($opts['keyMaxWidth'])) {
             $opts['keyMaxWidth'] = Arr::getKeyMaxWidth($data);
         }
 
@@ -228,40 +251,40 @@ final class FormatUtil
             $opts['keyMaxWidth'] = $opts['keyMinWidth'];
         }
 
-        $keyStyle = \trim($opts['keyStyle']);
+        $keyStyle = trim($opts['keyStyle']);
 
         foreach ($data as $key => $value) {
-            $hasKey = !\is_int($key);
+            $hasKey = !is_int($key);
             $text   .= $opts['leftChar'];
 
             if ($hasKey && $opts['keyMaxWidth']) {
-                $key  = \str_pad($key, $opts['keyMaxWidth'], ' ');
+                $key  = str_pad($key, $opts['keyMaxWidth'], ' ');
                 $text .= ColorTag::wrap($key, $keyStyle) . $opts['sepChar'];
             }
 
             // if value is array, translate array to string
-            if (\is_array($value)) {
+            if (is_array($value)) {
                 $temp = '';
 
                 /** @var array $value */
                 foreach ($value as $k => $val) {
-                    if (\is_bool($val)) {
+                    if (is_bool($val)) {
                         $val = $val ? '(True)' : '(False)';
                     } else {
-                        $val = \is_scalar($val) ? (string)$val : \gettype($val);
+                        $val = is_scalar($val) ? (string)$val : gettype($val);
                     }
 
-                    $temp .= (!\is_numeric($k) ? "$k: " : '') . "$val, ";
+                    $temp .= (!is_numeric($k) ? "$k: " : '') . "$val, ";
                 }
 
-                $value = \rtrim($temp, ' ,');
-            } elseif (\is_bool($value)) {
+                $value = rtrim($temp, ' ,');
+            } elseif (is_bool($value)) {
                 $value = $value ? '(True)' : '(False)';
             } else {
                 $value = (string)$value;
             }
 
-            $value = $hasKey && $opts['ucFirst'] ? \ucfirst($value) : $value;
+            $value = $hasKey && $opts['ucFirst'] ? ucfirst($value) : $value;
             $text  .= ColorTag::wrap($value, $opts['valStyle']) . "\n";
         }
 

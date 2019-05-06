@@ -2,7 +2,15 @@
 
 namespace Swoft\Console;
 
+use function array_merge;
+use function get_class;
+use function implode;
+use ReflectionException;
+use function strpos;
+use function strtr;
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Console\Concern\RenderHelpInfoTrait;
 use Swoft\Console\Contract\ConsoleInterface;
 use Swoft\Console\Input\Input;
@@ -10,6 +18,9 @@ use Swoft\Console\Output\Output;
 use Swoft\Console\Router\Router;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\ObjectHelper;
+use Throwable;
+use function trim;
+use function ucfirst;
 
 /**
  * Class Application
@@ -111,7 +122,7 @@ class Application implements ConsoleInterface
     public function run(): void
     {
         try {
-            \Swoft::trigger(ConsoleEvent::RUN_BEFORE, $this);
+            Swoft::trigger(ConsoleEvent::RUN_BEFORE, $this);
 
             // Prepare
             $this->prepare();
@@ -125,8 +136,8 @@ class Application implements ConsoleInterface
                 $this->doRun($inputCommand);
             }
 
-            \Swoft::trigger(ConsoleEvent::RUN_AFTER, $this, $inputCommand);
-        } catch (\Throwable $e) {
+            Swoft::trigger(ConsoleEvent::RUN_AFTER, $this, $inputCommand);
+        } catch (Throwable $e) {
             $this->handleException($e);
         }
     }
@@ -134,15 +145,15 @@ class Application implements ConsoleInterface
     /**
      * @param string $inputCmd
      * @return void
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Throwable
+     * @throws ReflectionException
+     * @throws ContainerException
+     * @throws Throwable
      */
     public function doRun(string $inputCmd): void
     {
         $output = $this->output;
         /* @var Router $router */
-        $router = \Swoft::getBean('cliRouter');
+        $router = Swoft::getBean('cliRouter');
         $result = $router->match($inputCmd);
 
         // Command not found
@@ -152,7 +163,7 @@ class Application implements ConsoleInterface
 
             // find similar command names by similar_text()
             if ($similar = Arr::findSimilar($inputCmd, $names)) {
-                $output->writef("\nMaybe what you mean is:\n    <info>%s</info>", \implode(', ', $similar));
+                $output->writef("\nMaybe what you mean is:\n    <info>%s</info>", implode(', ', $similar));
             } else {
                 $this->showApplicationHelp(false);
             }
@@ -176,21 +187,21 @@ class Application implements ConsoleInterface
         // Parse default options and arguments
         $this->bindOptionsAndArguments($info);
 
-        \Swoft::triggerByArray(ConsoleEvent::DISPATCH_BEFORE, $this, $info);
+        Swoft::triggerByArray(ConsoleEvent::DISPATCH_BEFORE, $this, $info);
 
         // Call command handler
         /** @var ConsoleDispatcher $dispatcher */
-        $dispatcher = \Swoft::getSingleton('cliDispatcher');
+        $dispatcher = Swoft::getSingleton('cliDispatcher');
         $dispatcher->dispatch($info);
 
-        \Swoft::triggerByArray(ConsoleEvent::DISPATCH_AFTER, $this, $info);
+        Swoft::triggerByArray(ConsoleEvent::DISPATCH_AFTER, $this, $info);
     }
 
     /**
      * Filter special option. eg: -h, --help, --version
      * @return void
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     private function filterSpecialOption(): void
     {
@@ -262,12 +273,12 @@ class Application implements ConsoleInterface
     }
 
     /**
-     * @param \Throwable $e
+     * @param Throwable $e
      */
-    protected function handleException(\Throwable $e): void
+    protected function handleException(Throwable $e): void
     {
         try {
-            $evt = \Swoft::triggerByArray(ConsoleEvent::RUN_ERROR, $this, [
+            $evt = Swoft::triggerByArray(ConsoleEvent::RUN_ERROR, $this, [
                 'exception' => $e,
             ]);
 
@@ -278,14 +289,14 @@ class Application implements ConsoleInterface
                 \output()->flush();
                 \output()->writef(
                     "<error>(CONSOLE)%s: %s</error>\nAt %s line <cyan>%d</cyan>\n<comment>Code Trace:</comment>\n%s",
-                    \get_class($e),
+                    get_class($e),
                     $e->getMessage(),
                     $e->getFile(),
                     $e->getLine(),
                     $e->getTraceAsString()
                 );
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // Do nothing
         }
     }
@@ -299,7 +310,7 @@ class Application implements ConsoleInterface
     protected function parseCommentsVars(string $str, array $vars): string
     {
         // not use vars
-        if (false === \strpos($str, self::HELP_VAR_LEFT)) {
+        if (false === strpos($str, self::HELP_VAR_LEFT)) {
             return $str;
         }
 
@@ -310,7 +321,7 @@ class Application implements ConsoleInterface
             $map[$key] = $value;
         }
 
-        return $map ? \strtr($str, $map) : $str;
+        return $map ? strtr($str, $map) : $str;
     }
 
     /**
@@ -327,7 +338,7 @@ class Application implements ConsoleInterface
     public function setCommentsVars(array $vars): void
     {
         if ($vars) {
-            $this->commentsVars = \array_merge($this->commentsVars, $vars);
+            $this->commentsVars = array_merge($this->commentsVars, $vars);
         }
     }
 
@@ -344,7 +355,7 @@ class Application implements ConsoleInterface
      */
     public function setName(string $name): void
     {
-        $this->name = \trim($name);
+        $this->name = trim($name);
     }
 
     /**
@@ -368,7 +379,7 @@ class Application implements ConsoleInterface
      */
     public function getDescription(): string
     {
-        return $this->description ? \ucfirst($this->description) : '';
+        return $this->description ? ucfirst($this->description) : '';
     }
 
     /**
@@ -376,6 +387,6 @@ class Application implements ConsoleInterface
      */
     public function setDescription(string $description): void
     {
-        $this->description = \trim($description);
+        $this->description = trim($description);
     }
 }
