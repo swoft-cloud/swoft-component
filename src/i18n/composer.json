@@ -1,0 +1,41 @@
+{
+    "name": "swoft/i18n",
+    "type": "library",
+    "keywords": [
+        "php",
+        "swoole",
+        "swoft",
+        "i18n",
+        "translation"
+    ],
+    "description": "I18n Translations Component for Swoft",
+    "license": "Apache-2.0",
+    "require": {
+        "swoft/framework": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Swoft\\I18n\\": "src/"
+        },
+        "files": [
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SwoftTest\\I18n\\Testing": "test/testing",
+            "SwoftTest\\I18n\\Unit": "test/unit"
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packagist.laravel-china.org"
+        }
+    ],
+    "require-dev": {
+
+    },
+    "scripts": {
+
+    }
+}

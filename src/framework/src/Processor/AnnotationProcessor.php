@@ -69,6 +69,9 @@ class AnnotationProcessor extends Processor
             case 'addLoaderClass':
                 CLog::debug('Parse autoloader %s', $target);
                 break;
+            case 'noExistClass':
+                CLog::debug('Not exist class %s', $target);
+                break;
         }
     }
 }

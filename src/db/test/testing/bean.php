@@ -7,11 +7,11 @@ return [
     'config'   => [
         'path' => __DIR__ . '/../config',
     ],
-    'db'       => [
+    'db'     => [
         'class'    => Database::class,
-        'dsn'      => 'mysql:dbname=swoft;host=127.0.0.1',
+        'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
         'username' => 'root',
-        'password' => '123456',
+        'password' => '',
         'charset'  => 'utf8mb4',
         // 'prefix'   => 't_',
         'options'  => [
@@ -28,16 +28,16 @@ return [
         'class'  => Database::class,
         'writes' => [
             [
-                'dsn'      => 'mysql:dbname=swoft;host=127.0.0.1',
+                'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
                 'username' => 'root',
-                'password' => '123456',
+                'password' => '',
             ],
         ],
         'reads'  => [
             [
-                'dsn'      => 'mysql:dbname=swoft;host=127.0.0.1',
+                'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
                 'username' => 'root',
-                'password' => '123456',
+                'password' => '',
             ]
         ],
     ],

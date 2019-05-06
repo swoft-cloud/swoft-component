@@ -234,6 +234,7 @@ class AnnotationResource extends Resource
 
                 // Will filtering: interfaces and traits
                 if (!\class_exists($className)) {
+                    $this->notify('noExistClass', $className);
                     continue;
                 }
 

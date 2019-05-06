@@ -20,7 +20,7 @@ class MySqlConnector extends AbstractConnector
      * @param array $config
      *
      * @return \PDO
-     * @throws \Exception
+     * @throws \Throwable
      */
     public function connect(array $config): \PDO
     {
@@ -32,7 +32,21 @@ class MySqlConnector extends AbstractConnector
         // We need to grab the PDO options that should be used while making the brand
         // new connection instance. The PDO options control various aspects of the
         // connection's behavior, and some might be specified by the developers.
-        $connection = $this->createConnection($dsn, $username, $password, $options);
+        try {
+            $connection = $this->createConnection($dsn, $username, $password, $options);
+        } catch (\Throwable $e) {
+            if ($e->getCode() == 2002) {
+                throw new \Exception(
+                    \sprintf('Dsn(%s) can not to connected!', $dsn)
+                );
+            }
+
+            if ($e->getCode() == 1045) {
+                throw new \Exception('Username or password is error!');
+            }
+
+            throw $e;
+        }
 
         if (!empty($config['database'])) {
             $connection->exec("use `{$config['database']}`;");
