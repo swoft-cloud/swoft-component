@@ -21,12 +21,14 @@ class ValidatorTypeTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage array must exist!
      *
+     * @throws ContainerException
      * @throws ValidatorException
+     * @throws \ReflectionException
      */
     public function testArrayType()
     {
         $data = [];
-        Validator::validate($data, ValidateDemo::class, 'testArray');
+        (new Validator())->validate($data, ValidateDemo::class, 'testArray');
     }
 
     /**
@@ -38,7 +40,7 @@ class ValidatorTypeTest extends TestCase
     public function testIntType()
     {
         $data = [];
-        Validator::validate($data, ValidateDemo::class, 'testInt');
+        (new Validator())->validate($data, ValidateDemo::class, 'testInt');
     }
 
     /**
@@ -50,7 +52,7 @@ class ValidatorTypeTest extends TestCase
     public function testBoolType()
     {
         $data = [];
-        Validator::validate($data, ValidateDemo::class, 'testBool');
+        (new Validator())->validate($data, ValidateDemo::class, 'testBool');
     }
 
     /**
@@ -62,7 +64,7 @@ class ValidatorTypeTest extends TestCase
     public function testStringType()
     {
         $data = [];
-        Validator::validate($data, ValidateDemo::class, 'testString');
+        (new Validator())->validate($data, ValidateDemo::class, 'testString');
     }
 
     /**
@@ -74,7 +76,7 @@ class ValidatorTypeTest extends TestCase
     public function testFloatType()
     {
         $data = [];
-        Validator::validate($data, ValidateDemo::class, 'testFloat');
+        (new Validator())->validate($data, ValidateDemo::class, 'testFloat');
     }
 
     /**
@@ -86,7 +88,7 @@ class ValidatorTypeTest extends TestCase
     public function testArrayTypeMessage()
     {
         $data = [];
-        Validator::validate($data, ValidateDemo::class, 'testArrayMessage');
+        (new Validator())->validate($data, ValidateDemo::class, 'testArrayMessage');
     }
 
     /**
@@ -98,7 +100,7 @@ class ValidatorTypeTest extends TestCase
     public function testIntTypeMessage()
     {
         $data = [];
-        Validator::validate($data, ValidateDemo::class, 'testIntMessage');
+        (new Validator())->validate($data, ValidateDemo::class, 'testIntMessage');
     }
 
     /**
@@ -110,7 +112,7 @@ class ValidatorTypeTest extends TestCase
     public function testBoolTypeMessage()
     {
         $data = [];
-        Validator::validate($data, ValidateDemo::class, 'testBoolMessage');
+        (new Validator())->validate($data, ValidateDemo::class, 'testBoolMessage');
     }
 
     /**
@@ -122,7 +124,7 @@ class ValidatorTypeTest extends TestCase
     public function testStringTypeMessage()
     {
         $data = [];
-        Validator::validate($data, ValidateDemo::class, 'testStringMessage');
+        (new Validator())->validate($data, ValidateDemo::class, 'testStringMessage');
     }
 
     /**
@@ -134,7 +136,7 @@ class ValidatorTypeTest extends TestCase
     public function testFloatTypeMessage()
     {
         $data = [];
-        Validator::validate($data, ValidateDemo::class, 'testFloatMessage');
+        (new Validator())->validate($data, ValidateDemo::class, 'testFloatMessage');
     }
 
     /**
@@ -143,7 +145,7 @@ class ValidatorTypeTest extends TestCase
     public function testDefault()
     {
         $data = [];
-        $data = Validator::validate($data, ValidateDemo::class, 'testTypeDefault');
+        $data = (new Validator())->validate($data, ValidateDemo::class, 'testTypeDefault');
 
         $result = [
             'arrayDefault'  => [],
@@ -162,7 +164,7 @@ class ValidatorTypeTest extends TestCase
      */
     public function testName(){
         $data = [];
-        $result = Validator::validate($data, ValidateDemo::class, 'testName');
+        $result = (new Validator())->validate($data, ValidateDemo::class, 'testName');
         $this->assertEquals($result, ['swoftName' => 'swoft']);
     }
 
@@ -178,6 +180,6 @@ class ValidatorTypeTest extends TestCase
         $data = [
             'swoftName' => 12
         ];
-        Validator::validate($data, ValidateDemo::class, 'testName');
+        (new Validator())->validate($data, ValidateDemo::class, 'testName');
     }
 }

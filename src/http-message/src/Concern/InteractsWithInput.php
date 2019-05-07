@@ -94,6 +94,16 @@ trait InteractsWithInput
     }
 
     /**
+     * Get post data
+     *
+     * @return array
+     */
+    public function getPost(): array
+    {
+        return $this->coRequest->post ?? [];
+    }
+
+    /**
      * Retrieve a get item from the request
      *
      * @param null|string $key

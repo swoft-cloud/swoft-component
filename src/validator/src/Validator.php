@@ -32,7 +32,7 @@ use Swoft\Validator\Exception\ValidatorException;
  *
  * @since 2.0
  *
- * @Bean()
+ * @Bean(name="validator")
  */
 class Validator
 {
@@ -48,12 +48,13 @@ class Validator
      * @throws ReflectionException
      * @throws ContainerException
      */
-    public static function validate(array $data, string $className, string $method): array
+    public function validate(array $data, string $className, string $method): array
     {
         $validates = ValidateRegister::getValidates($className, $method);
         if (empty($validates)) {
             return $data;
         }
+
         foreach ($validates as $validateName => $validate) {
             $validator = ValidatorRegister::getValidator($validateName);
             $type      = $validator['type'];
@@ -79,7 +80,7 @@ class Validator
      *
      * @throws ValidatorException
      */
-    protected static function validateDefaultValidator(array &$data, array $validator, array $fields): void
+    protected function validateDefaultValidator(array &$data, array $validator, array $fields): void
     {
         $properties = $validator['properties'] ?? [];
         foreach ($properties as $propName => $property) {
@@ -120,7 +121,7 @@ class Validator
      * @return bool
      * @throws ValidatorException
      */
-    protected static function validateDefaultItem(array &$data, string $propName, $item, $default = null): bool
+    protected function validateDefaultItem(array &$data, string $propName, $item, $default = null): bool
     {
         $result    = false;
         $itemClass = get_class($item);
@@ -184,7 +185,7 @@ class Validator
      * @throws ReflectionException
      * @throws ContainerException
      */
-    protected static function validateUserValidator(string $validateName, array &$data, array $params): void
+    protected function validateUserValidator(string $validateName, array &$data, array $params): void
     {
         $validator = BeanFactory::getBean($validateName);
         if (!$validator instanceof ValidatorInterface) {

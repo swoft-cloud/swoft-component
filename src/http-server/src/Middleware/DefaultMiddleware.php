@@ -2,12 +2,19 @@
 
 namespace Swoft\Http\Server\Middleware;
 
+use function context;
+use function explode;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use ReflectionException;
+use ReflectionNamedType;
+use function sprintf;
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Bean\Container;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Contract\MiddlewareInterface;
@@ -42,8 +49,8 @@ class DefaultMiddleware implements MiddlewareInterface
      * @return ResponseInterface
      * @throws MethodNotAllowedException
      * @throws NotFoundRouteException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -58,8 +65,8 @@ class DefaultMiddleware implements MiddlewareInterface
      * @return Response
      * @throws MethodNotAllowedException
      * @throws NotFoundRouteException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     private function handle(ServerRequestInterface $request): Response
     {
@@ -71,17 +78,20 @@ class DefaultMiddleware implements MiddlewareInterface
 
         // Not found
         if ($status === Router::NOT_FOUND) {
-            throw new NotFoundRouteException(\sprintf('Route not found(path %s)!', $uriPath));
+            throw new NotFoundRouteException(sprintf('Route not found(path %s)!', $uriPath));
         }
 
         // Method not allowed
         if ($status === Router::METHOD_NOT_ALLOWED) {
-            throw new MethodNotAllowedException(\sprintf('Uri(%s) method(%s) not allowed!', $uriPath, $method));
+            throw new MethodNotAllowedException(sprintf('Uri(%s) method(%s) not allowed!', $uriPath, $method));
         }
 
         // Controller and method
         $handlerId = $route->getHandler();
-        [$className, $method] = \explode('@', $handlerId);
+        [$className, $method] = explode('@', $handlerId);
+
+        // Update context request
+        context()->setRequest($request);
 
         $pathParams = $route->getParams();
         $bindParams = $this->bindParams($className, $method, $pathParams);
@@ -95,7 +105,7 @@ class DefaultMiddleware implements MiddlewareInterface
             return $data;
         }
 
-        $response = \context()->getResponse();
+        $response = context()->getResponse();
         return $response->withData($data);
     }
 
@@ -107,11 +117,11 @@ class DefaultMiddleware implements MiddlewareInterface
      * @param array  $pathParams
      *
      * @return array
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     private function bindParams(string $className, string $method, array $pathParams): array
     {
-        $reflection   = \Swoft::getReflection($className);
+        $reflection   = Swoft::getReflection($className);
         $methodParams = $reflection['methods'][$method]['params'] ?? [];
         if (!$methodParams) {
             return [];
@@ -120,7 +130,7 @@ class DefaultMiddleware implements MiddlewareInterface
         $bindParams = [];
         foreach ($methodParams as $methodParam) {
             [$paramName, $paramType, $paramDefaultType] = $methodParam;
-            if (!$paramType instanceof \ReflectionNamedType) {
+            if (!$paramType instanceof ReflectionNamedType) {
                 continue;
             }
 
