@@ -15,7 +15,7 @@ if (!function_exists('env')) {
      *
      * @return mixed
      */
-    function env($key, $default = null)
+    function env(string $key = null, $default = null)
     {
         $value = getenv($key);
 

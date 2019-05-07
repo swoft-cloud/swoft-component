@@ -90,7 +90,8 @@ trait ValidateItemTrait
         }
 
         $value = $data[$propertyName];
-        if (is_bool($value)) {
+        if ($value == 'true' || $value == 'false' || is_bool($value)) {
+            $data[$propertyName] = (bool)$value;
             return false;
         }
 
@@ -123,7 +124,9 @@ trait ValidateItemTrait
         }
 
         $value = $data[$propertyName];
-        if (is_float($value)) {
+        $value = filter_var($value, FILTER_VALIDATE_FLOAT);
+        if ($value !== false) {
+            $data[$propertyName] = $value;
             return false;
         }
 
@@ -156,7 +159,9 @@ trait ValidateItemTrait
         }
 
         $value = $data[$propertyName];
-        if (is_int($value)) {
+        $value = filter_var($value, FILTER_VALIDATE_INT);
+        if ($value !== false) {
+            $data[$propertyName] = $value;
             return false;
         }
 
