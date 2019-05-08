@@ -18,14 +18,16 @@ use Swoft\Stdlib\Helper\Arr;
  */
 class Collection extends BaseCollection
 {
+
     /**
      * Find a model in the collection by key.
      *
-     * @param  mixed $key
-     * @param  mixed $default
+     * @param      $key
+     * @param null $default
      *
-     * @return Model|static
+     * @return mixed|Collection
      * @throws EntityException
+     * @throws \Swoft\Db\Exception\EloquentException
      */
     public function find($key, $default = null)
     {
@@ -45,7 +47,7 @@ class Collection extends BaseCollection
             return $this->whereIn($this->first()->getKeyName(), $key);
         }
 
-        return Arr::first($this->items, function ($model) use ($key) {
+        return Arr::first($this->items, function (Model $model) use ($key) {
             return $model->getKey() == $key;
         }, $default);
     }
@@ -80,12 +82,12 @@ class Collection extends BaseCollection
         }
 
         if ($key instanceof Model) {
-            return parent::contains(function ($model) use ($key) {
+            return parent::contains(function (Model $model) use ($key) {
                 return $model->is($key);
             });
         }
 
-        return parent::contains(function ($model) use ($key) {
+        return parent::contains(function (Model $model) use ($key) {
             return $model->getKey() == $key;
         });
     }
@@ -97,7 +99,7 @@ class Collection extends BaseCollection
      */
     public function modelKeys()
     {
-        return array_map(function ($model) {
+        return array_map(function (Model $model) {
             return $model->getKey();
         }, $this->items);
     }
@@ -139,9 +141,9 @@ class Collection extends BaseCollection
     /**
      * Diff the collection with the given items.
      *
-     * @param  \ArrayAccess|array $items
+     * @param mixed $items
      *
-     * @return static
+     * @return Collection|BaseCollection
      */
     public function diff($items)
     {
@@ -227,30 +229,6 @@ class Collection extends BaseCollection
         $dictionary = Arr::except($this->getDictionary(), $keys);
 
         return new static(array_values($dictionary));
-    }
-
-    /**
-     * Make the given, typically visible, attributes hidden across the entire collection.
-     *
-     * @param  array|string $attributes
-     *
-     * @return $this
-     */
-    public function makeHidden($attributes)
-    {
-        return $this->each->addHidden($attributes);
-    }
-
-    /**
-     * Make the given, typically hidden, attributes visible across the entire collection.
-     *
-     * @param  array|string $attributes
-     *
-     * @return $this
-     */
-    public function makeVisible($attributes)
-    {
-        return $this->each->makeVisible($attributes);
     }
 
     /**

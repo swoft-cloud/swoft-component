@@ -19,7 +19,7 @@ go(function () {
 
         require $phpunit;
     } catch (Throwable $e) {
-        sprintf('%s At file=%s line=%d' . PHP_EOL,
+        printf('%s At file=%s line=%d' . PHP_EOL,
             $e->getMessage(),
             $e->getFile(),
             $e->getLine());

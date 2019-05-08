@@ -2,6 +2,7 @@
 
 namespace Swoft\Stdlib\Helper;
 
+use InvalidArgumentException;
 use Swoft\Stdlib\Collection;
 use Swoft\Stdlib\Contract\Arrayable;
 
@@ -219,8 +220,8 @@ class ArrayHelper
     /**
      * Get all of the given array except for a specified array of keys.
      *
-     * @param  array        $array
-     * @param  array|string $keys
+     * @param array        $array
+     * @param array|string $keys
      *
      * @return array
      */
@@ -234,8 +235,8 @@ class ArrayHelper
     /**
      * Remove one or many array items from a given array using "dot" notation.
      *
-     * @param  array        $array
-     * @param  array|string $keys
+     * @param array        $array
+     * @param array|string $keys
      *
      * @return void
      */
@@ -279,9 +280,9 @@ class ArrayHelper
     /**
      * Get a value from the array, and remove it.
      *
-     * @param  array  $array
-     * @param  string $key
-     * @param  mixed  $default
+     * @param array  $array
+     * @param string $key
+     * @param mixed  $default
      *
      * @return mixed
      */
@@ -743,8 +744,8 @@ class ArrayHelper
      * @param array|\Traversable $haystack The set of value to search.
      * @param boolean            $strict   Whether to enable strict (`===`) comparison.
      *
-     * @throws \InvalidArgumentException if `$haystack` or `$needles` is neither traversable nor an array.
      * @return boolean `true` if `$needles` is a subset of `$haystack`, `false` otherwise.
+     * @throws \InvalidArgumentException if `$haystack` or `$needles` is neither traversable nor an array.
      */
     public static function isSubset($needles, $haystack, $strict = false): ?bool
     {
@@ -852,7 +853,7 @@ class ArrayHelper
     /**
      * Determine whether the given value is array accessible.
      *
-     * @param  mixed $value
+     * @param mixed $value
      *
      * @return bool
      */
@@ -864,8 +865,8 @@ class ArrayHelper
     /**
      * Determine if the given key exists in the provided array.
      *
-     * @param  \ArrayAccess|array $array
-     * @param  string|int         $key
+     * @param \ArrayAccess|array $array
+     * @param string|int         $key
      *
      * @return bool
      */
@@ -881,9 +882,9 @@ class ArrayHelper
     /**
      * Get an item from an array using "dot" notation.
      *
-     * @param  \ArrayAccess|array $array
-     * @param  string             $key
-     * @param  mixed              $default
+     * @param \ArrayAccess|array $array
+     * @param string             $key
+     * @param mixed              $default
      *
      * @return mixed
      */
@@ -891,6 +892,11 @@ class ArrayHelper
     {
         if (null === $key) {
             return $array;
+        }
+
+        if (\is_object($array) && \method_exists($array, 'getAttribute')) {
+            $result = $array->getAttribute($key);
+            return $result[1] ?? $default;
         }
 
         if (isset($array[$key])) {
@@ -911,8 +917,8 @@ class ArrayHelper
     /**
      * Check if an item exists in an array using "dot" notation.
      *
-     * @param  \ArrayAccess|array $array
-     * @param  string             $key
+     * @param \ArrayAccess|array $array
+     * @param string             $key
      *
      * @return bool
      */
@@ -942,9 +948,9 @@ class ArrayHelper
      * Set an array item to a given value using "dot" notation.
      * If no key is given to the method, the entire array will be replaced.
      *
-     * @param  array  $array
-     * @param  string $key
-     * @param  mixed  $value
+     * @param array  $array
+     * @param string $key
+     * @param mixed  $value
      *
      * @return array
      */
@@ -990,7 +996,7 @@ class ArrayHelper
     /**
      * If the given value is not an array and not null, wrap it in one.
      *
-     * @param  mixed $value
+     * @param mixed $value
      *
      * @return array
      */
@@ -1016,8 +1022,8 @@ class ArrayHelper
     /**
      * Flatten a multi-dimensional array into a single level.
      *
-     * @param  array $array
-     * @param  int   $depth
+     * @param array $array
+     * @param int   $depth
      *
      * @return array
      */
@@ -1072,12 +1078,12 @@ class ArrayHelper
     /**
      * get key Max Width
      *
-     * @param  array $data
+     * @param array $data
      *     [
      *     'key1'      => 'value1',
      *     'key2-test' => 'value2',
      *     ]
-     * @param bool   $expectInt
+     * @param bool  $expectInt
      *
      * @return int
      */
@@ -1099,9 +1105,9 @@ class ArrayHelper
     /**
      * Return the first element in an array passing a given truth test.
      *
-     * @param  array         $array
-     * @param  callable|null $callback
-     * @param  mixed         $default
+     * @param array         $array
+     * @param callable|null $callback
+     * @param mixed         $default
      *
      * @return mixed
      */
@@ -1129,8 +1135,8 @@ class ArrayHelper
     /**
      * Filter the array using the given callback.
      *
-     * @param  array    $array
-     * @param  callable $callback
+     * @param array    $array
+     * @param callable $callback
      *
      * @return array
      */
@@ -1142,7 +1148,7 @@ class ArrayHelper
     /**
      * Convert the array into a query string.
      *
-     * @param  array $array
+     * @param array $array
      *
      * @return string
      */
@@ -1154,13 +1160,212 @@ class ArrayHelper
     /**
      * Get a subset of the items from the given array.
      *
-     * @param  array $array
-     * @param  array $keys
+     * @param array $array
+     * @param array $keys
      *
      * @return array
      */
     public static function only(array $array, array $keys): array
     {
         return array_intersect_key($array, array_flip((array)$keys));
+    }
+
+    /**
+     * Return the last element in an array passing a given truth test.
+     *
+     * @param array         $array
+     * @param callable|null $callback
+     * @param mixed         $default
+     *
+     * @return mixed
+     */
+    public static function last($array, callable $callback = null, $default = null)
+    {
+        if (is_null($callback)) {
+            return empty($array) ? value($default) : end($array);
+        }
+
+        return static::first(array_reverse($array, true), $callback, $default);
+    }
+
+    /**
+     * Pluck an array of values from an array.
+     *
+     * @param array             $array
+     * @param string|array      $value
+     * @param string|array|null $key
+     *
+     * @return array
+     */
+    public static function pluck($array, $value, $key = null)
+    {
+        $results = [];
+
+        foreach ($array as $item) {
+            $itemValue = static::get($item, $value);
+
+            // If the key is "null", we will just append the value to the array and keep
+            // looping. Otherwise we will key the array using the value of the key we
+            // received from the developer. Then we'll return the final array form.
+            if (is_null($key)) {
+                $results[] = $itemValue;
+            } else {
+                $itemKey = static::get($item, $key);
+
+                if (is_object($itemKey) && method_exists($itemKey, '__toString')) {
+                    $itemKey = (string)$itemKey;
+                }
+
+                $results[$itemKey] = $itemValue;
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Collapse an array of arrays into a single array.
+     *
+     * @param  array  $array
+     * @return array
+     */
+    public static function collapse($array)
+    {
+        $results = [];
+
+        foreach ($array as $values) {
+            if ($values instanceof Collection) {
+                $values = $values->all();
+            } elseif (! is_array($values)) {
+                continue;
+            }
+
+            $results = array_merge($results, $values);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Cross join the given arrays, returning all possible permutations.
+     *
+     * @param  array  ...$arrays
+     * @return array
+     */
+    public static function crossJoin(...$arrays)
+    {
+        $results = [[]];
+
+        foreach ($arrays as $index => $array) {
+            $append = [];
+
+            foreach ($results as $product) {
+                foreach ($array as $item) {
+                    $product[$index] = $item;
+
+                    $append[] = $product;
+                }
+            }
+
+            $results = $append;
+        }
+
+        return $results;
+    }
+
+    /**
+     * Explode the "value" and "key" arguments passed to "pluck".
+     *
+     * @param string|array      $value
+     * @param string|array|null $key
+     *
+     * @return array
+     */
+    protected static function explodePluckParameters($value, $key)
+    {
+        $value = is_string($value) ? explode('.', $value) : $value;
+
+        $key = is_null($key) || is_array($key) ? $key : explode('.', $key);
+
+        return [$value, $key];
+    }
+
+    /**
+     * Push an item onto the beginning of an array.
+     *
+     * @param  array  $array
+     * @param  mixed  $value
+     * @param  mixed  $key
+     * @return array
+     */
+    public static function prepend($array, $value, $key = null)
+    {
+        if (is_null($key)) {
+            array_unshift($array, $value);
+        } else {
+            $array = [$key => $value] + $array;
+        }
+
+        return $array;
+    }
+
+    /**
+     * Get one or a specified number of random values from an array.
+     *
+     * @param  array  $array
+     * @param  int|null  $number
+     * @return mixed
+     *
+     * @throws \InvalidArgumentException
+     */
+    public static function random($array, $number = null)
+    {
+        $requested = is_null($number) ? 1 : $number;
+
+        $count = count($array);
+
+        if ($requested > $count) {
+            throw new InvalidArgumentException(
+                "You requested {$requested} items, but there are only {$count} items available."
+            );
+        }
+
+        if (is_null($number)) {
+            return $array[array_rand($array)];
+        }
+
+        if ((int) $number === 0) {
+            return [];
+        }
+
+        $keys = array_rand($array, $number);
+
+        $results = [];
+
+        foreach ((array) $keys as $key) {
+            $results[] = $array[$key];
+        }
+
+        return $results;
+    }
+
+    /**
+     * Shuffle the given array and return the result.
+     *
+     * @param  array  $array
+     * @param  int|null  $seed
+     * @return array
+     */
+    public static function shuffle($array, $seed = null)
+    {
+        if (is_null($seed)) {
+            shuffle($array);
+        } else {
+            mt_srand($seed);
+            shuffle($array);
+            mt_srand();
+        }
+
+        return $array;
     }
 }

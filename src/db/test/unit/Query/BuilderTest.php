@@ -691,4 +691,16 @@ class BuilderTest extends TestCase
         );
         $this->assertEquals(true, $res);
     }
+
+    public function testCollection()
+    {
+        $collection = new Collection([
+            ['a' => 1, 'b' => 1],
+            ['a' => 1, 'b' => 1],
+            ['a' => 1, 'b' => 31],
+            ['a' => 5, 'b' => 21]
+        ]);
+
+        var_dump($collection->groupBy(['a','b']));
+    }
 }

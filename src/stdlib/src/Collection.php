@@ -4,7 +4,6 @@ namespace Swoft\Stdlib;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Stdlib\Contract\Arrayable;
 use Swoft\Stdlib\Contract\Jsonable;
 use Swoft\Stdlib\Helper\Arr;
@@ -29,34 +28,6 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
     protected $items = [];
 
     /**
-     * The methods that can be proxied.
-     *
-     * @var array
-     */
-    protected static $proxies = [
-        'average',
-        'avg',
-        'contains',
-        'each',
-        'every',
-        'filter',
-        'first',
-        'flatMap',
-        'groupBy',
-        'keyBy',
-        'map',
-        'max',
-        'min',
-        'partition',
-        'reject',
-        'some',
-        'sortBy',
-        'sortByDesc',
-        'sum',
-        'unique',
-    ];
-
-    /**
      * Create a new collection.
      *
      * @param mixed $items
@@ -73,8 +44,9 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
      *
      * @param array $items
      *
-     * @return static
-     * @throws PrototypeException
+     * @return Collection
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public static function new(array $items = []): self
     {
@@ -173,6 +145,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
         if ($count = $items->count()) {
             return $items->sum() / $count;
         }
+        return null;
     }
 
     /**
@@ -210,12 +183,12 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
         $middle = (int)($count / 2);
 
         if ($count % 2) {
-            return $values->get($middle);
+            return $values->get((string)$middle);
         }
 
         return (new static([
-            $values->get($middle - 1),
-            $values->get($middle),
+            $values->get((string)$middle - 1),
+            $values->get((string)$middle),
         ]))->average();
     }
 
@@ -309,7 +282,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
     {
         if (func_num_args() === 2) {
             return $this->contains(function ($item) use ($key, $value) {
-                return data_get($item, $key) === $value;
+                return Arr::get($item, $key) === $value;
             });
         }
 
@@ -337,13 +310,11 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
     /**
      * Dump the collection and end the script.
      *
-     * @return void
+     * @param mixed ...$args
      */
     public function dd(...$args): void
     {
         call_user_func_array([$this, 'dump'], $args);
-
-        die(1);
     }
 
     /**
@@ -356,7 +327,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
         (new static(func_get_args()))
             ->push($this)
             ->each(function ($item) {
-                VarDumper::dump($item);
+                var_dump($item);
             });
 
         return $this;
@@ -500,7 +471,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
     /**
      * Get all items except for those with the specified keys.
      *
-     * @param \Illuminate\Support\Collection|mixed $keys
+     * @param static|mixed $keys
      *
      * @return static
      */
@@ -655,7 +626,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
         }
 
         return function ($item) use ($key, $operator, $value) {
-            $retrieved = data_get($item, $key);
+            $retrieved = Arr::get($item, $key);
 
             $strings = array_filter([$retrieved, $value], function ($value) {
                 return is_string($value) || (is_object($value) && method_exists($value, '__toString'));
@@ -716,7 +687,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
         $values = $this->getArrayableItems($values);
 
         return $this->filter(function ($item) use ($key, $values, $strict) {
-            return in_array(data_get($item, $key), $values, $strict);
+            return in_array(Arr::get($item, $key), $values, $strict);
         });
     }
 
@@ -747,7 +718,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
         $values = $this->getArrayableItems($values);
 
         return $this->reject(function ($item) use ($key, $values, $strict) {
-            return in_array(data_get($item, $key), $values, $strict);
+            return in_array(Arr::get($item, $key), $values, $strict);
         });
     }
 
@@ -891,7 +862,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
                 $groupKey = is_bool($groupKey) ? (int)$groupKey : $groupKey;
 
                 if (!array_key_exists($groupKey, $results)) {
-                    $results[$groupKey] = new static;
+                    $results[$groupKey] = new static();
                 }
 
                 $results[$groupKey]->offsetSet($preserveKeys ? $key : null, $value);
@@ -901,7 +872,9 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
         $result = new static($results);
 
         if (!empty($nextGroups)) {
-            return $result->map->groupBy($nextGroups, $preserveKeys);
+            return $result->map(function (Collection $value) use ($nextGroups, $preserveKeys) {
+                return $value->groupBy($nextGroups, $preserveKeys);
+            });
         }
 
         return $result;
@@ -1827,8 +1800,8 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
             if (in_array($id = $callback($item, $key), $exists, $strict)) {
                 return true;
             }
-
             $exists[] = $id;
+            return true;
         });
     }
 
@@ -1868,7 +1841,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
         }
 
         return function ($item) use ($value) {
-            return data_get($item, $value);
+            return ArrayHelper::get($item, $value);
         };
     }
 
@@ -1969,17 +1942,17 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
         return new \ArrayIterator($this->items);
     }
 
-//    /**
-//     * Get a CachingIterator instance.
-//     *
-//     * @param  int $flags
-//     *
-//     * @return \CachingIterator
-//     */
-//    public function getCachingIterator($flags = CachingIterator::CALL_TOSTRING): \CachingIterator
-//    {
-//        return new CachingIterator($this->getIterator(), $flags);
-//    }
+    /**
+     * Get a CachingIterator instance.
+     *
+     * @param int $flags
+     *
+     * @return \CachingIterator
+     */
+    public function getCachingIterator($flags = \CachingIterator::CALL_TOSTRING): \CachingIterator
+    {
+        return new \CachingIterator($this->getIterator(), $flags);
+    }
 
     /**
      * Count the number of items in the collection.
@@ -2088,35 +2061,5 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
         }
 
         return (array)$items;
-    }
-
-    /**
-     * Add a method to the list of proxied methods.
-     *
-     * @param string $method
-     *
-     * @return void
-     */
-    public static function proxy($method): void
-    {
-        static::$proxies[] = $method;
-    }
-
-    /**
-     * Dynamically access collection proxies.
-     *
-     * @param string $key
-     *
-     * @return mixed
-     *
-     * @throws \Exception
-     */
-    public function __get($key)
-    {
-        if (!in_array($key, static::$proxies, true)) {
-            throw new Exception("Property [{$key}] does not exist on this collection instance.");
-        }
-
-        return new HigherOrderCollectionProxy($this, $key);
     }
 }
