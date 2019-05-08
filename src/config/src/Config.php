@@ -44,6 +44,11 @@ class Config extends Collection
     private $type = self::TYPE_PHP;
 
     /**
+     * @var string
+     */
+    private $env = '';
+
+    /**
      * Config path
      *
      * @var string
@@ -189,6 +194,22 @@ class Config extends Collection
     public function setParsers(array $parsers): void
     {
         $this->parsers = $parsers;
+    }
+
+    /**
+     * @param string $env
+     */
+    public function setEnv(string $env): void
+    {
+        $this->env = $env;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEnv(): string
+    {
+        return $this->env;
     }
 
     /**

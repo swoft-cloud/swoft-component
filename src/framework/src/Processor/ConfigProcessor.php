@@ -2,6 +2,9 @@
 
 namespace Swoft\Processor;
 
+use function define;
+use function env;
+
 /**
  * Config processor
  *
@@ -30,7 +33,7 @@ class ConfigProcessor extends Processor
     protected function defineConstant(): void
     {
         // Define some global constants
-        \define('APP_DEBUG', (int)\env('APP_DEBUG', 0));
-        \define('SWOFT_DEBUG', (int)\env('SWOFT_DEBUG', 0));
+        define('APP_DEBUG', (int)env('APP_DEBUG', 0));
+        define('SWOFT_DEBUG', (int)env('SWOFT_DEBUG', 0));
     }
 }

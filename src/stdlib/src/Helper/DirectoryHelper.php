@@ -14,6 +14,7 @@ class DirectoryHelper extends FSHelper
      *
      * @param string  $dir
      * @param integer $mode
+     *
      * @return void
      */
     public static function make(string $dir, int $mode = 0755): void
@@ -24,15 +25,16 @@ class DirectoryHelper extends FSHelper
     }
 
     /**
-     * Directory iterator
+     * Directory recursive iterator
      *
      * @param string $path
      * @param int    $iteratorFlags
      * @param int    $mode
      * @param int    $flags
+     *
      * @return \RecursiveIteratorIterator
      */
-    public static function iterator(
+    public static function recursiveIterator(
         string $path,
         int $iteratorFlags = \FilesystemIterator::KEY_AS_PATHNAME,
         int $mode = \RecursiveIteratorIterator::LEAVES_ONLY,
@@ -48,9 +50,29 @@ class DirectoryHelper extends FSHelper
     }
 
     /**
+     * Directory iterator
+     *
+     * @param string $path
+     *
+     * @return \IteratorIterator
+     */
+    public static function iterator(string $path): \IteratorIterator
+    {
+        if (empty($path) || !file_exists($path)) {
+            throw new \InvalidArgumentException('File path is not exist! Path: ' . $path);
+        }
+
+        $directoryIterator = new \DirectoryIterator($path);
+
+        return new \IteratorIterator($directoryIterator);
+    }
+
+
+    /**
      * Find all php files in the dir-path.
      *
      * @param string $dirPath
+     *
      * @return \RecursiveIteratorIterator
      */
     public static function phpFilesIterator(string $dirPath): \RecursiveIteratorIterator
@@ -77,10 +99,11 @@ class DirectoryHelper extends FSHelper
 
     /**
      * Directory iterator but support filter files.
+     *
      * @param string   $dirPath
      * @param callable $filter
-     * eg: only find php file
-     * $filter = function (\SplFileInfo $f): bool {
+     *      eg: only find php file
+     *      $filter = function (\SplFileInfo $f): bool {
      *      $name = $f->getFilename();
      *
      *       // Skip hidden files and directories.
@@ -97,6 +120,7 @@ class DirectoryHelper extends FSHelper
      *      return $f->isFile() && \substr($name, -4) === '.php';
      * }
      * @param int      $flags
+     *
      * @return \RecursiveIteratorIterator
      * @throws \InvalidArgumentException
      */
