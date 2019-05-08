@@ -87,7 +87,7 @@ class Config extends Collection
      *
      * @return mixed
      */
-    public function get(string $key, $default = null)
+    public function get(string $key = null, $default = null)
     {
         return ArrayHelper::get($this->items, $key, $default);
     }

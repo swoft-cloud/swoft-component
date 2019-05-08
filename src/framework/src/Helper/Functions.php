@@ -1,10 +1,18 @@
 <?php
 
+use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Config\Config;
+use Swoft\Context\Context;
 use \Swoft\Context\ContextInterface;
+use Swoft\Event\Manager\EventManager;
 use Swoft\Http\Server\HttpContext;
+use Swoft\Http\Server\HttpServer;
 use Swoft\Rpc\Server\ServiceContext;
+use Swoft\Server\Server;
 use Swoft\Task\FinishContext;
 use Swoft\Task\TaskContext;
+use Swoft\WebSocket\Server\WebSocketServer;
 
 if (!function_exists('env')) {
     /**
@@ -20,7 +28,7 @@ if (!function_exists('env')) {
         $value = getenv($key);
 
         if ($value === false) {
-            return \value($default);
+            return value($default);
         }
 
         switch (strtolower($value)) {
@@ -54,19 +62,19 @@ if (!function_exists('alias')) {
      */
     function alias(string $key): string
     {
-        return \Swoft::getAlias($key);
+        return Swoft::getAlias($key);
     }
 }
 
 if (!function_exists('event')) {
     /**
-     * @return \Swoft\Event\Manager\EventManager
+     * @return EventManager
      * @throws ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ContainerException
      */
-    function event(): \Swoft\Event\Manager\EventManager
+    function event(): EventManager
     {
-        return \Swoft\Bean\BeanFactory::getBean('eventManager');
+        return BeanFactory::getBean('eventManager');
     }
 }
 
@@ -78,16 +86,16 @@ if (!function_exists('config')) {
      * @param mixed  $default
      *
      * @return mixed
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ContainerException
      */
-    function config(string $key, $default = null)
+    function config(string $key = null, $default = null)
     {
-        if (!\Swoft\Bean\BeanFactory::hasBean('config')) {
+        if (!BeanFactory::hasBean('config')) {
             return sprintf('${%s}', $key);
         }
 
-        /* @var \Swoft\Config\Config $config */
-        $config = \Swoft\Bean\BeanFactory::getSingleton('config');
+        /* @var Config $config */
+        $config = BeanFactory::getSingleton('config');
 
         return $config->get($key, $default);
     }
@@ -113,9 +121,9 @@ if (!function_exists('context')) {
      *
      * @return ContextInterface|HttpContext|ServiceContext|TaskContext|FinishContext
      */
-    function context(): \Swoft\Context\ContextInterface
+    function context(): ContextInterface
     {
-        return \Swoft\Context\Context::get();
+        return Context::get();
     }
 }
 
@@ -123,10 +131,10 @@ if (!function_exists('server')) {
     /**
      * Get server instance
      *
-     * @return \Swoft\Server\Server|\Swoft\Http\Server\HttpServer|\Swoft\WebSocket\Server\WebSocketServer
+     * @return Server|HttpServer|WebSocketServer
      */
-    function server(): \Swoft\Server\Server
+    function server(): Server
     {
-        return \Swoft\Server\Server::getServer();
+        return Server::getServer();
     }
 }
