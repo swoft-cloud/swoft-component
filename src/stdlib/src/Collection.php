@@ -7,7 +7,6 @@ use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Stdlib\Contract\Arrayable;
 use Swoft\Stdlib\Contract\Jsonable;
 use Swoft\Stdlib\Helper\Arr;
-use Swoft\Stdlib\Helper\ArrayHelper;
 
 /**
  * Class Collection
@@ -79,7 +78,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
     {
         return $value instanceof self
             ? new static($value)
-            : new static(ArrayHelper::wrap($value));
+            : new static(Arr::wrap($value));
     }
 
     /**
@@ -1841,7 +1840,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
         }
 
         return function ($item) use ($value) {
-            return ArrayHelper::get($item, $value);
+            return Arr::get($item, $value);
         };
     }
 
