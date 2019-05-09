@@ -18,7 +18,7 @@ interface ConnectionInterface
     public function send(string $data): bool;
 
     /**
-     * @return string
+     * @return string|bool
      */
-    public function recv(): string;
+    public function recv();
 }
