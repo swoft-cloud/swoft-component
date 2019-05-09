@@ -4,9 +4,13 @@
 namespace Swoft\Rpc\Client;
 
 
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\AbstractConnection;
+use Swoft\Log\Debug;
+use Swoft\Log\Helper\Log;
 use Swoft\Rpc\Client\Contract\ConnectionInterface;
 use Swoft\Rpc\Client\Contract\ProviderInterface;
 use Swoft\Rpc\Client\Exception\RpcClientException;
@@ -42,7 +46,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return Connection
      * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ContainerException
      */
     public static function new(RpcClient $client, Pool $pool): Connection
     {
@@ -79,10 +83,16 @@ class Connection extends AbstractConnection implements ConnectionInterface
 
     /**
      * @return bool
+     * @throws RpcClientException
+     * @throws \ReflectionException
+     * @throws ContainerException
      */
     public function reconnect(): bool
     {
-        return false;
+        $this->create();
+
+        Debug::log('Rpc client reconnect success!');
+        return true;
     }
 
     /**
@@ -113,9 +123,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
     }
 
     /**
-     * @return string
+     * @return string|bool
      */
-    public function recv(): string
+    public function recv()
     {
         return $this->connection->recv((float)-1);
     }

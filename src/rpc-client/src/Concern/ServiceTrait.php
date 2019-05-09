@@ -3,7 +3,10 @@
 
 namespace Swoft\Rpc\Client\Concern;
 
+use ReflectionException;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Connection\Pool\Exception\ConnectionPoolException;
 use Swoft\Rpc\Client\Connection;
 use Swoft\Rpc\Client\Exception\RpcClientException;
 use Swoft\Rpc\Client\Pool;
@@ -24,12 +27,12 @@ trait ServiceTrait
      * @param array  $params
      *
      * @return mixed
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Connection\Pool\Exception\ConnectionPoolException
-     * @throws \Swoft\Rpc\Client\Exception\RpcClientException
+     * @throws ReflectionException
+     * @throws ContainerException
+     * @throws ConnectionPoolException
+     * @throws RpcClientException
      */
-    private function __proxyCall(string $interfaceClass, string $methodName, array $params)
+    protected function __proxyCall(string $interfaceClass, string $methodName, array $params)
     {
         $poolName = ReferenceRegister::getPool(__CLASS__);
         $version  = ReferenceRegister::getVersion(__CLASS__);
@@ -47,14 +50,9 @@ trait ServiceTrait
 
         $protocol = Protocol::new($version, $interfaceClass, $methodName, $params, $ext);
         $data     = $packet->encode($protocol);
+        $message = sprintf('Rpc call failed.interface=%s method=%s', $interfaceClass, $methodName);
 
-        if (!$connection->send($data)) {
-            throw new RpcClientException(
-                sprintf('Rpc call failed.interface=%s method=%s', $interfaceClass, $methodName)
-            );
-        }
-
-        $result = $connection->recv();
+        $result = $this->sendAndRecv($connection, $data, $message);
         $connection->release();
 
         $response = $packet->decodeResponse($result);
@@ -71,5 +69,43 @@ trait ServiceTrait
 
         return $response->getResult();
 
+    }
+
+    /**
+     * @param Connection $connection
+     * @param string     $data
+     * @param string     $message
+     * @param bool       $reconnect
+     *
+     * @return string
+     * @throws RpcClientException
+     * @throws ReflectionException
+     * @throws ContainerException
+     */
+    private function sendAndRecv(Connection $connection, string $data, string $message, bool $reconnect = false): string
+    {
+        // Reconnect
+        if ($reconnect) {
+            $connection->reconnect();
+        }
+
+        if (!$connection->send($data)) {
+            if ($reconnect) {
+                throw new RpcClientException($message);
+            }
+
+            return $this->sendAndRecv($connection, $data, $message, true);
+        }
+
+        $result = $connection->recv();
+        if ($result === false || empty($result)) {
+            if ($reconnect) {
+                throw new RpcClientException($message);
+            }
+
+            return $this->sendAndRecv($connection, $data, $message, true);
+        }
+
+        return $result;
     }
 }
