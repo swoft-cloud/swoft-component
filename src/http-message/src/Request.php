@@ -11,6 +11,7 @@ use Swoft\Http\Message\Contract\ServerRequestInterface;
 use Swoft\Http\Message\Helper\HttpHelper;
 use Swoft\Http\Message\Stream\Stream;
 use Swoft\Http\Message\Uri\Uri;
+use Swoft\Stdlib\Helper\Str;
 use Swoole\Http\Request as CoRequest;
 
 /**
@@ -311,8 +312,17 @@ class Request extends PsrRequest implements ServerRequestInterface
             return $this->parsedBody;
         }
 
-
         $parsedBody = $this->coRequest->post ?? [];
+
+        $needles     = [
+            ContentType::FORM,
+            ContentType::FORM_DATA,
+        ];
+        $contentType = $this->getHeaderLine(ContentType::KEY);
+        if (Str::contains($contentType, $needles)) {
+            $this->parsedBody = $parsedBody;
+            return $parsedBody;
+        }
 
         // Parse body
         if (!$parsedBody && !$this->isGet()) {
@@ -323,7 +333,6 @@ class Request extends PsrRequest implements ServerRequestInterface
         }
 
         $this->parsedBody = $parsedBody;
-
         return $this->parsedBody;
     }
 
