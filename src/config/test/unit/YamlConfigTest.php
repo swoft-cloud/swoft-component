@@ -25,6 +25,7 @@ class YamlConfigTest extends TestCase
         $config = new Config();
         $config->setPath(__DIR__ . '/../config-yaml');
         $config->setType(Config::TYPE_YAML);
+        $config->setEnv('pre');
         $config->init();;
 
         $this->config = $config;
@@ -43,15 +44,10 @@ class YamlConfigTest extends TestCase
         $this->assertEquals($value2, 'value2');
 
         $value2 = $this->config->get('key.key2');
-        $this->assertEquals($value2, 'value2');
+        $this->assertEquals($value2, 'value2Pro');
 
-        $dbUser = $this->config->get('db.user');
-
-        $this->assertEquals($dbUser, 'db');
-
-        $defaultUser = $this->config->get('db.user.key', 'defaultUser');
-
-        $this->assertEquals($defaultUser, 'defaultUser');
+        $value2 = $this->config->get('data.key3.key1');
+        $this->assertEquals($value2, ['key' => 'dataChildKey1']);
     }
 
     public function testOffsetGet()
@@ -60,19 +56,18 @@ class YamlConfigTest extends TestCase
         $this->assertEquals($value2, 'value2');
 
         $value2 = $this->config->offsetGet('key.key2');
-        $this->assertEquals($value2, 'value2');
+        $this->assertEquals($value2, 'value2Pro');
 
-        $dbUser = $this->config->offsetGet('db.user');
-
-        $this->assertEquals($dbUser, 'db');
+        $value2 = $this->config->offsetGet('data.key3.key1');
+        $this->assertEquals($value2, ['key' => 'dataChildKey1']);
     }
 
     public function testOffsetExists()
     {
-        $result = $this->config->offsetExists('db.user.key');
+        $result = $this->config->offsetExists('data.key3.key9');
         $this->assertFalse($result);
 
-        $result = $this->config->offsetExists('db.user');
+        $result = $this->config->offsetExists('data.key3.key1');
         $this->assertTrue($result);
     }
 

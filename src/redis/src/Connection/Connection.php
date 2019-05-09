@@ -4,6 +4,7 @@
 namespace Swoft\Redis\Connection;
 
 
+use Redis;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\AbstractConnection;
@@ -86,7 +87,6 @@ use Swoft\Stdlib\Helper\PhpHelper;
  * @method int sUnionStore(string $dstKey, string $key1, string $key2, string $keyN = null)
  * @method array|bool scan(int &$iterator, string $pattern = null, int $count = 0)
  * @method mixed script(string|array $nodeParams, string $command, string $script)
- * @method bool set(string $key, string $value, int $timeout = null)
  * @method int setBit(string $key, int $offset, int $value)
  * @method string setRange(string $key, int $offset, string $value)
  * @method int setex(string $key, int $ttl, string $value)
@@ -130,7 +130,6 @@ use Swoft\Stdlib\Helper\PhpHelper;
  * @method int zRemRangeByScore(string $key, float|string $start, float|string $end)
  * @method int zInterStore(string $Output, array $ZSetKeys, array $Weights = null, string $aggregateFunction = 'SUM')
  * @method int zUnionStore(string $Output, array $ZSetKeys, array $Weights = null, string $aggregateFunction = 'SUM')
- * @method bool mset(array $keyValues)
  * @method bool hMSet(string $key, array $keyValues)
  */
 abstract class Connection extends AbstractConnection implements ConnectionInterface
@@ -268,7 +267,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     ];
 
     /**
-     * @var \Redis|\RedisCluster
+     * @var Redis|\RedisCluster
      */
     protected $client;
 
@@ -454,7 +453,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     /**
      * @param string $key
      *
-     * @return bool|string If key didn't exist, FALSE is returned. Otherwise, the value
+     * @return bool|mixed If key didn't exist, FALSE is returned. Otherwise, the value
      *
      * @throws ContainerException
      * @throws RedisException
@@ -464,10 +463,32 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     {
         $result = $this->command('get', [$key]);
 
-        $hit  = ($result === false) ? 0 : 1;
+        $hit = 0;
+        if ($result !== false) {
+            $hit    = 1;
+            $result = unserialize($result);
+        }
+
         $name = $this->getCountingKey(__FUNCTION__);
 
         Log::counting($name, $hit, 1);
+        return $result;
+    }
+
+    /**
+     * @param string   $key
+     * @param mixed    $value
+     * @param int|null $timeout
+     *
+     * @return bool
+     * @throws ContainerException
+     * @throws RedisException
+     * @throws \ReflectionException
+     */
+    public function set(string $key, $value, int $timeout = null): bool
+    {
+        $result = $this->command('set', [$key, serialize($value), $timeout]);
+
         return $result;
     }
 
@@ -486,12 +507,40 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
         foreach ($values as $index => $value) {
             if ($value !== false && isset($keys[$index])) {
                 $key          = $keys[$index];
-                $result[$key] = $value;
+                $result[$key] = unserialize($value);
             }
         }
 
         $name = $this->getCountingKey(__FUNCTION__);
         Log::counting($name, \count($result), \count($keys));
+
+        return $result;
+    }
+
+    /**
+     * @param array $keyValues
+     * @param int   $ttl
+     *
+     * @return bool
+     * @throws ContainerException
+     * @throws RedisException
+     * @throws \ReflectionException
+     */
+    public function mset(array $keyValues, int $ttl = 0): bool
+    {
+        $kVs = [];
+        foreach ($keyValues as $key => $value) {
+            $kVs[$key] = serialize($value);
+        }
+
+        $result = $this->command('mset', [$kVs]);
+        if ($ttl == 0) {
+            return $result;
+        }
+
+        foreach ($keyValues as $k => $v) {
+            $this->command('expire', [$k, $ttl]);
+        }
 
         return $result;
     }
@@ -506,7 +555,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      */
     public function pipeline(callable $callback): array
     {
-        return $this->multi(\Redis::PIPELINE, $callback);
+        return $this->multi(Redis::PIPELINE, $callback);
     }
 
     /**
@@ -519,7 +568,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      */
     public function transaction(callable $callback): array
     {
-        return $this->multi(\Redis::MULTI, $callback);
+        return $this->multi(Redis::MULTI, $callback);
     }
 
     /**
@@ -582,7 +631,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      */
     private function multi(int $mode, callable $callback, bool $reconnect = false): array
     {
-        $name   = ($mode == \Redis::PIPELINE) ? 'pipeline' : 'transaction';
+        $name   = ($mode == Redis::PIPELINE) ? 'pipeline' : 'transaction';
         $proKey = \sprintf('redis.%s', $name);
         try {
             Log::profileStart($proKey);

@@ -2,9 +2,17 @@
 
 namespace Swoft\Processor;
 
+use function alias;
+use function file_exists;
+use function get_class;
+use InvalidArgumentException;
+use ReflectionException;
+use function sprintf;
 use Swoft\Annotation\AnnotationRegister;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\BeanHandler;
+use Swoft\Config\Config;
 use Swoft\Contract\ComponentInterface;
 use Swoft\Contract\DefinitionInterface;
 use Swoft\Log\Helper\CLog;
@@ -21,8 +29,8 @@ class BeanProcessor extends Processor
      * Handle bean
      *
      * @return bool
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function handle(): bool
     {
@@ -40,6 +48,12 @@ class BeanProcessor extends Processor
         BeanFactory::addParsers($parsers);
         BeanFactory::setHandler($handler);
         BeanFactory::init();
+
+        /* @var Config $config*/
+        $config = BeanFactory::getBean('config');
+
+        CLog::info('config path=%s', $config->getPath());
+        CLog::info('config env=%s', $config->getEnv());
 
         $stats = BeanFactory::getStats();
 
@@ -67,7 +81,7 @@ class BeanProcessor extends Processor
                 continue;
             }
 
-            $loaderClass = \get_class($autoLoader);
+            $loaderClass = get_class($autoLoader);
 
             // If the component is disabled by user.
             if (isset($disabledLoaders[$loaderClass])) {
@@ -85,12 +99,12 @@ class BeanProcessor extends Processor
 
         // Bean definitions
         $beanFile = $this->application->getBeanFile();
-        $beanFile = \alias($beanFile);
+        $beanFile = alias($beanFile);
 
-        if (!\file_exists($beanFile)) {
-            throw new \InvalidArgumentException(\sprintf(
-                'The bean config file of %s is not exist!', $beanFile
-            ));
+        if (!file_exists($beanFile)) {
+            throw new InvalidArgumentException(
+                sprintf('The bean config file of %s is not exist!', $beanFile)
+            );
         }
 
         $beanDefinitions = require $beanFile;

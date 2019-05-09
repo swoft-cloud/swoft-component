@@ -18,30 +18,22 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     public function getConfigData(): array
     {
         return [
-            'key'   => [
-                'key2' => 'value2'
+            'key'  => [
+                'key2' => 'value2Pro',
+                'key3' => 'value2'
             ],
-            'key2'  => 'value2',
-            'db'    => [
-                'host'     => '127.0.0.1',
-                'user'     => 'db',
-                'password' => 'password',
-            ],
-            'redis' => [
-                'host'     => '127.0.0.1',
-                'user'     => 'redis',
-                'password' => 'password',
-            ],
-            'user'  => [
-                'sms'    => [
-                    'monitor' => '135xxx',
-                ],
-                'member' => [
-                    'score' => [
-                        'one' => 12,
+            'key2' => 'value2',
+            'key3' => 'value3Pro',
+            'data' => [
+                'key'  => 'value2Pro',
+                'key2' => 'value2ProKey2',
+                'key3' => [
+                    'key1' => [
+                        'key' => 'dataChildKey1'
                     ]
                 ]
             ]
         ];
     }
 }
+
