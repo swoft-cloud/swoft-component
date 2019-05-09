@@ -887,7 +887,7 @@ class ArrayHelper
      *
      * @return mixed
      */
-    public static function get($array, $key, $default = null)
+    public static function get($array, $key = null, $default = null)
     {
         if (null === $key) {
             return $array;

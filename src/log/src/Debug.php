@@ -3,6 +3,7 @@
 
 namespace Swoft\Log;
 
+use Swoft\Co;
 use Swoft\Log\Helper\CLog;
 use Swoft\Log\Helper\Log;
 
@@ -25,7 +26,9 @@ class Debug
         // Console log
         CLog::debug($message, ...$params);
 
-        // Application log
-        Log::debug($message, ...$params);
+        // In coroutine to write application log
+        if (Co::id() > 0) {
+            Log::debug($message, ...$params);
+        }
     }
 }

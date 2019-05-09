@@ -2,8 +2,17 @@
 
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Container;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Concern\PathAliasTrait;
 use Swoft\Event\EventInterface;
 use Swoft\Event\Manager\EventManager;
+use Swoft\Http\Server\HttpServer;
+use Swoft\I18n\I18n;
+use Swoft\Server\Server as SwoftServer;
+use Swoft\Stdlib\Reflections;
+use Swoft\SwoftApplication;
+use Swoft\WebSocket\Server\WebSocketServer;
+use Swoole\Server;
 
 /**
  * Swoft is a helper class serving common framework functions.
@@ -12,10 +21,16 @@ use Swoft\Event\Manager\EventManager;
  */
 class Swoft
 {
-    use \Swoft\Concern\PathAliasTrait;
+    use PathAliasTrait;
 
+    /**
+     * Swoft version
+     */
     public const VERSION = '2.0.0-beta';
 
+    /**
+     * Swoft log
+     */
     public const FONT_LOGO = "
   ____                __ _     _____                                            _      ____         
  / ___|_      _____  / _| |_  |  ___| __ __ _ _ __ ___   _____      _____  _ __| | __ |___ \  __  __
@@ -25,14 +40,14 @@ class Swoft
 ";
 
     /**
-     * @var \Swoft\SwoftApplication
+     * @var SwoftApplication
      */
     public static $app;
 
     /**
-     * @return \Swoft\SwoftApplication
+     * @return SwoftApplication
      */
-    public static function app(): \Swoft\SwoftApplication
+    public static function app(): SwoftApplication
     {
         return self::$app;
     }
@@ -40,19 +55,19 @@ class Swoft
     /**
      * Get main server instance
      *
-     * @return \Swoft\Server\Server|\Swoft\Http\Server\HttpServer|\Swoft\WebSocket\Server\WebSocketServer
+     * @return SwoftServer|HttpServer|WebSocketServer
      */
-    public static function server(): \Swoft\Server\Server
+    public static function server(): SwoftServer
     {
-        return \Swoft\Server\Server::getServer();
+        return SwoftServer::getServer();
     }
 
     /**
      * Get swoole server
      *
-     * @return \Swoole\Server
+     * @return Server
      */
-    public static function swooleServer(): \Swoole\Server
+    public static function swooleServer(): Server
     {
         return self::server()->getSwooleServer();
     }
@@ -79,8 +94,8 @@ class Swoft
      * @param string $name Bean name Or alias Or class name
      *
      * @return object|mixed
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \ReflectionException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public static function getBean(string $name)
     {
@@ -93,7 +108,7 @@ class Swoft
      * @param string $name
      *
      * @return mixed
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ContainerException
      */
     public static function getSingleton(string $name)
     {
@@ -114,7 +129,7 @@ class Swoft
      */
     public static function getReflection(string $class): array
     {
-        return \Swoft\Stdlib\Reflections::get($class);
+        return Reflections::get($class);
     }
 
     /**
@@ -125,12 +140,29 @@ class Swoft
      * @param array                 $params
      *
      * @return EventInterface
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ContainerException
      */
     public static function trigger($event, $target = null, ...$params): EventInterface
     {
         /** @see EventManager::trigger() */
         return BeanFactory::getSingleton('eventManager')->trigger($event, $target, $params);
+    }
+
+    /**
+     * @param string $key
+     * @param array  $params
+     * @param string $locale
+     *
+     * @return string
+     * @throws ReflectionException
+     * @throws ContainerException
+     */
+    public static function t(string $key, array $params, string $locale = I18n::DEFAULT_LANG): string
+    {
+        /* @var I18n $i18n */
+        $i18n = BeanFactory::getBean('i18n');
+
+        return $i18n->translate($key, $params, $locale);
     }
 
     /**
@@ -141,7 +173,7 @@ class Swoft
      * @param array                 $params
      *
      * @return EventInterface
-     * @throws \Throwable
+     * @throws ContainerException
      */
     public static function triggerByArray($event, $target = null, array $params = []): EventInterface
     {

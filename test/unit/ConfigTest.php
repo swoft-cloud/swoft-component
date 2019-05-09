@@ -20,6 +20,24 @@ class ConfigTest extends TestCase
      */
     public function testA()
     {
+        $data = [
+            'data'  => 'baseData',
+            'array' => [
+                'arr',
+                'arr2',
+            ],
+            'other' => [
+                'data'  => 'otherData',
+                'array' => [
+                    'arrOther',
+                    'arr2Other',
+                ]
+            ]
+        ];
+
+        $result = config();
+        $this->assertEquals($result, $data);
+
         /* @var DemoConfig $config */
         $config = BeanFactory::getBean(DemoConfig::class);
         $this->assertEquals('baseData', $config->getData());
