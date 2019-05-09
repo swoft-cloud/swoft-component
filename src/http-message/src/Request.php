@@ -11,6 +11,7 @@ use Swoft\Http\Message\Contract\ServerRequestInterface;
 use Swoft\Http\Message\Helper\HttpHelper;
 use Swoft\Http\Message\Stream\Stream;
 use Swoft\Http\Message\Uri\Uri;
+use Swoft\Stdlib\Helper\Str;
 use Swoole\Http\Request as CoRequest;
 
 /**
@@ -294,7 +295,8 @@ class Request extends PsrRequest implements ServerRequestInterface
      */
     public function getRawBody(): string
     {
-        return $this->coRequest->rawContent();
+        $body = $this->coRequest->rawContent();
+        return ($body === false) ? '' : $body;
     }
 
     /**
@@ -306,17 +308,31 @@ class Request extends PsrRequest implements ServerRequestInterface
     public function getParsedBody()
     {
         // Need init
-        if ($this->parsedBody === null) {
-            $parsedBody = $this->coRequest->post ?? [];
-
-            // Parse body
-            if (!$parsedBody && !$this->isGet()) {
-                $parsedBody = $this->parseRawBody($this->getRawBody());
-            }
-
-            $this->parsedBody = $parsedBody;
+        if ($this->parsedBody !== null) {
+            return $this->parsedBody;
         }
 
+        $parsedBody = $this->coRequest->post ?? [];
+
+        $needles     = [
+            ContentType::FORM,
+            ContentType::FORM_DATA,
+        ];
+        $contentType = $this->getHeaderLine(ContentType::KEY);
+        if (Str::contains($contentType, $needles)) {
+            $this->parsedBody = $parsedBody;
+            return $parsedBody;
+        }
+
+        // Parse body
+        if (!$parsedBody && !$this->isGet()) {
+            $rawBody = $this->getRawBody();
+            if (!empty($rawBody)) {
+                $parsedBody = $this->parseRawBody($rawBody);
+            }
+        }
+
+        $this->parsedBody = $parsedBody;
         return $this->parsedBody;
     }
 
@@ -365,12 +381,13 @@ class Request extends PsrRequest implements ServerRequestInterface
 
     /**
      * @inheritdoc
-     * @see getAttributes()
      *
      * @param string $name    The attribute name.
      * @param mixed  $default Default value to return if the attribute does not exist.
      *
      * @return mixed
+     * @see getAttributes()
+     *
      */
     public function getAttribute($name, $default = null)
     {
@@ -380,12 +397,12 @@ class Request extends PsrRequest implements ServerRequestInterface
     /**
      * @inheritdoc
      *
-     * @see getAttributes()
-     *
      * @param string $name  The attribute name.
      * @param mixed  $value The value of the attribute.
      *
      * @return static
+     * @see getAttributes()
+     *
      */
     public function withAttribute($name, $value)
     {
@@ -398,11 +415,11 @@ class Request extends PsrRequest implements ServerRequestInterface
     /**
      * @inheritdoc
      *
-     * @see getAttributes()
-     *
      * @param string $name The attribute name.
      *
      * @return static
+     * @see getAttributes()
+     *
      */
     public function withoutAttribute($name)
     {

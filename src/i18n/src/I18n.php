@@ -86,7 +86,7 @@ class I18n
     protected function loadLanguages(string $sourcePath)
     {
         $languages = [];
-        $files     = DirectoryHelper::iterator($sourcePath);
+        $files     = DirectoryHelper::recursiveIterator($sourcePath);
 
         /* @var \SplFileInfo $splFileInfo */
         foreach ($files as $splFileInfo) {

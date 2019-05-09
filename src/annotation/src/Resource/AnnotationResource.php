@@ -205,7 +205,7 @@ class AnnotationResource extends Resource
         $nsPaths = $loader->getPrefixDirs();
 
         foreach ($nsPaths as $ns => $path) {
-            $iterator = DirectoryHelper::iterator($path);
+            $iterator = DirectoryHelper::recursiveIterator($path);
 
             /* @var \SplFileInfo $splFileInfo */
             foreach ($iterator as $splFileInfo) {
