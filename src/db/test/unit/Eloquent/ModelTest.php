@@ -6,6 +6,7 @@ namespace SwoftTest\Db\Unit\Eloquent;
 
 use PhpParser\ErrorHandler\Collecting;
 use Swoft\Db\DB;
+use Swoft\Db\Eloquent\Collection;
 use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Unit\TestCase;
 use Swoole\Event;
@@ -313,5 +314,25 @@ on A.id=B.id;', [$resCount - 20]);
         $sql    = User::where($wheres)->toSql();
 
         $this->assertEquals($expectSql, $sql);
+    }
+
+    public function testValue()
+    {
+        $res = User::value('user_desc');
+
+        $this->assertIsString($res);
+    }
+
+    public function testChunkId()
+    {
+        User::chunkById(2, function (Collection $users) {
+            /* @var $user User */
+            foreach ($users as $user) {
+                $this->assertGreaterThan(0, $user->getId());
+            }
+            $res = $users->pluck('age', 'id')->toArray();
+            $this->assertIsArray($res);
+        });
+
     }
 }
