@@ -701,6 +701,7 @@ class BuilderTest extends TestCase
             ['a' => 5, 'b' => 21]
         ]);
 
-        var_dump($collection->groupBy(['a','b']));
+        $this->assertArrayHasKey(1, $collection->groupBy(['a', 'b']));
+        $this->assertArrayHasKey(5, $collection->groupBy(['a', 'b']));
     }
 }
