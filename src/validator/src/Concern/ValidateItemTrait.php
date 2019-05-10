@@ -39,7 +39,7 @@ trait ValidateItemTrait
      *
      * @throws ValidatorException
      */
-    protected static function validateIsArray(array &$data, string $propertyName, $item, $default): bool
+    protected function validateIsArray(array &$data, string $propertyName, $item, $default): bool
     {
         /* @var IsBool $item */
         $message = $item->getMessage();
@@ -74,7 +74,7 @@ trait ValidateItemTrait
      *
      * @throws ValidatorException
      */
-    protected static function validateIsBool(array &$data, string $propertyName, $item, $default): bool
+    protected function validateIsBool(array &$data, string $propertyName, $item, $default): bool
     {
         /* @var IsBool $item */
         $message = $item->getMessage();
@@ -90,7 +90,8 @@ trait ValidateItemTrait
         }
 
         $value = $data[$propertyName];
-        if (is_bool($value)) {
+        if ($value == 'true' || $value == 'false' || is_bool($value)) {
+            $data[$propertyName] = (bool)$value;
             return false;
         }
 
@@ -107,7 +108,7 @@ trait ValidateItemTrait
      * @return bool
      * @throws ValidatorException
      */
-    protected static function validateIsFloat(array &$data, string $propertyName, $item, $default): bool
+    protected function validateIsFloat(array &$data, string $propertyName, $item, $default): bool
     {
         /* @var IsFloat $item */
         $message = $item->getMessage();
@@ -123,7 +124,9 @@ trait ValidateItemTrait
         }
 
         $value = $data[$propertyName];
-        if (is_float($value)) {
+        $value = filter_var($value, FILTER_VALIDATE_FLOAT);
+        if ($value !== false) {
+            $data[$propertyName] = $value;
             return false;
         }
 
@@ -140,7 +143,7 @@ trait ValidateItemTrait
      * @return bool
      * @throws ValidatorException
      */
-    protected static function validateIsInt(array &$data, string $propertyName, $item, $default): bool
+    protected function validateIsInt(array &$data, string $propertyName, $item, $default): bool
     {
         /* @var IsInt $item */
         $message = $item->getMessage();
@@ -156,7 +159,9 @@ trait ValidateItemTrait
         }
 
         $value = $data[$propertyName];
-        if (is_int($value)) {
+        $value = filter_var($value, FILTER_VALIDATE_INT);
+        if ($value !== false) {
+            $data[$propertyName] = $value;
             return false;
         }
 
@@ -173,7 +178,7 @@ trait ValidateItemTrait
      * @return bool
      * @throws ValidatorException
      */
-    protected static function validateIsString(array &$data, string $propertyName, $item, $default): bool
+    protected function validateIsString(array &$data, string $propertyName, $item, $default): bool
     {
         /* @var IsString $item */
         $message = $item->getMessage();
@@ -203,7 +208,7 @@ trait ValidateItemTrait
      *
      * @throws ValidatorException
      */
-    protected static function validateEmail(array &$data, string $propertyName, $item): void
+    protected function validateEmail(array &$data, string $propertyName, $item): void
     {
         $value = $data[$propertyName];
         if (ValidatorHelper::validateEmail($value)) {
@@ -224,7 +229,7 @@ trait ValidateItemTrait
      *
      * @throws ValidatorException
      */
-    protected static function validateEnum(array &$data, string $propertyName, $item): void
+    protected function validateEnum(array &$data, string $propertyName, $item): void
     {
         /* @var Enum $item */
         $values = $item->getValues();
@@ -246,7 +251,7 @@ trait ValidateItemTrait
      *
      * @throws ValidatorException
      */
-    protected static function validateIp(array &$data, string $propertyName, $item): void
+    protected function validateIp(array &$data, string $propertyName, $item): void
     {
         $value = $data[$propertyName];
         if (ValidatorHelper::validateIp($value)) {
@@ -267,7 +272,7 @@ trait ValidateItemTrait
      *
      * @throws ValidatorException
      */
-    protected static function validateLength(array &$data, string $propertyName, $item): void
+    protected function validateLength(array &$data, string $propertyName, $item): void
     {
         /* @var Length $item */
         $min = $item->getMin();
@@ -292,7 +297,7 @@ trait ValidateItemTrait
      *
      * @throws ValidatorException
      */
-    protected static function validateMax(array &$data, string $propertyName, $item): void
+    protected function validateMax(array &$data, string $propertyName, $item): void
     {
         /* @var Max $item */
         $max   = $item->getValue();
@@ -314,7 +319,7 @@ trait ValidateItemTrait
      *
      * @throws ValidatorException
      */
-    protected static function validateMin(array &$data, string $propertyName, $item): void
+    protected function validateMin(array &$data, string $propertyName, $item): void
     {
         /* @var Min $item */
         $min   = $item->getValue();
@@ -337,7 +342,7 @@ trait ValidateItemTrait
      *
      * @throws ValidatorException
      */
-    protected static function validateMobile(array &$data, string $propertyName, $item): void
+    protected function validateMobile(array &$data, string $propertyName, $item): void
     {
         /* @var Mobile $item */
         $value = $data[$propertyName];
@@ -357,7 +362,7 @@ trait ValidateItemTrait
      *
      * @throws ValidatorException
      */
-    protected static function validateNotEmpty(array &$data, string $propertyName, $item): void
+    protected function validateNotEmpty(array &$data, string $propertyName, $item): void
     {
         /* @var NotEmpty $item */
         $value = $data[$propertyName];
@@ -377,7 +382,7 @@ trait ValidateItemTrait
      *
      * @throws ValidatorException
      */
-    protected static function validatePattern(array &$data, string $propertyName, $item): void
+    protected function validatePattern(array &$data, string $propertyName, $item): void
     {
         /* @var Pattern $item */
         $regex = $item->getRegex();
@@ -398,7 +403,7 @@ trait ValidateItemTrait
      *
      * @throws ValidatorException
      */
-    protected static function validateRange(array &$data, string $propertyName, $item): void
+    protected function validateRange(array &$data, string $propertyName, $item): void
     {
         /* @var Range $item */
         $min = $item->getMin();

@@ -4,7 +4,9 @@ namespace Swoft\Http\Server\Parser;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Message\Contract\RequestParserInterface;
+use Swoft\Http\Server\Exception\HttpServerException;
 use Swoft\Stdlib\Helper\JsonHelper;
+use Throwable;
 
 /**
  * Class JsonRequestParser
@@ -19,13 +21,16 @@ class JsonRequestParser implements RequestParserInterface
      * @param string $content
      *
      * @return mixed
+     * @throws HttpServerException
      */
     public function parse(string $content)
     {
         try {
             $parsedBody = JsonHelper::decode($content, true);
-        } catch (\Exception $e) {
-            $parsedBody = $content;
+        } catch (Throwable $e) {
+            throw new HttpServerException(
+                sprintf('Request body parse to json errro(%s), body=%s', $e->getMessage(), $content)
+            );
         }
 
         return $parsedBody;

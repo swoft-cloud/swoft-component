@@ -595,7 +595,7 @@ class Builder
     public function value(string $column)
     {
         if ($result = $this->first([$column])) {
-            return $result->{$column};
+            return $result->getAttribute($column)[1];
         }
 
         return null;
@@ -691,7 +691,9 @@ class Builder
                 return false;
             }
 
-            $lastId = $results->last()->{$alias};
+            /* @var $last Model */
+            $last   = $results->last();
+            $lastId = $last->getAttribute($alias)[1];
 
             unset($results);
         } while ($countResults == $count);
