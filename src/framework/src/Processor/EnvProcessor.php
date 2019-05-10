@@ -40,6 +40,6 @@ class EnvProcessor extends Processor
 
         CLog::info('Env file(%s) is loaded', $envFile);
 
-        return $this->application->afterEvent();
+        return $this->application->afterEnv();
     }
 }
