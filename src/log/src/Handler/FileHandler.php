@@ -4,10 +4,21 @@
 namespace Swoft\Log\Handler;
 
 
+use function alias;
+use function array_column;
+use DateTime;
+use function dirname;
+use function implode;
+use function in_array;
+use InvalidArgumentException;
+use function is_dir;
 use Monolog\Handler\AbstractProcessingHandler;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Co;
 use Swoft\Log\Helper\Log;
 use Swoft\Stdlib\Helper\JsonHelper;
+use UnexpectedValueException;
 
 /**
  * Class FileHandler
@@ -35,7 +46,7 @@ class FileHandler extends AbstractProcessingHandler
      */
     public function init(): void
     {
-        $this->logFile = \alias($this->logFile);
+        $this->logFile = alias($this->logFile);
         $this->createDir();
     }
 
@@ -45,8 +56,8 @@ class FileHandler extends AbstractProcessingHandler
      * @param array $records
      *
      * @return void
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function handleBatch(array $records): void
     {
@@ -63,27 +74,27 @@ class FileHandler extends AbstractProcessingHandler
      *
      * @param array $records
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     protected function write(array $records): void
     {
         if (Log::getLogger()->isJson()) {
             $records = array_map([$this, 'formatJson'], $records);
         } else {
-            $records = \array_column($records, 'formatted');
+            $records = array_column($records, 'formatted');
         }
 
-        $messageText = \implode("\n", $records) . "\n";
+        $messageText = implode("\n", $records) . "\n";
 
         if (Co::id() <= 0) {
-            throw new \InvalidArgumentException('Write log file must be under Coroutine!');
+            throw new InvalidArgumentException('Write log file must be under Coroutine!');
         }
 
         $res = Co::writeFile($this->logFile, $messageText, FILE_APPEND);
 
         if ($res === false) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf('Unable to append to log file: %s', $this->logFile)
             );
         }
@@ -124,7 +135,7 @@ class FileHandler extends AbstractProcessingHandler
     {
         unset($record['formatted'], $record['context'], $record['extra']);
 
-        if ($record['datetime'] instanceof \DateTime) {
+        if ($record['datetime'] instanceof DateTime) {
             $record['datetime'] = $record['datetime']->format('Y-m-d H:i');
         }
         return JsonHelper::encode($record, JSON_UNESCAPED_UNICODE);
@@ -135,12 +146,12 @@ class FileHandler extends AbstractProcessingHandler
      */
     private function createDir(): void
     {
-        $logDir = \dirname($this->logFile);
+        $logDir = dirname($this->logFile);
 
-        if ($logDir !== null && !\is_dir($logDir)) {
+        if ($logDir !== null && !is_dir($logDir)) {
             $status = mkdir($logDir, 0777, true);
             if ($status === false) {
-                throw new \UnexpectedValueException(
+                throw new UnexpectedValueException(
                     sprintf('There is no existing directory at "%s" and its not buildable: ', $logDir)
                 );
             }
@@ -160,6 +171,6 @@ class FileHandler extends AbstractProcessingHandler
             return true;
         }
 
-        return \in_array($record['level'], $this->levels, true);
+        return in_array($record['level'], $this->levels, true);
     }
 }

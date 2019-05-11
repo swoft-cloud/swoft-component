@@ -4,6 +4,7 @@
 namespace Swoft\Log\Helper;
 
 use Monolog\Formatter\LineFormatter;
+use function sprintf;
 use Swoft\Log\CLogger;
 use Swoft\Log\Handler\CEchoHandler;
 use Swoft\Log\Handler\CFileHandler;
@@ -66,7 +67,7 @@ class CLog
     public static function debug(string $message, ...$params): void
     {
         if(SWOFT_DEBUG){
-            self::$cLogger->debug(\sprintf($message, ...$params), []);
+            self::$cLogger->debug(sprintf($message, ...$params), []);
         }
     }
 
@@ -78,7 +79,7 @@ class CLog
      */
     public static function info(string $message, ...$params): void
     {
-        self::$cLogger->info(\sprintf($message, ...$params), []);
+        self::$cLogger->info(sprintf($message, ...$params), []);
     }
 
     /**
@@ -89,7 +90,7 @@ class CLog
      */
     public static function warning(string $message, ...$params): void
     {
-        self::$cLogger->warning(\sprintf($message, ...$params), []);
+        self::$cLogger->warning(sprintf($message, ...$params), []);
     }
 
     /**
@@ -100,6 +101,6 @@ class CLog
      */
     public static function error(string $message, ...$params): void
     {
-        self::$cLogger->error(\sprintf($message, ...$params), []);
+        self::$cLogger->error(sprintf($message, ...$params), []);
     }
 }

@@ -4,9 +4,11 @@
 namespace Swoft\Log\Handler;
 
 
+use DateTime;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
+use function sprintf;
 use Toolkit\Cli\Color;
 use Toolkit\Cli\ColorTag;
 
@@ -52,7 +54,7 @@ class CEchoHandler extends AbstractProcessingHandler
             return;
         }
 
-        /* @var \DateTime $datetime */
+        /* @var DateTime $datetime */
         $datetime = $record['datetime'];
         $time     = $datetime->format('Y/m/d-H:i:s');
 
@@ -60,14 +62,14 @@ class CEchoHandler extends AbstractProcessingHandler
         $level     = $record['level'];
         $message   = $record['message'];
         $levelName = $record['level_name'];
-        $levelName = \sprintf('[%s]', $levelName);
+        $levelName = sprintf('[%s]', $levelName);
 
         // Add level tag
         $tagName   = self::STYLES[$level] ?? 'info';
         $levelName = ColorTag::add($levelName, $tagName);
 
         // Format message
-        $message = \sprintf('%s %s %s' . PHP_EOL, $time, $levelName, $message);
+        $message = sprintf('%s %s %s' . PHP_EOL, $time, $levelName, $message);
 
         echo Color::render($message);
     }
