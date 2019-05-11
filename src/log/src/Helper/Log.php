@@ -4,7 +4,10 @@
 namespace Swoft\Log\Helper;
 
 
+use ReflectionException;
+use function sprintf;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Log\Logger;
 
 class Log
@@ -14,12 +17,12 @@ class Log
      * @param array  $params
      *
      * @return bool
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function emergency(string $message, ...$params): bool
     {
-        return self::getLogger()->emergency(\sprintf($message, ...$params));
+        return self::getLogger()->emergency(sprintf($message, ...$params));
     }
 
     /**
@@ -27,13 +30,13 @@ class Log
      * @param array  $params
      *
      * @return bool
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function debug(string $message, ...$params): bool
     {
         if (APP_DEBUG) {
-            return self::getLogger()->debug(\sprintf($message, ...$params));
+            return self::getLogger()->debug(sprintf($message, ...$params));
         }
         
         return true;
@@ -44,12 +47,12 @@ class Log
      * @param array  $params
      *
      * @return bool
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function alert(string $message, ...$params): bool
     {
-        return self::getLogger()->alert(\sprintf($message, ...$params));
+        return self::getLogger()->alert(sprintf($message, ...$params));
     }
 
     /**
@@ -57,12 +60,12 @@ class Log
      * @param array  $params
      *
      * @return bool
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function info(string $message, ...$params): bool
     {
-        return self::getLogger()->info(\sprintf($message, ...$params));
+        return self::getLogger()->info(sprintf($message, ...$params));
     }
 
     /**
@@ -70,12 +73,12 @@ class Log
      * @param array  $params
      *
      * @return bool
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function warning(string $message, ...$params): bool
     {
-        return self::getLogger()->warning(\sprintf($message, ...$params));
+        return self::getLogger()->warning(sprintf($message, ...$params));
     }
 
     /**
@@ -83,12 +86,12 @@ class Log
      * @param array  $params
      *
      * @return bool
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function error(string $message, ...$params): bool
     {
-        return self::getLogger()->error(\sprintf($message, ...$params));
+        return self::getLogger()->error(sprintf($message, ...$params));
     }
 
     /**
@@ -97,8 +100,8 @@ class Log
      * @param string $key
      * @param mixed  $val
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function pushLog(string $key, $val): void
     {
@@ -111,12 +114,12 @@ class Log
      * @param string $name
      * @param array  $params
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function profileStart(string $name, ...$params): void
     {
-        self::getLogger()->profileStart(\sprintf($name, ...$params));
+        self::getLogger()->profileStart(sprintf($name, ...$params));
     }
 
     /**
@@ -124,8 +127,8 @@ class Log
      * @param int      $hit
      * @param int|null $total
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function counting(string $name, int $hit, int $total = null): void
     {
@@ -138,18 +141,18 @@ class Log
      * @param string $name
      * @param array  $params
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function profileEnd(string $name, ...$params): void
     {
-        self::getLogger()->profileEnd(\sprintf($name, ...$params));
+        self::getLogger()->profileEnd(sprintf($name, ...$params));
     }
 
     /**
      * @return Logger
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function getLogger(): Logger
     {

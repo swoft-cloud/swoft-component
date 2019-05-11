@@ -3,7 +3,10 @@
 
 namespace Swoft\Log;
 
+use function count;
+use function debug_backtrace;
 use Monolog\Handler\HandlerInterface;
+use function sprintf;
 
 /**
  * Console logger
@@ -81,8 +84,8 @@ class CLogger extends \Monolog\Logger
     public function getTrace(string $message): string
     {
         $stackStr = '';
-        $traces   = \debug_backtrace();
-        $count    = \count($traces);
+        $traces   = debug_backtrace();
+        $count    = count($traces);
 
         if ($count >= 5) {
             $info = $traces[4];
@@ -90,12 +93,12 @@ class CLogger extends \Monolog\Logger
                 $class    = $info['class'];
                 $lineNum  = $info['line'];
                 $function = $info['function'];
-                $stackStr = \sprintf('%s:%s(%s)', $class, $function, $lineNum);
+                $stackStr = sprintf('%s:%s(%s)', $class, $function, $lineNum);
             }
         }
 
         if (!empty($stackStr)) {
-            $message = \sprintf('%s %s', $stackStr, $message);
+            $message = sprintf('%s %s', $stackStr, $message);
         }
 
         return $message;
