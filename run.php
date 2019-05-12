@@ -22,7 +22,8 @@ go(function () {
         printf('%s At file=%s line=%d' . PHP_EOL,
             $e->getMessage(),
             $e->getFile(),
-            $e->getLine());
+            $e->getLine()
+        );
     }
 });
 
