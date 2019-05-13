@@ -168,6 +168,7 @@ class AnnotationResource extends Resource
     public function clearBasePath(string $filePath): string
     {
         if ($this->basePath) {
+            // todo: do not use IN_PHAR
             $basePath = (\IN_PHAR ? 'phar://' : '') . $this->basePath;
 
             return \str_replace($basePath, '{PROJECT}', $filePath);
@@ -405,6 +406,7 @@ class AnnotationResource extends Resource
      */
     private function getAnnotationClassLoaderFile(string $path): string
     {
+        // todo: do not use IN_PHAR
         $path = \IN_PHAR ? $path : (string)\realpath($path);
 
         return \sprintf('%s/%s.%s', $path, $this->loaderClassName, $this->loaderClassSuffix);
@@ -506,13 +508,11 @@ class AnnotationResource extends Resource
      * Notify operation
      *
      * @param string $type
-     * @param        $target
+     * @param mixed  ...$target
      */
     public function notify(string $type, ...$target): void
     {
-        if ($this->notifyHandler) {
-            ($this->notifyHandler)($type, ...$target);
-        }
+        ($this->notifyHandler)($type, ...$target);
     }
 
     /**
