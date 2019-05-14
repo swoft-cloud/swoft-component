@@ -36,8 +36,6 @@ class AopTest extends TestCase
         /* @var BeanAspect $spect */
         $spect = BeanFactory::getBean(BeanAspect::class);
         $this->assertEquals('beforeAround-before-after-afterThrowing(exception message)-', $spect->getTrace());
-
-        $this->assertTrue(false);
     }
 
     /**
