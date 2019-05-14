@@ -68,13 +68,16 @@ if (!in_array('-c', $_SERVER['argv'])) {
 }
 require PHPUNIT_COMPOSER_INSTALL;
 
-\go(function () {
+$exit = 0;
+go(function (){
     try {
         PHPUnit\TextUI\Command::main(false);
     } catch (Throwable $e) {
         var_dump($e->getMessage());
+
+        global $exit;
+        $exit = 255;
     }
 });
 
 Swoole\Event::wait();
-
