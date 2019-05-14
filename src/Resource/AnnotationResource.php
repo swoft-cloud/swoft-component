@@ -88,6 +88,11 @@ class AnnotationResource extends Resource
     private $onlyNamespaces = [];
 
     /**
+     * @var bool
+     */
+    private $inPhar = false;
+
+    /**
      * AnnotationResource constructor.
      *
      * @param array $config
@@ -168,7 +173,7 @@ class AnnotationResource extends Resource
     public function clearBasePath(string $filePath): string
     {
         if ($this->basePath) {
-            $basePath = (\IN_PHAR ? 'phar://' : '') . $this->basePath;
+            $basePath = ($this->inPhar ? 'phar://' : '') . $this->basePath;
 
             return \str_replace($basePath, '{PROJECT}', $filePath);
         }
@@ -405,7 +410,7 @@ class AnnotationResource extends Resource
      */
     private function getAnnotationClassLoaderFile(string $path): string
     {
-        $path = \IN_PHAR ? $path : (string)\realpath($path);
+        $path = $this->inPhar ? $path : (string)\realpath($path);
 
         return \sprintf('%s/%s.%s', $path, $this->loaderClassName, $this->loaderClassSuffix);
     }
@@ -500,6 +505,22 @@ class AnnotationResource extends Resource
     public function setOnlyNamespaces(array $onlyNamespaces): void
     {
         $this->onlyNamespaces = $onlyNamespaces;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInPhar(): bool
+    {
+        return $this->inPhar;
+    }
+
+    /**
+     * @param bool $inPhar
+     */
+    public function setInPhar(bool $inPhar): void
+    {
+        $this->inPhar = $inPhar;
     }
 
     /**
