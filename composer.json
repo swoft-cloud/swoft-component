@@ -157,6 +157,6 @@
     }
   },
   "scripts": {
-    "test": "./phpunit.sh all"
+    "aop": "php run.php -c src/aop/phpunit.xml"
   }
 }

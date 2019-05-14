@@ -42,6 +42,7 @@ for lbName in ${components} ; do
         echo "======> Testing the【component】"
         echo "> php run.php -c phpunit.xml"
         php run.php -c phpunit.xml
+        echo $?
     else
         if [ ! -d "src/${lbName}" ]; then
             echo "!! Skip invalid component: ${lbName}"
@@ -49,6 +50,7 @@ for lbName in ${components} ; do
           echo "======> Testing the component【${lbName}】"
           echo "> php run.php -c src/${lbName}/phpunit.xml"
           php run.php -c src/${lbName}/phpunit.xml
+          echo $?
         fi
     fi
 done
