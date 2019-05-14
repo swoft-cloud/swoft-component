@@ -68,7 +68,7 @@ if (!in_array('-c', $_SERVER['argv'])) {
 }
 require PHPUNIT_COMPOSER_INSTALL;
 
-$exit = 121;
+$exit = 0;
 go(function (){
     try {
         PHPUnit\TextUI\Command::main(false);
