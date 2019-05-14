@@ -70,7 +70,12 @@ if (!in_array('-c', $_SERVER['argv'])) {
 require PHPUNIT_COMPOSER_INSTALL;
 
 go(function () {
-    PHPUnit\TextUI\Command::main();
+    try {
+        PHPUnit\TextUI\Command::main(false);
+    } catch (Throwable $e) {
+        var_dump($e);
+    }
+
 });
 
 Swoole\Event::wait();
