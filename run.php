@@ -68,7 +68,7 @@ if (!in_array('-c', $_SERVER['argv'])) {
 }
 require PHPUNIT_COMPOSER_INSTALL;
 
-$exit = 0;
+$exit = 121;
 go(function (){
     try {
         PHPUnit\TextUI\Command::main(false);
@@ -81,3 +81,5 @@ go(function (){
 });
 
 Swoole\Event::wait();
+
+exit($exit);

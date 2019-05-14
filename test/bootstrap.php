@@ -4,10 +4,7 @@
 use Swoft\Test\TestApplication;
 
 if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
-    /** @var \Composer\Autoload\ClassLoader $loader */
-    $loader = require dirname(__DIR__) . '/vendor/autoload.php';
-    var_dump($loader->getPrefixesPsr4());
-
+    require dirname(__DIR__) . '/vendor/autoload.php';
     // application's vendor
 } elseif (file_exists(dirname(__DIR__, 3) . '/autoload.php')) {
     /** @var \Composer\Autoload\ClassLoader $loader */
