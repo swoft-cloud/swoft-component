@@ -161,7 +161,7 @@
     "aop": "php run.php -c src/aop/phpunit.xml",
     "annotation": "php run.php -c src/annotation/phpunit.xml",
     "bean": "php run.php -c src/bean/phpunit.xml",
-    "config": "php run.php -c src/config/phpunit.xml",
+    "swoft-config": "php run.php -c src/config/phpunit.xml",
     "connection-pool": "php run.php -c src/connection-pool/phpunit.xml",
     "console": "php run.php -c src/console/phpunit.xml",
     "event": "php run.php -c src/event/phpunit.xml",

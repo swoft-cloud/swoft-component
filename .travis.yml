@@ -41,7 +41,7 @@ script:
   - composer aop
   - composer annotation
   - composer bean
-  - composer config
+  - composer swoft-config
   - composer connection-pool
   - composer console
   - composer event
