@@ -172,6 +172,7 @@
     "log": "php run.php -c src/log/phpunit.xml",
     "proxy": "php run.php -c src/proxy/phpunit.xml",
     "redis": "php run.php -c src/redis/phpunit.xml",
+    "db": "php run.php -c src/db/phpunit.xml",
     "rpc": "php run.php -c src/rpc/phpunit.xml",
     "rpc-client": "php run.php -c src/rpc-client/phpunit.xml",
     "rpc-server": "php run.php -c src/rpc-server/phpunit.xml",

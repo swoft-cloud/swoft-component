@@ -56,6 +56,7 @@ script:
   - composer log
   - composer proxy
   - composer redis
+  - composer db
   - composer rpc
   - composer rpc-client
   - composer rpc-server
