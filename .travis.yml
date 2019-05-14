@@ -38,3 +38,4 @@ before_script:
 
 script:
   - composer aop
+  - composer annotation

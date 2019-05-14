@@ -157,6 +157,7 @@
     }
   },
   "scripts": {
-    "aop": "php phpunit.php -c src/aop/phpunit.xml"
+    "aop": "php phpunit.php -c src/aop/phpunit.xml",
+    "annotation": "php phpunit.php -c src/annotation/phpunit.xml"
   }
 }
