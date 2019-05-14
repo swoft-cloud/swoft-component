@@ -4,13 +4,15 @@
 use Swoft\Test\TestApplication;
 
 if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
-    require dirname(__DIR__) . '/vendor/autoload.php';
+    /** @var \Composer\Autoload\ClassLoader $loader */
+    $loader = require dirname(__DIR__) . '/vendor/autoload.php';
+    var_dump($loader->getPrefixesPsr4());
+
     // application's vendor
 } elseif (file_exists(dirname(__DIR__, 3) . '/autoload.php')) {
     /** @var \Composer\Autoload\ClassLoader $loader */
     $loader = require dirname(__DIR__, 3) . '/autoload.php';
 
-    var_dump($loader->getPrefixesPsr4());
     // need load test psr4 config map
     $componentDir  = dirname(__DIR__);
     $componentJson = $componentDir . '/composer.json';
