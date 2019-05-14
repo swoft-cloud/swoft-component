@@ -36,6 +36,6 @@ if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
 
 Runtime::enableCoroutine();
 
-$application = new TestApplication();
+$application = new TestApplication(['basePath' => __DIR__]);
 $application->setBeanFile(__DIR__ . '/testing/bean.php');
 $application->run();

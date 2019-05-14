@@ -72,7 +72,11 @@ require PHPUNIT_COMPOSER_INSTALL;
     try {
         PHPUnit\TextUI\Command::main();
     } catch (Throwable $e) {
-        var_dump($e->getMessage());
+        printf('%s At file=%s line=%d' . PHP_EOL,
+            $e->getMessage(),
+            $e->getFile(),
+            $e->getLine()
+        );
     }
 });
 
