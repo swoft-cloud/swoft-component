@@ -84,7 +84,7 @@
       "Swoft\\Proxy\\": "src/proxy/src/",
       "Swoft\\I18n\\": "src/i18n/src",
       "Swoft\\Validator\\": "src/validator/src",
-      "Swoft\\Test\\": "src/Test/src/",
+      "Swoft\\Test\\": "src/test/src/",
       "Swoft\\": "src/framework/src/"
     },
     "files": [
