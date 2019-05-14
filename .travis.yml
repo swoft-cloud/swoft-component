@@ -14,7 +14,10 @@ services:
   - redis
 
 before_install:
-  - mysql --version;mysql -e 'CREATE DATABASE IF NOT EXISTS test;
+  - sudo mysql -e "use mysql; update user set authentication_string=PASSWORD('swoft123456') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;"
+  - sudo mysql_upgrade -u root -pswoft123456
+  - sudo service mysql restart
+  - mysql -uroot -pswoft123456 -e 'CREATE DATABASE IF NOT EXISTS test;
     USE test;
     CREATE TABLE `user` (
     `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -36,4 +39,30 @@ before_script:
   - composer config -g process-timeout 900 && composer update
   - phpenv config-rm xdebug.ini
 
-script: composer aop
+
+script:
+  - composer component
+  - composer aop
+  - composer annotation
+  - composer bean
+  - composer swoft-config
+  - composer connection-pool
+  - composer console
+  - composer event
+  - composer framework
+  - composer http-message
+  - composer http-server
+  - composer i18n
+  - composer log
+  - composer proxy
+  - composer redis
+  - composer db
+  - composer rpc
+  - composer rpc-client
+  - composer rpc-server
+  - composer stdlib
+  - composer task
+  - composer tcp-server
+  - composer test
+  - composer validator
+  - composer websocket-server
