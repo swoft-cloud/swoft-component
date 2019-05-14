@@ -70,13 +70,9 @@ require PHPUNIT_COMPOSER_INSTALL;
 
 \go(function () {
     try {
-        PHPUnit\TextUI\Command::main();
+        PHPUnit\TextUI\Command::main(false);
     } catch (Throwable $e) {
-        printf('%s At file=%s line=%d' . PHP_EOL,
-            $e->getMessage(),
-            $e->getFile(),
-            $e->getLine()
-        );
+        var_dump($e->getMessage());
     }
 });
 
