@@ -1,6 +1,8 @@
 <?php
 
 // vendor at component dir
+use Swoft\Test\TestApplication;
+
 if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
     require dirname(__DIR__) . '/vendor/autoload.php';
     // application's vendor
@@ -8,6 +10,7 @@ if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
     /** @var \Composer\Autoload\ClassLoader $loader */
     $loader = require dirname(__DIR__, 3) . '/autoload.php';
 
+    var_dump($loader->getPrefixesPsr4());
     // need load test psr4 config map
     $componentDir  = dirname(__DIR__);
     $componentJson = $componentDir . '/composer.json';
@@ -21,6 +24,6 @@ if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
 }
 
 \Swoole\Runtime::enableCoroutine();
-$application = new \Swoft\Test\TestApplication();
+$application = new TestApplication();
 $application->setBeanFile(__DIR__ . '/testing/bean.php');
 $application->run();
