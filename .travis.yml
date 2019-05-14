@@ -17,7 +17,7 @@ before_install:
   - sudo mysql -e "use mysql; update user set authentication_string=PASSWORD('swoft123456') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;"
   - sudo mysql_upgrade -u root -pswoft123456
   - sudo service mysql restart
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS test;
+  - mysql -uroot -pswoft123456 -e 'CREATE DATABASE IF NOT EXISTS test;
     USE test;
     CREATE TABLE `user` (
     `id` int(11) unsigned NOT NULL AUTO_INCREMENT,

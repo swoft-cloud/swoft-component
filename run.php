@@ -83,6 +83,8 @@ go(function (){
     }
 });
 
+
 Swoole\Event::wait();
 
+var_dump($exit);
 exit($exit);
