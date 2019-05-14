@@ -71,20 +71,20 @@ if (!in_array('-c', $_SERVER['argv'])) {
 }
 require PHPUNIT_COMPOSER_INSTALL;
 
-$exit = 0;
+$status = 0;
 go(function (){
+    // Status
+    global $status;
+
     try {
-        PHPUnit\TextUI\Command::main();
+        $status = PHPUnit\TextUI\Command::main(false);
     } catch (ExitException $e) {
         var_dump($e->getMessage());
-
-        global $exit;
-        $exit = $e->getCode();
+        $status = $e->getCode();
     }
 });
 
 
 Swoole\Event::wait();
 
-var_dump($exit);
-exit($exit);
+exit($status);
