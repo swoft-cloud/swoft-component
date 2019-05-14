@@ -1,5 +1,8 @@
 <?php
 /** For Swoole coroutine tests */
+
+use Swoole\ExitException;
+
 Co::set([
     'log_level'   => SWOOLE_LOG_INFO,
     'trace_flags' => 0
@@ -71,12 +74,12 @@ require PHPUNIT_COMPOSER_INSTALL;
 $exit = 0;
 go(function (){
     try {
-        PHPUnit\TextUI\Command::main(false);
-    } catch (Throwable $e) {
+        PHPUnit\TextUI\Command::main();
+    } catch (ExitException $e) {
         var_dump($e->getMessage());
 
         global $exit;
-        $exit = 255;
+        $exit = $e->getCode();
     }
 });
 
