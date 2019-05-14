@@ -29,8 +29,8 @@ class RouterTest extends TestCase
 
         $this->assertFalse($router->isEnableDynamicRoute());
         $this->assertTrue($router->hasModule('/ws-test/chat'));
-        $this->assertGreaterThan(1, $router->getCounter());
-        $this->assertGreaterThan(1, $router->getModuleCount());
+        $this->assertGreaterThan(0, $router->getCounter());
+        $this->assertGreaterThan(0, $router->getModuleCount());
 
         $this->assertNotEmpty($router->getModules());
         $this->assertNotEmpty($router->getCommands());

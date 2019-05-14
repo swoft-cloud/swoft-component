@@ -37,5 +37,27 @@ before_script:
   - phpenv config-rm xdebug.ini
 
 script:
+  - component
   - composer aop
   - composer annotation
+  - composer bean
+  - composer config
+  - composer connection-pool
+  - composer console
+  - composer event
+  - composer framework
+  - composer http-message
+  - composer http-server
+  - composer i18n
+  - composer log
+  - composer proxy
+  - composer redis
+  - composer rpc
+  - composer rpc-client
+  - composer rpc-server
+  - composer stdlib
+  - composer task
+  - composer tcp-server
+  - composer test
+  - composer validator
+  - composer websocket-server

@@ -157,7 +157,29 @@
     }
   },
   "scripts": {
-    "aop": "php phpunit.php -c src/aop/phpunit.xml",
-    "annotation": "php phpunit.php -c src/annotation/phpunit.xml"
+    "component": "php run.php -c phpunit.xml",
+    "aop": "php run.php -c src/aop/phpunit.xml",
+    "annotation": "php run.php -c src/annotation/phpunit.xml",
+    "bean": "php run.php -c src/bean/phpunit.xml",
+    "config": "php run.php -c src/config/phpunit.xml",
+    "connection-pool": "php run.php -c src/connection-pool/phpunit.xml",
+    "console": "php run.php -c src/console/phpunit.xml",
+    "event": "php run.php -c src/event/phpunit.xml",
+    "framework": "php run.php -c src/framework/phpunit.xml",
+    "http-message": "php run.php -c src/http-message/phpunit.xml",
+    "http-server": "php run.php -c src/http-server/phpunit.xml",
+    "i18n": "php run.php -c src/i18n/phpunit.xml",
+    "log": "php run.php -c src/log/phpunit.xml",
+    "proxy": "php run.php -c src/proxy/phpunit.xml",
+    "redis": "php run.php -c src/redis/phpunit.xml",
+    "rpc": "php run.php -c src/rpc/phpunit.xml",
+    "rpc-client": "php run.php -c src/rpc-client/phpunit.xml",
+    "rpc-server": "php run.php -c src/rpc-server/phpunit.xml",
+    "stdlib": "php run.php -c src/stdlib/phpunit.xml",
+    "task": "php run.php -c src/task/phpunit.xml",
+    "tcp-server": "php run.php -c src/tcp-server/phpunit.xml",
+    "test": "php run.php -c src/test/phpunit.xml",
+    "validator": "php run.php -c src/validator/phpunit.xml",
+    "websocket-server": "php run.php -c src/websocket-server/phpunit.xml"
   }
 }
