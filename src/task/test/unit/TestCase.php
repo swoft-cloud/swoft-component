@@ -3,6 +3,7 @@
 
 namespace SwoftTest\Task\Unit;
 
+use Swoft\Context\Context;
 use Swoft\Test\Task\MockTaskServer;
 
 /**
