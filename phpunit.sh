@@ -3,7 +3,7 @@
 # Tool for run unit test for swoft components
 #
 
-#binName="sh $(basename $0)"
+#binName="sh vi"
 binName="./$(basename $0)"
 components="component annotation aop bean config connection-pool i18n console db error framework http-message http-server
   log proxy redis rpc rpc-client rpc-server server stdlib task tcp-server websocket-server"
