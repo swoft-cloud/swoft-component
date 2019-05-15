@@ -283,10 +283,10 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @return Collection
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
+     * @throws QueryException
      * @throws ReflectionException
      */
     public static function all(array $columns = ['*']): Collection
@@ -303,10 +303,10 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @return mixed
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
+     * @throws QueryException
      * @throws ReflectionException
      */
     public function increment(string $column, $amount = 1, array $extra = [])
@@ -323,10 +323,10 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @return mixed
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
+     * @throws QueryException
      * @throws ReflectionException
      */
     public function decrement(string $column, $amount = 1, array $extra = [])
@@ -344,10 +344,10 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @return mixed
      * @throws ContainerException
-     * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
+     * @throws DbException
      * @throws EloquentException
+     * @throws EntityException
+     * @throws QueryException
      * @throws ReflectionException
      */
     protected function incrementOrDecrement(string $column, $amount, array $extra, string $method)
@@ -406,11 +406,11 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @return bool
      * @throws ContainerException
+     * @throws DbException
+     * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
-     * @throws EloquentException
      * @throws ReflectionException
      */
     public function update(array $attributes = [])
@@ -427,11 +427,11 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @return bool
      * @throws ContainerException
+     * @throws DbException
+     * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
-     * @throws EloquentException
      * @throws ReflectionException
      */
     public function save()
@@ -504,11 +504,11 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @return bool
      * @throws ContainerException
+     * @throws DbException
+     * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
-     * @throws EloquentException
      * @throws ReflectionException
      */
     protected function performUpdate(Builder $query)
@@ -538,11 +538,11 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @return Builder
      * @throws ContainerException
-     * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
-     * @throws ReflectionException
+     * @throws DbException
      * @throws EloquentException
+     * @throws EntityException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     protected function setKeysForSaveQuery(Builder $query)
     {
@@ -629,10 +629,10 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @return bool
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
      */
@@ -669,10 +669,10 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @return bool
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
      */
@@ -685,12 +685,12 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Perform the actual delete query on this model instance.
      *
      * @throws ContainerException
+     * @throws DbException
+     * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws EloquentException
      */
     protected function performDeleteOnModel()
     {
@@ -704,9 +704,10 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @return Builder
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
-     * @throws PoolException
+     * @throws QueryException
      * @throws ReflectionException
      */
     public static function query()
@@ -719,8 +720,9 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @return Builder
      * @throws ContainerException
+     * @throws DbException
      * @throws EntityException
-     * @throws PoolException
+     * @throws QueryException
      * @throws ReflectionException
      */
     public function newQuery()
@@ -825,10 +827,10 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @return null|$this|object|Builder|Model
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
+     * @throws QueryException
      * @throws ReflectionException
      */
     public function fresh()
@@ -847,10 +849,10 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @return $this
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
+     * @throws QueryException
      * @throws ReflectionException
      */
     public function refresh()
@@ -1094,8 +1096,9 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @return mixed
      * @throws ContainerException
+     * @throws DbException
      * @throws EntityException
-     * @throws PoolException
+     * @throws QueryException
      * @throws ReflectionException
      */
     public function __call($method, $parameters)

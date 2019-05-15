@@ -10,6 +10,7 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Co;
 use Swoft\Concern\DataPropertyTrait;
 use Swoft\Connection\Pool\Contract\ConnectionInterface as BaseConnection;
+use Throwable;
 
 /**
  * Class ConnectionManager
@@ -166,7 +167,7 @@ class ConnectionManager
      *
      * @throws ContainerException
      * @throws ReflectionException
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function release(bool $final = false): void
     {

@@ -2368,7 +2368,6 @@ class Builder implements PrototypeInterface
      * @throws ContainerException
      * @throws DbException
      * @throws EloquentException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
      */
@@ -2383,8 +2382,9 @@ class Builder implements PrototypeInterface
      * @param string $column
      *
      * @return mixed
-     * @throws PrototypeException
+     * @throws ContainerException
      * @throws EloquentException
+     * @throws ReflectionException
      */
     public function value(string $column)
     {
@@ -2965,7 +2965,6 @@ class Builder implements PrototypeInterface
      * @return string
      * @throws ContainerException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
      */
@@ -3009,7 +3008,6 @@ class Builder implements PrototypeInterface
      * @return int
      * @throws ContainerException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
      */
@@ -3032,7 +3030,6 @@ class Builder implements PrototypeInterface
      * @throws ContainerException
      * @throws DbException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
      */
@@ -3055,7 +3052,6 @@ class Builder implements PrototypeInterface
      * @return int
      * @throws ContainerException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
      */
@@ -3082,7 +3078,6 @@ class Builder implements PrototypeInterface
      * @return int
      * @throws ContainerException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
      */
@@ -3108,7 +3103,6 @@ class Builder implements PrototypeInterface
      * @throws ContainerException
      * @throws DbException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
      */
@@ -3178,8 +3172,9 @@ class Builder implements PrototypeInterface
      * @param mixed $value
      *
      * @return Expression
+     * @throws ContainerException
      * @throws PoolException
-     * @throws PrototypeException
+     * @throws ReflectionException
      */
     public function raw($value)
     {

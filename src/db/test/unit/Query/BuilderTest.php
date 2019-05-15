@@ -8,6 +8,7 @@ use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\DB;
+use Swoft\Db\Exception\DbException;
 use Swoft\Db\Exception\EloquentException;
 use Swoft\Db\Exception\PoolException;
 use Swoft\Db\Exception\QueryException;
@@ -28,7 +29,7 @@ class BuilderTest extends TestCase
      * @throws ContainerException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws \Swoft\Db\Exception\DbException
+     * @throws DbException
      */
     public function testSelect()
     {
@@ -44,11 +45,9 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
-     * @throws PoolException
-     * @throws PrototypeException
+     * @throws DbException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws \Swoft\Db\Exception\DbException
      */
     public function testSelectSub()
     {
@@ -75,10 +74,9 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
-     * @throws PrototypeException
+     * @throws DbException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws \Swoft\Db\Exception\DbException
      */
     public function testSelectRaw()
     {
@@ -93,7 +91,7 @@ class BuilderTest extends TestCase
      * @throws ContainerException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws \Swoft\Db\Exception\DbException
+     * @throws DbException
      */
     public function testSelectBetween()
     {
@@ -106,11 +104,9 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
-     * @throws PoolException
-     * @throws PrototypeException
+     * @throws DbException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws \Swoft\Db\Exception\DbException
      */
     public function testSelectExpression()
     {
@@ -127,10 +123,9 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
-     * @throws PrototypeException
+     * @throws DbException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws \Swoft\Db\Exception\DbException
      */
     public function testSelectLeftJoin()
     {
@@ -144,11 +139,9 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
-     * @throws PoolException
-     * @throws PrototypeException
+     * @throws DbException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws \Swoft\Db\Exception\DbException
      */
     public function testSelectSubJoinQuery()
     {
@@ -177,11 +170,9 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
-     * @throws PoolException
-     * @throws PrototypeException
+     * @throws DbException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws \Swoft\Db\Exception\DbException
      */
     public function testSelectList()
     {
@@ -214,7 +205,7 @@ class BuilderTest extends TestCase
      * @throws ContainerException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws \Swoft\Db\Exception\DbException
+     * @throws DbException
      */
     public function testHaving()
     {
@@ -254,7 +245,7 @@ class BuilderTest extends TestCase
      * @throws ContainerException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws \Swoft\Db\Exception\DbException
+     * @throws DbException
      */
     public function testDistinct()
     {
@@ -265,11 +256,9 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
-     * @throws PoolException
-     * @throws PrototypeException
+     * @throws DbException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws \Swoft\Db\Exception\DbException
      */
     public function testWheres()
     {
@@ -314,10 +303,9 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
-     * @throws PoolException
+     * @throws DbException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws \Swoft\Db\Exception\DbException
      */
     public function testOrWheres()
     {
@@ -367,7 +355,7 @@ class BuilderTest extends TestCase
      * @throws ContainerException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws \Swoft\Db\Exception\DbException
+     * @throws DbException
      */
     public function testSelectShareLock()
     {
@@ -380,11 +368,9 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
-     * @throws PoolException
-     * @throws PrototypeException
+     * @throws DbException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws \Swoft\Db\Exception\DbException
      */
     public function testSelectWriteLock()
     {
@@ -411,7 +397,7 @@ class BuilderTest extends TestCase
      * @throws ContainerException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws \Swoft\Db\Exception\DbException
+     * @throws DbException
      */
     public function testForceIndex()
     {
@@ -427,12 +413,11 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws \Swoft\Db\Exception\DbException
      */
     public function testInset()
     {
@@ -506,12 +491,11 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws \Swoft\Db\Exception\DbException
      */
     public function testUpdate()
     {
@@ -536,12 +520,11 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws \Swoft\Db\Exception\DbException
      */
     public function testDelete()
     {
@@ -572,10 +555,9 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
-     * @throws PrototypeException
+     * @throws DbException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws \Swoft\Db\Exception\DbException
      */
     public function testCrossJoin()
     {
@@ -590,10 +572,9 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
-     * @throws PoolException
+     * @throws DbException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws \Swoft\Db\Exception\DbException
      */
     public function testUnionSelect()
     {
@@ -611,11 +592,10 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws \Swoft\Db\Exception\DbException
      */
     public function testEach()
     {
@@ -667,11 +647,10 @@ class BuilderTest extends TestCase
      *
      * @return int
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws \Swoft\Db\Exception\DbException
      */
     public function getFirstId(): int
     {
@@ -702,7 +681,7 @@ class BuilderTest extends TestCase
     public function testChunk()
     {
         $this->getFirstId();
-        DB::table('user')->orderBy('id')->chunk(100, function (\Swoft\Stdlib\Collection $users) {
+        DB::table('user')->orderBy('id')->chunk(100, function (Collection $users) {
             $this->assertIsArray($users->toArray());
             return false;
         });

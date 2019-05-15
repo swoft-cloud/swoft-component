@@ -3,7 +3,9 @@
 
 namespace Swoft\Db\Query\Grammar;
 
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\Eloquent\Collection;
 use Swoft\Db\Query\Builder;
@@ -147,7 +149,8 @@ class MySqlGrammar extends Grammar
      * @param array   $values
      *
      * @return string
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function compileUpdate(Builder $query, $values)
     {
@@ -198,8 +201,8 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     protected function compileUpdateColumns($values)
     {
@@ -236,8 +239,8 @@ class MySqlGrammar extends Grammar
      * @param array $values
      *
      * @return array
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function prepareBindingsForUpdate(array $bindings, array $values)
     {
@@ -254,7 +257,8 @@ class MySqlGrammar extends Grammar
      * @param Builder $query
      *
      * @return string
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function compileDelete(Builder $query)
     {
@@ -318,7 +322,8 @@ class MySqlGrammar extends Grammar
      * @param string  $where
      *
      * @return string
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function compileDeleteWithJoins($query, $table, $where)
     {
@@ -348,8 +353,8 @@ class MySqlGrammar extends Grammar
      * @param string $value
      *
      * @return string
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     protected function wrapJsonSelector($value)
     {

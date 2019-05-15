@@ -4,7 +4,8 @@
 namespace Swoft\Db\Concern;
 
 use Closure;
-use Swoft\Bean\Exception\PrototypeException;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Eloquent\Model;
 use Swoft\Db\Exception\EloquentException;
 use Swoft\Db\Query\Builder;
@@ -19,12 +20,13 @@ trait BuildsQueries
     /**
      * Chunk the results of the query.
      *
-     * @param  int      $count
-     * @param  callable $callback
+     * @param int      $count
+     * @param callable $callback
      *
      * @return bool
-     * @throws PrototypeException
      * @throws EloquentException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function chunk($count, callable $callback)
     {
@@ -63,12 +65,13 @@ trait BuildsQueries
     /**
      * Execute a callback over each item while chunking.
      *
-     * @param  callable $callback
-     * @param  int      $count
+     * @param callable $callback
+     * @param int      $count
      *
      * @return bool
-     * @throws PrototypeException
+     * @throws ContainerException
      * @throws EloquentException
+     * @throws ReflectionException
      */
     public function each(callable $callback, $count = 1000)
     {
@@ -86,11 +89,12 @@ trait BuildsQueries
     /**
      * Execute the query and get the first result.
      *
-     * @param  array $columns
+     * @param array $columns
      *
      * @return Model|object|static|null
-     * @throws PrototypeException
      * @throws EloquentException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function first(array $columns = ['*'])
     {

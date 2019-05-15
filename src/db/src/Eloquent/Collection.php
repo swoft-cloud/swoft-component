@@ -4,7 +4,10 @@
 namespace Swoft\Db\Eloquent;
 
 use ArrayAccess;
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Exception\EloquentException;
 use Swoft\Db\Exception\EntityException;
 use Swoft\Stdlib\Collection as BaseCollection;
@@ -20,6 +23,24 @@ use Swoft\Stdlib\Helper\Arr;
  */
 class Collection extends BaseCollection
 {
+    use PrototypeTrait;
+
+    /**
+     * Create a new collection.
+     *
+     * @param array $items
+     *
+     * @return static
+     * @throws ReflectionException
+     * @throws ContainerException
+     */
+    public static function new(array $items = []): self
+    {
+        $self        = self::__instance();
+        $self->items = $items;
+
+        return $self;
+    }
 
     /**
      * Find a model in the collection by key.

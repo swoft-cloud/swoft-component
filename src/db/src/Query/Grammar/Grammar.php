@@ -4,8 +4,10 @@
 namespace Swoft\Db\Query\Grammar;
 
 use function end;
+use ReflectionException;
 use function reset;
 use RuntimeException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\Eloquent\Collection;
 use Swoft\Db\Grammar as BaseGrammar;
@@ -172,8 +174,8 @@ class Grammar extends BaseGrammar
      * @param array   $joins
      *
      * @return string
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     protected function compileJoins(Builder $query, $joins)
     {
@@ -191,10 +193,11 @@ class Grammar extends BaseGrammar
     /**
      * Compile the "where" portions of the query.
      *
-     * @param  Builder $query
+     * @param Builder $query
      *
      * @return string
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function compileWheres(Builder $query)
     {
@@ -221,8 +224,8 @@ class Grammar extends BaseGrammar
      * @param Builder $query
      *
      * @return array
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     protected function compileWheresToArray($query)
     {
@@ -514,11 +517,12 @@ class Grammar extends BaseGrammar
     /**
      * Compile a nested where clause.
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function whereNested(Builder $query, $where)
     {
@@ -901,8 +905,8 @@ class Grammar extends BaseGrammar
      * @param array   $values
      *
      * @return string
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function compileInsert(Builder $query, array $values)
     {
@@ -930,12 +934,13 @@ class Grammar extends BaseGrammar
     /**
      * Compile an insert and get ID statement into SQL.
      *
-     * @param  Builder $query
-     * @param  array   $values
-     * @param  string  $sequence
+     * @param Builder $query
+     * @param array   $values
+     * @param string  $sequence
      *
      * @return string
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function compileInsertGetId(Builder $query, $values, $sequence)
     {
@@ -963,9 +968,8 @@ class Grammar extends BaseGrammar
      * @param array   $values
      *
      * @return string
-     * @throws PrototypeException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function compileUpdate(Builder $query, $values)
     {
@@ -1015,10 +1019,11 @@ class Grammar extends BaseGrammar
     /**
      * Compile a delete statement into SQL.
      *
-     * @param  Builder $query
+     * @param Builder $query
      *
      * @return string
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function compileDelete(Builder $query)
     {

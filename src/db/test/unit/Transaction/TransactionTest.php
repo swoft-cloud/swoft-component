@@ -4,8 +4,11 @@
 namespace SwoftTest\Db\Unit\Transaction;
 
 
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\DB;
+use Swoft\Db\Exception\DbException;
 use Swoft\Db\Exception\EloquentException;
 use Swoft\Db\Exception\EntityException;
 use Swoft\Db\Exception\PoolException;
@@ -21,11 +24,13 @@ use SwoftTest\Db\Unit\TestCase;
 class TransactionTest extends TestCase
 {
     /**
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
      * @throws QueryException
+     * @throws ReflectionException
      */
     public function testCommit()
     {
@@ -54,11 +59,13 @@ class TransactionTest extends TestCase
     }
 
     /**
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
      * @throws QueryException
+     * @throws ReflectionException
      */
     public function testCommitByNest()
     {
@@ -90,11 +97,13 @@ class TransactionTest extends TestCase
     }
 
     /**
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
      * @throws QueryException
+     * @throws ReflectionException
      */
     public function testRollback()
     {
@@ -123,11 +132,13 @@ class TransactionTest extends TestCase
     }
 
     /**
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
      * @throws QueryException
+     * @throws ReflectionException
      */
     public function testRollbackByNest()
     {

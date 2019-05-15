@@ -12,6 +12,7 @@ use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\SwoftEvent;
+use Throwable;
 
 /**
  * Class CoroutineDestroyListener
@@ -25,8 +26,9 @@ class CoroutineDestroyListener implements EventHandlerInterface
     /**
      * @param EventInterface $event
      *
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
+     * @throws Throwable
      */
     public function handle(EventInterface $event): void
     {

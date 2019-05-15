@@ -35,4 +35,9 @@ interface PoolInterface
      * @return int
      */
     public function getConnectionId(): int;
+
+    /**
+     * Remove
+     */
+    public function remove(): void;
 }

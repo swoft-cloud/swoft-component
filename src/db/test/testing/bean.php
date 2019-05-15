@@ -9,13 +9,13 @@ return [
     ],
     'db'     => [
         'class'    => Database::class,
-        'dsn'      => 'mysql:dbname=test;host=172.17.0.3',
+        'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
         'username' => 'root',
         'password' => 'swoft123456',
         'charset'  => 'utf8mb4',
         // 'prefix'   => 't_',
         'options'  => [
-            \PDO::ATTR_CASE => \PDO::CASE_NATURAL,
+            PDO::ATTR_CASE => PDO::CASE_NATURAL,
         ],
         'config'   => [
             'collation' => 'utf8mb4_unicode_ci',
@@ -28,14 +28,14 @@ return [
         'class'  => Database::class,
         'writes' => [
             [
-                'dsn'      => 'mysql:dbname=test;host=172.17.0.3',
+                'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
                 'username' => 'root',
                 'password' => 'swoft123456',
             ],
         ],
         'reads'  => [
             [
-                'dsn'      => 'mysql:dbname=test;host=172.17.0.3',
+                'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
                 'username' => 'root',
                 'password' => 'swoft123456',
             ]
@@ -43,7 +43,7 @@ return [
     ],
     'db.pool2' => [
         'class'    => Pool::class,
-        'database' => \bean('db2')
+        'database' => bean('db2')
     ]
 ];
 

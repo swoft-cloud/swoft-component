@@ -3,7 +3,6 @@
 
 namespace Swoft\Db\Connection;
 
-use function bean;
 use Closure;
 use DateTimeInterface;
 use Generator;
@@ -13,18 +12,17 @@ use ReflectionException;
 use Swoft;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Connection\Pool\AbstractConnection;
 use Swoft\Db\Contract\ConnectionInterface;
 use Swoft\Db\Database;
 use Swoft\Db\DbEvent;
 use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Pool;
-use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
 use Swoft\Db\Query\Grammar\Grammar;
 use Swoft\Db\Query\Processor\Processor;
 use Throwable;
+use function bean;
 
 /**
  * Class Connection
@@ -168,8 +166,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Create connection
      *
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
+     * @throws Swoft\Db\Exception\DbException
      */
     public function create(): void
     {
@@ -325,7 +324,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param mixed $value
      *
      * @return Expression
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function raw($value): Expression
     {

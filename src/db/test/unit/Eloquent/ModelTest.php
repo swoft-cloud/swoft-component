@@ -4,9 +4,12 @@
 namespace SwoftTest\Db\Unit\Eloquent;
 
 
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\DB;
 use Swoft\Db\Eloquent\Collection;
+use Swoft\Db\Exception\DbException;
 use Swoft\Db\Exception\EloquentException;
 use Swoft\Db\Exception\EntityException;
 use Swoft\Db\Exception\PoolException;
@@ -22,13 +25,13 @@ use SwoftTest\Db\Unit\TestCase;
 class ModelTest extends TestCase
 {
     /**
+     * @throws ContainerException
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws DbException
      */
     public function testSave()
     {
@@ -82,13 +85,13 @@ class ModelTest extends TestCase
     }
 
     /**
+     * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
      */
     public function testDelete()
     {
@@ -160,13 +163,13 @@ class ModelTest extends TestCase
     }
 
     /**
+     * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
      */
     public function testUpdate()
     {

@@ -9,7 +9,6 @@ use DateTimeInterface;
 use Generator;
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\Concern\BuildsQueries;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\Exception\DbException;
@@ -382,12 +381,11 @@ class Builder
      *
      * @return null|object|Builder|Collection|Model
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws DbException
      */
     public function find($id, array $columns = ['*'])
     {
@@ -429,12 +427,11 @@ class Builder
      *
      * @return null|object|Builder|Collection|Model
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws DbException
      */
     public function findOrFail($id, array $columns = ['*'])
     {
@@ -459,12 +456,11 @@ class Builder
      *
      * @return null|object|Builder|Collection|Model
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws DbException
      */
     public function findOrNew($id, array $columns = ['*'])
     {
@@ -483,12 +479,11 @@ class Builder
      *
      * @return null|object|Builder|Model
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws DbException
      */
     public function firstOrNew(array $attributes, array $values = [])
     {
@@ -510,7 +505,6 @@ class Builder
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
      * @throws DbException
@@ -538,7 +532,6 @@ class Builder
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
      * @throws DbException
@@ -557,9 +550,10 @@ class Builder
      *
      * @return Model|static
      *
-     * @throws EntityException
+     * @throws ContainerException
      * @throws EloquentException
-     * @throws PrototypeException
+     * @throws EntityException
+     * @throws ReflectionException
      */
     public function firstOrFail(array $columns = ['*'])
     {
@@ -577,8 +571,9 @@ class Builder
      * @param Closure|null  $callback
      *
      * @return Model|static|mixed
+     * @throws ContainerException
      * @throws EloquentException
-     * @throws PrototypeException
+     * @throws ReflectionException
      */
     public function firstOr(array $columns = ['*'], Closure $callback = null)
     {
@@ -601,8 +596,9 @@ class Builder
      * @param string $column
      *
      * @return mixed
+     * @throws ContainerException
      * @throws EloquentException
-     * @throws PrototypeException
+     * @throws ReflectionException
      */
     public function value(string $column)
     {
@@ -737,10 +733,10 @@ class Builder
      *
      * @return Model
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
      */
@@ -759,7 +755,6 @@ class Builder
      * @return int
      * @throws ContainerException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
      */
@@ -778,7 +773,6 @@ class Builder
      * @return int
      * @throws ContainerException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
      */
@@ -799,7 +793,6 @@ class Builder
      * @return int
      * @throws ContainerException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
      */
@@ -815,11 +808,10 @@ class Builder
      *
      * @return int|mixed
      * @throws ContainerException
+     * @throws DbException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws DbException
      */
     public function delete()
     {
@@ -837,11 +829,10 @@ class Builder
      *
      * @return int
      * @throws ContainerException
+     * @throws DbException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
      * @throws ReflectionException
-     * @throws DbException
      */
     public function forceDelete()
     {
