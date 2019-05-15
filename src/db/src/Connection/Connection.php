@@ -3,7 +3,16 @@
 
 namespace Swoft\Db\Connection;
 
+use function bean;
+use Closure;
+use DateTimeInterface;
+use Generator;
+use PDO;
+use PDOStatement;
+use ReflectionException;
+use Swoft;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Connection\Pool\AbstractConnection;
 use Swoft\Db\Contract\ConnectionInterface;
@@ -15,6 +24,7 @@ use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
 use Swoft\Db\Query\Grammar\Grammar;
 use Swoft\Db\Query\Processor\Processor;
+use Throwable;
 
 /**
  * Class Connection
@@ -26,7 +36,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Default fetch mode
      */
-    const DEFAULT_FETCH_MODE = \PDO::FETCH_OBJ;
+    const DEFAULT_FETCH_MODE = PDO::FETCH_OBJ;
 
     /**
      * Default type
@@ -46,14 +56,14 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * The active PDO connection.
      *
-     * @var \PDO
+     * @var PDO
      */
     protected $pdo;
 
     /**
      * The active PDO connection used for reads.
      *
-     * @var \PDO
+     * @var PDO
      */
     protected $readPdo;
 
@@ -87,8 +97,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param Pool     $pool
      * @param Database $database
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function initialize(Pool $pool, Database $database)
     {
@@ -120,8 +130,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return void
      * @return object|string|Processor
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function useDefaultPostProcessor()
     {
@@ -133,12 +143,12 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return Processor
      * @return object|string|Processor
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     protected function getDefaultPostProcessor()
     {
-        return \bean(Processor::class);
+        return bean(Processor::class);
     }
 
     /**
@@ -158,8 +168,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Create connection
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function create(): void
     {
@@ -184,7 +194,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
                     $this->createReadPdo();
                     break;
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return false;
         }
 
@@ -194,8 +204,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * @param bool $force
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function release(bool $force = false): void
     {
@@ -233,8 +243,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Create pdo
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ContainerException
+     * @throws ReflectionException
+     * @throws Swoft\Db\Exception\DbException
      */
     private function createPdo()
     {
@@ -247,8 +258,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Create read pdo
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ContainerException
+     * @throws ReflectionException
+     * @throws Swoft\Db\Exception\DbException
      */
     private function createReadPdo()
     {
@@ -308,36 +320,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
     }
 
     /**
-     * Get a new query builder instance.
-     *
-     * @return Builder
-     * @return Builder
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
-     */
-    public function query()
-    {
-        return Builder::new($this, $this->getQueryGrammar(), $this->getPostProcessor());
-    }
-
-    /**
-     * Begin a fluent query against a database table.
-     *
-     * @param string $table
-     *
-     * @return Builder
-     *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
-     */
-    public function table($table): Builder
-    {
-        return $this->query()->from($table);
-    }
-
-    /**
      * Get a new raw query expression.
      *
      * @param mixed $value
@@ -359,8 +341,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return mixed
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function selectOne($query, $bindings = [], $useReadPdo = true)
     {
@@ -378,8 +360,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return array
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function select(string $query, array $bindings = [], bool $useReadPdo = true): array
     {
@@ -405,12 +387,12 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param array  $bindings
      * @param bool   $useReadPdo
      *
-     * @return \Generator
+     * @return Generator
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
-    public function cursor(string $query, array $bindings = [], bool $useReadPdo = true): \Generator
+    public function cursor(string $query, array $bindings = [], bool $useReadPdo = true): Generator
     {
         $statement = $this->run($query, $bindings, function ($query, $bindings) use ($useReadPdo) {
             // First we will create a statement for the query. Then, we will set the fetch
@@ -444,12 +426,29 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return bool
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function insert(string $query, array $bindings = []): bool
     {
         return $this->statement($query, $bindings);
+    }
+
+    /**
+     * Run an insert statement against the database.
+     *
+     * @param string $query
+     * @param array  $bindings
+     * @param string $sequence
+     *
+     * @return string
+     * @throws QueryException
+     * @throws ReflectionException
+     * @throws ContainerException
+     */
+    public function insertGetId(string $query, array $bindings = [], string $sequence = null): string
+    {
+        return $this->insertGetIdStatement($query, $bindings, $sequence);
     }
 
     /**
@@ -460,8 +459,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return int
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function update(string $query, array $bindings = []): int
     {
@@ -476,8 +475,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return int
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function delete(string $query, array $bindings = []): int
     {
@@ -492,8 +491,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return bool
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function statement(string $query, array $bindings = []): bool
     {
@@ -507,6 +506,30 @@ class Connection extends AbstractConnection implements ConnectionInterface
     }
 
     /**
+     * Execute an SQL insert statement and return the boolean result.
+     *
+     * @param string $query
+     * @param array  $bindings
+     * @param string  $sequence
+     *
+     * @return string
+     * @throws QueryException
+     * @throws ReflectionException
+     * @throws ContainerException
+     */
+    public function insertGetIdStatement(string $query, array $bindings = [], string $sequence = null): string
+    {
+        return $this->run($query, $bindings, function ($query, $bindings) use ($sequence) {
+            $statement = $this->getPdo()->prepare($query);
+
+            $this->bindValues($statement, $this->prepareBindings($bindings));
+            $statement->execute();
+
+            return $this->getPdo()->lastInsertId($sequence);
+        });
+    }
+
+    /**
      * Run an SQL statement and get the number of rows affected.
      *
      * @param string $query
@@ -514,8 +537,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return int
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function affectingStatement(string $query, array $bindings = []): int
     {
@@ -539,8 +562,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return bool
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function unprepared(string $query): bool
     {
@@ -567,7 +590,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
             // We need to transform all instances of DateTimeInterface into the actual
             // date string. Each query grammar maintains its own date string format
             // so we'll just ask the grammar for the format to get from the date.
-            if ($value instanceof \DateTimeInterface) {
+            if ($value instanceof DateTimeInterface) {
                 $bindings[$key] = $value->format($grammar->getDateFormat());
             } elseif (is_bool($value)) {
                 $bindings[$key] = (int)$value;
@@ -582,15 +605,15 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @param string   $query
      * @param array    $bindings
-     * @param \Closure $callback
+     * @param Closure $callback
      *
      * @return mixed
      *
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
-    protected function run(string $query, array $bindings, \Closure $callback)
+    protected function run(string $query, array $bindings, Closure $callback)
     {
         $this->reconnectIfMissingConnection();
 
@@ -610,16 +633,16 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @param string   $query
      * @param array    $bindings
-     * @param \Closure $callback
+     * @param Closure $callback
      * @param bool     $reconnect
      *
      * @return mixed
      *
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
-    protected function runQueryCallback(string $query, array $bindings, \Closure $callback, bool $reconnect = false)
+    protected function runQueryCallback(string $query, array $bindings, Closure $callback, bool $reconnect = false)
     {
         // To execute the statement, we'll simply call the callback, which will actually
         // run the SQL against the PDO connection. Then we can calculate the time it
@@ -629,7 +652,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
 
             // Release connection
             $this->release();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // If an exception occurs when attempting to run a query, we'll format the error
             // message to include the bindings with SQL, which will make this exception a
             // lot more helpful to the developer instead of just the database's errors.
@@ -679,11 +702,11 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Configure the PDO prepared statement.
      *
-     * @param \PDOStatement $statement
+     * @param PDOStatement $statement
      *
-     * @return \PDOStatement
+     * @return PDOStatement
      */
-    protected function prepared(\PDOStatement $statement): \PDOStatement
+    protected function prepared(PDOStatement $statement): PDOStatement
     {
         $config    = $this->database->getConfig();
         $fetchMode = $config['fetchMode'] ?? self::DEFAULT_FETCH_MODE;
@@ -694,22 +717,22 @@ class Connection extends AbstractConnection implements ConnectionInterface
     }
 
     /**
-     * @param \Closure $callback
+     * @param Closure $callback
      *
      * @return array
      */
-    public function pretend(\Closure $callback): array
+    public function pretend(Closure $callback): array
     {
         return [];
     }
 
     /**
-     * @param \Closure $callback
+     * @param Closure $callback
      * @param int      $attempts
      *
      * @return mixed|void
      */
-    public function transaction(\Closure $callback, $attempts = 1)
+    public function transaction(Closure $callback, $attempts = 1)
     {
 
     }
@@ -717,9 +740,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Start a new database transaction.
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Throwable
+     * @throws ReflectionException
+     * @throws ContainerException
+     * @throws Throwable
      */
     public function beginTransaction(): void
     {
@@ -731,13 +754,13 @@ class Connection extends AbstractConnection implements ConnectionInterface
         // Inc transactions
         $cm->incTransactionTransactons();
 
-        \Swoft::trigger(DbEvent::BEGIN_TRANSACTION);
+        Swoft::trigger(DbEvent::BEGIN_TRANSACTION);
     }
 
     /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Throwable
+     * @throws ReflectionException
+     * @throws ContainerException
+     * @throws Throwable
      */
     public function commit(): void
     {
@@ -763,15 +786,15 @@ class Connection extends AbstractConnection implements ConnectionInterface
             $cm->decTransactionTransactons();
         }
 
-        \Swoft::trigger(DbEvent::COMMIT_TRANSACTION);
+        Swoft::trigger(DbEvent::COMMIT_TRANSACTION);
     }
 
     /**
      * @param int|null $toLevel
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Throwable
+     * @throws ReflectionException
+     * @throws ContainerException
+     * @throws Throwable
      */
     public function rollBack(int $toLevel = null): void
     {
@@ -792,15 +815,15 @@ class Connection extends AbstractConnection implements ConnectionInterface
         // level that was passed into this method so it will be right from here out.
         $this->performRollBack($toLevel);
 
-        \Swoft::trigger(DbEvent::ROLLBACK_TRANSACTION);
+        Swoft::trigger(DbEvent::ROLLBACK_TRANSACTION);
     }
 
     /**
      * @param int|null $toLevel
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Throwable
+     * @throws ReflectionException
+     * @throws ContainerException
+     * @throws Throwable
      */
     public function forceRollBack(int $toLevel = null): void
     {
@@ -809,7 +832,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
         // level that was passed into this method so it will be right from here out.
         $this->performRollBack($toLevel);
 
-        \Swoft::trigger(DbEvent::ROLLBACK_TRANSACTION);
+        Swoft::trigger(DbEvent::ROLLBACK_TRANSACTION);
     }
 
     public function transactionLevel(): void
@@ -822,9 +845,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @param bool $useReadPdo
      *
-     * @return \PDO
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @return PDO
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     protected function getPdoForSelect($useReadPdo = true)
     {
@@ -834,9 +857,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Get the current PDO connection.
      *
-     * @return \PDO
+     * @return PDO
      */
-    public function getPdo(): \PDO
+    public function getPdo(): PDO
     {
         $this->pdoType = self::TYPE_WRITE;
         return $this->pdo;
@@ -845,11 +868,11 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Get the current PDO connection used for reading.
      *
-     * @return \PDO
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @return PDO
+     * @throws ReflectionException
+     * @throws ContainerException
      */
-    public function getReadPdo(): \PDO
+    public function getReadPdo(): PDO
     {
         $cm = $this->getConMananger();
         if ($cm->isTransaction()) {
@@ -867,17 +890,17 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Bind values to their parameters in the given statement.
      *
-     * @param \PDOStatement $statement
+     * @param PDOStatement $statement
      * @param array         $bindings
      *
      * @return void
      */
-    public function bindValues(\PDOStatement $statement, array $bindings): void
+    public function bindValues(PDOStatement $statement, array $bindings): void
     {
         foreach ($bindings as $key => $value) {
             $statement->bindValue(
                 is_string($key) ? $key : $key + 1, $value,
-                is_int($value) ? \PDO::PARAM_INT : \PDO::PARAM_STR
+                is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR
             );
         }
     }
@@ -888,8 +911,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param int $toLevel
      *
      * @return void
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     protected function performRollBack(int $toLevel): void
     {
@@ -944,8 +967,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * @return ConnectionManager
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     protected function getConMananger(): ConnectionManager
     {

@@ -3,6 +3,10 @@
 
 namespace Swoft\Db\Concern;
 
+use function array_diff;
+use function array_merge;
+use function array_unique;
+
 /**
  * Class HidesAttributes
  *
@@ -57,9 +61,9 @@ trait HidesAttributes
      */
     public function addHidden(array $attributes)
     {
-        $this->visible = \array_diff($this->visible, $attributes);
+        $this->visible = array_diff($this->visible, $attributes);
 
-        $this->hidden = \array_unique(\array_merge($this->hidden, $attributes));
+        $this->hidden = array_unique(array_merge($this->hidden, $attributes));
 
     }
 
@@ -96,9 +100,9 @@ trait HidesAttributes
      */
     public function addVisible(array $attributes): void
     {
-        $this->hidden  = \array_diff($this->hidden, $attributes);
+        $this->hidden  = array_diff($this->hidden, $attributes);
 
-        $this->visible = \array_unique(\array_merge($this->visible, $attributes));
+        $this->visible = array_unique(array_merge($this->visible, $attributes));
     }
 
     /**

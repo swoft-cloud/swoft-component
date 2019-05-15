@@ -9,7 +9,7 @@ return [
     ],
     'db'     => [
         'class'    => Database::class,
-        'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
+        'dsn'      => 'mysql:dbname=test;host=172.17.0.3',
         'username' => 'root',
         'password' => 'swoft123456',
         'charset'  => 'utf8mb4',
@@ -28,14 +28,14 @@ return [
         'class'  => Database::class,
         'writes' => [
             [
-                'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
+                'dsn'      => 'mysql:dbname=test;host=172.17.0.3',
                 'username' => 'root',
                 'password' => 'swoft123456',
             ],
         ],
         'reads'  => [
             [
-                'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
+                'dsn'      => 'mysql:dbname=test;host=172.17.0.3',
                 'username' => 'root',
                 'password' => 'swoft123456',
             ]

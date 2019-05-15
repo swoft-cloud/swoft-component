@@ -3,7 +3,10 @@
 
 namespace Swoft\Db\Concern;
 
+use Closure;
+use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\Eloquent\Model;
+use Swoft\Db\Exception\EloquentException;
 use Swoft\Db\Query\Builder;
 
 /**
@@ -20,8 +23,8 @@ trait BuildsQueries
      * @param  callable $callback
      *
      * @return bool
-     * @throws \Swoft\Bean\Exception\PrototypeException
-     * @throws \Swoft\Db\Exception\EloquentException
+     * @throws PrototypeException
+     * @throws EloquentException
      */
     public function chunk($count, callable $callback)
     {
@@ -64,8 +67,8 @@ trait BuildsQueries
      * @param  int      $count
      *
      * @return bool
-     * @throws \Swoft\Bean\Exception\PrototypeException
-     * @throws \Swoft\Db\Exception\EloquentException
+     * @throws PrototypeException
+     * @throws EloquentException
      */
     public function each(callable $callback, $count = 1000)
     {
@@ -86,8 +89,8 @@ trait BuildsQueries
      * @param  array $columns
      *
      * @return Model|object|static|null
-     * @throws \Swoft\Bean\Exception\PrototypeException
-     * @throws \Swoft\Db\Exception\EloquentException
+     * @throws PrototypeException
+     * @throws EloquentException
      */
     public function first(array $columns = ['*'])
     {
@@ -119,7 +122,7 @@ trait BuildsQueries
     /**
      * Pass the query to a given callback.
      *
-     * @param  \Closure $callback
+     * @param  Closure $callback
      *
      * @return Builder
      */

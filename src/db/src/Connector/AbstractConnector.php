@@ -3,6 +3,8 @@
 
 namespace Swoft\Db\Connector;
 
+use Exception;
+use PDO;
 use Swoft\Db\Contract\ConnectorInterface;
 
 /**
@@ -18,12 +20,12 @@ abstract class AbstractConnector implements ConnectorInterface
      * @var array
      */
     protected $options = [
-        \PDO::ATTR_CASE              => \PDO::CASE_NATURAL,
-        \PDO::ATTR_ERRMODE           => \PDO::ERRMODE_EXCEPTION,
-        \PDO::ATTR_ORACLE_NULLS      => \PDO::NULL_NATURAL,
-        \PDO::ATTR_STRINGIFY_FETCHES => false,
-        \PDO::ATTR_EMULATE_PREPARES  => false,
-        \PDO::ATTR_ERRMODE           => \PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_CASE              => PDO::CASE_NATURAL,
+        PDO::ATTR_ERRMODE           => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_ORACLE_NULLS      => PDO::NULL_NATURAL,
+        PDO::ATTR_STRINGIFY_FETCHES => false,
+        PDO::ATTR_EMULATE_PREPARES  => false,
+        PDO::ATTR_ERRMODE           => PDO::ERRMODE_EXCEPTION,
     ];
 
     /**
@@ -34,14 +36,14 @@ abstract class AbstractConnector implements ConnectorInterface
      * @param  string $password
      * @param  array  $options
      *
-     * @return \PDO
+     * @return PDO
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function createConnection($dsn, string $username, string $password, array $options)
     {
         $options = $this->getOptions($options);
-        return new \PDO($dsn, $username, $password, $options);
+        return new PDO($dsn, $username, $password, $options);
     }
 
     /**
@@ -52,11 +54,11 @@ abstract class AbstractConnector implements ConnectorInterface
      * @param  string $password
      * @param  array  $options
      *
-     * @return \PDO
+     * @return PDO
      */
     protected function createPdoConnection($dsn, $username, $password, $options)
     {
-        return new \PDO($dsn, $username, $password, $options);
+        return new PDO($dsn, $username, $password, $options);
     }
 
     /**

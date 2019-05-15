@@ -3,7 +3,9 @@
 
 namespace Swoft\Db\Eloquent;
 
+use ArrayAccess;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Db\Exception\EloquentException;
 use Swoft\Db\Exception\EntityException;
 use Swoft\Stdlib\Collection as BaseCollection;
 use Swoft\Stdlib\Contract\Arrayable;
@@ -27,7 +29,7 @@ class Collection extends BaseCollection
      *
      * @return mixed|Collection
      * @throws EntityException
-     * @throws \Swoft\Db\Exception\EloquentException
+     * @throws EloquentException
      */
     public function find($key, $default = null)
     {
@@ -107,7 +109,7 @@ class Collection extends BaseCollection
     /**
      * Merge the collection with the given items.
      *
-     * @param  \ArrayAccess|array $items
+     * @param  ArrayAccess|array $items
      *
      * @return static
      */
@@ -163,7 +165,7 @@ class Collection extends BaseCollection
     /**
      * Intersect the collection with the given items.
      *
-     * @param  \ArrayAccess|array $items
+     * @param  ArrayAccess|array $items
      *
      * @return static
      */
@@ -234,7 +236,7 @@ class Collection extends BaseCollection
     /**
      * Get a dictionary keyed by primary keys.
      *
-     * @param  \ArrayAccess|array|null $items
+     * @param  ArrayAccess|array|null $items
      *
      * @return array
      */

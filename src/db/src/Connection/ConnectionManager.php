@@ -3,7 +3,10 @@
 
 namespace Swoft\Db\Connection;
 
+use ReflectionException;
+use RuntimeException;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Co;
 use Swoft\Concern\DataPropertyTrait;
 use Swoft\Connection\Pool\Contract\ConnectionInterface as BaseConnection;
@@ -141,7 +144,7 @@ class ConnectionManager
         $key = sprintf('%d.transaction.%d.connection', Co::tid(), Co::id());
         $con = $this->get($key, null);
         if (!$con instanceof Connection) {
-            throw new \RuntimeException('Transaction is not beginning!');
+            throw new RuntimeException('Transaction is not beginning!');
         }
 
         return $con;
@@ -161,8 +164,9 @@ class ConnectionManager
      *
      * @param bool $final
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ContainerException
+     * @throws ReflectionException
+     * @throws \Throwable
      */
     public function release(bool $final = false): void
     {

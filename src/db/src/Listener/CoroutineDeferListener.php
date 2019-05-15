@@ -3,6 +3,9 @@
 
 namespace Swoft\Db\Listener;
 
+use function bean;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Connection\ConnectionManager;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
@@ -21,13 +24,13 @@ class CoroutineDeferListener implements EventHandlerInterface
     /**
      * @param EventInterface $event
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function handle(EventInterface $event): void
     {
         /* @var ConnectionManager $cm*/
-        $cm = \bean(ConnectionManager::class);
+        $cm = bean(ConnectionManager::class);
         $cm->release();
     }
 }

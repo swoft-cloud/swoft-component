@@ -3,6 +3,9 @@
 
 namespace Swoft\Db\Query\Grammar;
 
+use function end;
+use function reset;
+use RuntimeException;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\Eloquent\Collection;
 use Swoft\Db\Grammar as BaseGrammar;
@@ -165,11 +168,12 @@ class Grammar extends BaseGrammar
     /**
      * Compile the "join" portions of the query.
      *
-     * @param  Builder $query
-     * @param  array   $joins
+     * @param Builder $query
+     * @param array   $joins
      *
      * @return string
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function compileJoins(Builder $query, $joins)
     {
@@ -214,10 +218,11 @@ class Grammar extends BaseGrammar
     /**
      * Get an array of all the where clauses for the query.
      *
-     * @param  Builder $query
+     * @param Builder $query
      *
      * @return array
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function compileWheresToArray($query)
     {
@@ -608,11 +613,11 @@ class Grammar extends BaseGrammar
      *
      * @return string
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     protected function compileJsonContains($column, $value)
     {
-        throw new \RuntimeException('This database engine does not support JSON contains operations.');
+        throw new RuntimeException('This database engine does not support JSON contains operations.');
     }
 
     /**
@@ -651,11 +656,11 @@ class Grammar extends BaseGrammar
      *
      * @return string
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     protected function compileJsonLength($column, $operator, $value)
     {
-        throw new \RuntimeException('This database engine does not support JSON length operations.');
+        throw new RuntimeException('This database engine does not support JSON length operations.');
     }
 
     /**
@@ -736,9 +741,9 @@ class Grammar extends BaseGrammar
 
         $column = $this->wrap($having['column']);
 
-        $min = $this->parameter(\reset($having['values']));
+        $min = $this->parameter(reset($having['values']));
 
-        $max = $this->parameter(\end($having['values']));
+        $max = $this->parameter(end($having['values']));
 
         return $having['boolean'] . ' ' . $column . ' ' . $between . ' ' . $min . ' and ' . $max;
     }
@@ -892,11 +897,12 @@ class Grammar extends BaseGrammar
     /**
      * Compile an insert statement into SQL.
      *
-     * @param  Builder $query
-     * @param  array   $values
+     * @param Builder $query
+     * @param array   $values
      *
      * @return string
-     * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function compileInsert(Builder $query, array $values)
     {
@@ -953,11 +959,13 @@ class Grammar extends BaseGrammar
     /**
      * Compile an update statement into SQL.
      *
-     * @param  Builder $query
-     * @param  array   $values
+     * @param Builder $query
+     * @param array   $values
      *
      * @return string
      * @throws PrototypeException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function compileUpdate(Builder $query, $values)
     {
@@ -1130,7 +1138,7 @@ class Grammar extends BaseGrammar
      */
     protected function wrapJsonSelector($value)
     {
-        throw new \RuntimeException('This database engine does not support JSON operations.');
+        throw new RuntimeException('This database engine does not support JSON operations.');
     }
 
     /**

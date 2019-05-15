@@ -3,16 +3,32 @@
 
 namespace Swoft\Db\Query;
 
+use Closure;
+use DateTimeInterface;
+use Generator;
+use InvalidArgumentException;
+use ReflectionException;
+use RuntimeException;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Contract\PrototypeInterface;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\Concern\BuildsQueries;
 use Swoft\Db\Connection\Connection;
+use Swoft\Db\Database;
 use Swoft\Db\DB;
 use Swoft\Db\Eloquent\Builder as EloquentBuilder;
+use Swoft\Db\Eloquent\Model;
+use Swoft\Db\Exception\DbException;
+use Swoft\Db\Exception\EloquentException;
+use Swoft\Db\Exception\PoolException;
 use Swoft\Db\Exception\QueryException;
+use Swoft\Db\Pool;
 use Swoft\Db\Query\Grammar\Grammar;
+use Swoft\Db\Query\Grammar\MySqlGrammar;
+use Swoft\Db\Query\Processor\MySqlProcessor;
 use Swoft\Db\Query\Processor\Processor;
 use Swoft\Stdlib\Collection;
 use Swoft\Stdlib\Contract\Arrayable;
@@ -29,13 +45,6 @@ use Swoft\Stdlib\Helper\Str;
 class Builder implements PrototypeInterface
 {
     use BuildsQueries, PrototypeTrait;
-
-    /**
-     * The database connection instance.
-     *
-     * @var Connection
-     */
-    public $connection;
 
     /**
      * The database query grammar instance.
@@ -223,35 +232,59 @@ class Builder implements PrototypeInterface
     public $useWritePdo = false;
 
     /**
+     * @var string
+     */
+    public $poolName = Pool::DEFAULT_POOL;
+
+    /**
+     * @var string
+     */
+    public $db = '';
+
+    /**
+     * @var array
+     */
+    public $grammars = [
+        Database::MYSQL => MySqlGrammar::class
+    ];
+
+    /**
+     * @var array
+     */
+    public $processors = [
+        Database::MYSQL => MySqlProcessor::class
+    ];
+
+    /**
      * New builder instance
      *
      * @param mixed ...$params
      *
      * @return PrototypeInterface|Builder
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public static function new(...$params)
     {
         /**
-         * @var Connection|null $connection
-         * @var Grammar|null    $grammar
-         * @var Processor|null  $processor
+         * @var string|null    $poolName
+         * @var Grammar|null   $grammar
+         * @var Processor|null $processor
          */
         if (empty($params)) {
-            $connection = DB::connection();
-            $grammar    = null;
-            $processor  = null;
+            $poolName  = Pool::DEFAULT_POOL;
+            $grammar   = null;
+            $processor = null;
         } else {
-            [$connection, $grammar, $processor] = $params;
+            [$poolName, $grammar, $processor] = $params;
         }
 
         $self = self::__instance();
 
-        $self->connection = $connection;
-        $self->grammar    = $grammar ?: $connection->getQueryGrammar();
-        $self->processor  = $processor ?: $connection->getPostProcessor();
+        $self->poolName = $poolName;
+        $self->setQueryGrammarAndPostProcessor($grammar, $processor);
 
         return $self;
     }
@@ -277,15 +310,15 @@ class Builder implements PrototypeInterface
     /**
      * Add a subselect expression to the query.
      *
-     * @param \Closure|static|string $query
-     * @param string                 $as
+     * @param Closure|static|string $query
+     * @param string                $as
      *
      * @return static
      *
-     * @throws PrototypeException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function selectSub($query, string $as): self
     {
@@ -301,7 +334,8 @@ class Builder implements PrototypeInterface
      * @param array  $bindings
      *
      * @return Builder
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function selectRaw(string $expression, array $bindings = []): self
     {
@@ -317,14 +351,15 @@ class Builder implements PrototypeInterface
     /**
      * Makes "from" fetch from a subquery.
      *
-     * @param \Closure|static|string $query
-     * @param string                 $as
+     * @param Closure|static|string $query
+     * @param string                $as
      *
      * @return static
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function fromSub($query, string $as): self
     {
@@ -355,19 +390,20 @@ class Builder implements PrototypeInterface
     /**
      * Creates a subquery and parse it.
      *
-     * @param \Closure|static|string $query
+     * @param Closure|static|string $query
      *
      * @return array
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     protected function createSub($query): array
     {
         // If the given query is a Closure, we will execute it while passing in a new
         // query instance to the Closure. This will give the developer a chance to
         // format and work with the query before we cast it to a raw SQL string.
-        if ($query instanceof \Closure) {
+        if ($query instanceof Closure) {
             $callback = $query;
 
             $callback($query = $this->forSubQuery());
@@ -382,8 +418,6 @@ class Builder implements PrototypeInterface
      * @param mixed $query
      *
      * @return array
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     protected function parseSub($query): array
     {
@@ -392,7 +426,7 @@ class Builder implements PrototypeInterface
         } elseif (is_string($query)) {
             return [$query, []];
         } else {
-            throw new \InvalidArgumentException;
+            throw new InvalidArgumentException;
         }
     }
 
@@ -440,14 +474,15 @@ class Builder implements PrototypeInterface
      * Add a join clause to the query.
      *
      * @param string|Expression $table
-     * @param \Closure|string   $first
+     * @param Closure|string    $first
      * @param string|null       $operator
      * @param string|null       $second
      * @param string            $type
      * @param bool              $where
      *
      * @return static
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function join(
         $table,
@@ -462,7 +497,7 @@ class Builder implements PrototypeInterface
         // If the first "column" of the join is really a Closure instance the developer
         // is trying to build a join with a complex "on" clause containing more than
         // one condition, so we'll add the join and call a Closure with the query.
-        if ($first instanceof \Closure) {
+        if ($first instanceof Closure) {
             call_user_func($first, $join);
 
             $this->joins[] = $join;
@@ -487,14 +522,15 @@ class Builder implements PrototypeInterface
     /**
      * Add a "join where" clause to the query.
      *
-     * @param string          $table
-     * @param \Closure|string $first
-     * @param string          $operator
-     * @param string          $second
-     * @param string          $type
+     * @param string         $table
+     * @param Closure|string $first
+     * @param string         $operator
+     * @param string         $second
+     * @param string         $type
      *
      * @return static
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function joinWhere(string $table, $first, string $operator, string $second, string $type = 'inner'): self
     {
@@ -504,20 +540,20 @@ class Builder implements PrototypeInterface
     /**
      * Add a subquery join clause to the query.
      *
-     * @param \Closure|static|string $query
-     * @param string                 $as
-     * @param \Closure|string        $first
-     * @param string|null            $operator
-     * @param string|null            $second
-     * @param string                 $type
-     * @param bool                   $where
+     * @param Closure|static|string $query
+     * @param string                $as
+     * @param Closure|string        $first
+     * @param string|null           $operator
+     * @param string|null           $second
+     * @param string                $type
+     * @param bool                  $where
      *
      * @return static|static
      *
-     * @throws PrototypeException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function joinSub(
         $query,
@@ -540,13 +576,14 @@ class Builder implements PrototypeInterface
     /**
      * Add a left join to the query.
      *
-     * @param string          $table
-     * @param \Closure|string $first
-     * @param string|null     $operator
-     * @param string|null     $second
+     * @param string         $table
+     * @param Closure|string $first
+     * @param string|null    $operator
+     * @param string|null    $second
      *
      * @return static
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function leftJoin(string $table, $first, string $operator = null, string $second = null): self
     {
@@ -562,7 +599,8 @@ class Builder implements PrototypeInterface
      * @param string $second
      *
      * @return static
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function leftJoinWhere(string $table, string $first, string $operator, string $second): self
     {
@@ -572,17 +610,17 @@ class Builder implements PrototypeInterface
     /**
      * Add a subquery left join to the query.
      *
-     * @param \Closure|static|string $query
-     * @param string                 $as
-     * @param string                 $first
-     * @param string|null            $operator
-     * @param string|null            $second
+     * @param Closure|static|string $query
+     * @param string                $as
+     * @param string                $first
+     * @param string|null           $operator
+     * @param string|null           $second
      *
      * @return static
-     * @throws PrototypeException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function leftJoinSub($query, string $as, string $first, string $operator = null, string $second = null): self
     {
@@ -592,13 +630,14 @@ class Builder implements PrototypeInterface
     /**
      * Add a right join to the query.
      *
-     * @param string          $table
-     * @param \Closure|string $first
-     * @param string|null     $operator
-     * @param string|null     $second
+     * @param string         $table
+     * @param Closure|string $first
+     * @param string|null    $operator
+     * @param string|null    $second
      *
      * @return static
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function rightJoin(string $table, $first, string $operator = null, string $second = null): self
     {
@@ -614,7 +653,8 @@ class Builder implements PrototypeInterface
      * @param string $second
      *
      * @return static
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function rightJoinWhere(string $table, string $first, string $operator, string $second): self
     {
@@ -624,17 +664,17 @@ class Builder implements PrototypeInterface
     /**
      * Add a subquery right join to the query.
      *
-     * @param \Closure|static|string $query
-     * @param string                 $as
-     * @param string                 $first
-     * @param string|null            $operator
-     * @param string|null            $second
+     * @param Closure|static|string $query
+     * @param string                $as
+     * @param string                $first
+     * @param string|null           $operator
+     * @param string|null           $second
      *
      * @return static
-     * @throws PrototypeException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function rightJoinSub(
         $query,
@@ -649,13 +689,14 @@ class Builder implements PrototypeInterface
     /**
      * Add a "cross join" clause to the query.
      *
-     * @param string               $table
-     * @param \Closure|string|null $first
-     * @param string|null          $operator
-     * @param string|null          $second
+     * @param string              $table
+     * @param Closure|string|null $first
+     * @param string|null         $operator
+     * @param string|null         $second
      *
      * @return static
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function crossJoin(string $table, $first = null, string $operator = null, string $second = null): self
     {
@@ -688,16 +729,16 @@ class Builder implements PrototypeInterface
     /**
      * Add a basic where clause to the query.
      *
-     * @param string|array|\Closure $column
-     * @param mixed                 $operator
-     * @param mixed                 $value
-     * @param string                $boolean
+     * @param string|array|Closure $column
+     * @param mixed                $operator
+     * @param mixed                $value
+     * @param string               $boolean
      *
      * @return $this
-     * @throws PrototypeException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function where($column, $operator = null, $value = null, string $boolean = 'and'): self
     {
@@ -718,7 +759,7 @@ class Builder implements PrototypeInterface
         // If the columns is actually a Closure instance, we will assume the developer
         // wants to begin a nested where statement which is wrapped in parenthesis.
         // We'll add that Closure to the query then return back out immediately.
-        if ($column instanceof \Closure) {
+        if ($column instanceof Closure) {
             return $this->whereNested($column, $boolean);
         }
 
@@ -732,7 +773,7 @@ class Builder implements PrototypeInterface
         // If the value is a Closure, it means the developer is performing an entire
         // sub-select within the query and we will need to compile the sub-select
         // within the where clause to get the appropriate query record results.
-        if ($value instanceof \Closure) {
+        if ($value instanceof Closure) {
             return $this->whereSub($column, $operator, $value, $boolean);
         }
 
@@ -774,9 +815,10 @@ class Builder implements PrototypeInterface
      * @param string $method
      *
      * @return $this
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     protected function addArrayOfWheres($column, $boolean, $method = 'where'): self
     {
@@ -800,14 +842,14 @@ class Builder implements PrototypeInterface
      *
      * @return array
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function prepareValueAndOperator($value, $operator, $useDefault = false): array
     {
         if ($useDefault) {
             return [$operator, '='];
         } elseif ($this->invalidOperatorAndValue($operator, $value)) {
-            throw new \InvalidArgumentException('Illegal operator and value combination.');
+            throw new InvalidArgumentException('Illegal operator and value combination.');
         }
 
         return [$value, $operator];
@@ -845,15 +887,15 @@ class Builder implements PrototypeInterface
     /**
      * Add an "or where" clause to the query.
      *
-     * @param string|array|\Closure $column
-     * @param mixed                 $operator
-     * @param mixed                 $value
+     * @param string|array|Closure $column
+     * @param mixed                $operator
+     * @param mixed                $value
      *
      * @return static
-     * @throws PrototypeException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function orWhere($column, $operator = null, $value = null): self
     {
@@ -873,9 +915,10 @@ class Builder implements PrototypeInterface
      * @param string|null  $boolean
      *
      * @return static
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function whereColumn($first, string $operator = null, string $second = null, string $boolean = 'and'): self
     {
@@ -913,9 +956,10 @@ class Builder implements PrototypeInterface
      * @param string|null  $second
      *
      * @return static
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function orWhereColumn($first, string $operator = null, string $second = null): self
     {
@@ -962,9 +1006,10 @@ class Builder implements PrototypeInterface
      * @param bool   $not
      *
      * @return $this
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function whereIn(string $column, $values, string $boolean = 'and', bool $not = false): self
     {
@@ -986,7 +1031,7 @@ class Builder implements PrototypeInterface
         // If the value of the where in clause is actually a Closure, we will assume that
         // the developer is using a full sub-select for this "in" statement, and will
         // execute those Closures, then we can re-construct the entire sub-selects.
-        if ($values instanceof \Closure) {
+        if ($values instanceof Closure) {
             return $this->whereInSub($column, $values, $boolean, $not);
         }
 
@@ -1014,9 +1059,10 @@ class Builder implements PrototypeInterface
      * @param mixed  $values
      *
      * @return static
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function orWhereIn(string $column, $values): self
     {
@@ -1031,9 +1077,10 @@ class Builder implements PrototypeInterface
      * @param string $boolean
      *
      * @return static
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function whereNotIn(string $column, $values, string $boolean = 'and'): self
     {
@@ -1047,9 +1094,10 @@ class Builder implements PrototypeInterface
      * @param mixed  $values
      *
      * @return static
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function orWhereNotIn(string $column, $values): self
     {
@@ -1059,17 +1107,18 @@ class Builder implements PrototypeInterface
     /**
      * Add a where in with a sub-select to the query.
      *
-     * @param string   $column
-     * @param \Closure $callback
-     * @param string   $boolean
-     * @param bool     $not
+     * @param string  $column
+     * @param Closure $callback
+     * @param string  $boolean
+     * @param bool    $not
      *
      * @return $this
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
-    protected function whereInSub(string $column, \Closure $callback, string $boolean, bool $not): self
+    protected function whereInSub(string $column, Closure $callback, string $boolean, bool $not): self
     {
         $type = $not ? 'NotInSub' : 'InSub';
 
@@ -1268,7 +1317,7 @@ class Builder implements PrototypeInterface
      *
      * @param string                    $column
      * @param string                    $operator
-     * @param \DateTimeInterface|string $value
+     * @param DateTimeInterface|string $value
      * @param string                    $boolean
      *
      * @return static
@@ -1279,7 +1328,7 @@ class Builder implements PrototypeInterface
             $value, $operator, func_num_args() === 2
         );
 
-        if ($value instanceof \DateTimeInterface) {
+        if ($value instanceof DateTimeInterface) {
             $value = $value->format('Y-m-d');
         }
 
@@ -1291,7 +1340,7 @@ class Builder implements PrototypeInterface
      *
      * @param string                    $column
      * @param string                    $operator
-     * @param \DateTimeInterface|string $value
+     * @param DateTimeInterface|string $value
      *
      * @return static
      */
@@ -1309,7 +1358,7 @@ class Builder implements PrototypeInterface
      *
      * @param string                    $column
      * @param string                    $operator
-     * @param \DateTimeInterface|string $value
+     * @param DateTimeInterface|string $value
      * @param string                    $boolean
      *
      * @return static
@@ -1320,7 +1369,7 @@ class Builder implements PrototypeInterface
             $value, $operator, func_num_args() === 2
         );
 
-        if ($value instanceof \DateTimeInterface) {
+        if ($value instanceof DateTimeInterface) {
             $value = $value->format('H:i:s');
         }
 
@@ -1332,7 +1381,7 @@ class Builder implements PrototypeInterface
      *
      * @param string                    $column
      * @param string                    $operator
-     * @param \DateTimeInterface|string $value
+     * @param DateTimeInterface|string $value
      *
      * @return static
      */
@@ -1350,7 +1399,7 @@ class Builder implements PrototypeInterface
      *
      * @param string                    $column
      * @param string                    $operator
-     * @param \DateTimeInterface|string $value
+     * @param DateTimeInterface|string $value
      * @param string                    $boolean
      *
      * @return static|static
@@ -1361,7 +1410,7 @@ class Builder implements PrototypeInterface
             $value, $operator, func_num_args() === 2
         );
 
-        if ($value instanceof \DateTimeInterface) {
+        if ($value instanceof DateTimeInterface) {
             $value = $value->format('d');
         }
 
@@ -1373,7 +1422,7 @@ class Builder implements PrototypeInterface
      *
      * @param string                    $column
      * @param string                    $operator
-     * @param \DateTimeInterface|string $value
+     * @param DateTimeInterface|string $value
      *
      * @return static
      */
@@ -1391,7 +1440,7 @@ class Builder implements PrototypeInterface
      *
      * @param string                    $column
      * @param string                    $operator
-     * @param \DateTimeInterface|string $value
+     * @param DateTimeInterface|string $value
      * @param string                    $boolean
      *
      * @return static
@@ -1402,7 +1451,7 @@ class Builder implements PrototypeInterface
             $value, $operator, func_num_args() === 2
         );
 
-        if ($value instanceof \DateTimeInterface) {
+        if ($value instanceof DateTimeInterface) {
             $value = $value->format('m');
         }
 
@@ -1414,7 +1463,7 @@ class Builder implements PrototypeInterface
      *
      * @param string                    $column
      * @param string                    $operator
-     * @param \DateTimeInterface|string $value
+     * @param DateTimeInterface|string $value
      *
      * @return static
      */
@@ -1432,7 +1481,7 @@ class Builder implements PrototypeInterface
      *
      * @param string                        $column
      * @param string                        $operator
-     * @param \DateTimeInterface|string|int $value
+     * @param DateTimeInterface|string|int $value
      * @param string                        $boolean
      *
      * @return static
@@ -1443,7 +1492,7 @@ class Builder implements PrototypeInterface
             $value, $operator, func_num_args() === 2
         );
 
-        if ($value instanceof \DateTimeInterface) {
+        if ($value instanceof DateTimeInterface) {
             $value = $value->format('Y');
         }
 
@@ -1455,7 +1504,7 @@ class Builder implements PrototypeInterface
      *
      * @param string                        $column
      * @param string                        $operator
-     * @param \DateTimeInterface|string|int $value
+     * @param DateTimeInterface|string|int $value
      *
      * @return static
      */
@@ -1498,15 +1547,16 @@ class Builder implements PrototypeInterface
     /**
      * Add a nested where statement to the query.
      *
-     * @param \Closure $callback
-     * @param string   $boolean
+     * @param Closure $callback
+     * @param string  $boolean
      *
      * @return static
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
-    public function whereNested(\Closure $callback, string $boolean = 'and'): self
+    public function whereNested(Closure $callback, string $boolean = 'and'): self
     {
         call_user_func($callback, $query = $this->forNestedWhere());
 
@@ -1517,9 +1567,10 @@ class Builder implements PrototypeInterface
      * Create a new query instance for nested where condition.
      *
      * @return static
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function forNestedWhere(): self
     {
@@ -1550,17 +1601,18 @@ class Builder implements PrototypeInterface
     /**
      * Add a full sub-select to the query.
      *
-     * @param string   $column
-     * @param string   $operator
-     * @param \Closure $callback
-     * @param string   $boolean
+     * @param string  $column
+     * @param string  $operator
+     * @param Closure $callback
+     * @param string  $boolean
      *
      * @return $this
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
-    protected function whereSub(string $column, string $operator, \Closure $callback, string $boolean): self
+    protected function whereSub(string $column, string $operator, Closure $callback, string $boolean): self
     {
         $type = 'Sub';
 
@@ -1581,16 +1633,17 @@ class Builder implements PrototypeInterface
     /**
      * Add an exists clause to the query.
      *
-     * @param \Closure $callback
-     * @param string   $boolean
-     * @param bool     $not
+     * @param Closure $callback
+     * @param string  $boolean
+     * @param bool    $not
      *
      * @return $this
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
-    public function whereExists(\Closure $callback, string $boolean = 'and', bool $not = false): self
+    public function whereExists(Closure $callback, string $boolean = 'and', bool $not = false): self
     {
         $query = $this->forSubQuery();
 
@@ -1605,15 +1658,16 @@ class Builder implements PrototypeInterface
     /**
      * Add an or exists clause to the query.
      *
-     * @param \Closure $callback
-     * @param bool     $not
+     * @param Closure $callback
+     * @param bool    $not
      *
      * @return static
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
-    public function orWhereExists(\Closure $callback, bool $not = false): self
+    public function orWhereExists(Closure $callback, bool $not = false): self
     {
         return $this->whereExists($callback, 'or', $not);
     }
@@ -1621,15 +1675,16 @@ class Builder implements PrototypeInterface
     /**
      * Add a where not exists clause to the query.
      *
-     * @param \Closure $callback
-     * @param string   $boolean
+     * @param Closure $callback
+     * @param string  $boolean
      *
      * @return static
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
-    public function whereNotExists(\Closure $callback, string $boolean = 'and'): self
+    public function whereNotExists(Closure $callback, string $boolean = 'and'): self
     {
         return $this->whereExists($callback, $boolean, true);
     }
@@ -1637,14 +1692,15 @@ class Builder implements PrototypeInterface
     /**
      * Add a where not exists clause to the query.
      *
-     * @param \Closure $callback
+     * @param Closure $callback
      *
      * @return static
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
-    public function orWhereNotExists(\Closure $callback): self
+    public function orWhereNotExists(Closure $callback): self
     {
         return $this->orWhereExists($callback, true);
     }
@@ -1682,7 +1738,7 @@ class Builder implements PrototypeInterface
     public function whereRowValues(array $columns, string $operator, array $values, string $boolean = 'and'): self
     {
         if (count($columns) !== count($values)) {
-            throw new \InvalidArgumentException('The number of columns must match the number of values');
+            throw new InvalidArgumentException('The number of columns must match the number of values');
         }
 
         $type = 'RowValues';
@@ -1823,10 +1879,10 @@ class Builder implements PrototypeInterface
      * @param array  $parameters
      *
      * @return $this
-     * @throws PrototypeException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function dynamicWhere(string $method, array $parameters): self
     {
@@ -1873,10 +1929,10 @@ class Builder implements PrototypeInterface
      * @param int    $index
      *
      *
-     * @throws PrototypeException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     protected function addDynamic($segment, $connector, $parameters, $index): void
     {
@@ -2180,10 +2236,10 @@ class Builder implements PrototypeInterface
      * @param string   $column
      *
      * @return static
-     * @throws PrototypeException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function forPageAfterId(int $perPage = 15, int $lastId = null, string $column = 'id'): self
     {
@@ -2216,17 +2272,18 @@ class Builder implements PrototypeInterface
     /**
      * Add a union statement to the query.
      *
-     * @param static|\Closure $query
-     * @param bool            $all
+     * @param static|Closure $query
+     * @param bool           $all
      *
      * @return static
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function union($query, bool $all = false): self
     {
-        if ($query instanceof \Closure) {
+        if ($query instanceof Closure) {
             call_user_func($query, $query = $this->newQuery());
         }
 
@@ -2240,12 +2297,13 @@ class Builder implements PrototypeInterface
     /**
      * Add a union all statement to the query.
      *
-     * @param static|\Closure $query
+     * @param static|Closure $query
      *
      * @return static
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function unionAll($query): self
     {
@@ -2294,17 +2352,10 @@ class Builder implements PrototypeInterface
      * Get the SQL representation of the query.
      *
      * @return string
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function toSql(): string
     {
-        $sql = $this->grammar->compileSelect($this);
-
-        // Release connection
-        $this->connection->release();
-
-        return $sql;
+        return $this->grammar->compileSelect($this);
     }
 
     /**
@@ -2313,12 +2364,13 @@ class Builder implements PrototypeInterface
      * @param string $id
      * @param array  $columns
      *
-     * @return null|object|\Swoft\Db\Eloquent\Model|Builder
+     * @return null|object|Model|Builder
+     * @throws ContainerException
+     * @throws DbException
+     * @throws EloquentException
      * @throws PrototypeException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\EloquentException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function find(string $id, array $columns = ['*'])
     {
@@ -2332,7 +2384,7 @@ class Builder implements PrototypeInterface
      *
      * @return mixed
      * @throws PrototypeException
-     * @throws \Swoft\Db\Exception\EloquentException
+     * @throws EloquentException
      */
     public function value(string $column)
     {
@@ -2361,13 +2413,14 @@ class Builder implements PrototypeInterface
      * Run the query as a "select" statement against the connection.
      *
      * @return array
+     * @throws ContainerException
+     * @throws PoolException
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
      */
     protected function runSelect(): array
     {
-        return $this->connection->select($this->toSql(), $this->getBindings(), !$this->useWritePdo);
+        return $this->getConnection()->select($this->toSql(), $this->getBindings(), !$this->useWritePdo);
     }
 
     /**
@@ -2449,18 +2502,19 @@ class Builder implements PrototypeInterface
     /**
      * Get a generator for the given query.
      *
-     * @return \Generator
+     * @return Generator
+     * @throws ContainerException
+     * @throws PoolException
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
      */
-    public function cursor(): \Generator
+    public function cursor(): Generator
     {
         if (is_null($this->columns)) {
             $this->columns = ['*'];
         }
 
-        return $this->connection->cursor($this->toSql(), $this->getBindings(), !$this->useWritePdo);
+        return $this->getConnection()->cursor($this->toSql(), $this->getBindings(), !$this->useWritePdo);
     }
 
     /**
@@ -2472,10 +2526,10 @@ class Builder implements PrototypeInterface
      * @param string|null $alias
      *
      * @return bool
-     * @throws PrototypeException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function chunkById(int $count, callable $callback, $column = 'id', string $alias = null): bool
     {
@@ -2517,12 +2571,12 @@ class Builder implements PrototypeInterface
      *
      * @return void
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     protected function enforceOrderBy(): void
     {
         if (empty($this->orders) && empty($this->unionOrders)) {
-            throw new \RuntimeException('You must specify an orderBy clause when using this function.');
+            throw new RuntimeException('You must specify an orderBy clause when using this function.');
         }
     }
 
@@ -2649,13 +2703,14 @@ class Builder implements PrototypeInterface
      * Determine if any rows exist for the current query.
      *
      * @return bool
+     * @throws ContainerException
+     * @throws PoolException
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
      */
     public function exists(): bool
     {
-        $results = $this->connection->select(
+        $results = $this->getConnection()->select(
             $this->grammar->compileExists($this), $this->getBindings(), !$this->useWritePdo
         );
 
@@ -2675,9 +2730,10 @@ class Builder implements PrototypeInterface
      * Determine if no rows exist for the current query.
      *
      * @return bool
+     * @throws ContainerException
+     * @throws PoolException
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
      */
     public function doesntExist(): bool
     {
@@ -2862,11 +2918,10 @@ class Builder implements PrototypeInterface
      * @param array $values
      *
      * @return bool
+     * @throws ContainerException
+     * @throws PoolException
      * @throws QueryException
-     * @throws PrototypeException
-     * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
      */
     public function insert(array $values)
     {
@@ -2895,7 +2950,7 @@ class Builder implements PrototypeInterface
         // Finally, we will run this query against the database connection and return
         // the results. We will need to also flatten these bindings before running
         // the query so they are all in one huge, flattened array for execution.
-        return $this->connection->insert(
+        return $this->getConnection()->insert(
             $this->grammar->compileInsert($this, $values),
             $this->cleanBindings(Arr::flatten($values, 1))
         );
@@ -2908,10 +2963,11 @@ class Builder implements PrototypeInterface
      * @param string|null $sequence
      *
      * @return string
+     * @throws ContainerException
+     * @throws PoolException
      * @throws PrototypeException
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
      */
     public function insertGetId(array $values, string $sequence = null): string
     {
@@ -2925,20 +2981,21 @@ class Builder implements PrototypeInterface
     /**
      * Insert new records into the table using a subquery.
      *
-     * @param array                  $columns
-     * @param \Closure|static|string $query
+     * @param array                 $columns
+     * @param Closure|static|string $query
      *
      * @return bool
+     * @throws ContainerException
+     * @throws DbException
+     * @throws PoolException
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ReflectionException
      */
     public function insertUsing(array $columns, $query)
     {
         [$sql, $bindings] = $this->createSub($query);
 
-        return $this->connection->insert(
+        return $this->getConnection()->insert(
             $this->grammar->compileInsertUsing($this, $columns, $sql),
             $this->cleanBindings($bindings)
         );
@@ -2950,16 +3007,17 @@ class Builder implements PrototypeInterface
      * @param array $values
      *
      * @return int
-     * @throws QueryException
+     * @throws ContainerException
+     * @throws PoolException
      * @throws PrototypeException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function update(array $values)
     {
         $sql = $this->grammar->compileUpdate($this, $values);
 
-        return $this->connection->update($sql, $this->cleanBindings(
+        return $this->getConnection()->update($sql, $this->cleanBindings(
             $this->grammar->prepareBindingsForUpdate($this->bindings, $values)
         ));
     }
@@ -2971,11 +3029,12 @@ class Builder implements PrototypeInterface
      * @param array $values
      *
      * @return bool
+     * @throws ContainerException
+     * @throws DbException
+     * @throws PoolException
      * @throws PrototypeException
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ReflectionException
      */
     public function updateOrInsert(array $attributes, array $values = [])
     {
@@ -2994,15 +3053,16 @@ class Builder implements PrototypeInterface
      * @param array     $extra
      *
      * @return int
-     * @throws QueryException
+     * @throws ContainerException
+     * @throws PoolException
      * @throws PrototypeException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function increment(string $column, $amount = 1, array $extra = [])
     {
         if (!is_numeric($amount)) {
-            throw new \InvalidArgumentException('Non-numeric value passed to increment method.');
+            throw new InvalidArgumentException('Non-numeric value passed to increment method.');
         }
 
         $wrapped = $this->grammar->wrap($column);
@@ -3020,15 +3080,16 @@ class Builder implements PrototypeInterface
      * @param array     $extra
      *
      * @return int
-     * @throws QueryException
+     * @throws ContainerException
+     * @throws PoolException
      * @throws PrototypeException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function decrement(string $column, $amount = 1, array $extra = [])
     {
         if (!is_numeric($amount)) {
-            throw new \InvalidArgumentException('Non-numeric value passed to decrement method.');
+            throw new InvalidArgumentException('Non-numeric value passed to decrement method.');
         }
 
         $wrapped = $this->grammar->wrap($column);
@@ -3044,11 +3105,12 @@ class Builder implements PrototypeInterface
      * @param mixed $id
      *
      * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws PoolException
      * @throws PrototypeException
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ReflectionException
      */
     public function delete($id = null)
     {
@@ -3059,7 +3121,7 @@ class Builder implements PrototypeInterface
             $this->where($this->from . '.id', '=', $id);
         }
 
-        return $this->connection->delete(
+        return $this->getConnection()->delete(
             $this->grammar->compileDelete($this), $this->cleanBindings(
             $this->grammar->prepareBindingsForDelete($this->bindings)
         )
@@ -3070,14 +3132,15 @@ class Builder implements PrototypeInterface
      * Run a truncate statement on the table.
      *
      * @return void
+     * @throws ContainerException
+     * @throws PoolException
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
      */
     public function truncate()
     {
         foreach ($this->grammar->compileTruncate($this) as $sql => $bindings) {
-            $this->connection->statement($sql, $bindings);
+            $this->getConnection()->statement($sql, $bindings);
         }
     }
 
@@ -3085,22 +3148,24 @@ class Builder implements PrototypeInterface
      * Get a new instance of the query builder.
      *
      * @return static
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function newQuery(): self
     {
-        return Builder::new($this->connection, $this->grammar, $this->processor);
+        return Builder::new($this->poolName, $this->grammar, $this->processor);
     }
 
     /**
      * Create a new query instance for a sub-query.
      *
      * @return static
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Db\Exception\PoolException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     protected function forSubQuery(): self
     {
@@ -3113,11 +3178,12 @@ class Builder implements PrototypeInterface
      * @param mixed $value
      *
      * @return Expression
+     * @throws PoolException
      * @throws PrototypeException
      */
     public function raw($value)
     {
-        return $this->connection->raw($value);
+        return $this->getConnection()->raw($value);
     }
 
     /**
@@ -3148,12 +3214,12 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function setBindings(array $bindings, string $type = 'where')
     {
         if (!array_key_exists($type, $this->bindings)) {
-            throw new \InvalidArgumentException("Invalid binding type: {$type}.");
+            throw new InvalidArgumentException("Invalid binding type: {$type}.");
         }
 
         $this->bindings[$type] = $bindings;
@@ -3169,12 +3235,12 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function addBinding($value, string $type = 'where')
     {
         if (!array_key_exists($type, $this->bindings)) {
-            throw new \InvalidArgumentException("Invalid binding type: {$type}.");
+            throw new InvalidArgumentException("Invalid binding type: {$type}.");
         }
 
         if (is_array($value)) {
@@ -3218,10 +3284,14 @@ class Builder implements PrototypeInterface
      * Get the database connection instance.
      *
      * @return Connection
+     * @throws PoolException
      */
     public function getConnection()
     {
-        return $this->connection;
+        $connection = DB::connection($this->poolName);
+
+        // @todo select db
+        return $connection;
     }
 
     /**
@@ -3289,5 +3359,92 @@ class Builder implements PrototypeInterface
         }
 
         return $clone;
+    }
+
+    /**
+     * @param Grammar|null   $grammar
+     * @param Processor|null $processor
+     *
+     * @throws ContainerException
+     * @throws DbException
+     * @throws QueryException
+     * @throws ReflectionException
+     */
+    protected function setQueryGrammarAndPostProcessor(Grammar $grammar = null, Processor $processor = null): void
+    {
+        /* @var Pool $pool*/
+        $pool = BeanFactory::getBean($this->poolName);
+
+        $driver = $pool->getDatabase()->getDriver();
+        $prefix = $pool->getDatabase()->getPrefix();
+
+        // Grammar
+        $this->setQueryGrammar($driver, $prefix, $grammar);
+
+        // Processor
+        $this->setPostProcessor($driver, $processor);
+    }
+
+    /**
+     * @param string       $driver
+     * @param string       $prefix
+     * @param Grammar|null $grammar
+     *
+     * @throws QueryException
+     * @throws ReflectionException
+     * @throws ContainerException
+     */
+    protected function setQueryGrammar(string $driver, string $prefix, Grammar $grammar = null):void
+    {
+        if(!empty($grammar)){
+            $this->grammar = $grammar;
+            return;
+        }
+
+        $grammarName = $this->grammars[$driver]??'';
+        if(empty($grammarName)){
+            throw new QueryException(
+                sprintf('Grammar(driver=%s) is not exist!', $driver)
+            );
+        }
+
+        $grammar = \bean($grammarName);
+        if (!$grammar instanceof Grammar) {
+            throw new InvalidArgumentException('%s class is not Grammar instance', get_class($grammar));
+        }
+
+        $grammar->setTablePrefix($prefix);
+
+        $this->grammar = $grammar;
+    }
+
+    /**
+     * @param string         $driver
+     * @param Processor|null $processor
+     *
+     * @throws ContainerException
+     * @throws QueryException
+     * @throws ReflectionException
+     */
+    protected function setPostProcessor(string $driver, Processor $processor = null):void
+    {
+        if(!empty($processor)){
+            $this->processor = $processor;
+            return;
+        }
+
+        $processorName = $this->processors[$driver]??'';
+        if(empty($processorName)){
+            throw new QueryException(
+                sprintf('Processor(driver=%s) is not exist!', $driver)
+            );
+        }
+
+        $processor = \bean($processorName);
+        if (!$processor instanceof Processor) {
+            throw new InvalidArgumentException('%s class is not processor instance', get_class($processor));
+        }
+
+        $this->processor = $processor;
     }
 }

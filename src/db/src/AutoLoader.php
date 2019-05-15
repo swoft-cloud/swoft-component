@@ -4,14 +4,17 @@
 namespace Swoft\Db;
 
 
+use function bean;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\SwoftComponent;
 
 class AutoLoader extends SwoftComponent
 {
     /**
      * @return array
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function beans(): array
     {
@@ -22,7 +25,7 @@ class AutoLoader extends SwoftComponent
             ],
             'db.pool' => [
                 'class'    => Pool::class,
-                'database' => \bean('db')
+                'database' => bean('db')
             ]
         ];
     }

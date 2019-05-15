@@ -4,7 +4,13 @@
 namespace SwoftTest\Db\Unit;
 
 
+use Swoft\Bean\Exception\PrototypeException;
+use Swoft\Db\Exception\EloquentException;
+use Swoft\Db\Exception\EntityException;
+use Swoft\Db\Exception\PoolException;
+use Swoft\Db\Exception\QueryException;
 use SwoftTest\Db\Testing\Entity\User;
+use Swoole\Event;
 
 /**
  * Class TestCase
@@ -18,16 +24,18 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
      */
     public function tearDown(): void
     {
-        \Swoole\Event::wait();
+        Event::wait();
     }
 
     /**
      * @return int
-     * @throws \Swoft\Bean\Exception\PrototypeException
-     * @throws \Swoft\Db\Exception\EloquentException
-     * @throws \Swoft\Db\Exception\EntityException
-     * @throws \Swoft\Db\Exception\PoolException
-     * @throws \Swoft\Db\Exception\QueryException
+     * @throws EloquentException
+     * @throws EntityException
+     * @throws PoolException
+     * @throws PrototypeException
+     * @throws QueryException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function addRecord(): int
     {
