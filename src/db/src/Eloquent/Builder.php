@@ -4,10 +4,14 @@
 namespace Swoft\Db\Eloquent;
 
 
+use Closure;
+use DateTimeInterface;
+use Generator;
+use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\Concern\BuildsQueries;
 use Swoft\Db\Connection\Connection;
+use Swoft\Db\Exception\DbException;
 use Swoft\Db\Exception\EloquentException;
 use Swoft\Db\Exception\EntityException;
 use Swoft\Db\Exception\PoolException;
@@ -22,25 +26,25 @@ use Swoft\Stdlib\Helper\PhpHelper;
  *
  * @since 2.0
  * @method Builder select(string ...$columns)
- * @method Builder selectSub(\Closure|QueryBuilder|string $query, string $as)
+ * @method Builder selectSub(Closure|QueryBuilder|string $query, string $as)
  * @method Builder selectRaw(string $expression, array $bindings = [])
- * @method Builder fromSub(\Closure|QueryBuilder|string $query, string $as)
+ * @method Builder fromSub(Closure|QueryBuilder|string $query, string $as)
  * @method Builder fromRaw(string $expression, array $bindings = [])
- * @method Builder createSub(\Closure|QueryBuilder|string $query)
- * @method Builder parseSub(\Closure|QueryBuilder|string $query)
+ * @method Builder createSub(Closure|QueryBuilder|string $query)
+ * @method Builder parseSub(Closure|QueryBuilder|string $query)
  * @method Builder addSelect(array $column)
  * @method Builder distinct()
  * @method Builder from(string $table)
- * @method Builder join(string $table, \Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
- * @method Builder joinWhere(string $table, \Closure|string $first, string $operator, string $second, string $type = 'inner')
- * @method Builder joinSub(\Closure|QueryBuilder|string $query, string $as, \Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
- * @method Builder leftJoin(string $table, \Closure|string $first, string $operator = null, string $second = null)
+ * @method Builder join(string $table, Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
+ * @method Builder joinWhere(string $table, Closure|string $first, string $operator, string $second, string $type = 'inner')
+ * @method Builder joinSub(Closure|QueryBuilder|string $query, string $as, Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
+ * @method Builder leftJoin(string $table, Closure|string $first, string $operator = null, string $second = null)
  * @method Builder leftJoinWhere(string $table, string $first, string $operator, string $second)
- * @method Builder leftJoinSub(\Closure|QueryBuilder|string $query, string $as, string $first, string $operator = null, string $second = null)
- * @method Builder rightJoin(string $table, \Closure|string $first, string $operator = null, string $second = null)
+ * @method Builder leftJoinSub(Closure|QueryBuilder|string $query, string $as, string $first, string $operator = null, string $second = null)
+ * @method Builder rightJoin(string $table, Closure|string $first, string $operator = null, string $second = null)
  * @method Builder rightJoinWhere(string $table, string $first, string $operator, string $second)
- * @method Builder rightJoinSub(\Closure|QueryBuilder|string $query, string $as, string $first, string $operator = null, string $second = null)
- * @method Builder crossJoin(string $table, \Closure|string $first = null, string $operator = null, string $second = null)
+ * @method Builder rightJoinSub(Closure|QueryBuilder|string $query, string $as, string $first, string $operator = null, string $second = null)
+ * @method Builder crossJoin(string $table, Closure|string $first = null, string $operator = null, string $second = null)
  * @method void mergeWheres(array $wheres, array $bindings)
  * @method Builder whereColumn(string|array $first, string $operator = null, string $second = null, string $boolean = 'and')
  * @method Builder orWhereColumn(string|array $first, string $operator = null, string $second = null)
@@ -60,24 +64,24 @@ use Swoft\Stdlib\Helper\PhpHelper;
  * @method Builder whereNotBetween(string $column, array $values, string $boolean = 'and')
  * @method Builder orWhereNotBetween(string $column, array $values)
  * @method Builder orWhereNotNull(string $column)
- * @method Builder whereDate(string $column, $operator, \DateTimeInterface|string $value = null, string $boolean = 'and')
- * @method Builder orWhereDate(string $column, string $operator, \DateTimeInterface|string $value = null)
- * @method Builder whereTime(string $column, $operator, \DateTimeInterface|string $value = null, string $boolean = 'and')
- * @method Builder orWhereTime(string $column, string $operator, \DateTimeInterface|string $value = null)
- * @method Builder whereDay(string $column, string $operator, \DateTimeInterface|string $value = null, string $boolean = 'and')
- * @method Builder orWhereDay(string $column, string $operator, \DateTimeInterface|string $value = null)
- * @method Builder whereMonth(string $column, string $operator, \DateTimeInterface|string $value = null, string $boolean = 'and')
- * @method Builder orWhereMonth(string $column, string $operator, \DateTimeInterface|string $value = null)
- * @method Builder whereYear(string $column, string $operator, \DateTimeInterface|string|int $value = null, string $boolean = 'and')
- * @method Builder orWhereYear(string $column, string $operator, \DateTimeInterface|string|int $value = null)
- * @method Builder whereNested(\Closure $callback, string $boolean = 'and')
+ * @method Builder whereDate(string $column, $operator, DateTimeInterface|string $value = null, string $boolean = 'and')
+ * @method Builder orWhereDate(string $column, string $operator, DateTimeInterface|string $value = null)
+ * @method Builder whereTime(string $column, $operator, DateTimeInterface|string $value = null, string $boolean = 'and')
+ * @method Builder orWhereTime(string $column, string $operator, DateTimeInterface|string $value = null)
+ * @method Builder whereDay(string $column, string $operator, DateTimeInterface|string $value = null, string $boolean = 'and')
+ * @method Builder orWhereDay(string $column, string $operator, DateTimeInterface|string $value = null)
+ * @method Builder whereMonth(string $column, string $operator, DateTimeInterface|string $value = null, string $boolean = 'and')
+ * @method Builder orWhereMonth(string $column, string $operator, DateTimeInterface|string $value = null)
+ * @method Builder whereYear(string $column, string $operator, DateTimeInterface|string|int $value = null, string $boolean = 'and')
+ * @method Builder orWhereYear(string $column, string $operator, DateTimeInterface|string|int $value = null)
+ * @method Builder whereNested(Closure $callback, string $boolean = 'and')
  * @method Builder forNestedWhere()
  * @method Builder addNestedWhereQuery(QueryBuilder $query, string $boolean = 'and')
- * @method Builder whereSub(string $column, string $operator, \Closure $callback, string $boolean)
- * @method Builder whereExists(\Closure $callback, string $boolean = 'and', bool $not = false)
- * @method Builder orWhereExists(\Closure $callback, bool $not = false)
- * @method Builder whereNotExists(\Closure $callback, string $boolean = 'and')
- * @method Builder orWhereNotExists(\Closure $callback)
+ * @method Builder whereSub(string $column, string $operator, Closure $callback, string $boolean)
+ * @method Builder whereExists(Closure $callback, string $boolean = 'and', bool $not = false)
+ * @method Builder orWhereExists(Closure $callback, bool $not = false)
+ * @method Builder whereNotExists(Closure $callback, string $boolean = 'and')
+ * @method Builder orWhereNotExists(Closure $callback)
  * @method Builder addWhereExistsQuery(Builder $query, string $boolean = 'and', bool $not = false)
  * @method Builder whereRowValues(array $columns, string $operator, array $values, string $boolean = 'and')
  * @method Builder orWhereRowValues(array $columns, string $operator, array $values)
@@ -154,7 +158,7 @@ class Builder
     /**
      * A replacement for the typical delete function.
      *
-     * @var \Closure
+     * @var Closure
      */
     protected $onDelete;
 
@@ -215,9 +219,9 @@ class Builder
      * @return $this|Builder
      * @throws ContainerException
      * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
-     * @throws \ReflectionException
+     * @throws QueryException
+     * @throws ReflectionException
+     * @throws DbException
      */
     public function whereKey($id)
     {
@@ -236,9 +240,9 @@ class Builder
      * @return $this|Builder
      * @throws ContainerException
      * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
-     * @throws \ReflectionException
+     * @throws QueryException
+     * @throws ReflectionException
+     * @throws DbException
      */
     public function whereKeyNot($id)
     {
@@ -254,21 +258,21 @@ class Builder
     /**
      * Add a basic where clause to the query.
      *
-     * @param string|array|\Closure $column
-     * @param mixed                 $operator
-     * @param mixed                 $value
-     * @param string                $boolean
+     * @param string|array|Closure $column
+     * @param mixed                $operator
+     * @param mixed                $value
+     * @param string               $boolean
      *
      * @return $this
-     * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws EntityException
+     * @throws QueryException
+     * @throws ReflectionException
+     * @throws DbException
      */
     public function where($column, $operator = null, $value = null, string $boolean = 'and')
     {
-        if ($column instanceof \Closure) {
+        if ($column instanceof Closure) {
             $column($query = $this->model->newModelQuery());
 
             $this->query->addNestedWhereQuery($query->getQuery(), $boolean);
@@ -282,16 +286,16 @@ class Builder
     /**
      * Add an "or where" clause to the query.
      *
-     * @param \Closure|array|string $column
-     * @param mixed                 $operator
-     * @param mixed                 $value
+     * @param Closure|array|string $column
+     * @param mixed                $operator
+     * @param mixed                $value
      *
      * @return Builder
      * @throws ContainerException
      * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
-     * @throws \ReflectionException
+     * @throws QueryException
+     * @throws ReflectionException
+     * @throws DbException
      */
     public function orWhere($column, $operator = null, $value = null)
     {
@@ -336,8 +340,9 @@ class Builder
      * @param array $items
      *
      * @return Collection
+     * @throws ContainerException
      * @throws EloquentException
-     * @throws PrototypeException
+     * @throws ReflectionException
      */
     public function hydrate(array $items): Collection
     {
@@ -357,9 +362,9 @@ class Builder
      * @return Collection
      * @throws ContainerException
      * @throws EloquentException
-     * @throws PrototypeException
+     * @throws PoolException
      * @throws QueryException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function fromQuery(string $query, array $bindings = [])
     {
@@ -376,11 +381,11 @@ class Builder
      *
      * @return null|object|Builder|Collection|Model
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
-     * @throws \ReflectionException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function find($id, array $columns = ['*'])
     {
@@ -401,9 +406,9 @@ class Builder
      * @throws ContainerException
      * @throws EloquentException
      * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
-     * @throws \ReflectionException
+     * @throws QueryException
+     * @throws ReflectionException
+     * @throws DbException
      */
     public function findMany(array $ids, array $columns = ['*'])
     {
@@ -422,11 +427,11 @@ class Builder
      *
      * @return null|object|Builder|Collection|Model
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
-     * @throws \ReflectionException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function findOrFail($id, array $columns = ['*'])
     {
@@ -451,11 +456,11 @@ class Builder
      *
      * @return null|object|Builder|Collection|Model
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
-     * @throws \ReflectionException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function findOrNew($id, array $columns = ['*'])
     {
@@ -474,11 +479,11 @@ class Builder
      *
      * @return null|object|Builder|Model
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
-     * @throws \ReflectionException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function firstOrNew(array $attributes, array $values = [])
     {
@@ -500,9 +505,9 @@ class Builder
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
-     * @throws \ReflectionException
+     * @throws ReflectionException
+     * @throws DbException
      */
     public function firstOrCreate(array $attributes, array $values = [])
     {
@@ -527,9 +532,9 @@ class Builder
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
-     * @throws \ReflectionException
+     * @throws ReflectionException
+     * @throws DbException
      */
     public function updateOrCreate(array $attributes, array $values = [])
     {
@@ -545,9 +550,10 @@ class Builder
      *
      * @return Model|static
      *
-     * @throws EntityException
+     * @throws ContainerException
      * @throws EloquentException
-     * @throws PrototypeException
+     * @throws EntityException
+     * @throws ReflectionException
      */
     public function firstOrFail(array $columns = ['*'])
     {
@@ -561,16 +567,17 @@ class Builder
     /**
      * Execute the query and get the first result or call a callback.
      *
-     * @param \Closure|array $columns
-     * @param \Closure|null  $callback
+     * @param Closure|array $columns
+     * @param Closure|null  $callback
      *
      * @return Model|static|mixed
+     * @throws ContainerException
      * @throws EloquentException
-     * @throws PrototypeException
+     * @throws ReflectionException
      */
-    public function firstOr(array $columns = ['*'], \Closure $callback = null)
+    public function firstOr(array $columns = ['*'], Closure $callback = null)
     {
-        if ($columns instanceof \Closure) {
+        if ($columns instanceof Closure) {
             $callback = $columns;
 
             $columns = ['*'];
@@ -589,8 +596,9 @@ class Builder
      * @param string $column
      *
      * @return mixed
+     * @throws ContainerException
      * @throws EloquentException
-     * @throws PrototypeException
+     * @throws ReflectionException
      */
     public function value(string $column)
     {
@@ -607,8 +615,9 @@ class Builder
      * @param array $columns
      *
      * @return Collection
+     * @throws ContainerException
      * @throws EloquentException
-     * @throws PrototypeException
+     * @throws ReflectionException
      */
     public function get(array $columns = ['*'])
     {
@@ -624,8 +633,9 @@ class Builder
      * @param array $columns
      *
      * @return Model[]|static[]
+     * @throws ContainerException
      * @throws EloquentException
-     * @throws PrototypeException
+     * @throws ReflectionException
      */
     public function getModels($columns = ['*'])
     {
@@ -637,10 +647,11 @@ class Builder
     /**
      * Get a generator for the given query.
      *
-     * @return \Generator
+     * @return Generator
      * @throws ContainerException
+     * @throws PoolException
      * @throws QueryException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function cursor()
     {
@@ -658,9 +669,10 @@ class Builder
      * @param string|null $alias
      *
      * @return bool
+     * @throws ContainerException
      * @throws EloquentException
      * @throws EntityException
-     * @throws PrototypeException
+     * @throws ReflectionException
      */
     public function chunkById(int $count, callable $callback, string $column = null, string $alias = null): bool
     {
@@ -721,12 +733,12 @@ class Builder
      *
      * @return Model
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function create(array $attributes = [])
     {
@@ -742,9 +754,9 @@ class Builder
      *
      * @return int
      * @throws ContainerException
-     * @throws PrototypeException
+     * @throws PoolException
      * @throws QueryException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function update(array $values)
     {
@@ -760,9 +772,9 @@ class Builder
      *
      * @return int
      * @throws ContainerException
-     * @throws PrototypeException
+     * @throws PoolException
      * @throws QueryException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function increment(string $column, $amount = 1, array $extra = [])
     {
@@ -780,9 +792,9 @@ class Builder
      *
      * @return int
      * @throws ContainerException
-     * @throws PrototypeException
+     * @throws PoolException
      * @throws QueryException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function decrement($column, $amount = 1, array $extra = [])
     {
@@ -796,10 +808,10 @@ class Builder
      *
      * @return int|mixed
      * @throws ContainerException
+     * @throws DbException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function delete()
     {
@@ -817,10 +829,10 @@ class Builder
      *
      * @return int
      * @throws ContainerException
+     * @throws DbException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function forceDelete()
     {
@@ -830,11 +842,11 @@ class Builder
     /**
      * Register a replacement for the default delete function.
      *
-     * @param \Closure $callback
+     * @param Closure $callback
      *
      * @return void
      */
-    public function onDelete(\Closure $callback)
+    public function onDelete(Closure $callback)
     {
         $this->onDelete = $callback;
     }
@@ -931,7 +943,7 @@ class Builder
      *
      * @param string $name
      *
-     * @return \Closure
+     * @return Closure
      */
     public function getMacro($name)
     {

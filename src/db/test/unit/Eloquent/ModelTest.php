@@ -4,12 +4,18 @@
 namespace SwoftTest\Db\Unit\Eloquent;
 
 
-use PhpParser\ErrorHandler\Collecting;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\DB;
 use Swoft\Db\Eloquent\Collection;
+use Swoft\Db\Exception\DbException;
+use Swoft\Db\Exception\EloquentException;
+use Swoft\Db\Exception\EntityException;
+use Swoft\Db\Exception\PoolException;
+use Swoft\Db\Exception\QueryException;
 use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Unit\TestCase;
-use Swoole\Event;
 
 /**
  * Class ModelTest
@@ -19,11 +25,13 @@ use Swoole\Event;
 class ModelTest extends TestCase
 {
     /**
-     * @throws \Swoft\Bean\Exception\PrototypeException
-     * @throws \Swoft\Db\Exception\EloquentException
-     * @throws \Swoft\Db\Exception\EntityException
-     * @throws \Swoft\Db\Exception\PoolException
-     * @throws \Swoft\Db\Exception\QueryException
+     * @throws ContainerException
+     * @throws EloquentException
+     * @throws EntityException
+     * @throws PoolException
+     * @throws QueryException
+     * @throws ReflectionException
+     * @throws DbException
      */
     public function testSave()
     {
@@ -77,11 +85,13 @@ class ModelTest extends TestCase
     }
 
     /**
-     * @throws \Swoft\Bean\Exception\PrototypeException
-     * @throws \Swoft\Db\Exception\EloquentException
-     * @throws \Swoft\Db\Exception\EntityException
-     * @throws \Swoft\Db\Exception\PoolException
-     * @throws \Swoft\Db\Exception\QueryException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws EloquentException
+     * @throws EntityException
+     * @throws PoolException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function testDelete()
     {
@@ -153,11 +163,13 @@ class ModelTest extends TestCase
     }
 
     /**
-     * @throws \Swoft\Bean\Exception\PrototypeException
-     * @throws \Swoft\Db\Exception\EloquentException
-     * @throws \Swoft\Db\Exception\EntityException
-     * @throws \Swoft\Db\Exception\PoolException
-     * @throws \Swoft\Db\Exception\QueryException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws EloquentException
+     * @throws EntityException
+     * @throws PoolException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function testUpdate()
     {

@@ -3,7 +3,12 @@
 
 namespace Swoft\Db\Eloquent;
 
+use ArrayAccess;
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Db\Exception\EloquentException;
 use Swoft\Db\Exception\EntityException;
 use Swoft\Stdlib\Collection as BaseCollection;
 use Swoft\Stdlib\Contract\Arrayable;
@@ -18,6 +23,24 @@ use Swoft\Stdlib\Helper\Arr;
  */
 class Collection extends BaseCollection
 {
+    use PrototypeTrait;
+
+    /**
+     * Create a new collection.
+     *
+     * @param array $items
+     *
+     * @return static
+     * @throws ReflectionException
+     * @throws ContainerException
+     */
+    public static function new(array $items = []): self
+    {
+        $self        = self::__instance();
+        $self->items = $items;
+
+        return $self;
+    }
 
     /**
      * Find a model in the collection by key.
@@ -27,7 +50,7 @@ class Collection extends BaseCollection
      *
      * @return mixed|Collection
      * @throws EntityException
-     * @throws \Swoft\Db\Exception\EloquentException
+     * @throws EloquentException
      */
     public function find($key, $default = null)
     {
@@ -107,7 +130,7 @@ class Collection extends BaseCollection
     /**
      * Merge the collection with the given items.
      *
-     * @param  \ArrayAccess|array $items
+     * @param  ArrayAccess|array $items
      *
      * @return static
      */
@@ -163,7 +186,7 @@ class Collection extends BaseCollection
     /**
      * Intersect the collection with the given items.
      *
-     * @param  \ArrayAccess|array $items
+     * @param  ArrayAccess|array $items
      *
      * @return static
      */
@@ -234,7 +257,7 @@ class Collection extends BaseCollection
     /**
      * Get a dictionary keyed by primary keys.
      *
-     * @param  \ArrayAccess|array|null $items
+     * @param  ArrayAccess|array|null $items
      *
      * @return array
      */
