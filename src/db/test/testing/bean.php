@@ -7,7 +7,7 @@ return [
     'config'   => [
         'path' => __DIR__ . '/../config',
     ],
-    'db'     => [
+    'db'       => [
         'class'    => Database::class,
         'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
         'username' => 'root',
@@ -30,14 +30,14 @@ return [
             [
                 'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
                 'username' => 'root',
-                'password' => 'swoft123456',
+                'password' => '123456',
             ],
         ],
         'reads'  => [
             [
                 'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
                 'username' => 'root',
-                'password' => 'swoft123456',
+                'password' => '123456',
             ]
         ],
     ],

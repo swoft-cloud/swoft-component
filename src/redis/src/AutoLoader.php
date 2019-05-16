@@ -4,6 +4,7 @@
 namespace Swoft\Redis;
 
 
+use Redis;
 use Swoft\SwoftComponent;
 
 /**
@@ -40,7 +41,10 @@ class AutoLoader extends SwoftComponent
     {
         return [
             'redis'      => [
-                'class' => RedisDb::class,
+                'class'  => RedisDb::class,
+                'option' => [
+                    'serializer' => Redis::SERIALIZER_PHP
+                ],
             ],
             'redis.pool' => [
                 'class'   => Pool::class,

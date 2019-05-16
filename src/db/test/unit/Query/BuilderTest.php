@@ -734,4 +734,14 @@ class BuilderTest extends TestCase
         $this->assertArrayHasKey(1, $collection->groupBy(['a', 'b']));
         $this->assertArrayHasKey(5, $collection->groupBy(['a', 'b']));
     }
+
+    public function testDbPool()
+    {
+        $name = "swoft \ntest";
+        $isOK = DB::query('db.pool2')->from('user')->updateOrInsert(['id' => 22], ['name' => $name]);
+        $this->assertTrue($isOK);
+
+        $res = DB::query('db.pool2')->from('user')->find("22");
+        $this->assertEquals($name, $res->name);
+    }
 }
