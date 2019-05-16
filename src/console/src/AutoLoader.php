@@ -18,7 +18,7 @@ final class AutoLoader extends SwoftComponent
      */
     public function enable(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -52,7 +52,8 @@ final class AutoLoader extends SwoftComponent
     {
         return [
             'cliApp'    => [
-                'class' => Application::class,
+                'class'   => Application::class,
+                'version' => '2.0.0'
             ],
             'cliRouter' => [
                 'class' => Router::class,

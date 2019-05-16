@@ -63,7 +63,7 @@ class Application implements ConsoleInterface
     /**
      * @var string
      */
-    private $version = '0.0.1';
+    private $version = '2.0.0';
 
     /**
      * @var string
