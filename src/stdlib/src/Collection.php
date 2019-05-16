@@ -11,8 +11,6 @@ use Swoft\Stdlib\Helper\Arr;
 /**
  * Class Collection
  *
- * @Bean(scope=Bean::PROTOTYPE)
- *
  * @since 2.0
  */
 class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggregate, Jsonable, \JsonSerializable

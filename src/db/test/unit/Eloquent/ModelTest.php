@@ -104,7 +104,8 @@ class ModelTest extends TestCase
 
     public function testUpdateByWhere()
     {
-        $res1 = User::updateOrCreate(['id' => 1], ['age' => 18, 'name' => 'sakuraovq']);
+        $res1 = User::updateOrCreate(['id' => 1],
+            ['age' => 18, 'name' => 'sakuraovq']);
 
 
         User::updateOrInsert(['id' => 1], ['age' => 18, 'name' => 'sakuraovq']);
@@ -115,7 +116,8 @@ class ModelTest extends TestCase
         $orWheres = [
             ['name', 'like', '%s%']
         ];
-        $result   = User::where($wheres)->orWhere($orWheres)->update(['name' => 'sakuraovq' . mt_rand(1, 10)]);
+        $result   = User::where($wheres)->orWhere($orWheres)
+            ->update(['name' => 'sakuraovq' . mt_rand(1, 10)]);
         $this->assertGreaterThan(0, $result);
 
         $updateBeforeAge = $res1->getAge();
@@ -140,22 +142,26 @@ class ModelTest extends TestCase
 
         $res2 = User::updateOrCreate(['id' => 2], ['age' => 18]);
 
-        $result = User::whereIn('id', [$res1->getId(), $res2->getId()])->delete();
+        $result = User::whereIn('id', [$res1->getId(), $res2->getId()])
+            ->delete();
         $this->assertEquals(2, $result);
 
 
         /* @var User $res3 */
-        $res3 = User::updateOrCreate(['id' => 5], ['age' => 18, 'name' => 'sakura']);
+        $res3 = User::updateOrCreate(['id' => 5],
+            ['age' => 18, 'name' => 'sakura']);
 
-        $wheres    = [
+        $wheres   = [
             'age' => 18,
             ['id', '>=', 2]
         ];
-        $orWheres  = [
+        $orWheres = [
             ['name', 'like', '%s%']
         ];
-        $expectSql = 'select * from `user` where (`age` = ? and `id` >= ?) or (`name` like ?)';
-        $this->assertEquals($expectSql, User::where($wheres)->orWhere($orWheres)->toSql());
+        $expectSql
+                  = 'select * from `user` where (`age` = ? and `id` >= ?) or (`name` like ?)';
+        $this->assertEquals($expectSql,
+            User::where($wheres)->orWhere($orWheres)->toSql());
 
         $resultDelete = User::where($wheres)->orWhere($orWheres)->delete();
 
@@ -199,7 +205,8 @@ class ModelTest extends TestCase
         $uAge  = mt_rand(1, 100);
 
         /* @var User $uUser */
-        $uUser = User::updateOrCreate(['id' => $id], ['name' => $uName, 'age' => $uAge]);
+        $uUser = User::updateOrCreate(['id' => $id],
+            ['name' => $uName, 'age' => $uAge]);
 
         /* @var User $user */
         $user = User::find($id);
@@ -218,7 +225,8 @@ class ModelTest extends TestCase
 
     public function testModelSelect()
     {
-        $uUser = User::updateOrCreate(['id' => 22], ['name' => "sakura", 'age' => 18]);
+        $uUser = User::updateOrCreate(['id' => 22],
+            ['name' => "sakura", 'age' => 18]);
 
         $user = User::find(22);
         $user->addHidden(['age']);
@@ -232,11 +240,13 @@ class ModelTest extends TestCase
         });
         $this->assertArrayHasKey('pwd', $user->toArray());
         // Delete only left 20 rows
-        $resCount = DB::selectOne('select count(*) as `count` from `user`')->count;
+        $resCount
+            = DB::selectOne('select count(*) as `count` from `user`')->count;
         if ($resCount - 20 > 0) {
             DB::delete('delete A FROM `user` A INNER JOIN (SELECT ID FROM `user` B limit ?) B
 on A.id=B.id;', [$resCount - 20]);
-            $res = DB::selectOne('select count(*) as `count` from `user`')->count;
+            $res
+                = DB::selectOne('select count(*) as `count` from `user`')->count;
             $this->assertEquals(20, $res);
         }
         foreach (User::query()->cursor() as $user) {
@@ -268,9 +278,11 @@ on A.id=B.id;', [$resCount - 20]);
 
     public function testImplode()
     {
-        $ageString = DB::table('user')->where('age', '>', 18)->implode('age', ',');
+        $ageString = DB::table('user')->where('age', '>', 18)
+            ->implode('age', ',');
 
-        $this->assertEquals($ageString, User::where('age', '>', 18)->implode('age', ','));
+        $this->assertEquals($ageString,
+            User::where('age', '>', 18)->implode('age', ','));
     }
 
     public function testAggregate()
@@ -292,7 +304,8 @@ on A.id=B.id;', [$resCount - 20]);
         $this->assertEquals($result4, DB::table('user')->count());
 
         // sql = select max(`id`) as id from `user` group by user_desc
-        $res = User::query()->selectRaw('max(`id`) as id')->groupBy('user_desc')->get();
+        $res = User::query()->selectRaw('max(`id`) as id')->groupBy('user_desc')
+            ->get();
 
         /* @var $v User */
         foreach ($res as $v) {
@@ -316,7 +329,8 @@ on A.id=B.id;', [$resCount - 20]);
 
     public function testWheres()
     {
-        $expectSql = 'select * from `user` where (`name` = ? and `status` >= ? or `money` > ?)';
+        $expectSql
+            = 'select * from `user` where (`name` = ? and `status` >= ? or `money` > ?)';
 
         $wheres = [
             'name' => 'sakuraovq',
@@ -346,5 +360,26 @@ on A.id=B.id;', [$resCount - 20]);
             $this->assertIsArray($res);
         });
 
+    }
+
+    public function testGetModels()
+    {
+        $users = User::where('id', 22)->getModels(['id', 'age']);
+        /* @var User $user */
+        foreach ($users as $user) {
+            $age = $user->getAge();
+            $this->assertIsInt($age);
+        }
+    }
+
+    public function testKeyBy()
+    {
+        $users = User::forPage(1, 10)->get(['id', 'age'])->keyBy('id');
+
+        /* @var User $user */
+        foreach ($users as $id => $user) {
+            $this->assertIsInt($user->getAge());
+            $this->assertIsInt($id);
+        }
     }
 }

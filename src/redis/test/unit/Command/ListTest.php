@@ -7,9 +7,19 @@ namespace SwoftTest\Redis\Unit\Command;
 use Swoft\Redis\Redis;
 use SwoftTest\Redis\Unit\TestCase;
 
+/**
+ * Class ListTest
+ *
+ * @since 2.0
+ */
 class ListTest extends TestCase
 {
 
+    /**
+     *
+     *
+     * @return string
+     */
     public function getListKey(): string
     {
         return __METHOD__;
@@ -69,7 +79,7 @@ class ListTest extends TestCase
         });
         // 阻塞等待
         // 返回的key是真实插入的可以 带前缀
-        [$key, $res] = Redis::brPop($this->getListKey(), 1);
+        [$key, $res] = Redis::brPop((array)$this->getListKey(), 1);
 
         $this->assertTrue(strpos($key, $this->getListKey()) !== false);
         $this->assertEquals($value, $res);
