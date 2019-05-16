@@ -104,8 +104,7 @@ class ModelTest extends TestCase
 
     public function testUpdateByWhere()
     {
-        $res1 = User::updateOrCreate(['id' => 1],
-            ['age' => 18, 'name' => 'sakuraovq']);
+        $res1 = User::updateOrCreate(['id' => 1], ['age' => 18, 'name' => 'sakuraovq']);
 
 
         User::updateOrInsert(['id' => 1], ['age' => 18, 'name' => 'sakuraovq']);
@@ -116,8 +115,7 @@ class ModelTest extends TestCase
         $orWheres = [
             ['name', 'like', '%s%']
         ];
-        $result   = User::where($wheres)->orWhere($orWheres)
-            ->update(['name' => 'sakuraovq' . mt_rand(1, 10)]);
+        $result   = User::where($wheres)->orWhere($orWheres)->update(['name' => 'sakuraovq' . mt_rand(1, 10)]);
         $this->assertGreaterThan(0, $result);
 
         $updateBeforeAge = $res1->getAge();
@@ -142,26 +140,22 @@ class ModelTest extends TestCase
 
         $res2 = User::updateOrCreate(['id' => 2], ['age' => 18]);
 
-        $result = User::whereIn('id', [$res1->getId(), $res2->getId()])
-            ->delete();
+        $result = User::whereIn('id', [$res1->getId(), $res2->getId()])->delete();
         $this->assertEquals(2, $result);
 
 
         /* @var User $res3 */
-        $res3 = User::updateOrCreate(['id' => 5],
-            ['age' => 18, 'name' => 'sakura']);
+        $res3 = User::updateOrCreate(['id' => 5], ['age' => 18, 'name' => 'sakura']);
 
-        $wheres   = [
+        $wheres    = [
             'age' => 18,
             ['id', '>=', 2]
         ];
-        $orWheres = [
+        $orWheres  = [
             ['name', 'like', '%s%']
         ];
-        $expectSql
-                  = 'select * from `user` where (`age` = ? and `id` >= ?) or (`name` like ?)';
-        $this->assertEquals($expectSql,
-            User::where($wheres)->orWhere($orWheres)->toSql());
+        $expectSql = 'select * from `user` where (`age` = ? and `id` >= ?) or (`name` like ?)';
+        $this->assertEquals($expectSql, User::where($wheres)->orWhere($orWheres)->toSql());
 
         $resultDelete = User::where($wheres)->orWhere($orWheres)->delete();
 
@@ -225,8 +219,7 @@ class ModelTest extends TestCase
 
     public function testModelSelect()
     {
-        $uUser = User::updateOrCreate(['id' => 22],
-            ['name' => "sakura", 'age' => 18]);
+        $uUser = User::updateOrCreate(['id' => 22], ['name' => "sakura", 'age' => 18]);
 
         $user = User::find(22);
         $user->addHidden(['age']);
@@ -278,11 +271,13 @@ on A.id=B.id;', [$resCount - 20]);
 
     public function testImplode()
     {
-        $ageString = DB::table('user')->where('age', '>', 18)
+        $ageString = DB::table('user')
+            ->where('age', '>', 18)
             ->implode('age', ',');
 
         $this->assertEquals($ageString,
-            User::where('age', '>', 18)->implode('age', ','));
+            User::where('age', '>', 18)
+                ->implode('age', ','));
     }
 
     public function testAggregate()
@@ -304,7 +299,9 @@ on A.id=B.id;', [$resCount - 20]);
         $this->assertEquals($result4, DB::table('user')->count());
 
         // sql = select max(`id`) as id from `user` group by user_desc
-        $res = User::query()->selectRaw('max(`id`) as id')->groupBy('user_desc')
+        $res = User::query()
+            ->selectRaw('max(`id`) as id')
+            ->groupBy('user_desc')
             ->get();
 
         /* @var $v User */
