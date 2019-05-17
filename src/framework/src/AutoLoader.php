@@ -2,6 +2,8 @@
 
 namespace Swoft;
 
+use function alias;
+use function bean;
 use Monolog\Formatter\LineFormatter;
 use Swoft\Config\Config;
 use Swoft\Annotation\AutoLoader as AnnotationAutoLoader;
@@ -9,6 +11,7 @@ use Swoft\Contract\DefinitionInterface;
 use Swoft\Event\Manager\EventManager;
 use Swoft\Log\Handler\FileHandler;
 use Swoft\Log\Logger;
+use Throwable;
 
 /**
  * Class AutoLoader
@@ -33,14 +36,14 @@ class AutoLoader extends AnnotationAutoLoader implements DefinitionInterface
      * Core bean definition
      *
      * @return array
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function beans(): array
     {
         return [
             'config'             => [
                 'class'   => Config::class,
-                'path'    => \alias('@config'),
+                'path'    => alias('@config'),
                 'parsers' => [
                     Config::TYPE_PHP => '${phpParser}'
                 ]
@@ -56,7 +59,7 @@ class AutoLoader extends AnnotationAutoLoader implements DefinitionInterface
             'noticeHandler'      => [
                 'class'     => FileHandler::class,
                 'logFile'   => '@runtime/logs/notice.log',
-                'formatter' => \bean('lineFormatter'),
+                'formatter' => bean('lineFormatter'),
                 'levels'    => [
                     Logger::NOTICE,
                     Logger::INFO,
@@ -67,7 +70,7 @@ class AutoLoader extends AnnotationAutoLoader implements DefinitionInterface
             'applicationHandler' => [
                 'class'     => FileHandler::class,
                 'logFile'   => '@runtime/logs/error.log',
-                'formatter' => \bean('lineFormatter'),
+                'formatter' => bean('lineFormatter'),
                 'levels'    => [
                     Logger::ERROR,
                     Logger::WARNING,
@@ -78,8 +81,8 @@ class AutoLoader extends AnnotationAutoLoader implements DefinitionInterface
                 'flushRequest' => false,
                 'enable'       => false,
                 'handlers'     => [
-                    'application' => \bean('applicationHandler'),
-                    'notice'      => \bean('noticeHandler'),
+                    'application' => bean('applicationHandler'),
+                    'notice'      => bean('noticeHandler'),
                 ],
             ]
         ];

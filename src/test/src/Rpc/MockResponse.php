@@ -4,7 +4,10 @@
 namespace Swoft\Test\Rpc;
 
 
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Rpc\Exception\RpcException;
 use Swoft\Rpc\Packet;
 use Swoft\Rpc\Server\Response;
 use Swoft\Test\Concern\RpcResponseAssertTrait;
@@ -27,9 +30,9 @@ class MockResponse extends Response
 
     /**
      * @return bool
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Rpc\Exception\RpcException
+     * @throws ReflectionException
+     * @throws ContainerException
+     * @throws RpcException
      */
     public function send(): bool
     {

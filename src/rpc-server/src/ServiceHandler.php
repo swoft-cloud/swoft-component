@@ -4,9 +4,12 @@
 namespace Swoft\Rpc\Server;
 
 
+use function array_splice;
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Rpc\Server\Contract\MiddlewareInterface;
 use Swoft\Rpc\Server\Contract\RequestHandlerInterface;
 use Swoft\Rpc\Server\Contract\RequestInterface;
@@ -47,8 +50,8 @@ class ServiceHandler implements RequestHandlerInterface
      *
      * @return self
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function new(array $middlewares, string $defaultMiddleware): self
     {
@@ -66,8 +69,8 @@ class ServiceHandler implements RequestHandlerInterface
      * @param RequestInterface $request
      *
      * @return ResponseInterface
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function handle(RequestInterface $request): ResponseInterface
     {
@@ -99,6 +102,6 @@ class ServiceHandler implements RequestHandlerInterface
         }
 
         // Insert middlewares
-        \array_splice($this->middlewares, $offset, 0, $middlewares);
+        array_splice($this->middlewares, $offset, 0, $middlewares);
     }
 }

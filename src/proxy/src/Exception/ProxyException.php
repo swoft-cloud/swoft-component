@@ -3,12 +3,14 @@
 
 namespace Swoft\Proxy\Exception;
 
+use Exception;
+
 /**
  * Class ProxyException
  *
  * @since 2.0
  */
-class ProxyException extends \Exception
+class ProxyException extends Exception
 {
 
 }

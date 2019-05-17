@@ -4,6 +4,7 @@
 namespace Swoft\Aop\Point;
 
 use Swoft\Aop\Contract\ProceedingJoinPointInterface;
+use Throwable;
 
 /**
  * Class ProceedingJoinPoint
@@ -19,7 +20,7 @@ class ProceedingJoinPoint extends JoinPoint implements ProceedingJoinPointInterf
      * If the params is not empty, the params is used to call the method of target
      *
      * @return mixed
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function proceed($params = [])
     {

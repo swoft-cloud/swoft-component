@@ -2,8 +2,10 @@
 
 namespace Swoft\Http\Message\Upload;
 
-use Psr\Http\Message\StreamInterface;
+use InvalidArgumentException;
 use Psr\Http\Message\UploadedFileInterface;
+use RuntimeException;
+use const UPLOAD_ERR_OK;
 
 /**
  * Class UploadedFile
@@ -71,9 +73,7 @@ class UploadedFile implements UploadedFileInterface
      * If the moveTo() method has been called previously, this method MUST raise
      * an exception.
      *
-     * @return StreamInterface Stream representation of the uploaded file.
-     * @throws \RuntimeException in cases when no stream is available or can be
-     *     created.
+     * @return void Stream representation of the uploaded file.
      */
     public function getStream()
     {
@@ -90,8 +90,8 @@ class UploadedFile implements UploadedFileInterface
      *
      * @param string $targetPath Path to which to move the uploaded file.
      *
-     * @throws \InvalidArgumentException if the $targetPath specified is invalid.
-     * @throws \RuntimeException on any error during the move operation, or on
+     * @throws InvalidArgumentException if the $targetPath specified is invalid.
+     * @throws RuntimeException on any error during the move operation, or on
      *     the second or subsequent call to the method.
      */
     public function moveTo($targetPath): void
@@ -193,7 +193,7 @@ class UploadedFile implements UploadedFileInterface
      */
     public function isOk(): bool
     {
-        return $this->errorCode === \UPLOAD_ERR_OK;
+        return $this->errorCode === UPLOAD_ERR_OK;
     }
 
     /**

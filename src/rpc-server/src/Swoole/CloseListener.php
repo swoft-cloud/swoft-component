@@ -4,7 +4,9 @@
 namespace Swoft\Rpc\Server\Swoole;
 
 
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Rpc\Server\ServiceServerEvent;
 use Swoft\Server\Swoole\CloseInterface;
 use Swoole\Server;
@@ -23,17 +25,17 @@ class CloseListener implements CloseInterface
      * @param int    $fd
      * @param int    $reactorId
      *
-     * @throws \Swoft\Bean\Exception\ContainerException*
+     * @throws ContainerException*
      */
     public function onClose(Server $server, int $fd, int $reactorId): void
     {
         // Before close
-        \Swoft::trigger(ServiceServerEvent::BEFORE_CLOSE, null, $server, $fd, $reactorId);
+        Swoft::trigger(ServiceServerEvent::BEFORE_CLOSE, null, $server, $fd, $reactorId);
 
         // Close event
-        \Swoft::trigger(ServiceServerEvent::CLOSE);
+        Swoft::trigger(ServiceServerEvent::CLOSE);
 
         // After close
-        \Swoft::trigger(ServiceServerEvent::AFTER_CLOSE);
+        Swoft::trigger(ServiceServerEvent::AFTER_CLOSE);
     }
 }

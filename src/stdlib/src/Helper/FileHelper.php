@@ -2,9 +2,13 @@
 
 namespace Swoft\Stdlib\Helper;
 
+use const FILEINFO_MIME_TYPE;
+use function finfo_file;
+use function finfo_open;
 use function function_exists;
 use function ltrim;
 use function pathinfo;
+use const PATHINFO_EXTENSION;
 use function strrchr;
 
 /**
@@ -47,7 +51,7 @@ class FileHelper extends FSHelper
      */
     public static function getExtension(string $path, bool $clearPoint = false): string
     {
-        if ($ext = pathinfo($path, \PATHINFO_EXTENSION)) {
+        if ($ext = pathinfo($path, PATHINFO_EXTENSION)) {
             return $clearPoint ? $ext : '.' . $ext;
         }
 
@@ -61,7 +65,7 @@ class FileHelper extends FSHelper
     public static function mimeType(string $file): string
     {
         if (function_exists('finfo_file')) {
-            return \finfo_file(\finfo_open(\FILEINFO_MIME_TYPE), $file);
+            return finfo_file(finfo_open(FILEINFO_MIME_TYPE), $file);
         }
 
         return '';

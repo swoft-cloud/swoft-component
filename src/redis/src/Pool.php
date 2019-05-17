@@ -3,6 +3,8 @@
 
 namespace Swoft\Redis;
 
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\AbstractPool;
 use Swoft\Connection\Pool\Contract\ConnectionInterface;
 
@@ -26,8 +28,8 @@ class Pool extends AbstractPool
     /**
      * @return ConnectionInterface
      * @throws Exception\RedisException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function createConnection(): ConnectionInterface
     {

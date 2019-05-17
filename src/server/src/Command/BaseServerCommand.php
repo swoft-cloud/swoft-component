@@ -2,6 +2,7 @@
 
 namespace Swoft\Server\Command;
 
+use function input;
 use Swoft\Server\Server;
 
 /**
@@ -17,7 +18,7 @@ abstract class BaseServerCommand
      */
     protected function configStartOption(Server $server): void
     {
-        $asDaemon = \input()->getSameOpt(['d', 'daemon'], false);
+        $asDaemon = input()->getSameOpt(['d', 'daemon'], false);
         if ($asDaemon) {
             $server->setDaemonize();
         }

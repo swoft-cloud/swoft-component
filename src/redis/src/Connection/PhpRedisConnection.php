@@ -4,8 +4,6 @@
 namespace Swoft\Redis\Connection;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Stdlib\Collection;
-use Swoft\Stdlib\Helper\PhpHelper;
 
 /**
  * Class PhpRedisConnection

@@ -3,12 +3,14 @@
 
 namespace Swoft\Bean\Exception;
 
+use Exception;
+
 /**
  * Class PrototypeException
  *
  * @since 2.0
  */
-class PrototypeException extends \Exception
+class PrototypeException extends Exception
 {
 
 }

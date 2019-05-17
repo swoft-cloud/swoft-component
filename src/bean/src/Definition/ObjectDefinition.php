@@ -77,7 +77,6 @@ class ObjectDefinition
      * @param string $className
      * @param string $scope
      * @param string $alias
-     * @param int    $size
      */
     public function __construct(
         string $name,

@@ -4,6 +4,9 @@
 namespace Swoft\Rpc;
 
 
+use function bean;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Rpc\Contract\PacketInterface;
 use Swoft\Rpc\Exception\RpcException;
 use Swoft\Rpc\Packet\AbstractPacket;
@@ -59,8 +62,8 @@ class Packet implements PacketInterface
      *
      * @return string
      * @throws RpcException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function encode(Protocol $protocol): string
     {
@@ -73,8 +76,8 @@ class Packet implements PacketInterface
      *
      * @return Protocol
      * @throws RpcException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function decode(string $string): Protocol
     {
@@ -90,8 +93,8 @@ class Packet implements PacketInterface
      *
      * @return string
      * @throws RpcException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function encodeResponse($result, int $code = null, string $message = '', $data = null): string
     {
@@ -104,8 +107,8 @@ class Packet implements PacketInterface
      *
      * @return Response
      * @throws RpcException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function decodeResponse(string $string): Response
     {
@@ -115,13 +118,13 @@ class Packet implements PacketInterface
 
     /**
      * @return array
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function defaultPackets(): array
     {
         return [
-            self::JSON => \bean(JsonPacket::class)
+            self::JSON => bean(JsonPacket::class)
         ];
     }
 
@@ -152,8 +155,8 @@ class Packet implements PacketInterface
     /**
      * @return PacketInterface
      * @throws RpcException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     private function getPacket(): PacketInterface
     {

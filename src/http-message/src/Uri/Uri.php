@@ -2,10 +2,19 @@
 
 namespace Swoft\Http\Message\Uri;
 
+use function explode;
+use InvalidArgumentException;
+use function parse_url;
+use function preg_match;
+use function preg_replace_callback;
 use Psr\Http\Message\UriInterface;
+use function rawurlencode;
+use ReflectionException;
+use function strpos;
+use function strtolower;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Container;
+use Swoft\Bean\Exception\ContainerException;
 
 /**
  * Class Uri
@@ -133,6 +142,8 @@ class Uri implements UriInterface
      * @param array  $params
      *
      * @return Uri
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function new(string $uri = '', array $params = []): self
     {
@@ -147,9 +158,9 @@ class Uri implements UriInterface
             return $instance;
         }
 
-        $parts = \parse_url($uri);
+        $parts = parse_url($uri);
         if ($parts === false) {
-            throw new \InvalidArgumentException("Unable to parse URI: $uri");
+            throw new InvalidArgumentException("Unable to parse URI: $uri");
         }
         $instance->applyParts($parts);
 
@@ -250,18 +261,18 @@ class Uri implements UriInterface
     private function parseHostPort(): void
     {
         if ($host = $this->params['http_host']) {
-            $hostParts  = \explode(':', $host, 2);
-            $this->host = \strtolower($hostParts[0]);
+            $hostParts  = explode(':', $host, 2);
+            $this->host = strtolower($hostParts[0]);
 
             if (isset($hostParts[1])) {
                 $this->port = $this->filterPort($hostParts[1]);
                 return;
             }
         } elseif ($host = $this->params['server_name'] ?: $this->params['server_addr']) {
-            $this->host = \strtolower($host);
+            $this->host = strtolower($host);
         } elseif ($headerHost = $this->params['host']) {
-            $hostParts  = \explode(':', $headerHost, 2);
-            $this->host = \strtolower($hostParts[0]);
+            $hostParts  = explode(':', $headerHost, 2);
+            $this->host = strtolower($hostParts[0]);
 
             if (isset($hostParts[1]) && $hostParts[1] !== '80') {
                 $this->port = $this->filterPort($hostParts[1]);
@@ -328,7 +339,7 @@ class Uri implements UriInterface
      * @inheritdoc
      *
      * @return static A new instance with the specified scheme.
-     * @throws \InvalidArgumentException for invalid or unsupported schemes.
+     * @throws InvalidArgumentException for invalid or unsupported schemes.
      */
     public function withScheme($scheme)
     {
@@ -376,7 +387,7 @@ class Uri implements UriInterface
      * @inheritdoc
      *
      * @return static A new instance with the specified host.
-     * @throws \InvalidArgumentException for invalid hostnames.
+     * @throws InvalidArgumentException for invalid hostnames.
      */
     public function withHost($host)
     {
@@ -398,7 +409,7 @@ class Uri implements UriInterface
      * @inheritdoc
      *
      * @return static A new instance with the specified port.
-     * @throws \InvalidArgumentException for invalid ports.
+     * @throws InvalidArgumentException for invalid ports.
      */
     public function withPort($port)
     {
@@ -422,7 +433,7 @@ class Uri implements UriInterface
      * @param string $path The path to use with the new instance.
      *
      * @return static A new instance with the specified path.
-     * @throws \InvalidArgumentException for invalid paths.
+     * @throws InvalidArgumentException for invalid paths.
      */
     public function withPath($path): self
     {
@@ -442,7 +453,7 @@ class Uri implements UriInterface
      * @inheritdoc
      *
      * @return static A new instance with the specified query string.
-     * @throws \InvalidArgumentException for invalid query strings.
+     * @throws InvalidArgumentException for invalid query strings.
      */
     public function withQuery($query)
     {
@@ -591,11 +602,11 @@ class Uri implements UriInterface
      *
      * @return string
      *
-     * @throws \InvalidArgumentException If the scheme is invalid.
+     * @throws InvalidArgumentException If the scheme is invalid.
      */
     private function filterScheme(string $scheme): string
     {
-        return \strtolower($scheme);
+        return strtolower($scheme);
     }
 
     /**
@@ -603,7 +614,7 @@ class Uri implements UriInterface
      *
      * @return string
      *
-     * @throws \InvalidArgumentException If the user info is invalid.
+     * @throws InvalidArgumentException If the user info is invalid.
      */
     private function filterUserInfoComponent(string $component): string
     {
@@ -623,11 +634,11 @@ class Uri implements UriInterface
      *
      * @return string
      *
-     * @throws \InvalidArgumentException If the host is invalid.
+     * @throws InvalidArgumentException If the host is invalid.
      */
     private function filterHost(string $host): string
     {
-        return \strtolower($host);
+        return strtolower($host);
     }
 
     /**
@@ -635,7 +646,7 @@ class Uri implements UriInterface
      *
      * @return int|null
      *
-     * @throws \InvalidArgumentException If the port is invalid.
+     * @throws InvalidArgumentException If the port is invalid.
      */
     private function filterPort($port): ?int
     {
@@ -645,7 +656,7 @@ class Uri implements UriInterface
 
         $port = (int)$port;
         if (1 > $port || 0xffff < $port) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf('Invalid port: %d. Must be between 1 and 65535', $port)
             );
         }
@@ -732,7 +743,7 @@ class Uri implements UriInterface
      *
      * @return string
      *
-     * @throws \InvalidArgumentException If the path is invalid.
+     * @throws InvalidArgumentException If the path is invalid.
      */
     private function filterPath(string $path): string
     {
@@ -740,11 +751,11 @@ class Uri implements UriInterface
             return $path;
         }
 
-        if (\preg_match('#^[\w/-]+$#', $path) === 1) {
+        if (preg_match('#^[\w/-]+$#', $path) === 1) {
             return $path;
         }
 
-        return \preg_replace_callback(
+        return preg_replace_callback(
             '/(?:[^' . self::$charUnreserved . self::$charSubDelims . '%:@\/]++|%(?![A-Fa-f0-9]{2}))/',
             [$this, 'rawurlencodeMatchZero'],
             $path
@@ -758,7 +769,7 @@ class Uri implements UriInterface
      *
      * @return string
      *
-     * @throws \InvalidArgumentException If the query or fragment is invalid.
+     * @throws InvalidArgumentException If the query or fragment is invalid.
      */
     private function filterQueryAndFragment(string $str): string
     {
@@ -766,7 +777,7 @@ class Uri implements UriInterface
             return $str;
         }
 
-        return \preg_replace_callback(
+        return preg_replace_callback(
             '/(?:[^' . self::$charUnreserved . self::$charSubDelims . '%:@\/\?]++|%(?![A-Fa-f0-9]{2}))/',
             [$this, 'rawurlencodeMatchZero'],
             $str
@@ -780,7 +791,7 @@ class Uri implements UriInterface
      */
     private function rawurlencodeMatchZero(array $match): string
     {
-        return \rawurlencode($match[0]);
+        return rawurlencode($match[0]);
     }
 
     /**
@@ -793,11 +804,11 @@ class Uri implements UriInterface
         }
 
         if ($this->getAuthority() === '') {
-            if (0 === \strpos($this->path, '//')) {
-                throw new \InvalidArgumentException('The path of a URI without an authority must not start with two slashes "//"');
+            if (0 === strpos($this->path, '//')) {
+                throw new InvalidArgumentException('The path of a URI without an authority must not start with two slashes "//"');
             }
-            if ($this->scheme === '' && false !== \strpos(explode('/', $this->path, 2)[0], ':')) {
-                throw new \InvalidArgumentException('A relative URI must not have a path beginning with a segment containing a colon');
+            if ($this->scheme === '' && false !== strpos(explode('/', $this->path, 2)[0], ':')) {
+                throw new InvalidArgumentException('A relative URI must not have a path beginning with a segment containing a colon');
             }
         } elseif (isset($this->path[0]) && $this->path[0] !== '/') {
             $this->path = '/' . $this->path;

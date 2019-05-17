@@ -2,7 +2,9 @@
 
 namespace Swoft\Test\Concern;
 
+use function in_array;
 use PHPUnit\Framework\Assert;
+use function strpos;
 
 /**
  * Class CommonTestAssertTrait
@@ -17,7 +19,7 @@ trait CommonTestAssertTrait
      */
     public function assertContainString(string $haystack, string $needle): void
     {
-        $exist = \strpos($haystack, $needle) !== false;
+        $exist = strpos($haystack, $needle) !== false;
 
         Assert::assertTrue($exist);
     }
@@ -28,7 +30,7 @@ trait CommonTestAssertTrait
      */
     public function assertArrayContainValue(array $haystack, $needle): void
     {
-        $exist = \in_array($needle, $haystack, true);
+        $exist = in_array($needle, $haystack, true);
 
         Assert::assertTrue($exist);
     }

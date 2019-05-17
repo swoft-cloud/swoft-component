@@ -4,6 +4,7 @@
 namespace Swoft\Task;
 
 
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\ContainerException;
@@ -84,7 +85,7 @@ class Request implements RequestInterface
      * @param SwooleTask $task
      *
      * @return Request
-     * @throws \ReflectionException
+     * @throws ReflectionException
      * @throws ContainerException
      * @throws TaskException
      */

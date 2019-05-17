@@ -2,11 +2,17 @@
 
 namespace Swoft\Http\Server;
 
+use function get_class;
+use function printf;
+use ReflectionException;
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Error\ErrorHandlers;
 use Swoft\Error\ErrorType;
 use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Contract\HttpErrorHandlerInterface;
+use Throwable;
 
 /**
  * Class HttpErrorHandler
@@ -18,17 +24,17 @@ use Swoft\Http\Server\Contract\HttpErrorHandlerInterface;
 class HttpErrorDispatcher
 {
     /**
-     * @param \Throwable $e
+     * @param Throwable $e
      * @param Response   $response
      *
      * @return Response
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
-    public function run(\Throwable $e, Response $response): Response
+    public function run(Throwable $e, Response $response): Response
     {
         /** @var ErrorHandlers $handlers */
-        $handlers = \Swoft::getSingleton(ErrorHandlers::class);
+        $handlers = Swoft::getSingleton(ErrorHandlers::class);
 
         /** @var HttpErrorHandlerInterface $handler */
         if ($handler = $handlers->matchHandler($e, ErrorType::HTTP)) {
@@ -36,8 +42,8 @@ class HttpErrorDispatcher
         }
         
         // TODO: debug
-        \printf("Http Error(no handler, %s): %s\nAt File %s line %d\nTrace:\n%s",
-            \get_class($e),
+        printf("Http Error(no handler, %s): %s\nAt File %s line %d\nTrace:\n%s",
+            get_class($e),
             $e->getMessage(),
             $e->getFile(),
             $e->getLine(),

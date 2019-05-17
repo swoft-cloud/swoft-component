@@ -2,12 +2,16 @@
 
 namespace Swoft;
 
-use Swoft\Console\Console;
+use function count;
+use function go;
+use ReflectionException;
+use function sgo;
+use Swoft;
 use Swoft\Context\Context;
 use Swoft\Log\Debug;
-use Swoft\Log\Helper\CLog;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoole\Coroutine;
+use Throwable;
 
 /**
  * Class Co
@@ -64,7 +68,7 @@ class Co
         $tid = self::tid();
 
         // return coroutine ID for created.
-        return \go(function () use ($callable, $tid, $wait) {
+        return go(function () use ($callable, $tid, $wait) {
             try {
                 $id = Coroutine::getCid();
                 // Storage fd
@@ -75,7 +79,7 @@ class Co
                 }
 
                 PhpHelper::call($callable);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 Debug::log(
                     "Coroutine internal error: %s\nAt File %s line %d\nTrace:\n%s",
                     $e->getMessage(),
@@ -87,7 +91,7 @@ class Co
 
             if ($wait) {
                 // Trigger defer
-                \Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
+                Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
 
                 Context::getWaitGroup()->done();
             }
@@ -128,15 +132,15 @@ class Co
      *
      * @return array
      * @throws Bean\Exception\ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function multi(array $requests, float $timeout = 0): array
     {
-        $count   = \count($requests);
+        $count   = count($requests);
         $channel = new Coroutine\Channel($count);
 
         foreach ($requests as $key => $callback) {
-            \sgo(function () use ($key, $channel, $callback) {
+            sgo(function () use ($key, $channel, $callback) {
                 $data = PhpHelper::call($callback);
                 $channel->push([$key, $data]);
             });

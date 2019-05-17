@@ -2,9 +2,28 @@
 
 namespace Swoft\Stdlib\Helper;
 
+use function array_pop;
+use ArrayAccess;
+use Closure;
+use function count;
+use function func_get_args;
+use function get_class;
+use function in_array;
 use InvalidArgumentException;
+use function is_array;
+use function is_float;
+use function is_int;
+use function is_numeric;
+use function is_object;
+use function is_string;
+use Iterator;
+use function mb_strlen;
+use function method_exists;
+use function similar_text;
 use Swoft\Stdlib\Collection;
 use Swoft\Stdlib\Contract\Arrayable;
+use Traversable;
+use function value;
 
 /**
  * Array helper
@@ -26,11 +45,11 @@ class ArrayHelper
      */
     public static function toArray($object, $properties = [], $recursive = true): array
     {
-        if (\is_array($object)) {
+        if (is_array($object)) {
             if ($recursive) {
                 /** @var array $object */
                 foreach ($object as $key => $value) {
-                    if (\is_array($value) || \is_object($value)) {
+                    if (is_array($value) || is_object($value)) {
                         $object[$key] = static::toArray($value, $properties, true);
                     }
                 }
@@ -39,13 +58,13 @@ class ArrayHelper
             return $object;
         }
 
-        if (\is_object($object)) {
+        if (is_object($object)) {
             if (!empty($properties)) {
-                $className = \get_class($object);
+                $className = get_class($object);
                 if (!empty($properties[$className])) {
                     $result = [];
                     foreach ($properties[$className] as $key => $name) {
-                        if (\is_int($key)) {
+                        if (is_int($key)) {
                             $result[$name] = $object->$name;
                         } else {
                             $result[$key] = static::getValue($object, $name);
@@ -88,18 +107,18 @@ class ArrayHelper
      */
     public static function merge($a, $b): array
     {
-        $args = \func_get_args();
+        $args = func_get_args();
         $res  = array_shift($args);
         while (!empty($args)) {
             $next = array_shift($args);
             foreach ($next as $k => $v) {
-                if (\is_int($k)) {
+                if (is_int($k)) {
                     if (isset($res[$k])) {
                         $res[] = $v;
                     } else {
                         $res[$k] = $v;
                     }
-                } elseif (\is_array($v) && isset($res[$k]) && \is_array($res[$k])) {
+                } elseif (is_array($v) && isset($res[$k]) && is_array($res[$k])) {
                     $res[$k] = self::merge($res[$k], $v);
                 } else {
                     $res[$k] = $v;
@@ -139,23 +158,23 @@ class ArrayHelper
      * $value = \Swoft\Helper\ArrayHelper::getValue($versions, ['1.0', 'date']);
      * ```
      *
-     * @param array|object          $array   array or object to extract value from
-     * @param string|\Closure|array $key     key name of the array element, an array of keys or property name of the object,
+     * @param array|object         $array    array or object to extract value from
+     * @param string|Closure|array $key      key name of the array element, an array of keys or property name of the object,
      *                                       or an anonymous function returning the value. The anonymous function signature should be:
      *                                       `function($array, $defaultValue)`.
-     * @param mixed                 $default the default value to be returned if the specified array key does not exist. Not used when
+     * @param mixed                $default  the default value to be returned if the specified array key does not exist. Not used when
      *                                       getting value from an object.
      *
      * @return mixed the value of the element if found, default value otherwise
      */
     public static function getValue($array, $key, $default = null)
     {
-        if ($key instanceof \Closure) {
+        if ($key instanceof Closure) {
             return $key($array, $default);
         }
 
-        if (\is_array($key)) {
-            $lastKey = \array_pop($key);
+        if (is_array($key)) {
+            $lastKey = array_pop($key);
             /** @var array $key */
             foreach ($key as $keyPart) {
                 $array = static::getValue($array, $keyPart);
@@ -163,7 +182,7 @@ class ArrayHelper
             $key = $lastKey;
         }
 
-        if (\is_array($array) && (isset($array[$key]) || array_key_exists($key, $array))) {
+        if (is_array($array) && (isset($array[$key]) || array_key_exists($key, $array))) {
             return $array[$key];
         }
 
@@ -172,13 +191,13 @@ class ArrayHelper
             $key   = (string)substr($key, $pos + 1);
         }
 
-        if (\is_object($array)) {
+        if (is_object($array)) {
             // this is expected to fail if the property does not exist, or __get() is not implemented
             // it is not reliably possible to check whether a property is accessable beforehand
             return $array->$key;
         }
 
-        if (\is_array($array)) {
+        if (is_array($array)) {
             return (isset($array[$key]) || array_key_exists($key, $array)) ? $array[$key] : $default;
         }
 
@@ -207,7 +226,7 @@ class ArrayHelper
      */
     public static function remove(&$array, $key, $default = null)
     {
-        if (\is_array($array) && (isset($array[$key]) || array_key_exists($key, $array))) {
+        if (is_array($array) && (isset($array[$key]) || array_key_exists($key, $array))) {
             $value = $array[$key];
             unset($array[$key]);
 
@@ -246,7 +265,7 @@ class ArrayHelper
 
         $keys = (array)$keys;
 
-        if (\count($keys) === 0) {
+        if (count($keys) === 0) {
             return;
         }
 
@@ -263,10 +282,10 @@ class ArrayHelper
             // clean up before each pass
             $array = &$original;
 
-            while (\count($parts) > 1) {
+            while (count($parts) > 1) {
                 $part = array_shift($parts);
 
-                if (isset($array[$part]) && \is_array($array[$part])) {
+                if (isset($array[$part]) && is_array($array[$part])) {
                     $array = &$array[$part];
                 } else {
                     continue 2;
@@ -387,9 +406,9 @@ class ArrayHelper
      * ]
      * ```
      *
-     * @param array                           $array  the array that needs to be indexed or grouped
-     * @param string|\Closure|null            $key    the column name or anonymous function which result will be used to index the array
-     * @param string|string[]|\Closure[]|null $groups the array of keys, that will be used to group the input array
+     * @param array                          $array   the array that needs to be indexed or grouped
+     * @param string|Closure|null            $key     the column name or anonymous function which result will be used to index the array
+     * @param string|string[]|Closure[]|null $groups  the array of keys, that will be used to group the input array
      *                                                by one or more keys. If the $key attribute or its value for the particular element is null and $groups is not
      *                                                defined, the array element will be discarded. Otherwise, if $groups is specified, array element will be added
      *                                                to the result array without any key.
@@ -419,7 +438,7 @@ class ArrayHelper
             } else {
                 $value = static::getValue($element, $key);
                 if ($value !== null) {
-                    if (\is_float($value)) {
+                    if (is_float($value)) {
                         $value = (string)$value;
                     }
                     $lastArray[$value] = $element;
@@ -451,9 +470,9 @@ class ArrayHelper
      * });
      * ```
      *
-     * @param array           $array
-     * @param string|\Closure $name
-     * @param boolean         $keepKeys whether to maintain the array keys. If false, the resulting array
+     * @param array          $array
+     * @param string|Closure $name
+     * @param boolean        $keepKeys whether to maintain the array keys. If false, the resulting array
      *                                  will be re-indexed with integers.
      *
      * @return array the list of column values
@@ -509,10 +528,10 @@ class ArrayHelper
      * // ]
      * ```
      *
-     * @param array           $array
-     * @param string|\Closure $from
-     * @param string|\Closure $to
-     * @param string|\Closure $group
+     * @param array          $array
+     * @param string|Closure $from
+     * @param string|Closure $to
+     * @param string|Closure $group
      *
      * @return array
      */
@@ -561,37 +580,37 @@ class ArrayHelper
     /**
      * Sorts an array of objects or arrays (with the same structure) by one or several keys.
      *
-     * @param array                 $array     the array to be sorted. The array will be modified after calling this method.
-     * @param string|\Closure|array $key       the key(s) to be sorted by. This refers to a key name of the sub-array
+     * @param array                $array      the array to be sorted. The array will be modified after calling this method.
+     * @param string|Closure|array $key        the key(s) to be sorted by. This refers to a key name of the sub-array
      *                                         elements, a property name of the objects, or an anonymous function returning the values for comparison
      *                                         purpose. The anonymous function signature should be: `function($item)`.
      *                                         To sort by multiple keys, provide an array of keys here.
-     * @param integer|array         $direction the sorting direction. It can be either `SORT_ASC` or `SORT_DESC`.
+     * @param integer|array        $direction  the sorting direction. It can be either `SORT_ASC` or `SORT_DESC`.
      *                                         When sorting by multiple keys with different sorting directions, use an array of sorting directions.
      * @param integer|array         $sortFlag  the PHP sort flag. Valid values include
      *                                         `SORT_REGULAR`, `SORT_NUMERIC`, `SORT_STRING`, `SORT_LOCALE_STRING`, `SORT_NATURAL` and `SORT_FLAG_CASE`.
      *                                         Please refer to [PHP manual](http://php.net/manual/en/function.sort.php)
      *                                         for more details. When sorting by multiple keys with different sort flags, use an array of sort flags.
      *
-     * @throws \InvalidArgumentException if the $direction or $sortFlag parameters do not have
+     * @throws InvalidArgumentException if the $direction or $sortFlag parameters do not have
      * correct number of elements as that of $key.
      */
     public static function multisort(&$array, $key, $direction = SORT_ASC, $sortFlag = SORT_REGULAR): void
     {
-        $keys = \is_array($key) ? $key : [$key];
+        $keys = is_array($key) ? $key : [$key];
         if (empty($keys) || empty($array)) {
             return;
         }
-        $n = \count($keys);
+        $n = count($keys);
         if (is_scalar($direction)) {
             $direction = array_fill(0, $n, $direction);
-        } elseif (\count($direction) !== $n) {
-            throw new \InvalidArgumentException('The length of $direction parameter must be the same as that of $keys.');
+        } elseif (count($direction) !== $n) {
+            throw new InvalidArgumentException('The length of $direction parameter must be the same as that of $keys.');
         }
         if (is_scalar($sortFlag)) {
             $sortFlag = array_fill(0, $n, $sortFlag);
-        } elseif (\count($sortFlag) !== $n) {
-            throw new \InvalidArgumentException('The length of $sortFlag parameter must be the same as that of $keys.');
+        } elseif (count($sortFlag) !== $n) {
+            throw new InvalidArgumentException('The length of $sortFlag parameter must be the same as that of $keys.');
         }
         $args = [];
         foreach ($keys as $i => $k) {
@@ -603,7 +622,7 @@ class ArrayHelper
 
         // This fix is used for cases when main sorting specified by columns has equal values
         // Without it it will lead to Fatal Error: Nesting level too deep - recursive dependency?
-        $args[] = range(1, \count($array));
+        $args[] = range(1, count($array));
         $args[] = SORT_ASC;
         $args[] = SORT_NUMERIC;
 
@@ -627,13 +646,13 @@ class ArrayHelper
      */
     public static function isAssociative($array, $allStrings = true): ?bool
     {
-        if (!\is_array($array) || empty($array)) {
+        if (!is_array($array) || empty($array)) {
             return false;
         }
 
         if ($allStrings) {
             foreach ($array as $key => $value) {
-                if (!\is_string($key)) {
+                if (!is_string($key)) {
                     return false;
                 }
             }
@@ -641,7 +660,7 @@ class ArrayHelper
             return true;
         } else {
             foreach ($array as $key => $value) {
-                if (\is_string($key)) {
+                if (is_string($key)) {
                     return true;
                 }
             }
@@ -666,7 +685,7 @@ class ArrayHelper
      */
     public static function isIndexed($array, $consecutive = false): ?bool
     {
-        if (!\is_array($array)) {
+        if (!is_array($array)) {
             return false;
         }
 
@@ -675,10 +694,10 @@ class ArrayHelper
         }
 
         if ($consecutive) {
-            return array_keys($array) === range(0, \count($array) - 1);
+            return array_keys($array) === range(0, count($array) - 1);
         } else {
             foreach ($array as $key => $value) {
-                if (!\is_int($key)) {
+                if (!is_int($key)) {
                     return false;
                 }
             }
@@ -693,26 +712,26 @@ class ArrayHelper
      * This method does the same as the PHP function [in_array()](http://php.net/manual/en/function.in-array.php)
      * but additionally works for objects that implement the [[\Traversable]] interface.
      *
-     * @param mixed              $needle   The value to look for.
-     * @param array|\Traversable $haystack The set of values to search.
-     * @param boolean            $strict   Whether to enable strict (`===`) comparison.
+     * @param mixed             $needle   The value to look for.
+     * @param array|Traversable $haystack The set of values to search.
+     * @param boolean           $strict   Whether to enable strict (`===`) comparison.
      *
      * @return boolean `true` if `$needle` was found in `$haystack`, `false` otherwise.
-     * @throws \InvalidArgumentException if `$haystack` is neither traversable nor an array.
+     * @throws InvalidArgumentException if `$haystack` is neither traversable nor an array.
      * @see   http://php.net/manual/en/function.in-array.php
      */
     public static function isIn($needle, $haystack, $strict = false): bool
     {
-        if ($haystack instanceof \Traversable) {
+        if ($haystack instanceof Traversable) {
             foreach ($haystack as $value) {
                 if ($needle == $value && (!$strict || $needle === $value)) {
                     return true;
                 }
             }
-        } elseif (\is_array($haystack)) {
-            return \in_array($needle, $haystack, $strict);
+        } elseif (is_array($haystack)) {
+            return in_array($needle, $haystack, $strict);
         } else {
-            throw new \InvalidArgumentException('Argument $haystack must be an array or implement Traversable');
+            throw new InvalidArgumentException('Argument $haystack must be an array or implement Traversable');
         }
 
         return false;
@@ -731,7 +750,7 @@ class ArrayHelper
      */
     public static function isTraversable($var): bool
     {
-        return \is_array($var) || $var instanceof \Traversable;
+        return is_array($var) || $var instanceof Traversable;
     }
 
     /**
@@ -740,16 +759,16 @@ class ArrayHelper
      * This method will return `true`, if all elements of `$needles` are contained in
      * `$haystack`. If at least one element is missing, `false` will be returned.
      *
-     * @param array|\Traversable $needles  The values that must **all** be in `$haystack`.
-     * @param array|\Traversable $haystack The set of value to search.
-     * @param boolean            $strict   Whether to enable strict (`===`) comparison.
+     * @param array|Traversable $needles  The values that must **all** be in `$haystack`.
+     * @param array|Traversable $haystack The set of value to search.
+     * @param boolean           $strict   Whether to enable strict (`===`) comparison.
      *
      * @return boolean `true` if `$needles` is a subset of `$haystack`, `false` otherwise.
-     * @throws \InvalidArgumentException if `$haystack` or `$needles` is neither traversable nor an array.
+     * @throws InvalidArgumentException if `$haystack` or `$needles` is neither traversable nor an array.
      */
     public static function isSubset($needles, $haystack, $strict = false): ?bool
     {
-        if (\is_array($needles) || $needles instanceof \Traversable) {
+        if (is_array($needles) || $needles instanceof Traversable) {
             foreach ($needles as $needle) {
                 if (!static::isIn($needle, $haystack, $strict)) {
                     return false;
@@ -759,7 +778,7 @@ class ArrayHelper
             return true;
         }
 
-        throw new \InvalidArgumentException('Argument $needles must be an array or implement Traversable');
+        throw new InvalidArgumentException('Argument $needles must be an array or implement Traversable');
     }
 
     /**
@@ -859,20 +878,20 @@ class ArrayHelper
      */
     public static function accessible($value): bool
     {
-        return \is_array($value) || $value instanceof \ArrayAccess;
+        return is_array($value) || $value instanceof ArrayAccess;
     }
 
     /**
      * Determine if the given key exists in the provided array.
      *
-     * @param \ArrayAccess|array $array
+     * @param ArrayAccess|array $array
      * @param string|int         $key
      *
      * @return bool
      */
     public static function exists($array, $key): bool
     {
-        if (\is_array($array)) {
+        if (is_array($array)) {
             return array_key_exists($key, $array);
         }
 
@@ -882,7 +901,7 @@ class ArrayHelper
     /**
      * Get an item from an array using "dot" notation.
      *
-     * @param \ArrayAccess|array $array
+     * @param ArrayAccess|array $array
      * @param string             $key
      * @param mixed              $default
      *
@@ -894,7 +913,7 @@ class ArrayHelper
             return $array;
         }
 
-        if (\is_object($array) && \method_exists($array, 'getAttribute')) {
+        if (is_object($array) && method_exists($array, 'getAttribute')) {
             $result = $array->getAttribute($key);
             return $result[1] ?? $default;
         }
@@ -917,7 +936,7 @@ class ArrayHelper
     /**
      * Check if an item exists in an array using "dot" notation.
      *
-     * @param \ArrayAccess|array $array
+     * @param ArrayAccess|array $array
      * @param string             $key
      *
      * @return bool
@@ -933,8 +952,8 @@ class ArrayHelper
         }
 
         foreach (explode('.', $key) as $segment) {
-            if ((\is_array($array) && array_key_exists($segment,
-                        $array)) || ($array instanceof \ArrayAccess && $array->offsetExists($segment))) {
+            if ((is_array($array) && array_key_exists($segment,
+                        $array)) || ($array instanceof ArrayAccess && $array->offsetExists($segment))) {
                 $array = $array[$segment];
             } else {
                 return false;
@@ -962,13 +981,13 @@ class ArrayHelper
 
         $keys = explode('.', $key);
 
-        while (\count($keys) > 1) {
+        while (count($keys) > 1) {
             $key = array_shift($keys);
 
             // If the key doesn't exist at this depth, we will just create an empty array
             // to hold the next value, allowing us to create the arrays to hold final
             // values at the correct depth. Then we'll keep digging into the array.
-            if (!isset($array[$key]) || !\is_array($array[$key])) {
+            if (!isset($array[$key]) || !is_array($array[$key])) {
                 $array[$key] = [];
             }
 
@@ -1050,7 +1069,7 @@ class ArrayHelper
      * find similar text from an array|Iterator
      *
      * @param string          $need
-     * @param \Iterator|array $iterator
+     * @param Iterator|array $iterator
      * @param int             $similarPercent
      *
      * @return array
@@ -1065,7 +1084,7 @@ class ArrayHelper
         $similar = [];
 
         foreach ($iterator as $name) {
-            \similar_text($need, $name, $percent);
+            similar_text($need, $name, $percent);
 
             if ($similarPercent <= (int)$percent) {
                 $similar[] = $name;
@@ -1093,8 +1112,8 @@ class ArrayHelper
 
         foreach ($data as $key => $value) {
             // key is not a integer
-            if (!$expectInt || !\is_numeric($key)) {
-                $width       = \mb_strlen((string)$key, 'UTF-8');
+            if (!$expectInt || !is_numeric($key)) {
+                $width       = mb_strlen((string)$key, 'UTF-8');
                 $keyMaxWidth = $width > $keyMaxWidth ? $width : $keyMaxWidth;
             }
         }
@@ -1115,7 +1134,7 @@ class ArrayHelper
     {
         if ($callback === null) {
             if (empty($array)) {
-                return \value($default);
+                return value($default);
             }
 
             foreach ($array as $item) {
@@ -1129,7 +1148,7 @@ class ArrayHelper
             }
         }
 
-        return \value($default);
+        return value($default);
     }
 
     /**
@@ -1314,9 +1333,10 @@ class ArrayHelper
      *
      * @param  array  $array
      * @param  int|null  $number
+     *
      * @return mixed
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function random($array, $number = null)
     {

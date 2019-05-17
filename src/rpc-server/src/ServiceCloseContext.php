@@ -5,7 +5,6 @@ namespace Swoft\Rpc\Server;
 
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Context\AbstractContext;
 
 /**
  * Class ServiceCloseContext

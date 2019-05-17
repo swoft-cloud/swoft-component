@@ -4,9 +4,12 @@
 namespace Swoft\Rpc\Server;
 
 
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Rpc\Error;
+use Swoft\Rpc\Exception\RpcException;
 use Swoft\Rpc\Packet;
 use Swoft\Rpc\Server\Contract\ResponseInterface;
 use Swoole\Server;
@@ -58,8 +61,8 @@ class Response implements ResponseInterface
      * @param int    $reactorId
      *
      * @return Response
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function new(Server $server = null, int $fd = null, int $reactorId = null): self
     {
@@ -108,9 +111,9 @@ class Response implements ResponseInterface
 
     /**
      * @return bool
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Rpc\Exception\RpcException
+     * @throws ReflectionException
+     * @throws ContainerException
+     * @throws RpcException
      */
     public function send(): bool
     {
@@ -151,9 +154,9 @@ class Response implements ResponseInterface
     }
 
     /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Rpc\Exception\RpcException
+     * @throws ReflectionException
+     * @throws ContainerException
+     * @throws RpcException
      */
     protected function prepare(): void
     {

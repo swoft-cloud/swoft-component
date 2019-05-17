@@ -2,6 +2,11 @@
 
 namespace Swoft\Stdlib;
 
+use function count;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionMethod;
+
 /**
  * Class Reflections - use for cache some common classes reflection info
  * @since 2.0
@@ -38,13 +43,13 @@ final class Reflections
      */
     public static function count(): int
     {
-        return \count(self::$pool);
+        return count(self::$pool);
     }
 
     /**
      * @param string $className
      * @return array
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function get(string $className): array
     {
@@ -58,7 +63,7 @@ final class Reflections
 
     /**
      * @param string $className
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function cache(string $className): void
     {
@@ -66,23 +71,23 @@ final class Reflections
             return;
         }
 
-        $reflectionClass = new \ReflectionClass($className);
+        $reflectionClass = new ReflectionClass($className);
 
         self::cacheReflectionClass($reflectionClass);
     }
 
     /**
-     * @param \ReflectionClass $reflectionClass
-     * @throws \ReflectionException
+     * @param ReflectionClass $reflectionClass
+     * @throws ReflectionException
      */
-    public static function cacheReflectionClass(\ReflectionClass $reflectionClass): void
+    public static function cacheReflectionClass(ReflectionClass $reflectionClass): void
     {
         $className = $reflectionClass->getName();
         if (isset(self::$pool[$className])) {
             return;
         }
 
-        $reflectionMethods = $reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC);
+        $reflectionMethods = $reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC);
 
         self::$pool[$className]['name']     = $reflectionClass->getName();
         self::$pool[$className]['comments'] = $reflectionClass->getDocComment();

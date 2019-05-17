@@ -2,6 +2,10 @@
 
 namespace Swoft\Http\Server;
 
+use function bean;
+use function dirname;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Helper\ComposerJSON;
 use Swoft\Http\Message\ContentType;
 use Swoft\Http\Message\Response;
@@ -12,13 +16,14 @@ use Swoft\Http\Server\Parser\JsonRequestParser;
 use Swoft\Http\Server\Parser\XmlRequestParser;
 use Swoft\Http\Server\Swoole\RequestListener;
 use Swoft\Server\Swoole\SwooleEvent;
+use Swoft\SwoftComponent;
 
 /**
  * Class AutoLoader
  *
  * @since 2.0
  */
-class AutoLoader extends \Swoft\SwoftComponent
+class AutoLoader extends SwoftComponent
 {
     /**
      * Metadata information for the component.
@@ -28,7 +33,7 @@ class AutoLoader extends \Swoft\SwoftComponent
      */
     public function metadata(): array
     {
-        $jsonFile = \dirname(__DIR__) . '/composer.json';
+        $jsonFile = dirname(__DIR__) . '/composer.json';
 
         return ComposerJSON::open($jsonFile)->getMetadata();
     }
@@ -47,24 +52,24 @@ class AutoLoader extends \Swoft\SwoftComponent
 
     /**
      * @return array
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function beans(): array
     {
         return [
             'httpRequest'     => [
                 'parsers' => [
-                    ContentType::XML  => \bean(XmlRequestParser::class),
-                    ContentType::JSON => \bean(JsonRequestParser::class),
+                    ContentType::XML  => bean(XmlRequestParser::class),
+                    ContentType::JSON => bean(JsonRequestParser::class),
                 ]
             ],
             'httpResponse'    => [
                 'format'     => Response::FORMAT_JSON,
                 'formatters' => [
-                    Response::FORMAT_HTML => \bean(HtmlResponseFormatter::class),
-                    Response::FORMAT_JSON => \bean(JsonResponseFormatter::class),
-                    Response::FORMAT_XML  => \bean(XmlResponseFormatter::class),
+                    Response::FORMAT_HTML => bean(HtmlResponseFormatter::class),
+                    Response::FORMAT_JSON => bean(JsonResponseFormatter::class),
+                    Response::FORMAT_XML  => bean(XmlResponseFormatter::class),
                 ]
             ],
             'acceptFormatter' => [
@@ -76,7 +81,7 @@ class AutoLoader extends \Swoft\SwoftComponent
             ],
             'httpServer'      => [
                 'on' => [
-                    SwooleEvent::REQUEST => \bean(RequestListener::class)
+                    SwooleEvent::REQUEST => bean(RequestListener::class)
                 ]
             ],
             'httpRouter'      => [

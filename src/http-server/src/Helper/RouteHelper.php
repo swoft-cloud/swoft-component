@@ -8,6 +8,11 @@
 
 namespace Swoft\Http\Server\Helper;
 
+use function preg_replace;
+use function rawurldecode;
+use function rtrim;
+use function strpos;
+
 /**
  * Class RouteHelper
  * @package Swoft\Http\Server\Helper
@@ -21,7 +26,7 @@ class RouteHelper
      */
     public static function isStaticRoute(string $route): bool
     {
-        return \strpos($route, '{') === false && \strpos($route, '[') === false;
+        return strpos($route, '{') === false && strpos($route, '[') === false;
     }
 
     /**
@@ -37,18 +42,18 @@ class RouteHelper
         }
 
         // Clear '//', '///' => '/'
-        if (false !== \strpos($path, '//')) {
-            $path = \preg_replace('#\/\/+#', '/', $path);
+        if (false !== strpos($path, '//')) {
+            $path = preg_replace('#\/\/+#', '/', $path);
         }
 
         // Must be start withs '/'
-        if (\strpos($path, '/') !== 0) {
+        if (strpos($path, '/') !== 0) {
             $path = '/' . $path;
         }
 
         // Decode
-        $path = \rawurldecode($path);
+        $path = rawurldecode($path);
 
-        return $ignoreLastSlash ? \rtrim($path, '/') : $path;
+        return $ignoreLastSlash ? rtrim($path, '/') : $path;
     }
 }

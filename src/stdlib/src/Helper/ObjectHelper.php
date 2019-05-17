@@ -2,6 +2,12 @@
 
 namespace Swoft\Stdlib\Helper;
 
+use function is_numeric;
+use function method_exists;
+use function property_exists;
+use function spl_object_hash;
+use function ucfirst;
+
 /**
  * Object helper
  *
@@ -18,7 +24,7 @@ class ObjectHelper
      */
     public static function hash($object): string
     {
-        return \spl_object_hash($object);
+        return spl_object_hash($object);
     }
 
     /**
@@ -34,16 +40,16 @@ class ObjectHelper
     public static function init($object, array $options)
     {
         foreach ($options as $property => $value) {
-            if (\is_numeric($property)) {
+            if (is_numeric($property)) {
                 continue;
             }
 
-            $setter = 'set' . \ucfirst($property);
+            $setter = 'set' . ucfirst($property);
 
             // has setter
-            if (\method_exists($object, $setter)) {
+            if (method_exists($object, $setter)) {
                 $object->$setter($value);
-            } elseif (\property_exists($object, $property)) {
+            } elseif (property_exists($object, $property)) {
                 $object->$property = $value;
             }
         }

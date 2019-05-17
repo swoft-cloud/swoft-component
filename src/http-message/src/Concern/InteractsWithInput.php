@@ -2,7 +2,12 @@
 
 namespace Swoft\Http\Message\Concern;
 
+use function array_merge;
+use Exception;
+use InvalidArgumentException;
+use function stripos;
 use Swoft\Http\Message\Stream\Stream;
+use Swoft\Http\Message\Upload\UploadedFile;
 use Swoft\Stdlib\Helper\ArrayHelper;
 use Swoft\Stdlib\Helper\JsonHelper;
 
@@ -131,7 +136,7 @@ trait InteractsWithInput
     {
         $parsedBody = $this->getParsedBody();
         $parsedBody = is_array($parsedBody) ? $parsedBody : [];
-        $inputs     = \array_merge($parsedBody, $this->getQueryParams());
+        $inputs     = array_merge($parsedBody, $this->getQueryParams());
 
         if (!$key) {
             return $inputs;
@@ -191,8 +196,8 @@ trait InteractsWithInput
         $map = [];
         try {
             $contentType = $this->getHeader('content-type');
-            if (!$contentType || false === \stripos($contentType[0], 'application/json')) {
-                throw new \InvalidArgumentException(sprintf('Invalid Content-Type of the request, expects %s, %s given',
+            if (!$contentType || false === stripos($contentType[0], 'application/json')) {
+                throw new InvalidArgumentException(sprintf('Invalid Content-Type of the request, expects %s, %s given',
                     'application/json', ($contentType ? current($contentType) : 'null')));
             }
 
@@ -201,7 +206,7 @@ trait InteractsWithInput
                 $raw = $body->getContents();
                 $map = JsonHelper::decode($raw, true);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $default;
         }
 
@@ -218,7 +223,7 @@ trait InteractsWithInput
      * @param string $key
      * @param mixed  $default
      *
-     * @return array|\Swoft\Http\Message\Upload\UploadedFile|null
+     * @return array|UploadedFile|null
      */
     public function file(string $key = '', $default = null)
     {

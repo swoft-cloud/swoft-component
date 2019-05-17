@@ -4,12 +4,17 @@
 namespace Swoft\Rpc\Server;
 
 
+use ReflectionException;
+use function sprintf;
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Dispatcher;
 use Swoft\Log\Debug;
 use Swoft\Rpc\Error;
 use Swoft\Rpc\Server\Middleware\DefaultMiddleware;
 use Swoft\Rpc\Server\Middleware\UserMiddleware;
+use Throwable;
 
 /**
  * Class ServiceDispatcher
@@ -28,8 +33,8 @@ class ServiceDispatcher extends Dispatcher
     /**
      * @param array $params
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function dispatch(...$params)
     {
@@ -40,20 +45,20 @@ class ServiceDispatcher extends Dispatcher
         list($request, $response) = $params;
 
         try {
-            \Swoft::trigger(ServiceServerEvent::BEFORE_RECEIVE, null, $request, $response);
+            Swoft::trigger(ServiceServerEvent::BEFORE_RECEIVE, null, $request, $response);
 
             $handler  = ServiceHandler::new($this->requestMiddleware(), $this->defaultMiddleware);
             $response = $handler->handle($request);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Debug::log(
-                \sprintf("RPC Server Error: %s\nAt %s %d\n", $e->getMessage(), $e->getFile(), $e->getLine())
+                sprintf("RPC Server Error: %s\nAt %s %d\n", $e->getMessage(), $e->getFile(), $e->getLine())
             );
 
             $error    = Error::new($e->getCode(), $e->getMessage(), null);
             $response = $response->setError($error);
         }
 
-        \Swoft::trigger(ServiceServerEvent::AFTER_RECEIVE, null, $response);
+        Swoft::trigger(ServiceServerEvent::AFTER_RECEIVE, null, $response);
     }
 
     /**

@@ -4,8 +4,10 @@
 namespace Swoft\Rpc\Server;
 
 
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\AbstractContext;
 
 /**
@@ -34,8 +36,8 @@ class ServiceContext extends AbstractContext
      * @param Response $response
      *
      * @return ServiceContext
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function new(Request $request, Response $response): self
     {

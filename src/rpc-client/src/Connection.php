@@ -4,13 +4,15 @@
 namespace Swoft\Rpc\Client;
 
 
+use function count;
+use function explode;
 use ReflectionException;
+use function sprintf;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\AbstractConnection;
 use Swoft\Log\Debug;
-use Swoft\Log\Helper\Log;
 use Swoft\Rpc\Client\Contract\ConnectionInterface;
 use Swoft\Rpc\Client\Contract\ProviderInterface;
 use Swoft\Rpc\Client\Exception\RpcClientException;
@@ -45,7 +47,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param Pool                     $pool
      *
      * @return Connection
-     * @throws \ReflectionException
+     * @throws ReflectionException
      * @throws ContainerException
      */
     public static function new(RpcClient $client, Pool $pool): Connection
@@ -84,7 +86,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * @return bool
      * @throws RpcClientException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      * @throws ContainerException
      */
     public function reconnect(): bool
@@ -152,15 +154,15 @@ class Connection extends AbstractConnection implements ConnectionInterface
         $list = $provider->getList();
         if (!is_array($list)) {
             throw new RpcClientException(
-                \sprintf('Provider(%s) return format is error!', JsonHelper::encode($list))
+                sprintf('Provider(%s) return format is error!', JsonHelper::encode($list))
             );
         }
         $randKey  = array_rand($list, 1);
-        $hostPort = \explode(':', $list[$randKey]);
+        $hostPort = explode(':', $list[$randKey]);
 
-        if (\count($hostPort) < 2) {
+        if (count($hostPort) < 2) {
             throw new RpcClientException(
-                \sprintf('Provider(%s) return format is error!', JsonHelper::encode($hostPort))
+                sprintf('Provider(%s) return format is error!', JsonHelper::encode($hostPort))
             );
         }
 

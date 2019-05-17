@@ -2,14 +2,18 @@
 
 namespace Swoft\Http\Server;
 
+use ReflectionException;
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Dispatcher;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Middleware\DefaultMiddleware;
 use Swoft\Http\Server\Middleware\UserMiddleware;
 use Swoft\Http\Server\Middleware\ValidatorMiddleware;
+use Throwable;
 
 /**
  * Class HttpDispatcher
@@ -30,14 +34,14 @@ class HttpDispatcher extends Dispatcher
      * Dispatch http request
      *
      * @param array ...$params
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ContainerException
      */
 
     /**
      * @param mixed ...$params
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function dispatch(...$params): void
     {
@@ -53,9 +57,9 @@ class HttpDispatcher extends Dispatcher
 
         try {
             // Trigger before handle event
-            \Swoft::trigger(HttpServerEvent::BEFORE_REQUEST, null, $request, $response);
+            Swoft::trigger(HttpServerEvent::BEFORE_REQUEST, null, $request, $response);
             $response = $requestHandler->handle($request);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             /** @var HttpErrorDispatcher $errDispatcher */
             $errDispatcher = BeanFactory::getSingleton(HttpErrorDispatcher::class);
 
@@ -64,7 +68,7 @@ class HttpDispatcher extends Dispatcher
         }
 
         // Trigger after request
-        \Swoft::trigger(HttpServerEvent::AFTER_REQUEST, null, $response);
+        Swoft::trigger(HttpServerEvent::AFTER_REQUEST, null, $response);
     }
 
     /**

@@ -4,6 +4,7 @@
 namespace Swoft\Rpc\Server\Router;
 
 
+use function sprintf;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Rpc\Server\Contract\RouterInterface;
 
@@ -63,7 +64,7 @@ class Router implements RouterInterface
      */
     private function getRoute(string $interface, string $version): string
     {
-        return \sprintf('%s@%s', $interface, $version);
+        return sprintf('%s@%s', $interface, $version);
     }
 
     /**

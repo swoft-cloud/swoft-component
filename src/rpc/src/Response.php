@@ -3,8 +3,10 @@
 
 namespace Swoft\Rpc;
 
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Exception\ContainerException;
 
 /**
  * Class Response
@@ -32,8 +34,8 @@ class Response
      * @param $error
      *
      * @return Response
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function new($result, $error): self
     {

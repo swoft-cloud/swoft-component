@@ -2,6 +2,15 @@
 
 namespace Swoft\Server;
 
+use const SWOOLE_BASE;
+use const SWOOLE_PROCESS;
+use const SWOOLE_SOCK_TCP;
+use const SWOOLE_SOCK_TCP6;
+use const SWOOLE_SOCK_UDP;
+use const SWOOLE_SOCK_UDP6;
+use const SWOOLE_SOCK_UNIX_DGRAM;
+use const SWOOLE_SOCK_UNIX_STREAM;
+
 /**
  * Interface ServerInterface
  *
@@ -11,18 +20,18 @@ interface ServerInterface
 {
     // Swoole mode list
     public const MODE_LIST = [
-        \SWOOLE_BASE    => 'Base',
-        \SWOOLE_PROCESS => 'Process',
+        SWOOLE_BASE    => 'Base',
+        SWOOLE_PROCESS => 'Process',
     ];
 
     // Swoole socket type list
     public const TYPE_LIST = [
-        \SWOOLE_SOCK_TCP         => 'TCP',
-        \SWOOLE_SOCK_TCP6        => 'TCP6',
-        \SWOOLE_SOCK_UDP         => 'UDP',
-        \SWOOLE_SOCK_UDP6        => 'UDP6',
-        \SWOOLE_SOCK_UNIX_DGRAM  => 'UNIX DGRAM',
-        \SWOOLE_SOCK_UNIX_STREAM => 'UNIX STREAM',
+        SWOOLE_SOCK_TCP         => 'TCP',
+        SWOOLE_SOCK_TCP6        => 'TCP6',
+        SWOOLE_SOCK_UDP         => 'UDP',
+        SWOOLE_SOCK_UDP6        => 'UDP6',
+        SWOOLE_SOCK_UNIX_DGRAM  => 'UNIX DGRAM',
+        SWOOLE_SOCK_UNIX_STREAM => 'UNIX STREAM',
     ];
 
     /**
