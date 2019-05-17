@@ -3,6 +3,9 @@
 
 namespace Swoft\Redis;
 
+use function bean;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Redis\Connection\Connection;
 use Swoft\Redis\Connection\PhpRedisConnection;
 use Swoft\Redis\Connector\PhpRedisConnector;
@@ -113,8 +116,8 @@ class RedisDb
      *
      * @return Connection
      * @throws RedisException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function createConnection(Pool $pool): Connection
     {
@@ -128,8 +131,8 @@ class RedisDb
     /**
      * @return ConnectorInterface
      * @throws RedisException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function getConnector(): ConnectorInterface
     {
@@ -146,8 +149,8 @@ class RedisDb
     /**
      * @return Connection
      * @throws RedisException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function getConnection(): Connection
     {
@@ -163,25 +166,25 @@ class RedisDb
 
     /**
      * @return array
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function defaultConnectors(): array
     {
         return [
-            self::PHP_REDIS => \bean(PhpRedisConnector::class)
+            self::PHP_REDIS => bean(PhpRedisConnector::class)
         ];
     }
 
     /**
      * @return array
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function defaultConnections(): array
     {
         return [
-            self::PHP_REDIS => \bean(PhpRedisConnection::class)
+            self::PHP_REDIS => bean(PhpRedisConnection::class)
         ];
     }
 

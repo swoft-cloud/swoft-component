@@ -4,6 +4,8 @@
 namespace Swoft\Rpc\Server\Annotation\Parser;
 
 
+use ReflectionClass;
+use ReflectionException;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Bean\Annotation\Mapping\Bean;
@@ -24,11 +26,11 @@ class ServiceParser extends Parser
      * @param Service $annotationObject
      *
      * @return array
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function parse(int $type, $annotationObject): array
     {
-        $reflectionClass = new \ReflectionClass($this->className);
+        $reflectionClass = new ReflectionClass($this->className);
         $interfaces      = $reflectionClass->getInterfaceNames();
 
         foreach ($interfaces as $interface) {

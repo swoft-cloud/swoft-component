@@ -3,12 +3,14 @@
 
 namespace Swoft\Redis\Exception;
 
+use Exception;
+
 /**
  * Class RedisException
  *
  * @since 2.0
  */
-class RedisException extends \Exception
+class RedisException extends Exception
 {
 
 }

@@ -4,8 +4,11 @@
 namespace Swoft\Rpc\Server\Middleware;
 
 
+use function context;
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Rpc\Code;
 use Swoft\Rpc\Server\Contract\MiddlewareInterface;
 use Swoft\Rpc\Server\Contract\RequestHandlerInterface;
@@ -31,8 +34,8 @@ class DefaultMiddleware implements MiddlewareInterface
      *
      * @return ResponseInterface
      * @throws RpcServerException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function process(RequestInterface $request, RequestHandlerInterface $requestHandler): ResponseInterface
     {
@@ -44,8 +47,8 @@ class DefaultMiddleware implements MiddlewareInterface
      *
      * @return ResponseInterface
      * @throws RpcServerException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     private function handler(RequestInterface $request): ResponseInterface
     {
@@ -81,7 +84,7 @@ class DefaultMiddleware implements MiddlewareInterface
 
         $data = PhpHelper::call([$object, $method], ...$params);
 
-        $response = \context()->getResponse();
+        $response = context()->getResponse();
         return $response->setData($data);
     }
 }

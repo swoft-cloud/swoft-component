@@ -4,7 +4,12 @@
 namespace Swoft\Redis\Connection;
 
 
+use function count;
 use Redis;
+use RedisCluster;
+use ReflectionException;
+use function sprintf;
+use Swoft;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\AbstractConnection;
@@ -15,6 +20,7 @@ use Swoft\Redis\Pool;
 use Swoft\Redis\RedisDb;
 use Swoft\Redis\RedisEvent;
 use Swoft\Stdlib\Helper\PhpHelper;
+use Throwable;
 
 /**
  * Class Connection
@@ -266,7 +272,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     ];
 
     /**
-     * @var Redis|\RedisCluster
+     * @var Redis|RedisCluster
      */
     protected $client;
 
@@ -289,8 +295,8 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
 
     /**
      * @throws RedisException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function create(): void
     {
@@ -304,9 +310,9 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     }
 
     /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Redis\Exception\RedisException
+     * @throws ReflectionException
+     * @throws ContainerException
+     * @throws RedisException
      */
     public function createClient(): void
     {
@@ -326,9 +332,9 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     }
 
     /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Redis\Exception\RedisException
+     * @throws ReflectionException
+     * @throws ContainerException
+     * @throws RedisException
      */
     public function createClusterClient(): void
     {
@@ -348,7 +354,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @return mixed
      * @throws RedisException
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function command(string $method, array $parameters = [], bool $reconnect = false)
     {
@@ -361,18 +367,18 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
             }
 
             // Before event
-            \Swoft::trigger(RedisEvent::BEFORE_COMMAND, null, $method, $parameters);
+            Swoft::trigger(RedisEvent::BEFORE_COMMAND, null, $method, $parameters);
 
             Log::profileStart('redis.%s', $method);
             $result = $this->client->{$method}(...$parameters);
             Log::profileEnd('redis.%s', $method);
 
             // After event
-            \Swoft::trigger(RedisEvent::AFTER_COMMAND, null, $method, $parameters, $result);
+            Swoft::trigger(RedisEvent::AFTER_COMMAND, null, $method, $parameters, $result);
 
             // Release Connection
             $this->release();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             if (!$reconnect && $this->reconnect()) {
                 return $this->command($method, $parameters, true);
             }
@@ -388,8 +394,8 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     /**
      * @param bool $force
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function release(bool $force = false): void
     {
@@ -407,7 +413,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @return array
      * @throws ContainerException
      * @throws RedisException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function hMGet(string $key, array $keys): array
     {
@@ -433,7 +439,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @return int Number of values added
      * @throws ContainerException
      * @throws RedisException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function zAdd(string $key, array $scoreValues): int
     {
@@ -455,7 +461,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      *
      * @throws ContainerException
      * @throws RedisException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function get(string $key)
     {
@@ -479,7 +485,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @return bool
      * @throws ContainerException
      * @throws RedisException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function set(string $key, $value, int $timeout = null): bool
     {
@@ -495,7 +501,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @return array
      * @throws ContainerException
      * @throws RedisException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function mget(array $keys): array
     {
@@ -509,7 +515,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
         }
 
         $name = $this->getCountingKey(__FUNCTION__);
-        Log::counting($name, \count($result), \count($keys));
+        Log::counting($name, count($result), count($keys));
 
         return $result;
     }
@@ -521,7 +527,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @return bool
      * @throws ContainerException
      * @throws RedisException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function mset(array $keyValues, int $ttl = 0): bool
     {
@@ -543,7 +549,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @return array
      * @throws ContainerException
      * @throws RedisException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function pipeline(callable $callback): array
     {
@@ -556,7 +562,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @return array
      * @throws ContainerException
      * @throws RedisException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function transaction(callable $callback): array
     {
@@ -566,13 +572,13 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     /**
      * @return bool
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function reconnect(): bool
     {
         try {
             $this->create();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::error('Redis reconnect error(%s)', $e->getMessage());
             return false;
         }
@@ -599,7 +605,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @return mixed
      * @throws RedisException
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function __call(string $method, array $parameters)
     {
@@ -613,7 +619,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      */
     private function getCountingKey(string $name): string
     {
-        return \sprintf('redis.hit/req.%s', $name);
+        return sprintf('redis.hit/req.%s', $name);
     }
 
     /**
@@ -624,21 +630,21 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @return array
      * @throws ContainerException
      * @throws RedisException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     private function multi(int $mode, callable $callback, bool $reconnect = false): array
     {
         $name   = ($mode == Redis::PIPELINE) ? 'pipeline' : 'transaction';
-        $proKey = \sprintf('redis.%s', $name);
+        $proKey = sprintf('redis.%s', $name);
         try {
             Log::profileStart($proKey);
 
             $pipeline = $this->client->multi($mode);
             try {
                 PhpHelper::call($callback, $pipeline);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 Log::error(
-                    \sprintf(
+                    sprintf(
                         'Redis multi error(message=%s line=%d file=%s)',
                         $e->getMessage(),
                         $e->getLine(),
@@ -649,7 +655,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
             $result = $pipeline->exec();
 
             Log::profileEnd($proKey);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             if (!$reconnect && $this->reconnect()) {
                 return $this->multi($mode, $callback, true);
             }

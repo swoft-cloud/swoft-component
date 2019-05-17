@@ -2,7 +2,10 @@
 
 namespace Swoft\Tcp\Server;
 
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Server;
 
 /**
@@ -16,9 +19,8 @@ class TcpServer extends Server
 {
     /**
      * Start server
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Server\Exception\ServerException
+     * @throws ContainerException
+     * @throws ServerException
      */
     public function start(): void
     {

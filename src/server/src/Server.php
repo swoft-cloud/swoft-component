@@ -2,8 +2,19 @@
 
 namespace Swoft\Server;
 
+use function alias;
+use function array_keys;
+use function array_merge;
+use function dirname;
+use function explode;
+use function file_exists;
+use function file_get_contents;
+use function file_put_contents;
+use InvalidArgumentException;
+use function sprintf;
 use Swoft;
 use Swoft\Console\Console;
+use Swoft\Http\Server\HttpServer;
 use Swoft\Server\Event\ServerStartEvent;
 use Swoft\Server\Event\WorkerEvent;
 use Swoft\Server\Exception\ServerException;
@@ -12,9 +23,14 @@ use Swoft\Server\Swoole\SwooleEvent;
 use Swoft\Stdlib\Helper\Dir;
 use Swoft\Stdlib\Helper\Str;
 use Swoft\Stdlib\Helper\Sys;
+use Swoft\WebSocket\Server\WebSocketServer;
 use Swoole\Process;
 use Swoole\Server as CoServer;
 use Swoft\Stdlib\Helper\Arr;
+use const SWOOLE_PROCESS;
+use const SWOOLE_SOCK_TCP;
+use Throwable;
+use function ucfirst;
 
 /**
  * Class Server
@@ -26,7 +42,7 @@ abstract class Server implements ServerInterface
     /**
      * Swoft server
      *
-     * @var \Swoft\Server\Server|\Swoft\Http\Server\HttpServer|\Swoft\WebSocket\Server\WebSocketServer
+     * @var Server|HttpServer|WebSocketServer
      */
     private static $server;
 
@@ -56,14 +72,14 @@ abstract class Server implements ServerInterface
      *
      * @var int
      */
-    protected $mode = \SWOOLE_PROCESS;
+    protected $mode = SWOOLE_PROCESS;
 
     /**
      * Default socket type
      *
      * @var int
      */
-    protected $type = \SWOOLE_SOCK_TCP;
+    protected $type = SWOOLE_SOCK_TCP;
 
     /**
      * Server setting for swoole. (@see swooleServer->setting)
@@ -138,7 +154,7 @@ abstract class Server implements ServerInterface
     /**
      * Swoole Server
      *
-     * @var \Swoole\Server|\Swoole\Http\Server|\Swoole\Websocket\Server
+     * @var CoServer|\Swoole\Http\Server|\Swoole\Websocket\Server
      */
     protected $swooleServer;
 
@@ -197,7 +213,7 @@ abstract class Server implements ServerInterface
      * @param CoServer $server
      *
      * @return void
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function onStart(CoServer $server): void
     {
@@ -207,13 +223,13 @@ abstract class Server implements ServerInterface
         $masterPid  = $server->master_pid;
         $managerPid = $server->manager_pid;
 
-        $pidStr = \sprintf('%s,%s', $masterPid, $managerPid);
-        $title  = \sprintf('%s master process (%s)', $this->pidName, $this->scriptFile);
+        $pidStr = sprintf('%s,%s', $masterPid, $managerPid);
+        $title  = sprintf('%s master process (%s)', $this->pidName, $this->scriptFile);
 
         // Save PID to file
-        $pidFile = \alias($this->pidFile);
-        Dir::make(\dirname($pidFile));
-        \file_put_contents(\alias($this->pidFile), $pidStr);
+        $pidFile = alias($this->pidFile);
+        Dir::make(dirname($pidFile));
+        file_put_contents(alias($this->pidFile), $pidStr);
 
         // Set process title
         Sys::setProcessTitle($title);
@@ -229,14 +245,14 @@ abstract class Server implements ServerInterface
      *
      * @param CoServer $server
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function onManagerStart(CoServer $server): void
     {
         // Server pid map
         $this->setPidMap($server);
         // Set process title
-        Sys::setProcessTitle(\sprintf('%s manager process', $this->pidName));
+        Sys::setProcessTitle(sprintf('%s manager process', $this->pidName));
 
         Swoft::trigger(new ServerStartEvent(SwooleEvent::MANAGER_START, $server));
     }
@@ -246,7 +262,7 @@ abstract class Server implements ServerInterface
      *
      * @param CoServer $server
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function onManagerStop(CoServer $server): void
     {
@@ -259,7 +275,7 @@ abstract class Server implements ServerInterface
      * @param CoServer $server
      * @param int      $workerId
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function onWorkerStart(CoServer $server, int $workerId): void
     {
@@ -288,7 +304,7 @@ abstract class Server implements ServerInterface
         $newEvent = clone $event;
         $newEvent->setName($eventName);
 
-        Sys::setProcessTitle(\sprintf('%s %s process', $this->pidName, $procRole));
+        Sys::setProcessTitle(sprintf('%s %s process', $this->pidName, $procRole));
         Swoft::trigger($newEvent);
     }
 
@@ -298,7 +314,7 @@ abstract class Server implements ServerInterface
      * @param CoServer $server
      * @param int      $workerId
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function onWorkerStop(CoServer $server, int $workerId): void
     {
@@ -318,7 +334,7 @@ abstract class Server implements ServerInterface
      * @param int      $exitCode
      * @param int      $signal
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function onWorkerError(CoServer $server, int $workerId, int $workerPid, int $exitCode, int $signal): void
     {
@@ -339,7 +355,7 @@ abstract class Server implements ServerInterface
      *
      * @param CoServer $server
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function onShutdown(CoServer $server): void
     {
@@ -367,7 +383,7 @@ abstract class Server implements ServerInterface
 
         // Register events
         $defaultEvents = $this->defaultEvents();
-        $swooleEvents  = \array_merge($defaultEvents, $this->on);
+        $swooleEvents  = array_merge($defaultEvents, $this->on);
 
         // Add event
         $this->addEvent($this->swooleServer, $swooleEvents, $defaultEvents);
@@ -417,9 +433,9 @@ abstract class Server implements ServerInterface
     /**
      * Add events
      *
-     * @param \Swoole\Server|CoServer\Port $server
-     * @param array                        $swooleEvents
-     * @param array                        $defaultEvents
+     * @param CoServer|CoServer\Port $server
+     * @param array                  $swooleEvents
+     * @param array                  $defaultEvents
      *
      * @throws ServerException
      */
@@ -433,15 +449,15 @@ abstract class Server implements ServerInterface
             }
 
             if (!isset(SwooleEvent::LISTENER_MAPPING[$name])) {
-                throw new ServerException(\sprintf('Swoole %s event is not defined!', $name));
+                throw new ServerException(sprintf('Swoole %s event is not defined!', $name));
             }
 
             $listenerInterface = SwooleEvent::LISTENER_MAPPING[$name];
             if (!($listener instanceof $listenerInterface)) {
-                throw new ServerException(\sprintf('Swoole %s event listener is not %s', $name, $listenerInterface));
+                throw new ServerException(sprintf('Swoole %s event listener is not %s', $name, $listenerInterface));
             }
 
-            $listenerMethod = \sprintf('on%s', \ucfirst($name));
+            $listenerMethod = sprintf('on%s', ucfirst($name));
             $server->on($name, [$listener, $listenerMethod]);
         }
     }
@@ -492,7 +508,7 @@ abstract class Server implements ServerInterface
     public function setMode(int $mode): void
     {
         if (!isset(self::MODE_LIST[$mode])) {
-            throw new \InvalidArgumentException('invalid server mode value: ' . $mode);
+            throw new InvalidArgumentException('invalid server mode value: ' . $mode);
         }
 
         $this->mode = $mode;
@@ -520,7 +536,7 @@ abstract class Server implements ServerInterface
     public function setType(int $type): void
     {
         if (!isset(self::TYPE_LIST[$type])) {
-            throw new \InvalidArgumentException('invalid server type value: ' . $type);
+            throw new InvalidArgumentException('invalid server type value: ' . $type);
         }
 
         $this->type = $type;
@@ -547,7 +563,7 @@ abstract class Server implements ServerInterface
      */
     public function setSetting(array $setting): void
     {
-        $this->setting = \array_merge($this->setting, $setting);
+        $this->setting = array_merge($this->setting, $setting);
     }
 
     /**
@@ -573,7 +589,7 @@ abstract class Server implements ServerInterface
      */
     public function getRegisteredEvents(): array
     {
-        return \array_keys($this->on);
+        return array_keys($this->on);
     }
 
     /**
@@ -585,7 +601,7 @@ abstract class Server implements ServerInterface
     }
 
     /**
-     * @return \Swoft\Server\Server|\Swoft\Http\Server\HttpServer|\Swoft\WebSocket\Server\WebSocketServer
+     * @return Server|HttpServer|WebSocketServer
      */
     public static function getServer(): ?Server
     {
@@ -644,7 +660,7 @@ abstract class Server implements ServerInterface
 
         // SIGTERM = 15
         if (ServerHelper::killAndWait($pid, 15, $this->pidName)) {
-            return ServerHelper::removePidFile(\alias($this->pidFile));
+            return ServerHelper::removePidFile(alias($this->pidFile));
         }
 
         return false;
@@ -728,15 +744,15 @@ abstract class Server implements ServerInterface
      */
     public function isRunning(): bool
     {
-        $pidFile = \alias($this->pidFile);
+        $pidFile = alias($this->pidFile);
 
         // Is pid file exist ?
-        if (\file_exists($pidFile)) {
+        if (file_exists($pidFile)) {
             // Get pid file content and parse the content
-            $pidFile = \file_get_contents($pidFile);
+            $pidFile = file_get_contents($pidFile);
 
             // Parse and record PIDs
-            [$masterPID, $managerPID] = \explode(',', $pidFile);
+            [$masterPID, $managerPID] = explode(',', $pidFile);
             // Format type
             $masterPID  = (int)$masterPID;
             $managerPID = (int)$managerPID;

@@ -3,8 +3,6 @@
 
 namespace Swoft\Rpc\Server\Router;
 
-use Swoft\Rpc\Server\Exception\RpcServerException;
-
 /**
  * Class RouteRegister
  *

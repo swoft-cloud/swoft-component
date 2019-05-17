@@ -7,6 +7,7 @@ use Swoft\Bean\BeanFactory;
 use Swoft\Redis\Connection\Connection;
 use Swoft\Redis\Connection\ConnectionManager;
 use Swoft\Redis\Exception\RedisException;
+use Throwable;
 
 /**
  * Class Redis
@@ -152,7 +153,7 @@ class Redis
 
             $connection->setRelease(true);
             $conManager->setConnection($connection);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw new RedisException(
                 sprintf('Pool error is %s file=%s line=%d', $e->getMessage(), $e->getFile(), $e->getLine())
             );

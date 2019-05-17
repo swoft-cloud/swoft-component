@@ -5,6 +5,7 @@ namespace Swoft\Rpc\Server;
 
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Server;
 use Swoft\Stdlib\Helper\Arr;
@@ -46,7 +47,7 @@ class ServiceServer extends Server
      *
      * @throws ServerException
      * @throws ServerException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ContainerException
      */
     public function start(): void
     {

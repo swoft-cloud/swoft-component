@@ -3,6 +3,8 @@
 namespace Swoft\Test\Concern;
 
 use PHPUnit\Framework\Assert;
+use function strpos;
+use Swoft\Rpc\Response;
 
 /**
  * Trait RpcResponseAssertTrait
@@ -12,7 +14,7 @@ use PHPUnit\Framework\Assert;
 trait RpcResponseAssertTrait
 {
     /**
-     * @var \Swoft\Rpc\Response
+     * @var Response
      */
     protected $returnResponse;
 
@@ -74,7 +76,7 @@ trait RpcResponseAssertTrait
         }
 
         $errorMessage = $error->getMessage();
-        Assert::assertTrue(\strpos($errorMessage, $message) !== false);
+        Assert::assertTrue(strpos($errorMessage, $message) !== false);
     }
 
     /**

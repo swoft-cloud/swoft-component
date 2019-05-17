@@ -2,6 +2,32 @@
 
 namespace Swoft\Stdlib\Helper;
 
+use function chdir;
+use function exec;
+use function fclose;
+use function function_exists;
+use function getcwd;
+use function getmyuid;
+use function implode;
+use function is_resource;
+use function ob_end_clean;
+use function ob_get_contents;
+use function ob_start;
+use function passthru;
+use function pclose;
+use function popen;
+use function posix_getpwuid;
+use function preg_match;
+use function preg_replace;
+use function proc_close;
+use function proc_open;
+use RuntimeException;
+use function shell_exec;
+use function stream_get_contents;
+use function sys_get_temp_dir;
+use function system;
+use function trim;
+
 /**
  * Class SystemHelper
  *
@@ -22,7 +48,7 @@ class SystemHelper extends EnvHelper
             return false;
         }
 
-        if (\function_exists('cli_set_process_title')) {
+        if (function_exists('cli_set_process_title')) {
             return @cli_set_process_title($title);
         }
 
@@ -34,7 +60,7 @@ class SystemHelper extends EnvHelper
      * @param string      $command
      * @param string|null $cwd
      * @return array [$code, $output, $error]
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public static function run(string $command, string $cwd = null): array
     {
@@ -45,26 +71,26 @@ class SystemHelper extends EnvHelper
             3 => ['pipe', 'r'], // stdin - This is the pipe we can feed the password into
         ];
 
-        $process = \proc_open($command, $descriptors, $pipes, $cwd);
+        $process = proc_open($command, $descriptors, $pipes, $cwd);
 
-        if (!\is_resource($process)) {
-            throw new \RuntimeException("Can't open resource with proc_open.");
+        if (!is_resource($process)) {
+            throw new RuntimeException("Can't open resource with proc_open.");
         }
 
         // Nothing to push to input.
-        \fclose($pipes[0]);
+        fclose($pipes[0]);
 
-        $output = \stream_get_contents($pipes[1]);
-        \fclose($pipes[1]);
+        $output = stream_get_contents($pipes[1]);
+        fclose($pipes[1]);
 
-        $error = \stream_get_contents($pipes[2]);
-        \fclose($pipes[2]);
+        $error = stream_get_contents($pipes[2]);
+        fclose($pipes[2]);
 
         // TODO: Write passphrase in pipes[3].
-        \fclose($pipes[3]);
+        fclose($pipes[3]);
 
         // Close all pipes before proc_close! $code === 0 is success.
-        $code = \proc_close($process);
+        $code = proc_close($process);
 
         return [$code, $output, $error];
     }
@@ -86,30 +112,30 @@ class SystemHelper extends EnvHelper
         $exitStatus = 1;
 
         if ($cwd) {
-            \chdir($cwd);
+            chdir($cwd);
         }
 
         // system
-        if (\function_exists('system')) {
-            \ob_start();
-            \system($command, $exitStatus);
-            $output = \ob_get_contents();
-            \ob_end_clean();
+        if (function_exists('system')) {
+            ob_start();
+            system($command, $exitStatus);
+            $output = ob_get_contents();
+            ob_end_clean();
 
             // passthru
-        } elseif (\function_exists('passthru')) {
-            \ob_start();
-            \passthru($command, $exitStatus);
-            $output = \ob_get_contents();
-            \ob_end_clean();
+        } elseif (function_exists('passthru')) {
+            ob_start();
+            passthru($command, $exitStatus);
+            $output = ob_get_contents();
+            ob_end_clean();
             //exec
-        } elseif (\function_exists('exec')) {
-            \exec($command, $output, $exitStatus);
-            $output = \implode("\n", $output);
+        } elseif (function_exists('exec')) {
+            exec($command, $output, $exitStatus);
+            $output = implode("\n", $output);
 
             //shell_exec
-        } elseif (\function_exists('shell_exec')) {
-            $output = \shell_exec($command);
+        } elseif (function_exists('shell_exec')) {
+            $output = shell_exec($command);
         } else {
             $output = 'Command execution not possible on this system';
             $exitStatus = 0;
@@ -117,12 +143,12 @@ class SystemHelper extends EnvHelper
 
         if ($returnStatus) {
             return [
-                'output' => \trim($output),
+                'output' => trim($output),
                 'status' => $exitStatus
             ];
         }
 
-        return \trim($output);
+        return trim($output);
     }
 
     /**
@@ -141,9 +167,9 @@ class SystemHelper extends EnvHelper
     public static function execInBackground(string $cmd): void
     {
         if (self::isWindows()) {
-            \pclose(\popen('start /B ' . $cmd, 'r'));
+            pclose(popen('start /B ' . $cmd, 'r'));
         } else {
-            \exec($cmd . ' > /dev/null &');
+            exec($cmd . ' > /dev/null &');
         }
     }
 
@@ -153,7 +179,7 @@ class SystemHelper extends EnvHelper
      */
     public static function getCurrentUser(): array
     {
-        return \posix_getpwuid(\getmyuid());
+        return posix_getpwuid(getmyuid());
     }
 
     /**
@@ -170,8 +196,8 @@ class SystemHelper extends EnvHelper
     public static function getTempDir(): string
     {
         // @codeCoverageIgnoreStart
-        if (\function_exists('sys_get_temp_dir')) {
-            $tmp = \sys_get_temp_dir();
+        if (function_exists('sys_get_temp_dir')) {
+            $tmp = sys_get_temp_dir();
         } elseif (!empty($_SERVER['TMP'])) {
             $tmp = $_SERVER['TMP'];
         } elseif (!empty($_SERVER['TEMP'])) {
@@ -179,7 +205,7 @@ class SystemHelper extends EnvHelper
         } elseif (!empty($_SERVER['TMPDIR'])) {
             $tmp = $_SERVER['TMPDIR'];
         } else {
-            $tmp = \getcwd();
+            $tmp = getcwd();
         }
         // @codeCoverageIgnoreEnd
 
@@ -236,8 +262,8 @@ class SystemHelper extends EnvHelper
             $stty = [];
 
             if (
-                \exec('stty -a 2>&1', $stty) &&
-                \preg_match('/rows\s+(\d+);\s*columns\s+(\d+);/mi', implode(' ', $stty), $matches)
+                exec('stty -a 2>&1', $stty) &&
+                preg_match('/rows\s+(\d+);\s*columns\s+(\d+);/mi', implode(' ', $stty), $matches)
             ) {
                 return ($size = [$matches[2], $matches[1]]);
             }
@@ -255,12 +281,12 @@ class SystemHelper extends EnvHelper
 
         if (self::isWindows()) {
             $output = [];
-            \exec('mode con', $output);
+            exec('mode con', $output);
 
             if (isset($output[1]) && strpos($output[1], 'CON') !== false) {
                 return ($size = [
-                    (int)\preg_replace('~\D~', '', $output[3]),
-                    (int)\preg_replace('~\D~', '', $output[4])
+                    (int)preg_replace('~\D~', '', $output[3]),
+                    (int)preg_replace('~\D~', '', $output[4])
                 ]);
             }
         }

@@ -29,8 +29,10 @@ class WsCloseContext extends AbstractContext
     /**
      * @param int $fd
      * @param int $reactorId
+     *
      * @return WsCloseContext
      * @throws ContainerException
+     * @throws \ReflectionException
      */
     public static function new(int $fd, int $reactorId): self
     {
