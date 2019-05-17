@@ -3,6 +3,7 @@
 namespace Swoft\Config;
 
 
+use InvalidArgumentException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Config\Contract\ParserInterface;
 use Swoft\Config\Exception\ConfigException;
@@ -71,7 +72,7 @@ class Config extends Collection
     {
         $parsers = $this->getConfigParser();
         if (!isset($parsers[$this->type])) {
-            throw new \InvalidArgumentException('Resourcer is not exist! resourceType=' . $this->type);
+            throw new InvalidArgumentException('Resourcer is not exist! resourceType=' . $this->type);
         }
 
         /* @var ParserInterface $parser */

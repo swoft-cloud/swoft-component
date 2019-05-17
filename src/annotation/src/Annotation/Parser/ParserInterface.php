@@ -2,6 +2,8 @@
 
 namespace Swoft\Annotation\Annotation\Parser;
 
+use ReflectionClass;
+
 /**
  * Interface ParserInterface
  *
@@ -13,10 +15,10 @@ interface ParserInterface
      * Parser constructor.
      *
      * @param string           $className
-     * @param \ReflectionClass $reflectionClass
+     * @param ReflectionClass $reflectionClass
      * @param array            $classAnnotations
      */
-    public function __construct(string $className, \ReflectionClass $reflectionClass, array $classAnnotations);
+    public function __construct(string $className, ReflectionClass $reflectionClass, array $classAnnotations);
 
     /**
      * Parse object

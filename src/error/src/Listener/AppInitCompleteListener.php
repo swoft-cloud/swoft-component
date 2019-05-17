@@ -4,8 +4,6 @@ namespace Swoft\Error\Listener;
 
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Error\Annotation\Parser\ExceptionHandlerParser;
-use Swoft\Error\Contract\ErrorHandlerInterface;
 use Swoft\Error\ErrorHandlers;
 use Swoft\Error\ErrorRegister;
 use Swoft\Event\Annotation\Mapping\Listener;

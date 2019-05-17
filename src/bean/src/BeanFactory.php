@@ -2,6 +2,8 @@
 
 namespace Swoft\Bean;
 
+use ReflectionException;
+use Swoft\Annotation\Exception\AnnotationException;
 use Swoft\Bean\Contract\HandlerInterface;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Reflections;
@@ -18,7 +20,8 @@ final class BeanFactory
      *
      * @return void
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
+     * @throws AnnotationException
      */
     public static function init(): void
     {
@@ -52,7 +55,7 @@ final class BeanFactory
      *
      * @return object|mixed
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function getBean(string $name)
     {
@@ -113,7 +116,7 @@ final class BeanFactory
      *
      * @return object
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function createBean(string $name, array $definition = [])
     {
@@ -132,7 +135,7 @@ final class BeanFactory
      *
      * @return object
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function getRequestBean(string $name, string $id)
     {
@@ -147,7 +150,7 @@ final class BeanFactory
      *
      * @return object
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function getSessionBean(string $name, string $sid)
     {
@@ -228,7 +231,7 @@ final class BeanFactory
      * @param string $className
      *
      * @return array
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function getReflection(string $className): array
     {

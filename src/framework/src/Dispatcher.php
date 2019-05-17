@@ -2,6 +2,7 @@
 
 namespace Swoft;
 
+use function array_merge;
 use Swoft\Contract\DispatcherInterface;
 
 /**
@@ -51,8 +52,8 @@ abstract class Dispatcher implements DispatcherInterface
     public function requestMiddleware(): array
     {
         return $this->middlewares ?
-            \array_merge($this->preMiddlewares, $this->middlewares, $this->afterMiddlewares) :
-            \array_merge($this->preMiddlewares, $this->afterMiddlewares);
+            array_merge($this->preMiddlewares, $this->middlewares, $this->afterMiddlewares) :
+            array_merge($this->preMiddlewares, $this->afterMiddlewares);
     }
 
     /**

@@ -2,12 +2,19 @@
 
 namespace Swoft\Http\Server\Command;
 
+use function bean;
+use function input;
+use function output;
+use ReflectionException;
+use Swoft;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Annotation\Mapping\CommandMapping;
 use Swoft\Console\Annotation\Mapping\CommandOption;
 use Swoft\Console\Helper\Show;
 use Swoft\Http\Server\HttpServer;
 use Swoft\Server\Command\BaseServerCommand;
+use Swoft\Server\Exception\ServerException;
 use Swoft\Server\ServerInterface;
 
 /**
@@ -32,9 +39,9 @@ class HttpServerCommand extends BaseServerCommand
      *  {fullCommand}
      *  {fullCommand} -d
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Server\Exception\ServerException
+     * @throws ReflectionException
+     * @throws ContainerException
+     * @throws ServerException
      */
     public function start(): void
     {
@@ -43,7 +50,7 @@ class HttpServerCommand extends BaseServerCommand
         // Check if it has started
         if ($server->isRunning()) {
             $masterPid = $server->getPid();
-            \output()->writeln("<error>The HTTP server have been running!(PID: {$masterPid})</error>");
+            output()->writeln("<error>The HTTP server have been running!(PID: {$masterPid})</error>");
             return;
         }
 
@@ -84,7 +91,7 @@ class HttpServerCommand extends BaseServerCommand
 
         Show::panel($panel);
 
-        \output()->writef('<success>HTTP server start success !</success>');
+        output()->writef('<success>HTTP server start success !</success>');
 
         // Start the server
         $server->start();
@@ -96,21 +103,21 @@ class HttpServerCommand extends BaseServerCommand
      * @CommandMapping(usage="{fullCommand} [-t]")
      * @CommandOption("t", desc="Only to reload task processes, default to reload worker and task")
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function reload(): void
     {
         $server = $this->createServer();
-        $script = \input()->getScript();
+        $script = input()->getScript();
 
         // Check if it has started
         if (!$server->isRunning()) {
-            \output()->writeln('<error>The HTTP server is not running! cannot reload</error>');
+            output()->writeln('<error>The HTTP server is not running! cannot reload</error>');
             return;
         }
 
-        \output()->writef('<info>Server %s is reloading</info>', $script);
+        output()->writef('<info>Server %s is reloading</info>', $script);
 
         if ($reloadTask = input()->hasOpt('t')) {
             Show::notice('Will only reload task worker');
@@ -121,7 +128,7 @@ class HttpServerCommand extends BaseServerCommand
             return;
         }
 
-        \output()->writef('<success>HTTP server %s reload success</success>', $script);
+        output()->writef('<success>HTTP server %s reload success</success>', $script);
     }
 
     /**
@@ -129,8 +136,8 @@ class HttpServerCommand extends BaseServerCommand
      *
      * @CommandMapping()
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function stop(): void
     {
@@ -138,7 +145,7 @@ class HttpServerCommand extends BaseServerCommand
 
         // Check if it has started
         if (!$server->isRunning()) {
-            \output()->writeln('<error>The HTTP server is not running! cannot stop.</error>');
+            output()->writeln('<error>The HTTP server is not running! cannot stop.</error>');
             return;
         }
 
@@ -155,8 +162,8 @@ class HttpServerCommand extends BaseServerCommand
      * @example
      *  {fullCommand}
      *  {fullCommand} -d
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function restart(): void
     {
@@ -167,14 +174,14 @@ class HttpServerCommand extends BaseServerCommand
             $server->stop();
         }
 
-        \output()->writef('<success>Server HTTP reload success !</success>');
+        output()->writef('<success>Server HTTP reload success !</success>');
         $server->restart();
     }
 
     /**
      * @return HttpServer
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     private function createServer(): HttpServer
     {
@@ -182,8 +189,8 @@ class HttpServerCommand extends BaseServerCommand
         // EnvHelper::check();
         $script = input()->getScript();
         /** @var HttpServer $server */
-        $server = \bean('httpServer');
-        $server->setScriptFile(\Swoft::app()->getPath($script));
+        $server = bean('httpServer');
+        $server->setScriptFile(Swoft::app()->getPath($script));
 
         return $server;
     }

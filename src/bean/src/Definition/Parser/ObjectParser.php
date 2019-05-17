@@ -2,6 +2,8 @@
 
 namespace Swoft\Bean\Definition\Parser;
 
+use function is_string;
+use function preg_match;
 use Swoft\Bean\Definition\ObjectDefinition;
 
 /**
@@ -106,12 +108,12 @@ class ObjectParser
      */
     protected function getValueByRef($value): array
     {
-        if (!\is_string($value)) {
+        if (!is_string($value)) {
             return [$value, false];
         }
 
         // Reg match
-        $isRef = \preg_match('/^\$\{(.*)\}$/', $value, $match);
+        $isRef = preg_match('/^\$\{(.*)\}$/', $value, $match);
         if ($isRef && isset($match[1])) {
             return [$match[1], (bool)$isRef];
         }

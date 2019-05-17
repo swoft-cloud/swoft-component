@@ -2,6 +2,7 @@
 
 namespace Swoft\Bean\Exception;
 
+use Exception;
 use Psr\Container\NotFoundExceptionInterface;
 
 /**
@@ -9,7 +10,7 @@ use Psr\Container\NotFoundExceptionInterface;
  *
  * @since 2.0
  */
-class NotFoundException extends \Exception implements NotFoundExceptionInterface
+class NotFoundException extends Exception implements NotFoundExceptionInterface
 {
 
 }

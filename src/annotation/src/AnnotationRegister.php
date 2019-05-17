@@ -2,6 +2,8 @@
 
 namespace Swoft\Annotation;
 
+use Doctrine\Common\Annotations\AnnotationException;
+use ReflectionException;
 use Swoft\Annotation\Resource\AnnotationResource;
 use Swoft\Annotation\Contract\LoaderInterface;
 
@@ -122,8 +124,8 @@ class AnnotationRegister
      *
      * @param array $config
      *
-     * @throws \Doctrine\Common\Annotations\AnnotationException
-     * @throws \ReflectionException
+     * @throws AnnotationException
+     * @throws ReflectionException
      */
     public static function load(array $config = []): void
     {

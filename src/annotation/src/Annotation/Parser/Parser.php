@@ -4,6 +4,7 @@ namespace Swoft\Annotation\Annotation\Parser;
 
 
 use PhpDocReader\PhpDocReader;
+use ReflectionClass;
 
 /**
  * Class Parser
@@ -37,7 +38,7 @@ abstract class Parser implements ParserInterface
     /**
      * Class reflect
      *
-     * @var \ReflectionClass
+     * @var ReflectionClass
      */
     protected $reflectClass;
 
@@ -73,10 +74,10 @@ abstract class Parser implements ParserInterface
      * Parser constructor.
      *
      * @param string           $className
-     * @param \ReflectionClass $reflectionClass
+     * @param ReflectionClass $reflectionClass
      * @param array            $classAnnotations
      */
-    public function __construct(string $className, \ReflectionClass $reflectionClass, array $classAnnotations)
+    public function __construct(string $className, ReflectionClass $reflectionClass, array $classAnnotations)
     {
         $this->className        = $className;
         $this->reflectClass     = $reflectionClass;

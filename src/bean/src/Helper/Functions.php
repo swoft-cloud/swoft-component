@@ -1,5 +1,9 @@
 <?php declare(strict_types=1);
 
+use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Container;
+use Swoft\Bean\Exception\ContainerException;
+
 if (!function_exists('bean')) {
     /**
      * Get bean by name
@@ -8,15 +12,15 @@ if (!function_exists('bean')) {
      *
      * @return object|string
      * @throws ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ContainerException
      */
     function bean(string $name)
     {
-        if (\Swoft\Bean\BeanFactory::isSingleton('config')) {
-            return \Swoft\Bean\BeanFactory::getBean($name);
+        if (BeanFactory::isSingleton('config')) {
+            return BeanFactory::getBean($name);
         }
 
-        return \sprintf('${%s}', $name);
+        return sprintf('${%s}', $name);
     }
 }
 
@@ -24,10 +28,10 @@ if (!function_exists('container')) {
     /**
      * Get container
      *
-     * @return \Swoft\Bean\Container
+     * @return Container
      */
-    function container(): \Swoft\Bean\Container
+    function container(): Container
     {
-        return \Swoft\Bean\Container::getInstance();
+        return Container::getInstance();
     }
 }

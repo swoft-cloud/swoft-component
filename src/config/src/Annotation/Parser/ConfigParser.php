@@ -2,6 +2,7 @@
 
 namespace Swoft\Config\Annotation\Parser;
 
+use function sprintf;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Config\Annotation\Mapping\Config;
@@ -28,7 +29,7 @@ class ConfigParser extends Parser
         }
 
         $key   = $annotationObject->getKey();
-        $value = \sprintf('config.%s', $key);
+        $value = sprintf('config.%s', $key);
 
         return [$value, true];
     }

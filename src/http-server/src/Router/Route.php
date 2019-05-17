@@ -2,12 +2,37 @@
 
 namespace Swoft\Http\Server\Router;
 
+use function array_merge;
+use function array_shift;
+use ArrayIterator;
+use function count;
+use function get_class;
+use function is_array;
+use function is_object;
+use function is_string;
+use IteratorAggregate;
+use LogicException;
+use function preg_match;
+use function preg_match_all;
+use function property_exists;
+use function rtrim;
+use function sprintf;
+use function str_replace;
+use function strlen;
+use function strpos;
+use function strtoupper;
+use function strtr;
+use function substr;
+use function substr_count;
+use Traversable;
+use function trim;
+
 /**
  * Class Route
  *
  * @since 2.0
  */
-final class Route implements \IteratorAggregate
+final class Route implements IteratorAggregate
 {
     /**
      * @var string Route name
@@ -106,7 +131,7 @@ final class Route implements \IteratorAggregate
         $route = new self('GET', '/', '');
 
         foreach ($config as $property => $value) {
-            if (\property_exists($route, $property)) {
+            if (property_exists($route, $property)) {
                 $route->$property = $value;
             }
         }
@@ -125,8 +150,8 @@ final class Route implements \IteratorAggregate
      */
     public function __construct(string $method, string $path, $handler, array $pathParams = [], array $options = [])
     {
-        $this->path     = \trim($path);
-        $this->method   = \strtoupper($method);
+        $this->path     = trim($path);
+        $this->method   = strtoupper($method);
         $this->bindVars = $pathParams;
         $this->handler  = $handler;
         $this->options  = $options;
@@ -183,34 +208,34 @@ final class Route implements \IteratorAggregate
     {
         $first  = '';
         $backup = $path = $this->path;
-        $argPos = \strpos($path, '{');
+        $argPos = strpos($path, '{');
 
         // quote '.','/' to '\.','\/'
-        if (false !== \strpos($path, '.')) {
-            $path = \str_replace('.', '\.', $path);
+        if (false !== strpos($path, '.')) {
+            $path = str_replace('.', '\.', $path);
         }
 
         // Parse the optional parameters
-        if (false !== ($optPos = \strpos($path, '['))) {
-            $withoutClosingOptionals = \rtrim($path, ']');
-            $optionalNum             = \strlen($path) - \strlen($withoutClosingOptionals);
+        if (false !== ($optPos = strpos($path, '['))) {
+            $withoutClosingOptionals = rtrim($path, ']');
+            $optionalNum             = strlen($path) - strlen($withoutClosingOptionals);
 
-            if ($optionalNum !== \substr_count($withoutClosingOptionals, '[')) {
-                throw new \LogicException('Optional segments can only occur at the end of a route');
+            if ($optionalNum !== substr_count($withoutClosingOptionals, '[')) {
+                throw new LogicException('Optional segments can only occur at the end of a route');
             }
 
             // '/hello[/{name}]' -> '/hello(?:/{name})?'
-            $path = \str_replace(['[', ']'], ['(?:', ')?'], $path);
+            $path = str_replace(['[', ']'], ['(?:', ')?'], $path);
 
             // no params
             if ($argPos === false) {
-                $noOptional      = \substr($path, 0, $optPos);
+                $noOptional      = substr($path, 0, $optPos);
                 $this->pathStart = $noOptional;
                 $this->pathRegex = '#^' . $path . '$#';
 
                 // eg '/article/12'
-                if ($pos = \strpos($noOptional, '/', 1)) {
-                    $first = \substr($noOptional, 1, $pos - 1);
+                if ($pos = strpos($noOptional, '/', 1)) {
+                    $first = substr($noOptional, 1, $pos - 1);
                 }
 
                 return $first;
@@ -221,19 +246,19 @@ final class Route implements \IteratorAggregate
             $floorPos = (int)$argPos;
         }
 
-        $start = \substr($backup, 0, $floorPos);
+        $start = substr($backup, 0, $floorPos);
 
         // regular: first node is a normal string e.g '/user/{id}' -> 'user', '/a/{post}' -> 'a'
-        if ($pos = \strpos($start, '/', 1)) {
-            $first = \substr($start, 1, $pos - 1);
+        if ($pos = strpos($start, '/', 1)) {
+            $first = substr($start, 1, $pos - 1);
         }
 
         if ($bindVars = $this->getBindVars()) { // merge current route vars
-            $bindParams = \array_merge($bindParams, $bindVars);
+            $bindParams = array_merge($bindParams, $bindVars);
         }
 
         // Parse the parameters and replace them with the corresponding regular
-        if (\preg_match_all('#\{([a-zA-Z_][\w-]*)\}#', $path, $m)) {
+        if (preg_match_all('#\{([a-zA-Z_][\w-]*)\}#', $path, $m)) {
             /** @var array[] $m */
             $pairs = [];
 
@@ -243,7 +268,7 @@ final class Route implements \IteratorAggregate
                 // $pairs['{' . $name . '}'] = \sprintf('(?P<%s>%s)', $name, $regex);
             }
 
-            $path           = \strtr($path, $pairs);
+            $path           = strtr($path, $pairs);
             $this->pathVars = $m[1];
         }
 
@@ -269,31 +294,31 @@ final class Route implements \IteratorAggregate
     public function match(string $path): array
     {
         // check start string
-        if ($this->pathStart !== '' && \strpos($path, $this->pathStart) !== 0) {
+        if ($this->pathStart !== '' && strpos($path, $this->pathStart) !== 0) {
             return [false,];
         }
 
         // regex match
-        if (!\preg_match($this->pathRegex, $path, $matches)) {
+        if (!preg_match($this->pathRegex, $path, $matches)) {
             return [false,];
         }
 
         // no params. eg: only use optional. '/about[.html]'
-        if (\count($this->pathVars) === 0) {
+        if (count($this->pathVars) === 0) {
             return [true, []];
         }
 
         $params = [];
 
         // first is full match.
-        \array_shift($matches);
+        array_shift($matches);
         foreach ($matches as $index => $value) {
             $params[$this->pathVars[$index]] = $value;
         }
 
         // if has default values
         if (isset($this->options['defaults'])) {
-            $params = \array_merge($this->options['defaults'], $params);
+            $params = array_merge($this->options['defaults'], $params);
         }
 
         return [true, $params];
@@ -365,7 +390,7 @@ final class Route implements \IteratorAggregate
     public function toUri(array $pathVars = []): string
     {
         if ($pathVars) {
-            return \strtr($this->path, $pathVars);
+            return strtr($this->path, $pathVars);
         }
 
         return $this->path;
@@ -420,9 +445,9 @@ final class Route implements \IteratorAggregate
      */
     public function toString(): string
     {
-        return \sprintf(
+        return sprintf(
             '%-7s %-25s --> %s (%d middleware)',
-            $this->method, $this->path, $this->getHandlerName(), \count($this->chains)
+            $this->method, $this->path, $this->getHandlerName(), count($this->chains)
         );
     }
 
@@ -433,7 +458,7 @@ final class Route implements \IteratorAggregate
      */
     public function setName(string $name): self
     {
-        if ($name = \trim($name)) {
+        if ($name = trim($name)) {
             $this->name = $name;
         }
 
@@ -445,7 +470,7 @@ final class Route implements \IteratorAggregate
      */
     public function setPath(string $path): void
     {
-        $this->path = \trim($path);
+        $this->path = trim($path);
     }
 
     /**
@@ -478,12 +503,12 @@ final class Route implements \IteratorAggregate
     /**
      * Retrieve an external iterator
      * @link  https://php.net/manual/en/iteratoraggregate.getiterator.php
-     * @return \Traversable An instance of an object implementing <b>Iterator</b> or <b>Traversable</b>
+     * @return Traversable An instance of an object implementing <b>Iterator</b> or <b>Traversable</b>
      * @since 5.0.0
      */
-    public function getIterator(): \Traversable
+    public function getIterator(): Traversable
     {
-        return new \ArrayIterator($this->toArray());
+        return new ArrayIterator($this->toArray());
     }
 
     /**
@@ -592,11 +617,11 @@ final class Route implements \IteratorAggregate
     {
         $handlerName = 'unknown';
 
-        if (\is_object($this->handler)) {
-            $handlerName = \get_class($this->handler);
-        } elseif (\is_array($this->handler)) {
+        if (is_object($this->handler)) {
+            $handlerName = get_class($this->handler);
+        } elseif (is_array($this->handler)) {
             $handlerName = '[array callback]';
-        } elseif (\is_string($this->handler)) {
+        } elseif (is_string($this->handler)) {
             $handlerName = $this->handler;
         }
 

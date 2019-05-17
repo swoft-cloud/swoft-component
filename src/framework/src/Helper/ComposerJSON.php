@@ -2,6 +2,10 @@
 
 namespace Swoft\Helper;
 
+use function file_exists;
+use function file_get_contents;
+use InvalidArgumentException;
+use function json_decode;
 use Swoft\Stdlib\Helper\ArrayHelper;
 
 /**
@@ -30,13 +34,13 @@ class ComposerJSON
      */
     public function __construct(string $jsonFile)
     {
-        if (!\file_exists($jsonFile)) {
-            throw new \InvalidArgumentException('composer.json is not exist! FILE: ' . $jsonFile);
+        if (!file_exists($jsonFile)) {
+            throw new InvalidArgumentException('composer.json is not exist! FILE: ' . $jsonFile);
         }
 
-        $content = \file_get_contents($jsonFile);
+        $content = file_get_contents($jsonFile);
         // decode
-        $this->data = \json_decode($content, true);
+        $this->data = json_decode($content, true);
     }
 
     /**

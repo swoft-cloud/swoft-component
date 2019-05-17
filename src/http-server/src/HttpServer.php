@@ -3,6 +3,8 @@
 namespace Swoft\Http\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Server;
 
 /**
@@ -31,8 +33,8 @@ class HttpServer extends Server
     /**
      * Start server
      *
-     * @throws \Swoft\Server\Exception\ServerException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ServerException
+     * @throws ContainerException
      */
     public function start(): void
     {

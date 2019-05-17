@@ -9,14 +9,14 @@ use Doctrine\Common\Annotations\Annotation\Target;
 /**
  * Class PointExecution
  *
+ * @since 2.0
+ *
  * @Annotation
  * @Target("CLASS")
  * @Attributes({
  *     @Attribute("include", type="array"),
  *     @Attribute("exclude", type="array"),
  * })
- *
- * @since 2.0
  */
 final class PointExecution
 {

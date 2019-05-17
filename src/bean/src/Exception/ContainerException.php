@@ -3,6 +3,7 @@
 namespace Swoft\Bean\Exception;
 
 
+use Exception;
 use Psr\Container\ContainerExceptionInterface;
 
 /**
@@ -10,7 +11,7 @@ use Psr\Container\ContainerExceptionInterface;
  *
  * @since 2.0
  */
-class ContainerException extends \Exception implements ContainerExceptionInterface
+class ContainerException extends Exception implements ContainerExceptionInterface
 {
 
 }

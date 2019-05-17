@@ -2,6 +2,7 @@
 
 namespace Swoft\Concern;
 
+use function array_merge;
 use Swoft\Stdlib\Helper\ArrayHelper;
 
 /**
@@ -74,6 +75,6 @@ trait DataPropertyTrait
      */
     public function setMulti(array $map): void
     {
-        $this->data = \array_merge($this->data, $map);
+        $this->data = array_merge($this->data, $map);
     }
 }

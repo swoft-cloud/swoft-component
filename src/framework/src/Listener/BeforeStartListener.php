@@ -2,6 +2,7 @@
 
 namespace Swoft\Listener;
 
+use function implode;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
@@ -23,6 +24,6 @@ class BeforeStartListener implements EventHandlerInterface
         /** @var Server $server */
         // $server = $event->getTarget();
 
-        CLog::info("Registered swoole events:\n <info>%s</info>", \implode(', ', $event->getParam(0)));
+        CLog::info("Registered swoole events:\n <info>%s</info>", implode(', ', $event->getParam(0)));
     }
 }
