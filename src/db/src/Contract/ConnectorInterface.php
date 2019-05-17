@@ -3,6 +3,8 @@
 
 namespace Swoft\Db\Contract;
 
+use PDO;
+
 /**
  * Class ConnectorInterface
  *
@@ -15,7 +17,7 @@ interface ConnectorInterface
      *
      * @param  array $config
      *
-     * @return \PDO
+     * @return PDO
      */
-    public function connect(array $config): \PDO;
+    public function connect(array $config): PDO;
 }

@@ -1,6 +1,8 @@
 <?php
 
 // vendor at component dir
+use Swoft\Test\TestApplication;
+
 if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
     require dirname(__DIR__) . '/vendor/autoload.php';
     // application's vendor
@@ -21,6 +23,6 @@ if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
 }
 
 \Swoole\Runtime::enableCoroutine();
-$application = new \Swoft\Test\TestApplication();
+$application = new TestApplication();
 $application->setBeanFile(__DIR__ . '/testing/bean.php');
 $application->run();

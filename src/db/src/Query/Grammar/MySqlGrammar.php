@@ -3,7 +3,9 @@
 
 namespace Swoft\Db\Query\Grammar;
 
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\Eloquent\Collection;
 use Swoft\Db\Query\Builder;
@@ -14,8 +16,9 @@ use Swoft\Stdlib\Helper\Str;
 /**
  * Class MySqlGrammar
  *
- * @Bean(scope=Bean::PROTOTYPE)
  * @since 2.0
+ *
+ * @Bean(scope=Bean::PROTOTYPE)
  */
 class MySqlGrammar extends Grammar
 {
@@ -48,7 +51,7 @@ class MySqlGrammar extends Grammar
     /**
      * Compile a select query into SQL.
      *
-     * @param  Builder $query
+     * @param Builder $query
      *
      * @return string
      */
@@ -70,8 +73,8 @@ class MySqlGrammar extends Grammar
     /**
      * Compile a "JSON contains" statement into SQL.
      *
-     * @param  string $column
-     * @param  string $value
+     * @param string $column
+     * @param string $value
      *
      * @return string
      */
@@ -83,9 +86,9 @@ class MySqlGrammar extends Grammar
     /**
      * Compile a "JSON length" statement into SQL.
      *
-     * @param  string $column
-     * @param  string $operator
-     * @param  string $value
+     * @param string $column
+     * @param string $operator
+     * @param string $value
      *
      * @return string
      */
@@ -99,7 +102,7 @@ class MySqlGrammar extends Grammar
     /**
      * Compile a single union statement.
      *
-     * @param  array $union
+     * @param array $union
      *
      * @return string
      */
@@ -113,7 +116,7 @@ class MySqlGrammar extends Grammar
     /**
      * Compile the random statement into SQL.
      *
-     * @param  string $seed
+     * @param string $seed
      *
      * @return string
      */
@@ -125,8 +128,8 @@ class MySqlGrammar extends Grammar
     /**
      * Compile the lock into SQL.
      *
-     * @param  Builder     $query
-     * @param  bool|string $value
+     * @param Builder     $query
+     * @param bool|string $value
      *
      * @return string
      */
@@ -142,11 +145,12 @@ class MySqlGrammar extends Grammar
     /**
      * Compile an update statement into SQL.
      *
-     * @param  Builder $query
-     * @param  array   $values
+     * @param Builder $query
+     * @param array   $values
      *
      * @return string
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function compileUpdate(Builder $query, $values)
     {
@@ -193,11 +197,12 @@ class MySqlGrammar extends Grammar
     /**
      * Compile all of the columns for an update statement.
      *
-     * @param  array $values
+     * @param array $values
      *
      * @return string
      *
-     * @throws PrototypeException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     protected function compileUpdateColumns($values)
     {
@@ -213,8 +218,8 @@ class MySqlGrammar extends Grammar
     /**
      * Prepares a JSON column being updated using the JSON_SET function.
      *
-     * @param  string         $key
-     * @param  JsonExpression $value
+     * @param string         $key
+     * @param JsonExpression $value
      *
      * @return string
      */
@@ -230,11 +235,12 @@ class MySqlGrammar extends Grammar
      *
      * Booleans, integers, and doubles are inserted into JSON updates as raw values.
      *
-     * @param  array $bindings
-     * @param  array $values
+     * @param array $bindings
+     * @param array $values
      *
      * @return array
-     * @throws PrototypeException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function prepareBindingsForUpdate(array $bindings, array $values)
     {
@@ -248,10 +254,11 @@ class MySqlGrammar extends Grammar
     /**
      * Compile a delete statement into SQL.
      *
-     * @param  Builder $query
+     * @param Builder $query
      *
      * @return string
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function compileDelete(Builder $query)
     {
@@ -267,7 +274,7 @@ class MySqlGrammar extends Grammar
     /**
      * Prepare the bindings for a delete statement.
      *
-     * @param  array $bindings
+     * @param array $bindings
      *
      * @return array
      */
@@ -283,9 +290,9 @@ class MySqlGrammar extends Grammar
     /**
      * Compile a delete query that does not use joins.
      *
-     * @param  Builder $query
-     * @param  string  $table
-     * @param  string   $where
+     * @param Builder $query
+     * @param string  $table
+     * @param string  $where
      *
      * @return string
      */
@@ -310,12 +317,13 @@ class MySqlGrammar extends Grammar
     /**
      * Compile a delete query that uses joins.
      *
-     * @param  Builder $query
-     * @param  string  $table
-     * @param  string  $where
+     * @param Builder $query
+     * @param string  $table
+     * @param string  $where
      *
      * @return string
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function compileDeleteWithJoins($query, $table, $where)
     {
@@ -330,7 +338,7 @@ class MySqlGrammar extends Grammar
     /**
      * Wrap a single string in keyword identifiers.
      *
-     * @param  string $value
+     * @param string $value
      *
      * @return string
      */
@@ -342,10 +350,11 @@ class MySqlGrammar extends Grammar
     /**
      * Wrap the given JSON selector.
      *
-     * @param  string $value
+     * @param string $value
      *
      * @return string
-     * @throws PrototypeException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     protected function wrapJsonSelector($value)
     {

@@ -3,12 +3,14 @@
 
 namespace Swoft\Db\Exception;
 
+use Exception;
+
 /**
  * Class DbException
  *
  * @since 2.0
  */
-class DbException extends \Exception
+class DbException extends Exception
 {
 
 }

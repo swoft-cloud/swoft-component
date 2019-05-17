@@ -3,7 +3,7 @@
 # Tool for run unit test for swoft components
 #
 
-#binName="sh $(basename $0)"
+#binName="sh vi"
 binName="./$(basename $0)"
 components="component annotation aop bean config connection-pool i18n console db error framework http-message http-server
   log proxy redis rpc rpc-client rpc-server server stdlib task tcp-server websocket-server"
@@ -42,6 +42,7 @@ for lbName in ${components} ; do
         echo "======> Testing the【component】"
         echo "> php run.php -c phpunit.xml"
         php run.php -c phpunit.xml
+        echo $?
     else
         if [ ! -d "src/${lbName}" ]; then
             echo "!! Skip invalid component: ${lbName}"
@@ -49,6 +50,7 @@ for lbName in ${components} ; do
           echo "======> Testing the component【${lbName}】"
           echo "> php run.php -c src/${lbName}/phpunit.xml"
           php run.php -c src/${lbName}/phpunit.xml
+          echo $?
         fi
     fi
 done

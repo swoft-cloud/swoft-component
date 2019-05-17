@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace SwoftTest\Stdlib\Helper;
+namespace SwoftTest\Stdlib\Unit\Helper;
 
 use PHPUnit\Framework\TestCase;
 use Swoft\Stdlib\Helper\Str;

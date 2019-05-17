@@ -2,6 +2,11 @@
 
 namespace Swoft\Stdlib\Helper;
 
+use function function_exists;
+use function ltrim;
+use function pathinfo;
+use function strrchr;
+
 /**
  * Class FileHelper
  */
@@ -15,37 +20,50 @@ class FileHelper extends FSHelper
      */
     public static function getSuffix(string $filename, bool $clearPoint = false): string
     {
-        if (!$suffix = \strrchr($filename, '.')) {
+        if (!$suffix = strrchr($filename, '.')) {
             return '';
         }
 
-        return $clearPoint ? \rtrim($suffix, '.') : $suffix;
+        return $clearPoint ? ltrim($suffix, '.') : $suffix;
+    }
+
+    /**
+     * @param string $path
+     * @param bool   $clearPoint
+     *
+     * @return string
+     */
+    public static function getExt(string $path, bool $clearPoint = false): string
+    {
+        return self::getExtension($path, $clearPoint);
     }
 
     /**
      * Get file extension, suffix name
+     *
      * @param string $path
      * @param bool $clearPoint
      * @return string
      */
     public static function getExtension(string $path, bool $clearPoint = false): string
     {
-        $ext = \pathinfo($path, \PATHINFO_EXTENSION);
+        if ($ext = pathinfo($path, \PATHINFO_EXTENSION)) {
+            return $clearPoint ? $ext : '.' . $ext;
+        }
 
-        return $clearPoint ? $ext : '.' . $ext;
+        return '';
     }
 
     /**
      * @param string $file
      * @return string eg: image/gif
      */
-    public static function mimeType($file): string
+    public static function mimeType(string $file): string
     {
-        if (\function_exists('finfo_file')) {
+        if (function_exists('finfo_file')) {
             return \finfo_file(\finfo_open(\FILEINFO_MIME_TYPE), $file);
         }
 
         return '';
     }
-
 }

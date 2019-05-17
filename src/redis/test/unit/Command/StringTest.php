@@ -42,12 +42,36 @@ class StringTest extends TestCase
         $this->assertEquals($value, $getValue);
     }
 
+    public function testArray()
+    {
+        $key = \uniqid();
+
+        $setData = [
+            'goods' => ['goods_id' => 1, 'goods_name' => 'iPhone xx']
+        ];
+        Redis::set($key, $setData);
+
+        $this->assertEquals($setData, Redis::get($key));
+    }
+
+    public function testInc()
+    {
+        $key = \uniqid();
+
+        $redis = Redis::connection('redis.inc.pool');
+
+        $this->assertEquals(1, $redis->incrBy($key, 1));
+        $redis->set($key, 2);
+        $redis->incr($key);
+        $this->assertEquals(3, $redis->get($key));
+    }
+
     public function testMsetAndMget()
     {
         $key    = ':mset:' . \uniqid();
-        $value  = \uniqid();
+        $value  = [\uniqid()];
         $key2   = ':mset:' . \uniqid();
-        $value2 = \uniqid();
+        $value2 = [\uniqid()];
 
         $keys = [
             $key  => $value,

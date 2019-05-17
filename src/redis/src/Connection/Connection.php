@@ -14,7 +14,6 @@ use Swoft\Redis\Exception\RedisException;
 use Swoft\Redis\Pool;
 use Swoft\Redis\RedisDb;
 use Swoft\Redis\RedisEvent;
-use Swoft\Stdlib\Helper\ArrayHelper;
 use Swoft\Stdlib\Helper\PhpHelper;
 
 /**
@@ -89,8 +88,8 @@ use Swoft\Stdlib\Helper\PhpHelper;
  * @method mixed script(string|array $nodeParams, string $command, string $script)
  * @method int setBit(string $key, int $offset, int $value)
  * @method string setRange(string $key, int $offset, string $value)
- * @method int setex(string $key, int $ttl, string $value)
- * @method bool setnx(string $key, string $value)
+ * @method int setex(string $key, int $ttl, $value)
+ * @method bool setnx(string $key, $value)
  * @method array sort(string $key, array $option = null)
  * @method array sScan(string $key, int &$iterator, string $pattern = null, int $count = 0)
  * @method int strlen(string $key)
@@ -354,7 +353,6 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     public function command(string $method, array $parameters = [], bool $reconnect = false)
     {
         try {
-
             $lowerMethod = strtolower($method);
             if (!in_array($lowerMethod, $this->supportedMethods, true)) {
                 throw new RedisException(
@@ -465,8 +463,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
 
         $hit = 0;
         if ($result !== false) {
-            $hit    = 1;
-            $result = unserialize($result);
+            $hit = 1;
         }
 
         $name = $this->getCountingKey(__FUNCTION__);
@@ -479,7 +476,6 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @param string   $key
      * @param mixed    $value
      * @param int|null $timeout
-     *
      * @return bool
      * @throws ContainerException
      * @throws RedisException
@@ -487,10 +483,11 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      */
     public function set(string $key, $value, int $timeout = null): bool
     {
-        $result = $this->command('set', [$key, serialize($value), $timeout]);
+        $result = $this->command('set', [$key, $value, $timeout]);
 
         return $result;
     }
+
 
     /**
      * @param array $keys
@@ -507,7 +504,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
         foreach ($values as $index => $value) {
             if ($value !== false && isset($keys[$index])) {
                 $key          = $keys[$index];
-                $result[$key] = unserialize($value);
+                $result[$key] = $value;
             }
         }
 
@@ -528,12 +525,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      */
     public function mset(array $keyValues, int $ttl = 0): bool
     {
-        $kVs = [];
-        foreach ($keyValues as $key => $value) {
-            $kVs[$key] = serialize($value);
-        }
-
-        $result = $this->command('mset', [$kVs]);
+        $result = $this->command('mset', [$keyValues]);
         if ($ttl == 0) {
             return $result;
         }
@@ -588,6 +580,11 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
         return true;
     }
 
+    /**
+     * Get last time
+     *
+     * @return int
+     */
     public function getLastTime(): int
     {
         return time();

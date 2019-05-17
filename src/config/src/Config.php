@@ -15,10 +15,12 @@ use Swoft\Stdlib\Helper\ArrayHelper;
  * Class Config
  *
  * @Bean("config")
+ *
  * @since 2.0
  */
 class Config extends Collection
 {
+
     /**
      * Php formatter
      */
@@ -155,7 +157,7 @@ class Config extends Collection
     /**
      * Determine if an item exists at an offset.
      *
-     * @param  mixed $key
+     * @param mixed $key
      *
      * @return bool
      */
