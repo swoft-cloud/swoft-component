@@ -3,6 +3,14 @@
 
 namespace Swoft\Db\Eloquent;
 
+use ArrayAccess;
+use function bean;
+use Closure;
+use DateTimeInterface;
+use Generator;
+use JsonSerializable;
+use function property_exists;
+use ReflectionException;
 use Swoft\Aop\Proxy;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Bean\Exception\PrototypeException;
@@ -11,6 +19,7 @@ use Swoft\Db\Concern\HidesAttributes;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\DB;
 use Swoft\Db\EntityRegister;
+use Swoft\Db\Exception\DbException;
 use Swoft\Db\Exception\EloquentException;
 use Swoft\Db\Exception\EntityException;
 use Swoft\Db\Exception\PoolException;
@@ -21,6 +30,7 @@ use Swoft\Stdlib\Contract\Jsonable;
 use Swoft\Stdlib\Helper\JsonHelper;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoft\Stdlib\Helper\Str;
+use Throwable;
 
 /**
  * Class Model
@@ -44,35 +54,35 @@ use Swoft\Stdlib\Helper\Str;
  * @method static static updateOrCreate(array $attributes, array $values = [])
  * @method static bool updateOrInsert(array $attributes, array $values = [])
  * @method static Builder firstOrFail(array $columns = ['*'])
- * @method static Builder firstOr(array $columns = ['*'], \Closure $callback = null)
+ * @method static Builder firstOr(array $columns = ['*'], Closure $callback = null)
  * @method static mixed value(string $column)
  * @method static Collection get(array $columns = ['*'])
  * @method static static[] getModels($columns = ['*'])
- * @method static \Generator cursor()
+ * @method static Generator cursor()
  * @method static bool chunkById(int $count, callable $callback, string $column = null, string $alias = null)
  * @method static void enforceOrderBy()
  * @method static Collection pluck(string $column, string $key = null)
  * @method static static create(array $attributes = [])
  * @method static Builder select(string ...$columns)
- * @method static Builder selectSub(\Closure|QueryBuilder|string $query, string $as)
+ * @method static Builder selectSub(Closure|QueryBuilder|string $query, string $as)
  * @method static Builder selectRaw(string $expression, array $bindings = [])
- * @method static Builder fromSub(\Closure|QueryBuilder|string $query, string $as)
+ * @method static Builder fromSub(Closure|QueryBuilder|string $query, string $as)
  * @method static Builder fromRaw(string $expression, array $bindings = [])
- * @method static Builder createSub(\Closure|QueryBuilder|string $query)
- * @method static Builder parseSub(\Closure|QueryBuilder|string $query)
+ * @method static Builder createSub(Closure|QueryBuilder|string $query)
+ * @method static Builder parseSub(Closure|QueryBuilder|string $query)
  * @method static Builder addSelect(array $column)
  * @method static Builder distinct()
  * @method static Builder from(string $table)
- * @method static Builder join(string $table, \Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
- * @method static Builder joinWhere(string $table, \Closure|string $first, string $operator, string $second, string $type = 'inner')
- * @method static Builder joinSub(\Closure|QueryBuilder|string $query, string $as, \Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
- * @method static Builder leftJoin(string $table, \Closure|string $first, string $operator = null, string $second = null)
+ * @method static Builder join(string $table, Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
+ * @method static Builder joinWhere(string $table, Closure|string $first, string $operator, string $second, string $type = 'inner')
+ * @method static Builder joinSub(Closure|QueryBuilder|string $query, string $as, Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
+ * @method static Builder leftJoin(string $table, Closure|string $first, string $operator = null, string $second = null)
  * @method static Builder leftJoinWhere(string $table, string $first, string $operator, string $second)
- * @method static Builder leftJoinSub(\Closure|QueryBuilder|string $query, string $as, string $first, string $operator = null, string $second = null)
- * @method static Builder rightJoin(string $table, \Closure|string $first, string $operator = null, string $second = null)
+ * @method static Builder leftJoinSub(Closure|QueryBuilder|string $query, string $as, string $first, string $operator = null, string $second = null)
+ * @method static Builder rightJoin(string $table, Closure|string $first, string $operator = null, string $second = null)
  * @method static Builder rightJoinWhere(string $table, string $first, string $operator, string $second)
- * @method static Builder rightJoinSub(\Closure|QueryBuilder|string $query, string $as, string $first, string $operator = null, string $second = null)
- * @method static Builder crossJoin(string $table, \Closure|string $first = null, string $operator = null, string $second = null)
+ * @method static Builder rightJoinSub(Closure|QueryBuilder|string $query, string $as, string $first, string $operator = null, string $second = null)
+ * @method static Builder crossJoin(string $table, Closure|string $first = null, string $operator = null, string $second = null)
  * @method static void mergeWheres(array $wheres, array $bindings)
  * @method static Builder whereColumn(string|array $first, string $operator = null, string $second = null, string $boolean = 'and')
  * @method static Builder orWhereColumn(string|array $first, string $operator = null, string $second = null)
@@ -92,24 +102,24 @@ use Swoft\Stdlib\Helper\Str;
  * @method static Builder whereNotBetween(string $column, array $values, string $boolean = 'and')
  * @method static Builder orWhereNotBetween(string $column, array $values)
  * @method static Builder orWhereNotNull(string $column)
- * @method static Builder whereDate(string $column, $operator, \DateTimeInterface|string $value = null, string $boolean = 'and')
- * @method static Builder orWhereDate(string $column, string $operator, \DateTimeInterface|string $value = null)
- * @method static Builder whereTime(string $column, $operator, \DateTimeInterface|string $value = null, string $boolean = 'and')
- * @method static Builder orWhereTime(string $column, string $operator, \DateTimeInterface|string $value = null)
- * @method static Builder whereDay(string $column, string $operator, \DateTimeInterface|string $value = null, string $boolean = 'and')
- * @method static Builder orWhereDay(string $column, string $operator, \DateTimeInterface|string $value = null)
- * @method static Builder whereMonth(string $column, string $operator, \DateTimeInterface|string $value = null, string $boolean = 'and')
- * @method static Builder orWhereMonth(string $column, string $operator, \DateTimeInterface|string $value = null)
- * @method static Builder whereYear(string $column, string $operator, \DateTimeInterface|string|int $value = null, string $boolean = 'and')
- * @method static Builder orWhereYear(string $column, string $operator, \DateTimeInterface|string|int $value = null)
- * @method static Builder whereNested(\Closure $callback, string $boolean = 'and')
+ * @method static Builder whereDate(string $column, $operator, DateTimeInterface|string $value = null, string $boolean = 'and')
+ * @method static Builder orWhereDate(string $column, string $operator, DateTimeInterface|string $value = null)
+ * @method static Builder whereTime(string $column, $operator, DateTimeInterface|string $value = null, string $boolean = 'and')
+ * @method static Builder orWhereTime(string $column, string $operator, DateTimeInterface|string $value = null)
+ * @method static Builder whereDay(string $column, string $operator, DateTimeInterface|string $value = null, string $boolean = 'and')
+ * @method static Builder orWhereDay(string $column, string $operator, DateTimeInterface|string $value = null)
+ * @method static Builder whereMonth(string $column, string $operator, DateTimeInterface|string $value = null, string $boolean = 'and')
+ * @method static Builder orWhereMonth(string $column, string $operator, DateTimeInterface|string $value = null)
+ * @method static Builder whereYear(string $column, string $operator, DateTimeInterface|string|int $value = null, string $boolean = 'and')
+ * @method static Builder orWhereYear(string $column, string $operator, DateTimeInterface|string|int $value = null)
+ * @method static Builder whereNested(Closure $callback, string $boolean = 'and')
  * @method static Builder forNestedWhere()
  * @method static Builder addNestedWhereQuery(QueryBuilder $query, string $boolean = 'and')
- * @method static Builder whereSub(string $column, string $operator, \Closure $callback, string $boolean)
- * @method static Builder whereExists(\Closure $callback, string $boolean = 'and', bool $not = false)
- * @method static Builder orWhereExists(\Closure $callback, bool $not = false)
- * @method static Builder whereNotExists(\Closure $callback, string $boolean = 'and')
- * @method static Builder orWhereNotExists(\Closure $callback)
+ * @method static Builder whereSub(string $column, string $operator, Closure $callback, string $boolean)
+ * @method static Builder whereExists(Closure $callback, string $boolean = 'and', bool $not = false)
+ * @method static Builder orWhereExists(Closure $callback, bool $not = false)
+ * @method static Builder whereNotExists(Closure $callback, string $boolean = 'and')
+ * @method static Builder orWhereNotExists(Closure $callback)
  * @method static Builder addWhereExistsQuery(Builder $query, string $boolean = 'and', bool $not = false)
  * @method static Builder whereRowValues(array $columns, string $operator, array $values, string $boolean = 'and')
  * @method static Builder orWhereRowValues(array $columns, string $operator, array $values)
@@ -138,7 +148,7 @@ use Swoft\Stdlib\Helper\Str;
  * @method static Builder limit(int $value)
  * @method static Builder forPage(int $page, int $perPage = 15)
  */
-abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializable
+abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
 {
     use HidesAttributes, HasAttributes;
 
@@ -183,8 +193,8 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
     {
         try {
             /* @var static $self */
-            $self = \bean(Proxy::getClassName(static::class));
-        } catch (\Throwable $e) {
+            $self = bean(Proxy::getClassName(static::class));
+        } catch (Throwable $e) {
             throw new EloquentException($e->getMessage());
         }
 
@@ -273,11 +283,11 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return Collection
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
-     * @throws \ReflectionException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public static function all(array $columns = ['*']): Collection
     {
@@ -293,13 +303,13 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return mixed
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
-     * @throws \ReflectionException
+     * @throws QueryException
+     * @throws ReflectionException
      */
-    protected function increment(string $column, $amount = 1, array $extra = [])
+    public function increment(string $column, $amount = 1, array $extra = [])
     {
         return $this->incrementOrDecrement($column, $amount, $extra, 'increment');
     }
@@ -313,13 +323,13 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return mixed
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
-     * @throws \ReflectionException
+     * @throws QueryException
+     * @throws ReflectionException
      */
-    protected function decrement(string $column, $amount = 1, array $extra = [])
+    public function decrement(string $column, $amount = 1, array $extra = [])
     {
         return $this->incrementOrDecrement($column, $amount, $extra, 'decrement');
     }
@@ -334,11 +344,11 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return mixed
      * @throws ContainerException
-     * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
+     * @throws DbException
      * @throws EloquentException
-     * @throws \ReflectionException
+     * @throws EntityException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     protected function incrementOrDecrement(string $column, $amount, array $extra, string $method)
     {
@@ -378,7 +388,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
     protected function incrementOrDecrementAttributeValue(string $column, $amount, $extra, $method)
     {
         $columnValue = $method === 'increment' ? $amount : $amount * -1;
-        if (!\property_exists($this, $column)) {
+        if (!property_exists($this, $column)) {
             $this->setAttribute($column, $this->getAttribute($column)[1] + $columnValue);
         } else {
             $this->{$column} = $this->{$column} + $columnValue;
@@ -396,12 +406,12 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return bool
      * @throws ContainerException
+     * @throws DbException
+     * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
-     * @throws EloquentException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function update(array $attributes = [])
     {
@@ -417,12 +427,12 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return bool
      * @throws ContainerException
+     * @throws DbException
+     * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
-     * @throws EloquentException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function save()
     {
@@ -466,7 +476,7 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return bool
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function saveOrFail(array $options = [])
     {
@@ -494,12 +504,12 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return bool
      * @throws ContainerException
+     * @throws DbException
+     * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
-     * @throws EloquentException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     protected function performUpdate(Builder $query)
     {
@@ -528,11 +538,11 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return Builder
      * @throws ContainerException
-     * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
-     * @throws \ReflectionException
+     * @throws DbException
      * @throws EloquentException
+     * @throws EntityException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     protected function setKeysForSaveQuery(Builder $query)
     {
@@ -619,12 +629,12 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return bool
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function delete(): bool
     {
@@ -659,12 +669,12 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return bool
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function forceDelete()
     {
@@ -675,12 +685,12 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      * Perform the actual delete query on this model instance.
      *
      * @throws ContainerException
+     * @throws DbException
+     * @throws EloquentException
      * @throws EntityException
      * @throws PoolException
-     * @throws PrototypeException
      * @throws QueryException
-     * @throws \ReflectionException
-     * @throws EloquentException
+     * @throws ReflectionException
      */
     protected function performDeleteOnModel()
     {
@@ -694,10 +704,11 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return Builder
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
-     * @throws PoolException
-     * @throws \ReflectionException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public static function query()
     {
@@ -709,9 +720,10 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return Builder
      * @throws ContainerException
+     * @throws DbException
      * @throws EntityException
-     * @throws PoolException
-     * @throws \ReflectionException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function newQuery()
     {
@@ -723,9 +735,10 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return Builder
      * @throws ContainerException
+     * @throws DbException
      * @throws EntityException
-     * @throws PoolException
-     * @throws \ReflectionException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function newModelQuery()
     {
@@ -748,15 +761,16 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      * Get a new query builder instance for the connection.
      *
      * @return QueryBuilder
-     * @throws EntityException
-     * @throws PoolException
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws EntityException
+     * @throws QueryException
+     * @throws ReflectionException
+     * @throws DbException
      */
     protected function newBaseQueryBuilder()
     {
-        $connection = $this->getConnection();
-        return QueryBuilder::new($connection, $connection->getQueryGrammar(), $connection->getPostProcessor());
+        $poolName = EntityRegister::getPool($this->getClassName());
+        return QueryBuilder::new($poolName, null, null);
     }
 
     /**
@@ -765,7 +779,8 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      * @param array $models
      *
      * @return Collection
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function newCollection(array $models = [])
     {
@@ -812,11 +827,11 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return null|$this|object|Builder|Model
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
-     * @throws \ReflectionException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function fresh()
     {
@@ -834,11 +849,11 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return $this
      * @throws ContainerException
+     * @throws DbException
      * @throws EloquentException
      * @throws EntityException
-     * @throws PoolException
-     * @throws PrototypeException
-     * @throws \ReflectionException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function refresh()
     {
@@ -1081,9 +1096,10 @@ abstract class Model implements \ArrayAccess, Arrayable, Jsonable, \JsonSerializ
      *
      * @return mixed
      * @throws ContainerException
+     * @throws DbException
      * @throws EntityException
-     * @throws PoolException
-     * @throws \ReflectionException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function __call($method, $parameters)
     {

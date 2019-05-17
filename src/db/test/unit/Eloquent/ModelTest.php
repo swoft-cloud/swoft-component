@@ -4,12 +4,18 @@
 namespace SwoftTest\Db\Unit\Eloquent;
 
 
-use PhpParser\ErrorHandler\Collecting;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\DB;
 use Swoft\Db\Eloquent\Collection;
+use Swoft\Db\Exception\DbException;
+use Swoft\Db\Exception\EloquentException;
+use Swoft\Db\Exception\EntityException;
+use Swoft\Db\Exception\PoolException;
+use Swoft\Db\Exception\QueryException;
 use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Unit\TestCase;
-use Swoole\Event;
 
 /**
  * Class ModelTest
@@ -19,11 +25,13 @@ use Swoole\Event;
 class ModelTest extends TestCase
 {
     /**
-     * @throws \Swoft\Bean\Exception\PrototypeException
-     * @throws \Swoft\Db\Exception\EloquentException
-     * @throws \Swoft\Db\Exception\EntityException
-     * @throws \Swoft\Db\Exception\PoolException
-     * @throws \Swoft\Db\Exception\QueryException
+     * @throws ContainerException
+     * @throws EloquentException
+     * @throws EntityException
+     * @throws PoolException
+     * @throws QueryException
+     * @throws ReflectionException
+     * @throws DbException
      */
     public function testSave()
     {
@@ -77,11 +85,13 @@ class ModelTest extends TestCase
     }
 
     /**
-     * @throws \Swoft\Bean\Exception\PrototypeException
-     * @throws \Swoft\Db\Exception\EloquentException
-     * @throws \Swoft\Db\Exception\EntityException
-     * @throws \Swoft\Db\Exception\PoolException
-     * @throws \Swoft\Db\Exception\QueryException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws EloquentException
+     * @throws EntityException
+     * @throws PoolException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function testDelete()
     {
@@ -153,11 +163,13 @@ class ModelTest extends TestCase
     }
 
     /**
-     * @throws \Swoft\Bean\Exception\PrototypeException
-     * @throws \Swoft\Db\Exception\EloquentException
-     * @throws \Swoft\Db\Exception\EntityException
-     * @throws \Swoft\Db\Exception\PoolException
-     * @throws \Swoft\Db\Exception\QueryException
+     * @throws ContainerException
+     * @throws DbException
+     * @throws EloquentException
+     * @throws EntityException
+     * @throws PoolException
+     * @throws QueryException
+     * @throws ReflectionException
      */
     public function testUpdate()
     {
@@ -187,7 +199,8 @@ class ModelTest extends TestCase
         $uAge  = mt_rand(1, 100);
 
         /* @var User $uUser */
-        $uUser = User::updateOrCreate(['id' => $id], ['name' => $uName, 'age' => $uAge]);
+        $uUser = User::updateOrCreate(['id' => $id],
+            ['name' => $uName, 'age' => $uAge]);
 
         /* @var User $user */
         $user = User::find($id);
@@ -220,11 +233,13 @@ class ModelTest extends TestCase
         });
         $this->assertArrayHasKey('pwd', $user->toArray());
         // Delete only left 20 rows
-        $resCount = DB::selectOne('select count(*) as `count` from `user`')->count;
+        $resCount
+            = DB::selectOne('select count(*) as `count` from `user`')->count;
         if ($resCount - 20 > 0) {
             DB::delete('delete A FROM `user` A INNER JOIN (SELECT ID FROM `user` B limit ?) B
 on A.id=B.id;', [$resCount - 20]);
-            $res = DB::selectOne('select count(*) as `count` from `user`')->count;
+            $res
+                = DB::selectOne('select count(*) as `count` from `user`')->count;
             $this->assertEquals(20, $res);
         }
         foreach (User::query()->cursor() as $user) {
@@ -256,9 +271,13 @@ on A.id=B.id;', [$resCount - 20]);
 
     public function testImplode()
     {
-        $ageString = DB::table('user')->where('age', '>', 18)->implode('age', ',');
+        $ageString = DB::table('user')
+            ->where('age', '>', 18)
+            ->implode('age', ',');
 
-        $this->assertEquals($ageString, User::where('age', '>', 18)->implode('age', ','));
+        $this->assertEquals($ageString,
+            User::where('age', '>', 18)
+                ->implode('age', ','));
     }
 
     public function testAggregate()
@@ -280,7 +299,10 @@ on A.id=B.id;', [$resCount - 20]);
         $this->assertEquals($result4, DB::table('user')->count());
 
         // sql = select max(`id`) as id from `user` group by user_desc
-        $res = User::query()->selectRaw('max(`id`) as id')->groupBy('user_desc')->get();
+        $res = User::query()
+            ->selectRaw('max(`id`) as id')
+            ->groupBy('user_desc')
+            ->get();
 
         /* @var $v User */
         foreach ($res as $v) {
@@ -304,7 +326,8 @@ on A.id=B.id;', [$resCount - 20]);
 
     public function testWheres()
     {
-        $expectSql = 'select * from `user` where (`name` = ? and `status` >= ? or `money` > ?)';
+        $expectSql
+            = 'select * from `user` where (`name` = ? and `status` >= ? or `money` > ?)';
 
         $wheres = [
             'name' => 'sakuraovq',
@@ -334,5 +357,26 @@ on A.id=B.id;', [$resCount - 20]);
             $this->assertIsArray($res);
         });
 
+    }
+
+    public function testGetModels()
+    {
+        $users = User::where('id', 22)->getModels(['id', 'age']);
+        /* @var User $user */
+        foreach ($users as $user) {
+            $age = $user->getAge();
+            $this->assertIsInt($age);
+        }
+    }
+
+    public function testKeyBy()
+    {
+        $users = User::forPage(1, 10)->get(['id', 'age'])->keyBy('id');
+
+        /* @var User $user */
+        foreach ($users as $id => $user) {
+            $this->assertIsInt($user->getAge());
+            $this->assertIsInt($id);
+        }
     }
 }

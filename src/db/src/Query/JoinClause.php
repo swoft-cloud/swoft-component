@@ -4,9 +4,12 @@
 namespace Swoft\Db\Query;
 
 
+use Closure;
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\PrototypeException;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Db\Exception\DbException;
 use Swoft\Db\Exception\QueryException;
 
 /**
@@ -45,7 +48,8 @@ class JoinClause extends Builder
      * @param mixed ...$params
      *
      * @return JoinClause
-     * @throws PrototypeException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function new(...$params): self
     {
@@ -62,13 +66,10 @@ class JoinClause extends Builder
         $self->table       = $table;
         $self->parentQuery = $parentQuery;
 
-        $connection = $parentQuery->getConnection();
-        $grammar    = $parentQuery->getGrammar();
-        $processor  = $parentQuery->getProcessor();
 
-        $self->connection = $connection;
-        $self->grammar    = $grammar ?: $connection->getQueryGrammar();
-        $self->processor  = $processor ?: $connection->getPostProcessor();
+        $self->poolName  = $parentQuery->poolName;
+        $self->grammar   = $parentQuery->grammar;
+        $self->processor = $parentQuery->processor;
         return $self;
     }
 
@@ -85,18 +86,21 @@ class JoinClause extends Builder
      *
      * on `contacts`.`user_id` = `users`.`id`  and `contacts`.`info_id` = `info`.`id`
      *
-     * @param  \Closure|string $first
-     * @param  string|null     $operator
-     * @param  string|null     $second
-     * @param  string          $boolean
+     * @param Closure|string $first
+     * @param string|null    $operator
+     * @param string|null    $second
+     * @param string         $boolean
      *
      * @return $this
      *
+     * @throws ContainerException
+     * @throws DbException
      * @throws QueryException
+     * @throws ReflectionException
      */
     public function on($first, $operator = null, $second = null, $boolean = 'and')
     {
-        if ($first instanceof \Closure) {
+        if ($first instanceof Closure) {
             return $this->whereNested($first, $boolean);
         }
 
@@ -106,12 +110,15 @@ class JoinClause extends Builder
     /**
      * Add an "or on" clause to the join.
      *
-     * @param  \Closure|string $first
-     * @param  string|null     $operator
-     * @param  string|null     $second
+     * @param Closure|string $first
+     * @param string|null    $operator
+     * @param string|null    $second
      *
      * @return static
+     * @throws ContainerException
+     * @throws DbException
      * @throws QueryException
+     * @throws ReflectionException
      */
     public function orOn($first, $operator = null, $second = null)
     {
@@ -122,7 +129,8 @@ class JoinClause extends Builder
      * Get a new instance of the join clause builder.
      *
      * @return static
-     * @throws PrototypeException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function newQuery(): Builder
     {
@@ -133,7 +141,10 @@ class JoinClause extends Builder
      * Create a new query instance for sub-query.
      *
      * @return Builder
-     * @throws PrototypeException
+     * @throws QueryException
+     * @throws ReflectionException
+     * @throws ContainerException
+     * @throws DbException
      */
     protected function forSubQuery(): Builder
     {

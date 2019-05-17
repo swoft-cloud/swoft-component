@@ -3,13 +3,20 @@
 
 namespace Swoft\Db;
 
+use function bean;
+use Closure;
+use Generator;
+use ReflectionException;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Connection\Pool\Exception\ConnectionPoolException;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\Connection\ConnectionManager;
 use Swoft\Db\Exception\PoolException;
 use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
+use Throwable;
 
 /**
  * Class Db
@@ -17,18 +24,17 @@ use Swoft\Db\Query\Expression;
  * @see   Connection
  * @since 2.0
  *
- * @method static Builder table($table);
  * @method static Expression raw($value)
  * @method static mixed selectOne(string $query, $bindings = [], $useReadPdo = true)
  * @method static array select(string $query, array $bindings = [], bool $useReadPdo = true)
- * @method static \Generator cursor(string $query, array $bindings = [], bool $useReadPdo = true)
+ * @method static Generator cursor(string $query, array $bindings = [], bool $useReadPdo = true)
  * @method static bool insert(string $query, array $bindings = [])
  * @method static int update(string $query, array $bindings = [])
  * @method static int delete(string $query, array $bindings = [])
  * @method static bool statement(string $query, array $bindings = [])
  * @method static int affectingStatement(string $query, array $bindings = [])
  * @method static bool unprepared(string $query)
- * @method static mixed transaction(\Closure $callback, $attempts = 1)
+ * @method static mixed transaction(Closure $callback, $attempts = 1)
  * @method static void beginTransaction()
  * @method static void commit()
  * @method static void rollBack(int $toLevel = null)
@@ -41,7 +47,6 @@ class DB
      * @var array
      */
     private static $passthru = [
-        'table',
         'raw',
         'selectOne',
         'select',
@@ -73,11 +78,39 @@ class DB
             }
 
             return self::getConnectionFromPool($name);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw new PoolException(
                 sprintf('Pool error is %s file=%s line=%d', $e->getMessage(), $e->getFile(), $e->getLine())
             );
         }
+    }
+
+    /**
+     * @param string $table
+     *
+     * @return Builder
+     * @throws Exception\DbException
+     * @throws QueryException
+     * @throws ReflectionException
+     * @throws ContainerException
+     */
+    public static function table(string $table): Builder
+    {
+        return self::query()->from($table);
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Builder
+     * @throws Exception\DbException
+     * @throws QueryException
+     * @throws ReflectionException
+     * @throws ContainerException
+     */
+    public static function query(string $name = Pool::DEFAULT_POOL): Builder
+    {
+        return Builder::new($name, null, null);
     }
 
     /**
@@ -107,14 +140,14 @@ class DB
      *
      * @return Connection
      * @throws PoolException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Connection\Pool\Exception\ConnectionPoolException
-     * @throws \Throwable
+     * @throws ReflectionException
+     * @throws ContainerException
+     * @throws ConnectionPoolException
+     * @throws Throwable
      */
     private static function getConnectionFromPool(string $name): Connection
     {
-        $pool = \bean($name);
+        $pool = bean($name);
         if (!$pool instanceof Pool) {
             throw new PoolException(sprintf('%s is not instance of pool', $name));
         }

@@ -3,7 +3,10 @@
 
 namespace Swoft\Db\Query;
 
+use InvalidArgumentException;
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
 
 /**
  * Class JsonExpression
@@ -19,7 +22,8 @@ class JsonExpression extends Expression
      * @param mixed ...$params
      *
      * @return static
-     * @throws \Swoft\Bean\Exception\PrototypeException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function new(...$params)
     {
@@ -38,7 +42,7 @@ class JsonExpression extends Expression
      *
      * @return string
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     protected function getJsonBindingParameter($value)
     {
@@ -59,6 +63,6 @@ class JsonExpression extends Expression
                 return '?';
         }
 
-        throw new \InvalidArgumentException("JSON value is of illegal type: {$type}");
+        throw new InvalidArgumentException("JSON value is of illegal type: {$type}");
     }
 }

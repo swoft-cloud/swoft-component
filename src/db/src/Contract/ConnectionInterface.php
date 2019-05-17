@@ -3,8 +3,11 @@
 
 namespace Swoft\Db\Contract;
 
+use Closure;
+use Generator;
 use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
+use Throwable;
 
 /**
  * Class ConnectionInterface
@@ -13,15 +16,6 @@ use Swoft\Db\Query\Expression;
  */
 interface ConnectionInterface
 {
-    /**
-     * Begin a fluent query against a database table.
-     *
-     * @param  string $table
-     *
-     * @return Builder
-     */
-    public function table($table): Builder;
-
     /**
      * Get a new raw query expression.
      *
@@ -60,9 +54,9 @@ interface ConnectionInterface
      * @param  array  $bindings
      * @param  bool   $useReadPdo
      *
-     * @return \Generator
+     * @return Generator
      */
-    public function cursor(string $query, array $bindings = [], bool $useReadPdo = true): \Generator;
+    public function cursor(string $query, array $bindings = [], bool $useReadPdo = true): Generator;
 
     /**
      * Run an insert statement against the database.
@@ -135,14 +129,14 @@ interface ConnectionInterface
     /**
      * Execute a Closure within a transaction.
      *
-     * @param  \Closure $callback
+     * @param  Closure $callback
      * @param  int      $attempts
      *
      * @return mixed
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
-    public function transaction(\Closure $callback, $attempts = 1);
+    public function transaction(Closure $callback, $attempts = 1);
 
     /**
      * Start a new database transaction.
@@ -182,9 +176,9 @@ interface ConnectionInterface
     /**
      * Execute the given callback in "dry run" mode.
      *
-     * @param  \Closure $callback
+     * @param  Closure $callback
      *
      * @return array
      */
-    public function pretend(\Closure $callback): array;
+    public function pretend(Closure $callback): array;
 }

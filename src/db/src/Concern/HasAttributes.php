@@ -3,6 +3,8 @@
 
 namespace Swoft\Db\Concern;
 
+use BadMethodCallException;
+use function in_array;
 use Swoft\Db\EntityRegister;
 use Swoft\Db\Exception\EloquentException;
 use Swoft\Stdlib\Helper\Arr;
@@ -79,9 +81,9 @@ trait HasAttributes
     {
         [$pro, $hidden, $value] = $this->getHiddenAttribute($key);
         // hidden status
-        $hiddenStatus = $hidden || \in_array($key, $this->getHidden()) || \in_array($pro, $this->getHidden());
+        $hiddenStatus = $hidden || in_array($key, $this->getHidden()) || in_array($pro, $this->getHidden());
         // visible status
-        $visibleStatus = \in_array($key, $this->getVisible()) || \in_array($pro, $this->getVisible());
+        $visibleStatus = in_array($key, $this->getVisible()) || in_array($pro, $this->getVisible());
 
         if ($hiddenStatus === true && $visibleStatus === false) {
             return [false, false];
@@ -96,7 +98,7 @@ trait HasAttributes
      *
      * @return array
      * @throws EloquentException
-     * @throws \BadMethodCallException
+     * @throws BadMethodCallException
      */
     public function getAttribute(string $key): array
     {
@@ -104,7 +106,7 @@ trait HasAttributes
         $getter = sprintf('get%s', ucfirst($attrName));
 
         if (!method_exists($this, $getter)) {
-            throw new \BadMethodCallException(
+            throw new BadMethodCallException(
                 sprintf('%s method(%s) is not exist!', static::class, $getter)
             );
         }
@@ -120,7 +122,7 @@ trait HasAttributes
      *
      * @return array
      * @throws EloquentException
-     * @throws \BadMethodCallException
+     * @throws BadMethodCallException
      */
     public function getHiddenAttribute(string $key): array
     {
@@ -128,7 +130,7 @@ trait HasAttributes
         $getter = sprintf('get%s', ucfirst($attrName));
 
         if (!method_exists($this, $getter)) {
-            throw new \BadMethodCallException(
+            throw new BadMethodCallException(
                 sprintf('%s method(%s) is not exist!', static::class, $getter)
             );
         }

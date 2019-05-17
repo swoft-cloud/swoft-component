@@ -8,6 +8,7 @@ use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Db\Annotation\Mapping\Id;
 use Swoft\Db\EntityRegister;
+use Swoft\Db\Exception\EntityException;
 
 /**
  * Class IdParser
@@ -22,7 +23,7 @@ class IdParser extends Parser
      * @param object $annotationObject
      *
      * @return array
-     * @throws \Swoft\Db\Exception\EntityException
+     * @throws EntityException
      */
     public function parse(int $type, $annotationObject): array
     {

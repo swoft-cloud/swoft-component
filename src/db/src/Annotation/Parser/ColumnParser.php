@@ -3,10 +3,13 @@
 
 namespace Swoft\Db\Annotation\Parser;
 
+use ReflectionException;
+use ReflectionProperty;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Db\Annotation\Mapping\Column;
 use Swoft\Db\EntityRegister;
+use Swoft\Db\Exception\EntityException;
 
 /**
  * Class ColumnParser
@@ -21,8 +24,8 @@ class ColumnParser extends Parser
      * @param Column $annotationObject
      *
      * @return array
-     * @throws \Swoft\Db\Exception\EntityException
-     * @throws \ReflectionException
+     * @throws EntityException
+     * @throws ReflectionException
      */
     public function parse(int $type, $annotationObject): array
     {
@@ -41,12 +44,12 @@ class ColumnParser extends Parser
      * Get property `@var` type
      *
      * @return string
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     private function getPropertyType(): string
     {
         // Parse php document
-        $reflectProperty = new \ReflectionProperty($this->className, $this->propertyName);
+        $reflectProperty = new ReflectionProperty($this->className, $this->propertyName);
         $document        = $reflectProperty->getDocComment();
 
         if (!preg_match('/@var\s+([^\s]+)/', $document, $matches)) {
