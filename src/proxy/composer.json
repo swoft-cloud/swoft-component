@@ -10,6 +10,7 @@
     "description": "microservice framework base on swoole",
     "license": "Apache-2.0",
     "require": {
+        "nikic/php-parser": "~4.2"
     },
     "require-dev": {
     },

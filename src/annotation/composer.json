@@ -15,8 +15,6 @@
     "swoft/stdlib": "dev-master"
   },
   "autoload": {
-    "classmap": [
-    ],
     "psr-4": {
       "Swoft\\Annotation\\": "src/"
     }
