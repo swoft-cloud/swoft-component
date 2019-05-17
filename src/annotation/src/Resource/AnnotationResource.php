@@ -531,7 +531,9 @@ class AnnotationResource extends Resource
      */
     public function notify(string $type, ...$target): void
     {
-        ($this->notifyHandler)($type, ...$target);
+        if ($this->notifyHandler) {
+            ($this->notifyHandler)($type, ...$target);
+        }
     }
 
     /**
