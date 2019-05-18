@@ -2,8 +2,14 @@
 
 namespace Swoft\Http\Message\Helper;
 
+use function array_keys;
+use function explode;
+use InvalidArgumentException;
+use function is_array;
 use Psr\Http\Message\UploadedFileInterface;
+use ReflectionException;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\Upload\UploadedFile;
 use Swoft\Http\Message\Uri\Uri;
 
@@ -18,7 +24,7 @@ class HttpHelper
      *
      * @param array $files A array which respect $_FILES structure
      *
-     * @throws \InvalidArgumentException for unrecognized values
+     * @throws InvalidArgumentException for unrecognized values
      * @return array
      */
     public static function normalizeFiles(array $files): array
@@ -28,7 +34,7 @@ class HttpHelper
         foreach ($files as $key => $value) {
             if ($value instanceof UploadedFileInterface) {
                 $normalized[$key] = $value;
-            } elseif (\is_array($value)) {
+            } elseif (is_array($value)) {
                 if (isset($value['tmp_name'])) {
                     $normalized[$key] = self::createUploadedFileFromSpec($value);
                     continue;
@@ -36,7 +42,7 @@ class HttpHelper
 
                 $normalized[$key] = self::normalizeFiles($value);
             } else {
-                throw new \InvalidArgumentException('Invalid value in files specification');
+                throw new InvalidArgumentException('Invalid value in files specification');
             }
         }
 
@@ -55,7 +61,7 @@ class HttpHelper
      */
     private static function createUploadedFileFromSpec(array $value)
     {
-        if (\is_array($value['tmp_name'])) {
+        if (is_array($value['tmp_name'])) {
             return self::normalizeNestedFileSpec($value);
         }
 
@@ -81,7 +87,7 @@ class HttpHelper
     {
         $normalizedFiles = [];
 
-        foreach (\array_keys($files['tmp_name']) as $key) {
+        foreach (array_keys($files['tmp_name']) as $key) {
             $spec = [
                 'tmp_name' => $files['tmp_name'][$key],
                 'size'     => $files['size'][$key],
@@ -104,8 +110,10 @@ class HttpHelper
      * @param string $query
      * @param string $headerHost
      * @param array  $server
+     *
      * @return Uri
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public static function newUriByCoRequest(string $path, string $query,  string $headerHost, array &$server): Uri
     {
@@ -115,7 +123,7 @@ class HttpHelper
         $uri = $uri->withPath($path)->withQuery($query ?: $server['query_string']);
 
         if ($host = $server['http_host']) {
-            $parts = \explode(':', $host);
+            $parts = explode(':', $host);
             $uri   = $uri->withHost($parts[0]);
 
             if (isset($parts[1])) {
@@ -124,7 +132,7 @@ class HttpHelper
         } elseif ($host = $server['server_name'] ?: $server['server_addr']) {
             $uri = $uri->withHost($host);
         } elseif ($headerHost) {
-            $parts  = \explode(':', $headerHost, 2);
+            $parts  = explode(':', $headerHost, 2);
             $uri   = $uri->withHost($parts[0]);
 
             if (isset($parts[1])) {

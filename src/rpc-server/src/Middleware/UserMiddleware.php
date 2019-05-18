@@ -4,12 +4,15 @@
 namespace Swoft\Rpc\Server\Middleware;
 
 
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Rpc\Server\Contract\MiddlewareInterface;
 use Swoft\Rpc\Server\Contract\RequestHandlerInterface;
 use Swoft\Rpc\Server\Contract\RequestInterface;
 use Swoft\Rpc\Server\Contract\ResponseInterface;
+use Swoft\Rpc\Server\Exception\RpcServerException;
 use Swoft\Rpc\Server\Request;
 use Swoft\Rpc\Server\Router\Router;
 use Swoft\Rpc\Server\ServiceHandler;
@@ -28,9 +31,9 @@ class UserMiddleware implements MiddlewareInterface
      * @param RequestHandlerInterface $requestHandler
      *
      * @return ResponseInterface
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Rpc\Server\Exception\RpcServerException
+     * @throws ReflectionException
+     * @throws ContainerException
+     * @throws RpcServerException
      */
     public function process(RequestInterface $request, RequestHandlerInterface $requestHandler): ResponseInterface
     {

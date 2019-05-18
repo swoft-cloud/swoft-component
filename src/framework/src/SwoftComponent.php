@@ -1,18 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-02
- * Time: 17:32
- */
-
 namespace Swoft;
 
+use function array_merge;
 use Swoft\Contract\ComponentInterface;
 
 /**
  * Class SwoftComponent
- * @package Swoft
+ *
+ * @since 2.0
  */
 abstract class SwoftComponent implements ComponentInterface
 {
@@ -32,7 +27,7 @@ abstract class SwoftComponent implements ComponentInterface
     public function __construct()
     {
         $this->enable   = $this->enable();
-        $this->metadata = \array_merge(self::DEFAULT_META, $this->metadata());
+        $this->metadata = array_merge(self::DEFAULT_META, $this->metadata());
     }
 
     /**

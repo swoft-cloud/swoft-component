@@ -2,9 +2,8 @@
 
 namespace Swoft\Bean\Concern;
 
-use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Container;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 
 /**
  * Class Prototype
@@ -17,8 +16,8 @@ trait PrototypeTrait
      * Get instance from container
      *
      * @return static
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     protected static function __instance()
     {

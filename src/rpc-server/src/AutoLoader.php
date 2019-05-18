@@ -4,6 +4,9 @@
 namespace Swoft\Rpc\Server;
 
 
+use function bean;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Rpc\Packet;
 use Swoft\Rpc\Server\Swoole\CloseListener;
 use Swoft\Rpc\Server\Swoole\ConnectListener;
@@ -38,8 +41,8 @@ class AutoLoader extends SwoftComponent
 
     /**
      * @return array
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function beans(): array
     {
@@ -47,9 +50,9 @@ class AutoLoader extends SwoftComponent
             'rpcServer' => [
                 'class' => ServiceServer::class,
                 'on'    => [
-                    SwooleEvent::CONNECT => \bean(ConnectListener::class),
-                    SwooleEvent::CLOSE   => \bean(CloseListener::class),
-                    SwooleEvent::RECEIVE => \bean(ReceiveListener::class),
+                    SwooleEvent::CONNECT => bean(ConnectListener::class),
+                    SwooleEvent::CLOSE   => bean(CloseListener::class),
+                    SwooleEvent::RECEIVE => bean(ReceiveListener::class),
                 ]
             ],
             'rpcServerPacket' => [

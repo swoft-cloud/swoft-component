@@ -2,6 +2,9 @@
 
 namespace Swoft\Bean\Definition\Parser;
 
+use function array_merge;
+use function count;
+use function get_class;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\Annotation\Parser\ParserInterface;
 use Swoft\Annotation\Exception\AnnotationException;
@@ -77,6 +80,7 @@ class AnnotationObjParser extends ObjectParser
      * @param array $parsers
      *
      * @return array
+     * @throws AnnotationException
      * @throws ContainerException
      */
     public function parseAnnotations(array $annotations, array $parsers): array
@@ -99,6 +103,7 @@ class AnnotationObjParser extends ObjectParser
      * @param string $className
      * @param array  $classOneAnnotations
      *
+     * @throws AnnotationException
      * @throws ContainerException
      */
     private function parseOneClassAnnotations(string $className, array $classOneAnnotations): void
@@ -183,7 +188,7 @@ class AnnotationObjParser extends ObjectParser
 
         $objectDefinition = null;
         foreach ($classAnnotations as $annotation) {
-            $annotationClass = \get_class($annotation);
+            $annotationClass = get_class($annotation);
             if (!isset($this->parsers[$annotationClass])) {
                 continue;
             }
@@ -196,7 +201,7 @@ class AnnotationObjParser extends ObjectParser
                 continue;
             }
 
-            if (\count($data) !== 4) {
+            if (count($data) !== 4) {
                 throw new ContainerException(sprintf('%s annotation parse must be 4 size', $annotationClass));
             }
 
@@ -245,7 +250,7 @@ class AnnotationObjParser extends ObjectParser
                 continue;
             }
 
-            if (\count($data) !== 2) {
+            if (count($data) !== 2) {
                 throw new ContainerException('Return array with property annotation parse must be 2 size');
             }
 
@@ -279,7 +284,7 @@ class AnnotationObjParser extends ObjectParser
         $methodInject = null;
 
         foreach ($methodAnnotations as $methodAnnotation) {
-            $annotationClass = \get_class($methodAnnotation);
+            $annotationClass = get_class($methodAnnotation);
             if (!isset($this->parsers[$annotationClass])) {
                 continue;
             }
@@ -311,7 +316,7 @@ class AnnotationObjParser extends ObjectParser
      */
     private function mergeDefinitions(array $definitions, array $appendDefinitions): array
     {
-        return \array_merge($definitions, $appendDefinitions);
+        return array_merge($definitions, $appendDefinitions);
     }
 
     /**

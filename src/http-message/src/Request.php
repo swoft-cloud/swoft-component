@@ -2,9 +2,19 @@
 
 namespace Swoft\Http\Message;
 
+use function array_merge;
+use function explode;
+use InvalidArgumentException;
+use function is_array;
+use function preg_replace;
 use Psr\Http\Message\StreamInterface;
+use ReflectionException;
+use function rtrim;
+use function strtoupper;
+use function substr;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\Concern\InteractsWithInput;
 use Swoft\Http\Message\Contract\RequestParserInterface;
 use Swoft\Http\Message\Contract\ServerRequestInterface;
@@ -119,15 +129,15 @@ class Request extends PsrRequest implements ServerRequestInterface
      * @param CoRequest $coRequest
      *
      * @return Request
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function new(CoRequest $coRequest): self
     {
         /** @var Request $self */
         $self = BeanFactory::getBean('httpRequest');
 
-        $serverParams = \array_merge(self::DEFAULT_SERVER, $coRequest->server);
+        $serverParams = array_merge(self::DEFAULT_SERVER, $coRequest->server);
 
         // Set headers
         $self->initializeHeaders($headers = $coRequest->header ?: []);
@@ -139,7 +149,7 @@ class Request extends PsrRequest implements ServerRequestInterface
         $self->serverParams  = $serverParams;
         $self->requestTarget = $serverParams['request_uri'];
 
-        $parts = \explode('?', $serverParams['request_uri'], 2);
+        $parts = explode('?', $serverParams['request_uri'], 2);
         // save
         $self->uriPath  = $parts[0];
         $self->uriQuery = $parts[1] ?? $serverParams['query_string'];
@@ -279,7 +289,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      * @inheritdoc
      *
      * @return static
-     * @throws \InvalidArgumentException if an invalid structure is provided.
+     * @throws InvalidArgumentException if an invalid structure is provided.
      */
     public function withUploadedFiles(array $uploadedFiles)
     {
@@ -346,7 +356,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      */
     public function addParserBody(string $name, $value)
     {
-        if (!\is_array($this->parsedBody)) {
+        if (!is_array($this->parsedBody)) {
             return $this;
         }
 
@@ -359,7 +369,7 @@ class Request extends PsrRequest implements ServerRequestInterface
     /**
      * @inheritdoc
      * @return static
-     * @throws \InvalidArgumentException if an unsupported argument type is provided.
+     * @throws InvalidArgumentException if an unsupported argument type is provided.
      */
     public function withParsedBody($data)
     {
@@ -440,7 +450,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      */
     public function url(): string
     {
-        return \rtrim(\preg_replace('/\?.*/', '', $this->getUri()), '/');
+        return rtrim(preg_replace('/\?.*/', '', $this->getUri()), '/');
     }
 
     /**
@@ -506,7 +516,7 @@ class Request extends PsrRequest implements ServerRequestInterface
     public function getMethod(): string
     {
         if ($method = $this->post(self::METHOD_OVERRIDE_KEY)) {
-            return \strtoupper($method);
+            return strtoupper($method);
         }
 
         return parent::getMethod();
@@ -514,8 +524,8 @@ class Request extends PsrRequest implements ServerRequestInterface
 
     /**
      * @return StreamInterface
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function getBody(): StreamInterface
     {
@@ -558,7 +568,7 @@ class Request extends PsrRequest implements ServerRequestInterface
     {
         if (!$this->protocol) {
             // $self->protocol = \str_replace('HTTP/', '', $serverParams['server_protocol']);
-            $this->protocol = \substr($this->serverParams['server_protocol'], 5); // faster
+            $this->protocol = substr($this->serverParams['server_protocol'], 5); // faster
         }
 
         return $this->protocol;

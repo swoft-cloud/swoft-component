@@ -3,6 +3,8 @@
 
 namespace Swoft\Http\Server\Middleware;
 
+use function array_unique;
+
 /**
  * Class MiddlewareRegister
  *
@@ -63,7 +65,7 @@ class MiddlewareRegister
         $middlewares   = self::$middlewares[$className]['controller'] ?? [];
         $middlewares[] = $name;
 
-        self::$middlewares[$className]['controller'] = \array_unique($middlewares);
+        self::$middlewares[$className]['controller'] = array_unique($middlewares);
     }
 
     /**
@@ -80,7 +82,7 @@ class MiddlewareRegister
         $middlewares   = self::$middlewares[$className]['methods'][$methodName] ?? [];
         $middlewares[] = $name;
 
-        self::$middlewares[$className]['methods'][$methodName] = \array_unique($middlewares);
+        self::$middlewares[$className]['methods'][$methodName] = array_unique($middlewares);
     }
 
     /**

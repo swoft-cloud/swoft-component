@@ -5,6 +5,7 @@ namespace Swoft\Aop\Point;
 
 use Swoft\Aop\AspectHandler;
 use Swoft\Aop\Contract\JoinPointInterface;
+use Throwable;
 
 /**
  * Class JoinPoint
@@ -34,7 +35,7 @@ class JoinPoint implements JoinPointInterface
     protected $method;
 
     /**
-     * @var \Throwable
+     * @var Throwable
      */
     protected $catch;
 
@@ -90,9 +91,9 @@ class JoinPoint implements JoinPointInterface
     }
 
     /**
-     * @return \Throwable
+     * @return Throwable
      */
-    public function getCatch(): \Throwable
+    public function getCatch(): Throwable
     {
         return $this->catch;
     }
@@ -106,9 +107,9 @@ class JoinPoint implements JoinPointInterface
     }
 
     /**
-     * @param \Throwable $catch
+     * @param Throwable $catch
      */
-    public function setCatch(\Throwable $catch): void
+    public function setCatch(Throwable $catch): void
     {
         $this->catch = $catch;
     }

@@ -2,6 +2,13 @@
 
 namespace Swoft\Stdlib\Helper;
 
+use const DIRECTORY_SEPARATOR;
+use function preg_match;
+use function preg_replace;
+use function str_replace;
+use function strpos;
+use function substr;
+
 /**
  * Class FSHelper - file system helper
  * @since 2.0
@@ -14,8 +21,8 @@ class FSHelper
      */
     public static function formatPath(string $path): string
     {
-        if (\DIRECTORY_SEPARATOR === '\\') {
-            return \str_replace('\\', '/', $path);
+        if (DIRECTORY_SEPARATOR === '\\') {
+            return str_replace('\\', '/', $path);
         }
 
         return $path;
@@ -32,8 +39,8 @@ class FSHelper
         }
 
         if (
-            \strpos($path, '/') === 0 ||  // linux/mac
-            1 === \preg_match('#^[a-z]:[\/|\\\]{1}.+#i', $path) // windows
+            strpos($path, '/') === 0 ||  // linux/mac
+            1 === preg_match('#^[a-z]:[\/|\\\]{1}.+#i', $path) // windows
         ) {
             return true;
         }
@@ -47,11 +54,11 @@ class FSHelper
      */
     public function clearPharPath(string $path): string
     {
-        if (\strpos($path, 'phar://') === 0) {
-            $path = (string)\substr($path, 7);
+        if (strpos($path, 'phar://') === 0) {
+            $path = (string)substr($path, 7);
 
-            if (\strpos($path, '.phar')) {
-                return \preg_replace('//[\w-]+\.phar/', '', $path);
+            if (strpos($path, '.phar')) {
+                return preg_replace('//[\w-]+\.phar/', '', $path);
             }
         }
 

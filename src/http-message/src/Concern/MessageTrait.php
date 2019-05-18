@@ -2,9 +2,19 @@
 
 namespace Swoft\Http\Message\Concern;
 
+use function array_map;
+use function array_merge;
+use function bean;
+use function implode;
+use InvalidArgumentException;
+use function is_array;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\StreamInterface;
+use ReflectionException;
+use function strtolower;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\Stream\Stream;
+use function trim;
 
 /**
  * Class MessageTrait
@@ -113,7 +123,7 @@ trait MessageTrait
      */
     public function hasHeader($name): bool
     {
-        return isset($this->headerNames[\strtolower($name)]);
+        return isset($this->headerNames[strtolower($name)]);
     }
 
     /**
@@ -133,7 +143,7 @@ trait MessageTrait
      */
     public function getHeader($name): array
     {
-        $header = \strtolower($name);
+        $header = strtolower($name);
         if (!isset($this->headerNames[$header])) {
             return [];
         }
@@ -164,7 +174,7 @@ trait MessageTrait
      */
     public function getHeaderLine($name): string
     {
-        return \implode(', ', $this->getHeader($name));
+        return implode(', ', $this->getHeader($name));
     }
 
     /**
@@ -181,16 +191,16 @@ trait MessageTrait
      * @param string|string[] $value Header value(s).
      *
      * @return static
-     * @throws \InvalidArgumentException for invalid header names or values.
+     * @throws InvalidArgumentException for invalid header names or values.
      */
     public function withHeader($name, $value)
     {
-        if (!\is_array($value)) {
+        if (!is_array($value)) {
             $value = [$value];
         }
 
         $value      = $this->trimHeaderValues($value);
-        $normalized = \strtolower($name);
+        $normalized = strtolower($name);
         $new        = clone $this;
 
         if (isset($new->headerNames[$normalized])) {
@@ -210,21 +220,21 @@ trait MessageTrait
      * @param string|string[] $value Header value(s).
      *
      * @return static
-     * @throws \InvalidArgumentException for invalid header names or values.
+     * @throws InvalidArgumentException for invalid header names or values.
      */
     public function withAddedHeader($name, $value)
     {
-        if (!\is_array($value)) {
+        if (!is_array($value)) {
             $value = [$value];
         }
 
         $value      = $this->trimHeaderValues($value);
-        $normalized = \strtolower($name);
+        $normalized = strtolower($name);
         $new        = clone $this;
 
         if (isset($new->headerNames[$normalized])) {
             $name                = $this->headerNames[$normalized];
-            $new->headers[$name] = \array_merge($this->headers[$name], $value);
+            $new->headers[$name] = array_merge($this->headers[$name], $value);
 
             return $new;
         }
@@ -239,18 +249,18 @@ trait MessageTrait
     {
         $new = clone $this;
         foreach ($headers as $header => $value) {
-            if (!\is_array($value)) {
+            if (!is_array($value)) {
                 $value = [$value];
             }
 
             $value      = $new->trimHeaderValues($value);
-            $normalized = \strtolower($header);
+            $normalized = strtolower($header);
 
             if (isset($new->headerNames[$normalized])) {
                 $headerName = $new->headerNames[$normalized];
                 $oldValues  = $new->headers[$headerName];
                 // re-save
-                $new->headers[$headerName] = \array_merge($oldValues, $value);
+                $new->headers[$headerName] = array_merge($oldValues, $value);
                 continue;
             }
 
@@ -276,7 +286,7 @@ trait MessageTrait
      */
     public function withoutHeader($name)
     {
-        $normalized = \strtolower($name);
+        $normalized = strtolower($name);
         if (!isset($this->headerNames[$normalized])) {
             return $this;
         }
@@ -292,13 +302,13 @@ trait MessageTrait
      * Gets the body of the message.
      *
      * @return StreamInterface Returns the body as a stream.
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function getBody(): StreamInterface
     {
         if (!$this->stream) {
-            $this->stream = \bean(Stream::class);
+            $this->stream = bean(Stream::class);
         }
 
         return $this->stream;
@@ -316,7 +326,7 @@ trait MessageTrait
      * @param StreamInterface $body Body.
      *
      * @return static
-     * @throws \InvalidArgumentException When the body is not valid.
+     * @throws InvalidArgumentException When the body is not valid.
      */
     public function withBody(StreamInterface $body)
     {
@@ -341,18 +351,18 @@ trait MessageTrait
     {
         $this->headerNames = $this->headers = [];
         foreach ($headers as $header => $value) {
-            if (!\is_array($value)) {
+            if (!is_array($value)) {
                 $value = [$value];
             }
 
             $value      = $this->trimHeaderValues($value);
-            $normalized = \strtolower($header);
+            $normalized = strtolower($header);
 
             if (isset($this->headerNames[$normalized])) {
                 $headerName = $this->headerNames[$normalized];
                 $oldValues  = $this->headers[$headerName];
                 // re-save
-                $this->headers[$headerName] = \array_merge($oldValues, $value);
+                $this->headers[$headerName] = array_merge($oldValues, $value);
                 continue;
             }
 
@@ -368,7 +378,7 @@ trait MessageTrait
     protected function initializeHeaders(array $headers): void
     {
         foreach ($headers as $name => $value) {
-            $name = \strtolower($name);
+            $name = strtolower($name);
 
             $this->headers[$name]     = [$value];
             $this->headerNames[$name] = $name;
@@ -391,8 +401,8 @@ trait MessageTrait
      */
     private function trimHeaderValues(array $values): array
     {
-        return \array_map(function ($value) {
-            return \trim((string)$value, " \t");
+        return array_map(function ($value) {
+            return trim((string)$value, " \t");
         }, $values);
     }
 }

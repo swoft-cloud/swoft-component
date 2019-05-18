@@ -3,12 +3,14 @@
 
 namespace Swoft\Connection\Pool\Exception;
 
+use Exception;
+
 /**
  * Class ConnectionPoolException
  *
  * @since 2.0
  */
-class ConnectionPoolException extends \Exception
+class ConnectionPoolException extends Exception
 {
 
 }

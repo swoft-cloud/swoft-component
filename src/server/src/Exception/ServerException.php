@@ -2,12 +2,14 @@
 
 namespace Swoft\Server\Exception;
 
+use Exception;
+
 /**
  * Class ServerException
  *
  * @since 2.0
  */
-class ServerException extends \Exception
+class ServerException extends Exception
 {
 
 }

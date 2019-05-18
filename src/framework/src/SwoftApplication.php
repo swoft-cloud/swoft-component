@@ -2,6 +2,12 @@
 
 namespace Swoft;
 
+use function define;
+use function defined;
+use function dirname;
+use const IN_PHAR;
+use function realpath;
+use Swoft;
 use Swoft\Concern\SwoftTrait;
 use Swoft\Contract\ApplicationInterface;
 use Swoft\Contract\SwoftInterface;
@@ -133,7 +139,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     public function __construct(array $config = [])
     {
         // Storage as global static property.
-        \Swoft::$app = $this;
+        Swoft::$app = $this;
 
         // before init
         $this->beforeInit();
@@ -169,8 +175,8 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     protected function beforeInit(): void
     {
         // Check phar env
-        if (!\defined('IN_PHAR')) {
-            \define('IN_PHAR', false);
+        if (!defined('IN_PHAR')) {
+            define('IN_PHAR', false);
         }
     }
 
@@ -180,7 +186,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
     protected function afterInit(): void
     {
-        if (\IN_PHAR) {
+        if (IN_PHAR) {
             $this->setRuntimePath(Str::rmPharPrefix($this->runtimePath));
         }
 
@@ -193,11 +199,11 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
         $filePath = ComposerHelper::getClassLoader()->findFile(static::class);
 
         // If run in phar package
-        if (\IN_PHAR) {
+        if (IN_PHAR) {
             $filePath = Str::rmPharPrefix($filePath);
         }
 
-        $this->basePath = \dirname(\realpath($filePath), 2);
+        $this->basePath = dirname(realpath($filePath), 2);
     }
 
     /**
@@ -213,7 +219,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     }
 
     /**
-     * @param array ...$classes
+     * @param string ...$classes
      */
     public function disableAutoLoader(string ...$classes)
     {
@@ -223,7 +229,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     }
 
     /**
-     * @param array ...$classes
+     * @param string ...$classes
      */
     public function disableProcessor(string ...$classes)
     {
@@ -381,7 +387,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     {
         $this->appPath = $appPath;
 
-        \Swoft::setAlias('@app', $appPath);
+        Swoft::setAlias('@app', $appPath);
     }
 
     /**
@@ -391,7 +397,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     {
         $this->configPath = $configPath;
 
-        \Swoft::setAlias('@config', $configPath);
+        Swoft::setAlias('@config', $configPath);
     }
 
     /**
@@ -401,7 +407,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     {
         $this->basePath = $basePath;
 
-        \Swoft::setAlias('@base', $basePath);
+        Swoft::setAlias('@base', $basePath);
     }
 
     /**
@@ -411,7 +417,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     {
         $this->runtimePath = $runtimePath;
 
-        \Swoft::setAlias('@runtime', $runtimePath);
+        Swoft::setAlias('@runtime', $runtimePath);
     }
 
     /**
@@ -469,11 +475,11 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
         $runtimePath  = $this->getRuntimePath();
         $resourcePath = $this->getResourcePath();
 
-        \Swoft::setAlias('@base', $basePath);
-        \Swoft::setAlias('@app', $appPath);
-        \Swoft::setAlias('@config', $configPath);
-        \Swoft::setAlias('@runtime', $runtimePath);
-        \Swoft::setAlias('@resource', $resourcePath);
+        Swoft::setAlias('@base', $basePath);
+        Swoft::setAlias('@app', $appPath);
+        Swoft::setAlias('@config', $configPath);
+        Swoft::setAlias('@runtime', $runtimePath);
+        Swoft::setAlias('@resource', $resourcePath);
 
         CLog::info('Set alias @base=%s', $basePath);
         CLog::info('Set alias @app=%s', $appPath);

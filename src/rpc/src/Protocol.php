@@ -3,8 +3,10 @@
 
 namespace Swoft\Rpc;
 
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Exception\ContainerException;
 
 
 /**
@@ -58,8 +60,8 @@ class Protocol
      * @param array  $ext
      *
      * @return Protocol
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function new(string $version, string $interface, string $method, array $params, array $ext)
     {

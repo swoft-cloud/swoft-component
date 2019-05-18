@@ -2,7 +2,11 @@
 
 namespace Swoft\Processor;
 
+use function alias;
+use function basename;
+use function dirname;
 use Dotenv\Dotenv;
+use function file_exists;
 use Swoft\Log\Helper\CLog;
 
 /**
@@ -25,11 +29,11 @@ class EnvProcessor extends Processor
         }
 
         $envFile = $this->application->getEnvFile();
-        $envFile = \alias($envFile);
-        $path    = \dirname($envFile);
-        $env     = \basename($envFile);
+        $envFile = alias($envFile);
+        $path    = dirname($envFile);
+        $env     = basename($envFile);
 
-        if (!\file_exists($envFile)) {
+        if (!file_exists($envFile)) {
             CLog::warning('Env file(%s) is not exist! skip load it', $envFile);
             return true;
         }

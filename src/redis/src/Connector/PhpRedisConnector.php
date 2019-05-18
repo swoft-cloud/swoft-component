@@ -3,6 +3,9 @@
 
 namespace Swoft\Redis\Connector;
 
+use Redis;
+use RedisCluster;
+use RedisClusterException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Redis\Contract\ConnectorInterface;
 use Swoft\Redis\Exception\RedisException;
@@ -22,12 +25,12 @@ class PhpRedisConnector implements ConnectorInterface
      * @param array $config
      * @param array $option
      *
-     * @return \Redis
+     * @return Redis
      * @throws RedisException
      */
-    public function connect(array $config, array $option): \Redis
+    public function connect(array $config, array $option): Redis
     {
-        $client = new \Redis();
+        $client = new Redis();
         $this->establishConnection($client, $config);
 
         if (!empty($config['password'])) {
@@ -39,15 +42,15 @@ class PhpRedisConnector implements ConnectorInterface
         }
 
         if (!empty($config['read_timeout'])) {
-            $client->setOption(\Redis::OPT_READ_TIMEOUT, $config['read_timeout']);
+            $client->setOption(Redis::OPT_READ_TIMEOUT, $config['read_timeout']);
         }
 
         if (!empty($option['prefix'])) {
-            $client->setOption(\Redis::OPT_PREFIX, $option['prefix']);
+            $client->setOption(Redis::OPT_PREFIX, $option['prefix']);
         }
 
         if (!empty($option['serializer'])) {
-            $client->setOption(\Redis::OPT_SERIALIZER, (string)$option['serializer']);
+            $client->setOption(Redis::OPT_SERIALIZER, (string)$option['serializer']);
         }
         return $client;
     }
@@ -56,10 +59,10 @@ class PhpRedisConnector implements ConnectorInterface
      * @param array $config
      * @param array $option
      *
-     * @return \RedisCluster
-     * @throws \RedisClusterException
+     * @return RedisCluster
+     * @throws RedisClusterException
      */
-    public function connectToCluster(array $config, array $option): \RedisCluster
+    public function connectToCluster(array $config, array $option): RedisCluster
     {
         $servers     = array_map([$this, 'buildClusterConnectionString'], $config);
         $servers     = array_values($servers);
@@ -67,7 +70,7 @@ class PhpRedisConnector implements ConnectorInterface
         $timeout     = $option['timeout'] ?? 0;
         $persistent  = $option['persistent'] ?? false;
 
-        $redisCluster = new \RedisCluster(null, $servers, $timeout, $readTimeout, $persistent);
+        $redisCluster = new RedisCluster(null, $servers, $timeout, $readTimeout, $persistent);
         return $redisCluster;
     }
 
@@ -95,13 +98,13 @@ class PhpRedisConnector implements ConnectorInterface
     /**
      * Establish a connection with the Redis host.
      *
-     * @param \Redis $client
+     * @param Redis $client
      * @param array  $config
      *
      * @return void
      * @throws RedisException
      */
-    protected function establishConnection(\Redis $client, array $config): void
+    protected function establishConnection(Redis $client, array $config): void
     {
         $parameters = [
             $config['host'],

@@ -3,6 +3,18 @@
 namespace Swoft\Bean;
 
 
+use function array_keys;
+use function class_exists;
+use function count;
+use function end;
+use function is_array;
+use function is_string;
+use function method_exists;
+use ReflectionClass;
+use ReflectionException;
+use function sprintf;
+use function strpos;
+use Swoft\Annotation\Exception\AnnotationException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Contract\ContainerInterface;
 use Swoft\Bean\Contract\HandlerInterface;
@@ -15,6 +27,7 @@ use Swoft\Bean\Definition\PropertyInjection;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\ArrayHelper;
 use Swoft\Stdlib\Reflections;
+use function ucfirst;
 
 /**
  * Class Container
@@ -279,7 +292,8 @@ class Container implements ContainerInterface
      * Init
      *
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
+     * @throws AnnotationException
      */
     public function init(): void
     {
@@ -309,7 +323,7 @@ class Container implements ContainerInterface
      *
      * @return object
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function getRequest(string $name, string $id)
     {
@@ -324,12 +338,12 @@ class Container implements ContainerInterface
         // Class name
         $classNames = $this->classNames[$name] ?? [];
         if ($classNames) {
-            $name = \end($classNames);
+            $name = end($classNames);
             return $this->getRequest($name, $id);
         }
 
         if (!isset($this->requestDefinitions[$name])) {
-            throw new ContainerException(\sprintf('Request bean(%s) is not defined', $name));
+            throw new ContainerException(sprintf('Request bean(%s) is not defined', $name));
         }
 
         return $this->newBean($name, $id);
@@ -343,7 +357,7 @@ class Container implements ContainerInterface
      *
      * @return object
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function getSession(string $name, string $sid)
     {
@@ -358,12 +372,12 @@ class Container implements ContainerInterface
         // Class name
         $classNames = $this->classNames[$name] ?? [];
         if ($classNames) {
-            $name = \end($classNames);
+            $name = end($classNames);
             return $this->getSession($name, $sid);
         }
 
         if (!isset($this->sessionDefinitions[$name])) {
-            throw new ContainerException(\sprintf('Session bean(%s) is not defined', $name));
+            throw new ContainerException(sprintf('Session bean(%s) is not defined', $name));
         }
 
         return $this->newBean($name, $sid);
@@ -378,7 +392,7 @@ class Container implements ContainerInterface
      *
      * @return object
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function get($id)
     {
@@ -401,7 +415,7 @@ class Container implements ContainerInterface
         // Class name
         $classNames = $this->classNames[$id] ?? [];
         if ($classNames) {
-            $id = \end($classNames);
+            $id = end($classNames);
             return $this->get($id);
         }
 
@@ -438,11 +452,11 @@ class Container implements ContainerInterface
 
         $classNames = $this->classNames[$name] ?? [];
         if ($classNames) {
-            $name = \end($classNames);
+            $name = end($classNames);
             return $this->singletonPool[$name];
         }
 
-        throw new ContainerException(\sprintf('The singleton bean "%s" is not defined', $name));
+        throw new ContainerException(sprintf('The singleton bean "%s" is not defined', $name));
     }
 
     /**
@@ -471,7 +485,7 @@ class Container implements ContainerInterface
      *
      * @return object
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function create(string $name, array $definition = [])
     {
@@ -480,7 +494,7 @@ class Container implements ContainerInterface
         }
 
         //  Create bean only by class name
-        if (empty($definition) && \class_exists($name)) {
+        if (empty($definition) && class_exists($name)) {
             $definition = [
                 'class' => $name
             ];
@@ -599,6 +613,7 @@ class Container implements ContainerInterface
      * Parse annotations
      *
      * @throws ContainerException
+     * @throws AnnotationException
      */
     private function parseAnnotations(): void
     {
@@ -640,9 +655,9 @@ class Container implements ContainerInterface
     public function getStats(): array
     {
         return [
-            'singleton'  => \count($this->singletonPool),
-            'prototype'  => \count($this->prototypePool),
-            'definition' => \count($this->definitions),
+            'singleton'  => count($this->singletonPool),
+            'prototype'  => count($this->prototypePool),
+            'definition' => count($this->definitions),
             // 'definition' => \count($this->r),
         ];
     }
@@ -655,11 +670,11 @@ class Container implements ContainerInterface
     public function getNames(): array
     {
         return [
-            'session'    => \array_keys($this->sessionPool),
-            'request'    => \array_keys($this->requestPool),
-            'singleton'  => \array_keys($this->singletonPool),
-            'prototype'  => \array_keys($this->prototypePool),
-            'definition' => \array_keys($this->definitions),
+            'session'    => array_keys($this->sessionPool),
+            'request'    => array_keys($this->requestPool),
+            'singleton'  => array_keys($this->singletonPool),
+            'prototype'  => array_keys($this->prototypePool),
+            'definition' => array_keys($this->definitions),
             // 'definition' => \count($this->r),
         ];
     }
@@ -684,7 +699,7 @@ class Container implements ContainerInterface
      * Initialize beans
      *
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     private function initializeBeans(): void
     {
@@ -732,7 +747,7 @@ class Container implements ContainerInterface
 
         $classNames = $this->classNames[$beanName] ?? [];
         if (!empty($classNames)) {
-            $beanName = \end($classNames);
+            $beanName = end($classNames);
             return $this->getNewObjectDefinition($beanName);
         }
 
@@ -780,7 +795,7 @@ class Container implements ContainerInterface
      * @param string $id
      *
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      * @return object
      */
     private function newBean(string $beanName, string $id = '')
@@ -811,7 +826,7 @@ class Container implements ContainerInterface
             $className = $this->handler->classProxy($className);
         }
 
-        $reflectionClass = new \ReflectionClass($className);
+        $reflectionClass = new ReflectionClass($className);
         $reflectObject   = $this->newInstance($reflectionClass, $constructArgs);
 
         // Inject properties values
@@ -838,7 +853,7 @@ class Container implements ContainerInterface
      *
      * @return array
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     private function getConstructParams(MethodInjection $methodInjection, string $id = ''): array
     {
@@ -857,7 +872,7 @@ class Container implements ContainerInterface
         foreach ($argInjects as $argInject) {
             // Empty args
             $argValue = $argInject->getValue();
-            if (empty($argValue) || !\is_string($argValue)) {
+            if (empty($argValue) || !is_string($argValue)) {
                 $args[] = $argValue;
                 continue;
             }
@@ -876,14 +891,14 @@ class Container implements ContainerInterface
     /**
      * New bean instance
      *
-     * @param \ReflectionClass $reflectionClass
+     * @param ReflectionClass $reflectionClass
      * @param array            $args
      *
      * @return object
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
-    private function newInstance(\ReflectionClass $reflectionClass, array $args)
+    private function newInstance(ReflectionClass $reflectionClass, array $args)
     {
         if (empty($args) || !$reflectionClass->hasMethod('__construct')) {
             return $reflectionClass->newInstance();
@@ -901,17 +916,17 @@ class Container implements ContainerInterface
      * Inject properties into this bean. The properties data from config, annotation
      *
      * @param  object          $reflectObject
-     * @param \ReflectionClass $reflectionClass
+     * @param ReflectionClass $reflectionClass
      * @param array            $propertyInjects
      * @param string           $id
      *
      * @return void
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     private function newProperty(
         $reflectObject,
-        \ReflectionClass $reflectionClass,
+        ReflectionClass $reflectionClass,
         array $propertyInjects,
         string $id = ''
     ): void {
@@ -931,12 +946,12 @@ class Container implements ContainerInterface
             $reflectProperty = $reflectionClass->getProperty($propertyName);
 
             if ($reflectProperty->isStatic()) {
-                throw new ContainerException(\sprintf('Property %s for bean can not be `static` ', $propertyName));
+                throw new ContainerException(sprintf('Property %s for bean can not be `static` ', $propertyName));
             }
 
             // Parse property value
             $propertyValue = $propertyInject->getValue();
-            if (\is_array($propertyValue)) {
+            if (is_array($propertyValue)) {
                 $propertyValue = $this->newPropertyArray($propertyValue, $id);
             }
 
@@ -945,8 +960,8 @@ class Container implements ContainerInterface
             }
 
             // First, try set value by setter method
-            $setter = 'set' . \ucfirst($propertyName);
-            if (\method_exists($reflectObject, $setter)) {
+            $setter = 'set' . ucfirst($propertyName);
+            if (method_exists($reflectObject, $setter)) {
                 $reflectObject->$setter($propertyValue);
                 continue;
             }
@@ -992,7 +1007,7 @@ class Container implements ContainerInterface
      *
      * @return array
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     private function newPropertyArray(array $propertyValue, string $id = ''): array
     {
@@ -1014,15 +1029,15 @@ class Container implements ContainerInterface
      *
      * @return mixed
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     private function getRefValue($value, string $id = '')
     {
-        if (!\is_string($value)) {
+        if (!is_string($value)) {
             return $value;
         }
 
-        if (false === \strpos($value, '.')) {
+        if (false === strpos($value, '.')) {
             return $this->newBean($value, $id);
         }
 

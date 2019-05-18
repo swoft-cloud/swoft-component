@@ -2,13 +2,16 @@
 
 namespace Swoft\Bean\Definition\Parser;
 
+use function array_unique;
+use function in_array;
+use function is_array;
+use function is_string;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Definition\ArgsInjection;
 use Swoft\Bean\Definition\MethodInjection;
 use Swoft\Bean\Definition\ObjectDefinition;
 use Swoft\Bean\Definition\PropertyInjection;
 use Swoft\Bean\Exception\ContainerException;
-use SwoftTest\Bean\Testing\Definition\PrototypeClass;
 
 /**
  * Class DefinitionParser
@@ -83,7 +86,7 @@ class DefinitionObjParser extends ObjectParser
         $classNames   = $this->classNames[$className] ?? [];
         $classNames[] = $beanName;
 
-        $this->classNames[$className]       = \array_unique($classNames);
+        $this->classNames[$className]       = array_unique($classNames);
         $this->objectDefinitions[$beanName] = $objDefinition;
     }
 
@@ -125,7 +128,7 @@ class DefinitionObjParser extends ObjectParser
 
         // Parse definition option
         $option = $definition['__option'] ?? [];
-        if (!\is_array($option)) {
+        if (!is_array($option)) {
             throw new ContainerException('__option for definition must be array');
         }
 
@@ -135,14 +138,14 @@ class DefinitionObjParser extends ObjectParser
         // Parse definition properties
         $propertyInjects = [];
         foreach ($definition as $propertyName => $propertyValue) {
-            if (!\is_string($propertyName)) {
+            if (!is_string($propertyName)) {
                 throw new ContainerException('Property key from definition must be string');
             }
 
             [$proValue, $proIsRef] = $this->getValueByRef($propertyValue);
 
             // Parse property for array
-            if (\is_array($proValue)) {
+            if (is_array($proValue)) {
                 $proValue = $this->parseArrayProperty($proValue);
             }
 
@@ -186,7 +189,7 @@ class DefinitionObjParser extends ObjectParser
         $scope = $option['scope'] ?? '';
         $alias = $option['alias'] ?? '';
 
-        if (!empty($scope) && !\in_array($scope, $scopes, true)) {
+        if (!empty($scope) && !in_array($scope, $scopes, true)) {
             throw new ContainerException('Scope for definition is not undefined');
         }
 

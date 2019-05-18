@@ -4,6 +4,7 @@
 namespace Swoft\Test\Concern;
 
 use PHPUnit\Framework\Assert;
+use function strpos;
 use Swoft\Stdlib\Helper\JsonHelper;
 
 /**
@@ -84,7 +85,7 @@ trait HttpResponseAssertTrait
         Assert::assertTrue(isset($this->header[$key]));
 
         $headerLine = $this->header[$key] ?? '';
-        $hasContain = \strpos($headerLine, $value) !== false;
+        $hasContain = strpos($headerLine, $value) !== false;
 
         Assert::assertTrue($hasContain);
         return $this;
@@ -108,7 +109,7 @@ trait HttpResponseAssertTrait
      */
     public function assertContainContent(string $content): self
     {
-        $contains = \strpos($this->content, $content) !== false;
+        $contains = strpos($this->content, $content) !== false;
         Assert::assertTrue($contains);
         return $this;
     }

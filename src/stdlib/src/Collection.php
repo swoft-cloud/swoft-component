@@ -2,18 +2,31 @@
 
 namespace Swoft\Stdlib;
 
-use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\PrototypeTrait;
+use ArrayAccess;
+use ArrayIterator;
+use CachingIterator;
+use Closure;
+use function count;
+use Countable;
+use function func_get_args;
+use function func_num_args;
+use InvalidArgumentException;
+use IteratorAggregate;
+use function json_decode;
+use JsonSerializable;
+use stdClass;
 use Swoft\Stdlib\Contract\Arrayable;
 use Swoft\Stdlib\Contract\Jsonable;
 use Swoft\Stdlib\Helper\Arr;
+use Traversable;
+use function value;
 
 /**
  * Class Collection
  *
  * @since 2.0
  */
-class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggregate, Jsonable, \JsonSerializable
+class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate, Jsonable, JsonSerializable
 {
     /**
      * The items contained in the collection.
@@ -235,9 +248,9 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
      */
     public function contains($key, $operator = null, $value = null): bool
     {
-        if (\func_num_args() === 1) {
+        if (func_num_args() === 1) {
             if ($this->useAsCallable($key)) {
-                $placeholder = new \stdClass;
+                $placeholder = new stdClass;
 
                 return $this->first($key, $placeholder) !== $placeholder;
             }
@@ -245,7 +258,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
             return in_array($key, $this->items, true);
         }
 
-        return $this->contains($this->operatorForWhere(...\func_get_args()));
+        return $this->contains($this->operatorForWhere(...func_get_args()));
     }
 
     /**
@@ -587,7 +600,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
      * @param string $operator
      * @param mixed  $value
      *
-     * @return \Closure
+     * @return Closure
      */
     protected function operatorForWhere($key, $operator = null, $value = null): callable
     {
@@ -806,7 +819,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
             return $this->items[$key];
         }
 
-        return \value($default);
+        return value($default);
     }
 
     /**
@@ -1361,7 +1374,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
     /**
      * Push all of the given items onto the collection.
      *
-     * @param \Traversable|array $source
+     * @param Traversable|array $source
      *
      * @return static
      */
@@ -1411,7 +1424,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
      *
      * @return static|mixed
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function random($number = null)
     {
@@ -1882,12 +1895,12 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
     public function jsonSerialize(): array
     {
         return array_map(function ($value) {
-            if ($value instanceof \JsonSerializable) {
+            if ($value instanceof JsonSerializable) {
                 return $value->jsonSerialize();
             }
 
             if ($value instanceof Jsonable) {
-                return \json_decode($value->toJson(), true);
+                return json_decode($value->toJson(), true);
             }
 
             if ($value instanceof Arrayable) {
@@ -1913,11 +1926,11 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
     /**
      * Get an iterator for the items.
      *
-     * @return \ArrayIterator
+     * @return ArrayIterator
      */
-    public function getIterator(): \ArrayIterator
+    public function getIterator(): ArrayIterator
     {
-        return new \ArrayIterator($this->items);
+        return new ArrayIterator($this->items);
     }
 
     /**
@@ -1925,11 +1938,11 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
      *
      * @param int $flags
      *
-     * @return \CachingIterator
+     * @return CachingIterator
      */
-    public function getCachingIterator($flags = \CachingIterator::CALL_TOSTRING): \CachingIterator
+    public function getCachingIterator($flags = CachingIterator::CALL_TOSTRING): CachingIterator
     {
-        return new \CachingIterator($this->getIterator(), $flags);
+        return new CachingIterator($this->getIterator(), $flags);
     }
 
     /**
@@ -1939,7 +1952,7 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
      */
     public function count(): int
     {
-        return \count($this->items);
+        return count($this->items);
     }
 
     /**
@@ -2032,9 +2045,9 @@ class Collection implements \ArrayAccess, Arrayable, \Countable, \IteratorAggreg
             return $items->toArray();
         } elseif ($items instanceof Jsonable) {
             return json_decode($items->toJson(), true);
-        } elseif ($items instanceof \JsonSerializable) {
+        } elseif ($items instanceof JsonSerializable) {
             return $items->jsonSerialize();
-        } elseif ($items instanceof \Traversable) {
+        } elseif ($items instanceof Traversable) {
             return iterator_to_array($items);
         }
 

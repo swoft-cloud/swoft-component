@@ -4,7 +4,6 @@
 namespace Swoft\Rpc\Packet;
 
 
-use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Rpc\Contract\PacketInterface;
 use Swoft\Rpc\Packet;
 

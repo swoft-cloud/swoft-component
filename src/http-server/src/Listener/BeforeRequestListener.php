@@ -4,7 +4,9 @@
 namespace Swoft\Http\Server\Listener;
 
 
+use ReflectionException;
 use Swoft\Bean\Container;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\Context;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
@@ -28,7 +30,8 @@ class BeforeRequestListener implements EventHandlerInterface
     /**
      * @param EventInterface $event
      *
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function handle(EventInterface $event): void
     {

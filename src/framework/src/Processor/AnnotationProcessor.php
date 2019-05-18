@@ -2,6 +2,7 @@
 
 namespace Swoft\Processor;
 
+use Exception;
 use Swoft\Annotation\AnnotationRegister;
 use Swoft\Log\Helper\CLog;
 
@@ -15,7 +16,7 @@ class AnnotationProcessor extends Processor
      * Handle annotation
      *
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function handle(): bool
     {

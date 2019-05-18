@@ -3,12 +3,16 @@
 
 namespace Swoft\Aop;
 
+use ReflectionException;
+use ReflectionType;
 use Swoft\Aop\Concern\AopTrait;
 use Swoft\Aop\Point\JoinPoint;
 use Swoft\Aop\Point\ProceedingJoinPoint;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Reflections;
+use Throwable;
+use function array_shift;
 
 /**
  * Class Handler
@@ -54,7 +58,7 @@ class AspectHandler
     private $aspect;
 
     /**
-     * @var \Throwable
+     * @var Throwable
      */
     private $throwable;
 
@@ -62,9 +66,9 @@ class AspectHandler
      * Invoke aspect
      *
      * @return mixed
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Throwable
+     * @throws ReflectionException
+     * @throws ContainerException
+     * @throws Throwable
      */
     public function invokeAspect()
     {
@@ -84,7 +88,7 @@ class AspectHandler
                 $result = $this->invokeTarget();
             }
 
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->throwable = $e;
         }
 
@@ -116,12 +120,11 @@ class AspectHandler
      * @param array $params
      *
      * @return mixed
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function invokeTarget(array $params = [])
     {
         $before = $this->aspect['before'] ?? [];
-        $afThw  = $this->aspect['afterThrowing'] ?? [];
 
         // Invoke before advice
         if (!empty($before)) {
@@ -172,7 +175,7 @@ class AspectHandler
      */
     public function setAspects(array $aspects): void
     {
-        $this->aspect  = \array_shift($aspects);
+        $this->aspect  = array_shift($aspects);
         $this->aspects = $aspects;
     }
 
@@ -180,14 +183,14 @@ class AspectHandler
      * Invoke advice
      *
      * @param array      $aspectAry
-     * @param \Throwable $catch
+     * @param Throwable $catch
      * @param mixed      $return
      *
      * @return mixed
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
-    private function invokeAdvice(array $aspectAry, \Throwable $catch = null, $return = null)
+    private function invokeAdvice(array $aspectAry, Throwable $catch = null, $return = null)
     {
         [$aspectClass, $aspectMethod] = $aspectAry;
 
@@ -197,7 +200,7 @@ class AspectHandler
 
         $aspectArgs = [];
         foreach ($params as $param) {
-            /* @var \ReflectionType $reflectType */
+            /* @var ReflectionType $reflectType */
             // [, $reflectType] = $param;
             $reflectType = $param[1];
             if ($reflectType === null) {
@@ -218,7 +221,7 @@ class AspectHandler
                 continue;
             }
 
-            if ($type == \Throwable::class) {
+            if ($type == Throwable::class) {
                 $aspectArgs[] = $catch;
             }
 
@@ -232,12 +235,12 @@ class AspectHandler
     /**
      * New proceeding join point
      *
-     * @param \Throwable|null $catch
+     * @param Throwable|null $catch
      * @param mixed           $return
      *
      * @return ProceedingJoinPoint
      */
-    private function getProceedingJoinPoint(\Throwable $catch = null, $return = null): ProceedingJoinPoint
+    private function getProceedingJoinPoint(Throwable $catch = null, $return = null): ProceedingJoinPoint
     {
         $proceedingJoinPoint = new ProceedingJoinPoint($this->target, $this->methodName, $this->args);
         $proceedingJoinPoint->setHandler($this);
@@ -256,12 +259,12 @@ class AspectHandler
     /**
      * New join point
      *
-     * @param \Throwable|null $catch
+     * @param Throwable|null $catch
      * @param mixed           $return
      *
      * @return JoinPoint
      */
-    private function getJoinPoint(\Throwable $catch = null, $return = null): JoinPoint
+    private function getJoinPoint(Throwable $catch = null, $return = null): JoinPoint
     {
         $joinPoint = new JoinPoint($this->target, $this->methodName, $this->args);
         if ($catch) {
@@ -285,7 +288,7 @@ class AspectHandler
         $aspect = clone  $this;
 
         // Next aspect data
-        $aspect->aspect  = \array_shift($this->aspects);
+        $aspect->aspect  = array_shift($this->aspects);
         $aspect->aspects = $this->aspects;
 
         return $aspect;

@@ -3,8 +3,11 @@
 
 namespace Swoft\Test\Http;
 
+use ReflectionException;
+use RuntimeException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\Request as ServerRequest;
 use Swoft\Http\Message\Response as ServerResponse;
 use Swoft\Http\Server\HttpDispatcher;
@@ -29,8 +32,8 @@ class MockHttpServer
      * @param array  $ext
      *
      * @return MockResponse
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function request(
         string $method,
@@ -48,7 +51,7 @@ class MockHttpServer
         $response = $response->getCoResponse();
 
         if (!$response instanceof MockResponse) {
-            throw new \RuntimeException('Mock request return is not MockResponse');
+            throw new RuntimeException('Mock request return is not MockResponse');
         }
         return $response;
     }
@@ -62,8 +65,8 @@ class MockHttpServer
      * @param array  $ext
      *
      * @return Request
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function mockRequest(
         string $method,
@@ -92,8 +95,8 @@ class MockHttpServer
      * @param Response $response
      *
      * @return ServerResponse
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function onRequest(Request $request, Response $response): ServerResponse
     {

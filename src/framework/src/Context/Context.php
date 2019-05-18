@@ -2,7 +2,9 @@
 
 namespace Swoft\Context;
 
+use ReflectionException;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Co;
 use Swoft\Exception\ContextException;
 use Swoft\Http\Server\HttpContext;
@@ -74,8 +76,8 @@ class Context
      *
      * @return ContextWaitGroup
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function getWaitGroup(): ContextWaitGroup
     {

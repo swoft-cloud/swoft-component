@@ -4,6 +4,8 @@
 namespace Swoft\Http\Server\Listener;
 
 
+use Exception;
+use Swoft;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
@@ -23,7 +25,7 @@ class AfterRequestListener implements EventHandlerInterface
     /**
      * @param EventInterface $event
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function handle(EventInterface $event): void
     {
@@ -32,9 +34,9 @@ class AfterRequestListener implements EventHandlerInterface
         $response->send();
 
         // Defer
-        \Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
+        Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
 
         // Destroy
-        \Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
+        Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
     }
 }

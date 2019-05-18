@@ -2,6 +2,13 @@
 
 namespace Swoft\Aop;
 
+use function array_column;
+use function array_intersect;
+use function array_multisort;
+use function count;
+use function explode;
+use function preg_match;
+
 /**
  * Class AopRegister
  *
@@ -43,8 +50,8 @@ class Aop
         $aspects = AspectRegister::getAspects();
 
         // Sort aspect by order
-        $temp = \array_column($aspects, 'order');
-        \array_multisort($temp, SORT_ASC, $aspects);
+        $temp = array_column($aspects, 'order');
+        array_multisort($temp, SORT_ASC, $aspects);
 
         foreach ($aspects as $aspectClass => $aspect) {
             if (!isset($aspect['point'], $aspect['advice'])) {
@@ -121,7 +128,7 @@ class Aop
      */
     private static function isBeanOrAnnotation(array $pointAry, array $classAry): bool
     {
-        $intersectAry = \array_intersect($pointAry, $classAry);
+        $intersectAry = array_intersect($pointAry, $classAry);
 
         return $intersectAry ? true : false;
     }
@@ -138,8 +145,8 @@ class Aop
     private static function isExecution(string $class, string $method, array $executions): bool
     {
         foreach ($executions as $execution) {
-            $executionAry = \explode('::', $execution);
-            if (\count($executionAry) < 2) {
+            $executionAry = explode('::', $execution);
+            if (count($executionAry) < 2) {
                 continue;
             }
 
@@ -151,7 +158,7 @@ class Aop
 
             // Method
             $reg = '/^(?:' . $executionMethod . ')$/';
-            if (\preg_match($reg, $method)) {
+            if (preg_match($reg, $method)) {
                 return true;
             }
         }

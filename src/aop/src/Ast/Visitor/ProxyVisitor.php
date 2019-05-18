@@ -3,12 +3,15 @@
 
 namespace Swoft\Aop\Ast\Visitor;
 
+use function array_unshift;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\NodeFinder;
 use PhpParser\NodeTraverser;
+use function sprintf;
 use Swoft\Aop\Concern\AopTrait;
 use Swoft\Proxy\Ast\Visitor\Visitor;
+use function uniqid;
 
 /**
  * Class ProxyVisitor
@@ -61,7 +64,7 @@ class ProxyVisitor extends Visitor
     public function __construct(string $proxyId = '', string $aopClassName = AopTrait::class)
     {
         $this->aopClassName = $aopClassName;
-        $this->proxyId      = $proxyId ?: \uniqid();
+        $this->proxyId      = $proxyId ?: uniqid();
     }
 
     /**
@@ -159,7 +162,7 @@ class ProxyVisitor extends Visitor
         $traitNode          = $this->getTraitNode();
         $originalMethodNode = $this->getOriginalClassNameMethodNode();
 
-        \array_unshift($classNode->stmts, $traitNode, $originalMethodNode);
+        array_unshift($classNode->stmts, $traitNode, $originalMethodNode);
         return $nodes;
     }
 
@@ -174,7 +177,6 @@ class ProxyVisitor extends Visitor
     {
         $methodName = $node->name->toString();
 
-        // TODO Origin method params
         $params = [];
         foreach ($node->params as $key => $param) {
             $params[] = $param;
@@ -231,7 +233,7 @@ class ProxyVisitor extends Visitor
      */
     public function getProxyClassName(): string
     {
-        return \sprintf('%s\\%s', $this->namespace, $this->proxyName);
+        return sprintf('%s\\%s', $this->namespace, $this->proxyName);
     }
 
     /**

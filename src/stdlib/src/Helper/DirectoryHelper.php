@@ -2,6 +2,22 @@
 
 namespace Swoft\Stdlib\Helper;
 
+use DirectoryIterator;
+use function file_exists;
+use FilesystemIterator;
+use InvalidArgumentException;
+use function is_dir;
+use IteratorIterator;
+use function mkdir;
+use RecursiveCallbackFilterIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use RuntimeException;
+use SplFileInfo;
+use function sprintf;
+use function strpos;
+use function substr;
+
 /**
  * Directory helper
  *
@@ -19,8 +35,8 @@ class DirectoryHelper extends FSHelper
      */
     public static function make(string $dir, int $mode = 0755): void
     {
-        if (!\file_exists($dir) && !\mkdir($dir, $mode, true) && !\is_dir($dir)) {
-            throw new \RuntimeException(\sprintf('Directory "%s" was not created', $dir));
+        if (!file_exists($dir) && !mkdir($dir, $mode, true) && !is_dir($dir)) {
+            throw new RuntimeException(sprintf('Directory "%s" was not created', $dir));
         }
     }
 
@@ -28,25 +44,23 @@ class DirectoryHelper extends FSHelper
      * Directory recursive iterator
      *
      * @param string $path
-     * @param int    $iteratorFlags
      * @param int    $mode
      * @param int    $flags
      *
-     * @return \RecursiveIteratorIterator
+     * @return RecursiveIteratorIterator
      */
     public static function recursiveIterator(
         string $path,
-        int $iteratorFlags = \FilesystemIterator::KEY_AS_PATHNAME,
-        int $mode = \RecursiveIteratorIterator::LEAVES_ONLY,
+        int $mode = RecursiveIteratorIterator::LEAVES_ONLY,
         int $flags = 0
-    ): \RecursiveIteratorIterator {
+    ): RecursiveIteratorIterator {
         if (empty($path) || !file_exists($path)) {
-            throw new \InvalidArgumentException('File path is not exist! Path: ' . $path);
+            throw new InvalidArgumentException('File path is not exist! Path: ' . $path);
         }
 
-        $directoryIterator = new \RecursiveDirectoryIterator($path);
+        $directoryIterator = new RecursiveDirectoryIterator($path);
 
-        return new \RecursiveIteratorIterator($directoryIterator, $mode, $flags);
+        return new RecursiveIteratorIterator($directoryIterator, $mode, $flags);
     }
 
     /**
@@ -54,17 +68,17 @@ class DirectoryHelper extends FSHelper
      *
      * @param string $path
      *
-     * @return \IteratorIterator
+     * @return IteratorIterator
      */
-    public static function iterator(string $path): \IteratorIterator
+    public static function iterator(string $path): IteratorIterator
     {
         if (empty($path) || !file_exists($path)) {
-            throw new \InvalidArgumentException('File path is not exist! Path: ' . $path);
+            throw new InvalidArgumentException('File path is not exist! Path: ' . $path);
         }
 
-        $directoryIterator = new \DirectoryIterator($path);
+        $directoryIterator = new DirectoryIterator($path);
 
-        return new \IteratorIterator($directoryIterator);
+        return new IteratorIterator($directoryIterator);
     }
 
 
@@ -73,15 +87,15 @@ class DirectoryHelper extends FSHelper
      *
      * @param string $dirPath
      *
-     * @return \RecursiveIteratorIterator
+     * @return RecursiveIteratorIterator
      */
-    public static function phpFilesIterator(string $dirPath): \RecursiveIteratorIterator
+    public static function phpFilesIterator(string $dirPath): RecursiveIteratorIterator
     {
-        $filter = function (\SplFileInfo $f): bool {
+        $filter = function (SplFileInfo $f): bool {
             $name = $f->getFilename();
 
             // Skip hidden files and directories.
-            if (\strpos($name, '.') === 0) {
+            if (strpos($name, '.') === 0) {
                 return false;
             }
 
@@ -91,7 +105,7 @@ class DirectoryHelper extends FSHelper
             }
 
             // Only find php file
-            return $f->isFile() && \substr($name, -4) === '.php';
+            return $f->isFile() && substr($name, -4) === '.php';
         };
 
         return self::filterIterator($dirPath, $filter);
@@ -121,21 +135,21 @@ class DirectoryHelper extends FSHelper
      * }
      * @param int      $flags
      *
-     * @return \RecursiveIteratorIterator
-     * @throws \InvalidArgumentException
+     * @return RecursiveIteratorIterator
+     * @throws InvalidArgumentException
      */
     public static function filterIterator(
         string $dirPath,
         callable $filter,
-        $flags = \FilesystemIterator::KEY_AS_PATHNAME | \FilesystemIterator::CURRENT_AS_FILEINFO
-    ): \RecursiveIteratorIterator {
-        if (!$dirPath || !\file_exists($dirPath)) {
-            throw new \InvalidArgumentException('Please provide a exists source directory. Path:' . $dirPath);
+        $flags = FilesystemIterator::KEY_AS_PATHNAME | FilesystemIterator::CURRENT_AS_FILEINFO
+    ): RecursiveIteratorIterator {
+        if (!$dirPath || !file_exists($dirPath)) {
+            throw new InvalidArgumentException('Please provide a exists source directory. Path:' . $dirPath);
         }
 
-        $directory      = new \RecursiveDirectoryIterator($dirPath, $flags);
-        $filterIterator = new \RecursiveCallbackFilterIterator($directory, $filter);
+        $directory      = new RecursiveDirectoryIterator($dirPath, $flags);
+        $filterIterator = new RecursiveCallbackFilterIterator($directory, $filter);
 
-        return new \RecursiveIteratorIterator($filterIterator);
+        return new RecursiveIteratorIterator($filterIterator);
     }
 }

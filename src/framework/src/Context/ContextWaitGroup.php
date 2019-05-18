@@ -2,6 +2,7 @@
 
 namespace Swoft\Context;
 
+use RuntimeException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Co;
 use Swoft\Contract\WaitGroupInterface;
@@ -50,7 +51,7 @@ class ContextWaitGroup implements WaitGroupInterface
     {
         $waitGroup = $this->getWaitGroup();
         if ($waitGroup === null) {
-            throw new \RuntimeException('You must to be done then add by wait group');
+            throw new RuntimeException('You must to be done then add by wait group');
         }
 
         $waitGroup->done();

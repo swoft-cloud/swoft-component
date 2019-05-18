@@ -4,6 +4,7 @@
 namespace Swoft\Config\Parser;
 
 
+use function class_exists;
 use SplFileInfo;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Config\Config;
@@ -30,7 +31,7 @@ class YamlParser extends Parser
      */
     public function parse(Config $config): array
     {
-        if (!\class_exists('Symfony\Component\Yaml\Yaml')) {
+        if (!class_exists('Symfony\Component\Yaml\Yaml')) {
             throw new ConfigException('You must to composer require symfony/yaml');
         }
 

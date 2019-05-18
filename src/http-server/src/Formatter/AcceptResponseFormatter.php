@@ -2,6 +2,9 @@
 
 namespace Swoft\Http\Server\Formatter;
 
+use function context;
+use function current;
+use function strpos;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Message\Contract\ResponseFormatterInterface;
 use Swoft\Http\Message\Response;
@@ -36,7 +39,7 @@ class AcceptResponseFormatter implements ResponseFormatterInterface
     public function format(Response $response): Response
     {
         $format  = '';
-        $request = \context()->getRequest();
+        $request = context()->getRequest();
         $accepts = $request->getHeader('accept');
 
         // Fix empty bug
@@ -44,9 +47,9 @@ class AcceptResponseFormatter implements ResponseFormatterInterface
             return $response;
         }
 
-        $acceptType = \current($accepts);
+        $acceptType = current($accepts);
         foreach ($this->formats as $contentType => $formatType) {
-            if (\strpos($acceptType, $contentType) === 0) {
+            if (strpos($acceptType, $contentType) === 0) {
                 $format = $formatType;
                 break;
             }

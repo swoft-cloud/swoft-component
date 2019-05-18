@@ -3,6 +3,9 @@
 
 namespace Swoft\Proxy\Ast;
 
+use Exception;
+use function file_exists;
+use function file_get_contents;
 use PhpParser\ErrorHandler;
 use PhpParser\Lexer;
 use PhpParser\NodeTraverser;
@@ -110,17 +113,17 @@ class Parser
      * @param string $className
      *
      * @return string
-     * @throws ProxyException|\Exception
+     * @throws ProxyException|Exception
      */
     private function getCodeByClassName(string $className): string
     {
         // Get file by class name
         $file = ComposerHelper::getClassLoader()->findFile($className);
 
-        if (!\file_exists($file)) {
+        if (!file_exists($file)) {
             throw new ProxyException(sprintf('%s file is not exist!', $file));
         }
 
-        return \file_get_contents($file);
+        return file_get_contents($file);
     }
 }

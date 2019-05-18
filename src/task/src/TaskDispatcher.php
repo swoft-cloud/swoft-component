@@ -4,12 +4,15 @@
 namespace Swoft\Task;
 
 
+use ReflectionException;
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoft\Task\Exception\TaskException;
 use Swoft\Task\Router\Router;
+use Throwable;
 
 /**
  * Class TaskDispatcher
@@ -27,18 +30,18 @@ class TaskDispatcher
      */
     public function dispatch(Request $request, Response $response)
     {
-        \Swoft::trigger(TaskEvent::BEFORE_TASK, null, $request, $response);
+        Swoft::trigger(TaskEvent::BEFORE_TASK, null, $request, $response);
 
         $result = null;
         try {
             $result = $this->handle($request);
             $response->setResult($result);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $response->setErrorCode($e->getCode());
             $response->setErrorMessage($e->getMessage());
         }
 
-        \Swoft::trigger(TaskEvent::AFTER_TASK, null, $response);
+        Swoft::trigger(TaskEvent::AFTER_TASK, null, $response);
     }
 
     /**
@@ -46,8 +49,8 @@ class TaskDispatcher
      *
      * @return mixed
      * @throws TaskException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     private function handle(Request $request)
     {

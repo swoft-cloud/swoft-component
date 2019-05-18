@@ -9,6 +9,7 @@ use InvalidArgumentException;
 use ReflectionException;
 use function sprintf;
 use Swoft\Annotation\AnnotationRegister;
+use Swoft\Annotation\Exception\AnnotationException;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\BeanHandler;
@@ -29,8 +30,9 @@ class BeanProcessor extends Processor
      * Handle bean
      *
      * @return bool
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
+     * @throws AnnotationException
      */
     public function handle(): bool
     {
