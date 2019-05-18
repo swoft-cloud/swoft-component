@@ -94,7 +94,7 @@ class ModelTest extends TestCase
         $res1 = User::updateOrCreate(['id' => 1], ['age' => 18, 'name' => 'sakuraovq']);
 
 
-        User::updateOrInsert(['id' => 1], ['age' => 18, 'name' => 'sakuraovq']);
+        $res2     = User::updateOrInsert(['id' => mt_rand(1, 20)], ['age' => 18, 'name' => 'sakuraovq']);
         $wheres   = [
             'name' => 'sakuraovq',
             ['id', '>=', 2]

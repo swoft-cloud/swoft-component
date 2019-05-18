@@ -345,17 +345,15 @@ trait HasAttributes
      */
     public function setRawAttributes(array $attributes, $sync = false)
     {
-        $this->attributes = $attributes;
-
         foreach ($attributes as $key => $value) {
             $column = EntityRegister::getReverseMappingByColumn($this->getClassName(), $key);
             // not found this key column annotation
             if (empty($column)) {
-                unset($this->attributes[$key]);
                 continue;
             }
             $type = $column['type'];
             $this->setAttribute($key, ObjectHelper::parseParamType($type, $value));
+            $this->attributes[$key] = $value;
         }
 
         if ($sync) {

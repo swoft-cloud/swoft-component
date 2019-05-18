@@ -816,9 +816,9 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public function is(Model $model): bool
     {
-        return !is_null($model) &&
-            $this->getKey() === $model->getKey() &&
-            $this->getTable() === $model->getTable();
+        return !is_null($model)
+            && $this->getKey() === $model->getKey()
+            && $this->getTable() === $model->getTable();
     }
 
     /**
