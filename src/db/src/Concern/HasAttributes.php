@@ -351,8 +351,9 @@ trait HasAttributes
             if (empty($column)) {
                 continue;
             }
-            $type = $column['type'];
-            $this->setAttribute($key, ObjectHelper::parseParamType($type, $value));
+            $type  = $column['type'];
+            $value = ObjectHelper::parseParamType($type, $value);
+            $this->setAttribute($key, $value);
             $this->attributes[$key] = $value;
         }
 
