@@ -2485,7 +2485,7 @@ class Builder implements PrototypeInterface
             $this->columns = ['*'];
         }
 
-        yield $this->getConnection()->cursor($this->toSql(), $this->getBindings(), !$this->useWritePdo);
+        return $this->getConnection()->cursor($this->toSql(), $this->getBindings(), !$this->useWritePdo);
     }
 
     /**

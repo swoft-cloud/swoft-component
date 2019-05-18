@@ -11,7 +11,7 @@ return [
         'class'    => Database::class,
         'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
         'username' => 'root',
-        'password' => '123456',
+        'password' => 'swoft123456',
         'charset'  => 'utf8mb4',
         // 'prefix'   => 't_',
         'options'  => [
@@ -22,7 +22,7 @@ return [
             'strict'    => false,
             'timezone'  => '+8:00',
             'modes'     => 'NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES',
-            'fetchMode' => PDO::FETCH_ASSOC,
+            //'fetchMode' => PDO::FETCH_ASSOC,
         ],
     ],
     'db2'      => [
@@ -31,14 +31,14 @@ return [
             [
                 'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
                 'username' => 'root',
-                'password' => '123456',
+                'password' => 'swoft123456',
             ],
         ],
         'reads'  => [
             [
                 'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
                 'username' => 'root',
-                'password' => '123456',
+                'password' => 'swoft123456',
             ]
         ],
     ],

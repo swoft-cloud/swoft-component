@@ -654,8 +654,7 @@ class BuilderTest extends TestCase
 
         $users = DB::table('user')->cursor();
         foreach ($users as $user) {
-            $user = (object)$user;
-            $this->assertIsString($user->name);
+            $this->assertIsString($user['name']);
         }
     }
 
