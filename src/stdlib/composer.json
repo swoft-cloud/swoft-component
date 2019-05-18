@@ -12,13 +12,16 @@
   "require": {
     "php": ">7.1.0"
   },
+  "require-dev": {
+    "phpunit/phpunit": "^7.5"
+  },
   "autoload": {
     "psr-4": {
       "Swoft\\Stdlib\\": "src/"
-    }
-  },
-  "require-dev": {
-    "phpunit/phpunit": "^7.5"
+    },
+    "files": [
+      "src/Helper/Functions.php"
+    ]
   },
   "autoload-dev": {
     "psr-4": {
