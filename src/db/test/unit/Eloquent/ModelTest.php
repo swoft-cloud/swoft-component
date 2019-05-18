@@ -6,14 +6,9 @@ namespace SwoftTest\Db\Unit\Eloquent;
 
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\DB;
 use Swoft\Db\Eloquent\Collection;
 use Swoft\Db\Exception\DbException;
-use Swoft\Db\Exception\EloquentException;
-use Swoft\Db\Exception\EntityException;
-use Swoft\Db\Exception\PoolException;
-use Swoft\Db\Exception\QueryException;
 use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Unit\TestCase;
 
@@ -26,12 +21,8 @@ class ModelTest extends TestCase
 {
     /**
      * @throws ContainerException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws PoolException
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws DbException
+     * @throws ReflectionException
      */
     public function testSave()
     {
@@ -87,10 +78,6 @@ class ModelTest extends TestCase
     /**
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws PoolException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function testDelete()
@@ -165,10 +152,6 @@ class ModelTest extends TestCase
     /**
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws PoolException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function testUpdate()
@@ -234,12 +217,12 @@ class ModelTest extends TestCase
         $this->assertArrayHasKey('pwd', $user->toArray());
         // Delete only left 20 rows
         $resCount
-            = DB::selectOne('select count(*) as `count` from `user`')->count;
+            = DB::selectOne('select count(*) as `count` from `user`')['count'];
         if ($resCount - 20 > 0) {
             DB::delete('delete A FROM `user` A INNER JOIN (SELECT ID FROM `user` B limit ?) B
 on A.id=B.id;', [$resCount - 20]);
             $res
-                = DB::selectOne('select count(*) as `count` from `user`')->count;
+                = DB::selectOne('select count(*) as `count` from `user`')['count'];
             $this->assertEquals(20, $res);
         }
         foreach (User::query()->cursor() as $user) {
@@ -304,7 +287,7 @@ on A.id=B.id;', [$resCount - 20]);
             ->groupBy('user_desc')
             ->get();
 
-        /* @var $v User */
+        /* @var User $v */
         foreach ($res as $v) {
             $this->assertGreaterThan(0, $v->getId());
         }
@@ -318,7 +301,7 @@ on A.id=B.id;', [$resCount - 20]);
         $users = User::skip(10)->take(5)->get();
 
         foreach ($users as $user) {
-            /* @var $user User */
+            /* @var User $user */
             $this->assertIsInt($user->getId());
         }
         $this->assertInstanceOf('Swoft\Db\Eloquent\Collection', $users);
@@ -349,7 +332,7 @@ on A.id=B.id;', [$resCount - 20]);
     public function testChunkId()
     {
         User::chunkById(2, function (Collection $users) {
-            /* @var $user User */
+            /* @var User $user */
             foreach ($users as $user) {
                 $this->assertGreaterThan(0, $user->getId());
             }

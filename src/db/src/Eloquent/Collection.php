@@ -8,8 +8,7 @@ use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Db\Exception\EloquentException;
-use Swoft\Db\Exception\EntityException;
+use Swoft\Db\Exception\DbException;
 use Swoft\Stdlib\Collection as BaseCollection;
 use Swoft\Stdlib\Contract\Arrayable;
 use Swoft\Stdlib\Helper\Arr;
@@ -31,8 +30,8 @@ class Collection extends BaseCollection
      * @param array $items
      *
      * @return static
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      */
     public static function new(array $items = []): self
     {
@@ -49,8 +48,7 @@ class Collection extends BaseCollection
      * @param null $default
      *
      * @return mixed|Collection
-     * @throws EntityException
-     * @throws EloquentException
+     * @throws DbException
      */
     public function find($key, $default = null)
     {
@@ -167,6 +165,7 @@ class Collection extends BaseCollection
      * @param mixed $items
      *
      * @return Collection|BaseCollection
+     * @throws DbException
      */
     public function diff($items)
     {
@@ -175,7 +174,8 @@ class Collection extends BaseCollection
         $dictionary = $this->getDictionary($items);
 
         foreach ($this->items as $item) {
-            if (!isset($dictionary[$item->getKey()])) {
+            /* @var Model $item */
+            if (!isset($dictionary[$item->getKey()[1]])) {
                 $diff->add($item);
             }
         }
@@ -186,9 +186,10 @@ class Collection extends BaseCollection
     /**
      * Intersect the collection with the given items.
      *
-     * @param ArrayAccess|array  $items
+     * @param ArrayAccess|array $items
      *
      * @return static
+     * @throws DbException
      */
     public function intersect($items)
     {
@@ -197,7 +198,8 @@ class Collection extends BaseCollection
         $dictionary = $this->getDictionary($items);
 
         foreach ($this->items as $item) {
-            if (isset($dictionary[$item->getKey()])) {
+            /* @var Model $item */
+            if (isset($dictionary[$item->getKey()[1]])) {
                 $intersect->add($item);
             }
         }
@@ -257,7 +259,7 @@ class Collection extends BaseCollection
     /**
      * Get a dictionary keyed by primary keys.
      *
-     * @param ArrayAccess|array|null  $items
+     * @param ArrayAccess|array|null $items
      *
      * @return array
      */

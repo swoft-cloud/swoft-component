@@ -6,12 +6,8 @@ namespace SwoftTest\Db\Unit\Query;
 use DateTime;
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\DB;
 use Swoft\Db\Exception\DbException;
-use Swoft\Db\Exception\EloquentException;
-use Swoft\Db\Exception\PoolException;
-use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
 use Swoft\Stdlib\Collection;
@@ -27,9 +23,8 @@ class BuilderTest extends TestCase
 {
     /**
      * @throws ContainerException
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws DbException
+     * @throws ReflectionException
      */
     public function testSelect()
     {
@@ -46,7 +41,6 @@ class BuilderTest extends TestCase
     /**
      * @throws ContainerException
      * @throws DbException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function testSelectSub()
@@ -75,7 +69,6 @@ class BuilderTest extends TestCase
     /**
      * @throws ContainerException
      * @throws DbException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function testSelectRaw()
@@ -89,9 +82,8 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws DbException
+     * @throws ReflectionException
      */
     public function testSelectBetween()
     {
@@ -105,7 +97,6 @@ class BuilderTest extends TestCase
     /**
      * @throws ContainerException
      * @throws DbException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function testSelectExpression()
@@ -124,7 +115,6 @@ class BuilderTest extends TestCase
     /**
      * @throws ContainerException
      * @throws DbException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function testSelectLeftJoin()
@@ -140,7 +130,6 @@ class BuilderTest extends TestCase
     /**
      * @throws ContainerException
      * @throws DbException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function testSelectSubJoinQuery()
@@ -171,7 +160,6 @@ class BuilderTest extends TestCase
     /**
      * @throws ContainerException
      * @throws DbException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function testSelectList()
@@ -203,9 +191,8 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws DbException
+     * @throws ReflectionException
      */
     public function testHaving()
     {
@@ -243,9 +230,8 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws DbException
+     * @throws ReflectionException
      */
     public function testDistinct()
     {
@@ -257,7 +243,6 @@ class BuilderTest extends TestCase
     /**
      * @throws ContainerException
      * @throws DbException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function testWheres()
@@ -304,7 +289,6 @@ class BuilderTest extends TestCase
     /**
      * @throws ContainerException
      * @throws DbException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function testOrWheres()
@@ -353,9 +337,8 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws DbException
+     * @throws ReflectionException
      */
     public function testSelectShareLock()
     {
@@ -369,7 +352,6 @@ class BuilderTest extends TestCase
     /**
      * @throws ContainerException
      * @throws DbException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function testSelectWriteLock()
@@ -395,9 +377,8 @@ class BuilderTest extends TestCase
 
     /**
      * @throws ContainerException
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws DbException
+     * @throws ReflectionException
      */
     public function testForceIndex()
     {
@@ -414,9 +395,6 @@ class BuilderTest extends TestCase
     /**
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws PoolException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function testInset()
@@ -492,9 +470,6 @@ class BuilderTest extends TestCase
     /**
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws PoolException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function testUpdate()
@@ -521,9 +496,6 @@ class BuilderTest extends TestCase
     /**
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws PoolException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function testDelete()
@@ -556,7 +528,6 @@ class BuilderTest extends TestCase
     /**
      * @throws ContainerException
      * @throws DbException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function testCrossJoin()
@@ -573,7 +544,6 @@ class BuilderTest extends TestCase
     /**
      * @throws ContainerException
      * @throws DbException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function testUnionSelect()
@@ -593,8 +563,6 @@ class BuilderTest extends TestCase
     /**
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function testEach()
@@ -623,7 +591,7 @@ class BuilderTest extends TestCase
         DB::table('user')->truncate();
         // Single strip
         $res = DB::selectOne($sql, [$this->getFirstId()]);
-        $this->assertIsInt($res->id);
+        $this->assertIsInt($res['id']);
 
 
         // Multiple strips
@@ -637,7 +605,7 @@ class BuilderTest extends TestCase
         $sql = 'select * from `user`';
         $res = DB::cursor($sql);
         foreach ($res as $user) {
-            $this->assertIsString($user->name);
+            $this->assertIsString($user['name']);
         }
         //DB::statement('drop table `count`');
     }
@@ -648,8 +616,6 @@ class BuilderTest extends TestCase
      * @return int
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function getFirstId(): int
@@ -658,7 +624,7 @@ class BuilderTest extends TestCase
         if (empty($res)) {
             return User::updateOrCreate(['id' => 22], ['age' => 18, 'name' => 'sakuraovq'])->getId();
         }
-        return $res->id;
+        return $res['id'];
     }
 
     public function testPool()
@@ -688,6 +654,7 @@ class BuilderTest extends TestCase
 
         $users = DB::table('user')->cursor();
         foreach ($users as $user) {
+            $user = (object)$user;
             $this->assertIsString($user->name);
         }
     }
@@ -697,13 +664,13 @@ class BuilderTest extends TestCase
         $name = '哈哈哈哈哈' . mt_rand(1, 1000);
 
         $user   = User::updateOrCreate(['id' => 22], ['age' => 18, 'name' => $name]);
-        $result = DB::table('user')->find((string)$user->getId());
+        $result = (object)DB::table('user')->find((string)$user->getId());
 
         $this->assertEquals($name, $result->name);
 
 
         DB::table('user')->where('id', $user->getId())->update(['name' => $name]);
-        $result1 = DB::table('user')->find((string)$user->getId());
+        $result1 = (object)DB::table('user')->find((string)$user->getId());
 
         $this->assertEquals($name, $result1->name);
     }
@@ -743,5 +710,21 @@ class BuilderTest extends TestCase
 
         $res = DB::query('db.pool2')->from('user')->find("22");
         $this->assertEquals($name, $res->name);
+    }
+
+    public function testPaginate()
+    {
+        $res = DB::table('user')->paginate(1, 2);
+
+        $this->assertIsArray($res);
+    }
+
+    public function testChunkById()
+    {
+        DB::table('user')->chunkById(2, function ($users) {
+            foreach ($users as $user) {
+                $this->assertIsString($user['name']);
+            }
+        });
     }
 }

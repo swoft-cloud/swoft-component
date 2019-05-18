@@ -13,17 +13,12 @@ use function property_exists;
 use ReflectionException;
 use Swoft\Aop\Proxy;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\Concern\HasAttributes;
 use Swoft\Db\Concern\HidesAttributes;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\DB;
 use Swoft\Db\EntityRegister;
 use Swoft\Db\Exception\DbException;
-use Swoft\Db\Exception\EloquentException;
-use Swoft\Db\Exception\EntityException;
-use Swoft\Db\Exception\PoolException;
-use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Query\Builder as QueryBuilder;
 use Swoft\Stdlib\Contract\Arrayable;
 use Swoft\Stdlib\Contract\Jsonable;
@@ -171,7 +166,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @param array $attributes
      *
-     * @throws EloquentException
+     * @throws DbException
      */
     public function __construct(array $attributes = [])
     {
@@ -187,7 +182,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param array $attributes
      *
      * @return static
-     * @throws EloquentException
+     * @throws DbException
      */
     public static function new(array $attributes = []): self
     {
@@ -195,7 +190,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
             /* @var static $self */
             $self = bean(Proxy::getClassName(static::class));
         } catch (Throwable $e) {
-            throw new EloquentException($e->getMessage());
+            throw new DbException($e->getMessage());
         }
 
         $self->syncOriginal();
@@ -211,7 +206,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param array $attributes
      *
      * @return Model
-     * @throws EloquentException
+     * @throws DbException
      */
     public function fill(array $attributes): self
     {
@@ -228,7 +223,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param string $column
      *
      * @return string
-     * @throws EntityException
+     * @throws DbException
      */
     public function qualifyColumn(string $column): string
     {
@@ -246,7 +241,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param bool  $exists
      *
      * @return static
-     * @throws EloquentException
+     * @throws DbException
      */
     public function newInstance(array $attributes = [], bool $exists = false): self
     {
@@ -284,9 +279,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @return Collection
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public static function all(array $columns = ['*']): Collection
@@ -304,9 +296,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @return mixed
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function increment(string $column, $amount = 1, array $extra = [])
@@ -324,9 +313,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @return mixed
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function decrement(string $column, $amount = 1, array $extra = [])
@@ -345,9 +331,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @return mixed
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws QueryException
      * @throws ReflectionException
      */
     protected function incrementOrDecrement(string $column, $amount, array $extra, string $method)
@@ -383,7 +366,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param        $extra
      * @param        $method
      *
-     * @throws EloquentException
+     * @throws DbException
      */
     protected function incrementOrDecrementAttributeValue(string $column, $amount, $extra, $method)
     {
@@ -407,10 +390,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @return bool
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws PoolException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function update(array $attributes = [])
@@ -428,10 +407,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @return bool
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws PoolException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function save()
@@ -505,10 +480,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @return bool
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws PoolException
-     * @throws QueryException
      * @throws ReflectionException
      */
     protected function performUpdate(Builder $query)
@@ -539,9 +510,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @return Builder
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws QueryException
      * @throws ReflectionException
      */
     protected function setKeysForSaveQuery(Builder $query)
@@ -555,8 +523,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Get the primary key value for a save query.
      *
      * @return mixed
-     * @throws EntityException
-     * @throws EloquentException
+     * @throws DbException
      */
     protected function getKeyForSaveQuery()
     {
@@ -570,8 +537,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param Builder $query
      *
      * @return bool
-     * @throws EntityException
-     * @throws EloquentException
+     * @throws DbException
      */
     protected function performInsert(Builder $query)
     {
@@ -613,8 +579,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param array   $attributes
      *
      * @return void
-     * @throws EntityException
-     * @throws EloquentException
+     * @throws DbException
      */
     protected function insertAndSetId(Builder $query, $attributes)
     {
@@ -630,16 +595,12 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @return bool
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws PoolException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function delete(): bool
     {
         if (is_null($this->getKeyName())) {
-            throw new EloquentException('No primary key defined on model.');
+            throw new DbException('No primary key defined on model.');
         }
 
         // If the model doesn't exist, there is nothing to delete so we'll just return
@@ -670,10 +631,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @return bool
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws PoolException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function forceDelete()
@@ -686,10 +643,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws PoolException
-     * @throws QueryException
      * @throws ReflectionException
      */
     protected function performDeleteOnModel()
@@ -705,9 +658,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @return Builder
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public static function query()
@@ -721,8 +671,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @return Builder
      * @throws ContainerException
      * @throws DbException
-     * @throws EntityException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function newQuery()
@@ -736,8 +684,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @return Builder
      * @throws ContainerException
      * @throws DbException
-     * @throws EntityException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function newModelQuery()
@@ -762,10 +708,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @return QueryBuilder
      * @throws ContainerException
-     * @throws EntityException
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws DbException
+     * @throws ReflectionException
      */
     protected function newBaseQueryBuilder()
     {
@@ -791,7 +735,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Convert the model instance to an array.
      *
      * @return array
-     * @throws EloquentException
+     * @throws DbException
      */
     public function toArray(): array
     {
@@ -804,7 +748,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param int $options
      *
      * @return string
-     * @throws EloquentException
+     * @throws DbException
      */
     public function toJson(int $options = 0): string
     {
@@ -815,7 +759,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Convert the object into something JSON serializable.
      *
      * @return array
-     * @throws EloquentException
+     * @throws DbException
      */
     public function jsonSerialize()
     {
@@ -828,9 +772,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @return null|$this|object|Builder|Model
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function fresh()
@@ -850,9 +791,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @return $this
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function refresh()
@@ -876,8 +814,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param Model $model
      *
      * @return bool
-     * @throws EntityException
-     * @throws EloquentException
+     * @throws DbException
      */
     public function is(Model $model): bool
     {
@@ -892,8 +829,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param Model $model
      *
      * @return bool
-     * @throws EntityException
-     * @throws EloquentException
+     * @throws DbException
      */
     public function isNot(Model $model): bool
     {
@@ -903,8 +839,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     /**
      * Get the database connection for the model.
      *
-     * @throws EntityException
-     * @throws PoolException
+     * @throws DbException
+     * @throws DbException
      */
     public function getConnection(): Connection
     {
@@ -917,7 +853,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Get the table associated with the model.
      *
      * @return string
-     * @throws EntityException
+     * @throws DbException
      */
     public function getTable()
     {
@@ -928,7 +864,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Get the primary key for the model.
      *
      * @return string
-     * @throws EntityException
+     * @throws DbException
      */
     public function getKeyName()
     {
@@ -939,7 +875,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Get the table qualified key name.
      *
      * @return string
-     * @throws EntityException
+     * @throws DbException
      */
     public function getQualifiedKeyName()
     {
@@ -960,8 +896,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Get the value of the model's primary key.
      *
      * @return array
-     * @throws EloquentException
-     * @throws EntityException
+     * @throws DbException
      */
     public function getKey()
     {
@@ -972,7 +907,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Get the route key for the model.
      *
      * @return string
-     * @throws EntityException
+     * @throws DbException
      */
     public function getRouteKeyName()
     {
@@ -1009,7 +944,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param mixed $offset
      *
      * @return bool
-     * @throws EloquentException
+     * @throws DbException
      */
     public function offsetExists($offset)
     {
@@ -1022,7 +957,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param mixed $offset
      *
      * @return mixed
-     * @throws EloquentException
+     * @throws DbException
      */
     public function offsetGet($offset)
     {
@@ -1036,7 +971,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param mixed $value
      *
      * @return void
-     * @throws EloquentException
+     * @throws DbException
      */
     public function offsetSet($offset, $value)
     {
@@ -1061,7 +996,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param string $key
      *
      * @return bool
-     * @throws EloquentException
+     * @throws DbException
      */
     public function __isset($key)
     {
@@ -1097,8 +1032,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @return mixed
      * @throws ContainerException
      * @throws DbException
-     * @throws EntityException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function __call($method, $parameters)
@@ -1117,7 +1050,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param array  $parameters
      *
      * @return mixed
-     * @throws EloquentException
+     * @throws DbException
      */
     public static function __callStatic($method, $parameters)
     {
@@ -1128,7 +1061,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Convert the model to its string representation.
      *
      * @return string
-     * @throws EloquentException
+     * @throws DbException
      */
     public function __toString()
     {

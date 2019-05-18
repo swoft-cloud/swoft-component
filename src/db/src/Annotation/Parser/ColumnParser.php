@@ -3,13 +3,16 @@
 
 namespace Swoft\Db\Annotation\Parser;
 
+use function trim;
+use function explode;
+use function preg_match;
 use ReflectionException;
 use ReflectionProperty;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Db\Annotation\Mapping\Column;
 use Swoft\Db\EntityRegister;
-use Swoft\Db\Exception\EntityException;
+use Swoft\Db\Exception\DbException;
 
 /**
  * Class ColumnParser
@@ -24,7 +27,7 @@ class ColumnParser extends Parser
      * @param Column $annotationObject
      *
      * @return array
-     * @throws EntityException
+     * @throws DbException
      * @throws ReflectionException
      */
     public function parse(int $type, $annotationObject): array
@@ -41,7 +44,7 @@ class ColumnParser extends Parser
     }
 
     /**
-     * Get property `@var` type
+     * Get property `
      *
      * @return string
      * @throws ReflectionException

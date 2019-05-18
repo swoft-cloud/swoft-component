@@ -33,9 +33,9 @@ class Pool extends AbstractPool
      * Create connection
      *
      * @return ConnectionInterface
+     * @throws ContainerException
      * @throws DbException
      * @throws ReflectionException
-     * @throws ContainerException
      */
     public function createConnection(): ConnectionInterface
     {

@@ -9,12 +9,17 @@ use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\SwoftComponent;
 
+/**
+ * Class AutoLoader
+ *
+ * @since 2.0
+ */
 class AutoLoader extends SwoftComponent
 {
     /**
      * @return array
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      */
     public function beans(): array
     {

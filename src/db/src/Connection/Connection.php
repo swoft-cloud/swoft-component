@@ -16,11 +16,11 @@ use Swoft\Connection\Pool\AbstractConnection;
 use Swoft\Db\Contract\ConnectionInterface;
 use Swoft\Db\Database;
 use Swoft\Db\DbEvent;
-use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Pool;
 use Swoft\Db\Query\Expression;
 use Swoft\Db\Query\Grammar\Grammar;
 use Swoft\Db\Query\Processor\Processor;
+use Swoft\Db\Exception\DbException;
 use Throwable;
 use function bean;
 
@@ -95,8 +95,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param Pool     $pool
      * @param Database $database
      *
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      */
     public function initialize(Pool $pool, Database $database)
     {
@@ -127,9 +127,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * Set the query post processor to the default implementation.
      *
      * @return void
-     * @return object|string|Processor
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      */
     public function useDefaultPostProcessor()
     {
@@ -140,9 +139,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * Get the default post processor instance.
      *
      * @return Processor
-     * @return object|string|Processor
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function getDefaultPostProcessor()
     {
@@ -167,8 +165,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * Create connection
      *
      * @throws ContainerException
+     * @throws DbException
      * @throws ReflectionException
-     * @throws Swoft\Db\Exception\DbException
      */
     public function create(): void
     {
@@ -203,8 +201,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * @param bool $force
      *
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      */
     public function release(bool $force = false): void
     {
@@ -243,8 +241,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * Create pdo
      *
      * @throws ContainerException
+     * @throws DbException
      * @throws ReflectionException
-     * @throws Swoft\Db\Exception\DbException
      */
     private function createPdo()
     {
@@ -258,8 +256,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * Create read pdo
      *
      * @throws ContainerException
+     * @throws DbException
      * @throws ReflectionException
-     * @throws Swoft\Db\Exception\DbException
      */
     private function createReadPdo()
     {
@@ -340,9 +338,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param bool   $useReadPdo
      *
      * @return mixed
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
      */
     public function selectOne($query, $bindings = [], $useReadPdo = true)
     {
@@ -359,9 +357,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param bool   $useReadPdo
      *
      * @return array
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
      */
     public function select(string $query, array $bindings = [], bool $useReadPdo = true): array
     {
@@ -388,9 +386,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param bool   $useReadPdo
      *
      * @return Generator
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
      */
     public function cursor(string $query, array $bindings = [], bool $useReadPdo = true): Generator
     {
@@ -425,9 +423,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param array  $bindings
      *
      * @return bool
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
      */
     public function insert(string $query, array $bindings = []): bool
     {
@@ -442,9 +440,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param string $sequence
      *
      * @return string
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
      */
     public function insertGetId(string $query, array $bindings = [], string $sequence = null): string
     {
@@ -458,9 +456,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param array  $bindings
      *
      * @return int
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
      */
     public function update(string $query, array $bindings = []): int
     {
@@ -474,9 +472,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param array  $bindings
      *
      * @return int
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
      */
     public function delete(string $query, array $bindings = []): int
     {
@@ -490,9 +488,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param array  $bindings
      *
      * @return bool
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
      */
     public function statement(string $query, array $bindings = []): bool
     {
@@ -510,12 +508,12 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @param string $query
      * @param array  $bindings
-     * @param string  $sequence
+     * @param string $sequence
      *
      * @return string
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
      */
     public function insertGetIdStatement(string $query, array $bindings = [], string $sequence = null): string
     {
@@ -536,9 +534,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param array  $bindings
      *
      * @return int
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
      */
     public function affectingStatement(string $query, array $bindings = []): int
     {
@@ -561,9 +559,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param string $query
      *
      * @return bool
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
      */
     public function unprepared(string $query): bool
     {
@@ -603,15 +601,15 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Run a SQL statement and log its execution context.
      *
-     * @param string   $query
-     * @param array    $bindings
+     * @param string  $query
+     * @param array   $bindings
      * @param Closure $callback
      *
      * @return mixed
      *
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
      */
     protected function run(string $query, array $bindings, Closure $callback)
     {
@@ -631,16 +629,16 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Run a SQL statement.
      *
-     * @param string   $query
-     * @param array    $bindings
+     * @param string  $query
+     * @param array   $bindings
      * @param Closure $callback
-     * @param bool     $reconnect
+     * @param bool    $reconnect
      *
      * @return mixed
      *
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
      */
     protected function runQueryCallback(string $query, array $bindings, Closure $callback, bool $reconnect = false)
     {
@@ -670,7 +668,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
             }
 
             // Throw exception
-            throw new QueryException($e->getMessage());
+            throw new DbException($e->getMessage());
         }
 
         $this->pdoType = self::TYPE_DEFAULT;
@@ -728,7 +726,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
 
     /**
      * @param Closure $callback
-     * @param int      $attempts
+     * @param int     $attempts
      *
      * @return mixed|void
      */
@@ -740,7 +738,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Start a new database transaction.
      *
-     * @throws ReflectionException
      * @throws ContainerException
      * @throws Throwable
      */
@@ -758,7 +755,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
     }
 
     /**
-     * @throws ReflectionException
      * @throws ContainerException
      * @throws Throwable
      */
@@ -792,7 +788,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * @param int|null $toLevel
      *
-     * @throws ReflectionException
      * @throws ContainerException
      * @throws Throwable
      */
@@ -821,9 +816,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * @param int|null $toLevel
      *
-     * @throws ReflectionException
      * @throws ContainerException
-     * @throws Throwable
+     * @throws ReflectionException
      */
     public function forceRollBack(int $toLevel = null): void
     {
@@ -846,8 +840,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param bool $useReadPdo
      *
      * @return PDO
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function getPdoForSelect($useReadPdo = true)
     {
@@ -869,8 +863,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * Get the current PDO connection used for reading.
      *
      * @return PDO
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      */
     public function getReadPdo(): PDO
     {
@@ -891,7 +885,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * Bind values to their parameters in the given statement.
      *
      * @param PDOStatement $statement
-     * @param array         $bindings
+     * @param array        $bindings
      *
      * @return void
      */
@@ -911,8 +905,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param int $toLevel
      *
      * @return void
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function performRollBack(int $toLevel): void
     {
@@ -967,8 +961,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * @return ConnectionManager
      *
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function getConMananger(): ConnectionManager
     {
