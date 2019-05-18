@@ -713,7 +713,7 @@ class BuilderTest extends TestCase
 
     public function testPaginate()
     {
-        $res = DB::table('user')->paginate(1, 2);
+        $res = DB::table('user')->where('id',22)->paginate(1, 2);
 
         $this->assertIsArray($res);
     }

@@ -142,6 +142,7 @@ use Throwable;
  * @method static bool    insert(array $values)
  * @method static Builder limit(int $value)
  * @method static Builder forPage(int $page, int $perPage = 15)
+ * @method static array   paginate(int $page = 1, int $perPage = 15, array $columns = ['*'])
  */
 abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
 {
@@ -162,7 +163,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     public $exists = false;
 
     /**
-     * Create a new EloquentException model instance.
+     * Create a new Eloquent model instance.
      *
      * @param array $attributes
      *
@@ -210,10 +211,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public function fill(array $attributes): self
     {
-        foreach ($attributes as $key => $value) {
-            $this->setAttribute($key, $value);
-        }
-
+        $this->setRawAttributes($attributes);
         return $this;
     }
 
@@ -247,7 +245,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     {
         // This method just provides a convenient way for us to generate fresh model
         // instances of this current model. It is particularly useful during the
-        // hydration of new objects via the EloquentException query builder instances.
+        // hydration of new objects via the Eloquent query builder instances.
         $model = static::new($attributes);
 
         $model->exists = $exists;
@@ -692,7 +690,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     }
 
     /**
-     * Create a new EloquentException query builder for the model.
+     * Create a new Eloquent query builder for the model.
      *
      * @param QueryBuilder $query
      *
@@ -718,7 +716,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     }
 
     /**
-     * Create a new EloquentException Collection instance.
+     * Create a new Eloquent Collection instance.
      *
      * @param array $models
      *

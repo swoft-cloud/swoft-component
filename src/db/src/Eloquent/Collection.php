@@ -33,7 +33,7 @@ class Collection extends BaseCollection
      * @throws ContainerException
      * @throws ReflectionException
      */
-    public static function new(array $items = []): self
+    public static function  new(array $items = []): self
     {
         $self        = self::__instance();
         $self->items = $items;

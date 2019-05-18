@@ -362,4 +362,11 @@ on A.id=B.id;', [$resCount - 20]);
             $this->assertIsInt($id);
         }
     }
+
+    public function testPaginate()
+    {
+        $res = User::paginate(1, 2);
+
+        $this->assertIsArray($res);
+    }
 }

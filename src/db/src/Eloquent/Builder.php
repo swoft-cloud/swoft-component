@@ -179,11 +179,12 @@ class Builder
         'implode',
         'pluck',
         'getConnection',
-        'updateOrInsert'
+        'updateOrInsert',
+        'paginate'
     ];
 
     /**
-     * Create a new EloquentException query builder instance.
+     * Create a new Eloquent query builder instance.
      *
      * @param QueryBuilder $query
      *
