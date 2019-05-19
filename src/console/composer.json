@@ -29,10 +29,6 @@
     }
   },
   "repositories": [
-    {
-      "type": "composer",
-      "url": "https://packagist.laravel-china.org"
-    }
   ],
   "require-dev": {
     "swoft/swoole-ide-helper": "dev-master",
