@@ -12,6 +12,7 @@
     "php": ">7.1.0",
     "psr/container": "^1.0",
     "swoft/annotation": "dev-master",
+    "swoft/event": "dev-master",
     "swoft/stdlib": "dev-master"
   },
   "autoload": {
@@ -40,7 +41,6 @@
     }
   },
   "scripts": {
-    "test": "./vendor/bin/phpunit -c phpunit.xml",
-    "cs-fix": "./vendor/bin/php-cs-fixer fix $1"
+    "test": "./vendor/bin/phpunit -c phpunit.xml"
   }
 }
