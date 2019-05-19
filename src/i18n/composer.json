@@ -23,8 +23,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "SwoftTest\\I18n\\Testing": "test/testing",
-            "SwoftTest\\I18n\\Unit": "test/unit"
+            "SwoftTest\\I18n\\Testing\\": "test/testing",
+            "SwoftTest\\I18n\\Unit\\": "test/unit"
         }
     },
     "repositories": [
