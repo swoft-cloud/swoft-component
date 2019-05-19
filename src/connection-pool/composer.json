@@ -9,6 +9,7 @@
   "description": "connect pool for swoft",
   "license": "Apache-2.0",
   "require": {
+    "swoft/stdlib": "dev-master"
   },
   "autoload": {
     "psr-4": {
@@ -24,13 +25,10 @@
     }
   },
   "repositories": {
-    "packagist": {
-      "type": "composer",
-      "url": "https://packagist.laravel-china.org"
-    }
   },
   "require-dev": {
   },
   "scripts": {
+    "test": "./vendor/bin/phpunit -c phpunit.xml"
   }
 }
