@@ -22,8 +22,8 @@ class JsonExpression extends Expression
      * @param mixed ...$params
      *
      * @return static
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      */
     public static function new(...$params)
     {

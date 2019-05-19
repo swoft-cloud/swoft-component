@@ -10,8 +10,6 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Exception\DbException;
-use Swoft\Db\Exception\QueryException;
-
 /**
  * Class JoinClause
  *
@@ -48,8 +46,8 @@ class JoinClause extends Builder
      * @param mixed ...$params
      *
      * @return JoinClause
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      */
     public static function new(...$params): self
     {
@@ -95,7 +93,6 @@ class JoinClause extends Builder
      *
      * @throws ContainerException
      * @throws DbException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function on($first, $operator = null, $second = null, $boolean = 'and')
@@ -117,7 +114,6 @@ class JoinClause extends Builder
      * @return static
      * @throws ContainerException
      * @throws DbException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function orOn($first, $operator = null, $second = null)
@@ -141,10 +137,9 @@ class JoinClause extends Builder
      * Create a new query instance for sub-query.
      *
      * @return Builder
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws ContainerException
      * @throws DbException
+     * @throws ReflectionException
      */
     protected function forSubQuery(): Builder
     {

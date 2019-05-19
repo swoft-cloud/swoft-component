@@ -6,7 +6,7 @@ namespace Swoft\Db\Concern;
 use BadMethodCallException;
 use function in_array;
 use Swoft\Db\EntityRegister;
-use Swoft\Db\Exception\EloquentException;
+use Swoft\Db\Exception\DbException;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Stdlib\Helper\Str;
@@ -43,7 +43,7 @@ trait HasAttributes
      * Convert the model's attributes to an array.
      *
      * @return array
-     * @throws EloquentException
+     * @throws DbException
      */
     public function attributesToArray()
     {
@@ -75,7 +75,7 @@ trait HasAttributes
      * @param string $key
      *
      * @return array
-     * @throws EloquentException
+     * @throws DbException
      */
     protected function getArrayableItem(string $key)
     {
@@ -97,8 +97,7 @@ trait HasAttributes
      * @param string $key
      *
      * @return array
-     * @throws EloquentException
-     * @throws BadMethodCallException
+     * @throws DbException
      */
     public function getAttribute(string $key): array
     {
@@ -121,8 +120,7 @@ trait HasAttributes
      * @param string $key
      *
      * @return array
-     * @throws EloquentException
-     * @throws BadMethodCallException
+     * @throws DbException
      */
     public function getHiddenAttribute(string $key): array
     {
@@ -171,7 +169,7 @@ trait HasAttributes
      * @param        $value
      *
      * @return HasAttributes
-     * @throws EloquentException
+     * @throws DbException
      */
     public function setAttribute(string $key, $value): self
     {
@@ -343,21 +341,20 @@ trait HasAttributes
      * @param bool  $sync
      *
      * @return $this
-     * @throws EloquentException
+     * @throws DbException
      */
     public function setRawAttributes(array $attributes, $sync = false)
     {
-        $this->attributes = $attributes;
-
         foreach ($attributes as $key => $value) {
             $column = EntityRegister::getReverseMappingByColumn($this->getClassName(), $key);
             // not found this key column annotation
             if (empty($column)) {
-                unset($this->attributes[$key]);
                 continue;
             }
-            $type = $column['type'];
-            $this->setAttribute($key, ObjectHelper::parseParamType($type, $value));
+            $type  = $column['type'];
+            $value = ObjectHelper::parseParamType($type, $value);
+            $this->setAttribute($key, $value);
+            $this->attributes[$key] = $value;
         }
 
         if ($sync) {
@@ -386,7 +383,7 @@ trait HasAttributes
      * @param array $attributes
      *
      * @return array
-     * @throws EloquentException
+     * @throws DbException
      */
     public function only(array $attributes)
     {
@@ -580,14 +577,14 @@ trait HasAttributes
      * @param string $key
      *
      * @return array
-     * @throws EloquentException
+     * @throws DbException
      */
     private function getMappingByColumn(string $key): array
     {
         $mapping = EntityRegister::getReverseMappingByColumn($this->getClassName(), $key);
 
         if (empty($mapping)) {
-            throw new EloquentException(sprintf('Column(%s) is not exist!', $key));
+            throw new DbException(sprintf('Column(%s) is not exist!', $key));
         }
 
         $attrName = $mapping['attr'];

@@ -6,12 +6,7 @@ namespace SwoftTest\Db\Unit;
 
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\Exception\DbException;
-use Swoft\Db\Exception\EloquentException;
-use Swoft\Db\Exception\EntityException;
-use Swoft\Db\Exception\PoolException;
-use Swoft\Db\Exception\QueryException;
 use SwoftTest\Db\Testing\Entity\User;
 use Swoole\Event;
 
@@ -33,12 +28,8 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     /**
      * @return int
      * @throws ContainerException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws PoolException
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws DbException
+     * @throws ReflectionException
      */
     public function addRecord(): int
     {

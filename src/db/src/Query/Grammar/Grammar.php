@@ -3,12 +3,9 @@
 
 namespace Swoft\Db\Query\Grammar;
 
-use function end;
 use ReflectionException;
-use function reset;
 use RuntimeException;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\Eloquent\Collection;
 use Swoft\Db\Grammar as BaseGrammar;
 use Swoft\Db\Query\Builder;
@@ -16,6 +13,8 @@ use Swoft\Db\Query\Expression;
 use Swoft\Db\Query\JoinClause;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\Str;
+use function end;
+use function reset;
 
 /**
  * Class Grammar
@@ -174,8 +173,8 @@ class Grammar extends BaseGrammar
      * @param array   $joins
      *
      * @return string
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function compileJoins(Builder $query, $joins)
     {
@@ -224,8 +223,8 @@ class Grammar extends BaseGrammar
      * @param Builder $query
      *
      * @return array
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function compileWheresToArray($query)
     {
@@ -905,8 +904,8 @@ class Grammar extends BaseGrammar
      * @param array   $values
      *
      * @return string
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      */
     public function compileInsert(Builder $query, array $values)
     {

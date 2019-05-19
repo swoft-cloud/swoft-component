@@ -538,7 +538,7 @@ class AnnotationResource extends Resource
      * Notify operation
      *
      * @param string $type
-     * @param        $target
+     * @param mixed  ...$target
      */
     public function notify(string $type, ...$target): void
     {

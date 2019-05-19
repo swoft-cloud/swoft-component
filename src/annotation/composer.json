@@ -11,11 +11,10 @@
   "require": {
     "php": ">7.1",
     "doctrine/annotations": "^1.4",
-    "php-di/phpdoc-reader": "^2.0"
+    "php-di/phpdoc-reader": "^2.0",
+    "swoft/stdlib": "dev-master"
   },
   "autoload": {
-    "classmap": [
-    ],
     "psr-4": {
       "Swoft\\Annotation\\": "src/"
     }
