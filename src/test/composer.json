@@ -26,9 +26,7 @@
       "SwoftTest\\Test\\": "test/case"
     }
   },
-  "repositories": [
-
-  ],
   "scripts": {
+    "test": "./vendor/bin/phpunit -c phpunit.xml"
   }
 }
