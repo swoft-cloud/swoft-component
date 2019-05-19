@@ -11,7 +11,7 @@
     "description": "I18n Translations Component for Swoft",
     "license": "Apache-2.0",
     "require": {
-        "swoft/framework": "^1.0"
+        "swoft/stdlib": "dev-master"
     },
     "autoload": {
         "psr-4": {
@@ -27,15 +27,11 @@
         }
     },
     "repositories": [
-        {
-            "type": "composer",
-            "url": "https://packagist.laravel-china.org"
-        }
     ],
     "require-dev": {
-
+        "phpunit/phpunit": "^7.5"
     },
     "scripts": {
-
+        "test": "./vendor/bin/phpunit -c phpunit.xml"
     }
 }
