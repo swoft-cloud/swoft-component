@@ -28,10 +28,7 @@
     }
   },
   "repositories": [
-    {
-      "type": "composer",
-      "url": "https://packagist.laravel-china.org"
-    }
+
   ],
   "scripts": {
   }

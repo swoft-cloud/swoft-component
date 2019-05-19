@@ -11,6 +11,8 @@
     "description": "I18n Translations Component for Swoft",
     "license": "Apache-2.0",
     "require": {
+        "swoft/bean": "dev-master",
+        "swoft/test": "dev-master",
         "swoft/stdlib": "dev-master"
     },
     "autoload": {
