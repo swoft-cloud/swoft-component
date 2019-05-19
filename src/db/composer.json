@@ -31,7 +31,6 @@
         "psr-4": {
             "SwoftTest\\Db\\Testing": "test/testing",
             "SwoftTest\\Db\\Unit": "test/unit"
-
         }
     },
     "scripts": {
