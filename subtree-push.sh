@@ -21,7 +21,6 @@ git subtree push --prefix=src/rpc-client git@github.com:swoft-cloud/swoft-rpc-cl
 git subtree push --prefix=src/rpc-server git@github.com:swoft-cloud/swoft-rpc-server.git master --squash
 git subtree push --prefix=src/log git@github.com:swoft-cloud/swoft-log.git master --squash
 git subtree push --prefix=src/proxy git@github.com:swoft-cloud/swoft-proxy.git master --squash
-git subtree push --prefix=src/redis git@github.com:swoft-cloud/swoft-redis.git master --squash
 git subtree push --prefix=src/rpc git@github.com:swoft-cloud/swoft-rpc.git master --squash
 git subtree push --prefix=src/rpc-client git@github.com:swoft-cloud/swoft-rpc-client.git master --squash
 git subtree push --prefix=src/rpc-server git@github.com:swoft-cloud/swoft-rpc-server.git master --squash

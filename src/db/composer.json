@@ -29,7 +29,9 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "SwoftTest\\Db\\": "test/case"
+            "SwoftTest\\Db\\Testing": "test/testing",
+            "SwoftTest\\Db\\Unit": "test/unit"
+
         }
     },
     "scripts": {
