@@ -9,5 +9,8 @@ use PHPUnit\Framework\TestCase;
  */
 class ErrorHandlerChainTest extends TestCase
 {
-
+    public function testMethod()
+    {
+        $this->assertTrue(true);
+    }
 }

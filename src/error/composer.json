@@ -11,6 +11,7 @@
     "description": "Error Handler Component for Swoft",
     "license": "Apache-2.0",
     "require": {
+        "swoft/stdlib": "dev-master"
     },
     "autoload": {
         "psr-4": {
@@ -24,15 +25,12 @@
         }
     },
     "repositories": [
-        {
-            "type": "composer",
-            "url": "https://packagist.phpcomposer.com"
-        }
+
     ],
     "require-dev": {
+        "phpunit/phpunit": "^7.5"
     },
     "scripts": {
-        "test": "./vendor/bin/phpunit -c phpunit.xml",
-        "cs-fix": "./vendor/bin/php-cs-fixer fix $1"
+        "test": "./vendor/bin/phpunit -c phpunit.xml"
     }
 }
