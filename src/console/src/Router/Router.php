@@ -2,6 +2,8 @@
 
 namespace Swoft\Console\Router;
 
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Console\Contract\RouterInterface;
 use function array_keys;
 use function array_merge;
 use function count;
@@ -11,8 +13,6 @@ use function ksort;
 use function sort;
 use function sprintf;
 use function strpos;
-use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Console\Contract\RouterInterface;
 use function trim;
 
 /**
@@ -30,18 +30,21 @@ class Router implements RouterInterface
 
     /**
      * The default group of command. eg: http
+     *
      * @var string
      */
     private $defaultGroup = '';
 
     /**
      * The default command. eg. 'start'
+     *
      * @var string
      */
     private $defaultCommand = 'index';
 
     /**
      * The default commands. eg. ['start', 'stop']
+     *
      * @var string[]
      */
     private $defaultCommands = [];
@@ -136,6 +139,7 @@ class Router implements RouterInterface
      * Match route by input command
      *
      * @param array $params [$route]
+     *
      * @return array
      *
      * [
@@ -233,6 +237,7 @@ class Router implements RouterInterface
 
     /**
      * @param string $cmdID It is equals to 'group:command'
+     *
      * @return array
      */
     public function getRouteByID(string $cmdID): array
@@ -242,6 +247,7 @@ class Router implements RouterInterface
 
     /**
      * @param string $alias
+     *
      * @return string
      */
     public function getGroupName(string $alias): string
@@ -251,6 +257,7 @@ class Router implements RouterInterface
 
     /**
      * @param string $alias
+     *
      * @return string
      */
     public function getCommandName(string $alias): string
@@ -260,6 +267,7 @@ class Router implements RouterInterface
 
     /**
      * @param string $command
+     *
      * @return bool
      */
     public function isDefault(string $command): bool
@@ -269,6 +277,7 @@ class Router implements RouterInterface
 
     /**
      * @param string $name
+     *
      * @return bool
      */
     public function isGroup(string $name): bool
@@ -278,8 +287,10 @@ class Router implements RouterInterface
 
     /**
      * command ID = group + : + command
+     *
      * @param string $group
      * @param string $command
+     *
      * @return string
      */
     public function buildCommandID(string $group, string $command): string
@@ -293,6 +304,7 @@ class Router implements RouterInterface
 
     /**
      * @param string $name
+     *
      * @return string
      */
     public function resolveGroupAlias(string $name): string
@@ -302,6 +314,7 @@ class Router implements RouterInterface
 
     /**
      * @param string $name
+     *
      * @return string
      */
     public function resolveCommandAlias(string $name): string
@@ -355,6 +368,7 @@ class Router implements RouterInterface
 
     /**
      * Get all name for search
+     *
      * @return array
      */
     public function getAllNames(): array
@@ -421,6 +435,7 @@ class Router implements RouterInterface
 
     /**
      * @param string $name
+     *
      * @return array
      */
     public function getGroupInfo(string $name): array
@@ -438,6 +453,7 @@ class Router implements RouterInterface
 
     /**
      * @param int $plusValue
+     *
      * @return int
      */
     public function getKeyWidth(int $plusValue = 0): int

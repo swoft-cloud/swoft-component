@@ -2,11 +2,12 @@
 
 namespace Swoft\WebSocket\Server\Router;
 
-use function array_merge;
 use Swoft\Stdlib\Helper\Str;
+use function array_merge;
 
 /**
  * Class RouteRegister
+ *
  * @since 2.0
  */
 final class RouteRegister

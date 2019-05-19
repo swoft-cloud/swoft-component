@@ -2,20 +2,21 @@
 
 namespace Swoft\WebSocket\Server\Command;
 
-use function bean;
-use function input;
-use function output;
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Annotation\Mapping\CommandMapping;
 use Swoft\Console\Annotation\Mapping\CommandOption;
 use Swoft\Console\Helper\Show;
-// use Swoft\Helper\EnvHelper;
 use Swoft\Server\Command\BaseServerCommand;
 use Swoft\Server\Exception\ServerException;
 use Swoft\WebSocket\Server\WebSocketServer;
 use Throwable;
+use function bean;
+use function input;
+use function output;
+
+// use Swoft\Helper\EnvHelper;
 
 /**
  * Class WsServerCommand
@@ -34,14 +35,14 @@ class WsServerCommand extends BaseServerCommand
      * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
      * @CommandOption("daemon", short="d", desc="Run server on the background")
      *
-     * @example
-     *  {fullCommand}
-     *  {fullCommand} -d  Start server on background
-     *
      * @throws ContainerException
      * @throws ReflectionException
      * @throws ServerException
      * @throws Throwable
+     * @example
+     *  {fullCommand}
+     *  {fullCommand} -d  Start server on background
+     *
      */
     public function start(): void
     {
@@ -152,11 +153,11 @@ class WsServerCommand extends BaseServerCommand
      * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
      * @CommandOption("daemon", short="d", desc="Run server on the background")
      *
+     * @throws ReflectionException
+     * @throws ContainerException
      * @example
      * {fullCommand}
      * {fullCommand} -d
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function restart(): void
     {

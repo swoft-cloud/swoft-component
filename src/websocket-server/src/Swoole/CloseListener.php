@@ -19,6 +19,7 @@ use Throwable;
 
 /**
  * Class CloseListener
+ *
  * @since 2.0
  *
  * @Bean()
@@ -31,6 +32,7 @@ class CloseListener implements CloseInterface
      * @param Server|\Swoole\WebSocket\Server $server
      * @param int                             $fd
      * @param int                             $reactorId
+     *
      * @throws Throwable
      */
     public function onClose(Server $server, int $fd, int $reactorId): void

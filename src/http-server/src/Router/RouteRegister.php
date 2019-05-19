@@ -62,8 +62,8 @@ class RouteRegister
                 // Ensure is not empty
                 $routePath = $route['route'] ?: $route['action'];
 
-                // 以 '/' 开头的路由是一个单独的路由
-                // 未使用 '/' 需要和控制器组拼成一个路由
+                // A route starting with '/' is a separate route
+                // Unused '/' needs to be combined with the controller group into a route
                 $path    = $routePath[0] === '/' ? $routePath : $prefix . '/' . $routePath;
                 $handler = $class . '@' . $route['action'];
 

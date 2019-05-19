@@ -4,6 +4,7 @@ namespace Swoft\WebSocket\Server;
 
 /**
  * Class WsServerEvent
+ *
  * @since 2.0
  */
 final class WsServerEvent

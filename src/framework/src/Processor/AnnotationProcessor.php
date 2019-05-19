@@ -29,6 +29,7 @@ class AnnotationProcessor extends Processor
 
         // Find AutoLoader classes. Parse and collect annotations.
         AnnotationRegister::load([
+            'inPhar'               => \IN_PHAR,
             'basePath'             => $app->getBasePath(),
             'notifyHandler'        => [$this, 'notifyHandler'],
             'disabledAutoLoaders'  => $app->getDisabledAutoLoaders(),

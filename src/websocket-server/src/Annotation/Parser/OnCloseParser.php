@@ -11,6 +11,7 @@ use Swoft\WebSocket\Server\Router\RouteRegister;
 
 /**
  * Class OnCloseParser
+ *
  * @since 2.0
  * @AnnotationParser(OnClose::class)
  */

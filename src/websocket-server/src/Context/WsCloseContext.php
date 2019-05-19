@@ -9,6 +9,7 @@ use Swoft\Context\AbstractContext;
 
 /**
  * Class WsCloseContext - on ws close event
+ *
  * @since 2.0
  * @Bean(scope=Bean::PROTOTYPE)
  */

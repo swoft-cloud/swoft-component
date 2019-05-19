@@ -2,13 +2,13 @@
 
 namespace Swoft\WebSocket\Server\Helper;
 
+use Swoole\Http\Request;
+use Swoole\Http\Response;
 use function base64_decode;
 use function base64_encode;
 use function preg_match;
 use function sha1;
 use function strlen;
-use Swoole\Http\Request;
-use Swoole\Http\Response;
 use function trim;
 
 /**
