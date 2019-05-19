@@ -337,6 +337,18 @@ class Request extends PsrRequest implements ServerRequestInterface
     }
 
     /**
+     * @param string $key
+     * @param mixed|null   $default
+     *
+     * @return mixed|null
+     */
+    public function parsedBody(string $key, $default = null)
+    {
+        $parseBody = $this->getParsedBody();
+        return $parseBody[$key] ?? $default;
+    }
+
+    /**
      * add parser body
      *
      * @param string $name  the name of param
