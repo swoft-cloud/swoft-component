@@ -359,14 +359,14 @@ class Request extends PsrRequest implements ServerRequestInterface
     }
 
     /**
-     * add parser body
+     * Add parser body
      *
      * @param string $name  the name of param
      * @param mixed  $value the value of param
      *
      * @return static
      */
-    public function addParserBody(string $name, $value)
+    public function addParsedBody(string $name, $value)
     {
         if (!is_array($this->parsedBody)) {
             return $this;
