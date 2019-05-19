@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Test\Http;
+namespace SwoftTest\Http\Server\Unit;
 
 use ReflectionException;
 use RuntimeException;

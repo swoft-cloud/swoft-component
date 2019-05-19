@@ -5,7 +5,6 @@ namespace SwoftTest\Http\Server\Unit;
 
 
 use Swoft\Http\Message\ContentType;
-use Swoft\Test\Http\MockRequest;
 
 /**
  * Class MdTest

@@ -11,7 +11,8 @@
   "minimum-stability": "dev",
   "require": {
     "swoft/framework": "dev-master",
-    "swoft/http-message": "dev-master"
+    "swoft/http-message": "dev-master",
+    "swoft/validator": "dev-master"
   },
   "autoload": {
     "psr-4": {

@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Test\Http;
+namespace SwoftTest\Http\Server\Unit;
 
 use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Test\Concern\HttpResponseAssertTrait;
+use SwoftTest\Http\Server\Unit\Concern\HttpResponseAssertTrait;
 use Swoole\Http\Response;
 
 /**
@@ -38,8 +38,8 @@ class MockResponse extends Response
 
     /**
      * @return MockResponse
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      */
     public static function new()
     {

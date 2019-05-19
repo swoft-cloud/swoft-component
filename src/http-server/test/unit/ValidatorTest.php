@@ -4,7 +4,6 @@
 namespace SwoftTest\Http\Server\Unit;
 
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Test\Http\MockRequest;
 
 /**
  * Class ValidatorTest
