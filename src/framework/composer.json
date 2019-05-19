@@ -43,6 +43,6 @@
     "phpunit/phpunit": "^7.5"
   },
   "scripts": {
-    "test": "./vendor/bin/phpunit -c phpunit.xml"
+    "test": "php run.php -c phpunit.xml"
   }
 }
