@@ -11,6 +11,7 @@ use Swoft\WebSocket\Server\Message\Message;
 
 /**
  * Class JsonParser
+ *
  * @since 2.0
  * @Bean()
  */

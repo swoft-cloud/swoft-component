@@ -3,7 +3,6 @@
 namespace Swoft\WebSocket\Server;
 
 use InvalidArgumentException;
-use function sprintf;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
@@ -15,6 +14,7 @@ use Swoft\WebSocket\Server\Exception\WsModuleRouteException;
 use Swoft\WebSocket\Server\Router\Router;
 use Swoole\WebSocket\Server;
 use Throwable;
+use function sprintf;
 
 /**
  * Class WsDispatcher
@@ -45,10 +45,7 @@ class WsDispatcher
         $path = $request->getUriPath();
 
         if (!$info = $router->match($path)) {
-            throw new WsModuleRouteException(sprintf(
-                'The requested websocket route path "%s" is not exist!',
-                $path
-            ));
+            throw new WsModuleRouteException(sprintf('The requested websocket route path "%s" is not exist!', $path));
         }
 
         $class = $info['class'];

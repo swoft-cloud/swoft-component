@@ -11,6 +11,7 @@ use Swoft\WebSocket\Server\Router\RouteRegister;
 
 /**
  * Class OnHandshakeParser
+ *
  * @since 2.0
  * @AnnotationParser(OnHandshake::class)
  */

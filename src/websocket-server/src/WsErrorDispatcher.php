@@ -2,7 +2,6 @@
 
 namespace Swoft\WebSocket\Server;
 
-use function server;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Error\DefaultErrorDispatcher;
@@ -18,6 +17,7 @@ use Swoft\WebSocket\Server\Exception\WsMessageRouteException;
 use Swoft\WebSocket\Server\Exception\WsModuleRouteException;
 use Swoole\WebSocket\Frame;
 use Throwable;
+use function server;
 
 /**
  * Class WsErrorDispatcher
@@ -29,7 +29,7 @@ class WsErrorDispatcher
 {
     /**
      * @param Throwable $e
-     * @param Response   $response
+     * @param Response  $response
      *
      * @return Response
      * @throws Throwable
@@ -38,9 +38,7 @@ class WsErrorDispatcher
     {
         // TODO should handle it?
         if ($e instanceof WsModuleRouteException) {
-            return $response
-                ->withStatus(404)
-                ->withAddedHeader('Failure-Reason', 'Route not found');
+            return $response->withStatus(404)->withAddedHeader('Failure-Reason', 'Route not found');
         }
 
         /** @var ErrorHandlers $handlers */
@@ -56,7 +54,7 @@ class WsErrorDispatcher
 
     /**
      * @param Throwable $e
-     * @param Request    $request
+     * @param Request   $request
      *
      * @throws Throwable
      */
@@ -80,7 +78,7 @@ class WsErrorDispatcher
 
     /**
      * @param Throwable $e
-     * @param Frame      $frame
+     * @param Frame     $frame
      *
      * @throws Throwable
      */
@@ -105,7 +103,7 @@ class WsErrorDispatcher
 
     /**
      * @param Throwable $e
-     * @param int        $fd
+     * @param int       $fd
      *
      * @throws Throwable
      */

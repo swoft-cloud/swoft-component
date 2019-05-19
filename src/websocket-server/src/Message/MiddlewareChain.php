@@ -2,10 +2,7 @@
 
 namespace Swoft\WebSocket\Server\Message;
 
-use function class_exists;
 use InvalidArgumentException;
-use function is_callable;
-use function is_string;
 use ReflectionException;
 use RuntimeException;
 use SplDoublyLinkedList;
@@ -18,6 +15,9 @@ use Swoft\WebSocket\Server\Contract\MiddlewareInterface;
 use Swoft\WebSocket\Server\Contract\RequestInterface;
 use Swoft\WebSocket\Server\Contract\ResponseInterface;
 use UnexpectedValueException;
+use function class_exists;
+use function is_callable;
+use function is_string;
 
 /**
  * Class MiddlewareChain
@@ -73,8 +73,8 @@ class MiddlewareChain implements MessageHandlerInterface
      * This method prepends new middleware to the application middleware stack.
      *
      * @param MiddlewareInterface[] ...$middlewareList Any callable that accepts two arguments:
-     *                                 1. A Request object
-     *                                 2. A Handler object
+     *                                                 1. A Request object
+     *                                                 2. A Handler object
      *
      * @return $this
      * @throws RuntimeException
@@ -143,10 +143,10 @@ class MiddlewareChain implements MessageHandlerInterface
      * Do not call directly externally, internally called
      * 不要在外部直接调用，内部调用的
      *
-     * @internal
-     * {@inheritDoc}
      * @throws UnexpectedValueException
      * @throws InvalidArgumentException
+     * @internal
+     * {@inheritDoc}
      */
     public function handle(RequestInterface $request): ResponseInterface
     {
@@ -172,9 +172,7 @@ class MiddlewareChain implements MessageHandlerInterface
         }
 
         if (!$response instanceof ResponseInterface) {
-            throw new UnexpectedValueException(
-                'Middleware must return object and instance of \Psr\Http\Message\ResponseInterface'
-            );
+            throw new UnexpectedValueException('Middleware must return object and instance of \Psr\Http\Message\ResponseInterface');
         }
 
         return $response;

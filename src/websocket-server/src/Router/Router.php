@@ -2,15 +2,15 @@
 
 namespace Swoft\WebSocket\Server\Router;
 
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Contract\RouterInterface;
+use Swoft\WebSocket\Server\Helper\WsHelper;
 use function array_shift;
 use function count;
 use function preg_match;
 use function preg_match_all;
 use function strpos;
 use function strtr;
-use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Contract\RouterInterface;
-use Swoft\WebSocket\Server\Helper\WsHelper;
 use function trim;
 
 /**

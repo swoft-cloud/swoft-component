@@ -25,6 +25,7 @@ interface MessageParserInterface
      * Decode swoole Frame to Message object
      *
      * @param string $data Message data
+     *
      * @return Message
      */
     public function decode(string $data): Message;

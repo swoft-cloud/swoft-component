@@ -8,13 +8,15 @@ use Throwable;
 
 /**
  * Interface OpenErrorHandlerInterface
+ *
  * @since 2.0
  */
 interface OpenErrorHandlerInterface extends ErrorHandlerInterface
 {
     /**
      * @param Throwable $e
-     * @param Request    $request
+     * @param Request   $request
+     *
      * @return void
      */
     public function handle(Throwable $e, Request $request): void;

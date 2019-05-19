@@ -2,16 +2,16 @@
 
 namespace Swoft\WebSocket\Server;
 
-use function array_flip;
-use function array_shift;
-use function count;
-use function end;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Server;
 use Swoft\Server\Swoole\SwooleEvent;
 use Swoole\Websocket\Frame;
 use Throwable;
+use function array_flip;
+use function array_shift;
+use function count;
+use function end;
 use const WEBSOCKET_OPCODE_TEXT;
 
 /**
@@ -33,12 +33,7 @@ class WebSocketServer extends Server
      */
     public function start(): void
     {
-        $this->swooleServer = new \Swoole\Websocket\Server(
-            $this->host,
-            $this->port,
-            $this->mode,
-            $this->type
-        );
+        $this->swooleServer = new \Swoole\Websocket\Server($this->host, $this->port, $this->mode, $this->type);
 
         $this->startSwoole();
     }
@@ -52,6 +47,7 @@ class WebSocketServer extends Server
      * NOTICE: require swoole version >= 4.2.0
      *
      * @param Frame $frame
+     *
      * @return bool
      */
     public function pushFrame(Frame $frame): bool
@@ -61,14 +57,15 @@ class WebSocketServer extends Server
 
     /**
      * @param int    $fd
-     * @param string $data Data for send to client. NOTICE: max size is 2M.
+     * @param string $data   Data for send to client. NOTICE: max size is 2M.
      * @param int    $opcode WebSocket opcode value
-     *                     text:   WEBSOCKET_OPCODE_TEXT   = 1
-     *                     binary: WEBSOCKET_OPCODE_BINARY = 2
-     *                     close:  WEBSOCKET_OPCODE_CLOSE  = 8
-     *                     ping:   WEBSOCKET_OPCODE_PING   = 9
-     *                     pong:   WEBSOCKET_OPCODE_PONG   = 10
+     *                       text:   WEBSOCKET_OPCODE_TEXT   = 1
+     *                       binary: WEBSOCKET_OPCODE_BINARY = 2
+     *                       close:  WEBSOCKET_OPCODE_CLOSE  = 8
+     *                       ping:   WEBSOCKET_OPCODE_PING   = 9
+     *                       pong:   WEBSOCKET_OPCODE_PONG   = 10
      * @param bool   $finish
+     *
      * @return bool
      */
     public function push(int $fd, string $data, int $opcode = WEBSOCKET_OPCODE_TEXT, bool $finish = true): bool
@@ -78,11 +75,13 @@ class WebSocketServer extends Server
 
     /**
      * Send a message to the specified user
+     *
      * @param int    $receiver The receiver fd
      * @param string $data
      * @param int    $sender   The sender fd
      * @param int    $opcode
      * @param bool   $finish
+     *
      * @return bool
      */
     public function sendTo(
@@ -104,11 +103,13 @@ class WebSocketServer extends Server
 
     /**
      * Send message to client(s)
+     *
      * @param string    $data
      * @param int|array $receivers
      * @param int|array $excluded
      * @param int       $sender
      * @param int       $pageSize
+     *
      * @return int Return send count
      */
     public function send(string $data, $receivers = 0, $excluded = 0, int $sender = 0, int $pageSize = 50): int
@@ -137,10 +138,12 @@ class WebSocketServer extends Server
 
     /**
      * Broadcast message to all user, but will exclude sender
+     *
      * @param string $data      Message data
      * @param int    $sender    Sender FD
      * @param int[]  $receivers Designated receivers(FD list)
      * @param int[]  $excluded  The receivers to be excluded
+     *
      * @return int Return send count
      */
     public function broadcast(string $data, array $receivers = [], array $excluded = [], int $sender = 0): int
@@ -171,9 +174,11 @@ class WebSocketServer extends Server
 
     /**
      * Send message to all connections
+     *
      * @param string $data
      * @param int    $sender
      * @param int    $pageSize
+     *
      * @return int
      */
     public function sendToAll(string $data, int $sender = 0, int $pageSize = 50): int
@@ -192,6 +197,7 @@ class WebSocketServer extends Server
      * @param array  $excluded
      * @param int    $sender
      * @param int    $pageSize
+     *
      * @return int
      */
     public function sendToSome(
@@ -238,7 +244,9 @@ class WebSocketServer extends Server
 
     /**
      * Traverse all valid WS connections FD
+     *
      * @param callable $handler
+     *
      * @return int
      */
     public function each(callable $handler): int
@@ -259,6 +267,7 @@ class WebSocketServer extends Server
      *
      * @param callable $handler
      * @param int      $pageSize
+     *
      * @return int
      */
     public function pageEach(callable $handler, int $pageSize = 50): int
@@ -294,9 +303,11 @@ class WebSocketServer extends Server
 
     /**
      * Disconnect for client
+     *
      * @param int    $fd
      * @param int    $code
      * @param string $reason
+     *
      * @return bool
      */
     public function disconnect(int $fd, int $code = 0, string $reason = ''): bool
@@ -306,7 +317,9 @@ class WebSocketServer extends Server
 
     /**
      * Check it is valid websocket connection(has been handshake)
+     *
      * @param int $fd
+     *
      * @return bool
      */
     public function isEstablished(int $fd): bool

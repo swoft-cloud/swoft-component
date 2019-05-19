@@ -4,12 +4,14 @@ namespace Swoft\WebSocket\Server\Storage;
 
 /**
  * Class AbstractStorage
+ *
  * @package Swoft\WebSocket\Server\Storage
  */
 abstract class AbstractStorage
 {
     /**
      * server ID
+     *
      * @var string
      */
     protected $id;
@@ -30,6 +32,7 @@ abstract class AbstractStorage
 
     /**
      * rooms cache
+     *
      * @var array
      */
     private $rooms = [];

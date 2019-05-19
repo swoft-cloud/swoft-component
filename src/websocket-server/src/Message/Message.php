@@ -2,13 +2,13 @@
 
 namespace Swoft\WebSocket\Server\Message;
 
-use function is_scalar;
 use JsonSerializable;
 use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\JsonHelper;
+use function is_scalar;
 
 /**
  * Class Message
