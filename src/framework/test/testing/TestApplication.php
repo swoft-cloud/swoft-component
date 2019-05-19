@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 
-namespace SwoftTest\Unit;
+namespace SwoftTest\Testing;
 
 
 use Swoft\Processor\AnnotationProcessor;
