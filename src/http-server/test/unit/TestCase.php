@@ -5,7 +5,6 @@ namespace SwoftTest\Http\Server\Unit;
 
 
 use Swoft\Bean\BeanFactory;
-use Swoft\Test\Http\MockHttpServer;
 
 /**
  * Class TestCase

@@ -5,7 +5,6 @@ namespace SwoftTest\Redis\Unit\Command;
 
 
 use Swoft\Redis\Redis;
-use Swoft\Redis\RedisDb;
 use SwoftTest\Redis\Unit\TestCase;
 
 /**

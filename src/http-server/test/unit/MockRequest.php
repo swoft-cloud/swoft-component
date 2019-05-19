@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Test\Http;
+namespace SwoftTest\Http\Server\Unit;
 
 use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
@@ -102,7 +102,7 @@ class MockRequest extends Request
      * @param array $cookies
      * @param array $params
      *
-     * @return MockRequest
+     * @return \Swoft\Test\Http\MockRequest
      * @throws ReflectionException
      * @throws ContainerException
      */

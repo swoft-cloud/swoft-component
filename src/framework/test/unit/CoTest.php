@@ -4,9 +4,9 @@
 namespace SwoftTest\Unit;
 
 
+use PHPUnit\Framework\TestCase;
 use Swoft\Co;
 use Swoft\Context\Context;
-use SwoftTest\Db\Unit\TestCase;
 use Swoole\Coroutine\Http\Client;
 
 /**
