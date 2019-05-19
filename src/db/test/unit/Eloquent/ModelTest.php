@@ -365,19 +365,19 @@ on A.id=B.id;', [$resCount - 20]);
 
     public function testPaginate()
     {
-        $prePage = 2;
+        $perPage = 2;
         $page    = 1;
 
-        $res = User::paginate(1, 2);
+        $res = User::paginate($page, $perPage);
 
         $this->assertIsArray($res);
         $this->assertArrayHasKey('list', $res);
         $this->assertArrayHasKey('count', $res);
-        $this->assertArrayHasKey('prePage', $res);
+        $this->assertArrayHasKey('perPage', $res);
         $this->assertArrayHasKey('pageCount', $res);
         $this->assertArrayHasKey('page', $res);
 
         $this->assertEquals($res['page'], $page);
-        $this->assertEquals($res['prePage'], $prePage);
+        $this->assertEquals($res['perPage'], $perPage);
     }
 }
