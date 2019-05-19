@@ -27,12 +27,6 @@
             "SwoftTest\\Proxy\\Testing\\": "test/testing"
         }
     },
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://packagist.laravel-china.org"
-        }
-    ],
     "scripts": {
         "test": "./vendor/bin/phpunit -c phpunit.xml"
     }
