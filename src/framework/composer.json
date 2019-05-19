@@ -19,6 +19,7 @@
     "swoft/error": "dev-master",
     "swoft/log": "dev-master",
     "swoft/aop": "dev-master",
+    "swoft/server": "dev-master",
     "swoft/stdlib": "dev-master"
   },
   "autoload": {
