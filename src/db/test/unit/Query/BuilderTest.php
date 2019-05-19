@@ -713,9 +713,20 @@ class BuilderTest extends TestCase
 
     public function testPaginate()
     {
-        $res = DB::table('user')->where('id',22)->paginate(1, 2);
+        $prePage = 2;
+        $page    = 1;
+
+        $res = DB::table('user')->paginate($page, $prePage);
 
         $this->assertIsArray($res);
+        $this->assertArrayHasKey('list', $res);
+        $this->assertArrayHasKey('count', $res);
+        $this->assertArrayHasKey('prePage', $res);
+        $this->assertArrayHasKey('pageCount', $res);
+        $this->assertArrayHasKey('page', $res);
+
+        $this->assertEquals($res['page'], $page);
+        $this->assertEquals($res['prePage'], $prePage);
     }
 
     public function testChunkById()
