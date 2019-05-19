@@ -10,7 +10,9 @@
   "license": "Apache-2.0",
   "require": {
     "php": ">7.1.0",
-    "psr/container": "^1.0"
+    "psr/container": "^1.0",
+    "swoft/annotation": "dev-master",
+    "swoft/stdlib": "dev-master"
   },
   "autoload": {
     "classmap": [
