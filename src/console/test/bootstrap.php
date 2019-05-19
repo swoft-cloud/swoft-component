@@ -33,9 +33,3 @@ if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
 } else {
     exit('Please run "composer install" to install the dependencies' . PHP_EOL);
 }
-
-Runtime::enableCoroutine();
-
-$application = new TestApplication();
-$application->setBeanFile(__DIR__ . '/testing/bean.php');
-$application->run();

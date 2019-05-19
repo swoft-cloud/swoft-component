@@ -2409,7 +2409,7 @@ class Builder implements PrototypeInterface
             'count'     => $count,
             'list'      => $list,
             'page'      => $page,
-            'prePage'   => $perPage,
+            'perPage'   => $perPage,
             'pageCount' => ceil($count / $perPage)
         ];
     }
