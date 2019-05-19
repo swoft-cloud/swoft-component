@@ -27,7 +27,8 @@
       "src/Swoft.php"
     ],
     "psr-4": {
-      "Swoft\\": "src/"
+      "Swoft\\": "src/",
+      "SwoftTest\\Testing\\": "test/testing/"
     },
     "files": [
       "src/Helper/Functions.php"
@@ -35,8 +36,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "SwoftTest\\Unit\\": "test/unit/",
-      "SwoftTest\\Testing\\": "test/testing/"
+      "SwoftTest\\Unit\\": "test/unit/"
     }
   },
   "require-dev": {
