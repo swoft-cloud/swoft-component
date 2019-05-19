@@ -1,3 +1,13 @@
+deploy:
+  - provider: script
+    script: cat composer.json
+    on:
+      tags: true
+  - provider: script
+    script: rm -rf composer.json && mv dev.composer.json composer.json
+    on:
+      all_branches: true
+
 language: php
 
 php:
