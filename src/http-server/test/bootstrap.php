@@ -1,5 +1,8 @@
 <?php
 // vendor at component dir
+use SwoftTest\Testing\TestApplication;
+use Swoole\Runtime;
+
 if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
     require dirname(__DIR__) . '/vendor/autoload.php';
     // application's vendor
@@ -30,7 +33,7 @@ if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
     exit('Please run "composer install" to install the dependencies' . PHP_EOL);
 }
 
-\Swoole\Runtime::enableCoroutine();
-$application = new \Swoft\Test\TestApplication();
+Runtime::enableCoroutine();
+$application = new TestApplication();
 $application->setBeanFile(__DIR__ . '/testing/bean.php');
 $application->run();
