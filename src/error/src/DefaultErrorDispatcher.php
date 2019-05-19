@@ -2,18 +2,19 @@
 
 namespace Swoft\Error;
 
-use function error_get_last;
 use ErrorException;
 use InvalidArgumentException;
-use function register_shutdown_function;
-use function set_error_handler;
-use function set_exception_handler;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Error\Contract\DefaultErrorHandlerInterface;
 use Throwable;
+use function error_get_last;
+use function register_shutdown_function;
+use function set_error_handler;
+use function set_exception_handler;
 
 /**
  * Class DefaultErrorDispatcher
+ *
  * @since 2.0
  * @Bean()
  */
@@ -38,6 +39,7 @@ class DefaultErrorDispatcher
 
     /**
      * Register system error handle
+     *
      * @throws InvalidArgumentException
      */
     protected function registerErrorHandle(): void
@@ -55,10 +57,12 @@ class DefaultErrorDispatcher
 
     /**
      * Run error handling
+     *
      * @param int    $num
      * @param string $str
      * @param string $file
      * @param int    $line
+     *
      * @throws InvalidArgumentException
      * @throws ErrorException
      */
@@ -70,7 +74,9 @@ class DefaultErrorDispatcher
 
     /**
      * Running exception handling
+     *
      * @param Throwable $e
+     *
      * @throws InvalidArgumentException
      */
     public function handleException(Throwable $e): void

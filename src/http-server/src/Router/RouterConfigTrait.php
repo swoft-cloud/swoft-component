@@ -7,7 +7,8 @@ use function trim;
 
 /**
  * Trait RouterConfigTrait
- * @package Swoft\Http\Server\Router
+ *
+ * @since 2.0
  */
 trait RouterConfigTrait
 {

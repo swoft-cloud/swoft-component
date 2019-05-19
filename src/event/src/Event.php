@@ -10,10 +10,10 @@
 
 namespace Swoft\Event;
 
-use function array_merge;
 use ArrayAccess;
 use InvalidArgumentException;
 use Serializable;
+use function array_merge;
 use function serialize;
 use function strlen;
 use function trim;
@@ -43,6 +43,7 @@ class Event implements EventInterface, ArrayAccess, Serializable
 
     /**
      * Stop execution of the listener queue associated with the event
+     *
      * @var boolean
      */
     protected $stopPropagation = false;
@@ -50,6 +51,7 @@ class Event implements EventInterface, ArrayAccess, Serializable
     /**
      * @param string $name
      * @param array  $params
+     *
      * @return Event
      */
     public static function create(string $name = '', array $params = []): self
@@ -60,6 +62,7 @@ class Event implements EventInterface, ArrayAccess, Serializable
     /**
      * @param string $name
      * @param array  $params
+     *
      * @throws InvalidArgumentException
      */
     public function __construct(string $name = '', array $params = [])
@@ -75,6 +78,7 @@ class Event implements EventInterface, ArrayAccess, Serializable
 
     /**
      * @param string $name
+     *
      * @return string
      * @throws InvalidArgumentException
      */
@@ -108,6 +112,7 @@ class Event implements EventInterface, ArrayAccess, Serializable
 
     /**
      * set all params
+     *
      * @param array $params
      */
     public function setParams(array $params): void
@@ -117,6 +122,7 @@ class Event implements EventInterface, ArrayAccess, Serializable
 
     /**
      * @param array $params
+     *
      * @return $this
      */
     public function addParams(array $params): self
@@ -128,6 +134,7 @@ class Event implements EventInterface, ArrayAccess, Serializable
 
     /**
      * get all param
+     *
      * @return array
      */
     public function getParams(): array
@@ -149,8 +156,10 @@ class Event implements EventInterface, ArrayAccess, Serializable
 
     /**
      * add a argument
+     *
      * @param string $name
      * @param mixed  $value
+     *
      * @return $this
      * @throws InvalidArgumentException
      */
@@ -165,10 +174,12 @@ class Event implements EventInterface, ArrayAccess, Serializable
 
     /**
      * set a argument
+     *
      * @param string $name
      * @param mixed  $value
-     * @throws  InvalidArgumentException  If the argument name is null.
+     *
      * @return $this
+     * @throws  InvalidArgumentException  If the argument name is null.
      */
     public function setParam($name, $value): self
     {
@@ -184,6 +195,7 @@ class Event implements EventInterface, ArrayAccess, Serializable
     /**
      * @param int|string $key
      * @param mixed      $default
+     *
      * @return mixed
      */
     public function getParam($key, $default = null)
@@ -193,6 +205,7 @@ class Event implements EventInterface, ArrayAccess, Serializable
 
     /**
      * @param string $name
+     *
      * @return bool
      */
     public function hasParam($name): bool
@@ -212,6 +225,7 @@ class Event implements EventInterface, ArrayAccess, Serializable
 
     /**
      * Get target/context from which event was triggered
+     *
      * @return null|string|mixed
      */
     public function getTarget()
@@ -221,7 +235,9 @@ class Event implements EventInterface, ArrayAccess, Serializable
 
     /**
      * Set the event target
-     * @param  null|string|mixed $target
+     *
+     * @param null|string|mixed $target
+     *
      * @return void
      */
     public function setTarget($target): void
@@ -231,7 +247,8 @@ class Event implements EventInterface, ArrayAccess, Serializable
 
     /**
      * Indicate whether or not to stop propagating this event
-     * @param  bool $flag
+     *
+     * @param bool $flag
      */
     public function stopPropagation($flag)
     {
@@ -240,6 +257,7 @@ class Event implements EventInterface, ArrayAccess, Serializable
 
     /**
      * Has this event indicated event propagation should stop?
+     *
      * @return bool
      */
     public function isPropagationStopped(): bool
@@ -257,7 +275,9 @@ class Event implements EventInterface, ArrayAccess, Serializable
 
     /**
      * Unserialize the event.
-     * @param   string $serialized The serialized event.
+     *
+     * @param string $serialized The serialized event.
+     *
      * @return  void
      */
     public function unserialize($serialized): void
@@ -271,7 +291,9 @@ class Event implements EventInterface, ArrayAccess, Serializable
 
     /**
      * Tell if the given event argument exists.
-     * @param   string $name The argument name.
+     *
+     * @param string $name The argument name.
+     *
      * @return  boolean  True if it exists, false otherwise.
      */
     public function offsetExists($name): bool
@@ -281,7 +303,9 @@ class Event implements EventInterface, ArrayAccess, Serializable
 
     /**
      * Get an event argument value.
-     * @param   string $name The argument name.
+     *
+     * @param string $name The argument name.
+     *
      * @return  mixed  The argument value or null if not existing.
      */
     public function offsetGet($name)
@@ -291,8 +315,10 @@ class Event implements EventInterface, ArrayAccess, Serializable
 
     /**
      * Set the value of an event argument.
-     * @param   string $name The argument name.
-     * @param   mixed  $value The argument value.
+     *
+     * @param string $name  The argument name.
+     * @param mixed  $value The argument value.
+     *
      * @return  void
      * @throws InvalidArgumentException
      */
@@ -303,7 +329,9 @@ class Event implements EventInterface, ArrayAccess, Serializable
 
     /**
      * Remove an event argument.
-     * @param   string $name The argument name.
+     *
+     * @param string $name The argument name.
+     *
      * @return  void
      */
     public function offsetUnset($name): void

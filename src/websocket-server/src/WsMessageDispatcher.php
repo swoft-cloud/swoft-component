@@ -112,6 +112,7 @@ class WsMessageDispatcher
      * @param string $method
      * @param Frame  $frame
      * @param mixed  $data
+     *
      * @return array
      * @throws ReflectionException
      */
@@ -127,9 +128,9 @@ class WsMessageDispatcher
         $methodParams = $classInfo['methods'][$method]['params'];
 
         /**
-         * @var string          $name
+         * @var string         $name
          * @var ReflectionType $paramType
-         * @var mixed           $devVal
+         * @var mixed          $devVal
          */
         foreach ($methodParams as [$name, $paramType, $devVal]) {
             // Defined type of the param

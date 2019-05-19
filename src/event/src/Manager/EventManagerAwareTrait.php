@@ -11,13 +11,14 @@
 namespace Swoft\Event\Manager;
 
 use InvalidArgumentException;
-use function method_exists;
 use Swoft\Event\EventInterface;
+use function method_exists;
 
 /**
  * Trait EventAwareTrait
+ *
  * @package Swoft\Event\Manager
- * @since 2.0
+ * @since   2.0
  */
 trait EventManagerAwareTrait
 {
@@ -28,6 +29,7 @@ trait EventManagerAwareTrait
 
     /**
      * @param bool $createIfNotExists
+     *
      * @return EventManager|EventManagerInterface
      * @throws InvalidArgumentException
      */
@@ -53,9 +55,10 @@ trait EventManagerAwareTrait
     }
 
     /**
-     * @param  string|EventInterface $event 'app.start' 'app.stop'
-     * @param  mixed|string          $target
-     * @param  array|mixed           $args
+     * @param string|EventInterface $event 'app.start' 'app.stop'
+     * @param mixed|string          $target
+     * @param array|mixed           $args
+     *
      * @return mixed
      */
     public function trigger($event, $target = null, array $args = [])

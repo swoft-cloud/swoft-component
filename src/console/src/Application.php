@@ -2,23 +2,26 @@
 
 namespace Swoft\Console;
 
-use function array_merge;
-use function get_class;
-use function implode;
 use ReflectionException;
-use function strpos;
-use function strtr;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Concern\RenderHelpInfoTrait;
 use Swoft\Console\Contract\ConsoleInterface;
+use Swoft\Console\Exception\ConsoleArgumentException;
+use Swoft\Console\Helper\Show;
 use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
 use Swoft\Console\Router\Router;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use Throwable;
+use function array_merge;
+use function get_class;
+use function implode;
+use function strpos;
+use function strtr;
 use function trim;
 use function ucfirst;
 
@@ -63,7 +66,7 @@ class Application implements ConsoleInterface
     /**
      * @var string
      */
-    private $version = '0.0.1';
+    private $version = '2.0.0';
 
     /**
      * @var string
@@ -77,6 +80,7 @@ class Application implements ConsoleInterface
 
     /**
      * Class constructor.
+     *
      * @param array $options
      */
     public function __construct(array $options = [])
@@ -144,6 +148,7 @@ class Application implements ConsoleInterface
 
     /**
      * @param string $inputCmd
+     *
      * @return void
      * @throws ReflectionException
      * @throws ContainerException
@@ -199,6 +204,7 @@ class Application implements ConsoleInterface
 
     /**
      * Filter special option. eg: -h, --help, --version
+     *
      * @return void
      * @throws ReflectionException
      * @throws ContainerException
@@ -219,6 +225,8 @@ class Application implements ConsoleInterface
      * Bind option and argument values by route info
      *
      * @param array $info
+     *
+     * @throws ConsoleArgumentException
      */
     protected function bindOptionsAndArguments(array $info): void
     {
@@ -265,6 +273,13 @@ class Application implements ConsoleInterface
                     $values[$index] = $arg['default'];
                 }
 
+                // arg is required
+                if ($arg['mode'] === Command::ARG_REQUIRED && empty($values[$name])) {
+                    throw new ConsoleArgumentException(
+                        "The argument '{$name}'(position: {$index}) is required"
+                    );
+                }
+
                 $index++;
             }
 
@@ -277,6 +292,11 @@ class Application implements ConsoleInterface
      */
     protected function handleException(Throwable $e): void
     {
+        if ($e instanceof ConsoleArgumentException) {
+            Show::error($e->getMessage());
+            return;
+        }
+
         try {
             $evt = Swoft::triggerByArray(ConsoleEvent::RUN_ERROR, $this, [
                 'exception' => $e,
@@ -287,14 +307,8 @@ class Application implements ConsoleInterface
                 // Ensure no buffer
                 \output()->clearBuffer();
                 \output()->flush();
-                \output()->writef(
-                    "<error>(CONSOLE)%s: %s</error>\nAt %s line <cyan>%d</cyan>\n<comment>Code Trace:</comment>\n%s",
-                    get_class($e),
-                    $e->getMessage(),
-                    $e->getFile(),
-                    $e->getLine(),
-                    $e->getTraceAsString()
-                );
+                \output()->writef("<error>(CONSOLE)%s: %s</error>\nAt %s line <cyan>%d</cyan>\n<comment>Code Trace:</comment>\n%s",
+                    get_class($e), $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString());
             }
         } catch (Throwable $e) {
             // Do nothing
@@ -303,8 +317,10 @@ class Application implements ConsoleInterface
 
     /**
      * Replace the variable in the comment with the corresponding value
+     *
      * @param string $str
      * @param array  $vars
+     *
      * @return string
      */
     protected function parseCommentsVars(string $str, array $vars): string

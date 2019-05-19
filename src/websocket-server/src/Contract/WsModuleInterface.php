@@ -8,6 +8,7 @@ use Swoole\WebSocket\Server;
 
 /**
  * Interface WsModuleInterface
+ *
  * @since 2.0
  */
 interface WsModuleInterface
@@ -21,6 +22,7 @@ interface WsModuleInterface
      *
      * @param Request  $request
      * @param Response $response
+     *
      * @return array [bool, $response]
      */
     public function checkHandshake(Request $request, Response $response): array;

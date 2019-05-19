@@ -5,6 +5,7 @@ namespace SwoftTest\Bean\Unit;
 
 
 use PHPUnit\Framework\TestCase;
+use Swoft\Bean\BeanFactory;
 
 /**
  * Class BeanTest

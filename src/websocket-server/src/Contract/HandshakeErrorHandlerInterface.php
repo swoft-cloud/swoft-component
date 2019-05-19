@@ -8,13 +8,15 @@ use Throwable;
 
 /**
  * Interface HandshakeErrorHandlerInterface
+ *
  * @since 2.0
  */
 interface HandshakeErrorHandlerInterface extends ErrorHandlerInterface
 {
     /**
      * @param Throwable $e
-     * @param Response   $response
+     * @param Response  $response
+     *
      * @return Response
      */
     public function handle(Throwable $e, Response $response): Response;

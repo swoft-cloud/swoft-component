@@ -10,11 +10,14 @@
 
 namespace Swoft\Event\Manager;
 
+use Closure;
+use InvalidArgumentException;
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Event\{Event, EventHandlerInterface, EventInterface, EventSubscriberInterface};
+use Swoft\Event\Listener\{LazyListener, ListenerPriority, ListenerQueue};
 use function array_keys;
 use function class_exists;
-use Closure;
 use function count;
-use InvalidArgumentException;
 use function is_callable;
 use function is_int;
 use function is_numeric;
@@ -24,13 +27,11 @@ use function method_exists;
 use function strpos;
 use function strrpos;
 use function substr;
-use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Event\{Event, EventHandlerInterface, EventInterface, EventSubscriberInterface};
-use Swoft\Event\Listener\{LazyListener, ListenerPriority, ListenerQueue};
 use function trim;
 
 /**
  * Class EventManager
+ *
  * @since 2.0
  * @Bean("eventManager", alias="eventDispatcher")
  */
@@ -75,6 +76,7 @@ class EventManager implements EventManagerInterface
 
     /**
      * EventManager constructor.
+     *
      * @throws InvalidArgumentException
      */
     public function __construct()
@@ -103,9 +105,11 @@ class EventManager implements EventManagerInterface
 
     /**
      * Attaches a listener to an event
-     * @param string                               $event the event to attach too
+     *
+     * @param string                               $event    the event to attach too
      * @param callable|EventHandlerInterface|mixed $callback A callable listener
      * @param int                                  $priority the priority at which the $callback executed
+     *
      * @return bool true on success false on failure
      */
     public function attach($event, $callback, $priority = 0): bool
@@ -115,8 +119,10 @@ class EventManager implements EventManagerInterface
 
     /**
      * Detaches a listener from an event
-     * @param string         $event the event to attach too
+     *
+     * @param string         $event    the event to attach too
      * @param callable|mixed $callback a callable function
+     *
      * @return bool true on success false on failure
      */
     public function detach($event, $callback): bool
@@ -152,22 +158,24 @@ class EventManager implements EventManagerInterface
 
     /**
      * Add a listener and associate it to one (multiple) event
-     * @param Closure|callback|mixed $listener listener
-     * @param array|string|int        $definition Event name, priority setting
-     * Allowed:
-     *     $definition = [
-     *        'event name' => priority(int),
-     *        'event name1' => priority(int),
-     *     ]
-     * OR
-     *     $definition = [
-     *        'event name','event name1',
-     *     ]
-     * OR
-     *     $definition = 'event name'
-     * OR
-     *     // The priority of the listener
-     *     $definition = 1
+     *
+     * @param Closure|callback|mixed $listener   listener
+     * @param array|string|int       $definition Event name, priority setting
+     *                                           Allowed:
+     *                                           $definition = [
+     *                                           'event name' => priority(int),
+     *                                           'event name1' => priority(int),
+     *                                           ]
+     *                                           OR
+     *                                           $definition = [
+     *                                           'event name','event name1',
+     *                                           ]
+     *                                           OR
+     *                                           $definition = 'event name'
+     *                                           OR
+     *                                           // The priority of the listener
+     *                                           $definition = 1
+     *
      * @return bool
      */
     public function addListener($listener, $definition = null): bool
@@ -240,6 +248,7 @@ class EventManager implements EventManagerInterface
     /**
      * @param array $events
      * @param array $args
+     *
      * @return array
      * @throws InvalidArgumentException
      */
@@ -257,9 +266,10 @@ class EventManager implements EventManagerInterface
     /**
      * Trigger an event. Can accept an EventInterface or will create one if not passed
      *
-     * @param  string|EventInterface $event 'app.start' 'app.stop'
-     * @param  mixed|string          $target It is object or string.
-     * @param  array|mixed           $args
+     * @param string|EventInterface $event  'app.start' 'app.stop'
+     * @param mixed|string          $target It is object or string.
+     * @param array|mixed           $args
+     *
      * @return EventInterface
      * @throws InvalidArgumentException
      */
@@ -328,7 +338,9 @@ class EventManager implements EventManagerInterface
 
     /**
      * Is there a listen queue for the event?
-     * @param  EventInterface|string $event
+     *
+     * @param EventInterface|string $event
+     *
      * @return boolean
      */
     public function hasListenerQueue($event): bool
@@ -341,9 +353,10 @@ class EventManager implements EventManagerInterface
     }
 
     /**
-     * @see hasListenerQueue() alias method
-     * @param  EventInterface|string $event
+     * @param EventInterface|string $event
+     *
      * @return boolean
+     * @see hasListenerQueue() alias method
      */
     public function hasListeners($event): bool
     {
@@ -352,8 +365,10 @@ class EventManager implements EventManagerInterface
 
     /**
      * Whether there is a listener (for the event)
-     * @param  mixed                 $listener
-     * @param  EventInterface|string $event
+     *
+     * @param mixed                 $listener
+     * @param EventInterface|string $event
+     *
      * @return bool
      */
     public function hasListener($listener, $event = null): bool
@@ -379,8 +394,10 @@ class EventManager implements EventManagerInterface
 
     /**
      * Get the priority of a listener for an event
+     *
      * @param                        $listener
-     * @param  string|EventInterface $event
+     * @param string|EventInterface  $event
+     *
      * @return int|null
      */
     public function getListenerPriority($listener, $event): ?int
@@ -398,7 +415,9 @@ class EventManager implements EventManagerInterface
 
     /**
      * Get all the listeners for the event
-     * @param  string|EventInterface $event
+     *
+     * @param string|EventInterface $event
+     *
      * @return ListenerQueue|null
      */
     public function getListenerQueue($event): ?ListenerQueue
@@ -412,6 +431,7 @@ class EventManager implements EventManagerInterface
 
     /**
      * Get all the listeners
+     *
      * @return ListenerQueue[]
      */
     public function getListeners(): array
@@ -421,7 +441,9 @@ class EventManager implements EventManagerInterface
 
     /**
      * Get all the listeners for the event
-     * @param  string|EventInterface $event
+     *
+     * @param string|EventInterface $event
+     *
      * @return array
      */
     public function getEventListeners($event): array
@@ -439,7 +461,9 @@ class EventManager implements EventManagerInterface
 
     /**
      * Count the number of listeners that get the event
-     * @param  string|EventInterface $event
+     *
+     * @param string|EventInterface $event
+     *
      * @return int
      */
     public function countListeners($event): int
@@ -453,10 +477,12 @@ class EventManager implements EventManagerInterface
 
     /**
      * Remove listeners for an event
+     *
      * @param                            $listener
      * @param null|string|EventInterface $event
      * 为空时，移除监听者队列中所有名为 $listener 的监听者
      * 否则， 则移除对事件 $event 的监听者
+     *
      * @return bool
      */
     public function removeListener($listener, $event = null): bool
@@ -482,7 +508,9 @@ class EventManager implements EventManagerInterface
 
     /**
      * Clear all listeners for a given event
-     * @param  string|EventInterface $event
+     *
+     * @param string|EventInterface $event
+     *
      * @return void
      */
     public function clearListeners($event): void
@@ -503,6 +531,7 @@ class EventManager implements EventManagerInterface
 
     /**
      * @param string $name
+     *
      * @return bool
      */
     public function isListenedEvent(string $name): bool
@@ -512,6 +541,7 @@ class EventManager implements EventManagerInterface
 
     /**
      * @param bool $onlyName
+     *
      * @return array
      */
     public function getListenedEvents(bool $onlyName = true): array
@@ -525,8 +555,10 @@ class EventManager implements EventManagerInterface
 
     /**
      * Add a non-existing event
+     *
      * @param EventInterface|string $event event name
      * @param array                 $params
+     *
      * @return $this
      * @throws InvalidArgumentException
      */
@@ -544,8 +576,10 @@ class EventManager implements EventManagerInterface
 
     /**
      * Set an event object
+     *
      * @param string|EventInterface $event
      * @param array                 $params
+     *
      * @return $this
      * @throws InvalidArgumentException
      */
@@ -563,6 +597,7 @@ class EventManager implements EventManagerInterface
     /**
      * @param string $name
      * @param null   $default
+     *
      * @return mixed|null
      */
     public function getEvent(string $name, $default = null)
@@ -572,6 +607,7 @@ class EventManager implements EventManagerInterface
 
     /**
      * @param string|EventInterface $event
+     *
      * @return $this
      */
     public function removeEvent($event): self
@@ -589,6 +625,7 @@ class EventManager implements EventManagerInterface
 
     /**
      * @param string|EventInterface $event
+     *
      * @return bool
      */
     public function hasEvent($event): bool
@@ -610,6 +647,7 @@ class EventManager implements EventManagerInterface
 
     /**
      * @param array $events
+     *
      * @throws InvalidArgumentException
      */
     public function setEvents(array $events): void
@@ -623,6 +661,7 @@ class EventManager implements EventManagerInterface
      * @param string|EventInterface $event
      * @param null|string           $target
      * @param array                 $params
+     *
      * @return EventInterface
      */
     public function wrapperEvent($event, $target = null, array $params = []): EventInterface

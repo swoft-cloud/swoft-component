@@ -2,13 +2,14 @@
 
 namespace Swoft\Error;
 
-use function count;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Error\Contract\ErrorHandlerInterface;
+use function count;
 
 /**
  * Class ErrorRegister
+ *
  * @since 2.0
  */
 final class ErrorRegister
@@ -32,6 +33,7 @@ final class ErrorRegister
 
     /**
      * @param ErrorHandlers $chain
+     *
      * @return int
      * @throws ContainerException
      */

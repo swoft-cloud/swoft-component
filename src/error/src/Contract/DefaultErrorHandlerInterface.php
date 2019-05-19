@@ -13,6 +13,7 @@ interface DefaultErrorHandlerInterface extends ErrorHandlerInterface
 {
     /**
      * @param Throwable $e
+     *
      * @return void
      */
     public function handle(Throwable $e): void;

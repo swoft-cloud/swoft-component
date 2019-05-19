@@ -7,6 +7,7 @@ use Swoft\WebSocket\Server\Contract\HandshakeErrorHandlerInterface;
 
 /**
  * Class AbstractHandshakeErrorHandler
+ *
  * @since 2.0
  */
 abstract class AbstractHandshakeErrorHandler implements HandshakeErrorHandlerInterface

@@ -9,6 +9,7 @@ use Swoft\Http\Message\Request;
 
 /**
  * Class WsOpenContext - on ws open event
+ *
  * @since 2.0
  * @Bean(scope=Bean::PROTOTYPE)
  */

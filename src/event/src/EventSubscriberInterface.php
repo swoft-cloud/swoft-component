@@ -12,13 +12,15 @@ namespace Swoft\Event;
 
 /**
  * Interface EventSubscriberInterface - 自定义配置多个相关的事件的监听器
+ *
  * @package Swoft\Event
- * @since 2.0
+ * @since   2.0
  */
 interface EventSubscriberInterface
 {
     /**
      * Configure events and corresponding processing methods (you can configure the priority)
+     *
      * @return array
      * [
      *  'event name' => 'handler method'
