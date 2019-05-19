@@ -6,7 +6,7 @@ php:
   - 7.3
 
 before_script:
-  - composer config -g process-timeout 900 && composer update
+  - composer config -g process-timeout 9000 && composer update
   - phpenv config-rm xdebug.ini
 
 script:
