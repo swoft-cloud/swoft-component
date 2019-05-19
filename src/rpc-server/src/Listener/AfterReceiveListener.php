@@ -4,9 +4,13 @@
 namespace Swoft\Rpc\Server\Listener;
 
 
+use ReflectionException;
+use Swoft;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
+use Swoft\Rpc\Exception\RpcException;
 use Swoft\Rpc\Server\Response;
 use Swoft\SwoftEvent;
 use Swoft\Rpc\Server\ServiceServerEvent;
@@ -23,9 +27,9 @@ class AfterReceiveListener implements EventHandlerInterface
     /**
      * @param EventInterface $event
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Rpc\Exception\RpcException
+     * @throws ReflectionException
+     * @throws ContainerException
+     * @throws RpcException
      */
     public function handle(EventInterface $event): void
     {
@@ -34,10 +38,10 @@ class AfterReceiveListener implements EventHandlerInterface
         $response->send();
 
         // Defer
-        \Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
+        Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
 
         // Destroy
-        \Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
+        Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
     }
 
 }

@@ -7,6 +7,7 @@ use Swoft\Bean\BeanFactory;
 use Swoft\Redis\Connection\Connection;
 use Swoft\Redis\Connection\ConnectionManager;
 use Swoft\Redis\Exception\RedisException;
+use Throwable;
 
 /**
  * Class Redis
@@ -57,7 +58,7 @@ use Swoft\Redis\Exception\RedisException;
  * @method static bool persist(string $key)
  * @method static bool pExpire(string $key, int $ttl)
  * @method static bool pExpireAt(string $key, int $timestamp)
- * @method static bool psetex(string $key, int $ttl, string $value)
+ * @method static bool psetex(string $key, int $ttl, $value)
  * @method static int pttl(string $key)
  * @method static string rPop(string $key)
  * @method static int|bool rPush(string $key, string $value1, string $value2 = null, string $valueN = null)
@@ -80,11 +81,11 @@ use Swoft\Redis\Exception\RedisException;
  * @method static int sUnionStore(string $dstKey, string $key1, string $key2, string $keyN = null)
  * @method static array|bool scan(int &$iterator, string $pattern = null, int $count = 0)
  * @method static mixed script(string|array $nodeParams, string $command, string $script)
- * @method static bool set(string $key,$value, int $timeout = null)
+ * @method static bool set(string $key, $value, int $timeout = null)
  * @method static int setBit(string $key, int $offset, int $value)
- * @method static string setRange(string $key, int $offset, string $value)
- * @method static int setex(string $key, int $ttl, string $value)
- * @method static bool setnx(string $key, string $value)
+ * @method static string setRange(string $key, int $offset, $value)
+ * @method static int setex(string $key, int $ttl, $value)
+ * @method static bool setnx(string $key, $value)
  * @method static array sort(string $key, array $option = null)
  * @method static array sScan(string $key, int &$iterator, string $pattern = null, int $count = 0)
  * @method static int strlen(string $key)
@@ -152,7 +153,7 @@ class Redis
 
             $connection->setRelease(true);
             $conManager->setConnection($connection);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw new RedisException(
                 sprintf('Pool error is %s file=%s line=%d', $e->getMessage(), $e->getFile(), $e->getLine())
             );

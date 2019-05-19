@@ -2,13 +2,15 @@
 
 namespace Swoft\Http\Server\Contract;
 
+use Countable;
+use IteratorAggregate;
 use Swoft\Http\Server\Router\Route;
 
 /**
  * Interface RouterInterface
  * @since 1.0
  */
-interface RouterInterface extends \IteratorAggregate, \Countable, \Swoft\Contract\RouterInterface
+interface RouterInterface extends IteratorAggregate, Countable, \Swoft\Contract\RouterInterface
 {
     public const METHOD_NOT_ALLOWED = 3;
 

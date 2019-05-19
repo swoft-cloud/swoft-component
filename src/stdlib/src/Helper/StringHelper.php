@@ -2,6 +2,29 @@
 
 namespace Swoft\Stdlib\Helper;
 
+use Exception;
+use function explode;
+use function is_string;
+use function lcfirst;
+use function mb_convert_case;
+use function mb_strlen;
+use function mb_strtoupper;
+use function preg_match;
+use function preg_replace;
+use function random_bytes;
+use RuntimeException;
+use function str_pad;
+use const STR_PAD_LEFT;
+use const STR_PAD_RIGHT;
+use function str_replace;
+use function strlen;
+use function strpos;
+use function strrpos;
+use function substr;
+use function substr_replace;
+use function trim;
+use function uniqid;
+
 /**
  * String helper
  *
@@ -65,16 +88,16 @@ class StringHelper
 
     public static function toArray(string $string, string $delimiter = ',', int $limit = 0): array
     {
-        $string = \trim($string, "$delimiter ");
+        $string = trim($string, "$delimiter ");
         if ($string === '') {
             return [];
         }
 
         $values  = [];
-        $rawList = $limit < 1 ? \explode($delimiter, $string) : \explode($delimiter, $string, $limit);
+        $rawList = $limit < 1 ? explode($delimiter, $string) : explode($delimiter, $string, $limit);
 
         foreach ($rawList as $val) {
-            if (($val = \trim($val)) !== '') {
+            if (($val = trim($val)) !== '') {
                 $values[] = $val;
             }
         }
@@ -131,12 +154,12 @@ class StringHelper
      */
     public static function firstLine(string $str): string
     {
-        if (!$str = \trim($str)) {
+        if (!$str = trim($str)) {
             return '';
         }
 
-        if (\strpos($str, "\n") > 0) {
-            return \explode("\n", $str)[0];
+        if (strpos($str, "\n") > 0) {
+            return explode("\n", $str)[0];
         }
 
         return $str;
@@ -195,7 +218,7 @@ class StringHelper
 
     public static function len(string $value): int
     {
-        return \mb_strlen($value);
+        return mb_strlen($value);
     }
 
     /**
@@ -205,19 +228,19 @@ class StringHelper
      * @param int    $padType
      * @return string
      */
-    public static function pad(string $string, int $padLen, string $padStr = ' ', int $padType = \STR_PAD_RIGHT): string
+    public static function pad(string $string, int $padLen, string $padStr = ' ', int $padType = STR_PAD_RIGHT): string
     {
-        return $padLen > 0 ? \str_pad($string, $padLen, $padStr, $padType) : $string;
+        return $padLen > 0 ? str_pad($string, $padLen, $padStr, $padType) : $string;
     }
 
     public static function padLeft(string $string, int $padLen, string $padStr = ' '): string
     {
-        return $padLen > 0 ? \str_pad($string, $padLen, $padStr, \STR_PAD_LEFT) : $string;
+        return $padLen > 0 ? str_pad($string, $padLen, $padStr, STR_PAD_LEFT) : $string;
     }
 
     public static function padRight(string $string, int $padLen, string $padStr = ' '): string
     {
-        return $padLen > 0 ? \str_pad($string, $padLen, $padStr) : $string;
+        return $padLen > 0 ? str_pad($string, $padLen, $padStr) : $string;
     }
 
     /**
@@ -292,10 +315,10 @@ class StringHelper
     public static function uniqID(string $prefix = '', bool $moreEntropy = false): string
     {
         if (false === $moreEntropy) {
-            return \uniqid($prefix, false);
+            return uniqid($prefix, false);
         }
 
-        return \str_replace('.', '', \uniqid($prefix, true));
+        return str_replace('.', '', uniqid($prefix, true));
     }
 
     /**
@@ -304,8 +327,8 @@ class StringHelper
      * @param  int $length
      *
      * @return string
-     * @throws \RuntimeException
-     * @throws \Exception
+     * @throws RuntimeException
+     * @throws Exception
      */
     public static function random(int $length = 16): string
     {
@@ -313,7 +336,7 @@ class StringHelper
 
         while (($len = strlen($string)) < $length) {
             $size = $length - $len;
-            $bytes = \random_bytes($size);
+            $bytes = random_bytes($size);
 
             $string .= substr(str_replace(['/', '+', '='], '', base64_encode($bytes)), 0, $size);
         }
@@ -327,7 +350,7 @@ class StringHelper
      * @param  int $length
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      * @deprecated since version 5.2. Use random_bytes instead.
      */
     public static function randomBytes(int $length = 16): string
@@ -338,10 +361,10 @@ class StringHelper
             $bytes = openssl_random_pseudo_bytes($length, $strong);
 
             if ($bytes === false || $strong === false) {
-                throw new \RuntimeException('Unable to generate random string.');
+                throw new RuntimeException('Unable to generate random string.');
             }
         } else {
-            throw new \RuntimeException('OpenSSL extension or paragonie/random_compat is required for PHP 5 users.');
+            throw new RuntimeException('OpenSSL extension or paragonie/random_compat is required for PHP 5 users.');
         }
 
         return $bytes;
@@ -409,10 +432,10 @@ class StringHelper
      */
     public static function replaceLast(string $search, $replace, string $subject): string
     {
-        $position = \strrpos($subject, $search);
+        $position = strrpos($subject, $search);
 
         if ($position !== false) {
-            return \substr_replace($subject, $replace, $position, \strlen($search));
+            return substr_replace($subject, $replace, $position, strlen($search));
         }
 
         return $subject;
@@ -427,7 +450,7 @@ class StringHelper
      */
     public static function upper(string $value): string
     {
-        return \mb_strtoupper($value, 'UTF-8');
+        return mb_strtoupper($value, 'UTF-8');
     }
 
     /**
@@ -439,7 +462,7 @@ class StringHelper
      */
     public static function title($value): string
     {
-        return \mb_convert_case($value, MB_CASE_TITLE, 'UTF-8');
+        return mb_convert_case($value, MB_CASE_TITLE, 'UTF-8');
     }
 
     /**
@@ -605,7 +628,7 @@ class StringHelper
      * @param   integer $length Length of string to return
      *
      * @return  string
-     * @throws \Exception
+     * @throws Exception
      */
     public static function randomString($type = 'alnum', $length = 8): string
     {
@@ -672,7 +695,7 @@ class StringHelper
      */
     public static function isAscii($str): bool
     {
-        return \is_string($str) && !\preg_match('/[^\x00-\x7F]/S', $str);
+        return is_string($str) && !preg_match('/[^\x00-\x7F]/S', $str);
     }
 
     /**
@@ -690,15 +713,15 @@ class StringHelper
         }
 
         // \\(\w+)Helper$
-        if (\strpos($class, $suffix) > 0) {
+        if (strpos($class, $suffix) > 0) {
             $regex = '/\\\(\w+)' . $suffix . '$/';
-            $ok    = \preg_match($regex, $class, $match);
+            $ok    = preg_match($regex, $class, $match);
         } else {
             $ok    = true;
             $match = [1 => $class];
         }
 
-        return $ok ? \lcfirst($match[1]) : '';
+        return $ok ? lcfirst($match[1]) : '';
     }
 
     /**
@@ -707,8 +730,8 @@ class StringHelper
      */
     public static function rmPharPrefix(string $path): string
     {
-        if (0 === \strpos($path, 'phar://')) {
-            return \preg_replace('/[\w-]+\.phar\//', '', \substr($path, 7));
+        if (0 === strpos($path, 'phar://')) {
+            return preg_replace('/[\w-]+\.phar\//', '', substr($path, 7));
         }
 
         return $path;

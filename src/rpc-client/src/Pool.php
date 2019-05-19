@@ -4,6 +4,8 @@
 namespace Swoft\Rpc\Client;
 
 
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\AbstractPool;
 use Swoft\Connection\Pool\Contract\ConnectionInterface;
 use Swoft\Rpc\Client\Exception\RpcClientException;
@@ -23,8 +25,8 @@ class Pool extends AbstractPool
     /**
      * @return ConnectionInterface
      * @throws Exception\RpcClientException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function createConnection(): ConnectionInterface
     {

@@ -4,6 +4,9 @@
 namespace Swoft\Listener;
 
 
+use function bean;
+use function sgo;
+use Swoft;
 use Swoft\Bean\BeanEvent;
 use Swoft\Co;
 use Swoft\Context\Context;
@@ -27,12 +30,12 @@ class CoroutineCompleteListener implements EventHandlerInterface
      */
     public function handle(EventInterface $event): void
     {
-        \sgo(function () {
+        sgo(function () {
             // Wait
             Context::getWaitGroup()->wait();
 
             /* @var Logger $logger */
-            $logger = \bean('logger');
+            $logger = bean('logger');
 
             // Add notice log
             if ($logger->isEnable()) {
@@ -40,10 +43,10 @@ class CoroutineCompleteListener implements EventHandlerInterface
             }
 
             // Coroutine destroy
-            \Swoft::trigger(SwoftEvent::COROUTINE_DESTROY);
+            Swoft::trigger(SwoftEvent::COROUTINE_DESTROY);
 
             // Destroy request bean
-            \Swoft::trigger(BeanEvent::DESTROY_REQUEST, $this, Co::tid());
+            Swoft::trigger(BeanEvent::DESTROY_REQUEST, $this, Co::tid());
 
             // Destroy context
             Context::destroy();

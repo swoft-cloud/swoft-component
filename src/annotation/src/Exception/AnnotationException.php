@@ -3,12 +3,14 @@
 
 namespace Swoft\Annotation\Exception;
 
+use Exception;
+
 /**
  * Class AnnotationException
  *
  * @since 2.0
  */
-class AnnotationException extends \Exception
+class AnnotationException extends Exception
 {
 
 }

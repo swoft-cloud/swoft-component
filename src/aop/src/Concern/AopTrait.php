@@ -5,6 +5,7 @@ namespace Swoft\Aop\Concern;
 
 use Swoft\Aop\Aop;
 use Swoft\Aop\AspectHandler;
+use Throwable;
 
 /**
  * Class AopTrait
@@ -21,7 +22,7 @@ trait AopTrait
      * @param array  $args
      *
      * @return mixed
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function __proxyCall(string $className, string $methodName, array $args)
     {

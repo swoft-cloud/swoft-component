@@ -2,9 +2,17 @@
 
 namespace Swoft;
 
+use function array_shift;
+use function explode;
+use function get_class;
+use function implode;
+use ReflectionClass;
+use ReflectionException;
+use Swoft;
 use Swoft\Aop\Aop;
 use Swoft\Aop\Proxy;
 use Swoft\Bean\Definition\ObjectDefinition;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Bean\Handler;
 use Swoft\Proxy\Exception\ProxyException;
 
@@ -53,14 +61,14 @@ class BeanHandler extends Handler
      *    ],
      * ]
      *
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function beforeInit(string $beanName, string $className, ObjectDefinition $objDfn, array $annotation): void
     {
         $alias = $objDfn->getAlias();
 
         // Register aop
-        $reflectionClass   = new \ReflectionClass($className);
+        $reflectionClass   = new ReflectionClass($className);
         $reflectionMethods = $reflectionClass->getMethods();
         foreach ($reflectionMethods as $reflectionMethod) {
             if ($reflectionMethod->isStatic() || $reflectionMethod->isPrivate()) {
@@ -81,7 +89,7 @@ class BeanHandler extends Handler
 
             $mtdAntClassNames = [];
             foreach ($methodAnnotations as $methodAnnotation) {
-                $mtdAntClassNames[] = \get_class($methodAnnotation);
+                $mtdAntClassNames[] = get_class($methodAnnotation);
             }
 
             Aop::register($beanNames, $className, $methodName, $mtdAntClassNames);
@@ -108,20 +116,20 @@ class BeanHandler extends Handler
      * @param $value
      *
      * @return mixed|string
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \ReflectionException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function getReferenceValue($value)
     {
-        $values = \explode('.', $value);
+        $values = explode('.', $value);
 
         // Remove `config.` prefix, if exists.
         if (isset($values[0]) && $values[0] === 'config') {
-            \array_shift($values);
-            $value = \implode('.', $values);
+            array_shift($values);
+            $value = implode('.', $values);
         }
 
         /** @see \Swoft\Config\Config::get() */
-        return \Swoft::getBean('config')->get($value);
+        return Swoft::getBean('config')->get($value);
     }
 }

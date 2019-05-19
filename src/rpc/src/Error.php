@@ -4,8 +4,10 @@
 namespace Swoft\Rpc;
 
 
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Exception\ContainerException;
 
 /**
  * Class Error
@@ -39,8 +41,8 @@ class Error
      * @param mixed  $data
      *
      * @return Error
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function new(int $code, string $mesage, $data): self
     {

@@ -2,6 +2,9 @@
 
 namespace Swoft\Processor;
 
+use function bean;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Console\CommandRegister;
 use Swoft\Console\Router\Router;
 use Swoft\Log\Helper\CLog;
@@ -15,8 +18,8 @@ class ConsoleProcessor extends Processor
     /**
      * Handle console
      * @return bool
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function handle(): bool
     {
@@ -25,7 +28,7 @@ class ConsoleProcessor extends Processor
         }
 
         /** @var Router $router */
-        $router = \bean('cliRouter');
+        $router = bean('cliRouter');
 
         // Register console routes
         CommandRegister::register($router);
@@ -37,7 +40,7 @@ class ConsoleProcessor extends Processor
         );
 
         // Run console application
-        \bean('cliApp')->run();
+        bean('cliApp')->run();
 
         return $this->application->afterConsole();
     }

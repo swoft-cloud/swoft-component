@@ -2,7 +2,10 @@
 
 namespace Swoft\Bean\Annotation\Parser;
 
+use PhpDocReader\AnnotationException;
 use PhpDocReader\PhpDocReader;
+use ReflectionException;
+use ReflectionProperty;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Bean\Annotation\Mapping\Inject;
@@ -24,8 +27,8 @@ class InjectParser extends Parser
      *
      * @return array
      * @throws BeanException
-     * @throws \PhpDocReader\AnnotationException
-     * @throws \ReflectionException
+     * @throws AnnotationException
+     * @throws ReflectionException
      */
     public function parse(int $type, $annotationObject): array
     {
@@ -41,7 +44,7 @@ class InjectParser extends Parser
 
         // Parse php document
         $phpReader       = new PhpDocReader();
-        $reflectProperty = new \ReflectionProperty($this->className, $this->propertyName);
+        $reflectProperty = new ReflectionProperty($this->className, $this->propertyName);
         $docInject       = $phpReader->getPropertyClass($reflectProperty);
 
         if (empty($docInject)) {

@@ -4,7 +4,9 @@
 namespace Swoft\Rpc\Packet;
 
 
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Rpc\Error;
 use Swoft\Rpc\Exception\RpcException;
 use Swoft\Rpc\Protocol;
@@ -55,8 +57,8 @@ class JsonPacket extends AbstractPacket
      *
      * @return Protocol
      * @throws RpcException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function decode(string $string): Protocol
     {
@@ -138,8 +140,8 @@ class JsonPacket extends AbstractPacket
      * @param string $string
      *
      * @return Response
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function decodeResponse(string $string): Response
     {

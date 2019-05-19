@@ -5,7 +5,6 @@ namespace Swoft\Rpc\Client;
 
 
 use Swoft\Rpc\Packet;
-use Swoft\Rpc\Packet\JsonPacket;
 use Swoft\SwoftComponent;
 
 /**

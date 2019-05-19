@@ -3,8 +3,10 @@
 
 namespace Swoft\Test\Http;
 
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\Arr;
 use Swoole\Http\Request;
 
@@ -101,8 +103,8 @@ class MockRequest extends Request
      * @param array $params
      *
      * @return MockRequest
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function new(array $server, array $headers, array $cookies, array $params): self
     {

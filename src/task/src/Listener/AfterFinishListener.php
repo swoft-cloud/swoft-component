@@ -4,6 +4,8 @@
 namespace Swoft\Task\Listener;
 
 
+use Swoft;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
@@ -22,14 +24,14 @@ class AfterFinishListener implements EventHandlerInterface
     /**
      * @param EventInterface $event
      *
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ContainerException
      */
     public function handle(EventInterface $event): void
     {
         // Defer
-        \Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
+        Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
 
         // Destroy
-        \Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
+        Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
     }
 }

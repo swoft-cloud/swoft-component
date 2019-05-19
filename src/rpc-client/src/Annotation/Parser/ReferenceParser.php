@@ -4,10 +4,13 @@
 namespace Swoft\Rpc\Client\Annotation\Parser;
 
 
+use PhpDocReader\AnnotationException;
 use PhpDocReader\PhpDocReader;
+use ReflectionException;
+use ReflectionProperty;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
-use Swoft\Bean\BeanFactory;
+use Swoft\Proxy\Exception\ProxyException;
 use Swoft\Rpc\Client\Annotation\Mapping\Reference;
 use Swoft\Rpc\Client\Exception\RpcClientException;
 use Swoft\Rpc\Client\Proxy;
@@ -28,15 +31,15 @@ class ReferenceParser extends Parser
      *
      * @return array
      * @throws RpcClientException
-     * @throws \PhpDocReader\AnnotationException
-     * @throws \ReflectionException
-     * @throws \Swoft\Proxy\Exception\ProxyException
+     * @throws AnnotationException
+     * @throws ReflectionException
+     * @throws ProxyException
      */
     public function parse(int $type, $annotationObject): array
     {
         // Parse php document
         $phpReader       = new PhpDocReader();
-        $reflectProperty = new \ReflectionProperty($this->className, $this->propertyName);
+        $reflectProperty = new ReflectionProperty($this->className, $this->propertyName);
         $propClassType   = $phpReader->getPropertyClass($reflectProperty);
 
         if (empty($propClassType)) {

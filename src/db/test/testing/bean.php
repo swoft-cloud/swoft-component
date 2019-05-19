@@ -7,7 +7,7 @@ return [
     'config'   => [
         'path' => __DIR__ . '/../config',
     ],
-    'db'     => [
+    'db'       => [
         'class'    => Database::class,
         'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
         'username' => 'root',

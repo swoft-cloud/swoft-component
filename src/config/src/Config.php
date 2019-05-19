@@ -3,6 +3,7 @@
 namespace Swoft\Config;
 
 
+use InvalidArgumentException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Config\Contract\ParserInterface;
 use Swoft\Config\Exception\ConfigException;
@@ -15,10 +16,12 @@ use Swoft\Stdlib\Helper\ArrayHelper;
  * Class Config
  *
  * @Bean("config")
+ *
  * @since 2.0
  */
 class Config extends Collection
 {
+
     /**
      * Php formatter
      */
@@ -69,7 +72,7 @@ class Config extends Collection
     {
         $parsers = $this->getConfigParser();
         if (!isset($parsers[$this->type])) {
-            throw new \InvalidArgumentException('Resourcer is not exist! resourceType=' . $this->type);
+            throw new InvalidArgumentException('Resourcer is not exist! resourceType=' . $this->type);
         }
 
         /* @var ParserInterface $parser */
@@ -155,7 +158,7 @@ class Config extends Collection
     /**
      * Determine if an item exists at an offset.
      *
-     * @param  mixed $key
+     * @param mixed $key
      *
      * @return bool
      */

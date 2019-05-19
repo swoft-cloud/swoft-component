@@ -2,8 +2,12 @@
 
 namespace Swoft\Http\Message;
 
+use function in_array;
+use InvalidArgumentException;
+use function preg_match;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
+use function strtoupper;
 use Swoft\Http\Message\Concern\MessageTrait;
 
 /**
@@ -86,8 +90,8 @@ class PsrRequest implements RequestInterface
      */
     public function withRequestTarget($requestTarget)
     {
-        if (\preg_match('#\s#', $requestTarget)) {
-            throw new \InvalidArgumentException('Invalid request target provided; cannot contain whitespace');
+        if (preg_match('#\s#', $requestTarget)) {
+            throw new InvalidArgumentException('Invalid request target provided; cannot contain whitespace');
         }
 
         $new = clone $this;
@@ -111,15 +115,15 @@ class PsrRequest implements RequestInterface
      * @param string $method Case-sensitive method.
      *
      * @return static
-     * @throws \InvalidArgumentException for invalid HTTP methods.
+     * @throws InvalidArgumentException for invalid HTTP methods.
      */
     public function withMethod($method)
     {
-        $method  = \strtoupper($method);
+        $method  = strtoupper($method);
         $methods = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'HEAD'];
 
-        if (!\in_array($method, $methods, true)) {
-            throw new \InvalidArgumentException('Invalid Method');
+        if (!in_array($method, $methods, true)) {
+            throw new InvalidArgumentException('Invalid Method');
         }
         $new         = clone $this;
         $new->method = $method;

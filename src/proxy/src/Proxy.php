@@ -4,13 +4,14 @@
 namespace Swoft\Proxy;
 
 
+use function file_put_contents;
+use const PHP_EOL;
+use function sprintf;
 use Swoft\Proxy\Ast\Parser;
 use Swoft\Proxy\Ast\Visitor\Visitor;
 use Swoft\Proxy\Contract\VisitorInterface;
 use Swoft\Proxy\Exception\ProxyException;
 use Swoft\Stdlib\Helper\Sys;
-use SwoftTest\Validator\Testing\ValidateUser;
-use SwoftTest\Validator\Testing\Validator\UserValidator;
 
 class Proxy
 {
@@ -40,11 +41,11 @@ class Proxy
         $proxyName = $visitor->getProxyName();
 
         // Proxy file and proxy code
-        $proxyFile = \sprintf('%s/%s.php', Sys::getTempDir(), $proxyName);
-        $proxyCode = \sprintf('<?php %s %s', \PHP_EOL, $proxyCode);
+        $proxyFile = sprintf('%s/%s.php', Sys::getTempDir(), $proxyName);
+        $proxyCode = sprintf('<?php %s %s', PHP_EOL, $proxyCode);
 
         // Generate proxy class
-        $result = \file_put_contents($proxyFile, $proxyCode);
+        $result = file_put_contents($proxyFile, $proxyCode);
         if ($result === false) {
             throw new ProxyException(sprintf('Proxy file(%s) generate fail', $proxyFile));
         }

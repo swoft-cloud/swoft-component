@@ -637,7 +637,7 @@ class Builder
      * @throws EloquentException
      * @throws ReflectionException
      */
-    public function getModels($columns = ['*'])
+    public function getModels(array $columns = ['*'])
     {
         return $this->hydrate(
             $this->query->get($columns)->all()

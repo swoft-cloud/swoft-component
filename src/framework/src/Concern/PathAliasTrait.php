@@ -2,6 +2,10 @@
 
 namespace Swoft\Concern;
 
+use function explode;
+use InvalidArgumentException;
+use function str_replace;
+
 /**
  * Trait PathAliasTrait
  * @since 2.0
@@ -34,7 +38,7 @@ trait PathAliasTrait
      * @param string $path
      *
      * @return void
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function setAlias(string $alias, string $path = ''): void
     {
@@ -60,13 +64,13 @@ trait PathAliasTrait
             return;
         }
 
-        [$root] = \explode('/', $path);
+        [$root] = explode('/', $path);
         if (!isset(self::$aliases[$root])) {
-            throw new \InvalidArgumentException('The set root alias does not exist，alias=' . $root);
+            throw new InvalidArgumentException('The set root alias does not exist，alias=' . $root);
         }
 
         $rootPath  = self::$aliases[$root];
-        $aliasPath = \str_replace($root, '', $path);
+        $aliasPath = str_replace($root, '', $path);
 
         self::$aliases[$alias] = $rootPath . $aliasPath;
     }
@@ -77,7 +81,7 @@ trait PathAliasTrait
      * @param string $alias
      *
      * @return string
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function getAlias(string $alias): string
     {
@@ -90,13 +94,13 @@ trait PathAliasTrait
             return self::$aliases[$alias];
         }
 
-        [$root] = \explode('/', $alias, 2);
+        [$root] = explode('/', $alias, 2);
         if (!isset(self::$aliases[$root])) {
-            throw new \InvalidArgumentException('The set root alias does not exist，alias=' . $root);
+            throw new InvalidArgumentException('The set root alias does not exist，alias=' . $root);
         }
 
         $rootPath  = self::$aliases[$root];
-        $aliasPath = \str_replace($root, '', $alias);
+        $aliasPath = str_replace($root, '', $alias);
 
         return $rootPath . $aliasPath;
     }
@@ -107,7 +111,7 @@ trait PathAliasTrait
      * @param string $alias
      *
      * @return bool
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function hasAlias(string $alias): bool
     {

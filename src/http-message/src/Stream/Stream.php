@@ -2,9 +2,16 @@
 
 namespace Swoft\Http\Message\Stream;
 
+use BadMethodCallException;
+use Exception;
 use Psr\Http\Message\StreamInterface;
+use ReflectionException;
+use RuntimeException;
+use const SEEK_SET;
+use function strlen;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Exception\ContainerException;
 
 /**
  * Class Stream
@@ -33,15 +40,15 @@ class Stream implements StreamInterface
      * @param string $contents
      *
      * @return Stream
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function new(string $contents): self
     {
         $instance = self::__instance();
 
         $instance->contents = $contents;
-        $instance->size     = \strlen($instance->contents);
+        $instance->size     = strlen($instance->contents);
 
         return $instance;
     }
@@ -64,7 +71,7 @@ class Stream implements StreamInterface
     {
         try {
             return $this->contents;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return '';
         }
     }
@@ -76,7 +83,7 @@ class Stream implements StreamInterface
      */
     public function close(): void
     {
-        throw new \BadMethodCallException('Not implemented');
+        throw new BadMethodCallException('Not implemented');
     }
 
     /**
@@ -84,11 +91,11 @@ class Stream implements StreamInterface
      *
      * After the stream has been detached, the stream is in an unusable state.
      *
-     * @throws \BadMethodCallException
+     * @throws BadMethodCallException
      */
     public function detach(): void
     {
-        throw new \BadMethodCallException('Not implemented');
+        throw new BadMethodCallException('Not implemented');
     }
 
     /**
@@ -99,7 +106,7 @@ class Stream implements StreamInterface
     public function getSize(): int
     {
         if (!$this->size) {
-            $this->size = \strlen($this->getContents());
+            $this->size = strlen($this->getContents());
         }
 
         return $this->size;
@@ -108,31 +115,31 @@ class Stream implements StreamInterface
     /**
      * Returns the current position of the file read/write pointer
      *
-     * @throws \BadMethodCallException on error.
+     * @throws BadMethodCallException on error.
      */
     public function tell()
     {
-        throw new \BadMethodCallException('Not implemented');
+        throw new BadMethodCallException('Not implemented');
     }
 
     /**
      * Returns true if the stream is at the end of the stream.
      *
-     * @throws \BadMethodCallException
+     * @throws BadMethodCallException
      */
     public function eof(): bool
     {
-        throw new \BadMethodCallException('Not implemented');
+        throw new BadMethodCallException('Not implemented');
     }
 
     /**
      * Returns whether or not the stream is seekable.
      *
-     * @throws \BadMethodCallException
+     * @throws BadMethodCallException
      */
     public function isSeekable(): bool
     {
-        throw new \BadMethodCallException('Not implemented');
+        throw new BadMethodCallException('Not implemented');
     }
 
     /**
@@ -147,11 +154,11 @@ class Stream implements StreamInterface
      *                    offset bytes SEEK_CUR: Set position to current location plus offset
      *                    SEEK_END: Set position to end-of-stream plus offset.
      *
-     * @throws \BadMethodCallException on failure.
+     * @throws BadMethodCallException on failure.
      */
-    public function seek($offset, $whence = \SEEK_SET): void
+    public function seek($offset, $whence = SEEK_SET): void
     {
-        throw new \BadMethodCallException('Not implemented');
+        throw new BadMethodCallException('Not implemented');
     }
 
     /**
@@ -162,11 +169,11 @@ class Stream implements StreamInterface
      *
      * @see  seek()
      * @link http://www.php.net/manual/en/function.fseek.php
-     * @throws \BadMethodCallException on failure.
+     * @throws BadMethodCallException on failure.
      */
     public function rewind(): void
     {
-        throw new \BadMethodCallException('Not implemented');
+        throw new BadMethodCallException('Not implemented');
     }
 
     /**
@@ -185,11 +192,11 @@ class Stream implements StreamInterface
      * @param string $string The string that is to be written.
      *
      * @return int
-     * @throws \BadMethodCallException on failure.
+     * @throws BadMethodCallException on failure.
      */
     public function write($string): int
     {
-        throw new \BadMethodCallException('Not implemented');
+        throw new BadMethodCallException('Not implemented');
 
     }
 
@@ -212,18 +219,18 @@ class Stream implements StreamInterface
      *
      * @return string Returns the data read from the stream, or an empty string
      *     if no bytes are available.
-     * @throws \BadMethodCallException if an error occurs.
+     * @throws BadMethodCallException if an error occurs.
      */
     public function read($length): string
     {
-        throw new \BadMethodCallException('Not implemented');
+        throw new BadMethodCallException('Not implemented');
     }
 
     /**
      * Returns the remaining contents in a string
      *
      * @return string
-     * @throws \RuntimeException if unable to read or an error occurs while reading.
+     * @throws RuntimeException if unable to read or an error occurs while reading.
      */
     public function getContents(): string
     {
@@ -246,6 +253,6 @@ class Stream implements StreamInterface
      */
     public function getMetadata($key = null)
     {
-        throw new \BadMethodCallException('Not implemented');
+        throw new BadMethodCallException('Not implemented');
     }
 }

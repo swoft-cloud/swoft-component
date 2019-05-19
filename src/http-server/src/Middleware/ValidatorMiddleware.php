@@ -2,9 +2,11 @@
 
 namespace Swoft\Http\Server\Middleware;
 
+use function explode;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
@@ -12,7 +14,6 @@ use Swoft\Http\Message\Request;
 use Swoft\Http\Server\Contract\MiddlewareInterface;
 use Swoft\Http\Server\Router\Route;
 use Swoft\Http\Server\Router\Router;
-use Swoft\Validator\Annotation\Mapping\Validate;
 use Swoft\Validator\Exception\ValidatorException;
 use Swoft\Validator\Validator;
 
@@ -31,7 +32,7 @@ class ValidatorMiddleware implements MiddlewareInterface
      *
      * @return ResponseInterface
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      * @throws ValidatorException
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -45,7 +46,7 @@ class ValidatorMiddleware implements MiddlewareInterface
 
         // Controller and method
         $handlerId = $route->getHandler();
-        [$className, $method] = \explode('@', $handlerId);
+        [$className, $method] = explode('@', $handlerId);
 
         $data = $request->getParsedBody();
 

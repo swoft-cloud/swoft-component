@@ -1,6 +1,10 @@
 <?php declare(strict_types=1);
 namespace Swoft\Stdlib\Helper;
 
+use const PHP_OS;
+use const PHP_SAPI;
+use function stripos;
+
 /**
  * Env helper
  *
@@ -15,7 +19,7 @@ class EnvHelper
      */
     public static function isCli(): bool
     {
-        return \PHP_SAPI === 'cli';
+        return PHP_SAPI === 'cli';
     }
 
     /**
@@ -25,7 +29,7 @@ class EnvHelper
      */
     public static function isWin(): bool
     {
-        return \stripos(\PHP_OS, 'WIN') === 0;
+        return stripos(PHP_OS, 'WIN') === 0;
     }
 
     /**
@@ -35,7 +39,7 @@ class EnvHelper
      */
     public static function isWindows(): bool
     {
-        return \stripos(\PHP_OS, 'WIN') === 0;
+        return stripos(PHP_OS, 'WIN') === 0;
     }
 
     /**
@@ -45,6 +49,6 @@ class EnvHelper
      */
     public static function isMac(): bool
     {
-        return \stripos(\PHP_OS, 'Darwin') !== false;
+        return stripos(PHP_OS, 'Darwin') !== false;
     }
 }

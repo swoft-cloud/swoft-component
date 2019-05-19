@@ -2,6 +2,7 @@
 
 namespace Swoft\Tcp\Server;
 
+use function dirname;
 use Swoft\Helper\ComposerJSON;
 use Swoft\Server\Swoole\SwooleEvent;
 use Swoft\SwoftComponent;
@@ -21,7 +22,7 @@ class AutoLoader extends SwoftComponent
      */
     public function metadata(): array
     {
-        $jsonFile = \dirname(__DIR__) . '/composer.json';
+        $jsonFile = dirname(__DIR__) . '/composer.json';
 
         return ComposerJSON::open($jsonFile)->getMetadata();
     }

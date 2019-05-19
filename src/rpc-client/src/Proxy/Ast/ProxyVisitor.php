@@ -4,12 +4,15 @@
 namespace Swoft\Rpc\Client\Proxy\Ast;
 
 
+use function array_unshift;
+use function sprintf;
 use Swoft\Proxy\Ast\Visitor\Visitor;
 use Swoft\Rpc\Client\Concern\ServiceTrait;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\NodeFinder;
 use PhpParser\NodeTraverser;
+use function uniqid;
 
 /**
  * Class ProxyVisitor
@@ -62,7 +65,7 @@ class ProxyVisitor extends Visitor
     public function __construct(string $proxyId = '', string $TraitClassName = ServiceTrait::class)
     {
         $this->serviceTrait = $TraitClassName;
-        $this->proxyId      = $proxyId ?: \uniqid();
+        $this->proxyId      = $proxyId ?: uniqid();
     }
 
     /**
@@ -144,7 +147,7 @@ class ProxyVisitor extends Visitor
         $traitNode          = $this->getTraitNode();
         $originalMethodNode = $this->getOriginalClassNameMethodNode();
 
-        \array_unshift($classNode->stmts, $traitNode, $originalMethodNode);
+        array_unshift($classNode->stmts, $traitNode, $originalMethodNode);
         return $nodes;
     }
 
@@ -216,7 +219,7 @@ class ProxyVisitor extends Visitor
      */
     public function getProxyClassName(): string
     {
-        return \sprintf('%s\\%s', $this->namespace, $this->proxyName);
+        return sprintf('%s\\%s', $this->namespace, $this->proxyName);
     }
 
     /**

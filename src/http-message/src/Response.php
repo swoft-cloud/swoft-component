@@ -2,13 +2,19 @@
 
 namespace Swoft\Http\Message;
 
+use function implode;
+use function in_array;
+use InvalidArgumentException;
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\Concern\MessageTrait;
 use Swoft\Http\Message\Contract\ResponseFormatterInterface;
 use Swoft\Http\Message\Contract\ResponseInterface;
 use Swoft\Http\Message\Stream\Stream;
 use Swoole\Http\Response as CoResponse;
+use Throwable;
 
 /**
  * Class Response
@@ -50,7 +56,7 @@ class Response implements ResponseInterface
     /**
      * Exception
      *
-     * @var \Throwable|null
+     * @var Throwable|null
      */
     protected $exception;
 
@@ -104,8 +110,8 @@ class Response implements ResponseInterface
      * @param CoResponse $coResponse
      *
      * @return Response
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public static function new(CoResponse $coResponse): self
     {
@@ -150,8 +156,8 @@ class Response implements ResponseInterface
     /**
      * Send response
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function send(): void
     {
@@ -171,8 +177,8 @@ class Response implements ResponseInterface
      *
      * @param self|null $response
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function quickSend(Response $response = null): void
     {
@@ -180,7 +186,7 @@ class Response implements ResponseInterface
 
         // Write Headers to co response
         foreach ($response->getHeaders() as $key => $value) {
-            $this->coResponse->header($key, \implode(';', $value));
+            $this->coResponse->header($key, implode(';', $value));
         }
 
         // TODO ... write cookie
@@ -215,8 +221,8 @@ class Response implements ResponseInterface
      * @param $content
      *
      * @return static
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function withContent($content): Response
     {
@@ -231,19 +237,19 @@ class Response implements ResponseInterface
     }
 
     /**
-     * @return null|\Throwable
+     * @return null|Throwable
      */
-    public function getException(): ?\Throwable
+    public function getException(): ?Throwable
     {
         return $this->exception;
     }
 
     /**
-     * @param \Throwable $exception
+     * @param Throwable $exception
      *
      * @return $this
      */
-    public function setException(\Throwable $exception): self
+    public function setException(Throwable $exception): self
     {
         $this->exception = $exception;
         return $this;
@@ -370,7 +376,7 @@ class Response implements ResponseInterface
      *                             use the defaults as suggested in the HTTP specification.
      *
      * @return static|self
-     * @throws \InvalidArgumentException For invalid status code arguments.
+     * @throws InvalidArgumentException For invalid status code arguments.
      */
     public function withStatus($code, $reasonPhrase = '')
     {
@@ -447,7 +453,7 @@ class Response implements ResponseInterface
      */
     public function isEmpty(): bool
     {
-        return \in_array($this->getStatusCode(), [204, 205, 304], true);
+        return in_array($this->getStatusCode(), [204, 205, 304], true);
     }
 
     /**
@@ -487,7 +493,7 @@ class Response implements ResponseInterface
      */
     public function isRedirect(): bool
     {
-        return \in_array($this->getStatusCode(), [301, 302, 303, 307], true);
+        return in_array($this->getStatusCode(), [301, 302, 303, 307], true);
     }
 
     /**

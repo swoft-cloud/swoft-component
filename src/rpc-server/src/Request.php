@@ -4,8 +4,11 @@
 namespace Swoft\Rpc\Server;
 
 
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Rpc\Exception\RpcException;
 use Swoft\Rpc\Packet;
 use Swoft\Rpc\Server\Contract\RequestInterface;
 use Swoole\Server;
@@ -96,9 +99,9 @@ class Request implements RequestInterface
      * @param string $data
      *
      * @return Request
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Rpc\Exception\RpcException
+     * @throws ReflectionException
+     * @throws ContainerException
+     * @throws RpcException
      */
     public static function new(
         Server $server = null,

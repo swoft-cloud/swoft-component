@@ -4,7 +4,9 @@
 namespace Swoft\Rpc\Client;
 
 
+use ReflectionException;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Rpc\Client\Contract\ExtenderInterface;
 use Swoft\Rpc\Client\Contract\ProviderInterface;
 use Swoft\Rpc\Client\Exception\RpcClientException;
@@ -59,8 +61,8 @@ class Client
      *
      * @return Connection
      * @throws Exception\RpcClientException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function createConnection(Pool $pool): Connection
     {
@@ -110,8 +112,8 @@ class Client
 
     /**
      * @return ExtenderInterface
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function getExtender(): ExtenderInterface
     {

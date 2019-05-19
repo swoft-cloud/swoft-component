@@ -4,7 +4,10 @@
 namespace Swoft\Test\Rpc;
 
 
+use ReflectionException;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Rpc\Exception\RpcException;
 use Swoft\Rpc\Packet\JsonPacket;
 use Swoft\Rpc\Protocol;
 use Swoft\Rpc\Server\ServiceDispatcher;
@@ -24,9 +27,9 @@ class MockRpcServer
      * @param string $v
      *
      * @return MockResponse
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Rpc\Exception\RpcException
+     * @throws ReflectionException
+     * @throws ContainerException
+     * @throws RpcException
      */
     public function call(
         string $interface,
@@ -52,7 +55,8 @@ class MockRpcServer
      * @param MockResponse $response
      *
      * @return MockResponse
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     private function onReceive(MockRequest $request, MockResponse $response)
     {

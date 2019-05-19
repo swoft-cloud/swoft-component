@@ -4,8 +4,11 @@
 namespace Swoft\Rpc\Server\Swoole;
 
 
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Rpc\Exception\RpcException;
 use Swoft\Rpc\Server\Request;
 use Swoft\Rpc\Server\Response;
 use Swoft\Rpc\Server\ServiceDispatcher;
@@ -27,9 +30,9 @@ class ReceiveListener implements ReceiveInterface
      * @param int    $reactorId
      * @param string $data
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     * @throws \Swoft\Rpc\Exception\RpcException
+     * @throws ReflectionException
+     * @throws ContainerException
+     * @throws RpcException
      */
     public function onReceive(Server $server, int $fd, int $reactorId, string $data): void
     {

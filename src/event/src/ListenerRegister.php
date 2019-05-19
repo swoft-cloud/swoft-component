@@ -10,7 +10,8 @@ use Swoft\Event\Manager\EventManager;
 
 /**
  * Class ListenerRegister
- * @package Swoft\Event
+ *
+ * @since 2.0
  */
 final class ListenerRegister
 {

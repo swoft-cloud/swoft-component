@@ -2,6 +2,8 @@
 
 namespace Swoft\Helper;
 
+use function implode;
+
 /**
  * Class SwoftHelper
  * @since 2.0
@@ -19,6 +21,6 @@ class SwoftHelper
             $strings[] = "$name $count";
         }
 
-        return \implode(', ', $strings);
+        return implode(', ', $strings);
     }
 }

@@ -2,6 +2,9 @@
 
 namespace Swoft\Http\Server\Listener;
 
+use function bean;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
@@ -21,13 +24,13 @@ class AppInitCompleteListener implements EventHandlerInterface
     /**
      * @param EventInterface $event
      *
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function handle(EventInterface $event): void
     {
         /** @var Router $router Register HTTP routes */
-        $router = \bean('httpRouter');
+        $router = bean('httpRouter');
 
         RouteRegister::registerRoutes($router);
 

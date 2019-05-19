@@ -2,7 +2,12 @@
 
 namespace Swoft\Server\Helper;
 
+use function file_exists;
+use function sleep;
 use Swoole\Process;
+use function time;
+use function unlink;
+use function usleep;
 
 /**
  * Class ServerHelper
@@ -41,7 +46,7 @@ class ServerHelper
         }
 
         $errorMsg  = '';
-        $startTime = \time();
+        $startTime = time();
         echo 'Stopping .';
 
         // wait exit
@@ -50,13 +55,13 @@ class ServerHelper
                 break;
             }
 
-            if (\time() - $startTime > $waitTime) {
+            if (time() - $startTime > $waitTime) {
                 $errorMsg = "Stop the $name(PID:$pid) failed(timeout)!";
                 break;
             }
 
             echo '.';
-            \sleep(1);
+            sleep(1);
         }
 
         if ($errorMsg) {
@@ -96,7 +101,7 @@ class ServerHelper
 
         // failed, try again ...
         $timeout   = $timeout > 0 && $timeout < 10 ? $timeout : 3;
-        $startTime = \time();
+        $startTime = time();
 
         // retry stop if not stopped.
         while (true) {
@@ -106,13 +111,13 @@ class ServerHelper
             }
 
             // have been timeout
-            if ((\time() - $startTime) >= $timeout) {
+            if ((time() - $startTime) >= $timeout) {
                 return false;
             }
 
             // try again kill
             $ret = Process::kill($pid, $signal);
-            \usleep(10000);
+            usleep(10000);
         }
 
         return $ret;
@@ -125,8 +130,8 @@ class ServerHelper
      */
     public static function removePidFile(string $pidFile): bool
     {
-        if ($pidFile && \file_exists($pidFile)) {
-            return \unlink($pidFile);
+        if ($pidFile && file_exists($pidFile)) {
+            return unlink($pidFile);
         }
 
         return false;

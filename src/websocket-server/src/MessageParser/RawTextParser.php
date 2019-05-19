@@ -7,7 +7,6 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 use Swoft\WebSocket\Server\Message\Message;
-use Swoole\WebSocket\Frame;
 
 /**
  * Class TextParser

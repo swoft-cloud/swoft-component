@@ -4,6 +4,7 @@
 namespace Swoft\Rpc\Client;
 
 
+use Swoft\Proxy\Exception\ProxyException;
 use Swoft\Proxy\Proxy as BaseProxy;
 use Swoft\Rpc\Client\Exception\RpcClientException;
 use Swoft\Rpc\Client\Proxy\Ast\ProxyVisitor;
@@ -15,7 +16,7 @@ class Proxy
      *
      * @return string
      * @throws RpcClientException
-     * @throws \Swoft\Proxy\Exception\ProxyException
+     * @throws ProxyException
      */
     public static function newClassName(string $className): string
     {

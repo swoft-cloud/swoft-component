@@ -4,6 +4,10 @@
 namespace Swoft\Redis;
 
 
+use function bean;
+use Redis;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\SwoftComponent;
 
 /**
@@ -33,18 +37,21 @@ class AutoLoader extends SwoftComponent
 
     /**
      * @return array
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function beans(): array
     {
         return [
             'redis'      => [
-                'class' => RedisDb::class,
+                'class'  => RedisDb::class,
+                'option' => [
+                    'serializer' => Redis::SERIALIZER_PHP
+                ],
             ],
             'redis.pool' => [
                 'class'   => Pool::class,
-                'redisDb' => \bean('redis')
+                'redisDb' => bean('redis')
             ]
         ];
     }

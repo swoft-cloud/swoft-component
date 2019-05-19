@@ -2,6 +2,9 @@
 
 namespace Swoft\Stdlib;
 
+use function is_callable;
+use SplObjectStorage;
+
 /**
  * Class Pipeline
  * @since 2.0
@@ -9,7 +12,7 @@ namespace Swoft\Stdlib;
  */
 class Pipeline
 {
-    /** @var \SplObjectStorage */
+    /** @var SplObjectStorage */
     private $stages;
 
     /**
@@ -17,7 +20,7 @@ class Pipeline
      */
     public function __construct()
     {
-        $this->stages = new \SplObjectStorage;
+        $this->stages = new SplObjectStorage;
     }
 
     /**
@@ -79,7 +82,7 @@ class Pipeline
         $stage = $this->stages->current();
         $this->stages->next();
 
-        if (\is_callable($stage)) {
+        if (is_callable($stage)) {
             return $stage($payload, function ($payload) {
                 return $this->invokeStage($payload);
             });

@@ -2,6 +2,7 @@
 
 namespace Swoft\Processor;
 
+use function get_class;
 use Swoft\Stdlib\Helper\ArrayHelper;
 
 /**
@@ -23,7 +24,7 @@ class ApplicationProcessor extends Processor
         $disabled = $this->application->getDisabledProcessors();
 
         foreach ($this->processors as $processor) {
-            $class = \get_class($processor);
+            $class = get_class($processor);
 
             // If is disabled, skip handle.
             if (isset($disabled[$class])) {

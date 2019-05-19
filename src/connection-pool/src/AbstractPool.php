@@ -3,10 +3,12 @@
 
 namespace Swoft\Connection\Pool;
 
+use SplQueue;
 use Swoft\Connection\Pool\Contract\ConnectionInterface;
 use Swoft\Connection\Pool\Contract\PoolInterface;
 use Swoft\Connection\Pool\Exception\ConnectionPoolException;
 use Swoole\Coroutine\Channel;
+use Throwable;
 
 /**
  * Class AbstractPool
@@ -56,7 +58,7 @@ abstract class AbstractPool implements PoolInterface
     protected $channel;
 
     /**
-     * @var \SplQueue
+     * @var SplQueue
      */
     protected $queue;
 
@@ -175,7 +177,7 @@ abstract class AbstractPool implements PoolInterface
 
         try {
             $connection = $this->createConnection();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // Create error to reset count
             $this->count--;
 

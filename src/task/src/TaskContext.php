@@ -4,6 +4,7 @@
 namespace Swoft\Task;
 
 
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\ContainerException;
@@ -36,7 +37,7 @@ class TaskContext extends AbstractContext
      *
      * @return TaskContext
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function new(Request $request, Response $response): self
     {

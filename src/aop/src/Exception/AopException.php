@@ -3,12 +3,14 @@
 
 namespace Swoft\Aop\Exception;
 
+use Exception;
+
 /**
  * Class AopException
  *
  * @since 2.0
  */
-class AopException extends \Exception
+class AopException extends Exception
 {
 
 }

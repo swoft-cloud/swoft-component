@@ -3,12 +3,14 @@
 
 namespace Swoft\Task\Exception;
 
+use Exception;
+
 /**
  * Class TaskException
  *
  * @since 2.0
  */
-class TaskException extends \Exception
+class TaskException extends Exception
 {
 
 }

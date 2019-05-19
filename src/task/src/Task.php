@@ -4,6 +4,7 @@
 namespace Swoft\Task;
 
 
+use Swoft;
 use Swoft\Server\Server;
 use Swoft\Task\Exception\TaskException;
 
@@ -65,7 +66,7 @@ class Task
         callable $fallback = null
     ): string {
         $data   = Packet::pack(self::ASYNC, $name, $method, $params, $ext);
-        $result = \Swoft::swooleServer()->task($data, $dstWorkerId, $fallback);
+        $result = Swoft::swooleServer()->task($data, $dstWorkerId, $fallback);
         if ($result === false) {
             throw new TaskException(
                 sprintf('Task error name=%d method=%d', $name, $method)
@@ -115,7 +116,7 @@ class Task
 
         $resultData = [];
 
-        $taskResults = \Swoft::swooleServer()->taskCo($taskData, $timeout);
+        $taskResults = Swoft::swooleServer()->taskCo($taskData, $timeout);
         foreach ($taskResults as $key => $taskResult) {
             if ($taskResult == false) {
                 [$name, $method] = $tasks[$key];
