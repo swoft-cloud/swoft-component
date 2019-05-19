@@ -35,7 +35,6 @@
     }
   },
   "scripts": {
-    "test": "./vendor/bin/phpunit -c phpunit.xml",
-    "cs-fix": "./vendor/bin/php-cs-fixer fix $1"
+    "test": "./vendor/bin/phpunit -c phpunit.xml"
   }
 }
