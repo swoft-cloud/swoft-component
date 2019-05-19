@@ -37,7 +37,6 @@ class AppInitCompleteListener implements EventHandlerInterface
 
         RouteRegister::registerTo($router);
 
-        CLog::info('WebSocket server route registered(module %d, message command %d)', $router->getModuleCount(),
-            $router->getCounter());
+        CLog::info('WebSocket server route registered(module %d, message command %d)', $router->getModuleCount(), $router->getCounter());
     }
 }

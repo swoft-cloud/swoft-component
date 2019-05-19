@@ -89,8 +89,7 @@ class WsMessageDispatcher
 
         [$ctlClass, $ctlMethod] = $handler;
 
-        \server()->log("Message: conn#{$fd} call message command handler '{$ctlClass}::{$ctlMethod}'", $msg->toArray(),
-            'debug');
+        \server()->log("Message: conn#{$fd} call message command handler '{$ctlClass}::{$ctlMethod}'", $msg->toArray(), 'debug');
 
         $object = BeanFactory::getBean($ctlClass);
         $params = $this->getBindParams($ctlClass, $ctlMethod, $frame, $data);

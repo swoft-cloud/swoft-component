@@ -21,8 +21,14 @@ class DefaultExceptionHandler implements DefaultErrorHandlerInterface
      */
     public function handle(Throwable $e): void
     {
-        printf("(DEFAULT HANDLER)Exception(%s): %s\nAt File %s line %d\nTrace:\n%s\n", get_class($e), $e->getMessage(),
-            $e->getFile(), $e->getLine(), $e->getTraceAsString());
+        printf(
+            "(DEFAULT HANDLER)Exception(%s): %s\nAt File %s line %d\nTrace:\n%s\n",
+            get_class($e),
+            $e->getMessage(),
+            $e->getFile(),
+            $e->getLine(),
+            $e->getTraceAsString()
+        );
     }
 
     /**

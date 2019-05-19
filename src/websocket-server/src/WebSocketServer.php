@@ -85,11 +85,7 @@ class WebSocketServer extends Server
      * @return bool
      */
     public function sendTo(
-        int $receiver,
-        string $data,
-        int $sender = 0,
-        int $opcode = WEBSOCKET_OPCODE_TEXT,
-        bool $finish = true
+        int $receiver, string $data, int $sender = 0, int $opcode = WEBSOCKET_OPCODE_TEXT, bool $finish = true
     ): bool {
         if (!$this->swooleServer->isEstablished($receiver)) {
             return false;
@@ -201,11 +197,7 @@ class WebSocketServer extends Server
      * @return int
      */
     public function sendToSome(
-        string $data,
-        array $receivers = [],
-        array $excluded = [],
-        int $sender = 0,
-        int $pageSize = 50
+        string $data, array $receivers = [], array $excluded = [], int $sender = 0, int $pageSize = 50
     ): int {
         $count    = 0;
         $fromUser = $sender < 1 ? 'SYSTEM' : $sender;
