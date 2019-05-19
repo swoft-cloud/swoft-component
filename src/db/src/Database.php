@@ -113,9 +113,9 @@ class Database
      * @param Pool $pool
      *
      * @return Connection
+     * @throws ContainerException
      * @throws DbException
      * @throws ReflectionException
-     * @throws ContainerException
      */
     public function createConnection(Pool $pool): Connection
     {
@@ -198,9 +198,9 @@ class Database
      * Get connector
      *
      * @return ConnectorInterface
+     * @throws ContainerException
      * @throws DbException
      * @throws ReflectionException
-     * @throws ContainerException
      */
     public function getConnector(): ConnectorInterface
     {
@@ -219,9 +219,9 @@ class Database
      * Get connection
      *
      * @return Connection
+     * @throws ContainerException
      * @throws DbException
      * @throws ReflectionException
-     * @throws ContainerException
      */
     public function getConnection(): Connection
     {
@@ -257,8 +257,8 @@ class Database
 
     /**
      * @return array
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      */
     public function defaultConnectors(): array
     {
@@ -269,8 +269,8 @@ class Database
 
     /**
      * @return array
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      */
     public function defaultConnections(): array
     {

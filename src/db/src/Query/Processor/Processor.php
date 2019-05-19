@@ -6,8 +6,7 @@ namespace Swoft\Db\Query\Processor;
 use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Db\Exception\PoolException;
-use Swoft\Db\Exception\QueryException;
+use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder;
 
 /**
@@ -42,9 +41,8 @@ class Processor
      *
      * @return string
      * @throws ContainerException
-     * @throws QueryException
+     * @throws DbException
      * @throws ReflectionException
-     * @throws PoolException
      */
     public function processInsertGetId(Builder $query, $sql, $values, string $sequence = null): string
     {

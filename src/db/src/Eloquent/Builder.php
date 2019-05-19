@@ -12,10 +12,6 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Concern\BuildsQueries;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\Exception\DbException;
-use Swoft\Db\Exception\EloquentException;
-use Swoft\Db\Exception\EntityException;
-use Swoft\Db\Exception\PoolException;
-use Swoft\Db\Exception\QueryException;
 use Swoft\Db\Query\Builder as QueryBuilder;
 use Swoft\Stdlib\Contract\Arrayable;
 use Swoft\Stdlib\Helper\Arr;
@@ -183,11 +179,12 @@ class Builder
         'implode',
         'pluck',
         'getConnection',
-        'updateOrInsert'
+        'updateOrInsert',
+        'paginate'
     ];
 
     /**
-     * Create a new EloquentException query builder instance.
+     * Create a new Eloquent query builder instance.
      *
      * @param QueryBuilder $query
      *
@@ -204,7 +201,7 @@ class Builder
      * @param array $attributes
      *
      * @return Model
-     * @throws EloquentException
+     * @throws DbException
      */
     public function make(array $attributes = [])
     {
@@ -218,10 +215,8 @@ class Builder
      *
      * @return $this|Builder
      * @throws ContainerException
-     * @throws EntityException
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws DbException
+     * @throws ReflectionException
      */
     public function whereKey($id)
     {
@@ -239,10 +234,8 @@ class Builder
      *
      * @return $this|Builder
      * @throws ContainerException
-     * @throws EntityException
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws DbException
+     * @throws ReflectionException
      */
     public function whereKeyNot($id)
     {
@@ -265,10 +258,8 @@ class Builder
      *
      * @return $this
      * @throws ContainerException
-     * @throws EntityException
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws DbException
+     * @throws ReflectionException
      */
     public function where($column, $operator = null, $value = null, string $boolean = 'and')
     {
@@ -292,10 +283,8 @@ class Builder
      *
      * @return Builder
      * @throws ContainerException
-     * @throws EntityException
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws DbException
+     * @throws ReflectionException
      */
     public function orWhere($column, $operator = null, $value = null)
     {
@@ -341,7 +330,7 @@ class Builder
      *
      * @return Collection
      * @throws ContainerException
-     * @throws EloquentException
+     * @throws DbException
      * @throws ReflectionException
      */
     public function hydrate(array $items): Collection
@@ -361,9 +350,7 @@ class Builder
      *
      * @return Collection
      * @throws ContainerException
-     * @throws EloquentException
-     * @throws PoolException
-     * @throws QueryException
+     * @throws DbException
      * @throws ReflectionException
      */
     public function fromQuery(string $query, array $bindings = [])
@@ -382,9 +369,6 @@ class Builder
      * @return null|object|Builder|Collection|Model
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function find($id, array $columns = ['*'])
@@ -404,11 +388,8 @@ class Builder
      *
      * @return Collection
      * @throws ContainerException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws DbException
+     * @throws ReflectionException
      */
     public function findMany(array $ids, array $columns = ['*'])
     {
@@ -428,9 +409,6 @@ class Builder
      * @return null|object|Builder|Collection|Model
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function findOrFail($id, array $columns = ['*'])
@@ -445,7 +423,7 @@ class Builder
             return $result;
         }
 
-        throw new EntityException('Model is not finded');
+        throw new DbException('Model is not finded');
     }
 
     /**
@@ -457,9 +435,6 @@ class Builder
      * @return null|object|Builder|Collection|Model
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function findOrNew($id, array $columns = ['*'])
@@ -480,9 +455,6 @@ class Builder
      * @return null|object|Builder|Model
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function firstOrNew(array $attributes, array $values = [])
@@ -502,12 +474,8 @@ class Builder
      *
      * @return null|object|Builder|Model
      * @throws ContainerException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws PoolException
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws DbException
+     * @throws ReflectionException
      */
     public function firstOrCreate(array $attributes, array $values = [])
     {
@@ -529,12 +497,8 @@ class Builder
      *
      * @return null|object|Builder|Model
      * @throws ContainerException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws PoolException
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws DbException
+     * @throws ReflectionException
      */
     public function updateOrCreate(array $attributes, array $values = [])
     {
@@ -551,8 +515,7 @@ class Builder
      * @return Model|static
      *
      * @throws ContainerException
-     * @throws EloquentException
-     * @throws EntityException
+     * @throws DbException
      * @throws ReflectionException
      */
     public function firstOrFail(array $columns = ['*'])
@@ -561,7 +524,7 @@ class Builder
             return $model;
         }
 
-        throw new EntityException('Model is not find');
+        throw new DbException('Model is not find');
     }
 
     /**
@@ -572,7 +535,7 @@ class Builder
      *
      * @return Model|static|mixed
      * @throws ContainerException
-     * @throws EloquentException
+     * @throws DbException
      * @throws ReflectionException
      */
     public function firstOr(array $columns = ['*'], Closure $callback = null)
@@ -597,7 +560,7 @@ class Builder
      *
      * @return mixed
      * @throws ContainerException
-     * @throws EloquentException
+     * @throws DbException
      * @throws ReflectionException
      */
     public function value(string $column)
@@ -616,7 +579,7 @@ class Builder
      *
      * @return Collection
      * @throws ContainerException
-     * @throws EloquentException
+     * @throws DbException
      * @throws ReflectionException
      */
     public function get(array $columns = ['*'])
@@ -634,7 +597,7 @@ class Builder
      *
      * @return Model[]|static[]
      * @throws ContainerException
-     * @throws EloquentException
+     * @throws DbException
      * @throws ReflectionException
      */
     public function getModels(array $columns = ['*'])
@@ -649,8 +612,7 @@ class Builder
      *
      * @return Generator
      * @throws ContainerException
-     * @throws PoolException
-     * @throws QueryException
+     * @throws DbException
      * @throws ReflectionException
      */
     public function cursor()
@@ -670,8 +632,7 @@ class Builder
      *
      * @return bool
      * @throws ContainerException
-     * @throws EloquentException
-     * @throws EntityException
+     * @throws DbException
      * @throws ReflectionException
      */
     public function chunkById(int $count, callable $callback, string $column = null, string $alias = null): bool
@@ -703,7 +664,7 @@ class Builder
                 return false;
             }
 
-            /* @var $last Model */
+            /* @var Model $last */
             $last   = $results->last();
             $lastId = $last->getAttribute($alias)[1];
 
@@ -717,7 +678,7 @@ class Builder
      * Add a generic "order by" clause if the query doesn't already have one.
      *
      * @return void
-     * @throws EntityException
+     * @throws DbException
      */
     protected function enforceOrderBy()
     {
@@ -734,10 +695,6 @@ class Builder
      * @return Model
      * @throws ContainerException
      * @throws DbException
-     * @throws EloquentException
-     * @throws EntityException
-     * @throws PoolException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function create(array $attributes = [])
@@ -754,8 +711,7 @@ class Builder
      *
      * @return int
      * @throws ContainerException
-     * @throws PoolException
-     * @throws QueryException
+     * @throws DbException
      * @throws ReflectionException
      */
     public function update(array $values)
@@ -772,8 +728,7 @@ class Builder
      *
      * @return int
      * @throws ContainerException
-     * @throws PoolException
-     * @throws QueryException
+     * @throws DbException
      * @throws ReflectionException
      */
     public function increment(string $column, $amount = 1, array $extra = [])
@@ -792,8 +747,7 @@ class Builder
      *
      * @return int
      * @throws ContainerException
-     * @throws PoolException
-     * @throws QueryException
+     * @throws DbException
      * @throws ReflectionException
      */
     public function decrement($column, $amount = 1, array $extra = [])
@@ -809,8 +763,6 @@ class Builder
      * @return int|mixed
      * @throws ContainerException
      * @throws DbException
-     * @throws PoolException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function delete()
@@ -830,8 +782,6 @@ class Builder
      * @return int
      * @throws ContainerException
      * @throws DbException
-     * @throws PoolException
-     * @throws QueryException
      * @throws ReflectionException
      */
     public function forceDelete()
@@ -857,7 +807,7 @@ class Builder
      * @param array $attributes
      *
      * @return Model
-     * @throws EloquentException
+     * @throws DbException
      */
     public function newModelInstance($attributes = [])
     {
@@ -914,7 +864,7 @@ class Builder
      * @param Model $model
      *
      * @return $this
-     * @throws EntityException
+     * @throws DbException
      */
     public function setModel(Model $model)
     {
@@ -931,7 +881,7 @@ class Builder
      * @param string $column
      *
      * @return string
-     * @throws EntityException
+     * @throws DbException
      */
     public function qualifyColumn($column)
     {

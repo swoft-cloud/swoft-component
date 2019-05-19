@@ -28,7 +28,6 @@ class CoroutineDestroyListener implements EventHandlerInterface
      *
      * @throws ContainerException
      * @throws ReflectionException
-     * @throws Throwable
      */
     public function handle(EventInterface $event): void
     {

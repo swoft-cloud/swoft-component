@@ -7,7 +7,7 @@ namespace Swoft\Bean\Definition;
  *
  * @since 2.0
  */
-class MethodInjection
+class  MethodInjection
 {
     /**
      * Method name
