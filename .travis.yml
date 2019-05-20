@@ -63,6 +63,5 @@ script:
   - composer stdlib
   - composer task
   - composer tcp-server
-  - composer test
   - composer validator
   - composer websocket-server
