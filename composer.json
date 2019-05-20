@@ -165,6 +165,7 @@
     "connection-pool": "php run.php -c src/connection-pool/phpunit.xml",
     "console": "php run.php -c src/console/phpunit.xml",
     "event": "php run.php -c src/event/phpunit.xml",
+    "error": "php run.php -c src/error/phpunit.xml",
     "framework": "php run.php -c src/framework/phpunit.xml",
     "http-message": "php run.php -c src/http-message/phpunit.xml",
     "http-server": "php run.php -c src/http-server/phpunit.xml",
