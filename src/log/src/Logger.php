@@ -403,7 +403,7 @@ class Logger extends \Monolog\Logger
      */
     public function getTrace(string $message): string
     {
-        $traces = debug_backtrace();
+        $traces = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 12);
         $count  = count($traces);
         $ex     = '';
         if ($count >= 10) {
@@ -428,6 +428,7 @@ class Logger extends \Monolog\Logger
             $message = "trace[$ex] " . $message;
         }
 
+        unset($traces);
         return $message;
     }
 
