@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 
-namespace SwoftTest\Http\Server\Unit\Concern;
+namespace SwoftTest\Http\Server\Testing\Concern;
 
 use PHPUnit\Framework\Assert;
 use function strpos;

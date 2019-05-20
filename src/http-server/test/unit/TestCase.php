@@ -4,7 +4,10 @@
 namespace SwoftTest\Http\Server\Unit;
 
 
+use ReflectionException;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
+use SwoftTest\Http\Server\Testing\MockHttpServer;
 
 /**
  * Class TestCase
@@ -19,8 +22,8 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     protected $mockServer;
 
     /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function setUp()
     {

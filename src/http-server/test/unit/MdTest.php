@@ -2,6 +2,7 @@
 
 
 namespace SwoftTest\Http\Server\Unit;
+use SwoftTest\Http\Server\Testing\MockRequest;
 
 
 use Swoft\Http\Message\ContentType;
