@@ -1,8 +1,7 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Test\Rpc;
-
+namespace SwoftTest\Rpc\Server\Testing;
 
 use ReflectionException;
 use Swoft\Bean\BeanFactory;
