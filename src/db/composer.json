@@ -11,7 +11,6 @@
     ],
     "description": "micro-service framework base on swoole",
     "license": "Apache-2.0",
-    "minimum-stability": "dev",
     "require": {
         "swoft/framework": "~2.0.0",
         "swoft/connection-pool": "~2.0.0"
