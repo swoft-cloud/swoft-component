@@ -5,9 +5,9 @@ namespace SwoftTest\WebSocket\Server\Unit\Router;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Test\Concern\CommonTestAssertTrait;
 use Swoft\WebSocket\Server\Router\Router;
 use function bean;
+use SwoftTest\Testing\Concern\CommonTestAssertTrait;
 
 /**
  * Class RouterTest

@@ -3,7 +3,7 @@
 namespace SwoftTest\WebSocket\Server\Unit;
 
 use PHPUnit\Framework\TestCase;
-use Swoft\Test\Concern\CommonTestAssertTrait;
+use SwoftTest\Testing\Concern\CommonTestAssertTrait;
 
 /**
  * Class WsDispatcherTest

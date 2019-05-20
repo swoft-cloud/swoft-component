@@ -1,10 +1,11 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Test\Task;
+namespace SwoftTest\Rpc\Server\Testing;
+
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Task\Request;
+use Swoft\Rpc\Server\Request;
 
 /**
  * Class MockRequest

@@ -3,6 +3,7 @@ language: php
 php:
   - 7.1
   - 7.2
+  - 7.3
 addons:
   apt:
     sources:
@@ -63,6 +64,5 @@ script:
   - composer stdlib
   - composer task
   - composer tcp-server
-  - composer test
   - composer validator
   - composer websocket-server

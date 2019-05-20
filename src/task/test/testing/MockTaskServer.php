@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Test\Task;
+namespace SwoftTest\Task\Testing;
 
 use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
