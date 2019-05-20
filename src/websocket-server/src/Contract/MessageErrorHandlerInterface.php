@@ -8,13 +8,14 @@ use Throwable;
 
 /**
  * Interface MessageErrorHandlerInterface
+ *
  * @since 2.0
  */
 interface MessageErrorHandlerInterface extends ErrorHandlerInterface
 {
     /**
      * @param Throwable $e
-     * @param Frame      $frame
+     * @param Frame     $frame
      */
     public function handle(Throwable $e, Frame $frame): void;
 }

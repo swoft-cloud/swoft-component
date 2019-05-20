@@ -7,6 +7,7 @@ use Swoft\WebSocket\Server\Contract\CloseErrorHandlerInterface;
 
 /**
  * Class AbstractCloseErrorHandler
+ *
  * @since 2.0
  */
 abstract class AbstractCloseErrorHandler implements CloseErrorHandlerInterface

@@ -2,9 +2,7 @@
 
 namespace Swoft\WebSocket\Server;
 
-use function microtime;
 use Psr\Http\Message\ServerRequestInterface;
-use function server;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Concern\DataPropertyTrait;
@@ -13,10 +11,13 @@ use Swoft\Http\Message\Response;
 use Swoft\Session\SessionInterface;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\Router\Router;
+use function microtime;
+use function server;
 use const WEBSOCKET_OPCODE_TEXT;
 
 /**
  * Class Connection
+ *
  * @since 2.0
  * @Bean(scope=Bean::PROTOTYPE)
  */
@@ -33,6 +34,7 @@ class Connection implements SessionInterface
 
     /**
      * Save handshake success module instance
+     *
      * @var WsModuleInterface
      */
     // private $module;

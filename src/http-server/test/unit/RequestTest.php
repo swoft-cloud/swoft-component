@@ -6,7 +6,7 @@ namespace SwoftTest\Http\Server\Unit;
 use Swoft\Http\Message\ContentType;
 use Swoft\Http\Message\Request;
 use Swoft\Stdlib\Helper\JsonHelper;
-use Swoft\Test\Http\MockRequest;
+use SwoftTest\Http\Server\Testing\MockRequest;
 
 /**
  * Class RequestTest

@@ -3,7 +3,6 @@
 namespace Swoft\WebSocket\Server\Swoole;
 
 use ReflectionException;
-use function server;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
@@ -25,9 +24,11 @@ use Swoft\WebSocket\Server\WsServerEvent;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Throwable;
+use function server;
 
 /**
  * Class HandshakeListener
+ *
  * @since 2.0
  *
  * @Bean()
@@ -39,6 +40,7 @@ class HandshakeListener implements HandshakeInterface
      *
      * @param Request  $request
      * @param Response $response
+     *
      * @return bool
      * @throws ReflectionException
      * @throws ContainerException
@@ -92,9 +94,7 @@ class HandshakeListener implements HandshakeInterface
             }
 
             // Config response
-            $psr7Res = $psr7Res
-                ->withStatus(101)
-                ->withHeaders(WsHelper::handshakeHeaders($secKey));
+            $psr7Res = $psr7Res->withStatus(101)->withHeaders(WsHelper::handshakeHeaders($secKey));
 
             if ($wsProtocol = $request->header['sec-websocket-protocol'] ?? '') {
                 $psr7Res = $psr7Res->withHeader('Sec-WebSocket-Protocol', $wsProtocol);
@@ -138,6 +138,7 @@ class HandshakeListener implements HandshakeInterface
     /**
      * @param Psr7Request $request
      * @param int         $fd
+     *
      * @throws Throwable
      */
     public function onOpen(Psr7Request $request, int $fd): void

@@ -2,12 +2,13 @@
 
 namespace Swoft\Event;
 
-use function dirname;
 use Swoft\Helper\ComposerJSON;
 use Swoft\SwoftComponent;
+use function dirname;
 
 /**
  * Class AutoLoader
+ *
  * @package Swoft\Event
  */
 class AutoLoader extends SwoftComponent

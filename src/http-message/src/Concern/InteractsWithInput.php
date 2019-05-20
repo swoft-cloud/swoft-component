@@ -53,11 +53,11 @@ trait InteractsWithInput
 
     /**
      * @param string $key
-     * @param string $default
+     * @param mixed $default
      *
-     * @return string
+     * @return mixed
      */
-    public function headerLine(string $key, string $default): string
+    public function headerLine(string $key, $default = null)
     {
         if (!$this->hasHeader($key)) {
             return $default;

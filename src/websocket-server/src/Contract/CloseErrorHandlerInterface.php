@@ -7,13 +7,14 @@ use Throwable;
 
 /**
  * Interface CloseErrorHandlerInterface
+ *
  * @since 2.0
  */
 interface CloseErrorHandlerInterface extends ErrorHandlerInterface
 {
     /**
      * @param Throwable $e
-     * @param int        $fd
+     * @param int       $fd
      */
     public function handle(Throwable $e, int $fd): void;
 }

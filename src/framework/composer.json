@@ -1,41 +1,48 @@
 {
-    "name": "swoft/framework",
-    "type": "library",
-    "keywords": [
-        "php",
-        "swoole",
-        "swoft"
+  "name": "swoft/framework",
+  "type": "library",
+  "keywords": [
+    "php",
+    "swoole",
+    "swoft"
+  ],
+  "description": "micro-service framework base on swoole",
+  "license": "Apache-2.0",
+  "minimum-stability": "dev",
+  "require": {
+    "php": ">=7.1",
+    "swoft/config": "dev-master",
+    "swoft/annotation": "dev-master",
+    "swoft/bean": "dev-master",
+    "swoft/event": "dev-master",
+    "swoft/console": "dev-master",
+    "swoft/error": "dev-master",
+    "swoft/log": "dev-master",
+    "swoft/aop": "dev-master",
+    "swoft/server": "dev-master",
+    "swoft/stdlib": "dev-master"
+  },
+  "autoload": {
+    "classmap": [
+      "src/Swoft.php"
     ],
-    "description": "micro-service framework base on swoole",
-    "license": "Apache-2.0",
-    "require": {
-        "php": ">7.1.0",
-        "swoft/config": "dev-master",
-        "swoft/aop": "dev-master"
+    "psr-4": {
+      "Swoft\\": "src/",
+      "SwoftTest\\Testing\\": "test/testing/"
     },
-    "autoload": {
-        "classmap": [
-            "src/Swoft.php"
-        ],
-        "psr-4": {
-            "Swoft\\": "src/"
-        },
-        "files": [
-            "src/Helper/Functions.php"
-        ]
-    },
-    "require-dev": {
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "SwoftTest\\Unit\\": "test/unit/",
-            "SwoftTest\\Testing\\": "test/testing//"
-        }
-    },
-    "repositories": {
-        "packagist": {
-            "type": "composer",
-            "url": "https://packagist.laravel-china.org"
-        }
+    "files": [
+      "src/Helper/Functions.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "SwoftTest\\Unit\\": "test/unit/"
     }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^7.5"
+  },
+  "scripts": {
+    "test": "php run.php -c phpunit.xml"
+  }
 }

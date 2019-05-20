@@ -12,7 +12,8 @@ namespace Swoft\Event;
 
 /**
  * Interface EventHandlerInterface - 独立的事件监听器接口
- * @package Swoft\Event
+ *
+ * @package   Swoft\Event
  * @author    inhere <in.798@qq.com>
  */
 interface EventHandlerInterface

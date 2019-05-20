@@ -11,6 +11,7 @@ use Swoft\Event\ListenerRegister;
 
 /**
  * Class ListenerParser
+ *
  * @since   2.0
  * @package Swoft\Event\Annotation\Parser
  *

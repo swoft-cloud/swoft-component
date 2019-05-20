@@ -1,2 +1,1 @@
-# swoft-config
-Swoft config component
+# Swoft Config Component

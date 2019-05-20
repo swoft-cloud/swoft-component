@@ -2,19 +2,21 @@
 
 namespace Swoft\Error;
 
-use function get_class;
-use function printf;
 use Swoft\Error\Contract\DefaultErrorHandlerInterface;
 use Throwable;
+use function get_class;
+use function printf;
 
 /**
  * Class DefaultExceptionHandler
+ *
  * @since 2.0
  */
 class DefaultExceptionHandler implements DefaultErrorHandlerInterface
 {
     /**
      * @param Throwable $e
+     *
      * @return void
      */
     public function handle(Throwable $e): void

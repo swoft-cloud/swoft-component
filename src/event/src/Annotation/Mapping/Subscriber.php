@@ -12,7 +12,8 @@ use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
  * Class Subscriber - Subscriber annotation, for mark an event subscriber class.
- * @since 2.0
+ *
+ * @since   2.0
  * @package Swoft\Event\Annotation\Mapping
  *
  * @Annotation

@@ -56,8 +56,7 @@ class Router implements RouterInterface
     protected $namedRoutes = [];
 
     /**
-     * static Routes - no dynamic argument match
-     * 整个路由 path 都是静态字符串 e.g. '/user/login'
+     * static Routes - no dynamic argument match. e.g. '/user/login'
      * @var Route[]
      * [
      *     'GET /user/login' =>  Route,
@@ -68,7 +67,7 @@ class Router implements RouterInterface
 
     /**
      * regular Routes - have dynamic arguments, but the first node is normal string.
-     * 第一节是个静态字符串，称之为有规律的动态路由。按第一节的信息进行分组存储
+     *
      * @var Route[][]
      * [
      *     // 使用完整的第一节作为key进行分组
@@ -84,7 +83,7 @@ class Router implements RouterInterface
 
     /**
      * vague Routes - have dynamic arguments,but the first node is exists regex.
-     * 第一节就包含了正则匹配，称之为无规律/模糊的动态路由
+     *
      * @var Route[][]
      * [
      *     // 使用 HTTP METHOD 作为 key进行分组

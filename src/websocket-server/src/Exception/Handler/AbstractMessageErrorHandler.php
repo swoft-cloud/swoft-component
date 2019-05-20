@@ -7,6 +7,7 @@ use Swoft\WebSocket\Server\Contract\MessageErrorHandlerInterface;
 
 /**
  * Class AbstractMessageErrorHandler
+ *
  * @since 2.0
  */
 abstract class AbstractMessageErrorHandler implements MessageErrorHandlerInterface

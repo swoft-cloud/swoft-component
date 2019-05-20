@@ -2,9 +2,6 @@
 
 namespace Swoft\WebSocket\Server;
 
-use function bean;
-use function dirname;
-use function env;
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Helper\ComposerJSON;
@@ -14,6 +11,9 @@ use Swoft\WebSocket\Server\Router\Router;
 use Swoft\WebSocket\Server\Swoole\CloseListener;
 use Swoft\WebSocket\Server\Swoole\HandshakeListener;
 use Swoft\WebSocket\Server\Swoole\MessageListener;
+use function bean;
+use function dirname;
+use function env;
 
 /**
  * Class AutoLoader

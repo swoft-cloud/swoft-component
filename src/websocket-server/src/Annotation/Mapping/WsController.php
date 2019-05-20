@@ -8,6 +8,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
  * Class WsController
+ *
  * @since 2.0
  *
  * @Annotation
