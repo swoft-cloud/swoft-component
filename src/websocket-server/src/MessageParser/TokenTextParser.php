@@ -2,17 +2,18 @@
 
 namespace Swoft\WebSocket\Server\MessageParser;
 
-use function explode;
 use ReflectionException;
-use function strpos;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 use Swoft\WebSocket\Server\Message\Message;
+use function explode;
+use function strpos;
 use function trim;
 
 /**
  * Class TokenTextParser
+ *
  * @since 2.0
  * @Bean()
  */

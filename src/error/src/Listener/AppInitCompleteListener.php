@@ -22,6 +22,7 @@ class AppInitCompleteListener implements EventHandlerInterface
 {
     /**
      * @param EventInterface $event
+     *
      * @throws ContainerException
      */
     public function handle(EventInterface $event): void
@@ -32,11 +33,7 @@ class AppInitCompleteListener implements EventHandlerInterface
         // Register error handlers
         $count = ErrorRegister::register($chain);
 
-        CLog::info(
-            'Error manager init completed(%d type, %d handler, %d exception)',
-            $chain->getTypeCount(),
-            $count,
-            $chain->getCount()
-        );
+        CLog::info('Error manager init completed(%d type, %d handler, %d exception)', $chain->getTypeCount(), $count,
+            $chain->getCount());
     }
 }

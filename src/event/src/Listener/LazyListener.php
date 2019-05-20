@@ -16,8 +16,9 @@ use Swoft\Stdlib\Helper\PhpHelper;
 
 /**
  * Class LazyListener - Wrap callable into an object
+ *
  * @package Swoft\Event\Listener
- * @since 2.0
+ * @since   2.0
  */
 class LazyListener implements EventHandlerInterface
 {
@@ -28,6 +29,7 @@ class LazyListener implements EventHandlerInterface
 
     /**
      * @param callable $callback
+     *
      * @return LazyListener
      */
     public static function create(callable $callback): self

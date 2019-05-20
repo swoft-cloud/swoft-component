@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'config'           => [
+    'config'              => [
         'path' => __DIR__ . '/../config',
     ],
-    'redis'            => [
+    'redis'               => [
         'class'         => \Swoft\Redis\RedisDb::class,
         'host'          => '127.0.0.1',
         'port'          => 6379,
@@ -16,7 +16,7 @@ return [
             'prefix' => 'swoft-t',
         ],
     ],
-    'redis.pool'       => [
+    'redis.pool'          => [
         'class'       => \Swoft\Redis\Pool::class,
         'redisDb'     => \bean('redis'),
         'minActive'   => 10,
@@ -25,7 +25,7 @@ return [
         'maxWaitTime' => 0,
         'maxIdleTime' => 60,
     ],
-    'redis-clusters'   => [
+    'redis-clusters'      => [
         'class'    => \Swoft\Redis\RedisDb::class,
         'option'   => [
             'timeout'    => 3,
@@ -52,7 +52,7 @@ return [
         'maxIdleTime' => 60,
     ],
     // inc redis
-    'inc'              => [
+    'inc'                 => [
         'class'         => \Swoft\Redis\RedisDb::class,
         'host'          => '127.0.0.1',
         'port'          => 6379,
@@ -61,10 +61,10 @@ return [
         'readTimeout'   => 0,
         'timeout'       => 2,
         'option'        => [
-            'prefix' => 'swoft-t',
+            'prefix'     => 'swoft-t',
         ],
     ],
-    'redis.inc.pool'        => [
+    'redis.inc.pool'      => [
         'class'       => \Swoft\Redis\Pool::class,
         'redisDb'     => \bean('inc'),
         'minActive'   => 10,

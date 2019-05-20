@@ -5,23 +5,33 @@ namespace Swoft\Db;
 
 
 use function bean;
+use PDO;
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\SwoftComponent;
 
+/**
+ * Class AutoLoader
+ *
+ * @since 2.0
+ */
 class AutoLoader extends SwoftComponent
 {
     /**
      * @return array
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      */
     public function beans(): array
     {
         return [
             'db'      => [
-                'class'    => Database::class,
-                'dsn'      => 'mysql:dbname=dbname;host=127.0.0.1',
+                'class'  => Database::class,
+                'dsn'    => 'mysql:dbname=dbname;host=127.0.0.1',
+                'config' => [
+                     // fetch array
+                    'fetchMode' => PDO::FETCH_ASSOC,
+                ],
             ],
             'db.pool' => [
                 'class'    => Pool::class,

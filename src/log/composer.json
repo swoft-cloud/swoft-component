@@ -10,7 +10,9 @@
   "license": "Apache-2.0",
   "require": {
     "php": ">=7.1",
-    "monolog/monolog": "^1.24"
+    "monolog/monolog": "^1.24",
+    "toolkit/cli-utils": "^1.0",
+    "swoft/stdlib": "dev-master"
   },
   "autoload": {
     "classmap": [
@@ -30,13 +32,8 @@
     }
   },
   "repositories": {
-    "packagist": {
-      "type": "composer",
-      "url": "https://packagist.laravel-china.org"
-    }
   },
   "scripts": {
-    "test": "./vendor/bin/phpunit -c phpunit.xml",
-    "cs-fix": "./vendor/bin/php-cs-fixer fix $1"
+    "test": "./vendor/bin/phpunit -c phpunit.xml"
   }
 }

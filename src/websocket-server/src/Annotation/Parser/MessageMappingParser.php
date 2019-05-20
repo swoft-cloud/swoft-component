@@ -10,6 +10,7 @@ use Swoft\WebSocket\Server\Router\RouteRegister;
 
 /**
  * Class MessageMappingParser
+ *
  * @since 2.0
  * @AnnotationParser(MessageMapping::class)
  */

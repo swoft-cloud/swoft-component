@@ -2,12 +2,13 @@
 
 namespace Swoft\Error;
 
-use function dirname;
 use Swoft\Helper\ComposerJSON;
 use Swoft\SwoftComponent;
+use function dirname;
 
 /**
  * Class AutoLoader
+ *
  * @since 2.0
  */
 class AutoLoader extends SwoftComponent
@@ -22,7 +23,7 @@ class AutoLoader extends SwoftComponent
      */
     public function getPrefixDirs(): array
     {
-        return [ __NAMESPACE__ => __DIR__ ];
+        return [__NAMESPACE__ => __DIR__];
     }
 
     /**

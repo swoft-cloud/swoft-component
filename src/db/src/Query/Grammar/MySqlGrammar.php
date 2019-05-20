@@ -6,7 +6,6 @@ namespace Swoft\Db\Query\Grammar;
 use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Bean\Exception\PrototypeException;
 use Swoft\Db\Eloquent\Collection;
 use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\JsonExpression;
@@ -201,8 +200,8 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      *
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function compileUpdateColumns($values)
     {
@@ -239,8 +238,8 @@ class MySqlGrammar extends Grammar
      * @param array $values
      *
      * @return array
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      */
     public function prepareBindingsForUpdate(array $bindings, array $values)
     {
@@ -353,8 +352,8 @@ class MySqlGrammar extends Grammar
      * @param string $value
      *
      * @return string
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function wrapJsonSelector($value)
     {

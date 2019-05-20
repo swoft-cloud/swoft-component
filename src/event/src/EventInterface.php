@@ -12,9 +12,10 @@ namespace Swoft\Event;
 
 /**
  * Interface EventInterface - Representation of an event
+ *
  * @package Swoft\Event
- * @author inhere <in.798@qq.com>
- * @link https://github.com/php-fig/fig-standards/blob/master/proposed/event-manager.md
+ * @author  inhere <in.798@qq.com>
+ * @link    https://github.com/php-fig/fig-standards/blob/master/proposed/event-manager.md
  */
 interface EventInterface
 {
@@ -42,8 +43,8 @@ interface EventInterface
     /**
      * Get a single parameter by name
      *
-     * @param  int|string $key
-     * @param  mixed      $default
+     * @param int|string $key
+     * @param mixed      $default
      *
      * @return mixed
      */
@@ -52,7 +53,8 @@ interface EventInterface
     /**
      * Set the event name
      *
-     * @param  string $name
+     * @param string $name
+     *
      * @return void
      */
     public function setName(string $name): void;
@@ -60,7 +62,8 @@ interface EventInterface
     /**
      * Set the event target
      *
-     * @param  null|string|object $target
+     * @param null|string|object $target
+     *
      * @return void
      */
     public function setTarget($target): void;
@@ -68,7 +71,8 @@ interface EventInterface
     /**
      * Set event parameters
      *
-     * @param  array $params
+     * @param array $params
+     *
      * @return void
      */
     public function setParams(array $params): void;
@@ -76,7 +80,7 @@ interface EventInterface
     /**
      * Indicate whether or not to stop propagating this event
      *
-     * @param  bool $flag
+     * @param bool $flag
      */
     public function stopPropagation($flag);
 

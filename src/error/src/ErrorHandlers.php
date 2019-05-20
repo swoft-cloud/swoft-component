@@ -2,12 +2,12 @@
 
 namespace Swoft\Error;
 
-use function count;
-use function get_class;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
 use Throwable;
+use function count;
+use function get_class;
 
 /**
  * Class ErrorHandlers
@@ -47,7 +47,7 @@ class ErrorHandlers
 
     /**
      * @param Throwable $e
-     * @param int        $type
+     * @param int       $type
      *
      * @return mixed|null
      * @throws ContainerException
@@ -101,6 +101,7 @@ class ErrorHandlers
      */
     public function clear(): void
     {
+        $this->count    = 0;
         $this->handlers = [];
     }
 }

@@ -10,6 +10,7 @@ use Swoft\WebSocket\Server\Message\Message;
 
 /**
  * Class TextParser
+ *
  * @since 2.0
  * @Bean()
  */

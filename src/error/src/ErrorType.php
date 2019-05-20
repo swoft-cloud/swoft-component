@@ -4,6 +4,7 @@ namespace Swoft\Error;
 
 /**
  * Class ErrorType
+ *
  * @since 2.0
  */
 final class ErrorType
@@ -24,7 +25,7 @@ final class ErrorType
     public const WS_MSG = 23;
     public const WS_CLS = 24;
 
-    public const SYS  = 85;
+    public const SYS = 85;
 
     // default
     public const DEF     = 90;

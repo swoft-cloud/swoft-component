@@ -17,6 +17,7 @@ use Swoole\WebSocket\Server;
 
 /**
  * Class ChatModule
+ *
  * @since 2.0
  *
  * @WsModule(
@@ -53,6 +54,7 @@ class ChatModule implements WsModuleInterface
      * @OnHandshake()
      * @param Request  $request
      * @param Response $response
+     *
      * @return array
      * [ self::ACCEPT, $response ]
      */
@@ -77,6 +79,7 @@ class ChatModule implements WsModuleInterface
      * @OnClose()
      * on connection closed
      * - you can do something. eg. record log
+     *
      * @param Server $server
      * @param int    $fd
      */
@@ -86,8 +89,8 @@ class ChatModule implements WsModuleInterface
     }
 
     /**
-     * @todo
      * @return array
+     * @todo
      */
     protected function configure(): array
     {
@@ -125,11 +128,11 @@ class ChatModule implements WsModuleInterface
     /**
      * @param Server $server
      * @param Frame  $frame
-     * data structure:
-     * [
+     *  data structure:
+     *  [
      *  'cmd' => 'name', // command name
      *  'body' => ...    // body data
-     * ]
+     *  ]
      */
     public function onMessage(Server $server, Frame $frame): void
     {

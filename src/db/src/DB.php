@@ -12,8 +12,7 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\Exception\ConnectionPoolException;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\Connection\ConnectionManager;
-use Swoft\Db\Exception\PoolException;
-use Swoft\Db\Exception\QueryException;
+use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
 use Throwable;
@@ -67,7 +66,7 @@ class DB
      * @param string $name
      *
      * @return Connection
-     * @throws PoolException
+     * @throws DbException
      */
     public static function connection(string $name = Pool::DEFAULT_POOL): Connection
     {
@@ -79,7 +78,7 @@ class DB
 
             return self::getConnectionFromPool($name);
         } catch (Throwable $e) {
-            throw new PoolException(
+            throw new DbException(
                 sprintf('Pool error is %s file=%s line=%d', $e->getMessage(), $e->getFile(), $e->getLine())
             );
         }
@@ -89,10 +88,9 @@ class DB
      * @param string $table
      *
      * @return Builder
-     * @throws Exception\DbException
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
      */
     public static function table(string $table): Builder
     {
@@ -103,10 +101,9 @@ class DB
      * @param string $name
      *
      * @return Builder
-     * @throws Exception\DbException
-     * @throws QueryException
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
      */
     public static function query(string $name = Pool::DEFAULT_POOL): Builder
     {
@@ -120,13 +117,12 @@ class DB
      * @param array  $arguments
      *
      * @return mixed
-     * @throws PoolException
-     * @throws QueryException
+     * @throws DbException
      */
     public static function __callStatic(string $name, array $arguments)
     {
         if (!in_array($name, self::$passthru)) {
-            throw new QueryException(sprintf('Method(%s) is not exist!', $name));
+            throw new DbException(sprintf('Method(%s) is not exist!', $name));
         }
 
         $connection = self::connection();
@@ -139,8 +135,6 @@ class DB
      * @param string $name
      *
      * @return Connection
-     * @throws PoolException
-     * @throws ReflectionException
      * @throws ContainerException
      * @throws ConnectionPoolException
      * @throws Throwable
@@ -149,7 +143,7 @@ class DB
     {
         $pool = bean($name);
         if (!$pool instanceof Pool) {
-            throw new PoolException(sprintf('%s is not instance of pool', $name));
+            throw new DbException(sprintf('%s is not instance of pool', $name));
         }
 
         /* @var ConnectionManager $conManager */

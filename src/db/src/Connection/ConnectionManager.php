@@ -167,7 +167,6 @@ class ConnectionManager
      *
      * @throws ContainerException
      * @throws ReflectionException
-     * @throws Throwable
      */
     public function release(bool $final = false): void
     {

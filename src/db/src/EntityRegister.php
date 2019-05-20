@@ -3,7 +3,7 @@
 
 namespace Swoft\Db;
 
-use Swoft\Db\Exception\EntityException;
+use Swoft\Db\Exception\DbException;
 
 /**
  * Class EntityRegister
@@ -82,12 +82,12 @@ class EntityRegister
      * @param string $attrName
      * @param bool incrementing
      *
-     * @throws EntityException
+     * @throws DbException
      */
     public static function registerId(string $className, string $attrName, bool $incrementing): void
     {
         if (!isset(self::$entity[$className])) {
-            throw new EntityException(sprintf('%s must be `@Entity` to use `@Id`', $className));
+            throw new DbException(sprintf('%s must be `@Entity` to use `@Id`', $className));
         }
 
         self::$entity[$className]['id']['attr']         = $attrName;
@@ -104,7 +104,7 @@ class EntityRegister
      * @param bool   $hidden
      * @param string $type
      *
-     * @throws EntityException
+     * @throws DbException
      */
     public static function registerColumn(
         string $className,
@@ -115,11 +115,11 @@ class EntityRegister
         string $type
     ): void {
         if (!isset(self::$entity[$className])) {
-            throw new EntityException(sprintf('%s must be `@Entity` to use `@Column`', $className));
+            throw new DbException(sprintf('%s must be `@Entity` to use `@Column`', $className));
         }
 
         if (isset(self::$columns[$className]['reverse'][$column])) {
-            throw new EntityException(sprintf('The `%s` name of `@Column` has exist in %s', $className, $column));
+            throw new DbException(sprintf('The `%s` name of `@Column` has exist in %s', $className, $column));
         }
 
         self::$columns[$className]['mapping'][$attrName] = [
@@ -143,14 +143,14 @@ class EntityRegister
      * @param string $className
      *
      * @return string
-     * @throws EntityException
+     * @throws DbException
      */
     public static function getTable(
         string $className
     ): string {
         $table = self::$entity[$className]['table'] ?? '';
         if (empty($table)) {
-            throw new EntityException(sprintf('The table of `%s` entity is not defined or empty', $className));
+            throw new DbException(sprintf('The table of `%s` entity is not defined or empty', $className));
         }
 
         return $table;
@@ -162,13 +162,13 @@ class EntityRegister
      * @param string $className
      *
      * @return string
-     * @throws EntityException
+     * @throws DbException
      */
     public static function getPool(string $className): string
     {
         $pool = self::$entity[$className]['pool'] ?? '';
         if (empty($pool)) {
-            throw new EntityException(sprintf('The pool of `%s` entity is not defined or empty', $className));
+            throw new DbException(sprintf('The pool of `%s` entity is not defined or empty', $className));
         }
 
         return $pool;
@@ -180,18 +180,18 @@ class EntityRegister
      * @param string $className
      *
      * @return string
-     * @throws EntityException
+     * @throws DbException
      */
     public static function getId(string $className): string
     {
         $idAttrName = self::$entity[$className]['id']['attr'] ?? '';
         if (empty($idAttrName)) {
-            throw new EntityException(sprintf('The `@Id` of `%s` entity is not defined', $className));
+            throw new DbException(sprintf('The `@Id` of `%s` entity is not defined', $className));
         }
 
         $idColumn = self::$columns[$className]['mapping'][$idAttrName]['column'] ?? '';
         if (empty($idColumn)) {
-            throw new EntityException(
+            throw new DbException(
                 sprintf('`%s` property must be define `@Column` in %s', $idAttrName, $className)
             );
         }

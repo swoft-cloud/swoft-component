@@ -14,6 +14,7 @@ class WsServerException extends RuntimeException
     /**
      * @param string $message
      * @param int    $code
+     *
      * @return WsServerException
      */
     public static function make(string $message, int $code = 500): self

@@ -5,7 +5,6 @@ namespace Swoft\Db\Contract;
 
 use Closure;
 use Generator;
-use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
 use Throwable;
 

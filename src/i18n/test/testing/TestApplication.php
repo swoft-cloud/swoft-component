@@ -8,7 +8,7 @@ namespace SwoftTest\I18n\Testing;
  *
  * @since 2.0
  */
-class TestApplication extends \Swoft\Test\TestApplication
+class TestApplication extends \SwoftTest\Testing\TestApplication
 {
     /**
      * @return string

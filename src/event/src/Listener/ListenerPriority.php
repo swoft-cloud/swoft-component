@@ -12,8 +12,9 @@ namespace Swoft\Event\Listener;
 
 /**
  * Class ListenerPriority
+ *
  * @package Swoft\Event\Listener
- * @since 2.0
+ * @since   2.0
  */
 class ListenerPriority
 {

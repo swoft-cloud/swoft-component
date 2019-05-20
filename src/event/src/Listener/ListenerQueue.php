@@ -11,38 +11,41 @@
 namespace Swoft\Event\Listener;
 
 use Closure;
-use function count;
 use Countable;
-use function is_object;
 use IteratorAggregate;
-use const PHP_INT_MAX;
 use SplObjectStorage;
 use SplPriorityQueue;
 use stdClass;
 use Traversable;
+use function count;
+use function is_object;
+use const PHP_INT_MAX;
 
 /**
  * Class ListenerQueue - Listener queue management class for an event
  *
  * @package Swoft\Event\Listener
- * @since 2.0
+ * @since   2.0
  */
 class ListenerQueue implements IteratorAggregate, Countable
 {
     /**
      * Object store - listener instance store
+     *
      * @var SplObjectStorage
      */
     private $store;
 
     /**
      * Priority queue
+     *
      * @var SplPriorityQueue
      */
     private $queue;
 
     /**
      * 计数器。设定最大值为 PHP_INT_MAX
+     *
      * @var int
      */
     private $counter = PHP_INT_MAX;
@@ -82,7 +85,9 @@ class ListenerQueue implements IteratorAggregate, Countable
 
     /**
      * Delete a listener
+     *
      * @param $listener
+     *
      * @return $this
      */
     public function remove($listener): self
@@ -107,8 +112,10 @@ class ListenerQueue implements IteratorAggregate, Countable
 
     /**
      * Get the priority of the given listener. 得到指定监听器的优先级
-     * @param   mixed $listener The listener.
-     * @param   int   $default The default value to return if the listener doesn't exist.
+     *
+     * @param mixed $listener The listener.
+     * @param int   $default  The default value to return if the listener doesn't exist.
+     *
      * @return  int|null  The listener priority if it exists, null otherwise.
      */
     public function getPriority($listener, int $default = null): ?int
@@ -123,8 +130,10 @@ class ListenerQueue implements IteratorAggregate, Countable
 
     /**
      * getPriority() alias method
+     *
      * @param mixed $listener
      * @param int   $default
+     *
      * @return mixed
      */
     public function getLevel($listener, int $default = null)
@@ -134,6 +143,7 @@ class ListenerQueue implements IteratorAggregate, Countable
 
     /**
      * Get all listeners contained in this queue, sorted according to their priority.
+     *
      * @return  mixed[]  An array of listeners.
      */
     public function getAll(): array
@@ -153,6 +163,7 @@ class ListenerQueue implements IteratorAggregate, Countable
 
     /**
      * @param $listener
+     *
      * @return bool
      */
     public function has($listener): bool
@@ -162,6 +173,7 @@ class ListenerQueue implements IteratorAggregate, Countable
 
     /**
      * @param $listener
+     *
      * @return bool
      */
     public function exists($listener): bool
@@ -171,6 +183,7 @@ class ListenerQueue implements IteratorAggregate, Countable
 
     /**
      * Get the inner queue with its cursor on top of the heap.
+     *
      * @return  SplPriorityQueue  The inner queue.
      */
     public function getIterator(): Traversable

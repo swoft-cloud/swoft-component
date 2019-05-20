@@ -3,7 +3,7 @@
 
 namespace SwoftTest\Rpc\Server\Unit;
 
-use Swoft\Test\Rpc\MockRpcServer;
+use SwoftTest\Rpc\Server\Testing\MockRpcServer;
 
 /**
  * Class TestCase

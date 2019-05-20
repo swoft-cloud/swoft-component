@@ -9,7 +9,10 @@
     ],
     "description": "Redis Component for Swoft",
     "license": "Apache-2.0",
+    "minimum-stability": "dev",
     "require": {
+        "swoft/framework": "dev-master",
+        "swoft/connection-pool": "dev-master"
     },
     "autoload": {
         "classmap": [
@@ -26,16 +29,10 @@
             "SwoftTest\\Redis\\Testing\\": "test/testing"
         }
     },
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://packagist.laravel-china.org"
-        }
-    ],
     "require-dev": {
-
+        "phpunit/phpunit": "^7.5"
     },
     "scripts": {
-
+        "test": "php run.php -c phpunit.xml"
     }
 }

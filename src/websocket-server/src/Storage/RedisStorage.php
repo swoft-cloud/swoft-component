@@ -10,6 +10,7 @@ namespace Swoft\WebSocket\Server\Storage;
 
 /**
  * Class RedisStorage
+ *
  * @package Swoft\WebSocket\Server\Storage
  */
 class RedisStorage
