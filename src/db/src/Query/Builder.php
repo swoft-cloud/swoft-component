@@ -3003,6 +3003,9 @@ class Builder implements PrototypeInterface
             return $this->insert(array_merge($attributes, $values));
         }
 
+        if (empty($values)) {
+            return true;
+        }
         return (bool)$this->take(1)->update($values);
     }
 
