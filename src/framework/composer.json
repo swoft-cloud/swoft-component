@@ -8,6 +8,7 @@
   ],
   "description": "micro-service framework base on swoole",
   "license": "Apache-2.0",
+  "minimum-stability": "dev",
   "require": {
     "php": ">=7.1",
     "swoft/config": "dev-master",
@@ -17,7 +18,7 @@
     "swoft/console": "dev-master",
     "swoft/error": "dev-master",
     "swoft/log": "dev-master",
-    "swoft/aop": "dev-master as 2.0.0",
+    "swoft/aop": "dev-master",
     "swoft/server": "dev-master",
     "swoft/stdlib": "dev-master"
   },
