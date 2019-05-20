@@ -1,8 +1,6 @@
 <?php
 // vendor at component dir
 use Composer\Autoload\ClassLoader;
-use Swoft\Test\TestApplication;
-use Swoole\Runtime;
 
 if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
     require dirname(__DIR__) . '/vendor/autoload.php';

@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Test\Concern;
+
+namespace SwoftTest\Testing\Concern;
 
 use function in_array;
 use PHPUnit\Framework\Assert;

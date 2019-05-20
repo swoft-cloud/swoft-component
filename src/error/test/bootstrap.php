@@ -1,6 +1,7 @@
 <?php
 // vendor at component dir
 use Composer\Autoload\ClassLoader;
+use SwoftTest\Testing\TestApplication;
 use Swoole\Runtime;
 
 if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
@@ -31,6 +32,6 @@ if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
 }
 
 Runtime::enableCoroutine();
-$application = new \Swoft\Test\TestApplication();
+$application = new TestApplication();
 $application->setBeanFile(__DIR__ . '/testing/bean.php');
 $application->run();
