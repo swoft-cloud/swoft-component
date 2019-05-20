@@ -11,7 +11,7 @@
   "license": "Apache-2.0",
   "require": {
     "php": ">7.1.0",
-    "swoft/stdlib": "dev-master"
+    "swoft/stdlib": "~2.0.0"
   },
   "autoload": {
     "psr-4": {

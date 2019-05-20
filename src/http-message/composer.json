@@ -14,7 +14,7 @@
     "psr/http-message": "^1.0",
     "psr/http-server-handler": "^1.0",
     "psr/http-server-middleware": "^1.0",
-    "swoft/stdlib": "dev-master"
+    "swoft/stdlib": "~2.0.0"
   },
   "autoload": {
     "classmap": [

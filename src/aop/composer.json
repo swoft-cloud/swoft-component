@@ -10,8 +10,8 @@
   "license": "Apache-2.0",
   "require": {
     "php": ">=7.1",
-    "swoft/proxy": "dev-master",
-    "swoft/stdlib": "dev-master"
+    "swoft/proxy": "~2.0.0",
+    "swoft/stdlib": "~2.0.0"
   },
   "autoload": {
     "classmap": [
