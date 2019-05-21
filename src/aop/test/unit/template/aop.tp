@@ -2,7 +2,7 @@
  declare (strict_types=1);
 namespace SwoftTest\Aop\Testing;
 
-class AopClass_proxy_id extends \SwoftTest\Aop\Testing\AopClass
+class AopClass_PROXY_proxy_id extends \SwoftTest\Aop\Testing\AopClass
 {
     use \Swoft\Aop\Concern\AopTrait;
     public function getOriginalClassName() : string
