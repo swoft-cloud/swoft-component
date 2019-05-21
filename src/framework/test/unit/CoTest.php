@@ -5,6 +5,8 @@ namespace SwoftTest\Unit;
 
 
 use PHPUnit\Framework\TestCase;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Co;
 use Swoft\Context\Context;
 use Swoole\Coroutine\Http\Client;
@@ -17,8 +19,8 @@ use Swoole\Coroutine\Http\Client;
 class CoTest extends TestCase
 {
     /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function testMulti()
     {

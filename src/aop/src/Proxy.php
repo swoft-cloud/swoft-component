@@ -49,4 +49,18 @@ class Proxy
         list($className) = explode('_', $proxyClassName);
         return $className;
     }
+
+    /**
+     * Get original class name
+     *
+     * @param string $proxyClassName
+     *
+     * @return string
+     */
+    public static function getOriginalClassName(string $proxyClassName): string
+    {
+        $proxys = explode(ProxyVisitor::PROXY, $proxyClassName);
+
+        return $proxys[0];
+    }
 }

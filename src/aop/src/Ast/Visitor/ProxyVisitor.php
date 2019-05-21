@@ -21,6 +21,11 @@ use function uniqid;
 class ProxyVisitor extends Visitor
 {
     /**
+     * Proxy tag
+     */
+    public const PROXY = '_PROXY_';
+
+    /**
      * Namespace
      *
      * @var string
@@ -87,7 +92,7 @@ class ProxyVisitor extends Visitor
         if ($node instanceof Node\Stmt\Class_) {
             $name = $node->name->toString();
 
-            $this->proxyName         = sprintf('%s_%s', $name, $this->proxyId);
+            $this->proxyName = sprintf('%s%s%s', $name, self::PROXY, $this->proxyId);
             $this->originalClassName = sprintf('%s\\%s', $this->namespace, $name);
 
             return null;

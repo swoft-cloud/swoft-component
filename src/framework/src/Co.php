@@ -151,9 +151,10 @@ class Co
             $result = $channel->pop($timeout);
             if ($result === false) {
                 Debug::log('Co::multi request fail!');
+            } else {
+                [$key, $value] = $result;
+                $response[$key] = $value;
             }
-            [$key, $value] = $result;
-            $response[$key] = $value;
 
             $count--;
         }
