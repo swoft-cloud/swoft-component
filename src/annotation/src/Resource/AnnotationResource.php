@@ -104,6 +104,13 @@ class AnnotationResource extends Resource
     private $inPhar = false;
 
     /**
+     * Included files
+     *
+     * @var array
+     */
+    private $includedFiles = [];
+
+    /**
      * AnnotationResource constructor.
      *
      * @param array $config
@@ -118,6 +125,8 @@ class AnnotationResource extends Resource
 
         $this->registerLoader();
         $this->classLoader = ComposerHelper::getClassLoader();
+
+        $this->includedFiles = get_included_files();
     }
 
     /**
@@ -225,9 +234,9 @@ class AnnotationResource extends Resource
 
             /* @var SplFileInfo $splFileInfo */
             foreach ($iterator as $splFileInfo) {
-                $pathName = $splFileInfo->getPathname();
+                $filePath = $splFileInfo->getPathname();
                 // $splFileInfo->isDir();
-                if (is_dir($pathName)) {
+                if (is_dir($filePath)) {
                     continue;
                 }
 
@@ -245,11 +254,14 @@ class AnnotationResource extends Resource
                 }
 
                 $suffix    = sprintf('.%s', $this->loaderClassSuffix);
-                $pathName  = str_replace([$path, '/', $suffix], ['', '\\', ''], $pathName);
+                $pathName  = str_replace([$path, '/', $suffix], ['', '\\', ''], $filePath);
                 $className = sprintf('%s%s', $ns, $pathName);
 
+                // Fix repeat included file bug
+                $autoload  = in_array($filePath, $this->includedFiles);
+
                 // Will filtering: interfaces and traits
-                if (!class_exists($className)) {
+                if (!class_exists($className, !$autoload)) {
                     $this->notify('noExistClass', $className);
                     continue;
                 }
