@@ -10,10 +10,9 @@
     ],
     "description": "I18n Translations Component for Swoft",
     "license": "Apache-2.0",
-    "minimum-stability": "dev",
     "require": {
         "php": ">=7.1",
-        "swoft/framework": "dev-master"
+        "swoft/framework": "~2.0.0"
     },
     "autoload": {
         "psr-4": {

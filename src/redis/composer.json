@@ -9,10 +9,9 @@
     ],
     "description": "Redis Component for Swoft",
     "license": "Apache-2.0",
-    "minimum-stability": "dev",
     "require": {
-        "swoft/framework": "dev-master",
-        "swoft/connection-pool": "dev-master"
+        "swoft/framework": "~2.0.0",
+        "swoft/connection-pool": "~2.0.0"
     },
     "autoload": {
         "classmap": [

@@ -8,19 +8,18 @@
   ],
   "description": "micro-service framework base on swoole",
   "license": "Apache-2.0",
-  "minimum-stability": "dev",
   "require": {
     "php": ">=7.1",
-    "swoft/config": "dev-master",
-    "swoft/annotation": "dev-master",
-    "swoft/bean": "dev-master",
-    "swoft/event": "dev-master",
-    "swoft/console": "dev-master",
-    "swoft/error": "dev-master",
-    "swoft/log": "dev-master",
-    "swoft/aop": "dev-master",
-    "swoft/server": "dev-master",
-    "swoft/stdlib": "dev-master"
+    "swoft/config": "~2.0.0",
+    "swoft/annotation": "~2.0.0",
+    "swoft/bean": "~2.0.0",
+    "swoft/event": "~2.0.0",
+    "swoft/console": "~2.0.0",
+    "swoft/error": "~2.0.0",
+    "swoft/log": "~2.0.0",
+    "swoft/aop": "~2.0.0",
+    "swoft/server": "~2.0.0",
+    "swoft/stdlib": "~2.0.0"
   },
   "autoload": {
     "classmap": [

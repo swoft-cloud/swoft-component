@@ -474,6 +474,11 @@ class BuilderTest extends TestCase
      */
     public function testUpdate()
     {
+        $this->assertTrue(DB::table('user')->updateOrInsert(['id' => 1]));
+        $this->assertTrue(DB::table('user')->updateOrInsert(['id' => 1]));
+        $this->assertTrue(DB::table('user')->updateOrInsert(['id' => 2], ['age' => 96]));
+        $this->assertTrue(DB::table('user')->updateOrInsert(['id' => 2]));
+
         $id     = $this->getFirstId();
         $update = DB::table('user')->where('id', $id)->update(['age' => 18, 'name' => 'ovo' . mt_rand(22, 33)]);
         // random update
@@ -484,7 +489,7 @@ class BuilderTest extends TestCase
         $delete  = DB::table('user')->delete($id);
         $doesNot = DB::table('user')->where('id', $id)->doesntExist();
 
-        $res = DB::update('update `user` set `age` = ? where `id` = ?', [23, $this->getFirstId()]);
+        $res = DB::update('update `user` set `age` = ? where `id` = ?', [mt_rand(2, 55), $this->getFirstId()]);
 
         $this->assertEquals($res, 1);
         $this->assertTrue($doesNot);
@@ -622,7 +627,7 @@ class BuilderTest extends TestCase
     {
         $res = DB::table('user')->first(['id']);
         if (empty($res)) {
-            return User::updateOrCreate(['id' => 22], ['age' => 18, 'name' => 'sakuraovq'])->getId();
+            return User::updateOrCreate(['id' => 22], ['age' => 1, 'name' => 'sakuraovq'])->getId();
         }
         return $res['id'];
     }

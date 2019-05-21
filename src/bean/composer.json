@@ -11,9 +11,9 @@
   "require": {
     "php": ">7.1.0",
     "psr/container": "^1.0",
-    "swoft/annotation": "dev-master",
-    "swoft/event": "dev-master",
-    "swoft/stdlib": "dev-master"
+    "swoft/annotation": "~2.0.0",
+    "swoft/event": "~2.0.0",
+    "swoft/stdlib": "~2.0.0"
   },
   "autoload": {
     "classmap": [
