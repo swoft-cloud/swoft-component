@@ -1,181 +1,157 @@
-<?php
+<?php declare(strict_types=1);
+
 
 namespace Swoft\Task;
 
-use Swoft\App;
-use Swoft\Pipe\PipeMessage;
-use Swoft\Pipe\PipeMessageInterface;
+
+use Swoft;
+use Swoft\Server\Server;
 use Swoft\Task\Exception\TaskException;
-use Swoft\Task\Helper\TaskHelper;
-use function bean;
-use function in_array;
-use function sprintf;
 
 class Task
 {
     /**
-     * Coroutine task
+     * Coroutine
      */
-    const TYPE_CO = 'co';
+    public const CO = 'co';
 
     /**
-     * Async task
+     * Async
      */
-    const TYPE_ASYNC = 'async';
+    public const ASYNC = 'async';
 
     /**
-     * Deliver a coroutine or async task
+     * @param string $name
+     * @param string $method
+     * @param array  $params
+     * @param float  $timeout
+     * @param array  $ext
      *
-     * @return bool|array|int
+     * @return mixed
      * @throws TaskException
      */
-    public static function deliver(
-        string $taskName,
-        string $methodName,
-        array $params = [],
-        string $type = self::TYPE_CO,
-        int $timeout = 3
-    ) {
-        if (! in_array($type, [static::TYPE_CO, static::TYPE_ASYNC], false)) {
-            throw new TaskException('Invalid task type.');
-        }
-        $data = TaskHelper::pack($taskName, $methodName, $params, $type);
-        if (! App::isWorkerStatus() && ! App::isCoContext()) {
-            return static::deliverByQueue($data);
-        }
-
-        if (! App::isWorkerStatus() && App::isCoContext()) {
-            throw new TaskException('Deliver in non-worker environment, please deliver the task via HTTP request.');
-        }
-
-        $server = App::$server->getServer();
-        switch ($type) {
-            case static::TYPE_CO:
-                $tasks[0] = $data;
-                $prifleKey = 'task' . '.' . $taskName . '.' . $methodName;
-                App::profileStart($prifleKey);
-                $result = $server->taskCo($tasks, $timeout);
-                App::profileEnd($prifleKey);
-                return $result;
-                break;
-            case static::TYPE_ASYNC:
-            default:
-                // Deliver async task
-                return $server->task($data);
-                break;
-        }
-    }
-
-    private static function deliverByQueue(string $data): bool
+    public static function co(string $name, string $method, array $params = [], float $timeout = 3, array $ext = [])
     {
-        $queueTask = bean(QueueTask::class);
-        return $queueTask->deliver($data);
+        $tasks[] = [
+            $name,
+            $method,
+            $params
+        ];
+        $result  = self::cos($tasks, $timeout, $ext);
+        if (!isset($result[0])) {
+            throw new TaskException(
+                sprintf('Task(name=%s method=%s) execution error!', $name, $method)
+            );
+        }
+        return $result[0];
     }
 
     /**
-     * Deliver task by process
+     * @param string   $name
+     * @param string   $method
+     * @param array    $params
+     * @param array    $ext
+     * @param int      $dstWorkerId
+     * @param callable $fallback
+     *
+     * @return string Task unique id
+     * @throws TaskException
      */
-    public static function deliverByProcess(
-        string $taskName,
-        string $methodName,
+    public static function async(
+        string $name,
+        string $method,
         array $params = [],
-        int $timeout = 3,
-        int $workerId = 0,
-        string $type = self::TYPE_ASYNC
-    ): bool {
-        /* @var PipeMessageInterface $pipeMessage */
-        $pipeMessage = bean(PipeMessage::class);
-        $message = $pipeMessage->pack(PipeMessage::MESSAGE_TYPE_TASK, [
-            'name' => $taskName,
-            'method' => $methodName,
-            'params' => $params,
-            'timeout' => $timeout,
-            'type' => $type,
-        ]);
-        return App::$server->getServer()->sendMessage($message, $workerId);
+        array $ext = [],
+        int $dstWorkerId = -1,
+        callable $fallback = null
+    ): string {
+        $data   = Packet::pack(self::ASYNC, $name, $method, $params, $ext);
+        $result = Swoft::swooleServer()->task($data, $dstWorkerId, $fallback);
+        if ($result === false) {
+            throw new TaskException(
+                sprintf('Task error name=%d method=%d', $name, $method)
+            );
+        }
+
+        return self::getUniqid($result);
     }
 
     /**
-     * Deliver multiple asynchronous tasks
+     * For example
+     *
+     * ```php
+     * $tasks = [
+     *     [
+     *         'name',
+     *         'method',
+     *         []
+     *     ],
+     *     ...
+     * ]
+     * Task::cos($tasks);
+     * ```
      *
      * @param array $tasks
-     *  <pre>
-     *  $task = [
-     *      'name'   => $taskName,
-     *      'method' => $methodName,
-     *      'params' => $params,
-     *      'type'   => $type
-     *  ];
-     *  </pre>
-     */
-    public static function async(array $tasks): array
-    {
-        $server = App::$server->getServer();
-
-        $result = [];
-        foreach ($tasks as $task) {
-            if (! isset($task['type']) || ! isset($task['name']) || ! isset($task['method']) || ! isset($task['params'])) {
-                App::error(sprintf('Task %s format error.', $task['name'] ?? '[UNKNOWN]'));
-                continue;
-            }
-
-            if ($task['type'] !== static::TYPE_ASYNC) {
-                App::error(sprintf('Task %s is not a asynchronous task.', $task['name']));
-                continue;
-            }
-
-            $data = TaskHelper::pack($task['name'], $task['method'], $task['params'], $task['type']);
-            $result[] = $server->task($data);
-        }
-
-        return $result;
-    }
-
-    /**
-     * @deprecated Use co() method instead, will be remove in swoft/task v1.1.
-     */
-    public static function cor(array $tasks): array
-    {
-        return static::co($tasks);
-    }
-
-    /**
-     * Deliver multiple coroutine tasks
+     * @param float $timeout
+     * @param array $ext
      *
-     * @param array $tasks
-     *  <pre>
-     *  $tasks = [
-     *      'name'   => $taskName,
-     *      'method' => $methodName,
-     *      'params' => $params,
-     *      'type'   => $type
-     *  ];
-     *  </pre>
+     * @return array
+     * @throws TaskException
      */
-    public static function co(array $tasks): array
+    public static function cos(array $tasks, float $timeout = 3, array $ext = []): array
     {
-        $taskCos = [];
+        $taskData = [];
         foreach ($tasks as $task) {
-            if (! isset($task['type']) || ! isset($task['name']) || ! isset($task['method']) || ! isset($task['params'])) {
-                App::error(sprintf('Task %s format error.', $task['name'] ?? '[UNKNOWN]'));
-                continue;
+            if (count($task) < 3) {
+                throw new TaskException('Task is bad format!');
             }
 
-            $type = $task['type'];
-            if ($type !== static::TYPE_CO) {
-                App::error(sprintf('Task %s is not a coroutine task.', $task['name']));
-                continue;
+            [$name, $method, $params] = $task;
+            if (!is_string($name) || !is_string($method) || !is_array($params)) {
+                throw new TaskException('Task params is bad format!');
             }
 
-            $taskCos[] = TaskHelper::pack($task['name'], $task['method'], $task['params'], $task['type']);
+            $taskData[] = Packet::pack(self::CO, $name, $method, $params, $ext);
         }
 
-        $result = [];
-        if (! empty($taskCos)) {
-            $result = App::$server->getServer()->taskCo($tasks);
+        $resultData = [];
+
+        $taskResults = Swoft::swooleServer()->taskCo($taskData, $timeout);
+        foreach ($taskResults as $key => $taskResult) {
+            if ($taskResult == false) {
+                [$name, $method] = $tasks[$key];
+                throw new TaskException(
+                    sprintf('Task co error(name=%s method=%s)', $name, $method)
+                );
+            }
+
+            [$result, $errorCode, $errorMessage] = Packet::unpackResponse($taskResult);
+            if ($errorCode !== null) {
+                throw new TaskException(
+                    sprintf('%s(code=%d)', $errorMessage, $errorCode)
+                );
+            }
+            $resultData[] = $result;
         }
 
-        return $result;
+        return $resultData;
     }
 
+    /**
+     * Get task global unique id
+     *
+     * @param int $taskId
+     *
+     * @return string
+     */
+    public static function getUniqid(int $taskId): string
+    {
+        $server = Server::getServer();
+        if (empty($server)) {
+            return sprintf('unit-%d', $taskId);
+        }
+
+        $serverUniqid = Server::getServer()->getUniqid();
+        return sprintf('%s-%d', $serverUniqid, $taskId);
+    }
 }

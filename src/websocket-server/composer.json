@@ -11,31 +11,23 @@
   "description": "websocket server for swoft",
   "license": "Apache-2.0",
   "require": {
-    "swoft/http-server": "^1.0"
+    "swoft/framework": "~2.0.0"
   },
   "autoload": {
     "psr-4": {
       "Swoft\\WebSocket\\Server\\": "src/"
-    },
-    "files": [
-      "src/Helper/Functions.php"
-    ]
+    }
   },
   "autoload-dev": {
     "psr-4": {
-      "SwoftTest\\WebSocket\\Server\\": "test/Cases"
-    }
-  },
-  "repositories": {
-    "packagist": {
-      "type": "composer",
-      "url": "https://packagist.laravel-china.org"
+      "SwoftTest\\WebSocket\\Server\\Unit\\": "test/unit/",
+      "SwoftTest\\WebSocket\\Server\\Testing\\": "test/testing/"
     }
   },
   "require-dev": {
-    "phpunit/phpunit": "^5.7"
+    "phpunit/phpunit": "^7.5"
   },
   "scripts": {
-    "test": "./vendor/bin/phpunit"
+    "test": "php run.php -c phpunit.xml"
   }
 }

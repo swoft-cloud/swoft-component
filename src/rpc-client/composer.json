@@ -10,16 +10,9 @@
     "description": "microservice framework base on swoole",
     "license": "Apache-2.0",
     "require": {
-        "swoft/framework": "^1.0"
-    },
-    "require-dev": {
-        "swoft/swoole-ide-helper": "dev-master",
-        "phpunit/phpunit": "^5.7",
-        "swoft/rpc": "^1.0",
-        "swoft/rpc-server": "^1.0",
-        "swoft/task": "^1.0",
-        "swoft/process": "^1.0",
-        "swoft/service-governance": "^1.0"
+        "swoft/framework": "~2.0.0",
+        "swoft/connection-pool": "~2.0.0",
+        "swoft/rpc": "~2.0.0"
     },
     "autoload": {
         "psr-4": {
@@ -28,17 +21,13 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "SwoftTest\\Rpc\\Client\\": "test/Cases/",
-            "SwoftTest\\Rpc\\Testing\\": "test/Testing/"
+            "SwoftTest\\Rpc\\Client\\Unit\\": "test/unit"
         }
     },
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://packagist.laravel-china.org"
-        }
-    ],
+    "require-dev": {
+        "phpunit/phpunit": "^7.5"
+    },
     "scripts": {
-        "test": "./vendor/bin/phpunit -c phpunit.xml"
+        "test": "php run.php -c phpunit.xml"
     }
 }

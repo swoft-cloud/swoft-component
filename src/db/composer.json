@@ -9,13 +9,11 @@
         "orm",
         "active record"
     ],
-    "description": "microservice framework base on swoole",
+    "description": "micro-service framework base on swoole",
     "license": "Apache-2.0",
     "require": {
-        "ext-pdo": "*",
-        "swoft/framework": "^1.0.15",
-        "swoft/console": "^1.0",
-        "swoft/service-governance": "^1.0"
+        "swoft/framework": "~2.0.0",
+        "swoft/connection-pool": "~2.0.0"
     },
     "autoload": {
         "psr-4": {
@@ -26,23 +24,15 @@
         ]
     },
     "require-dev": {
-        "swoft/swoole-ide-helper": "dev-master",
-        "phpunit/phpunit": "^5.7",
-        "friendsofphp/php-cs-fixer": "^2.10"
+        "phpunit/phpunit": "^7.5"
     },
     "autoload-dev": {
         "psr-4": {
-            "SwoftTest\\Db\\": "test"
+            "SwoftTest\\Db\\Testing\\": "test/testing",
+            "SwoftTest\\Db\\Unit\\": "test/unit"
         }
     },
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://packagist.laravel-china.org"
-        }
-    ],
     "scripts": {
-        "test": "./vendor/bin/phpunit -c phpunit.xml",
-        "cs-fix": "./vendor/bin/php-cs-fixer fix $1"
+        "test": "php run.php -c phpunit.xml"
     }
 }

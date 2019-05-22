@@ -1,2 +1,0 @@
-# swoft-swagger
-swoft swagger

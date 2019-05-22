@@ -1,31 +1,52 @@
-<?php
-/**
- * This file is part of Swoft.
- *
- * @link     https://swoft.org
- * @document https://doc.swoft.org
- * @contact  group@swoft.org
- * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
- */
+<?php declare(strict_types=1);
+
+
 namespace Swoft\Db;
 
+
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Connection\Pool\AbstractPool;
+use Swoft\Connection\Pool\Contract\ConnectionInterface;
+use Swoft\Db\Exception\DbException;
+
 /**
- * Pool
+ * Class Pool
+ *
+ * @since 2.0
  */
-class Pool
+class Pool extends AbstractPool
 {
     /**
-     * Default instance
+     * Default pool name
      */
-    const INSTANCE = 'default';
+    const DEFAULT_POOL = 'db.pool';
 
     /**
-     * Master
+     * Database
+     *
+     * @var Database
      */
-    const MASTER = 'master';
+    protected $database;
 
     /**
-     * Slave
+     * Create connection
+     *
+     * @return ConnectionInterface
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
      */
-    const SLAVE = 'slave';
+    public function createConnection(): ConnectionInterface
+    {
+        return $this->database->createConnection($this);
+    }
+
+    /**
+     * @return Database
+     */
+    public function getDatabase(): Database
+    {
+        return $this->database;
+    }
 }

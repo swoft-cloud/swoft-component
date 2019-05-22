@@ -1,0 +1,33 @@
+{
+    "name": "swoft/proxy",
+    "type": "library",
+    "keywords": [
+        "php",
+        "swoole",
+        "swoft",
+        "rpc"
+    ],
+    "description": "microservice framework base on swoole",
+    "license": "Apache-2.0",
+    "require": {
+        "nikic/php-parser": "~4.2",
+        "swoft/stdlib": "~2.0.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Swoft\\Proxy\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SwoftTest\\Proxy\\Unit\\": "test/unit",
+            "SwoftTest\\Proxy\\Testing\\": "test/testing"
+        }
+    },
+    "scripts": {
+        "test": "./vendor/bin/phpunit -c phpunit.xml"
+    }
+}

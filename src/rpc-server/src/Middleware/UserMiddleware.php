@@ -1,48 +1,63 @@
-<?php
+<?php declare(strict_types=1);
+
 
 namespace Swoft\Rpc\Server\Middleware;
 
-use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Swoft\Core\RequestHandler;
-use Swoft\Bean\Annotation\Bean;
-use Swoft\Http\Message\Middleware\MiddlewareInterface;
-use Swoft\Http\Message\Bean\Collector\MiddlewareCollector;
+
+use ReflectionException;
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Rpc\Server\Contract\MiddlewareInterface;
+use Swoft\Rpc\Server\Contract\RequestHandlerInterface;
+use Swoft\Rpc\Server\Contract\RequestInterface;
+use Swoft\Rpc\Server\Contract\ResponseInterface;
+use Swoft\Rpc\Server\Exception\RpcServerException;
+use Swoft\Rpc\Server\Request;
+use Swoft\Rpc\Server\Router\Router;
+use Swoft\Rpc\Server\ServiceHandler;
 
 /**
- * the annotation middlewares of action
+ * Class UserMiddleware
+ *
+ * @since 2.0
  *
  * @Bean()
- * @uses      UserMiddleware
- * @version   2017年12月10日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
  */
 class UserMiddleware implements MiddlewareInterface
 {
     /**
-     * @param \Psr\Http\Message\ServerRequestInterface     $request
-     * @param \Psr\Http\Server\RequestHandlerInterface $handler
+     * @param RequestInterface        $request
+     * @param RequestHandlerInterface $requestHandler
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
+     * @throws ReflectionException
+     * @throws ContainerException
+     * @throws RpcServerException
      */
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    public function process(RequestInterface $request, RequestHandlerInterface $requestHandler): ResponseInterface
     {
-        $serviceHandler = $request->getAttribute(RouterMiddleware::ATTRIBUTE);
-        list($className, $funcName) = $serviceHandler;
+        $version   = $request->getVersion();
+        $interface = $request->getInterface();
+        $method    = $request->getMethod();
 
-        $middlewares         = [];
-        $collector           = MiddlewareCollector::getCollector();
-        $middlewareCollector = $collector[$className]['middlewares']??[];
-        $groupMiddlewares    = $middlewareCollector['group'] ?? [];
-        $funcMiddlewares     = $middlewareCollector['actions'][$funcName]??[];
-        $middlewares = array_merge($middlewares, $groupMiddlewares, $funcMiddlewares);
-        if (!empty($middlewares) && $handler instanceof RequestHandler) {
-            $handler->insertMiddlewares($middlewares);
+        /* @var Router $router */
+        $router = BeanFactory::getBean('serviceRouter');
+
+        $handler = $router->match($version, $interface);
+        $request->setAttribute(Request::ROUTER_ATTRIBUTE, $handler);
+
+        [$status, $className] = $handler;
+
+        if ($status != Router::FOUND) {
+            return $requestHandler->handle($request);
         }
 
-        return $handler->handle($request);
+        $middlewares = MiddlewareRegister::getMiddlewares($className, $method);
+        if (!empty($middlewares) && $requestHandler instanceof ServiceHandler) {
+            $requestHandler->insertMiddlewares($middlewares);
+        }
+
+        return $requestHandler->handle($request);
     }
 }

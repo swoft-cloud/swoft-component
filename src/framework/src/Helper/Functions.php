@@ -1,34 +1,29 @@
 <?php
-/**
- * @version   2017-11-02
- * @author    huangzhhui <huangzhwork@gmail.com>
- * @copyright Copyright 2010-2017 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
- */
 
+use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Config\Config;
+use Swoft\Context\Context;
+use \Swoft\Context\ContextInterface;
+use Swoft\Event\Manager\EventManager;
+use Swoft\Http\Server\HttpContext;
+use Swoft\Http\Server\HttpServer;
+use Swoft\Rpc\Server\ServiceContext;
+use Swoft\Server\Server;
+use Swoft\Task\FinishContext;
+use Swoft\Task\TaskContext;
+use Swoft\WebSocket\Server\WebSocketServer;
 
-if (! function_exists('value')) {
-    /**
-     * Return the callback value
-     *
-     * @param mixed $value
-     * @return mixed
-     */
-    function value($value)
-    {
-        return $value instanceof \Closure ? $value() : $value;
-    }
-}
-
-if (! function_exists('env')) {
+if (!function_exists('env')) {
     /**
      * Gets the value of an environment variable.
      *
      * @param  string $key
      * @param  mixed  $default
+     *
      * @return mixed
      */
-    function env($key, $default = null)
+    function env(string $key = null, $default = null)
     {
         $value = getenv($key);
 
@@ -48,11 +43,7 @@ if (! function_exists('env')) {
                 return '';
             case 'null':
             case '(null)':
-                return;
-        }
-
-        if (strlen($value) > 1 && \Swoft\Helper\StringHelper::startsWith($value, '"') && \Swoft\Helper\StringHelper::endsWith($value, '"')) {
-            return substr($value, 1, -1);
+                return null;
         }
 
         if (defined($value)) {
@@ -63,102 +54,87 @@ if (! function_exists('env')) {
     }
 }
 
-if (! function_exists('cache')) {
-
+if (!function_exists('alias')) {
     /**
-     * Get the cache by $key value, return $default when cache not exist
+     * @param string $key
      *
-     * @param string|null $key
-     * @param mixed       $default
-     * @return \Psr\SimpleCache\CacheInterface|string
+     * @return string
      */
-    function cache(string $key = null, $default = null)
+    function alias(string $key): string
     {
-        /* @var Swoft\Cache\Cache $cache */
-        $cache = \Swoft\App::getBean('cache');
-
-        if ($key === null) {
-            return $cache->getDriver();
-        }
-
-        return $cache->get($key, value($default));
+        return Swoft::getAlias($key);
     }
 }
 
-if (! function_exists('bean')) {
+if (!function_exists('event')) {
     /**
-     * Get bean from container
-     *
-     * @param string $name
-     * @return object
+     * @return EventManager
+     * @throws ReflectionException
+     * @throws ContainerException
      */
-    function bean(string $name)
+    function event(): EventManager
     {
-        return \Swoft\App::getBean($name);
+        return BeanFactory::getBean('eventManager');
     }
 }
 
-if (! function_exists('config')) {
+if (!function_exists('config')) {
     /**
-     * Get config value from app config
+     * Get value from config by key or default
      *
      * @param string $key
-     * @param null|mixed $default
+     * @param mixed  $default
+     *
      * @return mixed
+     * @throws ContainerException
      */
-    function config(string $key, $default = null)
+    function config(string $key = null, $default = null)
     {
-        /** @see \Swoft\Core\Config::get() */
-        return \Swoft\App::getBean('config')->get($key, $default);
+        if (!BeanFactory::hasBean('config')) {
+            return sprintf('${%s}', $key);
+        }
+
+        /* @var Config $config */
+        $config = BeanFactory::getSingleton('config');
+
+        return $config->get($key, $default);
     }
 }
 
-if (! function_exists('alias')) {
+if (!function_exists('sgo')) {
     /**
-     * Get alias
+     * Create coroutine like 'go()'
+     * In the swoft, you must use `sgo()` instead of  swoole `go()` function
      *
-     * @param string $alias
-     * @return string
-     * @throws \InvalidArgumentException
+     * @param callable $callable
+     * @param bool     $wait
      */
-    function alias(string $alias): string
+    function sgo(callable $callable, bool $wait = true)
     {
-        return \Swoft\App::getAlias($alias);
+        \Swoft\Co::create($callable, $wait);
     }
 }
 
-if (! function_exists('request')) {
+if (!function_exists('context')) {
     /**
-     * Get the current Request object from RequestContext
+     * Get current context
      *
-     * @return \Psr\Http\Message\RequestInterface|Swoft\Http\Message\Server\Request
+     * @return ContextInterface|HttpContext|ServiceContext|TaskContext|FinishContext
      */
-    function request(): \Psr\Http\Message\RequestInterface
+    function context(): ContextInterface
     {
-        return \Swoft\Core\RequestContext::getRequest();
+        return Context::get();
     }
 }
 
-if (! function_exists('response')) {
+if (!function_exists('server')) {
     /**
-     * Get the current Response object from RequestContext
+     * Get server instance
      *
-     * @return \Psr\Http\Message\ResponseInterface|\Swoft\Http\Message\Server\Response
+     * @return Server|HttpServer|WebSocketServer
      */
-    function response(): \Psr\Http\Message\ResponseInterface
+    function server(): Server
     {
-        return \Swoft\Core\RequestContext::getResponse();
-    }
-}
-
-if (!function_exists('is_iterable')) {
-    /**
-     * is_iterable
-     * @param $obj
-     * @return bool
-     */
-    function is_iterable($obj)
-    {
-        return is_array($obj) || (is_object($obj) && ($obj instanceof \Traversable));
+        return Server::getServer();
     }
 }

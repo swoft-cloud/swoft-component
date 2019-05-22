@@ -1,6 +1,6 @@
-# swoft websocket server
+# Swoft WebSocket Server
 
-websocket server for swoft
+WebSocket server component for swoft
 
 ## Install
 

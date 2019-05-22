@@ -1,168 +1,379 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Console\Style;
 
-use Swoft\Bean\Annotation\Bean;
-use Swoft\Console\Helper\CommandHelper;
+use function array_key_exists;
+use function array_keys;
+use function array_merge;
+use function array_values;
+use InvalidArgumentException;
+use function is_array;
+use function is_object;
+use function preg_match_all;
+use function preg_replace;
+use function sprintf;
+use function str_replace;
+use function strpos;
+use Toolkit\Cli\Cli;
 
 /**
- * The style of command
- * @Bean()
+ * Class Style
+ * @package Swoft\Console\Style
+ * @link https://github.com/ventoviro/windwalker-IO
+ *
+ * @method string info(string $message)
+ * @method string comment(string $message)
+ * @method string success(string $message)
+ * @method string warning(string $message)
+ * @method string danger(string $message)
+ * @method string error(string $message)
  */
 class Style
 {
-    // 默认样式集合
-    const NORMAL = 'normal';
-    const FAINTLY = 'faintly';
-    const BOLD = 'bold';
-    const NOTICE = 'notice';
-    const PRIMARY = 'primary';
-    const SUCCESS = 'success';
-    const INFO = 'info';
-    const NOTE = 'note';
-    const WARNING = 'warning';
-    const COMMENT = 'comment';
-    const QUESTION = 'question';
-    const DANGER = 'danger';
-    const ERROR = 'error';
-    const UNDERLINE = 'underline';
-    const BLUE = 'blue';
-    const CYAN = 'cyan';
-    const MAGENTA = 'magenta';
-    const RED = 'red';
-    const YELLOW = 'yellow';
+    /**
+     * there are some default style tags
+     */
+    public const NORMAL   = 'normal';
+    public const FAINTLY  = 'faintly';
+    public const BOLD     = 'bold';
+    public const NOTICE   = 'notice';
+    public const PRIMARY  = 'primary';
+    public const SUCCESS  = 'success';
+    public const INFO     = 'info';
+    public const NOTE     = 'note';
+    public const WARNING  = 'warning';
+    public const COMMENT  = 'comment';
+    public const QUESTION = 'question';
+    public const DANGER   = 'danger';
+    public const ERROR    = 'error';
 
     /**
-     * tag样式表情匹配正则
+     * Regex to match tags
+     * @var string
      */
-    const TAGS_REG = '/<([a-z=;]+)>(.*?)<\/\\1>/s';
+    public const COLOR_TAG = '/<([a-zA-Z=;]+)>(.*?)<\/\\1>/s';
 
     /**
-     * 移除颜色匹配正则
+     * Regex used for removing color codes
      */
-    const STRIP_REG = '/<[\/]?[a-z=;]+>/';
+    public const STRIP_TAG = '/<[\/]?[a-zA-Z=;]+>/';
 
     /**
-     * 所有初始化的样式tag标签
-     *
-     * @var array
+     * @var self
      */
-    private $tags = [];
+    private static $instance;
 
     /**
-     * 初始化颜色标签
-     *
-     * @throws \InvalidArgumentException
+     * Flag to remove color codes from the output
+     * @var bool
      */
-    public function init()
+    protected static $noColor = false;
+
+    /**
+     * Array of Color objects
+     * @var Color[]
+     */
+    private $styles = [];
+
+    /**
+     * @return Style
+     */
+    public static function instance(): Style
     {
-        $this->tags[self::NORMAL] = Color::make('normal');
-        $this->tags[self::FAINTLY] = Color::make('normal', '', ['italic']);
-        $this->tags[self::BOLD] = Color::make('', '', ['bold']);
-        $this->tags[self::INFO] = Color::make('green');
-        $this->tags[self::NOTE] = Color::make('green', '', ['bold']);
-        $this->tags[self::PRIMARY] = Color::make('blue');
-        $this->tags[self::SUCCESS] = Color::make('green', '', ['bold']);
-        $this->tags[self::NOTICE] = Color::make('', '', ['bold', 'underscore']);
-        $this->tags[self::WARNING] = Color::make('yellow');
-        $this->tags[self::COMMENT] = Color::make('yellow');
-        $this->tags[self::QUESTION] = Color::make('black', 'cyan');
-        $this->tags[self::DANGER] = Color::make('red');
-        $this->tags[self::ERROR] = Color::make('black', 'red');
-        $this->tags[self::UNDERLINE] = Color::make('normal', '', ['underscore']);
-        $this->tags[self::BLUE] = Color::make('blue');
-        $this->tags[self::CYAN] = Color::make('cyan');
-        $this->tags[self::MAGENTA] = Color::make('magenta');
-        $this->tags[self::RED] = Color::make('red');
-        $this->tags[self::YELLOW] = Color::make('yellow');
+        if (!self::$instance) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
     }
 
     /**
-     * 颜色翻译
-     *
-     * @param string $message 文字
+     * Constructor
+     * @param  string $fg 前景色(字体颜色)
+     * @param  string $bg 背景色
+     * @param  array  $options 其它选项
+     */
+    public function __construct($fg = '', $bg = '', array $options = [])
+    {
+        if ($fg || $bg || $options) {
+            $this->add('base', $fg, $bg, $options);
+        }
+
+        $this->loadDefaultStyles();
+    }
+
+    /**
+     * @param string $method
+     * @param array  $args
      * @return mixed|string
+     * @throws InvalidArgumentException
      */
-    public function t(string $message)
+    public function __call($method, array $args)
     {
-        // 不支持颜色，移除颜色标签
-        if (!CommandHelper::supportColor()) {
-            return $this->stripColor($message);
+        if (isset($args[0]) && $this->hasStyle($method)) {
+            return $this->format(sprintf('<%s>%s</%s>', $method, $args[0], $method));
         }
 
-        $isMatch = preg_match_all(self::TAGS_REG, $message, $matches);
-        // 未匹配颜色标签
-        if ($isMatch === false) {
-            return $message;
-        }
-
-        // 颜色标签处理
-        foreach ((array)$matches[0] as $i => $m) {
-            if (array_key_exists($matches[1][$i], $this->tags)) {
-                $message = $this->replaceColor($message, $matches[1][$i], $matches[2][$i], (string)$this->tags[$matches[1][$i]]);
-            }
-        }
-        return $message;
+        throw new InvalidArgumentException("You called method is not exists: $method");
     }
 
     /**
-     * 根据信息，新增一个tag颜色标签
-     *
-     * @param string $name    名称
-     * @param string $fg      前景色
-     * @param string $bg      背景色
-     * @param array  $options 颜色选项
-     * @throws \InvalidArgumentException
+     * Adds predefined color styles to the Color styles
+     * default primary success info warning danger
      */
-    public function addTag(string $name, string $fg = '', string $bg = '', array $options = [])
+    protected function loadDefaultStyles(): void
     {
-        $this->tags[$name] = Color::make($fg, $bg, $options);
+        $this
+            ->addByArray(self::NORMAL, ['fg' => 'normal'])
+            // 不明显的 浅灰色的
+            ->addByArray(self::FAINTLY, ['fg' => 'normal', 'options' => ['italic']])
+            ->addByArray(self::BOLD, ['options' => ['bold']])
+            ->addByArray(self::INFO, ['fg' => 'green',])//'options' => ['bold']
+            ->addByArray(self::NOTE, ['fg' => 'cyan', 'options' => ['bold']])//'options' => ['bold']
+            ->addByArray(self::PRIMARY, ['fg' => 'yellow', 'options' => ['bold']])//
+            ->addByArray(self::SUCCESS, ['fg' => 'green', 'options' => ['bold']])
+            ->addByArray(self::NOTICE, ['options' => ['bold', 'underscore'],])
+            ->addByArray(self::WARNING, ['fg' => 'black', 'bg' => 'yellow',])//'options' => ['bold']
+            ->addByArray(self::COMMENT, ['fg' => 'yellow',])//'options' => ['bold']
+            ->addByArray(self::QUESTION, ['fg' => 'black', 'bg' => 'cyan'])
+            ->addByArray(self::DANGER, ['fg' => 'red',])// 'bg' => 'magenta', 'options' => ['bold']
+            ->add(self::ERROR, 'white', 'red', [], true)
+            ->add('underline', 'normal', '', ['underscore'])
+            ->add('blue', 'blue')
+            ->add('cyan', 'cyan')
+            ->add('magenta', 'magenta')
+            ->add('mga', 'magenta')
+            ->add('red', 'red')
+            ->addByArray('yellow', ['fg' => 'yellow'])
+            ->addByArray('darkGray', ['fg' => 'black', 'extra' => true]);
     }
 
     /**
-     * 根据颜色对象，新增一个tag颜色标签
-     *
-     * @param string $name
-     * @param Color  $color
-     */
-    public function addTagByColor(string $name, Color $color)
-    {
-        $this->tags[$name] = $color;
-    }
-
-    /**
-     * 标签替换成颜色
-     *
-     * @param string $text
-     * @param string $tag
-     * @param string $match
+     * Process a string use style
      * @param string $style
+     * @param        $text
      * @return string
      */
-    private function replaceColor(string $text, string $tag, string $match, string $style): string
+    public function apply(string $style, $text): string
     {
-        $replace = sprintf("\033[%sm%s\033[0m", $style, $match);
-        return str_replace("<$tag>$match</$tag>", $replace, $text);
+        return $this->format(self::wrap($text, $style));
     }
 
     /**
-     * 移除颜色标签
-     *
-     * @param string $message
+     * Process a string.
+     * @param $text
      * @return mixed
      */
-    public function stripColor(string $message)
+    public function t(string $text)
     {
-        return preg_replace(self::STRIP_REG, '', $message);
+        return $this->format($text);
+    }
+
+    /**
+     * Process a string.
+     * @param string $text
+     * @return mixed
+     */
+    public function render(string $text)
+    {
+        return $this->format($text);
     }
 
     /**
      * @param string $text
+     * @return mixed|string
+     */
+    public function format(string $text)
+    {
+        if (!$text || false === strpos($text, '</')) {
+            return $text;
+        }
+
+        // if don't support output color text, clear color tag.
+        if (!Cli::isSupportColor() || self::isNoColor()) {
+            return static::stripColor($text);
+        }
+
+        if (!preg_match_all(self::COLOR_TAG, $text, $matches)) {
+            return $text;
+        }
+
+        foreach ((array)$matches[0] as $i => $m) {
+            $key = $matches[1][$i];
+
+            if (array_key_exists($key, $this->styles)) {
+                $text = $this->replaceColor($text, $key, $matches[2][$i], (string)$this->styles[$key]);
+
+                /** Custom style format @see Color::makeByString() */
+            } elseif (strpos($key, '=')) {
+                $text = $this->replaceColor($text, $key, $matches[2][$i], (string)Color::makeByString($key));
+            }
+        }
+
+        return $text;
+    }
+
+    /**
+     * Replace color tags in a string.
+     * @param string   $text
+     * @param   string $tag The matched tag.
+     * @param   string $match The match.
+     * @param   string $style The color style to apply.
+     * @return  string
+     */
+    protected function replaceColor($text, $tag, $match, $style): string
+    {
+        $replace = self::$noColor ? $match : sprintf("\033[%sm%s\033[0m", $style, $match);
+
+        return str_replace("<$tag>$match</$tag>", $replace, $text);
+        // return sprintf("\033[%sm%s\033[%sm", implode(';', $setCodes), $text, implode(';', $unsetCodes));
+    }
+
+    /**
+     * Strip color tags from a string.
+     * @param string $string
+     * @return mixed
+     */
+    public static function stripColor(string $string)
+    {
+        // $text = strip_tags($text);
+        return preg_replace(self::STRIP_TAG, '', $string);
+    }
+
+    /****************************************************************************
+     * Attr Color Style
+     ****************************************************************************/
+
+    /**
+     * Add a style.
+     * @param string             $name
+     * @param string|Color|array $fg 前景色|Color对象|也可以是style配置数组(@see self::addByArray())
+     *                               当它为Color对象或配置数组时，后面两个参数无效
+     * @param string             $bg 背景色
+     * @param array              $options 其它选项
+     * @param bool               $extra
+     * @return $this
+     */
+    public function add(string $name, $fg = '', $bg = '', array $options = [], bool $extra = false): self
+    {
+        if (is_array($fg)) {
+            return $this->addByArray($name, $fg);
+        }
+
+        if (is_object($fg) && $fg instanceof Color) {
+            $this->styles[$name] = $fg;
+        } else {
+            $this->styles[$name] = Color::make($fg, $bg, $options, $extra);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Add a style by an array config
+     * @param string $name
+     * @param array  $styleConfig 样式设置信息
+     * e.g
+     * [
+     *     'fg' => 'white',
+     *     'bg' => 'black',
+     *     'extra' => true,
+     *     'options' => ['bold', 'underscore']
+     * ]
+     * @return $this
+     */
+    public function addByArray(string $name, array $styleConfig): self
+    {
+        $style = [
+            'fg'      => '',
+            'bg'      => '',
+            'extra'   => false,
+            'options' => []
+        ];
+
+        $config = array_merge($style, $styleConfig);
+        [$fg, $bg, $extra, $options] = array_values($config);
+
+        $this->styles[$name] = Color::make($fg, $bg, $options, (bool)$extra);
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getStyleNames(): array
+    {
+        return array_keys($this->styles);
+    }
+
+    /**
+     * @return array
+     */
+    public function getNames(): array
+    {
+        return array_keys($this->styles);
+    }
+
+    /**
+     * @return array
+     */
+    public function getStyles(): array
+    {
+        return $this->styles;
+    }
+
+    /**
+     * @param $name
+     * @return Color|null
+     */
+    public function getStyle($name): ?Color
+    {
+        if (!isset($this->styles[$name])) {
+            return null;
+        }
+
+        return $this->styles[$name];
+    }
+
+    /**
+     * @param $name
+     * @return bool
+     */
+    public function hasStyle($name): bool
+    {
+        return isset($this->styles[$name]);
+    }
+
+    /**
+     * wrap a color style tag
+     * @param string $text
      * @param string $tag
      * @return string
      */
-    public static function wrap(string $text, string $tag = 'info'): string
+    public static function wrap(string $text, string $tag): string
     {
-        return \sprintf('<%s>%s</%s>', $tag, $text, $tag);
+        if (!$text || !$tag) {
+            return $text;
+        }
+
+        return "<$tag>$text</$tag>";
+    }
+
+    /**
+     * Method to get property NoColor
+     */
+    public static function isNoColor(): bool
+    {
+        return (bool)self::$noColor;
+    }
+
+    /**
+     * Method to set property noColor
+     * @param $noColor
+     */
+    public static function setNoColor($noColor = true): void
+    {
+        self::$noColor = (bool)$noColor;
     }
 }

@@ -1,44 +1,59 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Console\Style;
 
+use function array_key_exists;
+use function array_keys;
+use function count;
+use function explode;
+use function implode;
+use InvalidArgumentException;
+use RuntimeException;
+use function str_replace;
+
 /**
- * 命令行颜色
+ * Class Color
+ * - fg unset 39
+ * - bg unset 49
+ *
+ * @package Swoft\Console\Style
  */
-final class Color
+class Color
 {
-    /**
-     * 前景色
-     */
-    const FG_BASE = 30;
+    /** Foreground base value */
+    public const FG_BASE = 30;
 
-    /**
-     * 背景色
-     */
-    const BG_BASE = 40;
+    /** Background base value */
+    public const BG_BASE = 40;
 
-    // 颜色组
-    const BLACK = 'black';
-    const RED = 'red';
-    const GREEN = 'green';
-    const YELLOW = 'yellow'; // BROWN
-    const BLUE = 'blue';
-    const MAGENTA = 'magenta';
-    const CYAN = 'cyan';
-    const WHITE = 'white';
-    const NORMAL = 'normal';
+    /** Extra Foreground base value */
+    public const FG_EXTRA = 90;
 
-    // 颜色选项
-    const BOLD = 'bold';       // 加粗
-    const FUZZY = 'fuzzy';      // 模糊(不是所有的终端仿真器都支持)
-    const ITALIC = 'italic';     // 斜体(不是所有的终端仿真器都支持)
-    const UNDERSCORE = 'underscore'; // 下划线
-    const BLINK = 'blink';      // 闪烁
-    const REVERSE = 'reverse';    // 颠倒的 交换背景色与前景色
-    const CONCEALED = 'concealed';  // 隐匿的
+    /** Extra Background base value */
+    public const BG_EXTRA = 100;
 
-    // 颜色集合
-    const COLORS = [
+    // color
+    public const BLACK   = 'black';
+    public const RED     = 'red';
+    public const GREEN   = 'green';
+    public const YELLOW  = 'yellow'; // BROWN
+    public const BLUE    = 'blue';
+    public const MAGENTA = 'magenta';
+    public const CYAN    = 'cyan';
+    public const WHITE   = 'white';
+    public const NORMAL  = 'normal';
+
+    // color option
+    public const BOLD       = 'bold';       // 加粗
+    public const FUZZY      = 'fuzzy';      // 模糊(不是所有的终端仿真器都支持)
+    public const ITALIC     = 'italic';     // 斜体(不是所有的终端仿真器都支持)
+    public const UNDERSCORE = 'underscore'; // 下划线
+    public const BLINK      = 'blink';      // 闪烁
+    public const REVERSE    = 'reverse';    // 颠倒的 交换背景色与前景色
+    public const CONCEALED  = 'concealed';  // 隐匿的
+
+    /** @var array Known color list */
+    private static $knownColors = [
         'black'   => 0,
         'red'     => 1,
         'green'   => 2,
@@ -50,10 +65,8 @@ final class Color
         'normal'  => 9,
     ];
 
-    /**
-     * 颜色选项集合
-     */
-    const OPTIONS = [
+    /** @var array Known style option */
+    private static $knownOptions = [
         'bold'       => 1,       // 22 加粗
         'fuzzy'      => 2,      // 模糊(不是所有的终端仿真器都支持)
         'italic'     => 3,      // 斜体(不是所有的终端仿真器都支持)
@@ -63,103 +76,169 @@ final class Color
         'concealed'  => 8,  // 28 隐匿的
     ];
 
-    /**
-     * 当前前景色
-     *
-     * @var int
-     */
+    /** @var int Foreground color */
     private $fgColor = 0;
 
-    /**
-     * 当前背景色
-     *
-     * @var int
-     */
+    /** @var int Background color */
     private $bgColor = 0;
 
-    /**
-     * 当前颜色选项
-     *
-     * @var array
-     */
+    /** @var array Array of style options */
     private $options = [];
 
     /**
-     * 新建一个颜色
-     *
-     * @param string $fg      前景色
-     * @param string $bg      背景色
-     * @param array  $options 选项
+     * @param string $fg
+     * @param string $bg
+     * @param array  $options
+     * @param bool   $extra
      * @return Color
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    public static function make(string $fg = '', string $bg = '', array $options = []): Color
+    public static function make($fg = '', $bg = '', array $options = [], bool $extra = false): Color
     {
-        return new self($fg, $bg, $options);
+        return new self($fg, $bg, $options, $extra);
     }
 
     /**
-     * 初始化
+     * Create a color style from a parameter string.
      *
-     * @param string $fg      前景色
-     * @param string $bg      背景色
-     * @param array  $options 选项
-     * @throws \InvalidArgumentException
+     * @param string $string e.g 'fg=white;bg=black;options=bold,underscore;extra=1'
+     * @return static
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
-    private function __construct(string $fg = '', string $bg = '', array $options = [])
+    public static function makeByString($string)
     {
-        // 前景和背景色取值验证
-        $fgNotExist = ! empty($fg) && ! array_key_exists($fg, self::COLORS);
-        $bgNotExist = ! empty($bg) && ! array_key_exists($bg, self::COLORS);
-        if ($fgNotExist || $bgNotExist) {
-            throw new \InvalidArgumentException('Foreground和Background参数值，不存在，检查后再试！');
+        $fg      = $bg = '';
+        $extra   = false;
+        $options = [];
+        $parts   = explode(';', str_replace(' ', '', $string));
+
+        foreach ($parts as $part) {
+            $subParts = explode('=', $part);
+
+            if (count($subParts) < 2) {
+                continue;
+            }
+
+            switch ($subParts[0]) {
+                case 'fg':
+                    $fg = $subParts[1];
+                    break;
+                case 'bg':
+                    $bg = $subParts[1];
+                    break;
+                case 'extra':
+                    $extra = (bool)$subParts[1];
+                    break;
+                case 'options':
+                    $options = explode(',', $subParts[1]);
+                    break;
+                default:
+                    throw new RuntimeException('Invalid option');
+                    break;
+            }
         }
 
-        // 前景色
-        if (! empty($fg)) {
-            $this->fgColor = self::FG_BASE + self::COLORS[$fg];
+        return new self($fg, $bg, $options, $extra);
+    }
+
+    /**
+     * Constructor
+     * @param string $fg Foreground color.  e.g 'white'
+     * @param string $bg Background color.  e.g 'black'
+     * @param array  $options Style options. e.g ['bold', 'underscore']
+     * @param bool   $extra
+     * @throws InvalidArgumentException
+     */
+    public function __construct($fg = '', $bg = '', array $options = [], bool $extra = false)
+    {
+        if ($fg) {
+            if (false === array_key_exists($fg, static::$knownColors)) {
+                throw new InvalidArgumentException(
+                    sprintf('Invalid foreground color "%1$s" [%2$s]',
+                        $fg,
+                        implode(', ', $this->getKnownColors())
+                    )
+                );
+            }
+
+            $this->fgColor = ($extra ? self::FG_EXTRA : self::FG_BASE) + static::$knownColors[$fg];
         }
 
-        // 背景色
-        if (! empty($bg)) {
-            $this->bgColor = self::BG_BASE + self::COLORS[$bg];
+        if ($bg) {
+            if (false === array_key_exists($bg, static::$knownColors)) {
+                throw new InvalidArgumentException(
+                    sprintf('Invalid background color "%1$s" [%2$s]',
+                        $bg,
+                        implode(', ', $this->getKnownColors())
+                    )
+                );
+            }
+
+            $this->bgColor = ($extra ? self::BG_EXTRA : self::BG_BASE) + static::$knownColors[$bg];
         }
 
         foreach ($options as $option) {
-            // 选项不存在
-            if (! array_key_exists($option, self::OPTIONS)) {
-                throw new \InvalidArgumentException('选项参数不存在，option=' . $option);
+            if (false === array_key_exists($option, static::$knownOptions)) {
+                throw new InvalidArgumentException(
+                    sprintf('Invalid option "%1$s" [%2$s]',
+                        $option,
+                        implode(', ', $this->getKnownOptions())
+                    )
+                );
             }
-            $this->options[] = self::OPTIONS[$option];
+
+            $this->options[] = $option;
         }
     }
 
     /**
-     * 字符串显示
-     *
-     * @return string
+     * Convert to a string.
      */
     public function __toString()
     {
-        return $this->getStyle();
+        return $this->toStyle();
     }
 
     /**
-     * 获取当前颜色值
-     *
-     * @return string
+     * Get the translated color code.
      */
-    public function getStyle(): string
+    public function toStyle(): string
     {
-        $values = $this->options;
-        if ($this->bgColor > 0) {
-            array_unshift($values, $this->bgColor);
+        $values = [];
+
+        if ($this->fgColor) {
+            $values[] = $this->fgColor;
         }
 
-        if ($this->fgColor > 0) {
-            array_unshift($values, $this->fgColor);
+        if ($this->bgColor) {
+            $values[] = $this->bgColor;
+        }
+
+        foreach ($this->options as $option) {
+            $values[] = static::$knownOptions[$option];
         }
 
         return implode(';', $values);
+    }
+
+    /**
+     * Get the known colors.
+     * @param bool $onlyName
+     * @return array
+     */
+    public function getKnownColors(bool $onlyName = true): array
+    {
+        return $onlyName ? array_keys(static::$knownColors) : static::$knownColors;
+    }
+
+    /**
+     * Get the known options.
+     * @param bool $onlyName
+     * @return array
+     */
+    public function getKnownOptions(bool $onlyName = true): array
+    {
+        return $onlyName ? array_keys(static::$knownOptions) : static::$knownOptions;
     }
 }

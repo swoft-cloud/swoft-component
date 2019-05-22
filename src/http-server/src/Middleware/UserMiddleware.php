@@ -1,59 +1,63 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Http\Server\Middleware;
 
-use Psr\Http\Server\RequestHandlerInterface;
+use function explode;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Swoft\Http\Message\Bean\Collector\MiddlewareCollector;
-use Swoft\Core\RequestHandler;
-use Swoft\Bean\Annotation\Bean;
-use Swoft\Http\Server\AttributeEnum;
-use Swoft\Http\Message\Middleware\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Container;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Http\Message\Request;
+use Swoft\Http\Server\Contract\MiddlewareInterface;
+use Swoft\Http\Server\Exception\HttpServerException;
+use Swoft\Http\Server\RequestHandler;
+use Swoft\Http\Server\Router\Route;
+use Swoft\Http\Server\Router\Router;
 
 /**
- * the annotation middlewares of action
+ * Class UserMiddleware
  *
  * @Bean()
+ *
+ * @since 2.0
  */
 class UserMiddleware implements MiddlewareInterface
 {
     /**
-     * do middlewares of action
+     * @param ServerRequestInterface  $request
+     * @param RequestHandlerInterface $handler
      *
-     * @param \Psr\Http\Message\ServerRequestInterface     $request
-     * @param \Psr\Http\Server\RequestHandlerInterface $handler
-     *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
+     * @throws ContainerException
+     * @throws HttpServerException
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $httpHandler = $request->getAttribute(AttributeEnum::ROUTER_ATTRIBUTE);
-        $info = $httpHandler[2];
+        /** @var Request $request $method */
+        $method  = $request->getMethod();
+        $uriPath = $request->getUriPath();
 
-        $actionMiddlewares = [];
-        if (isset($info['handler']) && \is_string($info['handler'])) {
-            // Extract action info from router handler
-            $exploded             = explode('@', $info['handler']);
-            $controllerClass      = $exploded[0] ?? '';
-            $action               = $exploded[1] ?? '';
+        /** @var Router $router */
+        $router        = Container::$instance->getSingleton('httpRouter');
+        $routerHandler = $router->match($uriPath, $method);
+        $request       = $request->withAttribute(Request::ROUTER_ATTRIBUTE, $routerHandler);
 
-            $collector = MiddlewareCollector::getCollector();
-            $collectedMiddlewares = $collector[$controllerClass]['middlewares']??[];
+        /* @var Route $route */
+        [$status, , $route] = $routerHandler;
 
-            // Get group middleware from Collector
-            if ($controllerClass) {
-                $collect = $collectedMiddlewares['group'] ?? [];
-                $collect && $actionMiddlewares = array_merge($actionMiddlewares, $collect);
-            }
-            // Get the specified action middleware from Collector
-            if ($action) {
-                $collect = $collectedMiddlewares['actions'][$action]??[];
-                $collect && $actionMiddlewares = array_merge($actionMiddlewares, $collect ?? []);
-            }
+        if ($status !== Router::FOUND) {
+            return $handler->handle($request);
         }
-        if (!empty($actionMiddlewares) && $handler instanceof RequestHandler) {
-            $handler->insertMiddlewares($actionMiddlewares);
+
+        // Controller and method
+        $handlerId = $route->getHandler();
+        [$className, $method] = explode('@', $handlerId);
+
+        $middlewares = MiddlewareRegister::getMiddlewares($className, $method);
+        if (!empty($middlewares) && $handler instanceof RequestHandler) {
+            $handler->insertMiddlewares($middlewares);
         }
 
         return $handler->handle($request);

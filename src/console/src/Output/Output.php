@@ -1,142 +1,185 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Console\Output;
 
-use Swoft\Bean\Annotation\Bean;
+use const STDERR;
+use const STDOUT;
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Console\Concern\FormatOutputAwareTrait;
+use Swoft\Console\Console;
+use Swoft\Console\Contract\OutputInterface;
+use Swoft\Console\Helper\Show;
+use Swoft\Console\Style\Style;
+use Toolkit\Cli\Cli;
 
 /**
- * 输出
- * @Bean()
+ * Class Output
+ * @Bean("output")
  */
 class Output implements OutputInterface
 {
-    /**
-     * 间隙字符
-     */
-    const GAP_CHAR = '  ';
+    use FormatOutputAwareTrait;
 
     /**
-     * 左边字符
+     * 正常输出流
+     * Property outStream.
      */
-    const LEFT_CHAR = '  ';
+    protected $outputStream = STDOUT;
 
     /**
-     * 输出一行数据
-     *
-     * @param string|array $messages 信息
-     * @param bool   $newline  是否换行
-     * @param bool   $quit     是否退出
+     * 错误输出流
+     * Property errorStream.
      */
-    public function writeln($messages = '', $newline = true, $quit = false)
+    protected $errorStream = STDERR;
+
+    /**
+     * 控制台窗口(字体/背景)颜色添加处理
+     * window colors
+     * @var Style
+     */
+    protected $style;
+
+    /**
+     * Output constructor.
+     * @param null|resource $outputStream
+     */
+    public function __construct($outputStream = null)
     {
-        if (\is_array($messages)) {
-            $messages = \implode($newline ? PHP_EOL : '', $messages);
+        if ($outputStream) {
+            $this->outputStream = $outputStream;
         }
 
-        // 文字里面颜色标签翻译
-        $messages = \style()->t((string)$messages);
+        $this->getStyle();
+    }
 
-        // 输出文字
-        echo $messages;
-        if ($newline) {
-            echo "\n";
-        }
+    /***************************************************************************
+     * Output buffer
+     ***************************************************************************/
 
-        // 是否退出
-        if ($quit) {
-            exit;
-        }
+    /**
+     * start buffering
+     */
+    public function startBuffer(): void
+    {
+        Console::startBuffer();
     }
 
     /**
-     * 输出显示LOGO图标
+     * clear buffering
      */
-    public function writeLogo()
+    public function clearBuffer(): void
     {
-        $logo = "
- ____                __ _
-/ ___|_      _____  / _| |_
-\___ \ \ /\ / / _ \| |_| __|
- ___) \ V  V / (_) |  _| |_
-|____/ \_/\_/ \___/|_|  \__|
-";
-        $this->colored(' ' . \ltrim($logo));
+        Console::clearBuffer();
     }
 
     /**
-     * @param string $text
-     * @param string $tag
+     * stop buffering and flush buffer text
+     * {@inheritdoc}
+     * @see Console::stopBuffer()
      */
-    public function colored(string $text, string $tag = 'info')
+    public function stopBuffer(bool $flush = true, $nl = false, $quit = false, array $opts = []): void
     {
-        $this->writeln(\sprintf('<%s>%s</%s>', $tag, $text, $tag));
+        Console::stopBuffer($flush, $nl, $quit, $opts);
     }
 
     /**
-     * 输出一个列表
-     *
-     * @param array       $list       列表数据
-     * @param string      $titleStyle 标题样式
-     * @param string      $cmdStyle   命令样式
-     * @param string|null $descStyle  描述样式
+     * stop buffering and flush buffer text
+     * {@inheritdoc}
      */
-    public function writeList(array $list, $titleStyle = 'comment', string $cmdStyle = 'info', string $descStyle = null)
+    public function flush(bool $nl = false, $quit = false, array $opts = []): void
     {
-        foreach ($list as $title => $items) {
-            // 标题
-            $title = "<$titleStyle>$title</$titleStyle>";
-            $this->writeln($title);
+        Console::flushBuffer($nl, $quit, $opts);
+    }
 
-            // 输出块内容
-            $this->writeItems((array)$items, $cmdStyle);
-            $this->writeln('');
-        }
+    /***************************************************************************
+     * Output Message
+     ***************************************************************************/
+
+    /**
+     * Read input information
+     * @param  string $question 若不为空，则先输出文本
+     * @param  bool   $nl true 会添加换行符 false 原样输出，不添加换行符
+     * @return string
+     */
+    public function read($question = null, $nl = false): string
+    {
+        return Console::read($question, $nl);
     }
 
     /**
-     * 显示命令列表一块数据
-     *
-     * @param array  $items    数据
-     * @param string $cmdStyle 命令样式
-     */
-    private function writeItems(array $items, string $cmdStyle)
-    {
-        foreach ($items as $cmd => $desc) {
-            // 没有命令，只是一行数据
-            if (\is_int($cmd)) {
-                $message = self::LEFT_CHAR . $desc;
-                $this->writeln($message);
-                continue;
-            }
-
-            // 命令和描述
-            $maxLength = $this->getCmdMaxLength(array_keys($items));
-            $cmd = \str_pad($cmd, $maxLength, ' ');
-            $cmd = "<$cmdStyle>$cmd</$cmdStyle>";
-            $message = self::LEFT_CHAR . $cmd . self::GAP_CHAR . $desc;
-
-            $this->writeln($message);
-        }
-    }
-
-    /**
-     * 所有命令最大宽度
-     *
-     * @param array $commands 所有命令
+     * Write a message to standard error output stream.
+     * @param string  $text
+     * @param boolean $nl True (default) to append a new line at the end of the output string.
      * @return int
      */
-    private function getCmdMaxLength(array $commands): int
+    public function stderr(string $text = '', $nl = true): int
     {
-        $max = 0;
+        return Console::write($text, $nl, [
+            'steam' => $this->errorStream,
+        ]);
+    }
 
-        foreach ($commands as $cmd) {
-            $length = \strlen($cmd);
-            if ($length > $max) {
-                $max = $length;
-                continue;
-            }
+    /***************************************************************************
+     * Getter/Setter
+     ***************************************************************************/
+
+    /**
+     * @return Style
+     */
+    public function getStyle(): Style
+    {
+        if (!$this->style) {
+            $this->style = Show::getStyle();
         }
 
-        return $max;
+        return $this->style;
+    }
+
+    /**
+     * @return bool
+     */
+    public function supportColor(): bool
+    {
+        return Cli::isSupportColor();
+    }
+
+    /**
+     * getOutStream
+     */
+    public function getOutputStream()
+    {
+        return $this->outputStream;
+    }
+
+    /**
+     * setOutStream
+     * @param $outStream
+     * @return $this
+     */
+    public function setOutputStream($outStream): self
+    {
+        $this->outputStream = $outStream;
+
+        return $this;
+    }
+
+    /**
+     * Method to get property ErrorStream
+     */
+    public function getErrorStream()
+    {
+        return $this->errorStream;
+    }
+
+    /**
+     * Method to set property errorStream
+     * @param $errorStream
+     * @return $this
+     */
+    public function setErrorStream($errorStream): self
+    {
+        $this->errorStream = $errorStream;
+
+        return $this;
     }
 }

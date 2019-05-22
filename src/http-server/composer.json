@@ -1,40 +1,33 @@
 {
-    "name": "swoft/http-server",
-    "type": "library",
-    "keywords": [
-        "php",
-        "swoole",
-        "swoft"
-    ],
-    "description": "microservice framework base on swoole",
-    "license": "Apache-2.0",
-    "require": {
-        "swoft/console": "^1.0",
-        "swoft/http-message": "^1.0",
-        "swoft/framework": "^1.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "Swoft\\Http\\Server\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "SwoftTest\\HttpServer\\": "test/Cases",
-            "SwoftTest\\Testing\\": "test/Testing"
-        }
-    },
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://packagist.laravel-china.org"
-        }
-    ],
-    "require-dev": {
-        "swoft/swoole-ide-helper": "dev-master",
-        "phpunit/phpunit": "^5.7"
-    },
-    "scripts": {
-        "test": "./vendor/bin/phpunit -c phpunit.xml"
+  "name": "swoft/http-server",
+  "type": "library",
+  "keywords": [
+    "php",
+    "swoole",
+    "swoft"
+  ],
+  "description": "micro-service framework base on swoole",
+  "license": "Apache-2.0",
+  "require": {
+    "swoft/framework": "~2.0.0",
+    "swoft/http-message": "~2.0.0",
+    "swoft/validator": "~2.0.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Swoft\\Http\\Server\\": "src/"
     }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "SwoftTest\\Http\\Server\\Unit\\": "test/unit/",
+      "SwoftTest\\Http\\Server\\Testing\\": "test/testing/"
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^7.5"
+  },
+  "scripts": {
+    "test": "./vendor/bin/phpunit -c phpunit.xml"
+  }
 }

@@ -1,137 +1,83 @@
-<?php
+<?php declare(strict_types=1);
+
 
 namespace Swoft\Rpc\Server;
 
-use Swoft\App;
-use Swoft\Contract\DispatcherInterface;
-use Swoft\Core\RequestHandler;
-use Swoft\Event\AppEvent;
-use Swoft\Helper\ResponseHelper;
-use Swoft\Rpc\Server\Event\RpcServerEvent;
-use Swoft\Rpc\Server\Middleware\HandlerAdapterMiddleware;
-use Swoft\Rpc\Server\Middleware\PackerMiddleware;
-use Swoft\Rpc\Server\Middleware\RouterMiddleware;
+
+use ReflectionException;
+use function sprintf;
+use Swoft;
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Dispatcher;
+use Swoft\Log\Debug;
+use Swoft\Rpc\Error;
+use Swoft\Rpc\Server\Middleware\DefaultMiddleware;
 use Swoft\Rpc\Server\Middleware\UserMiddleware;
-use Swoft\Rpc\Server\Middleware\ValidatorMiddleware;
-use Swoft\Rpc\Server\Router\HandlerAdapter;
-use Swoft\Rpc\Server\Rpc\Request;
-use Swoole\Server;
+use Throwable;
 
 /**
- * Service dispatcher
+ * Class ServiceDispatcher
+ *
+ * @since 2.0
+ *
+ * @Bean(name="serviceDispatcher")
  */
-class ServiceDispatcher implements DispatcherInterface
+class ServiceDispatcher extends Dispatcher
 {
     /**
-     * Service middlewares
-     *
-     * @var array
-     */
-    private $middlewares = [];
-
-    /**
-     * The default of handler adapter
-     *
      * @var string
      */
-    private $handlerAdapter = HandlerAdapterMiddleware::class;
+    protected $defaultMiddleware = DefaultMiddleware::class;
 
     /**
-     * @param array ...$params
-     * @throws \Swoft\Rpc\Exception\RpcException
-     * @throws \InvalidArgumentException
+     * @param array $params
+     *
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function dispatch(...$params)
     {
         /**
-         * @var Server $server
-         * @var int    $fd
-         * @var int    $fromid
-         * @var string $data
+         * @var Request  $request
+         * @var Response $response
          */
-        list($server, $fd, $fromid, $data) = $params;
+        list($request, $response) = $params;
 
         try {
-            // request middlewares
-            $serviceRequest = $this->getRequest($server, $fd, $fromid, $data);
-            $middlewares = $this->requestMiddleware();
-            $requestHandler = new RequestHandler($middlewares, $this->handlerAdapter);
+            Swoft::trigger(ServiceServerEvent::BEFORE_RECEIVE, null, $request, $response);
 
-            /* @var \Swoft\Rpc\Server\Rpc\Response $response */
-            $response = $requestHandler->handle($serviceRequest);
-            $data = $response->getAttribute(HandlerAdapter::ATTRIBUTE);
-        } catch (\Throwable $t) {
-            $message = sprintf('%s %s %s', $t->getMessage(), $t->getFile(), $t->getLine());
-            $data = ResponseHelper::formatData('', $message, $t->getCode());
-            $data = service_packer()->pack($data);
-        } finally {
+            $handler  = ServiceHandler::new($this->requestMiddleware(), $this->defaultMiddleware);
+            $response = $handler->handle($request);
+        } catch (Throwable $e) {
+            Debug::log(
+                sprintf("RPC Server Error: %s\nAt %s %d\n", $e->getMessage(), $e->getFile(), $e->getLine())
+            );
 
-            // Release system resources
-            App::trigger(AppEvent::RESOURCE_RELEASE);
-
-            $server->send($fd, $data);
+            $error    = Error::new($e->getCode(), $e->getMessage(), null);
+            $response = $response->setError($error);
         }
-        App::trigger(RpcServerEvent::AFTER_RECEIVE);
+
+        Swoft::trigger(ServiceServerEvent::AFTER_RECEIVE, null, $response);
     }
 
     /**
-     * Request middleware
-     *
-     * @return array
-     */
-    public function requestMiddleware(): array
-    {
-        return array_merge($this->preMiddleware(), $this->middlewares, $this->afterMiddleware());
-    }
-
-    /**
-     * Pre middleware
-     *
      * @return array
      */
     public function preMiddleware(): array
     {
         return [
-            PackerMiddleware::class,
-            RouterMiddleware::class,
+
         ];
     }
 
     /**
-     * After middleware
-     *
      * @return array
      */
     public function afterMiddleware(): array
     {
         return [
-            ValidatorMiddleware::class,
-            UserMiddleware::class,
+            UserMiddleware::class
         ];
-    }
-
-    /**
-     * @param \Swoole\Server $server
-     * @param int            $fd
-     * @param int            $fromid
-     * @param string         $data
-     * @return Request
-     */
-    private function getRequest(Server $server, int $fd, int $fromid, string $data): Request
-    {
-        $serviceRequest = new Request('get', '/');
-
-        return $serviceRequest->withAttribute(PackerMiddleware::ATTRIBUTE_SERVER, $server)
-                              ->withAttribute(PackerMiddleware::ATTRIBUTE_FD, $fd)
-                              ->withAttribute(PackerMiddleware::ATTRIBUTE_FROMID, $fromid)
-                              ->withAttribute(PackerMiddleware::ATTRIBUTE_DATA, $data);
-    }
-    
-    /**
-     * @return array
-     */
-    public function getMiddlewares(): array
-    {
-        return $this->middlewares;
     }
 }

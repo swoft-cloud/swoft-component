@@ -1,9 +1,12 @@
-<?php
+<?php declare(strict_types=1);
+
 
 namespace Swoft\Contract;
 
 /**
- * Dispatcher
+ * Class DispatcherInterface
+ *
+ * @since 2.0
  */
 interface DispatcherInterface
 {
@@ -13,13 +16,6 @@ interface DispatcherInterface
      * @param array ...$params dispatcher params
      */
     public function dispatch(...$params);
-
-    /**
-     * Request middleware
-     *
-     * @return array
-     */
-    public function requestMiddleware(): array;
 
     /**
      * Pre middleware
@@ -34,4 +30,18 @@ interface DispatcherInterface
      * @return array
      */
     public function afterMiddleware(): array;
+
+    /**
+     * Before dispatch
+     *
+     * @param array $params
+     */
+    public function before(...$params): void;
+
+    /**
+     * After dispatch
+     *
+     * @param array $params
+     */
+    public function after(...$params): void;
 }

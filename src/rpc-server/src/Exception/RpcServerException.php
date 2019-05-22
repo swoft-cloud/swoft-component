@@ -1,11 +1,14 @@
-<?php
+<?php declare(strict_types=1);
+
 
 namespace Swoft\Rpc\Server\Exception;
 
-use Swoft\Exception\Exception;
+use Exception;
 
 /**
- * Base exception of rpc server
+ * Class RpcServerException
+ *
+ * @since 2.0
  */
 class RpcServerException extends Exception
 {

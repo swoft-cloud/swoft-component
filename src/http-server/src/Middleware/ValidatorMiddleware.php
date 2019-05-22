@@ -1,49 +1,62 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Http\Server\Middleware;
 
-use Psr\Http\Server\RequestHandlerInterface;
+use function explode;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Swoft\App;
-use Swoft\Bean\Annotation\Bean;
-use Swoft\Bean\Collector\ValidatorCollector;
-use Swoft\Http\Server\AttributeEnum;
-use Swoft\Http\Message\Middleware\MiddlewareInterface;
-use Swoft\Http\Server\Validator\HttpValidator;
+use Psr\Http\Server\RequestHandlerInterface;
+use ReflectionException;
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Http\Message\Request;
+use Swoft\Http\Server\Contract\MiddlewareInterface;
+use Swoft\Http\Server\Router\Route;
+use Swoft\Http\Server\Router\Router;
+use Swoft\Validator\Exception\ValidatorException;
+use Swoft\Validator\Validator;
 
 /**
- * Validator middleware
+ * Class ValidatorMiddleware
+ *
  * @Bean()
+ *
+ * @since 2.0
  */
 class ValidatorMiddleware implements MiddlewareInterface
 {
     /**
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @param \Psr\Http\Server\RequestHandlerInterface $handler
-     * @return \Psr\Http\Message\ResponseInterface
-     * @throws \Swoft\Exception\ValidatorException
+     * @param ServerRequestInterface  $request
+     * @param RequestHandlerInterface $handler
+     *
+     * @return ResponseInterface
+     * @throws ContainerException
+     * @throws ReflectionException
+     * @throws ValidatorException
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $httpHandler = $request->getAttribute(AttributeEnum::ROUTER_ATTRIBUTE);
-        $info = $httpHandler[2];
+        /* @var Route $route */
+        [$status, , $route] = $request->getAttribute(Request::ROUTER_ATTRIBUTE);
 
-        if (isset($info['handler']) && \is_string($info['handler'])) {
-            $exploded = explode('@', $info['handler']);
-            $className = $exploded[0] ?? '';
-            $validatorKey = $exploded[1] ?? '';
-            $matches = $info['matches'] ?? [];
-
-            /* @var HttpValidator $validator */
-            $validator = App::getBean(HttpValidator::class);
-            $collector = ValidatorCollector::getCollector();
-
-            if (isset($collector[$className][$validatorKey]['validator'])) {
-                $validators = $collector[$className][$validatorKey]['validator'];
-                $request = $validator->validate($validators, $request, $matches);
-            }
+        if ($status !== Router::FOUND) {
+            return $handler->handle($request);
         }
+
+        // Controller and method
+        $handlerId = $route->getHandler();
+        [$className, $method] = explode('@', $handlerId);
+
+        $data = $request->getParsedBody();
+
+        // Fix body is empty string
+        $data = empty($data) ? [] : $data;
+
+        /* @var Validator $validator*/
+        $validator = BeanFactory::getBean('validator');
+        $data = $validator->validate($data, $className, $method);
+        $request = $request->withParsedBody($data);
 
         return $handler->handle($request);
     }

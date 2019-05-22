@@ -1,28 +1,40 @@
 <?php
-/**
- * This file is part of Swoft.
- *
- * @link     https://swoft.org
- * @document https://doc.swoft.org
- * @contact  group@swoft.org
- * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
- */
-require_once dirname(dirname(__FILE__)) . '/vendor/autoload.php';
-require_once dirname(dirname(__FILE__)) . '/test/config/define.php';
+// vendor at component dir
+use Composer\Autoload\ClassLoader;
+use SwoftTest\Testing\TestApplication;
+use Swoole\Runtime;
 
-Swoole\Coroutine::set(array(
-    'max_coroutine' => 40960,
-));
+if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
+    require dirname(__DIR__) . '/vendor/autoload.php';
+    // application's vendor
+} elseif (file_exists(dirname(__DIR__, 3) . '/vendor/autoload.php')) {
+    /** @var ClassLoader $loader */
+    $loader = require dirname(__DIR__, 3) . '/vendor/autoload.php';
 
-// init
-\Swoft\Bean\BeanFactory::init();
+    // need load testing psr4 config map
+    $componentDir  = dirname(__DIR__, 3);
+    $componentJson = $componentDir . '/composer.json';
+    $composerData  = json_decode(file_get_contents($componentJson), true);
+    foreach ($composerData['autoload-dev']['psr-4'] as $prefix => $dir) {
+        $loader->addPsr4($prefix, $componentDir . '/' . $dir);
+    }
+} elseif (file_exists(dirname(__DIR__, 5) . '/autoload.php')) {
+    /** @var ClassLoader $loader */
+    $loader = require dirname(__DIR__, 5) . '/autoload.php';
 
-/* @var \Swoft\Bootstrap\Boots\Bootable $bootstrap*/
-$bootstrap = \Swoft\App::getBean(\Swoft\Bootstrap\Bootstrap::class);
-$bootstrap->bootstrap();
+    // need load testing psr4 config map
+    $componentDir  = dirname(__DIR__, 3);
+    $componentJson = $componentDir . '/composer.json';
+    $composerData  = json_decode(file_get_contents($componentJson), true);
 
-\Swoft\Bean\BeanFactory::reload();
+    foreach ($composerData['autoload-dev']['psr-4'] as $prefix => $dir) {
+        $loader->addPsr4($prefix, $componentDir . '/' . $dir);
+    }
+} else {
+    exit('Please run "composer install" to install the dependencies' . PHP_EOL);
+}
 
-$initApplicationContext = new \Swoft\Core\InitApplicationContext();
-$initApplicationContext->init();
-\Swoft\App::$isInTest = true;
+Runtime::enableCoroutine();
+$application = new TestApplication();
+$application->setBeanFile(__DIR__ . '/testing/bean.php');
+$application->run();

@@ -11,30 +11,26 @@
     "description": "I18n Translations Component for Swoft",
     "license": "Apache-2.0",
     "require": {
-        "swoft/framework": "^1.0"
+        "php": ">=7.1",
+        "swoft/framework": "~2.0.0"
     },
     "autoload": {
         "psr-4": {
             "Swoft\\I18n\\": "src/"
         },
         "files": [
-            "src/Helper/Functions.php"
         ]
     },
     "autoload-dev": {
         "psr-4": {
-            "SwoftTest\\I18n\\": "test/Cases"
+            "SwoftTest\\I18n\\Testing\\": "test/testing",
+            "SwoftTest\\I18n\\Unit\\": "test/unit"
         }
     },
     "repositories": [
-        {
-            "type": "composer",
-            "url": "https://packagist.laravel-china.org"
-        }
     ],
     "require-dev": {
-        "swoft/swoole-ide-helper": "dev-master",
-        "phpunit/phpunit": "^5.7"
+        "phpunit/phpunit": "^7.5"
     },
     "scripts": {
         "test": "./vendor/bin/phpunit -c phpunit.xml"
