@@ -6,6 +6,7 @@ use function is_numeric;
 use function method_exists;
 use function property_exists;
 use function spl_object_hash;
+use Swoft\Db\Exception\DbException;
 use function ucfirst;
 
 /**
@@ -67,23 +68,29 @@ class ObjectHelper
      */
     public static function parseParamType(string $type, $value)
     {
-        switch ($type) {
-            case 'integer':
-            case 'int':
-                $value = (int)$value;
-                break;
-            case 'string':
-                $value = (string)$value;
-                break;
-            case 'bool':
-                $value = (bool)$value;
-                break;
-            case 'float':
-                $value = (float)$value;
-                break;
-            case 'double':
-                $value = (double)$value;
-                break;
+        try {
+            switch ($type) {
+                case 'integer':
+                case 'int':
+                    $value = (int)$value;
+                    break;
+                case 'string':
+                    $value = (string)$value;
+                    break;
+                case 'bool':
+                    $value = (bool)$value;
+                    break;
+                case 'float':
+                    $value = (float)$value;
+                    break;
+                case 'double':
+                    $value = (double)$value;
+                    break;
+            }
+        } catch (\Throwable $e) {
+            throw new \InvalidArgumentException(
+                sprintf('Convert value(%s) to %s', json_unescaped_encode($value), $type)
+            );
         }
 
         return $value;
