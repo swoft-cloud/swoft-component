@@ -5,6 +5,7 @@ namespace Swoft\Http\Message\Upload;
 use InvalidArgumentException;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
+use Swoft\Bean\BeanFactory;
 use const UPLOAD_ERR_OK;
 
 /**
@@ -40,9 +41,14 @@ class UploadedFile implements UploadedFileInterface
     private $clientMediaType;
 
     /**
+     * @var boolean
+     */
+    private $moved;
+
+    /**
      * @param string $tmpFile
-     * @param int    $size
-     * @param int    $errorStatus
+     * @param int $size
+     * @param int $errorStatus
      * @param string $clientFilename
      * @param string $clientMediaType
      */
@@ -52,7 +58,8 @@ class UploadedFile implements UploadedFileInterface
         int $errorStatus,
         string $clientFilename = '',
         string $clientMediaType = ''
-    ) {
+    )
+    {
         $this->setError($errorStatus)
             ->setSize($size)
             ->setClientFilename($clientFilename)
@@ -96,7 +103,19 @@ class UploadedFile implements UploadedFileInterface
      */
     public function moveTo($targetPath): void
     {
-        // TODO ...
+        $targetPath = \Swoft::getAlias($targetPath);
+        $this->validateActive();
+        if (! $this->isStringNotEmpty($targetPath)) {
+            throw new \InvalidArgumentException('Invalid path provided for move operation');
+        }
+
+        if ($this->file) {
+            $this->validateSavePath($targetPath);
+            $this->moved = move_uploaded_file($this->file, $targetPath);
+        }
+        if (! $this->moved) {
+            throw new \RuntimeException(sprintf('Uploaded file could not be move to %s', $targetPath));
+        }
     }
 
     /**
@@ -224,5 +243,48 @@ class UploadedFile implements UploadedFileInterface
     {
         $this->clientMediaType = $clientMediaType;
         return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isMoved(): bool
+    {
+        return $this->moved;
+    }
+
+    /**
+     * @param mixed $param
+     * @return boolean
+     */
+    private function isStringNotEmpty($param): bool
+    {
+        return is_string($param) && false === empty($param);
+    }
+
+    /**
+     * check file upload
+     */
+    public function validateActive()
+    {
+        if (false === $this->isOk()) {
+            throw new \RuntimeException("Cannot retrieve stream due to upload error");
+        }
+        if ($this->getSize() <= 0) {
+            throw new \RuntimeException("Cannot retrieve stream due to upload error");
+        }
+    }
+
+    /**
+     * check file savePath
+     * @param $targetPath
+     */
+    public function validateSavePath($targetPath){
+        $dir = str_replace($this->getClientFilename(),'',$targetPath);
+        if (!is_dir($dir)&&!file_exists($dir)){
+            if(!mkdir($dir,0777,true)){
+                throw new \RuntimeException("Cannot create directory");
+            }
+        }
     }
 }
