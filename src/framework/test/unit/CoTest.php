@@ -19,6 +19,15 @@ use Swoole\Coroutine\Http\Client;
 class CoTest extends TestCase
 {
     /**
+     * @throws ContainerException
+     * @throws ReflectionException
+     */
+    public function tearDown()
+    {
+        Context::getWaitGroup()->wait();
+    }
+
+    /**
      * @throws ReflectionException
      * @throws ContainerException
      */
@@ -40,8 +49,36 @@ class CoTest extends TestCase
         $response = Co::multi($requests);
 
         $this->assertEquals(\count($response), 3);
+    }
 
-        Context::getWaitGroup()->wait();
+    /**
+     * @throws ReflectionException
+     * @throws ContainerException
+     */
+    public function testMulti2()
+    {
+        $requests = [
+            'closure'      => function () {
+                $cli = new Client('192.1.1.1', 80);
+                $cli->get('/');
+                $result = $cli->body;
+                $cli->close();
+
+                return $result;
+            },
+            'closure2'      => function () {
+                $cli = new Client('192.1.1.1', 80);
+                $cli->get('/');
+                $result = $cli->body;
+                $cli->close();
+
+                return $result;
+            }
+        ];
+
+        $response = Co::multi($requests, 1);
+
+        $this->assertTrue(empty($response));
     }
 
     /**
