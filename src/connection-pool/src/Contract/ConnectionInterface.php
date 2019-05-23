@@ -48,4 +48,9 @@ interface ConnectionInterface
      * @param bool $release
      */
     public function setRelease(bool $release): void;
+
+    /**
+     * Close connection
+     */
+    public function close(): void;
 }

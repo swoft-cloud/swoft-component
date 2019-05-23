@@ -53,6 +53,13 @@ abstract class AbstractPool implements PoolInterface
     protected $maxIdleTime = 60;
 
     /**
+     * Maximum wait close time
+     *
+     * @var float
+     */
+    protected $maxCloseTime = 3;
+
+    /**
      * @var Channel
      */
     protected $channel;
@@ -108,6 +115,32 @@ abstract class AbstractPool implements PoolInterface
     public function remove(): void
     {
         $this->count--;
+    }
+
+    /**
+     * @return int
+     */
+    public function close(): int
+    {
+        $i = 0;
+        if (empty($this->channel)) {
+            return $i;
+        }
+
+        for (; $i < $this->count; $i++) {
+            $connection = $this->channel->pop($this->maxCloseTime);
+            if ($connection === false) {
+                break;
+            }
+
+            if (!$connection instanceof ConnectionInterface) {
+                continue;
+            }
+
+            $connection->close();
+        }
+
+        return $this->count;
     }
 
     /**

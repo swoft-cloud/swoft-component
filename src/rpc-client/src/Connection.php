@@ -84,6 +84,14 @@ class Connection extends AbstractConnection implements ConnectionInterface
     }
 
     /**
+     * Close connection
+     */
+    public function close(): void
+    {
+        $this->connection->close();
+    }
+
+    /**
      * @return bool
      * @throws RpcClientException
      * @throws ReflectionException
