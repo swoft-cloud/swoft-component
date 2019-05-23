@@ -342,7 +342,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         $this->incrementOrDecrementAttributeValue($column, $amount, $extra, $method);
 
         return $query->where(
-            $this->getKeyName(), $this->getKey()[1]
+            $this->getKeyName(), $this->getKey()
         )->{$method}($column, $amount, $extra);
     }
 
@@ -370,7 +370,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     {
         $columnValue = $method === 'increment' ? $amount : $amount * -1;
         if (!property_exists($this, $column)) {
-            $this->setAttribute($column, $this->getAttribute($column)[1] + $columnValue);
+            $this->setAttribute($column, $this->getAttributeValue($column) + $columnValue);
         } else {
             $this->{$column} = $this->{$column} + $columnValue;
         }
@@ -893,12 +893,12 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     /**
      * Get the value of the model's primary key.
      *
-     * @return array
+     * @return string
      * @throws DbException
      */
     public function getKey()
     {
-        return $this->getAttribute($this->getKeyName());
+        return $this->getAttributeValue($this->getKeyName());
     }
 
     /**
@@ -959,7 +959,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public function offsetGet($offset)
     {
-        return $this->getAttribute($offset);
+        return $this->getAttributeValue($offset);
     }
 
     /**

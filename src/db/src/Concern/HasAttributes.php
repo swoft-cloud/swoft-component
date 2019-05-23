@@ -115,6 +115,18 @@ trait HasAttributes
     }
 
     /**
+     * Get an attribute value from the model.
+     *
+     * @param string $key
+     * @return mixed
+     * @throws DbException
+     */
+    public function getAttributeValue(string $key)
+    {
+        return $this->getAttribute($key)[1];
+    }
+
+    /**
      * Get an not hidden attribute from the model.
      *
      * @param string $key
@@ -390,7 +402,7 @@ trait HasAttributes
         $results = [];
 
         foreach ($attributes as $attribute) {
-            $results[$attribute] = $this->getAttribute($attribute);
+            $results[$attribute] = $this->getAttributeValue($attribute);
         }
 
         return $results;
