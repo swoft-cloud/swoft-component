@@ -8,12 +8,6 @@ namespace Swoft;
  */
 final class SwoftEvent
 {
-    // public const ON_ANNOTATION_LOADED = 'swoft.annotation.loaded';
-    // public const ON_CONFIG_LOADED     = 'swoft.config.loaded';
-
-    // public const BEAN_INIT_BEFORE = 'swoft.bean.beforeInit';
-    // public const BEAN_INIT_AFTER  = 'swoft.bean.afterInit';
-
     /**
      * Swoft init complete
      */
@@ -39,4 +33,9 @@ final class SwoftEvent
      * Coroutine defer
      */
     public const COROUTINE_DEFER = 'swoft.co.defer';
+
+    /**
+     * Worker shutdown
+     */
+    public const WORKER_SHUTDOWN = 'swoft.worker.shutdown';
 }

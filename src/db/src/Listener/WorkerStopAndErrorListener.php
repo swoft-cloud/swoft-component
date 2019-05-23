@@ -10,6 +10,7 @@ use Swoft\Event\EventInterface;
 use Swoft\Event\EventSubscriberInterface;
 use Swoft\Log\Helper\CLog;
 use Swoft\Server\Swoole\SwooleEvent;
+use Swoft\SwoftEvent;
 use Swoole\Event;
 
 /**
@@ -27,8 +28,8 @@ class WorkerStopAndErrorListener implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            SwooleEvent::WORKER_STOP  => 'handle',
-            SwooleEvent::WORKER_ERROR => 'handle',
+            SwooleEvent::WORKER_STOP    => 'handle',
+            SwoftEvent::WORKER_SHUTDOWN => 'handle',
         ];
     }
 
