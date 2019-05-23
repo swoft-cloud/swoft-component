@@ -52,36 +52,6 @@ class CoTest extends TestCase
     }
 
     /**
-     * @throws ReflectionException
-     * @throws ContainerException
-     */
-    public function testMulti2()
-    {
-        $requests = [
-            'closure'      => function () {
-                $cli = new Client('189.1.1.1', 80);
-                $cli->get('/');
-                $result = $cli->body;
-                $cli->close();
-
-                return $result;
-            },
-            'closure2'      => function () {
-                $cli = new Client('189.1.1.1', 80);
-                $cli->get('/');
-                $result = $cli->body;
-                $cli->close();
-
-                return $result;
-            }
-        ];
-
-        $response = Co::multi($requests, 1);
-
-        $this->assertTrue(empty($response));
-    }
-
-    /**
      * @return mixed
      */
     public function requestMethod()
