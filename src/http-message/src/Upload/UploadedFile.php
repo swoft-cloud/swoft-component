@@ -104,7 +104,7 @@ class UploadedFile implements UploadedFileInterface
     {
         $targetPath = \Swoft::getAlias($targetPath);
         $this->validateActive();
-        if (! $this->isStringNotEmpty($targetPath)) {
+        if (!$this->isStringNotEmpty($targetPath)) {
             throw new \InvalidArgumentException('Invalid path provided for move operation');
         }
 
@@ -112,7 +112,7 @@ class UploadedFile implements UploadedFileInterface
             $this->validateSavePath($targetPath);
             $this->moved = move_uploaded_file($this->file, $targetPath);
         }
-        if (! $this->moved) {
+        if (!$this->moved) {
             throw new \RuntimeException(sprintf('Uploaded file could not be move to %s', $targetPath));
         }
     }
@@ -278,10 +278,11 @@ class UploadedFile implements UploadedFileInterface
      * check file savePath
      * @param $targetPath
      */
-    public function validateSavePath($targetPath){
+    public function validateSavePath($targetPath)
+    {
         $dir = dirname($targetPath);
-        if (!is_dir($dir)&&!file_exists($dir)){
-            if(!mkdir($dir,0777,true)){
+        if (!is_dir($dir) && !file_exists($dir)) {
+            if (!mkdir($dir, 0777, true)) {
                 throw new \RuntimeException("Cannot create directory");
             }
         }
