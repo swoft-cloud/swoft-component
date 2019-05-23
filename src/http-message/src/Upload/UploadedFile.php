@@ -5,7 +5,6 @@ namespace Swoft\Http\Message\Upload;
 use InvalidArgumentException;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
-use Swoft\Bean\BeanFactory;
 use const UPLOAD_ERR_OK;
 
 /**
@@ -280,7 +279,7 @@ class UploadedFile implements UploadedFileInterface
      * @param $targetPath
      */
     public function validateSavePath($targetPath){
-        $dir = str_replace($this->getClientFilename(),'',$targetPath);
+        $dir = dirname($targetPath);
         if (!is_dir($dir)&&!file_exists($dir)){
             if(!mkdir($dir,0777,true)){
                 throw new \RuntimeException("Cannot create directory");
