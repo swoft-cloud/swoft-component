@@ -432,6 +432,31 @@ class Container implements ContainerInterface
     }
 
     /**
+     * Many instance of one class
+     *
+     * @param string $className
+     *
+     * @return array
+     * @throws ContainerException
+     * @throws ReflectionException
+     */
+    public function gets(string $className): array
+    {
+        $instanceNames = $this->classNames[$className] ?? [];
+
+        if (empty($instanceNames)) {
+            return [];
+        }
+
+        $instances = [];
+        foreach ($instanceNames as $instanceName) {
+            $instances[] = self::get($instanceName);
+        }
+
+        return $instances;
+    }
+
+    /**
      * Quick get exist singleton
      *
      * @param string $name
@@ -465,14 +490,17 @@ class Container implements ContainerInterface
      * @param string $name
      * @param array  $definition
      *
+     * @return object
+     * @throws ContainerException
+     * @throws ReflectionException
      * @example
-     * [
-     *     'class' =>  'className',
-     *     [
+     *         [
+     *         'class' =>  'className',
+     *         [
      *         'arg',
      *         '${bean}',
      *         '${config.xxx.xxx}'
-     *     ], // Index = 0 is constructor
+     *         ], // Index = 0 is constructor
      *
      *     'propertyName' => 'propertyValue',
      *     'propertyName' => '${bean}',
@@ -483,9 +511,6 @@ class Container implements ContainerInterface
      *     ]
      * ]
      *
-     * @return object
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function create(string $name, array $definition = [])
     {
@@ -794,9 +819,9 @@ class Container implements ContainerInterface
      * @param string $beanName
      * @param string $id
      *
-     * @throws ContainerException
-     * @throws ReflectionException
      * @return object
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     private function newBean(string $beanName, string $id = '')
     {
@@ -892,7 +917,7 @@ class Container implements ContainerInterface
      * New bean instance
      *
      * @param ReflectionClass $reflectionClass
-     * @param array            $args
+     * @param array           $args
      *
      * @return object
      * @throws ContainerException
@@ -915,10 +940,10 @@ class Container implements ContainerInterface
     /**
      * Inject properties into this bean. The properties data from config, annotation
      *
-     * @param  object          $reflectObject
+     * @param object          $reflectObject
      * @param ReflectionClass $reflectionClass
-     * @param array            $propertyInjects
-     * @param string           $id
+     * @param array           $propertyInjects
+     * @param string          $id
      *
      * @return void
      * @throws ContainerException
