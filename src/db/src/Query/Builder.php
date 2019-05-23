@@ -2403,7 +2403,7 @@ class Builder implements PrototypeInterface
         // Run a pagination count query
         $count = $this->getCountForPagination($columns);
         // Get paginate records
-        $list = $this->forPage($page, $perPage)->addSelect($columns)->get();
+        $list = $this->forPage($page, $perPage)->addSelect($columns)->get()->toArray();
 
         return [
             'count'     => $count,
