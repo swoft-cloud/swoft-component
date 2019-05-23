@@ -59,7 +59,7 @@ class CoTest extends TestCase
     {
         $requests = [
             'closure'      => function () {
-                $cli = new Client('192.1.1.1', 80);
+                $cli = new Client('189.1.1.1', 80);
                 $cli->get('/');
                 $result = $cli->body;
                 $cli->close();
@@ -67,7 +67,7 @@ class CoTest extends TestCase
                 return $result;
             },
             'closure2'      => function () {
-                $cli = new Client('192.1.1.1', 80);
+                $cli = new Client('189.1.1.1', 80);
                 $cli->get('/');
                 $result = $cli->body;
                 $cli->close();
