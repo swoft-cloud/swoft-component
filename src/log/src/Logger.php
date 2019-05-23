@@ -403,24 +403,15 @@ class Logger extends \Monolog\Logger
      */
     public function getTrace(string $message): string
     {
-        $traces = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 12);
+        $traces = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 6);
         $count  = count($traces);
         $ex     = '';
-        if ($count >= 10) {
-            $info = $traces[9];
+        if ($count >= 4) {
+            $info = $traces[3];
             if (isset($info['file'], $info['line'])) {
                 $filename = basename($info['file']);
                 $lineNum  = $info['line'];
                 $ex       = "$filename:$lineNum";
-            }
-        }
-
-        if ($count >= 11) {
-            $info = $traces[10];
-            if (isset($info['class'], $info['type'], $info['function'])) {
-                $ex .= ',' . $info['class'] . $info['type'] . $info['function'];
-            } elseif (isset($info['function'])) {
-                $ex .= ',' . $info['function'];
             }
         }
 
