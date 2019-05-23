@@ -319,6 +319,7 @@ abstract class Server implements ServerInterface
     public function onWorkerStop(CoServer $server, int $workerId): void
     {
         $event = new WorkerEvent(SwooleEvent::WORKER_STOP, $server, $workerId);
+
         // is task process
         $event->taskProcess = $workerId >= $server->setting['worker_num'];
 

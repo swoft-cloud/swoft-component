@@ -310,6 +310,14 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     }
 
     /**
+     * Close connection
+     */
+    public function close(): void
+    {
+        $this->client->close();
+    }
+
+    /**
      * @throws ReflectionException
      * @throws ContainerException
      * @throws RedisException
