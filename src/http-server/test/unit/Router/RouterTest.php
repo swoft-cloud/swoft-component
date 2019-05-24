@@ -214,6 +214,15 @@ class RouterTest extends TestCase
         // invalid
         [$status, ,] = $router->match('/hi/dont-match');
         $this->assertSame(Router::NOT_FOUND, $status);
+        
+        // '/user/upload/moment/orj/{name}'
+        $router->get('/user/upload/moment/orj/{name}', 'handler4');
+        
+        [$status, $path, $route] = $router->match('/user/upload/moment/orj/da');
+
+        $this->assertSame(Router::FOUND, $status);
+        $this->assertSame('/user/upload/moment/orj/da', $path);
+        $this->assertSame('/user/upload/moment/orj/{name}', $route->getPath());
     }
 
     public function testComplexRoute(): void
