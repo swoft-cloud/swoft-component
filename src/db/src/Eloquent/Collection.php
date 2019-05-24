@@ -175,7 +175,7 @@ class Collection extends BaseCollection
 
         foreach ($this->items as $item) {
             /* @var Model $item */
-            if (!isset($dictionary[$item->getKey()[1]])) {
+            if (!isset($dictionary[$item->getKey()])) {
                 $diff->add($item);
             }
         }
@@ -199,7 +199,7 @@ class Collection extends BaseCollection
 
         foreach ($this->items as $item) {
             /* @var Model $item */
-            if (isset($dictionary[$item->getKey()[1]])) {
+            if (isset($dictionary[$item->getKey()])) {
                 $intersect->add($item);
             }
         }

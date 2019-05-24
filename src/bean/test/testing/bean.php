@@ -1,6 +1,7 @@
 <?php
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use SwoftTest\Bean\Testing\Definition\ManyInstance;
 use SwoftTest\Bean\Testing\Definition\SingletonClass;
 use SwoftTest\Bean\Testing\InjectBean;
 use SwoftTest\Bean\Testing\Definition\PrototypeClass;
@@ -8,7 +9,7 @@ use SwoftTest\Bean\Testing\Definition\RequestClass;
 use SwoftTest\Bean\Testing\Definition\SessionClass;
 
 return [
-    'singleton'    => [
+    'singleton'       => [
         'class'               => SingletonClass::class,
         'privateProp'         => 'privateProp',
         'publicProp'          => 12,
@@ -23,7 +24,7 @@ return [
             'alias' => 'singleton-alias'
         ]
     ],
-    'prototype'    => [
+    'prototype'       => [
         'class'               => PrototypeClass::class,
         'privateProp'         => 'privateProp',
         'publicProp'          => 12,
@@ -37,7 +38,7 @@ return [
             'alias' => 'prototype-alias'
         ]
     ],
-    'requestClass' => [
+    'requestClass'    => [
         'class'               => RequestClass::class,
         'privateProp'         => 'privateProp',
         'publicProp'          => 12,
@@ -51,7 +52,7 @@ return [
             'alias' => 'request-alias'
         ]
     ],
-    'sessionClass' => [
+    'sessionClass'    => [
         'class'               => SessionClass::class,
         'privateProp'         => 'privateProp',
         'publicProp'          => 12,
@@ -64,5 +65,11 @@ return [
         '__option'            => [
             'alias' => 'session-alias'
         ]
+    ],
+    'manyOneInstance' => [
+        'class' => ManyInstance::class,
+    ],
+    'manyTwoInstance' => [
+        'class' => ManyInstance::class,
     ],
 ];

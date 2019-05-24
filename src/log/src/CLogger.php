@@ -84,15 +84,15 @@ class CLogger extends \Monolog\Logger
     public function getTrace(string $message): string
     {
         $stackStr = '';
-        $traces   = debug_backtrace();
+        $traces   = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10);
         $count    = count($traces);
 
-        if ($count >= 5) {
-            $info = $traces[4];
+        if ($count >= 6) {
+            $info = $traces[5];
             if (isset($info['file'], $info['class'])) {
-                $class    = $info['class'];
-                $lineNum  = $info['line'];
-                $function = $info['function'];
+                $class    = $traces[5]['class'];
+                $lineNum  = $traces[5]['line'];
+                $function = $traces[5]['function'];
                 $stackStr = sprintf('%s:%s(%s)', $class, $function, $lineNum);
             }
         }

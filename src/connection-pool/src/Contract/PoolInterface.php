@@ -40,4 +40,11 @@ interface PoolInterface
      * Remove
      */
     public function remove(): void;
+
+    /**
+     * Close connections
+     *
+     * @return int
+     */
+    public function close(): int;
 }

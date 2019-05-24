@@ -57,6 +57,13 @@ class Validator
 
         foreach ($validates as $validateName => $validate) {
             $validator = ValidatorRegister::getValidator($validateName);
+
+            if(empty($validator)){
+                throw new ValidatorException(
+                    sprintf('Validator(%s) is not exist!', $validateName)
+                );
+            }
+
             $type      = $validator['type'];
             $fields    = $validate['fields'] ?? [];
             $params    = $validate['params'] ?? [];

@@ -178,6 +178,20 @@ class Connection extends AbstractConnection implements ConnectionInterface
     }
 
     /**
+     * Close connection
+     */
+    public function close(): void
+    {
+        if(!empty($this->pdo)){
+            $this->pdo = null;
+        }
+
+        if(!empty($this->readPdo)){
+            $this->readPdo = null;
+        }
+    }
+
+    /**
      * Reconnect
      */
     public function reconnect(): bool

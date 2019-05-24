@@ -9,6 +9,7 @@ use const PHP_EOL;
 use PHPUnit\Framework\TestCase;
 use function sprintf;
 use Swoft\Aop\Ast\Visitor\ProxyVisitor;
+use Swoft\Aop\Proxy;
 use Swoft\Proxy\Ast\Parser;
 use Swoft\Proxy\Exception\ProxyException;
 use Swoft\Proxy\Proxy as BaseProxy;
@@ -63,5 +64,8 @@ class AopTest extends TestCase
         // Proxy class
         $proxyClassName = $visitor->getProxyClassName();
         $this->assertTrue(class_exists($proxyClassName));
+
+        $originalClass = Proxy::getOriginalClassName($proxyClassName);
+        $this->assertEquals($originalClass, $className);
     }
 }
