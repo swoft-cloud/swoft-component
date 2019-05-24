@@ -16,6 +16,11 @@ class FileHelperTest extends TestCase
         $absPath = FileHelper::conv2abs($rawPath);
 
         $this->assertSame('/swoft-cli/app/SwoftCLI.php', $absPath);
+
+        $rawPath = 'swoft-cli/vendor/composer/../../app/SwoftCLI.php';
+        $absPath = FileHelper::conv2abs($rawPath);
+
+        $this->assertSame('swoft-cli/app/SwoftCLI.php', $absPath);
     }
 
     public function testGetSuffix(): void

@@ -76,13 +76,24 @@ class FSHelper
      * Convert 'this/is/../a/./test/.///is' to 'this/a/test/is'
      *
      * @param string $path
+     * @param bool   $filter
      *
      * @return string
      */
-    public static function conv2abs(string $path): string
+    public static function conv2abs(string $path, bool $filter = true): string
     {
-        $path  = str_replace('\\', '/', $path);
-        $parts = array_filter(explode('/', $path), 'strlen');
+        $path = str_replace('\\', '/', $path);
+
+        if (strpos($path, '..') === false) {
+            return $path;
+        }
+
+        $first = '';
+        $parts = explode('/', $path);
+        if ($filter) {
+            $first = $path[0] === '/' ? '/' : '';
+            $parts = array_filter($parts, 'strlen');
+        }
 
         $absolutes = [];
         foreach ($parts as $part) {
@@ -97,6 +108,6 @@ class FSHelper
             }
         }
 
-        return implode('/', $absolutes);
+        return $first . implode('/', $absolutes);
     }
 }
