@@ -380,4 +380,17 @@ on A.id=B.id;', [$resCount - 20]);
         $this->assertEquals($res['page'], $page);
         $this->assertEquals($res['perPage'], $perPage);
     }
+
+    public function testFull()
+    {
+        $expect     = "testHump,哈";
+        $attributes = ['testHump' => $expect];
+
+        $user = User::new($attributes);
+        $this->assertEquals($expect, $user->getTestHump());
+
+        $userArray = User::new()->fill($attributes)->toArray();
+        $this->assertArrayHasKey('testHump', $userArray);
+        $this->assertEquals($expect, $userArray['testHump']);
+    }
 }

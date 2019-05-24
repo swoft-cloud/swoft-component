@@ -913,11 +913,6 @@ class ArrayHelper
             return $array;
         }
 
-        if (is_object($array) && method_exists($array, 'getAttribute')) {
-            $result = $array->getAttribute($key);
-            return $result[1] ?? $default;
-        }
-
         if (isset($array[$key])) {
             return $array[$key];
         }
@@ -1290,23 +1285,6 @@ class ArrayHelper
         }
 
         return $results;
-    }
-
-    /**
-     * Explode the "value" and "key" arguments passed to "pluck".
-     *
-     * @param string|array      $value
-     * @param string|array|null $key
-     *
-     * @return array
-     */
-    protected static function explodePluckParameters($value, $key)
-    {
-        $value = is_string($value) ? explode('.', $value) : $value;
-
-        $key = is_null($key) || is_array($key) ? $key : explode('.', $key);
-
-        return [$value, $key];
     }
 
     /**
