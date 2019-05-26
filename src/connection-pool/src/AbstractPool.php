@@ -169,6 +169,8 @@ abstract class AbstractPool implements PoolInterface
 
         // Pop connection is not null
         if ($connection !== null) {
+            // Update last time
+            $connection->updateLastTime();
             return $connection;
         }
 
@@ -187,6 +189,7 @@ abstract class AbstractPool implements PoolInterface
             );
         }
 
+        /* @var ConnectionInterface $connection*/
         // Sleep coroutine and resume coroutine after `maxWaitTime`, Return false is waiting timeout
         $connection = $this->channel->pop($this->maxWaitTime);
         if ($connection === false) {
@@ -194,6 +197,9 @@ abstract class AbstractPool implements PoolInterface
                 sprintf('Channel pop timeout by %fs', $this->maxWaitTime)
             );
         }
+
+        // Update last time
+        $connection->updateLastTime();
 
         return $connection;
     }

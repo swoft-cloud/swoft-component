@@ -31,6 +31,11 @@ abstract class AbstractConnection implements ConnectionInterface
     protected $release = false;
 
     /**
+     * @var int
+     */
+    protected $lastTime = 0;
+
+    /**
      * @return int
      */
     public function getId(): int
@@ -44,6 +49,22 @@ abstract class AbstractConnection implements ConnectionInterface
     public function setRelease(bool $release): void
     {
         $this->release = $release;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLastTime(): int
+    {
+        return $this->lastTime;
+    }
+
+    /**
+     * Update last time
+     */
+    public function updateLastTime(): void
+    {
+        $this->lastTime = time();
     }
 
     /**

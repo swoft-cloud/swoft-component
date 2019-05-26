@@ -43,6 +43,11 @@ interface ConnectionInterface
     public function getLastTime(): int;
 
     /**
+     * Update last time
+     */
+    public function updateLastTime(): void;
+
+    /**
      * Set whether to release
      *
      * @param bool $release
