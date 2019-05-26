@@ -287,8 +287,9 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      */
     public function initialize(Pool $pool, RedisDb $redisDb)
     {
-        $this->pool    = $pool;
-        $this->redisDb = $redisDb;
+        $this->pool     = $pool;
+        $this->redisDb  = $redisDb;
+        $this->lastTime = time();
 
         $this->id = $this->pool->getConnectionId();
     }
@@ -490,6 +491,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @param string   $key
      * @param mixed    $value
      * @param int|null $timeout
+     *
      * @return bool
      * @throws ContainerException
      * @throws RedisException
@@ -592,16 +594,6 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
         }
 
         return true;
-    }
-
-    /**
-     * Get last time
-     *
-     * @return int
-     */
-    public function getLastTime(): int
-    {
-        return time();
     }
 
     /**
