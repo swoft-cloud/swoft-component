@@ -29,8 +29,10 @@ class ValidateParser extends Parser
         $validator = $annotationObject->getValidator();
         $fields    = $annotationObject->getFields();
         $params    = $annotationObject->getParams();
+        $type      = $annotationObject->getType();
 
-        ValidateRegister::registerValidate($this->className, $this->methodName, $validator, $fields, $params, '');
+        ValidateRegister::registerValidate($this->className, $this->methodName, $validator, $fields, $params, '',
+            $type);
 
         return [];
     }

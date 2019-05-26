@@ -9,6 +9,7 @@ use Swoft\Http\Server\Annotation\Mapping\RequestMapping;
 use Swoft\Validator\Annotation\Mapping\Validate;
 use SwoftTest\Http\Server\Testing\Validator\DefaultValidator;
 use SwoftTest\Http\Server\Testing\Validator\UserBaseValidate;
+use Swoft\Validator\Annotation\Mapping\ValidateType;
 
 /**
  * Class ValidatorController
@@ -36,7 +37,7 @@ class ValidatorController
 
     /**
      * @Validate(validator=UserBaseValidate::class)
-     * @Validate(validator="testUserValidtor")
+     * @Validate(validator="testUserValidtor", params={1,2})
      *
      * @RequestMapping(route="userValidator")
      *
@@ -47,6 +48,39 @@ class ValidatorController
     public function userValidator(Request $request)
     {
         $data = $request->getParsedBody();
+
+        return $data;
+    }
+
+
+    /**
+     * @Validate(validator=DefaultValidator::class, type=ValidateType::GET)
+     * @RequestMapping(route="defaultValidatorQuery", type=ValidateType::GET)
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function defaultValidatorQuery(Request $request)
+    {
+        $data = $request->getParsedQuery();
+
+        return $data;
+    }
+
+    /**
+     * @Validate(validator=UserBaseValidate::class, type=ValidateType::GET)
+     * @Validate(validator="testUserValidtor", params={1,2}, type=ValidateType::GET)
+     *
+     * @RequestMapping(route="userValidatorQuery")
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function userValidatorQuery(Request $request)
+    {
+        $data = $request->getParsedQuery();
 
         return $data;
     }

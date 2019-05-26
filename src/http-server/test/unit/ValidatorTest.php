@@ -19,12 +19,12 @@ class ValidatorTest extends TestCase
      */
     public function testDefaultValidator()
     {
-        $data = [
+        $data     = [
             'string' => 'string',
-            'int' => 1,
-            'float' => 1.2,
-            'bool' => true,
-            'array' => [
+            'int'    => 1,
+            'float'  => 1.2,
+            'bool'   => true,
+            'array'  => [
                 'array'
             ]
         ];
@@ -38,12 +38,12 @@ class ValidatorTest extends TestCase
      */
     public function testFailUserValidator()
     {
-        $data = [
+        $data     = [
             'start' => 12,
-            'end' => 10
+            'end'   => 10
         ];
         $response = $this->mockServer->request(MockRequest::POST, '/testValidator/userValidator', $data);
-        $response->assertContainContent('Start(d751713988987e9331980363e24189ce) must less than end');
+        $response->assertContainContent('Start(f79408e5ca998cd53faf44af31e6eb45) must less than end');
     }
 
     /**
@@ -53,10 +53,60 @@ class ValidatorTest extends TestCase
     public function testUserValidator()
     {
         $data     = [
-            'start' => 12,
-            'end'   => 16
+            'start'  => 12,
+            'end'    => 16,
+            'params' => [1, 2]
         ];
         $response = $this->mockServer->request(MockRequest::POST, '/testValidator/userValidator', $data);
+        $response->assertEqualJson($data);
+    }
+
+
+    /**
+     * @throws \ReflectionException
+     * @throws ContainerException
+     */
+    public function testDefaultValidatorQuery()
+    {
+        $data     = [
+            'string' => 'string',
+            'int'    => 1,
+            'float'  => 1.2,
+            'bool'   => true,
+            'array'  => [
+                'array'
+            ]
+        ];
+        $response = $this->mockServer->request(MockRequest::GET, '/testValidator/defaultValidatorQuery');
+        $response->assertEqualJson($data);
+    }
+
+    /**
+     * @throws \ReflectionException
+     * @throws ContainerException
+     */
+    public function testFailUserValidatorQuery()
+    {
+        $data     = [
+            'start' => 12,
+            'end'   => 10
+        ];
+        $response = $this->mockServer->request(MockRequest::GET, '/testValidator/userValidatorQuery', $data);
+        $response->assertContainContent('Start(f79408e5ca998cd53faf44af31e6eb45) must less than end');
+    }
+
+    /**
+     * @throws \ReflectionException
+     * @throws ContainerException
+     */
+    public function testUserValidatorQuery()
+    {
+        $data     = [
+            'start'  => 12,
+            'end'    => 16,
+            'params' => [1, 2]
+        ];
+        $response = $this->mockServer->request(MockRequest::GET, '/testValidator/userValidatorQuery', $data);
         $response->assertEqualJson($data);
     }
 }

@@ -21,7 +21,8 @@ class ValidateRegister
      *                  'validator' => 'validatorName',
      *                  'fields' => ['a', 'b']
      *                  'params' => [1,2]
-     *                  'message' => 'Fail message'.
+     *                  'message' => 'Fail message',
+     *                  'type' => 'body'
      *              ]
      *          ]
      *     ]
@@ -36,6 +37,7 @@ class ValidateRegister
      * @param array  $fields
      * @param array  $params
      * @param string $message
+     * @param string $type
      */
     public static function registerValidate(
         string $className,
@@ -43,13 +45,15 @@ class ValidateRegister
         string $validator,
         array $fields,
         array $params,
-        string $message
+        string $message,
+        string $type
     ): void {
         self::$validates[$className][$method][$validator] = [
             'validator' => $validator,
             'fields'    => $fields,
             'params'    => $params,
-            'message'   => $message
+            'message'   => $message,
+            'type'      => $type
         ];
     }
 
