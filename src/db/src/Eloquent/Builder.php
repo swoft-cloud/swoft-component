@@ -138,20 +138,6 @@ class Builder
     protected $model;
 
     /**
-     * All of the globally registered builder macros.
-     *
-     * @var array
-     */
-    protected static $macros = [];
-
-    /**
-     * All of the locally registered builder macros.
-     *
-     * @var array
-     */
-    protected $localMacros = [];
-
-    /**
      * A replacement for the typical delete function.
      *
      * @var Closure
@@ -886,18 +872,6 @@ class Builder
     public function qualifyColumn($column)
     {
         return $this->model->qualifyColumn($column);
-    }
-
-    /**
-     * Get the given macro by name.
-     *
-     * @param string $name
-     *
-     * @return Closure
-     */
-    public function getMacro($name)
-    {
-        return Arr::get($this->localMacros, $name);
     }
 
     /**
