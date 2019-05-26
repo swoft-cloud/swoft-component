@@ -29,7 +29,7 @@ class ConfigParser extends Parser
         }
 
         $key   = $annotationObject->getKey();
-        $value = sprintf('config.%s', $key);
+        $value = sprintf('.config.%s', $key);
 
         return [$value, true];
     }

@@ -6,8 +6,10 @@ namespace SwoftTest\Bean\Unit;
 
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
+use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Container;
 use Swoft\Bean\Exception\ContainerException;
+use SwoftTest\Bean\Testing\Definition\CommaNameClass;
 use SwoftTest\Bean\Testing\Definition\ManyInstance;
 
 /**
@@ -25,10 +27,26 @@ class ManyBeanTest extends TestCase
     {
         $beans = Container::getInstance()->gets(ManyInstance::class);
 
-        $this->assertEquals(2, count($beans));
+        $this->assertEquals(4, count($beans));
 
         foreach ($beans as $bean) {
             $this->assertTrue($bean instanceof ManyInstance);
         }
+
+        $beans = BeanFactory::getBeans(ManyInstance::class);
+        $this->assertEquals(4, count($beans));
+
+        foreach ($beans as $bean) {
+            $this->assertTrue($bean instanceof ManyInstance);
+        }
+
+        /* @var CommaNameClass $comma*/
+        $comma = BeanFactory::getBean(CommaNameClass::class);
+
+        $one = $comma->getManyInstance();
+        $two = $comma->getManyInstance2();
+
+        $this->assertTrue($one instanceof ManyInstance);
+        $this->assertTrue($two instanceof ManyInstance);
     }
 }

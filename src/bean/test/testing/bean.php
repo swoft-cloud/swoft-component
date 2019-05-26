@@ -72,4 +72,13 @@ return [
     'manyTwoInstance' => [
         'class' => ManyInstance::class,
     ],
+    'one.many' => [
+        'class' => ManyInstance::class,
+    ],
+    'two.many' => [
+        'class' => ManyInstance::class,
+    ],
+    'commaNameClass' => [
+        'manyInstance2' => \bean('two.many')
+    ]
 ];

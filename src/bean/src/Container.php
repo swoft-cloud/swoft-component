@@ -1062,9 +1062,12 @@ class Container implements ContainerInterface
             return $value;
         }
 
-        if (false === strpos($value, '.')) {
+        if(strpos($value, '.') !== 0){
             return $this->newBean($value, $id);
         }
+
+        // Remove `.`
+        $value = substr($value, 1);
 
         // Other reference
         if ($this->handler !== null) {

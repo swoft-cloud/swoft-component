@@ -91,7 +91,7 @@ if (!function_exists('config')) {
     function config(string $key = null, $default = null)
     {
         if (!BeanFactory::hasBean('config')) {
-            return sprintf('${%s}', $key);
+            return sprintf('${.config.%s}', $key);
         }
 
         /* @var Config $config */
