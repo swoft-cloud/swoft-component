@@ -57,6 +57,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
         $instance->client = $client;
         $instance->pool   = $pool;
 
+        $instance->lastTime = time();
+
         return $instance;
     }
 
@@ -81,6 +83,14 @@ class Connection extends AbstractConnection implements ConnectionInterface
         }
 
         $this->connection = $connection;
+    }
+
+    /**
+     * Close connection
+     */
+    public function close(): void
+    {
+        $this->connection->close();
     }
 
     /**
@@ -130,14 +140,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
     public function recv()
     {
         return $this->connection->recv((float)-1);
-    }
-
-    /**
-     * @return int
-     */
-    public function getLastTime(): int
-    {
-        return time();
     }
 
     /**

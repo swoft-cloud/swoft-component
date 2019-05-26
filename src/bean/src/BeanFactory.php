@@ -63,6 +63,20 @@ final class BeanFactory
     }
 
     /**
+     * Many instance of one class
+     *
+     * @param string $className
+     *
+     * @return array
+     * @throws ContainerException
+     * @throws ReflectionException
+     */
+    public static function getBeans(string $className): array
+    {
+        return Container::getInstance()->gets($className);
+    }
+
+    /**
      * Get an singleton bean instance
      *
      * @param string $name
