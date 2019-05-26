@@ -27,14 +27,14 @@ class ManyBeanTest extends TestCase
     {
         $beans = Container::getInstance()->gets(ManyInstance::class);
 
-        $this->assertEquals(4, count($beans));
+        $this->assertEquals(3, count($beans));
 
         foreach ($beans as $bean) {
             $this->assertTrue($bean instanceof ManyInstance);
         }
 
         $beans = BeanFactory::getBeans(ManyInstance::class);
-        $this->assertEquals(4, count($beans));
+        $this->assertEquals(3, count($beans));
 
         foreach ($beans as $bean) {
             $this->assertTrue($bean instanceof ManyInstance);
@@ -43,10 +43,8 @@ class ManyBeanTest extends TestCase
         /* @var CommaNameClass $comma*/
         $comma = BeanFactory::getBean(CommaNameClass::class);
 
-        $one = $comma->getManyInstance();
         $two = $comma->getManyInstance2();
 
-        $this->assertTrue($one instanceof ManyInstance);
         $this->assertTrue($two instanceof ManyInstance);
     }
 }

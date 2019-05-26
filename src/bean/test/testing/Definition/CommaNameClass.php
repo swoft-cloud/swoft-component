@@ -17,24 +17,9 @@ use Swoft\Bean\Annotation\Mapping\Inject;
 class CommaNameClass
 {
     /**
-     * @Inject(name="one.many")
-     *
-     * @var ManyInstance
-     */
-    private $manyInstance;
-
-    /**
      * @var ManyInstance
      */
     private $manyInstance2;
-
-    /**
-     * @return ManyInstance
-     */
-    public function getManyInstance(): ManyInstance
-    {
-        return $this->manyInstance;
-    }
 
     /**
      * @return ManyInstance
