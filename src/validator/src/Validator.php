@@ -23,6 +23,7 @@ use Swoft\Validator\Annotation\Mapping\NotEmpty;
 use Swoft\Validator\Annotation\Mapping\Pattern;
 use Swoft\Validator\Annotation\Mapping\Range;
 use Swoft\Validator\Annotation\Mapping\IsString;
+use Swoft\Validator\Annotation\Mapping\ValidateType;
 use Swoft\Validator\Concern\ValidateItemTrait;
 use Swoft\Validator\Contract\ValidatorInterface;
 use Swoft\Validator\Exception\ValidatorException;
@@ -39,45 +40,76 @@ class Validator
     use ValidateItemTrait;
 
     /**
-     * @param array  $data
+     * @param array  $body
      * @param string $className
      * @param string $method
+     * @param array  $query
      *
      * @return array
      * @throws ValidatorException
      * @throws ReflectionException
      * @throws ContainerException
      */
-    public function validate(array $data, string $className, string $method): array
+    public function validate(array $body, string $className, string $method, array $query = []): array
     {
         $validates = ValidateRegister::getValidates($className, $method);
         if (empty($validates)) {
-            return $data;
+            return [$body, $query];
         }
 
         foreach ($validates as $validateName => $validate) {
             $validator = ValidatorRegister::getValidator($validateName);
 
-            if(empty($validator)){
+            if (empty($validator)) {
                 throw new ValidatorException(
                     sprintf('Validator(%s) is not exist!', $validateName)
                 );
             }
 
-            $type      = $validator['type'];
-            $fields    = $validate['fields'] ?? [];
-            $params    = $validate['params'] ?? [];
+            $type   = $validator['type'];
+            $fields = $validate['fields'] ?? [];
+            $params = $validate['params'] ?? [];
 
-            // User validator
-            if ($type == ValidatorRegister::TYPE_USER) {
-                self::validateUserValidator($validateName, $data, $params);
+            $validateType = $validate['type'];
+
+            // Get query params
+            if ($validateType == ValidateType::GET) {
+                $query = $this->validateValidator($query, $type, $validateName, $params, $validator, $fields);
                 continue;
             }
 
-            self::validateDefaultValidator($data, $validator, $fields);
+            $body = $this->validateValidator($body, $type, $validateName, $params, $validator, $fields);
+        }
+        return [$body, $query];
+    }
+
+    /**
+     * @param array  $data
+     * @param int    $type
+     * @param string $validateName
+     * @param array  $params
+     * @param array  $validator
+     * @param array  $fields
+     *
+     * @return array
+     * @throws ContainerException
+     * @throws ReflectionException
+     * @throws ValidatorException
+     */
+    protected function validateValidator(
+        array $data,
+        int $type,
+        string $validateName,
+        array $params,
+        array $validator,
+        array $fields
+    ): array {
+        // User validator
+        if ($type == ValidatorRegister::TYPE_USER) {
+            return $this->validateUserValidator($validateName, $data, $params);
         }
 
-        return $data;
+        return $this->validateDefaultValidator($data, $validator, $fields);
     }
 
     /**
@@ -85,9 +117,10 @@ class Validator
      * @param array $validator
      * @param array $fields
      *
+     * @return array
      * @throws ValidatorException
      */
-    protected function validateDefaultValidator(array &$data, array $validator, array $fields): void
+    protected function validateDefaultValidator(array $data, array $validator, array $fields): array
     {
         $properties = $validator['properties'] ?? [];
         foreach ($properties as $propName => $property) {
@@ -106,17 +139,14 @@ class Validator
             $name     = $type->getName();
             $propName = (empty($name)) ? $propName : $name;
 
-            $isDefault = self::validateDefaultItem($data, $propName, $type, $default);
-
-            // Has set default value
-            if ($isDefault) {
-                continue;
-            }
-
+            // Default validate item(Type) and other item
+            $data = $this->validateDefaultItem($data, $propName, $type, $default);
             foreach ($annotations as $annotation) {
-                self::validateDefaultItem($data, $propName, $annotation);
+                $data = $this->validateDefaultItem($data, $propName, $annotation);
             }
         }
+
+        return $data;
     }
 
     /**
@@ -125,62 +155,61 @@ class Validator
      * @param object $item
      * @param mixed  $default
      *
-     * @return bool
+     * @return array
      * @throws ValidatorException
      */
-    protected function validateDefaultItem(array &$data, string $propName, $item, $default = null): bool
+    protected function validateDefaultItem(array $data, string $propName, $item, $default = null): array
     {
-        $result    = false;
         $itemClass = get_class($item);
         switch ($itemClass) {
             case IsArray::class:
-                $result = self::validateIsArray($data, $propName, $item, $default);
+                $data = $this->validateIsArray($data, $propName, $item, $default);
                 break;
             case IsBool::class:
-                $result = self::validateIsBool($data, $propName, $item, $default);
+                $data = $this->validateIsBool($data, $propName, $item, $default);
                 break;
             case IsFloat::class:
-                $result = self::validateIsFloat($data, $propName, $item, $default);
+                $data = $this->validateIsFloat($data, $propName, $item, $default);
                 break;
             case IsInt::class:
-                $result = self::validateIsInt($data, $propName, $item, $default);
+                $data = $this->validateIsInt($data, $propName, $item, $default);
                 break;
             case IsString::class:
-                $result = self::validateIsString($data, $propName, $item, $default);
+                $data = $this->validateIsString($data, $propName, $item, $default);
                 break;
             case Email::class:
-                self::validateEmail($data, $propName, $item);
+                $data = $this->validateEmail($data, $propName, $item);
                 break;
             case Enum::class:
-                self::validateEnum($data, $propName, $item);
+                $data = $this->validateEnum($data, $propName, $item);
                 break;
             case Ip::class:
-                self::validateIp($data, $propName, $item);
+                $data = $this->validateIp($data, $propName, $item);
                 break;
             case Length::class:
-                self::validateLength($data, $propName, $item);
+                $data = $this->validateLength($data, $propName, $item);
                 break;
             case Max::class:
-                self::validateMax($data, $propName, $item);
+                $data = $this->validateMax($data, $propName, $item);
                 break;
             case Min::class:
-                self::validateMin($data, $propName, $item);
+                $data = $this->validateMin($data, $propName, $item);
                 break;
             case Mobile::class:
-                self::validateMobile($data, $propName, $item);
+                $data = $this->validateMobile($data, $propName, $item);
                 break;
             case NotEmpty::class:
-                self::validateNotEmpty($data, $propName, $item);
+                $data = $this->validateNotEmpty($data, $propName, $item);
                 break;
             case Pattern::class:
-                self::validatePattern($data, $propName, $item);
+                $data = $this->validatePattern($data, $propName, $item);
                 break;
             case Range::class:
-                self::validateRange($data, $propName, $item);
+                $data = $this->validateRange($data, $propName, $item);
                 break;
         }
 
-        return $result;
+        return $data;
     }
 
     /**
@@ -188,11 +217,12 @@ class Validator
      * @param array  $data
      * @param array  $params
      *
+     * @return array
      * @throws ValidatorException
      * @throws ReflectionException
      * @throws ContainerException
      */
-    protected function validateUserValidator(string $validateName, array &$data, array $params): void
+    protected function validateUserValidator(string $validateName, array $data, array $params): array
     {
         $validator = BeanFactory::getBean($validateName);
         if (!$validator instanceof ValidatorInterface) {
@@ -201,14 +231,6 @@ class Validator
             );
         }
 
-        $result = $validator->validate($data, $params);
-
-        if ($result) {
-            return;
-        }
-
-        throw new ValidatorException(
-            sprintf('User validator(%s) must invalid!', $validateName)
-        );
+        return $validator->validate($data, $params);
     }
 }

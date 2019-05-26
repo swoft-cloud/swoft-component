@@ -6,6 +6,7 @@ namespace SwoftTest\Validator\Testing;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Validator\Annotation\Mapping\Validate;
 use SwoftTest\Validator\Testing\Validator\TestValidator;
+use Swoft\Validator\Annotation\Mapping\ValidateType;
 
 /**
  * Class ValidateDemo
@@ -132,5 +133,45 @@ class ValidateDemo
     public function testName()
     {
 
+    }
+
+    /**
+     * @Validate(validator=TestValidator::class, fields={"int"}, type=ValidateType::GET)
+     *
+     * @return bool
+     */
+    public function testIntQuery(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @Validate(validator=TestValidator::class, fields={"float"}, type=ValidateType::GET)
+     *
+     * @return bool
+     */
+    public function testFloatQuery(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @Validate(validator=TestValidator::class, fields={"bool"}, type=ValidateType::GET)
+     *
+     * @return bool
+     */
+    public function testBoolQuery(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @Validate(validator=TestValidator::class, fields={"string"}, type=ValidateType::GET)
+     *
+     * @return bool
+     */
+    public function testStringQuery(): bool
+    {
+        return true;
     }
 }

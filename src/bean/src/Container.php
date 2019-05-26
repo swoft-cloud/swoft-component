@@ -721,6 +721,46 @@ class Container implements ContainerInterface
     }
 
     /**
+     * @return array
+     */
+    public function getAliases(): array
+    {
+        return $this->aliases;
+    }
+
+    /**
+     * @return array
+     */
+    public function getClassNames(): array
+    {
+        return $this->classNames;
+    }
+
+    /**
+     * @return ObjectDefinition[]
+     */
+    public function getObjectDefinitions(): array
+    {
+        return $this->objectDefinitions;
+    }
+
+    /**
+     * @return ObjectDefinition[]
+     */
+    public function getRequestDefinitions(): array
+    {
+        return $this->requestDefinitions;
+    }
+
+    /**
+     * @return ObjectDefinition[]
+     */
+    public function getSessionDefinitions(): array
+    {
+        return $this->sessionDefinitions;
+    }
+
+    /**
      * Initialize beans
      *
      * @throws ContainerException
@@ -1062,9 +1102,12 @@ class Container implements ContainerInterface
             return $value;
         }
 
-        if (false === strpos($value, '.')) {
+        if(strpos($value, '.') !== 0){
             return $this->newBean($value, $id);
         }
+
+        // Remove `.`
+        $value = substr($value, 1);
 
         // Other reference
         if ($this->handler !== null) {

@@ -11,10 +11,12 @@ namespace Swoft\Validator\Contract;
 interface ValidatorInterface
 {
     /**
+     * Validate error is thrown exception, otherwise is return `$data`
+     *
      * @param array  $data
      * @param array  $params
      *
-     * @return bool
+     * @return array
      */
-    public function validate(array &$data, array $params): bool;
+    public function validate(array $data, array $params): array ;
 }

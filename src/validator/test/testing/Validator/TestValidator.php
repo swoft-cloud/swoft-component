@@ -110,7 +110,7 @@ class TestValidator
      *
      * @var int
      */
-    protected $intDefault = 0;
+    protected $intDefault = 6;
 
     /**
      * @IsBool()
