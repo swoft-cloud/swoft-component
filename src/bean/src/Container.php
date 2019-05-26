@@ -721,6 +721,46 @@ class Container implements ContainerInterface
     }
 
     /**
+     * @return array
+     */
+    public function getAliases(): array
+    {
+        return $this->aliases;
+    }
+
+    /**
+     * @return array
+     */
+    public function getClassNames(): array
+    {
+        return $this->classNames;
+    }
+
+    /**
+     * @return ObjectDefinition[]
+     */
+    public function getObjectDefinitions(): array
+    {
+        return $this->objectDefinitions;
+    }
+
+    /**
+     * @return ObjectDefinition[]
+     */
+    public function getRequestDefinitions(): array
+    {
+        return $this->requestDefinitions;
+    }
+
+    /**
+     * @return ObjectDefinition[]
+     */
+    public function getSessionDefinitions(): array
+    {
+        return $this->sessionDefinitions;
+    }
+
+    /**
      * Initialize beans
      *
      * @throws ContainerException
