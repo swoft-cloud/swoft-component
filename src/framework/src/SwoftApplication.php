@@ -21,6 +21,7 @@ use Swoft\Processor\EventProcessor;
 use Swoft\Processor\Processor;
 use Swoft\Processor\ProcessorInterface;
 use Swoft\Stdlib\Helper\ComposerHelper;
+use Swoft\Stdlib\Helper\FSHelper;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Stdlib\Helper\Str;
 use Swoft\Log\Helper\CLog;
@@ -186,6 +187,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
     protected function afterInit(): void
     {
+        // If run in phar package
         if (IN_PHAR) {
             $this->setRuntimePath(Str::rmPharPrefix($this->runtimePath));
         }
@@ -196,14 +198,15 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
     private function findBasePath()
     {
-        $filePath = ComposerHelper::getClassLoader()->findFile(static::class);
-
-        // If run in phar package
-        if (IN_PHAR) {
-            $filePath = Str::rmPharPrefix($filePath);
+        if ($this->basePath) {
+            return;
         }
 
-        $this->basePath = dirname(realpath($filePath), 2);
+        // Get bash path from current class file.
+        $filePath = ComposerHelper::getClassLoader()->findFile(static::class);
+        $filePath = FSHelper::conv2abs($filePath, false);
+
+        $this->basePath = dirname($filePath, 2);
     }
 
     /**

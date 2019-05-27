@@ -10,6 +10,19 @@ use Swoft\Stdlib\Helper\FileHelper;
  */
 class FileHelperTest extends TestCase
 {
+    public function testConv2abs(): void
+    {
+        $rawPath = '/swoft-cli/vendor/composer/../../app/SwoftCLI.php';
+        $absPath = FileHelper::conv2abs($rawPath);
+
+        $this->assertSame('/swoft-cli/app/SwoftCLI.php', $absPath);
+
+        $rawPath = 'swoft-cli/vendor/composer/../../app/SwoftCLI.php';
+        $absPath = FileHelper::conv2abs($rawPath);
+
+        $this->assertSame('swoft-cli/app/SwoftCLI.php', $absPath);
+    }
+
     public function testGetSuffix(): void
     {
         $this->assertSame('', FileHelper::getSuffix('layout-php'));
