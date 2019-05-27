@@ -163,7 +163,7 @@ class Response implements ResponseInterface
     {
         // Is send file
         if ($this->filePath) {
-            $this->coResponse->header('Content-Type', $this->fileType);
+            $this->coResponse->header(ContentType::KEY, $this->fileType);
             $this->coResponse->sendfile($this->filePath);
             return;
         }
@@ -211,6 +211,10 @@ class Response implements ResponseInterface
      */
     private function prepare(): Response
     {
+        if(empty($this->format)){
+            return $this;
+        }
+
         $formatter = $this->formatters[$this->format] ?? null;
 
         if ($formatter && $formatter instanceof ResponseFormatterInterface) {
@@ -310,12 +314,12 @@ class Response implements ResponseInterface
      * This method obviates the need for a hasAttribute() method, as it allows
      * specifying a default value to return if the attribute is not found.
      *
-     * @see getAttributes()
-     *
      * @param string $name    The attribute name.
      * @param mixed  $default Default value to return if the attribute does not exist.
      *
      * @return mixed
+     * @see getAttributes()
+     *
      */
     public function getAttribute($name, $default = null)
     {
@@ -330,12 +334,12 @@ class Response implements ResponseInterface
      * immutability of the message, and MUST return an instance that has the
      * updated attribute.
      *
-     * @see getAttributes()
-     *
      * @param string $name  The attribute name.
      * @param mixed  $value The value of the attribute.
      *
      * @return static|self
+     * @see getAttributes()
+     *
      */
     public function withAttribute($name, $value)
     {
@@ -406,9 +410,11 @@ class Response implements ResponseInterface
      */
     public function withContentType(string $type, string $charset = ''): self
     {
-        $value = $type . ($charset ? ", charset={$charset}" : '');
+        if (!empty($charset)) {
+            $this->charset = $charset;
+        }
 
-        return $this->withHeader('Content-Type', $value);
+        return $this->withHeader(ContentType::KEY, $type);
     }
 
     /**

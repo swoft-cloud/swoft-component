@@ -36,9 +36,11 @@ class UserValidatorTest extends TestCase
     {
         $data = [
             'start' => 123,
-            'end' => 126
+            'end' => 126,
+            'params' => [1, 'name']
         ];
-        $result = (new Validator())->validate($data, ValidateUser::class, 'testUser');
+
+        [$result] = (new Validator())->validate($data, ValidateUser::class, 'testUser');
         $this->assertEquals($data, $result);
     }
 }

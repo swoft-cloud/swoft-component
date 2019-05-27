@@ -53,6 +53,13 @@ abstract class AbstractPool implements PoolInterface
     protected $maxIdleTime = 60;
 
     /**
+     * Maximum wait close time
+     *
+     * @var float
+     */
+    protected $maxCloseTime = 3;
+
+    /**
      * @var Channel
      */
     protected $channel;
@@ -111,6 +118,32 @@ abstract class AbstractPool implements PoolInterface
     }
 
     /**
+     * @return int
+     */
+    public function close(): int
+    {
+        $i = 0;
+        if (empty($this->channel)) {
+            return $i;
+        }
+
+        for (; $i < $this->count; $i++) {
+            $connection = $this->channel->pop($this->maxCloseTime);
+            if ($connection === false) {
+                break;
+            }
+
+            if (!$connection instanceof ConnectionInterface) {
+                continue;
+            }
+
+            $connection->close();
+        }
+
+        return $this->count;
+    }
+
+    /**
      * Get connection by channel
      *
      * @return ConnectionInterface
@@ -136,6 +169,8 @@ abstract class AbstractPool implements PoolInterface
 
         // Pop connection is not null
         if ($connection !== null) {
+            // Update last time
+            $connection->updateLastTime();
             return $connection;
         }
 
@@ -154,6 +189,7 @@ abstract class AbstractPool implements PoolInterface
             );
         }
 
+        /* @var ConnectionInterface $connection*/
         // Sleep coroutine and resume coroutine after `maxWaitTime`, Return false is waiting timeout
         $connection = $this->channel->pop($this->maxWaitTime);
         if ($connection === false) {
@@ -161,6 +197,9 @@ abstract class AbstractPool implements PoolInterface
                 sprintf('Channel pop timeout by %fs', $this->maxWaitTime)
             );
         }
+
+        // Update last time
+        $connection->updateLastTime();
 
         return $connection;
     }

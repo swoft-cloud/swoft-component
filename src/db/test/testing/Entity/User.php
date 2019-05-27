@@ -46,9 +46,35 @@ class User extends Model
 
     /**
      * @Column(name="user_desc", prop="udesc")
+     *
      * @var string|null
      */
     private $userDesc;
+
+    /**
+     * this key is hump
+     *
+     * @Column()
+     *
+     * @var string|null
+     */
+    private $testHump;
+
+    /**
+     * @return null|string
+     */
+    public function getTestHump(): ?string
+    {
+        return $this->testHump;
+    }
+
+    /**
+     * @param null|string $testHump
+     */
+    public function setTestHump(?string $testHump): void
+    {
+        $this->testHump = $testHump;
+    }
 
     /**
      * @return int|null

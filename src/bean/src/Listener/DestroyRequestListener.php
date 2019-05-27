@@ -23,7 +23,7 @@ class DestroyRequestListener implements EventHandlerInterface
     public function handle(EventInterface $event): void
     {
         $id = (string)$event->getParam(0, '');
-        if (!empty($id)) {
+        if (empty($id)) {
             return;
         }
 
