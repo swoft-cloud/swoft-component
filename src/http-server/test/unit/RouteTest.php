@@ -51,7 +51,7 @@ class RouteTest extends TestCase
         ];
         $response = $this->mockServer->request(MockRequest::GET, '/testRoute/data', [], $headers);
         $response->assertEqualJson($data);
-        $response->assertEqualHeader(ContentType::KEY, ContentType::JSON);
+        $response->assertEqualHeader(ContentType::KEY, $response->getHeaderKey(ContentType::KEY));
 
         $headers  = [
             'accept' => ContentType::XML
@@ -60,7 +60,7 @@ class RouteTest extends TestCase
         $response->assertEqualContent(
             '<xml><name><![CDATA[swoft]]></name><desc><![CDATA[framework]]></desc></xml>'
         );
-        $response->assertEqualHeader(ContentType::KEY, ContentType::XML);
+        $response->assertEqualHeader(ContentType::KEY, $response->getHeaderKey(ContentType::KEY));
     }
 
     /**

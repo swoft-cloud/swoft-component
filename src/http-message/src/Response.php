@@ -186,10 +186,10 @@ class Response implements ResponseInterface
 
         // Write Headers to co response
         foreach ($response->getHeaders() as $key => $value) {
-            if ($key=='content-type'){
-                $contentType = sprintf(implode(';', $value).";charset=%s",$this->getCharset());
+            if ($key == ContentType::KEY) {
+                $contentType = sprintf(implode(';', $value) . ";charset=%s", $this->getCharset());
                 $this->coResponse->header($key, $contentType);
-            }else{
+            } else {
                 $this->coResponse->header($key, implode(';', $value));
             }
         }

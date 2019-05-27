@@ -32,6 +32,7 @@ class MdTest extends TestCase
 
         $response = $this->mockServer->request(MockRequest::GET, '/testMw/method');
         $response->assertEqualJson(['method']);
+        $headers[ContentType::KEY] = $response->getHeaderKey(ContentType::KEY);
         $response->assertEqualHeaders($headers);
     }
 
@@ -51,6 +52,7 @@ class MdTest extends TestCase
 
         $response = $this->mockServer->request(MockRequest::GET, '/testMw/method2');
         $response->assertEqualJson(['method2']);
+        $headers[ContentType::KEY] = $response->getHeaderKey(ContentType::KEY);
         $response->assertEqualHeaders($headers);
     }
 
@@ -69,6 +71,7 @@ class MdTest extends TestCase
 
         $response = $this->mockServer->request(MockRequest::GET, '/testMw/method3');
         $response->assertEqualJson(['method3']);
+        $headers[ContentType::KEY] = $response->getHeaderKey(ContentType::KEY);
         $response->assertEqualHeaders($headers);
     }
 }
