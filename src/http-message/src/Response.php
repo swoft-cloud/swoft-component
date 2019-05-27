@@ -186,7 +186,12 @@ class Response implements ResponseInterface
 
         // Write Headers to co response
         foreach ($response->getHeaders() as $key => $value) {
-            $this->coResponse->header($key, implode(';', $value));
+            if ($key == ContentType::KEY) {
+                $contentType = sprintf(implode(';', $value) . ";charset=%s", $this->getCharset());
+                $this->coResponse->header($key, $contentType);
+            } else {
+                $this->coResponse->header($key, implode(';', $value));
+            }
         }
 
         // TODO ... write cookie
