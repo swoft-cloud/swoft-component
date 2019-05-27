@@ -49,7 +49,7 @@ class ContentTypeTest extends TestCase
 
         $response = $this->mockServer->request('POST', '/ct/userCt3', [], $headers);
 
-        $response->assertEqualHeader(ContentType::KEY, ContentType::XML);
+        $response->assertEqualHeader(ContentType::KEY, $response->getHeaderKey(ContentType::KEY));
         $response->assertEqualContent("<xml><key><![CDATA[data]]></key></xml>");
 
 
