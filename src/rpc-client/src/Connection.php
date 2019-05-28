@@ -76,7 +76,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
             $connection->set($setting);
         }
 
-        if (!$connection->connect($host, $port)) {
+        if (!$connection->connect($host, (int)$port)) {
             throw new RpcClientException(
                 sprintf('Connect failed. host=%s port=%d', $host, $port)
             );
