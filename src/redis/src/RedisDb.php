@@ -209,7 +209,7 @@ class RedisDb
      */
     public function getPort(): int
     {
-        return $this->port;
+        return (int)$this->port;
     }
 
     /**
@@ -225,7 +225,7 @@ class RedisDb
      */
     public function getTimeout(): float
     {
-        return $this->timeout;
+        return (int)$this->timeout;
     }
 
     /**
@@ -241,7 +241,7 @@ class RedisDb
      */
     public function getRetryInterval(): int
     {
-        return $this->retryInterval;
+        return (int)$this->retryInterval;
     }
 
     /**
@@ -249,7 +249,7 @@ class RedisDb
      */
     public function getReadTimeout(): int
     {
-        return $this->readTimeout;
+        return (int)$this->readTimeout;
     }
 
     /**

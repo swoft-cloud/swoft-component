@@ -7,11 +7,13 @@ use ReflectionException;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\Exception\ConnectionPoolException;
+use Swoft\Log\Debug;
 use Swoft\Rpc\Client\Connection;
 use Swoft\Rpc\Client\Exception\RpcClientException;
 use Swoft\Rpc\Client\Pool;
 use Swoft\Rpc\Client\ReferenceRegister;
 use Swoft\Rpc\Protocol;
+use Swoft\Stdlib\Helper\JsonHelper;
 
 /**
  * Class ServiceTrait
@@ -56,14 +58,13 @@ trait ServiceTrait
         $connection->release();
 
         $response = $packet->decodeResponse($result);
-
         if ($response->getError() !== null) {
             $code      = $response->getError()->getCode();
             $message   = $response->getError()->getMessage();
             $errorData = $response->getError()->getData();
 
             throw new RpcClientException(
-                sprintf('Rpc call error!code=%d message=%d data=%s', $code, $message, $errorData)
+                sprintf('Rpc call error!code=%d message=%s data=%s', $code, $message, JsonHelper::encode($errorData))
             );
         }
 
