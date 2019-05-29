@@ -360,6 +360,19 @@ class Request extends PsrRequest implements ServerRequestInterface
     }
 
     /**
+     * @param string $key
+     * @param null   $default
+     *
+     * @return mixed|null
+     */
+    public function parsedQuery(string $key, $default = null)
+    {
+        $parsedQuery = $this->getParsedQuery();
+
+        return $parsedQuery[$key] ?? $default;
+    }
+
+    /**
      * @param array $query
      *
      * @return Request
@@ -380,8 +393,8 @@ class Request extends PsrRequest implements ServerRequestInterface
      */
     public function parsedBody(string $key, $default = null)
     {
-        $parseBody = $this->getParsedBody();
-        return $parseBody[$key] ?? $default;
+        $parsedBody = $this->getParsedBody();
+        return $parsedBody[$key] ?? $default;
     }
 
     /**
