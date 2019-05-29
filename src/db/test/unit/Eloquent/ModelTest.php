@@ -367,9 +367,12 @@ on A.id=B.id;', [$resCount - 20]);
     {
         $perPage = 2;
         $page    = 1;
-
-        $res = User::paginate($page, $perPage);
-
+        $res     = User::paginate($page, $perPage, ['name', 'password', 'id']);
+        $res1    = User::select('id')
+            ->where('id', '>', 0)
+            ->addSelect(['name', 'password'])
+            ->paginate($page, $perPage);
+        $this->assertEquals($res, $res1);
         $this->assertIsArray($res);
         $this->assertArrayHasKey('list', $res);
         $this->assertArrayHasKey('count', $res);
