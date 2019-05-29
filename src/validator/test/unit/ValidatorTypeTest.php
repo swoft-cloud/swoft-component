@@ -145,12 +145,12 @@ class ValidatorTypeTest extends TestCase
     public function testDefault()
     {
         $data = [];
-        $data = (new Validator())->validate($data, ValidateDemo::class, 'testTypeDefault');
+        [$data] = (new Validator())->validate($data, ValidateDemo::class, 'testTypeDefault');
 
         $result = [
             'arrayDefault'  => [],
             'stringDefault' => '',
-            'intDefault'    => 0,
+            'intDefault'    => 6,
             'boolDefault'   => false,
             'floatDefault'  => 1.0,
         ];
@@ -164,7 +164,7 @@ class ValidatorTypeTest extends TestCase
      */
     public function testName(){
         $data = [];
-        $result = (new Validator())->validate($data, ValidateDemo::class, 'testName');
+        [$result] = (new Validator())->validate($data, ValidateDemo::class, 'testName');
         $this->assertEquals($result, ['swoftName' => 'swoft']);
     }
 
@@ -181,5 +181,77 @@ class ValidatorTypeTest extends TestCase
             'swoftName' => 12
         ];
         (new Validator())->validate($data, ValidateDemo::class, 'testName');
+    }
+
+
+    /**
+     * @expectedException Swoft\Validator\Exception\ValidatorException
+     * @expectedExceptionMessage int must exist!
+     *
+     * @throws ValidatorException
+     */
+    public function testIntTypeQuery()
+    {
+        $data = [
+            'int' => 1,
+        ];
+        (new Validator())->validate($data, ValidateDemo::class, 'testIntQuery');
+    }
+
+    /**
+     * @expectedException Swoft\Validator\Exception\ValidatorException
+     * @expectedExceptionMessage bool must exist!
+     *
+     * @throws ValidatorException
+     */
+    public function testBoolTypeQuery()
+    {
+        $data = [
+            'bool' => false
+        ];
+        (new Validator())->validate($data, ValidateDemo::class, 'testBoolQuery');
+    }
+
+    /**
+     * @expectedException Swoft\Validator\Exception\ValidatorException
+     * @expectedExceptionMessage string must exist!
+     *
+     * @throws ValidatorException
+     */
+    public function testStringTypeQuery()
+    {
+        $data = [
+            'string' => 'string'
+        ];
+        (new Validator())->validate($data, ValidateDemo::class, 'testStringQuery');
+    }
+
+    /**
+     * @expectedException Swoft\Validator\Exception\ValidatorException
+     * @expectedExceptionMessage float must exist!
+     *
+     * @throws ValidatorException
+     */
+    public function testFloatTypeQuery()
+    {
+        $data = [
+            'float' => 1.1
+        ];
+        (new Validator())->validate($data, ValidateDemo::class, 'testFloatQuery');
+    }
+
+    /**
+     * @throws ContainerException
+     * @throws ValidatorException
+     * @throws \ReflectionException
+     */
+    public function testFloatTypeQuery2()
+    {
+        $query = [
+            'float' => '2.2'
+        ];
+        [,$result] = (new Validator())->validate([], ValidateDemo::class, 'testFloatQuery', $query);
+
+        $this->assertEquals($result, ['float' => 2.2]);
     }
 }

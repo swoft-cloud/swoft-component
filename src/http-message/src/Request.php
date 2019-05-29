@@ -82,6 +82,11 @@ class Request extends PsrRequest implements ServerRequestInterface
     /**
      * @var array
      */
+    private $parsedQuery = [];
+
+    /**
+     * @var array
+     */
     private $queryParams = [];
 
     /**
@@ -344,6 +349,27 @@ class Request extends PsrRequest implements ServerRequestInterface
 
         $this->parsedBody = $parsedBody;
         return $this->parsedBody;
+    }
+
+    /**
+     * @return array
+     */
+    public function getParsedQuery(): array
+    {
+        return $this->parsedQuery;
+    }
+
+    /**
+     * @param array $query
+     *
+     * @return Request
+     */
+    public function withParsedQuery(array $query)
+    {
+        $clone = clone $this;
+
+        $clone->parsedQuery = $query;
+        return $clone;
     }
 
     /**

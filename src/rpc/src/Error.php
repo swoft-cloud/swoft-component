@@ -28,7 +28,7 @@ class Error
     /**
      * @var string
      */
-    private $message = [];
+    private $message = '';
 
     /**
      * @var mixed
@@ -37,19 +37,19 @@ class Error
 
     /**
      * @param int    $code
-     * @param string $mesage
+     * @param string $message
      * @param mixed  $data
      *
      * @return Error
      * @throws ReflectionException
      * @throws ContainerException
      */
-    public static function new(int $code, string $mesage, $data): self
+    public static function new(int $code, string $message, $data): self
     {
         $instance = self::__instance();
 
         $instance->code    = $code;
-        $instance->message = $mesage;
+        $instance->message = $message;
         $instance->data    = $data;
 
         return $instance;

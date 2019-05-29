@@ -22,17 +22,17 @@ class UserValidator implements ValidatorInterface
      * @param array $data
      * @param array $params
      *
-     * @return bool
+     * @return array
      * @throws ValidatorException
      */
-    public function validate(array &$data, array $params): bool
+    public function validate(array $data, array $params): array
     {
         $start          = $data['start'];
         $end            = $data['end'];
         $data['params'] = $params;
 
         if ($start < $end) {
-            return true;
+            return $data;
         }
 
         $md = md5(JsonHelper::encode($params));

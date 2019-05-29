@@ -102,6 +102,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     {
         $this->pool     = $pool;
         $this->database = $database;
+        $this->lastTime = time();
 
         // We need to initialize a query grammar and the query post processors
         // which are both very important parts of the database abstractions
@@ -178,6 +179,20 @@ class Connection extends AbstractConnection implements ConnectionInterface
     }
 
     /**
+     * Close connection
+     */
+    public function close(): void
+    {
+        if (!empty($this->pdo)) {
+            $this->pdo = null;
+        }
+
+        if (!empty($this->readPdo)) {
+            $this->readPdo = null;
+        }
+    }
+
+    /**
      * Reconnect
      */
     public function reconnect(): bool
@@ -211,14 +226,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
             $cm->releaseOrdinaryConnection($this->id);
             parent::release($force);
         }
-    }
-
-    /**
-     * @return int
-     */
-    public function getLastTime(): int
-    {
-        return time();
     }
 
     /**

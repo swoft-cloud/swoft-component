@@ -49,14 +49,17 @@ class ValidatorMiddleware implements MiddlewareInterface
         [$className, $method] = explode('@', $handlerId);
 
         $data = $request->getParsedBody();
+        $query = $request->getQueryParams();
 
         // Fix body is empty string
         $data = empty($data) ? [] : $data;
 
         /* @var Validator $validator*/
         $validator = BeanFactory::getBean('validator');
-        $data = $validator->validate($data, $className, $method);
-        $request = $request->withParsedBody($data);
+
+        /* @var Request $request*/
+        [$data, $query] = $validator->validate($data, $className, $method, $query);
+        $request = $request->withParsedBody($data)->withParsedQuery($query);
 
         return $handler->handle($request);
     }

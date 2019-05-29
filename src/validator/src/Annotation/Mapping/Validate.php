@@ -41,6 +41,11 @@ class Validate
     /**
      * @var string
      */
+    private $type = ValidateType::body;
+
+    /**
+     * @var string
+     */
     private $message = '';
 
     /**
@@ -62,7 +67,9 @@ class Validate
         if (isset($values['params'])) {
             $this->params = $values['params'];
         }
-
+        if (isset($values['type'])) {
+            $this->type = $values['type'];
+        }
         if (isset($values['message'])) {
             $this->message = $values['message'];
         }
@@ -98,5 +105,13 @@ class Validate
     public function getParams(): array
     {
         return $this->params;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
     }
 }
