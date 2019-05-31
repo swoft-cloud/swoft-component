@@ -434,7 +434,6 @@ class Builder implements PrototypeInterface
     public function addSelect(array $column): self
     {
         $this->columns = array_merge((array)$this->columns, $column);
-
         return $this;
     }
 
@@ -2400,11 +2399,12 @@ class Builder implements PrototypeInterface
      */
     public function paginate(int $page = 1, int $perPage = 15, array $columns = ['*']): array
     {
+        $list = [];
         // Run a pagination count query
-        $count = $this->getCountForPagination($columns);
-        // Get paginate records
-        $list = $this->forPage($page, $perPage)->addSelect($columns)->get()->toArray();
-
+        if ($count = $this->getCountForPagination()) {
+            // Get paginate records
+            $list = $this->forPage($page, $perPage)->get($columns)->toArray();
+        }
         return [
             'count'     => $count,
             'list'      => $list,

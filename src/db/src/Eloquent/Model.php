@@ -143,6 +143,16 @@ use Throwable;
  * @method static Builder limit(int $value)
  * @method static Builder forPage(int $page, int $perPage = 15)
  * @method static array   paginate(int $page = 1, int $perPage = 15, array $columns = ['*'])
+ * @method static array getBindings()
+ * @method static string toSql()
+ * @method static bool exists()
+ * @method static bool doesntExist()
+ * @method static string count(string $columns = '*')
+ * @method static mixed min(string $column)
+ * @method static mixed max(string $column)
+ * @method static mixed sum(string $column)
+ * @method static mixed avg($column)
+ * @method static mixed average(string $column)
  */
 abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
 {

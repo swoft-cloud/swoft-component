@@ -8,6 +8,7 @@ use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\DB;
 use Swoft\Db\Exception\DbException;
+use SwoftTest\Db\Testing\Entity\Count;
 use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Unit\TestCase;
 
@@ -160,4 +161,88 @@ class TransactionTest extends TestCase
         $this->assertTrue($result2);
         DB::commit();
     }
+
+    public function testRelationship()
+    {
+
+        $name = uniqid();
+        $time = time();
+
+        DB::beginTransaction();
+
+        $userId = $this->addRecord();
+
+        $countId = $this->addCountRecord();
+
+        $count = Count::updateOrCreate(['id' => $countId], ['create_time' => $time, 'user_id' => $userId]);
+        $this->assertEquals($userId, $count->getUserId());
+        $this->assertEquals($time, $count->getCreateTime());
+
+        $findCount = Count::find($countId);
+        $this->assertEquals($userId, $findCount->getUserId());
+        $this->assertEquals($time, $findCount->getCreateTime());
+
+        $whereCount = Count::where('user_id', $userId)->first();
+        $this->assertEquals($userId, $whereCount->getUserId());
+        $this->assertEquals($time, $whereCount->getCreateTime());
+
+        DB::beginTransaction();
+        $res = User::where('id', $userId)->update(['name' => $name]);
+        $this->assertEquals(1, $res);
+        $userId = $this->addRecord();
+        DB::commit();
+
+
+        DB::rollBack();
+
+        $userDoesnt = User::where('id', $userId)->doesntExist();
+        $this->assertTrue($userDoesnt);
+
+        $countDoesnt = Count::where('id', $countId)->doesntExist();
+        $this->assertTrue($countDoesnt);
+    }
+
+    public function testRelationship2()
+    {
+
+        $name = uniqid();
+        $time = '1559205024';
+
+        DB::beginTransaction();
+
+        $userId = $this->addRecord();
+
+        $countId = $this->addCountRecord($userId);
+
+        $count = Count::updateOrCreate(['id' => $countId], ['create_time' => $time, 'user_id' => $userId]);
+        $this->assertEquals($userId, $count->getUserId());
+        $this->assertEquals($time, $count->getCreateTime());
+
+        $findCount = Count::find($countId);
+        $this->assertEquals($userId, $findCount->getUserId());
+        $this->assertEquals($time, $findCount->getCreateTime());
+
+        $whereCount = Count::where('user_id', $userId)->first();
+        $this->assertEquals($userId, $whereCount->getUserId());
+        $this->assertEquals($time, $whereCount->getCreateTime());
+
+        // Transaction two
+        DB::beginTransaction();
+        $res = User::where('id', $userId)->update(['name' => $name]);
+        $this->assertEquals(1, $res);
+        $this->assertEquals($name, User::find($userId)->getName());
+
+        $userId = $this->addRecord();
+        DB::rollBack();
+
+
+        DB::commit();
+
+        $userDoesnt = User::where('id', $userId)->doesntExist();
+        $this->assertTrue($userDoesnt);
+
+        $countDoesnt = Count::where('id', $countId)->exists();
+        $this->assertTrue($countDoesnt);
+    }
+
 }

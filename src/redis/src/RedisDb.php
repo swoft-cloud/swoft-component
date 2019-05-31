@@ -217,7 +217,7 @@ class RedisDb
      */
     public function getDatabase(): int
     {
-        return $this->database;
+        return (int)$this->database;
     }
 
     /**
