@@ -740,6 +740,7 @@ class BuilderTest extends TestCase
 
     public function testChunkById()
     {
+        $this->addRecord();
         DB::table('user')->chunkById(2, function ($users) {
             foreach ($users as $user) {
                 $this->assertIsString($user['name']);
