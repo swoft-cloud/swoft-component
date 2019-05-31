@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Http\Message\Unit;
-
 
 use PHPUnit\Framework\TestCase;
 

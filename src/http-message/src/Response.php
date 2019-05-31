@@ -2,19 +2,20 @@
 
 namespace Swoft\Http\Message;
 
-use function implode;
-use function in_array;
 use InvalidArgumentException;
 use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Http\Message\Concern\CookiesTrait;
 use Swoft\Http\Message\Concern\MessageTrait;
 use Swoft\Http\Message\Contract\ResponseFormatterInterface;
 use Swoft\Http\Message\Contract\ResponseInterface;
 use Swoft\Http\Message\Stream\Stream;
 use Swoole\Http\Response as CoResponse;
 use Throwable;
+use function implode;
+use function in_array;
 
 /**
  * Class Response
@@ -24,7 +25,7 @@ use Throwable;
  */
 class Response implements ResponseInterface
 {
-    use MessageTrait, PrototypeTrait;
+    use CookiesTrait, MessageTrait, PrototypeTrait;
 
     /**
      * @var string
@@ -88,13 +89,6 @@ class Response implements ResponseInterface
     public $formatters = [];
 
     /**
-     * Cookie
-     *
-     * @var array
-     */
-    protected $cookies = [];
-
-    /**
      * @var string
      */
     private $filePath = '';
@@ -134,13 +128,15 @@ class Response implements ResponseInterface
      */
     public function redirect($url, int $status = 302): self
     {
-        $response = $this;
-        $response = $response->withAddedHeader('Location', (string)$url)->withStatus($status);
-
-        return $response;
+        return $this->withAddedHeader('Location', (string)$url)->withStatus($status);
     }
 
     /**
+     * Add file to response.
+     *
+     * Usage:
+     *  $response->file('some/file.jpg', 'image/jpeg');
+     *
      * @param string $filePath    like '/path/to/some.jpg'
      * @param string $contentType like 'image/jpeg'
      *
@@ -150,6 +146,7 @@ class Response implements ResponseInterface
     {
         $this->filePath = $filePath;
         $this->fileType = $contentType;
+
         return $this;
     }
 
@@ -186,15 +183,18 @@ class Response implements ResponseInterface
 
         // Write Headers to co response
         foreach ($response->getHeaders() as $key => $value) {
-            if ($key == ContentType::KEY) {
-                $contentType = sprintf(implode(';', $value) . ";charset=%s", $this->getCharset());
+            if ($key === ContentType::KEY) {
+                $contentType = sprintf(implode(';', $value) . '; charset=%s', $this->getCharset());
                 $this->coResponse->header($key, $contentType);
             } else {
                 $this->coResponse->header($key, implode(';', $value));
             }
         }
 
-        // TODO ... write cookie
+        // Write cookies
+        foreach ($this->cookies as $name => $ck) {
+            $this->coResponse->cookie($name, $ck['value'], $ck['expires'], $ck['path'], $ck['domain'], $ck['secure'], $ck['httpOnly']);
+        }
 
         // Set status code
         $this->coResponse->status($response->getStatusCode());
@@ -211,7 +211,7 @@ class Response implements ResponseInterface
      */
     private function prepare(): Response
     {
-        if(empty($this->format)){
+        if (empty($this->format)) {
             return $this;
         }
 
@@ -343,8 +343,11 @@ class Response implements ResponseInterface
      */
     public function withAttribute($name, $value)
     {
-        $clone                    = clone $this;
+        $clone = clone $this;
+
+        // Set new value
         $clone->attributes[$name] = $value;
+
         return $clone;
     }
 
@@ -389,7 +392,8 @@ class Response implements ResponseInterface
      */
     public function withStatus($code, $reasonPhrase = '')
     {
-        $new             = clone $this;
+        $new = clone $this;
+        // Set new value
         $new->statusCode = (int)$code;
 
         if ($reasonPhrase === '' && isset(self::PHRASES[$new->statusCode])) {
@@ -410,7 +414,7 @@ class Response implements ResponseInterface
      */
     public function withContentType(string $type, string $charset = ''): self
     {
-        if (!empty($charset)) {
+        if ($charset) {
             $this->charset = $charset;
         }
 
@@ -460,6 +464,7 @@ class Response implements ResponseInterface
     /**
      * Is this response empty?
      * Note: This method is not part of the PSR-7 standard.
+     *
      * @return bool
      */
     public function isEmpty(): bool
@@ -470,6 +475,7 @@ class Response implements ResponseInterface
     /**
      * Is this response informational?
      * Note: This method is not part of the PSR-7 standard.
+     *
      * @return bool
      */
     public function isInformational(): bool
@@ -480,6 +486,7 @@ class Response implements ResponseInterface
     /**
      * Is this response OK?
      * Note: This method is not part of the PSR-7 standard.
+     *
      * @return bool
      */
     public function isOk(): bool
@@ -490,6 +497,7 @@ class Response implements ResponseInterface
     /**
      * Is this response successful?
      * Note: This method is not part of the PSR-7 standard.
+     *
      * @return bool
      */
     public function isSuccessful(): bool
@@ -500,6 +508,7 @@ class Response implements ResponseInterface
     /**
      * Is this response a redirect?
      * Note: This method is not part of the PSR-7 standard.
+     *
      * @return bool
      */
     public function isRedirect(): bool
@@ -510,6 +519,7 @@ class Response implements ResponseInterface
     /**
      * Is this response a redirection?
      * Note: This method is not part of the PSR-7 standard.
+     *
      * @return bool
      */
     public function isRedirection(): bool
@@ -520,6 +530,7 @@ class Response implements ResponseInterface
     /**
      * Is this response forbidden?
      * Note: This method is not part of the PSR-7 standard.
+     *
      * @return bool
      * @api
      */
@@ -531,6 +542,7 @@ class Response implements ResponseInterface
     /**
      * Is this response not Found?
      * Note: This method is not part of the PSR-7 standard.
+     *
      * @return bool
      */
     public function isNotFound(): bool
@@ -541,6 +553,7 @@ class Response implements ResponseInterface
     /**
      * Is this response a client error?
      * Note: This method is not part of the PSR-7 standard.
+     *
      * @return bool
      */
     public function isClientError(): bool
@@ -551,6 +564,7 @@ class Response implements ResponseInterface
     /**
      * Is this response a server error?
      * Note: This method is not part of the PSR-7 standard.
+     *
      * @return bool
      */
     public function isServerError(): bool
