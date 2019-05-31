@@ -26,6 +26,7 @@ use Swoft\Bean\Definition\Parser\DefinitionObjParser;
 use Swoft\Bean\Definition\PropertyInjection;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\ArrayHelper;
+use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Stdlib\Reflections;
 use function ucfirst;
 
@@ -1024,6 +1025,12 @@ class Container implements ContainerInterface
                 $propertyValue = $this->getRefValue($propertyValue, $id);
             }
 
+            // Parser property type
+            $propertyType = ObjectHelper::getPropertyBaseType($reflectProperty);
+            if (!empty($propertyType)) {
+                $propertyValue = ObjectHelper::parseParamType($propertyType, $propertyValue);
+            }
+
             // First, try set value by setter method
             $setter = 'set' . ucfirst($propertyName);
             if (method_exists($reflectObject, $setter)) {
@@ -1102,7 +1109,7 @@ class Container implements ContainerInterface
             return $value;
         }
 
-        if(strpos($value, '.') !== 0){
+        if (strpos($value, '.') !== 0) {
             return $this->newBean($value, $id);
         }
 
