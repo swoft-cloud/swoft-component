@@ -39,6 +39,15 @@ class Count extends Model
     private $createTime;
 
     /**
+     * attributes
+     *
+     * @Column()
+     *
+     * @var string|null
+     */
+    private $attributes;
+
+    /**
      * @return null|int
      */
     public function getId(): ?int
@@ -84,5 +93,21 @@ class Count extends Model
     public function setCreateTime(?int $createTime): void
     {
         $this->createTime = $createTime;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getAttributes(): ?string
+    {
+        return $this->attributes;
+    }
+
+    /**
+     * @param null|string $attributes
+     */
+    public function setAttributes(?string $attributes): void
+    {
+        $this->attributes = $attributes;
     }
 }

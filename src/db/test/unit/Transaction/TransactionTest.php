@@ -6,6 +6,7 @@ namespace SwoftTest\Db\Unit\Transaction;
 
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Db\Annotation\Mapping\Column;
 use Swoft\Db\DB;
 use Swoft\Db\Exception\DbException;
 use SwoftTest\Db\Testing\Entity\Count;
@@ -167,6 +168,8 @@ class TransactionTest extends TestCase
 
         $name = uniqid();
         $time = time();
+        User::truncate();
+        Count::truncate();
 
         DB::beginTransaction();
 
@@ -206,25 +209,33 @@ class TransactionTest extends TestCase
     {
 
         $name = uniqid();
-        $time = '1559205024';
+        $time = time();
+        Count::truncate();
+        User::truncate();
 
         DB::beginTransaction();
 
         $userId = $this->addRecord();
 
         $countId = $this->addCountRecord($userId);
-
-        $count = Count::updateOrCreate(['id' => $countId], ['create_time' => $time, 'user_id' => $userId]);
+        $count   = Count::updateOrCreate(['id' => $countId], [
+            'create_time' => $time,
+            'user_id'     => $userId,
+            'attributes'  => $name,
+        ]);
         $this->assertEquals($userId, $count->getUserId());
         $this->assertEquals($time, $count->getCreateTime());
+        $this->assertEquals($name, $count->getAttributes());
 
         $findCount = Count::find($countId);
         $this->assertEquals($userId, $findCount->getUserId());
         $this->assertEquals($time, $findCount->getCreateTime());
+        $this->assertEquals($name, $findCount->getAttributes());
 
         $whereCount = Count::where('user_id', $userId)->first();
         $this->assertEquals($userId, $whereCount->getUserId());
         $this->assertEquals($time, $whereCount->getCreateTime());
+        $this->assertEquals($name, $whereCount->getAttributes());
 
         // Transaction two
         DB::beginTransaction();

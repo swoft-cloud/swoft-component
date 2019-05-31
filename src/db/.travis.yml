@@ -32,6 +32,7 @@ before_install:
     `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
     `user_id` int(11) DEFAULT NULL,
     `create_time` int(11) DEFAULT NULL,
+    `attributes` varchar(244) DEFAULT NULL,
     PRIMARY KEY (`id`)
     ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;'
 install:
