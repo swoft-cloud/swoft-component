@@ -111,7 +111,6 @@ class MiddlewareChain implements MessageHandlerInterface
 
     /**
      * Call this method to start executing all middleware
-     * 调用此方法开始执行所有中间件
      *
      * @param RequestInterface $request
      *
@@ -120,7 +119,7 @@ class MiddlewareChain implements MessageHandlerInterface
      * @throws RuntimeException
      * @throws InvalidArgumentException
      */
-    public function callStack(RequestInterface $request): ResponseInterface
+    public function run(RequestInterface $request): ResponseInterface
     {
         if ($this->locked) {
             throw new RuntimeException('Middleware stack can’t be start once the stack is dequeuing');
@@ -141,7 +140,6 @@ class MiddlewareChain implements MessageHandlerInterface
 
     /**
      * Do not call directly externally, internally called
-     * 不要在外部直接调用，内部调用的
      *
      * @throws UnexpectedValueException
      * @throws InvalidArgumentException

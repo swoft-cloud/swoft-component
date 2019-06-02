@@ -96,7 +96,7 @@ class Response implements ResponseInterface
      *
      * @return $this
      */
-    public function from(int $sender): self
+    public function from(int $sender): ResponseInterface
     {
         return $this->setSender($sender);
     }
@@ -106,7 +106,7 @@ class Response implements ResponseInterface
      *
      * @return Response
      */
-    public function to(int $fd): self
+    public function to(int $fd): ResponseInterface
     {
         return $this->setFd($fd);
     }
@@ -126,7 +126,7 @@ class Response implements ResponseInterface
      *
      * @return Response
      */
-    public function toMore(array $fd): self
+    public function toMore(array $fd): ResponseInterface
     {
         return $this->toSome($fd);
     }
@@ -136,7 +136,7 @@ class Response implements ResponseInterface
      *
      * @return Response
      */
-    public function toSome(array $fds): self
+    public function toSome(array $fds): ResponseInterface
     {
         $this->fds = $fds;
         return $this;
@@ -147,7 +147,7 @@ class Response implements ResponseInterface
      *
      * @return Response
      */
-    public function toAll(bool $yes = true): self
+    public function toAll(bool $yes = true): ResponseInterface
     {
         $this->sendToAll = $yes;
         return $this;
@@ -193,7 +193,7 @@ class Response implements ResponseInterface
      *
      * @return self
      */
-    public function setFd(int $fd): self
+    public function setFd(int $fd): ResponseInterface
     {
         $this->fd = $fd;
         return $this;
@@ -212,7 +212,7 @@ class Response implements ResponseInterface
      *
      * @return self
      */
-    public function setOpcode(int $opcode): self
+    public function setOpcode(int $opcode): ResponseInterface
     {
         $this->opcode = $opcode;
         return $this;
@@ -231,7 +231,7 @@ class Response implements ResponseInterface
      *
      * @return self
      */
-    public function setFinish(bool $finish): self
+    public function setFinish(bool $finish): ResponseInterface
     {
         $this->finish = $finish;
         return $this;
@@ -250,10 +250,9 @@ class Response implements ResponseInterface
      *
      * @return Response
      */
-    public function setSender(int $sender): self
+    public function setSender(int $sender): ResponseInterface
     {
         $this->sender = $sender;
-
         return $this;
     }
 
@@ -276,12 +275,11 @@ class Response implements ResponseInterface
     /**
      * @param mixed $data
      *
-     * @return Response
+     * @return Response|ResponseInterface
      */
-    public function setData($data): self
+    public function setData($data): ResponseInterface
     {
         $this->data = $data;
-
         return $this;
     }
 }

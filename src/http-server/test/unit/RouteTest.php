@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Http\Server\Unit;
-
 
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
@@ -59,9 +57,7 @@ class RouteTest extends TestCase
             'accept' => ContentType::XML
         ];
         $response = $this->mockServer->request(MockRequest::GET, '/testRoute/data', [], $headers);
-        $response->assertEqualContent(
-            '<xml><name><![CDATA[swoft]]></name><desc><![CDATA[framework]]></desc></xml>'
-        );
+        $response->assertEqualContent('<xml><name><![CDATA[swoft]]></name><desc><![CDATA[framework]]></desc></xml>');
         $response->assertEqualHeader(ContentType::KEY, $response->getHeaderKey(ContentType::KEY));
     }
 
@@ -80,10 +76,10 @@ class RouteTest extends TestCase
             ContentType::KEY => ContentType::XML
         ];
 
-        $ext      = [
+        $ext = [
             'content' => '<xml><name><![CDATA[swoft]]></name><desc><![CDATA[framework]]></desc></xml>'
-
         ];
+
         $response = $this->mockServer->request(MockRequest::POST, '/testRoute/parser', [], $headers, [], $ext);
         $response->assertEqualJson($data);
 
