@@ -10,10 +10,12 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Dispatcher;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
+use Swoft\Http\Server\Formatter\AcceptResponseFormatter;
 use Swoft\Http\Server\Middleware\DefaultMiddleware;
 use Swoft\Http\Server\Middleware\UserMiddleware;
 use Swoft\Http\Server\Middleware\ValidatorMiddleware;
 use Throwable;
+use Swoft\Bean\Annotation\Mapping\Inject;
 
 /**
  * Class HttpDispatcher
@@ -31,9 +33,18 @@ class HttpDispatcher extends Dispatcher
     protected $defaultMiddleware = DefaultMiddleware::class;
 
     /**
+     * Accept formatter
+     *
+     * @var AcceptResponseFormatter
+     * @Inject()
+     */
+    protected $acceptFormatter;
+
+    /**
      * Dispatch http request
      *
      * @param array ...$params
+     *
      * @throws ContainerException
      */
 
@@ -65,6 +76,9 @@ class HttpDispatcher extends Dispatcher
 
             // Handle request error
             $response = $errDispatcher->run($e, $response);
+
+            // Format response
+            $response = $this->acceptFormatter->format($response);
         }
 
         // Trigger after request
