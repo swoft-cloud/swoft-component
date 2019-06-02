@@ -207,7 +207,7 @@ class ModelTest extends TestCase
 
         $user = User::find(22);
         $user->addHidden(['age']);
-        $user->setVisible(['password']);
+        $user->setModelVisible(['password']);
         $user->addHidden(['password']);
         $user->addVisible(['age']);
         $user->addVisible(['pwd']);

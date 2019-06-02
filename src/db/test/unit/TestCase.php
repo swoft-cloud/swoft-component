@@ -7,6 +7,7 @@ namespace SwoftTest\Db\Unit;
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Exception\DbException;
+use Swoft\Stdlib\Helper\Str;
 use SwoftTest\Db\Testing\Entity\Count;
 use SwoftTest\Db\Testing\Entity\User;
 use Swoole\Event;
@@ -59,7 +60,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $count = Count::new();
         $count->setUserId($userId ?: $this->addRecord());
         $count->setCreateTime(time());
-
+        $count->setAttributes(Str::random());
         // Save result
         $result = $count->save();
         $this->assertTrue($result);
