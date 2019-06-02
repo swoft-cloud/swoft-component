@@ -6,11 +6,14 @@ namespace Swoft\Db\Query\Grammar;
 use ReflectionException;
 use RuntimeException;
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Db\Connection\Connection;
 use Swoft\Db\Eloquent\Collection;
 use Swoft\Db\Grammar as BaseGrammar;
 use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
 use Swoft\Db\Query\JoinClause;
+use Swoft\Db\Schema\Blueprint;
+use Swoft\Stdlib\Fluent;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\Str;
 use function end;
@@ -53,7 +56,7 @@ class Grammar extends BaseGrammar
     /**
      * Compile a select query into SQL.
      *
-     * @param  Builder $query
+     * @param Builder $query
      *
      * @return string
      */
@@ -85,9 +88,39 @@ class Grammar extends BaseGrammar
     }
 
     /**
+     * Compile a rename column command.
+     *
+     * @param Blueprint  $blueprint
+     * @param Fluent     $command
+     * @param Connection $connection
+     *
+     * @return array  @todo ....
+     */
+    public function compileRenameColumn(Blueprint $blueprint, Fluent $command, Connection $connection)
+    {
+        //return RenameColumn::compile($this, $blueprint, $command, $connection);
+    }
+
+    /**
+     * Compile a change column command into a series of SQL statements.
+     *
+     * @param Blueprint  $blueprint
+     * @param Fluent     $command
+     * @param Connection $connection
+     *
+     * @return array  @todo ....
+     *
+     * @throws \RuntimeException
+     */
+    public function compileChange(Blueprint $blueprint, Fluent $command, Connection $connection)
+    {
+        //return ChangeColumn::compile($this, $blueprint, $command, $connection);
+    }
+
+    /**
      * Compile the components necessary for a select clause.
      *
-     * @param  Builder $query
+     * @param Builder $query
      *
      * @return array
      */
@@ -112,8 +145,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile an aggregated select clause.
      *
-     * @param  Builder $query
-     * @param  array   $aggregate
+     * @param Builder $query
+     * @param array   $aggregate
      *
      * @return string
      */
@@ -134,8 +167,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile the "select *" portion of the query.
      *
-     * @param  Builder $query
-     * @param  array   $columns
+     * @param Builder $query
+     * @param array   $columns
      *
      * @return string
      */
@@ -156,8 +189,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile the "from" portion of the query.
      *
-     * @param  Builder $query
-     * @param  string  $table
+     * @param Builder $query
+     * @param string  $table
      *
      * @return string
      */
@@ -236,8 +269,8 @@ class Grammar extends BaseGrammar
     /**
      * Format the where clause statements into one string.
      *
-     * @param  Builder $query
-     * @param  array   $sql
+     * @param Builder $query
+     * @param array   $sql
      *
      * @return string
      */
@@ -251,8 +284,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile a raw where clause.
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -264,8 +297,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile a basic where clause.
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -279,8 +312,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile a "where in" clause.
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -296,8 +329,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile a "where not in" clause.
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -315,8 +348,8 @@ class Grammar extends BaseGrammar
      *
      * For safety, whereIntegerInRaw ensures this method is only used with integer values.
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -332,8 +365,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile a where in sub-select clause.
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -345,8 +378,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile a where not in sub-select clause.
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -360,8 +393,8 @@ class Grammar extends BaseGrammar
      *
      * For safety, whereIntegerInRaw ensures this method is only used with integer values.
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -377,8 +410,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile a "where null" clause.
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -390,8 +423,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile a "where not null" clause.
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -403,8 +436,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile a "between" where clause.
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -422,8 +455,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile a "where date" clause.
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -435,8 +468,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile a "where time" clause.
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -448,8 +481,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile a "where day" clause.
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -461,8 +494,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile a "where month" clause.
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -474,8 +507,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile a "where year" clause.
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -487,9 +520,9 @@ class Grammar extends BaseGrammar
     /**
      * Compile a date based where clause.
      *
-     * @param  string  $type
-     * @param  Builder $query
-     * @param  array   $where
+     * @param string  $type
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -503,8 +536,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile a where clause comparing two columns..
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -536,8 +569,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile a where condition with a sub-select.
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -551,8 +584,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile a where exists clause.
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -564,8 +597,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile a where exists clause.
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -577,8 +610,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile a where row values condition.
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -594,8 +627,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile a "where JSON contains" clause.
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -611,8 +644,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile a "JSON contains" statement into SQL.
      *
-     * @param  string $column
-     * @param  string $value
+     * @param string $column
+     * @param string $value
      *
      * @return string
      *
@@ -626,7 +659,7 @@ class Grammar extends BaseGrammar
     /**
      * Prepare the binding for a "JSON contains" statement.
      *
-     * @param  mixed $binding
+     * @param mixed $binding
      *
      * @return string
      */
@@ -638,8 +671,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile a "where JSON length" clause.
      *
-     * @param  Builder $query
-     * @param  array   $where
+     * @param Builder $query
+     * @param array   $where
      *
      * @return string
      */
@@ -653,9 +686,9 @@ class Grammar extends BaseGrammar
     /**
      * Compile a "JSON length" statement into SQL.
      *
-     * @param  string $column
-     * @param  string $operator
-     * @param  string $value
+     * @param string $column
+     * @param string $operator
+     * @param string $value
      *
      * @return string
      *
@@ -669,8 +702,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile the "group by" portions of the query.
      *
-     * @param  Builder $query
-     * @param  array   $groups
+     * @param Builder $query
+     * @param array   $groups
      *
      * @return string
      */
@@ -682,8 +715,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile the "having" portions of the query.
      *
-     * @param  Builder $query
-     * @param  array   $havings
+     * @param Builder $query
+     * @param array   $havings
      *
      * @return string
      */
@@ -697,7 +730,7 @@ class Grammar extends BaseGrammar
     /**
      * Compile a single having clause.
      *
-     * @param  array $having
+     * @param array $having
      *
      * @return string
      */
@@ -718,7 +751,7 @@ class Grammar extends BaseGrammar
     /**
      * Compile a basic having clause.
      *
-     * @param  array $having
+     * @param array $having
      *
      * @return string
      */
@@ -734,7 +767,7 @@ class Grammar extends BaseGrammar
     /**
      * Compile a "between" having clause.
      *
-     * @param  array $having
+     * @param array $having
      *
      * @return string
      */
@@ -754,8 +787,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile the "order by" portions of the query.
      *
-     * @param  Builder $query
-     * @param  array   $orders
+     * @param Builder $query
+     * @param array   $orders
      *
      * @return string
      */
@@ -771,8 +804,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile the query orders to an array.
      *
-     * @param  Builder $query
-     * @param  array   $orders
+     * @param Builder $query
+     * @param array   $orders
      *
      * @return array
      */
@@ -788,7 +821,7 @@ class Grammar extends BaseGrammar
     /**
      * Compile the random statement into SQL.
      *
-     * @param  string $seed
+     * @param string $seed
      *
      * @return string
      */
@@ -800,8 +833,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile the "limit" portions of the query.
      *
-     * @param  Builder $query
-     * @param  int     $limit
+     * @param Builder $query
+     * @param int     $limit
      *
      * @return string
      */
@@ -813,8 +846,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile the "offset" portions of the query.
      *
-     * @param  Builder $query
-     * @param  int     $offset
+     * @param Builder $query
+     * @param int     $offset
      *
      * @return string
      */
@@ -826,7 +859,7 @@ class Grammar extends BaseGrammar
     /**
      * Compile the "union" queries attached to the main query.
      *
-     * @param  Builder $query
+     * @param Builder $query
      *
      * @return string
      */
@@ -856,7 +889,7 @@ class Grammar extends BaseGrammar
     /**
      * Compile a single union statement.
      *
-     * @param  array $union
+     * @param array $union
      *
      * @return string
      */
@@ -870,7 +903,7 @@ class Grammar extends BaseGrammar
     /**
      * Compile a union aggregate query into SQL.
      *
-     * @param  Builder $query
+     * @param Builder $query
      *
      * @return string
      */
@@ -886,7 +919,7 @@ class Grammar extends BaseGrammar
     /**
      * Compile an exists statement into SQL.
      *
-     * @param  Builder $query
+     * @param Builder $query
      *
      * @return string
      */
@@ -949,9 +982,9 @@ class Grammar extends BaseGrammar
     /**
      * Compile an insert statement using a subquery into SQL.
      *
-     * @param  Builder $query
-     * @param  array   $columns
-     * @param  string  $sql
+     * @param Builder $query
+     * @param array   $columns
+     * @param string  $sql
      *
      * @return string
      */
@@ -1001,8 +1034,8 @@ class Grammar extends BaseGrammar
     /**
      * Prepare the bindings for an update statement.
      *
-     * @param  array $bindings
-     * @param  array $values
+     * @param array $bindings
+     * @param array $values
      *
      * @return array
      */
@@ -1034,7 +1067,7 @@ class Grammar extends BaseGrammar
     /**
      * Prepare the bindings for a delete statement.
      *
-     * @param  array $bindings
+     * @param array $bindings
      *
      * @return array
      */
@@ -1046,7 +1079,7 @@ class Grammar extends BaseGrammar
     /**
      * Compile a truncate table statement into SQL.
      *
-     * @param  Builder $query
+     * @param Builder $query
      *
      * @return array
      */
@@ -1058,8 +1091,8 @@ class Grammar extends BaseGrammar
     /**
      * Compile the lock into SQL.
      *
-     * @param  Builder     $query
-     * @param  bool|string $value
+     * @param Builder     $query
+     * @param bool|string $value
      *
      * @return string
      */
@@ -1081,7 +1114,7 @@ class Grammar extends BaseGrammar
     /**
      * Compile the SQL statement to define a savepoint.
      *
-     * @param  string $name
+     * @param string $name
      *
      * @return string
      */
@@ -1093,7 +1126,7 @@ class Grammar extends BaseGrammar
     /**
      * Compile the SQL statement to execute a savepoint rollback.
      *
-     * @param  string $name
+     * @param string $name
      *
      * @return string
      */
@@ -1105,8 +1138,8 @@ class Grammar extends BaseGrammar
     /**
      * Wrap a value in keyword identifiers.
      *
-     * @param  Expression|string $value
-     * @param  bool              $prefixAlias
+     * @param Expression|string $value
+     * @param bool              $prefixAlias
      *
      * @return string
      */
@@ -1136,7 +1169,7 @@ class Grammar extends BaseGrammar
     /**
      * Wrap the given JSON selector.
      *
-     * @param  string $value
+     * @param string $value
      *
      * @return string
      */
@@ -1148,7 +1181,7 @@ class Grammar extends BaseGrammar
     /**
      * Split the given JSON selector into the field and the optional path and wrap them separately.
      *
-     * @param  string $column
+     * @param string $column
      *
      * @return array
      */
@@ -1166,7 +1199,7 @@ class Grammar extends BaseGrammar
     /**
      * Wrap the given JSON path.
      *
-     * @param  string $value
+     * @param string $value
      *
      * @return string
      */
@@ -1178,7 +1211,7 @@ class Grammar extends BaseGrammar
     /**
      * Determine if the given string is a JSON selector.
      *
-     * @param  string $value
+     * @param string $value
      *
      * @return bool
      */
@@ -1190,7 +1223,7 @@ class Grammar extends BaseGrammar
     /**
      * Concatenate an array of segments, removing empties.
      *
-     * @param  array $segments
+     * @param array $segments
      *
      * @return string
      */
@@ -1204,7 +1237,7 @@ class Grammar extends BaseGrammar
     /**
      * Remove the leading boolean from a statement.
      *
-     * @param  string $value
+     * @param string $value
      *
      * @return string
      */

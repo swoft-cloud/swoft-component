@@ -44,6 +44,8 @@ if (!function_exists('tap')) {
             return $value;
         }
 
-        return $callback($value);
+        $callback($value);
+
+        return $value;
     }
 }

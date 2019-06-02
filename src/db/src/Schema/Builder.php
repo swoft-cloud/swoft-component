@@ -4,18 +4,23 @@
 namespace Swoft\Db\Schema;
 
 use Closure;
+use InvalidArgumentException;
 use LogicException;
 use ReflectionException;
-use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\PrototypeTrait;
+use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Connection\Connection;
+use Swoft\Db\Database;
 use Swoft\Db\DB;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Pool;
 use Swoft\Db\Schema\Grammars\Grammar;
+use Swoft\Db\Schema\Grammars\MySqlGrammar;
 use function array_map;
+use function bean;
 use function call_user_func;
+use function end;
+use function explode;
 use function in_array;
 use function is_callable;
 use function strtolower;
@@ -24,20 +29,23 @@ use function tap;
 /**
  * Class Schema Builder
  *
- * @Bean(scope=Bean::PROTOTYPE)
- *
  * @since 2.0
  */
 class Builder
 {
-    use PrototypeTrait;
-
     /**
      * Select db pool
      *
      * @var string
      */
-    public $poolName = Pool::DEFAULT_POOL;
+    public $poolName;
+
+    /**
+     * The database config
+     *
+     * @var Database
+     */
+    public $database;
 
     /**
      * The database query grammar instance.
@@ -51,7 +59,21 @@ class Builder
      *
      * @var int
      */
-    public $defaultStringLength = 255;
+    public static $defaultStringLength = 255;
+
+    /**
+     * @var array
+     */
+    public $grammars = [
+        Database::MYSQL => MySqlGrammar::class
+    ];
+
+    /**
+     * @var array
+     */
+    public static $builders = [
+        Database::MYSQL => MySqlBuilder::class
+    ];
 
     /**
      * The Blueprint resolver callback.
@@ -61,21 +83,101 @@ class Builder
     protected $resolver;
 
     /**
-     * New schema builder
+     * New builder instance
      *
+     * @param mixed ...$params
+     *
+     * @return Builder
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public static function new(...$params): Builder
+    {
+        /**
+         * @var string|null  $poolName
+         * @var Grammar|null $grammar
+         */
+        if (empty($params)) {
+            $poolName = Pool::DEFAULT_POOL;
+            $grammar  = null;
+        } else {
+            [$poolName, $grammar] = $params;
+        }
+        // The driver builder
+        $static = self::getBuilder($poolName);
+        // Set schema config
+        $static->setSchemaGrammarAndDatabase($grammar);
+
+        return $static;
+    }
+
+    /**
      * @param string $poolName
      *
      * @return Builder
      * @throws ContainerException
+     * @throws DbException
      * @throws ReflectionException
      */
-    public static function new($poolName = Pool::DEFAULT_POOL): self
+    protected static function getBuilder(string $poolName): Builder
     {
-        $instance = self::__instance();
+        /* @var Pool $pool */
+        $pool = BeanFactory::getBean($poolName);
 
-        $instance->poolName = $poolName;
+        $driver      = $pool->getDatabase()->getDriver();
+        $builderName = static::$builders[$driver] ?? '';
+        if (empty($builderName)) {
+            throw new DbException(
+                sprintf('Builder(driver=%s) is not exist!', $driver)
+            );
+        }
 
-        return $instance;
+        $builder = bean($builderName);
+        if (!$builder instanceof self) {
+            throw new InvalidArgumentException('%s class is not Builder instance', get_class($builder));
+        }
+
+        $builder->poolName = $poolName;
+        return $builder;
+    }
+
+    /**
+     * @param Grammar|null $grammar
+     *
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    protected function setSchemaGrammarAndDatabase(Grammar $grammar = null): void
+    {
+        /* @var Pool $pool */
+        $pool = BeanFactory::getBean($this->poolName);
+
+        $this->database = $pool->getDatabase();
+        $driver         = $pool->getDatabase()->getDriver();
+        $prefix         = $pool->getDatabase()->getPrefix();
+        if (!empty($grammar)) {
+            $grammar->setTablePrefix($prefix);
+            $this->grammar = $grammar;
+            return;
+        }
+
+        $grammarName = $this->grammars[$driver] ?? '';
+        if (empty($grammarName)) {
+            throw new DbException(
+                sprintf('Grammar(driver=%s) is not exist!', $driver)
+            );
+        }
+
+        $grammar = bean($grammarName);
+        if (!$grammar instanceof Grammar) {
+            throw new InvalidArgumentException('%s class is not Grammar instance', get_class($grammar));
+        }
+
+        $grammar->setTablePrefix($prefix);
+
+        $this->grammar = $grammar;
     }
 
     /**
@@ -161,12 +263,12 @@ class Builder
      */
     public function getColumnListing(string $table)
     {
-        $table   = $this->getTableName($table);
-        $results = $this->getConnection()->select(
+        $table      = $this->getTableName($table);
+        $connection = $this->getConnection();
+        $results    = $connection->select(
             $this->grammar->compileColumnListing(), [$table], false
         );
-
-        return $this->getConnection()->getPostProcessor()->processColumnListing($results);
+        return $connection->getPostProcessor()->processColumnListing($results);
     }
 
     /**
@@ -376,5 +478,19 @@ class Builder
     public function dropAllTypes()
     {
         throw new LogicException('This database driver does not support dropping all types.');
+    }
+
+    /**
+     * Get connection database name
+     *
+     * @return string
+     */
+    public function getDatabaseName(): string
+    {
+        $writes       = $this->database->getWrites();
+        $dsn          = current($writes);
+        $dsnArray     = explode(';', $dsn['dsn'], 2);
+        $databaseName = explode('=', $dsnArray[0], 2);
+        return end($databaseName);
     }
 }
