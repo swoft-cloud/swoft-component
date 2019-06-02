@@ -23,21 +23,21 @@ trait HasAttributes
      *
      * @var array
      */
-    protected $attributes = [];
+    protected $modelAttributes = [];
 
     /**
      * The model attribute's original state.
      *
      * @var array
      */
-    protected $original = [];
+    protected $modelOriginal = [];
 
     /**
      * The changed model attributes.
      *
      * @var array
      */
-    protected $changes = [];
+    protected $modelChanges = [];
 
     /**
      * Convert the model's attributes to an array.
@@ -66,7 +66,7 @@ trait HasAttributes
      */
     protected function getArrayableAttributes()
     {
-        return $this->attributes;
+        return $this->modelAttributes;
     }
 
     /**
@@ -81,9 +81,9 @@ trait HasAttributes
     {
         [$pro, $hidden, $value] = $this->getHiddenAttribute($key);
         // hidden status
-        $hiddenStatus = $hidden || in_array($key, $this->getHidden()) || in_array($pro, $this->getHidden());
+        $hiddenStatus = $hidden || in_array($key, $this->getModelHidden()) || in_array($pro, $this->getModelHidden());
         // visible status
-        $visibleStatus = in_array($key, $this->getVisible()) || in_array($pro, $this->getVisible());
+        $visibleStatus = in_array($key, $this->getModelVisible()) || in_array($pro, $this->getModelVisible());
 
         if ($hiddenStatus === true && $visibleStatus === false) {
             return [false, false];
@@ -99,7 +99,7 @@ trait HasAttributes
      * @return array
      * @throws DbException
      */
-    public function getAttribute(string $key): array
+    public function getModelAttribute(string $key): array
     {
         [$attrName, , , $pro] = $this->getMappingByColumn($key);
         $getter = sprintf('get%s', ucfirst($attrName));
@@ -123,7 +123,7 @@ trait HasAttributes
      */
     public function getAttributeValue(string $key)
     {
-        return $this->getAttribute($key)[1];
+        return $this->getModelAttribute($key)[1];
     }
 
     /**
@@ -183,7 +183,7 @@ trait HasAttributes
      * @return HasAttributes
      * @throws DbException
      */
-    public function setAttribute(string $key, $value): self
+    public function setModelAttribute(string $key, $value): self
     {
         [$attrName, $attType] = $this->getMappingByColumn($key);
         $setter = sprintf('set%s', ucfirst($attrName));
@@ -233,7 +233,7 @@ trait HasAttributes
     {
         [$key, $path] = explode('->', $key, 2);
 
-        $this->attributes[$key] = $this->asJson($this->getArrayAttributeWithValue(
+        $this->modelAttributes[$key] = $this->asJson($this->getArrayAttributeWithValue(
             $path, $key, $value
         ));
 
@@ -266,8 +266,8 @@ trait HasAttributes
      */
     protected function getArrayAttributeByKey($key)
     {
-        return isset($this->attributes[$key]) ?
-            $this->fromJson($this->attributes[$key]) : [];
+        return isset($this->modelAttributes[$key]) ?
+            $this->fromJson($this->modelAttributes[$key]) : [];
     }
 
     /**
@@ -321,7 +321,7 @@ trait HasAttributes
      *
      * @return array
      */
-    public function getAttributes()
+    public function getModelAttributes()
     {
         $attributes = [];
 
@@ -365,8 +365,8 @@ trait HasAttributes
             }
             $type  = $column['type'];
             $value = ObjectHelper::parseParamType($type, $value);
-            $this->setAttribute($key, $value);
-            $this->attributes[$key] = $value;
+            $this->setModelAttribute($key, $value);
+            $this->modelAttributes[$key] = $value;
         }
 
         if ($sync) {
@@ -384,9 +384,9 @@ trait HasAttributes
      *
      * @return mixed|array
      */
-    public function getOriginal($key = null, $default = null)
+    public function getModelOriginal($key = null, $default = null)
     {
-        return Arr::get($this->original, $key, $default);
+        return Arr::get($this->modelOriginal, $key, $default);
     }
 
     /**
@@ -415,7 +415,7 @@ trait HasAttributes
      */
     public function syncOriginal()
     {
-        $this->original = $this->attributes;
+        $this->modelOriginal = $this->modelAttributes;
 
         return $this;
     }
@@ -444,7 +444,7 @@ trait HasAttributes
         $attributes = is_array($attributes) ? $attributes : func_get_args();
 
         foreach ($attributes as $attribute) {
-            $this->original[$attribute] = $this->attributes[$attribute];
+            $this->modelOriginal[$attribute] = $this->modelAttributes[$attribute];
         }
 
         return $this;
@@ -457,7 +457,7 @@ trait HasAttributes
      */
     public function syncChanges()
     {
-        $this->changes = $this->getDirty();
+        $this->modelChanges = $this->getDirty();
 
         return $this;
     }
@@ -471,7 +471,7 @@ trait HasAttributes
      */
     public function isDirty($attributes = null)
     {
-        return $this->hasChanges(
+        return $this->hasSwoftChanges(
             $this->getDirty(), is_array($attributes) ? $attributes : func_get_args()
         );
     }
@@ -497,8 +497,8 @@ trait HasAttributes
      */
     public function wasChanged($attributes = null)
     {
-        return $this->hasChanges(
-            $this->getChanges(), is_array($attributes) ? $attributes : func_get_args()
+        return $this->hasSwoftChanges(
+            $this->getModelChanges(), is_array($attributes) ? $attributes : func_get_args()
         );
     }
 
@@ -510,7 +510,7 @@ trait HasAttributes
      *
      * @return bool
      */
-    protected function hasChanges($changes, $attributes = null)
+    protected function hasSwoftChanges($changes, $attributes = null)
     {
         // If no specific attributes were provided, we will just see if the dirty array
         // already contains any attributes. If it does we will just return that this
@@ -540,7 +540,7 @@ trait HasAttributes
     {
         $dirty = [];
 
-        foreach ($this->getAttributes() as $key => $value) {
+        foreach ($this->getModelAttributes() as $key => $value) {
             if (!$this->originalIsEquivalent($key, $value)) {
                 $dirty[$key] = $value;
             }
@@ -559,11 +559,11 @@ trait HasAttributes
      */
     protected function originalIsEquivalent($key, $current)
     {
-        if (!array_key_exists($key, $this->original)) {
+        if (!array_key_exists($key, $this->modelOriginal)) {
             return false;
         }
 
-        $original = $this->getOriginal($key);
+        $original = $this->getModelOriginal($key);
 
         if ($current === $original) {
             return true;
@@ -580,9 +580,9 @@ trait HasAttributes
      *
      * @return array
      */
-    public function getChanges()
+    public function getModelChanges()
     {
-        return $this->changes;
+        return $this->modelChanges;
     }
 
     /**

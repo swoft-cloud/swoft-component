@@ -82,7 +82,7 @@ class Aop
             $isExclude = $isExcludeBean || $isExcludeAnnotation || $isExcludeExecution;
 
             if ($isInclude && !$isExclude) {
-                self::$mapping[$className][$method][] = $aspect['advice'];
+                self::$mapping[$className][$method][$aspectClass] = $aspect['advice'];
             }
         }
     }

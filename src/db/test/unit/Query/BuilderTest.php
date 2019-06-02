@@ -720,9 +720,13 @@ class BuilderTest extends TestCase
     {
         $perPage = 2;
         $page    = 1;
-
-        $res = DB::table('user')->paginate($page, $perPage);
-
+        $res     = DB::table('user')->paginate($page, $perPage, ['name', 'password', 'id']);
+        $res1    = DB::table('user')
+            ->select('id')
+            ->addSelect(['name', 'password'])
+            ->where('id', '>', 0)
+            ->paginate($page, $perPage);
+        $this->assertEquals($res, $res1);
         $this->assertIsArray($res);
         $this->assertArrayHasKey('list', $res);
         $this->assertArrayHasKey('count', $res);
@@ -736,6 +740,7 @@ class BuilderTest extends TestCase
 
     public function testChunkById()
     {
+        $this->addRecord();
         DB::table('user')->chunkById(2, function ($users) {
             foreach ($users as $user) {
                 $this->assertIsString($user['name']);

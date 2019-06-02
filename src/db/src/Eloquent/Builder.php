@@ -22,25 +22,25 @@ use Swoft\Stdlib\Helper\PhpHelper;
  *
  * @since 2.0
  * @method Builder select(string ...$columns)
- * @method Builder selectSub(Closure|QueryBuilder|string $query, string $as)
+ * @method QueryBuilder selectSub(Closure|QueryBuilder|string $query, string $as)
  * @method Builder selectRaw(string $expression, array $bindings = [])
- * @method Builder fromSub(Closure|QueryBuilder|string $query, string $as)
+ * @method QueryBuilder fromSub(Closure|QueryBuilder|string $query, string $as)
  * @method Builder fromRaw(string $expression, array $bindings = [])
- * @method Builder createSub(Closure|QueryBuilder|string $query)
- * @method Builder parseSub(Closure|QueryBuilder|string $query)
+ * @method QueryBuilder createSub(Closure|QueryBuilder|string $query)
+ * @method QueryBuilder parseSub(Closure|QueryBuilder|string $query)
  * @method Builder addSelect(array $column)
  * @method Builder distinct()
  * @method Builder from(string $table)
- * @method Builder join(string $table, Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
- * @method Builder joinWhere(string $table, Closure|string $first, string $operator, string $second, string $type = 'inner')
- * @method Builder joinSub(Closure|QueryBuilder|string $query, string $as, Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
- * @method Builder leftJoin(string $table, Closure|string $first, string $operator = null, string $second = null)
- * @method Builder leftJoinWhere(string $table, string $first, string $operator, string $second)
- * @method Builder leftJoinSub(Closure|QueryBuilder|string $query, string $as, string $first, string $operator = null, string $second = null)
- * @method Builder rightJoin(string $table, Closure|string $first, string $operator = null, string $second = null)
- * @method Builder rightJoinWhere(string $table, string $first, string $operator, string $second)
- * @method Builder rightJoinSub(Closure|QueryBuilder|string $query, string $as, string $first, string $operator = null, string $second = null)
- * @method Builder crossJoin(string $table, Closure|string $first = null, string $operator = null, string $second = null)
+ * @method QueryBuilder join(string $table, Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
+ * @method QueryBuilder joinWhere(string $table, Closure|string $first, string $operator, string $second, string $type = 'inner')
+ * @method QueryBuilder joinSub(Closure|QueryBuilder|string $query, string $as, Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
+ * @method QueryBuilder leftJoin(string $table, Closure|string $first, string $operator = null, string $second = null)
+ * @method QueryBuilder leftJoinWhere(string $table, string $first, string $operator, string $second)
+ * @method QueryBuilder leftJoinSub(Closure|QueryBuilder|string $query, string $as, string $first, string $operator = null, string $second = null)
+ * @method QueryBuilder rightJoin(string $table, Closure|string $first, string $operator = null, string $second = null)
+ * @method QueryBuilder rightJoinWhere(string $table, string $first, string $operator, string $second)
+ * @method QueryBuilder rightJoinSub(Closure|QueryBuilder|string $query, string $as, string $first, string $operator = null, string $second = null)
+ * @method QueryBuilder crossJoin(string $table, Closure|string $first = null, string $operator = null, string $second = null)
  * @method void mergeWheres(array $wheres, array $bindings)
  * @method Builder whereColumn(string|array $first, string $operator = null, string $second = null, string $boolean = 'and')
  * @method Builder orWhereColumn(string|array $first, string $operator = null, string $second = null)
@@ -73,7 +73,7 @@ use Swoft\Stdlib\Helper\PhpHelper;
  * @method Builder whereNested(Closure $callback, string $boolean = 'and')
  * @method Builder forNestedWhere()
  * @method Builder addNestedWhereQuery(QueryBuilder $query, string $boolean = 'and')
- * @method Builder whereSub(string $column, string $operator, Closure $callback, string $boolean)
+ * @method QueryBuilder whereSub(string $column, string $operator, Closure $callback, string $boolean)
  * @method Builder whereExists(Closure $callback, string $boolean = 'and', bool $not = false)
  * @method Builder orWhereExists(Closure $callback, bool $not = false)
  * @method Builder whereNotExists(Closure $callback, string $boolean = 'and')
@@ -117,6 +117,7 @@ use Swoft\Stdlib\Helper\PhpHelper;
  * @method mixed average(string $column)
  * @method Connection getConnection()
  * @method string implode(string $column, string $glue = '')
+ * @method array paginate(int $page = 1, int $perPage = 15, array $columns = ['*'])
  *
  */
 class Builder
@@ -166,7 +167,23 @@ class Builder
         'pluck',
         'getConnection',
         'updateOrInsert',
-        'paginate'
+        'paginate',
+        'join',
+        'joinSub',
+        'joinWhere',
+        'crossJoin',
+        'leftJoin',
+        'leftJoinSub',
+        'leftJoinWhere',
+        'rightJoin',
+        'rightJoinSub',
+        'rightJoinWhere',
+        'whereSub',
+        'createSub',
+        'parseSub',
+        'parseSub',
+        'fromSub',
+        'selectRaw',
     ];
 
     /**
@@ -617,9 +634,7 @@ class Builder
      * @param string|null $alias
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function chunkById(int $count, callable $callback, string $column = null, string $alias = null): bool
     {

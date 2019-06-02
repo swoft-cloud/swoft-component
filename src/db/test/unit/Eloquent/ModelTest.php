@@ -9,6 +9,7 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\DB;
 use Swoft\Db\Eloquent\Collection;
 use Swoft\Db\Exception\DbException;
+use SwoftTest\Db\Testing\Entity\Count;
 use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Unit\TestCase;
 
@@ -206,7 +207,7 @@ class ModelTest extends TestCase
 
         $user = User::find(22);
         $user->addHidden(['age']);
-        $user->setVisible(['password']);
+        $user->setModelVisible(['password']);
         $user->addHidden(['password']);
         $user->addVisible(['age']);
         $user->addVisible(['pwd']);
@@ -268,7 +269,7 @@ on A.id=B.id;', [$resCount - 20]);
         $result = DB::table('user')->max('age');;
         $this->assertEquals($result, User::query()->max('age'));
 
-        $result1 = User::query()->min('age');
+        $result1 = User::min('age');
         $this->assertEquals($result1, DB::table('user')->min('age'));
 
         $result2 = User::query()->average('age');
@@ -283,13 +284,12 @@ on A.id=B.id;', [$resCount - 20]);
 
         // sql = select max(`id`) as id from `user` group by user_desc
         $res = User::query()
-            ->selectRaw('max(`id`) as id')
+            ->selectRaw('max(`id`) as max_id')
             ->groupBy('user_desc')
             ->get();
 
-        /* @var User $v */
         foreach ($res as $v) {
-            $this->assertGreaterThan(0, $v->getId());
+            $this->assertGreaterThan(0, $v['max_id']);
         }
         $ages = array_column($res->toArray(), 'id');
         $this->assertIsArray($ages);
@@ -344,6 +344,7 @@ on A.id=B.id;', [$resCount - 20]);
 
     public function testGetModels()
     {
+       User::updateOrCreate(['id' => 22], ['name' => "sakura", 'age' => 18]);
         $users = User::where('id', 22)->getModels(['id', 'age']);
         /* @var User $user */
         foreach ($users as $user) {
@@ -367,9 +368,12 @@ on A.id=B.id;', [$resCount - 20]);
     {
         $perPage = 2;
         $page    = 1;
-
-        $res = User::paginate($page, $perPage);
-
+        $res     = User::paginate($page, $perPage, ['name', 'password', 'id']);
+        $res1    = User::select('id')
+            ->where('id', '>', 0)
+            ->addSelect(['name', 'password'])
+            ->paginate($page, $perPage);
+        $this->assertEquals($res, $res1);
         $this->assertIsArray($res);
         $this->assertArrayHasKey('list', $res);
         $this->assertArrayHasKey('count', $res);
@@ -392,5 +396,27 @@ on A.id=B.id;', [$resCount - 20]);
         $userArray = User::new()->fill($attributes)->toArray();
         $this->assertArrayHasKey('testHump', $userArray);
         $this->assertEquals($expect, $userArray['testHump']);
+    }
+
+    public function testJoin()
+    {
+        $this->addRecord();
+        $userCounts = User::join('count', 'user.id', '=', 'count.user_id')->get();
+
+        foreach ($userCounts as $user) {
+            $this->assertIsArray($user);
+            $this->assertArrayHasKey('user_id', $user);
+            $this->assertArrayHasKey('create_time', $user);
+            $this->assertArrayHasKey('name', $user);
+        }
+    }
+
+    public function testSelectRaw()
+    {
+        $this->addCountRecord();
+
+        $field = 'count(*)';
+        $res   = (array)Count::selectRaw($field)->first();
+        $this->assertArrayHasKey($field, $res);
     }
 }
