@@ -5,7 +5,10 @@ namespace SwoftTest\Bean\Unit;
 
 
 use PHPUnit\Framework\TestCase;
+use ReflectionException;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
+use SwoftTest\Bean\Testing\Definition\TypeBean;
 
 /**
  * Class BeanTest
@@ -14,8 +17,28 @@ use Swoft\Bean\BeanFactory;
  */
 class BeanTest extends TestCase
 {
-    public function testSingle()
+    /**
+     * @throws ReflectionException
+     * @throws ContainerException
+     */
+    public function testType()
     {
-        $this->assertTrue(true);
+        /* @var TypeBean $typeBean */
+        $typeBean = BeanFactory::getBean('testTypeBean');
+
+        $this->assertEquals($typeBean->getStringVar(), '1');
+        $this->assertEquals($typeBean->getIntVar(), 1);
+        $this->assertEquals($typeBean->getIntegerVar(), 2);
+        $this->assertEquals($typeBean->getFloatVar(), 1.1);
+        $this->assertEquals($typeBean->getDoubleVar(), 1.2);
+
+        /* @var TypeBean $typeBean */
+        $typeBean = BeanFactory::getBean(TypeBean::class);
+
+        $this->assertEquals($typeBean->getStringVar(), '1');
+        $this->assertEquals($typeBean->getIntVar(), 1);
+        $this->assertEquals($typeBean->getIntegerVar(), 2);
+        $this->assertEquals($typeBean->getFloatVar(), 1.1);
+        $this->assertEquals($typeBean->getDoubleVar(), 1.2);
     }
 }
