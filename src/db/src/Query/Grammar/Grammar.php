@@ -6,14 +6,11 @@ namespace Swoft\Db\Query\Grammar;
 use ReflectionException;
 use RuntimeException;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Db\Connection\Connection;
 use Swoft\Db\Eloquent\Collection;
 use Swoft\Db\Grammar as BaseGrammar;
 use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
 use Swoft\Db\Query\JoinClause;
-use Swoft\Db\Schema\Blueprint;
-use Swoft\Stdlib\Fluent;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\Str;
 use function end;
@@ -85,36 +82,6 @@ class Grammar extends BaseGrammar
         $query->columns = $original;
 
         return $sql;
-    }
-
-    /**
-     * Compile a rename column command.
-     *
-     * @param Blueprint  $blueprint
-     * @param Fluent     $command
-     * @param Connection $connection
-     *
-     * @return array  @todo ....
-     */
-    public function compileRenameColumn(Blueprint $blueprint, Fluent $command, Connection $connection)
-    {
-        //return RenameColumn::compile($this, $blueprint, $command, $connection);
-    }
-
-    /**
-     * Compile a change column command into a series of SQL statements.
-     *
-     * @param Blueprint  $blueprint
-     * @param Fluent     $command
-     * @param Connection $connection
-     *
-     * @return array  @todo ....
-     *
-     * @throws \RuntimeException
-     */
-    public function compileChange(Blueprint $blueprint, Fluent $command, Connection $connection)
-    {
-        //return ChangeColumn::compile($this, $blueprint, $command, $connection);
     }
 
     /**

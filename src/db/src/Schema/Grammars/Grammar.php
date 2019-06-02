@@ -3,6 +3,7 @@
 
 namespace Swoft\Db\Schema\Grammars;
 
+use Swoft\Db\Connection\Connection;
 use Swoft\Db\Grammar as BaseGrammar;
 use Swoft\Db\Query\Expression;
 use Swoft\Db\Schema\Blueprint;
@@ -45,6 +46,39 @@ abstract class Grammar extends BaseGrammar
     public function getFluentCommands()
     {
         return $this->fluentCommands;
+    }
+
+
+    /**
+     * Compile a rename column command.
+     *
+     * @param Blueprint  $blueprint
+     * @param Fluent     $command
+     * @param Connection $connection
+     *
+     * @return array  @todo ....
+     */
+    public function compileRenameColumn(Blueprint $blueprint, Fluent $command, Connection $connection)
+    {
+        //return RenameColumn::compile($this, $blueprint, $command, $connection);
+        return [];
+    }
+
+    /**
+     * Compile a change column command into a series of SQL statements.
+     *
+     * @param Blueprint  $blueprint
+     * @param Fluent     $command
+     * @param Connection $connection
+     *
+     * @return array  @todo ....
+     *
+     * @throws \RuntimeException
+     */
+    public function compileChange(Blueprint $blueprint, Fluent $command, Connection $connection)
+    {
+        //return ChangeColumn::compile($this, $blueprint, $command, $connection);
+        return [];
     }
 
     /**
