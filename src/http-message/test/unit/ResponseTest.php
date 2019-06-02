@@ -46,10 +46,4 @@ class ResponseTest extends TestCase
         $w->setCookies([]);
         $this->assertEmpty($w->getCookies());
     }
-
-    public function testSend(): void
-    {
-        // $w = new Response();
-        // $w->set
-    }
 }

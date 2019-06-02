@@ -2,9 +2,9 @@
 
 
 namespace SwoftTest\Http\Server\Unit;
+
+use Swoft\Bean\Exception\ContainerException;
 use SwoftTest\Http\Server\Testing\MockRequest;
-
-
 use Swoft\Http\Message\ContentType;
 
 /**
@@ -16,7 +16,7 @@ class MdTest extends TestCase
 {
     /**
      * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ContainerException
      */
     public function testMethod()
     {
@@ -38,7 +38,7 @@ class MdTest extends TestCase
 
     /**
      * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ContainerException
      */
     public function testMethod2()
     {
@@ -58,7 +58,7 @@ class MdTest extends TestCase
 
     /**
      * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ContainerException
      */
     public function testMethod23()
     {

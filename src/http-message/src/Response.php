@@ -180,28 +180,32 @@ class Response implements ResponseInterface
     public function quickSend(Response $response = null): void
     {
         $response = $response ?: $this;
+        // Ensure coResponse is right
+        $coResponse = $response->getCoResponse();
 
         // Write Headers to co response
         foreach ($response->getHeaders() as $key => $value) {
+            $headerLine = implode(';', $value);
+
             if ($key === ContentType::KEY) {
-                $contentType = sprintf(implode(';', $value) . '; charset=%s', $this->getCharset());
-                $this->coResponse->header($key, $contentType);
+                $headerLine .= '; charset=' . $response->getCharset();
+                $coResponse->header($key, $headerLine);
             } else {
-                $this->coResponse->header($key, implode(';', $value));
+                $coResponse->header($key, $headerLine);
             }
         }
 
         // Write cookies
-        foreach ($this->cookies as $name => $ck) {
-            $this->coResponse->cookie($name, $ck['value'], $ck['expires'], $ck['path'], $ck['domain'], $ck['secure'], $ck['httpOnly']);
+        foreach ($response->cookies as $n => $c) {
+            $coResponse->cookie($n, $c['value'], $c['expires'], $c['path'], $c['domain'], $c['secure'], $c['httpOnly']);
         }
 
         // Set status code
-        $this->coResponse->status($response->getStatusCode());
+        $coResponse->status($response->getStatusCode());
 
         // Set body
         $content = $response->getBody()->getContents();
-        $this->coResponse->end($content);
+        $coResponse->end($content);
     }
 
     /**

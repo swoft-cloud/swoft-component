@@ -77,7 +77,7 @@ class RequestTest extends TestCase
         $mockRequest = $this->mockServer->mockRequest(MockRequest::PUT, '/testRest/user', [], $headers, [], $ext);
         $request     = Request::new($mockRequest);
 
-        $requestHeaderss = [
+        $requestHeaders = [
             'user-agent'   => ['curl/7.29.0'],
             'host'         => ['127.0.0.1:18306'],
             'accept'       => ['*/*'],
@@ -85,7 +85,7 @@ class RequestTest extends TestCase
         ];
         $this->assertEquals(MockRequest::PUT, $request->getMethod());
         $this->assertEquals($request->getHeader(ContentType::KEY)[0], ContentType::JSON);
-        $this->assertEquals($request->getHeaders(), $requestHeaderss);
+        $this->assertEquals($request->getHeaders(), $requestHeaders);
         $this->assertEquals('/testRest/user', $request->getUri()->getPath());
         $this->assertGreaterThan(0, $request->getRequestTime());
         $this->assertEquals($request->getParsedBody(), $data);
