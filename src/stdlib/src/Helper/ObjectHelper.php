@@ -2,11 +2,13 @@
 
 namespace Swoft\Stdlib\Helper;
 
+use InvalidArgumentException;
+use Throwable;
 use function is_numeric;
+use function json_encode;
 use function method_exists;
 use function property_exists;
 use function spl_object_hash;
-use Swoft\Db\Exception\DbException;
 use function ucfirst;
 
 /**
@@ -87,10 +89,8 @@ class ObjectHelper
                     $value = (double)$value;
                     break;
             }
-        } catch (\Throwable $e) {
-            throw new \InvalidArgumentException(
-                sprintf('Convert value(%s) to %s', json_unescaped_encode($value), $type)
-            );
+        } catch (Throwable $e) {
+            throw new InvalidArgumentException(sprintf('Error on convert value(%s) to %s', json_encode($value), $type));
         }
 
         return $value;
