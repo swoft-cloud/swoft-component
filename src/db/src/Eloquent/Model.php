@@ -143,24 +143,28 @@ use Throwable;
  * @method static Builder limit(int $value)
  * @method static Builder forPage(int $page, int $perPage = 15)
  * @method static array   paginate(int $page = 1, int $perPage = 15, array $columns = ['*'])
+ * @method static array getBindings()
+ * @method static string toSql()
+ * @method static bool exists()
+ * @method static bool doesntExist()
+ * @method static string count(string $columns = '*')
+ * @method static mixed min(string $column)
+ * @method static mixed max(string $column)
+ * @method static mixed sum(string $column)
+ * @method static mixed avg($column)
+ * @method static mixed average(string $column)
+ * @method static void truncate()
  */
 abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
 {
     use HidesAttributes, HasAttributes;
 
     /**
-     * The number of models to return for pagination.
-     *
-     * @var int
-     */
-    protected $perPage = 15;
-
-    /**
      * Indicates if the model exists.
      *
      * @var bool
      */
-    public $exists = false;
+    public $swoftExists = false;
 
     /**
      * Create a new Eloquent model instance.
@@ -196,7 +200,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 
         $self->syncOriginal();
         $self->fill($attributes);
-        $self->exists = false;
+        $self->swoftExists = false;
 
         return $self;
     }
@@ -248,7 +252,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         // hydration of new objects via the Eloquent query builder instances.
         $model = static::new($attributes);
 
-        $model->exists = $exists;
+        $model->swoftExists = $exists;
 
         return $model;
     }
@@ -335,7 +339,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     {
         $query = $this->newModelQuery();
 
-        if (!$this->exists) {
+        if (!$this->swoftExists) {
             return $query->{$method}($column, $amount, $extra);
         }
 
@@ -369,7 +373,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     protected function incrementOrDecrementAttributeValue(string $column, $amount, $extra, $method)
     {
         $columnValue = $method === 'increment' ? $amount : $amount * -1;
-        $this->setAttribute($column, $this->getAttributeValue($column) + $columnValue);
+        $this->setModelAttribute($column, $this->getAttributeValue($column) + $columnValue);
 
         $this->fill($extra);
 
@@ -388,7 +392,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public function update(array $attributes = [])
     {
-        if (!$this->exists) {
+        if (!$this->swoftExists) {
             return false;
         }
 
@@ -416,7 +420,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         // If the model already exists in the database we can just update our record
         // that is already in this database using the current IDs in this "where"
         // clause to only update this model. Otherwise, we'll just insert them.
-        if ($this->exists) {
+        if ($this->swoftExists) {
             $saved = $this->isDirty() ?
                 $this->performUpdate($query) : true;
         }
@@ -521,7 +525,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     protected function getKeyForSaveQuery()
     {
-        return $this->original[$this->getKeyName()]
+        return $this->modelOriginal[$this->getKeyName()]
             ?? $this->getKey();
     }
 
@@ -540,7 +544,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         // If the model has an incrementing key, we can use the "insertGetId" method on
         // the query builder, which will give us back the final inserted ID for this
         // table from the database. Not all tables have to be incrementing though.
-        $attributes = $this->getAttributes();
+        $attributes = $this->getModelAttributes();
 
         if ($this->getIncrementing()) {
             $this->insertAndSetId($query, $attributes);
@@ -560,7 +564,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         // We will go ahead and set the exists property to true, so that it is set when
         // the created event is fired, just in case the developer tries to update it
         // during the event. This will allow them to do so and run an update here.
-        $this->exists = true;
+        $this->swoftExists = true;
 
         // fire created
         return true;
@@ -580,7 +584,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         $keyName = $this->getKeyName();
         $id      = $query->insertGetId($attributes, $keyName);
 
-        $this->setAttribute($keyName, $id);
+        $this->setModelAttribute($keyName, $id);
     }
 
     /**
@@ -600,7 +604,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         // If the model doesn't exist, there is nothing to delete so we'll just return
         // immediately and not do anything else. Otherwise, we will continue with a
         // deletion process on the model, firing the proper events, and so forth.
-        if (!$this->exists) {
+        if (!$this->swoftExists) {
             return false;
         }
 
@@ -643,7 +647,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     {
         $this->setKeysForSaveQuery($this->newModelQuery())->delete();
 
-        $this->exists = false;
+        $this->swoftExists = false;
     }
 
     /**
@@ -770,7 +774,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public function fresh()
     {
-        if (!$this->exists) {
+        if (!$this->swoftExists) {
             return $this;
         }
 
@@ -789,12 +793,12 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public function refresh()
     {
-        if (!$this->exists) {
+        if (!$this->swoftExists) {
             return $this;
         }
 
         $this->setRawAttributes(
-            $this->newModelQuery()->findOrFail($this->getKey())->attributes
+            $this->newModelQuery()->findOrFail($this->getKey())->modelAttributes
         );
 
         $this->syncOriginal();
@@ -909,30 +913,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     }
 
     /**
-     * Get the number of models to return per page.
-     *
-     * @return int
-     */
-    public function getPerPage()
-    {
-        return $this->perPage;
-    }
-
-    /**
-     * Set the number of models to return per page.
-     *
-     * @param int $perPage
-     *
-     * @return $this
-     */
-    public function setPerPage($perPage)
-    {
-        $this->perPage = $perPage;
-
-        return $this;
-    }
-
-    /**
      * Determine if the given attribute exists.
      *
      * @param mixed $offset
@@ -942,7 +922,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public function offsetExists($offset)
     {
-        return !is_null($this->getAttribute($offset));
+        return !is_null($this->getModelAttribute($offset));
     }
 
     /**
@@ -969,7 +949,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public function offsetSet($offset, $value)
     {
-        $this->setAttribute($offset, $value);
+        $this->setModelAttribute($offset, $value);
     }
 
     /**
@@ -981,7 +961,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public function offsetUnset($offset)
     {
-        unset($this->attributes[$offset]);
+        unset($this->modelAttributes[$offset]);
     }
 
     /**

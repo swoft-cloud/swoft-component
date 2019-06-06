@@ -21,16 +21,16 @@ use Swoft\Stdlib\Helper\PhpHelper;
  * Class Builder
  *
  * @since 2.0
- * @method QueryBuilder select(string ...$columns)
+ * @method Builder select(string ...$columns)
  * @method QueryBuilder selectSub(Closure|QueryBuilder|string $query, string $as)
- * @method QueryBuilder selectRaw(string $expression, array $bindings = [])
+ * @method Builder selectRaw(string $expression, array $bindings = [])
  * @method QueryBuilder fromSub(Closure|QueryBuilder|string $query, string $as)
- * @method QueryBuilder fromRaw(string $expression, array $bindings = [])
+ * @method Builder fromRaw(string $expression, array $bindings = [])
  * @method QueryBuilder createSub(Closure|QueryBuilder|string $query)
  * @method QueryBuilder parseSub(Closure|QueryBuilder|string $query)
- * @method QueryBuilder addSelect(array $column)
- * @method QueryBuilder distinct()
- * @method QueryBuilder from(string $table)
+ * @method Builder addSelect(array $column)
+ * @method Builder distinct()
+ * @method Builder from(string $table)
  * @method QueryBuilder join(string $table, Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
  * @method QueryBuilder joinWhere(string $table, Closure|string $first, string $operator, string $second, string $type = 'inner')
  * @method QueryBuilder joinSub(Closure|QueryBuilder|string $query, string $as, Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
@@ -42,67 +42,67 @@ use Swoft\Stdlib\Helper\PhpHelper;
  * @method QueryBuilder rightJoinSub(Closure|QueryBuilder|string $query, string $as, string $first, string $operator = null, string $second = null)
  * @method QueryBuilder crossJoin(string $table, Closure|string $first = null, string $operator = null, string $second = null)
  * @method void mergeWheres(array $wheres, array $bindings)
- * @method QueryBuilder whereColumn(string|array $first, string $operator = null, string $second = null, string $boolean = 'and')
- * @method QueryBuilder orWhereColumn(string|array $first, string $operator = null, string $second = null)
- * @method QueryBuilder whereRaw(string $sql, array $bindings = [], string $boolean = 'and')
- * @method QueryBuilder orWhereRaw(string $sql, array $bindings = [])
- * @method QueryBuilder whereIn(string $column, mixed $values, string $boolean = 'and', bool $not = false)
- * @method QueryBuilder orWhereIn(string $column, mixed $values)
- * @method QueryBuilder whereNotIn(string $column, mixed $values, string $boolean = 'and')
- * @method QueryBuilder orWhereNotIn(string $column, mixed $values)
- * @method QueryBuilder whereIntegerInRaw(string $column, Arrayable|array $values, string $boolean = 'and', bool $not = false)
- * @method QueryBuilder whereIntegerNotInRaw(string $column, Arrayable|array $values, string $boolean = 'and')
- * @method QueryBuilder whereNull(string $column, string $boolean = 'and', bool $not = false)
- * @method QueryBuilder orWhereNull(string $column)
- * @method QueryBuilder whereNotNull(string $column, string $boolean = 'and')
- * @method QueryBuilder whereBetween(string $column, array $values, string $boolean = 'and', bool $not = false)
- * @method QueryBuilder orWhereBetween(string $column, array $values)
- * @method QueryBuilder whereNotBetween(string $column, array $values, string $boolean = 'and')
- * @method QueryBuilder orWhereNotBetween(string $column, array $values)
- * @method QueryBuilder orWhereNotNull(string $column)
- * @method QueryBuilder whereDate(string $column, $operator, DateTimeInterface|string $value = null, string $boolean = 'and')
- * @method QueryBuilder orWhereDate(string $column, string $operator, DateTimeInterface|string $value = null)
- * @method QueryBuilder whereTime(string $column, $operator, DateTimeInterface|string $value = null, string $boolean = 'and')
- * @method QueryBuilder orWhereTime(string $column, string $operator, DateTimeInterface|string $value = null)
- * @method QueryBuilder whereDay(string $column, string $operator, DateTimeInterface|string $value = null, string $boolean = 'and')
- * @method QueryBuilder orWhereDay(string $column, string $operator, DateTimeInterface|string $value = null)
- * @method QueryBuilder whereMonth(string $column, string $operator, DateTimeInterface|string $value = null, string $boolean = 'and')
- * @method QueryBuilder orWhereMonth(string $column, string $operator, DateTimeInterface|string $value = null)
- * @method QueryBuilder whereYear(string $column, string $operator, DateTimeInterface|string|int $value = null, string $boolean = 'and')
- * @method QueryBuilder orWhereYear(string $column, string $operator, DateTimeInterface|string|int $value = null)
- * @method QueryBuilder whereNested(Closure $callback, string $boolean = 'and')
- * @method QueryBuilder forNestedWhere()
- * @method QueryBuilder addNestedWhereQuery(QueryBuilder $query, string $boolean = 'and')
+ * @method Builder whereColumn(string|array $first, string $operator = null, string $second = null, string $boolean = 'and')
+ * @method Builder orWhereColumn(string|array $first, string $operator = null, string $second = null)
+ * @method Builder whereRaw(string $sql, array $bindings = [], string $boolean = 'and')
+ * @method Builder orWhereRaw(string $sql, array $bindings = [])
+ * @method Builder whereIn(string $column, mixed $values, string $boolean = 'and', bool $not = false)
+ * @method Builder orWhereIn(string $column, mixed $values)
+ * @method Builder whereNotIn(string $column, mixed $values, string $boolean = 'and')
+ * @method Builder orWhereNotIn(string $column, mixed $values)
+ * @method Builder whereIntegerInRaw(string $column, Arrayable|array $values, string $boolean = 'and', bool $not = false)
+ * @method Builder whereIntegerNotInRaw(string $column, Arrayable|array $values, string $boolean = 'and')
+ * @method Builder whereNull(string $column, string $boolean = 'and', bool $not = false)
+ * @method Builder orWhereNull(string $column)
+ * @method Builder whereNotNull(string $column, string $boolean = 'and')
+ * @method Builder whereBetween(string $column, array $values, string $boolean = 'and', bool $not = false)
+ * @method Builder orWhereBetween(string $column, array $values)
+ * @method Builder whereNotBetween(string $column, array $values, string $boolean = 'and')
+ * @method Builder orWhereNotBetween(string $column, array $values)
+ * @method Builder orWhereNotNull(string $column)
+ * @method Builder whereDate(string $column, $operator, DateTimeInterface|string $value = null, string $boolean = 'and')
+ * @method Builder orWhereDate(string $column, string $operator, DateTimeInterface|string $value = null)
+ * @method Builder whereTime(string $column, $operator, DateTimeInterface|string $value = null, string $boolean = 'and')
+ * @method Builder orWhereTime(string $column, string $operator, DateTimeInterface|string $value = null)
+ * @method Builder whereDay(string $column, string $operator, DateTimeInterface|string $value = null, string $boolean = 'and')
+ * @method Builder orWhereDay(string $column, string $operator, DateTimeInterface|string $value = null)
+ * @method Builder whereMonth(string $column, string $operator, DateTimeInterface|string $value = null, string $boolean = 'and')
+ * @method Builder orWhereMonth(string $column, string $operator, DateTimeInterface|string $value = null)
+ * @method Builder whereYear(string $column, string $operator, DateTimeInterface|string|int $value = null, string $boolean = 'and')
+ * @method Builder orWhereYear(string $column, string $operator, DateTimeInterface|string|int $value = null)
+ * @method Builder whereNested(Closure $callback, string $boolean = 'and')
+ * @method Builder forNestedWhere()
+ * @method Builder addNestedWhereQuery(QueryBuilder $query, string $boolean = 'and')
  * @method QueryBuilder whereSub(string $column, string $operator, Closure $callback, string $boolean)
- * @method QueryBuilder whereExists(Closure $callback, string $boolean = 'and', bool $not = false)
- * @method QueryBuilder orWhereExists(Closure $callback, bool $not = false)
- * @method QueryBuilder whereNotExists(Closure $callback, string $boolean = 'and')
- * @method QueryBuilder orWhereNotExists(Closure $callback)
- * @method QueryBuilder addWhereExistsQuery(Builder $query, string $boolean = 'and', bool $not = false)
- * @method QueryBuilder whereRowValues(array $columns, string $operator, array $values, string $boolean = 'and')
- * @method QueryBuilder orWhereRowValues(array $columns, string $operator, array $values)
- * @method QueryBuilder whereJsonContains(string $column, $value, string $boolean = 'and', bool $not = false)
- * @method QueryBuilder orWhereJsonContains(string $column, mixed $value)
- * @method QueryBuilder whereJsonDoesntContain(string $column, mixed $value, string $boolean = 'and')
- * @method QueryBuilder orWhereJsonDoesntContain(string $column, mixed $value)
- * @method QueryBuilder whereJsonLength(string $column, mixed $operator, mixed $value = null, string $boolean = 'and')
- * @method QueryBuilder orWhereJsonLength(string $column, mixed $operator, mixed $value = null)
- * @method QueryBuilder groupBy(...$groups)
- * @method QueryBuilder having(string $column, string $operator = null, string $value = null, string $boolean = 'and')
- * @method QueryBuilder orHaving(string $column, string $operator = null, string $value = null)
- * @method QueryBuilder havingBetween(string $column, array $values, string $boolean = 'and', bool $not = false)
- * @method QueryBuilder havingRaw(string $sql, array $bindings = [], string $boolean = 'and')
- * @method QueryBuilder orHavingRaw(string $sql, array $bindings = [])
- * @method QueryBuilder orderBy(string $column, string $direction = 'asc')
- * @method QueryBuilder orderByDesc(string $column)
- * @method QueryBuilder inRandomOrder(string $seed = '')
- * @method QueryBuilder orderByRaw(string $sql, array $bindings = [])
- * @method QueryBuilder skip(int $value)
- * @method QueryBuilder offset(int $value)
- * @method QueryBuilder take(int $value)
- * @method QueryBuilder limit(int $value)
- * @method QueryBuilder forPage(int $page, int $perPage = 15)
- * @method QueryBuilder forPageAfterId(int $perPage = 15, int $lastId = null, string $column = 'id')
+ * @method Builder whereExists(Closure $callback, string $boolean = 'and', bool $not = false)
+ * @method Builder orWhereExists(Closure $callback, bool $not = false)
+ * @method Builder whereNotExists(Closure $callback, string $boolean = 'and')
+ * @method Builder orWhereNotExists(Closure $callback)
+ * @method Builder addWhereExistsQuery(Builder $query, string $boolean = 'and', bool $not = false)
+ * @method Builder whereRowValues(array $columns, string $operator, array $values, string $boolean = 'and')
+ * @method Builder orWhereRowValues(array $columns, string $operator, array $values)
+ * @method Builder whereJsonContains(string $column, $value, string $boolean = 'and', bool $not = false)
+ * @method Builder orWhereJsonContains(string $column, mixed $value)
+ * @method Builder whereJsonDoesntContain(string $column, mixed $value, string $boolean = 'and')
+ * @method Builder orWhereJsonDoesntContain(string $column, mixed $value)
+ * @method Builder whereJsonLength(string $column, mixed $operator, mixed $value = null, string $boolean = 'and')
+ * @method Builder orWhereJsonLength(string $column, mixed $operator, mixed $value = null)
+ * @method Builder groupBy(...$groups)
+ * @method Builder having(string $column, string $operator = null, string $value = null, string $boolean = 'and')
+ * @method Builder orHaving(string $column, string $operator = null, string $value = null)
+ * @method Builder havingBetween(string $column, array $values, string $boolean = 'and', bool $not = false)
+ * @method Builder havingRaw(string $sql, array $bindings = [], string $boolean = 'and')
+ * @method Builder orHavingRaw(string $sql, array $bindings = [])
+ * @method Builder orderBy(string $column, string $direction = 'asc')
+ * @method Builder orderByDesc(string $column)
+ * @method Builder inRandomOrder(string $seed = '')
+ * @method Builder orderByRaw(string $sql, array $bindings = [])
+ * @method Builder skip(int $value)
+ * @method Builder offset(int $value)
+ * @method Builder take(int $value)
+ * @method Builder limit(int $value)
+ * @method Builder forPage(int $page, int $perPage = 15)
+ * @method Builder forPageAfterId(int $perPage = 15, int $lastId = null, string $column = 'id')
  * @method string insertGetId(array $values, string $sequence = null)
  * @method bool insert(array $values)
  * @method array getBindings()
@@ -139,20 +139,6 @@ class Builder
     protected $model;
 
     /**
-     * All of the globally registered builder macros.
-     *
-     * @var array
-     */
-    protected static $macros = [];
-
-    /**
-     * All of the locally registered builder macros.
-     *
-     * @var array
-     */
-    protected $localMacros = [];
-
-    /**
      * A replacement for the typical delete function.
      *
      * @var Closure
@@ -181,7 +167,23 @@ class Builder
         'pluck',
         'getConnection',
         'updateOrInsert',
-        'paginate'
+        'paginate',
+        'join',
+        'joinSub',
+        'joinWhere',
+        'crossJoin',
+        'leftJoin',
+        'leftJoinSub',
+        'leftJoinWhere',
+        'rightJoin',
+        'rightJoinSub',
+        'rightJoinWhere',
+        'whereSub',
+        'createSub',
+        'parseSub',
+        'parseSub',
+        'fromSub',
+        'selectRaw',
     ];
 
     /**
@@ -632,9 +634,7 @@ class Builder
      * @param string|null $alias
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function chunkById(int $count, callable $callback, string $column = null, string $alias = null): bool
     {
@@ -887,18 +887,6 @@ class Builder
     public function qualifyColumn($column)
     {
         return $this->model->qualifyColumn($column);
-    }
-
-    /**
-     * Get the given macro by name.
-     *
-     * @param string $name
-     *
-     * @return Closure
-     */
-    public function getMacro($name)
-    {
-        return Arr::get($this->localMacros, $name);
     }
 
     /**

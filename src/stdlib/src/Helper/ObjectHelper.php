@@ -8,6 +8,7 @@ use function is_numeric;
 use function json_encode;
 use function method_exists;
 use function property_exists;
+use ReflectionProperty;
 use function spl_object_hash;
 use function ucfirst;
 
@@ -18,6 +19,20 @@ use function ucfirst;
  */
 class ObjectHelper
 {
+    /**
+     * Base types
+     */
+    public const BASE_TYPES = [
+        'bool',
+        'boolean',
+        'string',
+        'int',
+        'integer',
+        'float',
+        'double',
+        'array'
+    ];
+
     /**
      * Return object hash value
      *
@@ -80,6 +95,7 @@ class ObjectHelper
                     $value = (string)$value;
                     break;
                 case 'bool':
+                case 'boolean':
                     $value = (bool)$value;
                     break;
                 case 'float':
@@ -90,10 +106,38 @@ class ObjectHelper
                     break;
             }
         } catch (Throwable $e) {
-            throw new InvalidArgumentException(sprintf('Error on convert value(%s) to %s', json_encode($value), $type));
+            throw new InvalidArgumentException(
+                sprintf('Error on convert value(%s) to %s', json_encode($value), $type)
+            );
         }
 
         return $value;
+    }
+
+    /**
+     * @param ReflectionProperty $property
+     *
+     * @return string
+     */
+    public static function getPropertyBaseType(ReflectionProperty $property): string
+    {
+        $docComment = $property->getDocComment();
+        if (!$docComment) {
+            return '';
+        }
+
+        // Get the content of the @var annotation
+        if (preg_match('/@var\s+([^\s]+)/', $docComment, $matches)) {
+            [, $type] = $matches;
+        } else {
+            return '';
+        }
+
+        if (in_array($type, self::BASE_TYPES, true)) {
+            return $type;
+        }
+
+        return '';
     }
 
     /**
@@ -108,12 +152,14 @@ class ObjectHelper
         $value = null;
         switch ($type) {
             case 'int':
+            case 'integer':
                 $value = 0;
                 break;
             case 'string':
                 $value = '';
                 break;
             case 'bool':
+            case 'boolean':
                 $value = false;
                 break;
             case 'float':

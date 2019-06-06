@@ -19,35 +19,35 @@ trait HidesAttributes
      *
      * @var array
      */
-    protected $hidden = [];
+    protected $modelHidden = [];
 
     /**
      * The attributes that should be visible in serialization.
      *
      * @var array
      */
-    protected $visible = [];
+    protected $modelVisible = [];
 
     /**
      * Get the hidden attributes for the model.
      *
      * @return array
      */
-    public function getHidden()
+    public function getModelHidden()
     {
-        return $this->hidden;
+        return $this->modelHidden;
     }
 
     /**
      * Set the hidden attributes for the model.
      *
-     * @param array $hidden
+     * @param array $modelHidden
      *
      * @return $this
      */
-    public function setHidden(array $hidden)
+    public function setModelHidden(array $modelHidden)
     {
-        $this->hidden = $hidden;
+        $this->modelHidden = $modelHidden;
 
         return $this;
     }
@@ -61,9 +61,9 @@ trait HidesAttributes
      */
     public function addHidden(array $attributes)
     {
-        $this->visible = array_diff($this->visible, $attributes);
+        $this->modelVisible = array_diff($this->modelVisible, $attributes);
 
-        $this->hidden = array_unique(array_merge($this->hidden, $attributes));
+        $this->modelHidden = array_unique(array_merge($this->modelHidden, $attributes));
 
     }
 
@@ -72,21 +72,21 @@ trait HidesAttributes
      *
      * @return array
      */
-    public function getVisible()
+    public function getModelVisible()
     {
-        return $this->visible;
+        return $this->modelVisible;
     }
 
     /**
      * Set the visible attributes for the model.
      *
-     * @param array $visible
+     * @param array $modelVisible
      *
      * @return $this
      */
-    public function setVisible(array $visible)
+    public function setModelVisible(array $modelVisible)
     {
-        $this->visible = $visible;
+        $this->modelVisible = $modelVisible;
 
         return $this;
     }
@@ -100,9 +100,9 @@ trait HidesAttributes
      */
     public function addVisible(array $attributes): void
     {
-        $this->hidden  = array_diff($this->hidden, $attributes);
+        $this->modelHidden = array_diff($this->modelHidden, $attributes);
 
-        $this->visible = array_unique(array_merge($this->visible, $attributes));
+        $this->modelVisible = array_unique(array_merge($this->modelVisible, $attributes));
     }
 
     /**

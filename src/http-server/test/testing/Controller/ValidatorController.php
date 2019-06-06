@@ -30,7 +30,9 @@ class ValidatorController
      */
     public function defaultValidator(Request $request)
     {
-        $data = $request->getParsedBody();
+        $data            = $request->getParsedBody();
+        $data['kString'] = $request->parsedBody('string');
+        $data['noKey']   = $request->parsedBody('noKey', 'not');
 
         return $data;
     }
@@ -64,6 +66,9 @@ class ValidatorController
     public function defaultValidatorQuery(Request $request)
     {
         $data = $request->getParsedQuery();
+
+        $data['kString'] = $request->parsedQuery('string');
+        $data['noKey']   = $request->parsedQuery('noKey', 'not');
 
         return $data;
     }

@@ -72,10 +72,17 @@ return [
     'manyTwoInstance' => [
         'class' => ManyInstance::class,
     ],
-    'two.many' => [
+    'two.many'        => [
         'class' => ManyInstance::class,
     ],
-    'commaNameClass' => [
+    'commaNameClass'  => [
         'manyInstance2' => \bean('two.many')
+    ],
+    'testTypeBean'    => [
+        'stringVar'  => 1,
+        'intVar'     => '1',
+        'integerVar' => '2',
+        'floatVar'   => '1.1',
+        'doubleVar'  => '1.2',
     ]
 ];

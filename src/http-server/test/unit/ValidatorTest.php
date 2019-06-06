@@ -26,7 +26,9 @@ class ValidatorTest extends TestCase
             'bool'   => true,
             'array'  => [
                 'array'
-            ]
+            ],
+            'kString' => 'string',
+            'noKey' => 'not',
         ];
         $response = $this->mockServer->request(MockRequest::POST, '/testValidator/defautValidator');
         $response->assertEqualJson($data);
@@ -75,7 +77,9 @@ class ValidatorTest extends TestCase
             'bool'   => true,
             'array'  => [
                 'array'
-            ]
+            ],
+            'kString' => 'string',
+            'noKey' => 'not',
         ];
         $response = $this->mockServer->request(MockRequest::GET, '/testValidator/defaultValidatorQuery');
         $response->assertEqualJson($data);
