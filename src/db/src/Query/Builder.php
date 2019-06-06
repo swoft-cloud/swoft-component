@@ -3351,6 +3351,7 @@ class Builder implements PrototypeInterface
     protected function setQueryGrammar(string $driver, string $prefix, Grammar $grammar = null): void
     {
         if (!empty($grammar)) {
+            $grammar->setTablePrefix($prefix);
             $this->grammar = $grammar;
             return;
         }

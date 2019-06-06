@@ -975,4 +975,12 @@ class Connection extends AbstractConnection implements ConnectionInterface
     {
         return BeanFactory::getBean(ConnectionManager::class);
     }
+
+    /**
+     * @return Database
+     */
+    public function getDatabase(): Database
+    {
+        return $this->database;
+    }
 }
