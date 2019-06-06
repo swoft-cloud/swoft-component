@@ -6,7 +6,7 @@ use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\WebSocket\Server\Contract\ResponseInterface;
+use Swoft\WebSocket\Server\Contract\RequestInterface;
 use Swoole\WebSocket\Frame;
 
 /**
@@ -16,7 +16,7 @@ use Swoole\WebSocket\Frame;
  *
  * @Bean(scope=Bean::PROTOTYPE)
  */
-class Request implements ResponseInterface
+class Request implements RequestInterface
 {
     use PrototypeTrait;
 
@@ -36,6 +36,7 @@ class Request implements ResponseInterface
     {
         $self = self::__instance();
 
+        // Init properties
         $self->frame = $frame;
 
         return $self;

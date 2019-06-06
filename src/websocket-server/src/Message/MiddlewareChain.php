@@ -7,6 +7,7 @@ use ReflectionException;
 use RuntimeException;
 use SplDoublyLinkedList;
 use SplStack;
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\ContainerException;
@@ -111,16 +112,14 @@ class MiddlewareChain implements MessageHandlerInterface
 
     /**
      * Call this method to start executing all middleware
-     * 调用此方法开始执行所有中间件
      *
      * @param RequestInterface $request
      *
      * @return ResponseInterface
-     * @throws UnexpectedValueException
-     * @throws RuntimeException
-     * @throws InvalidArgumentException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
-    public function callStack(RequestInterface $request): ResponseInterface
+    public function run(RequestInterface $request): ResponseInterface
     {
         if ($this->locked) {
             throw new RuntimeException('Middleware stack can’t be start once the stack is dequeuing');
@@ -141,12 +140,13 @@ class MiddlewareChain implements MessageHandlerInterface
 
     /**
      * Do not call directly externally, internally called
-     * 不要在外部直接调用，内部调用的
      *
-     * @throws UnexpectedValueException
-     * @throws InvalidArgumentException
+     * @param RequestInterface $request
+     *
+     * @return ResponseInterface
+     * @throws ContainerException
+     * @throws ReflectionException
      * @internal
-     * {@inheritDoc}
      */
     public function handle(RequestInterface $request): ResponseInterface
     {
@@ -159,7 +159,8 @@ class MiddlewareChain implements MessageHandlerInterface
 
         // if is a class name
         if (is_string($middleware) && class_exists($middleware)) {
-            $middleware = new $middleware;
+            // $middleware = new $middleware;
+            $middleware = Swoft::getBean($middleware);
         }
 
         if ($middleware instanceof MiddlewareInterface) {

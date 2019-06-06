@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Http\Server\Testing\Controller;
 
 use ReflectionException;
@@ -11,26 +10,19 @@ use Swoft\Http\Server\Annotation\Mapping\Controller;
 use Swoft\Http\Server\Annotation\Mapping\RequestMapping;
 
 /**
- * Class ContentTypeController
+ * Class TestController
  *
- * @since 2.0
- *
- * @Controller(prefix="ct")
+ * @Controller("/fixture/test")
  */
-class ContentTypeController
+class TestController
 {
     /**
      * @RequestMapping()
-     *
-     * @param Response $response
-     *
-     * @return Response
-     * @throws ReflectionException
-     * @throws ContainerException
+     * @return string
      */
-    public function userCt(Response $response): Response
+    public function hello(): string
     {
-        return $response->withContentType('image/jpeg')->withContent('imag data content');
+        return 'hello';
     }
 
     /**
@@ -42,9 +34,9 @@ class ContentTypeController
      * @throws ReflectionException
      * @throws ContainerException
      */
-    public function userCt2(Response $response): Response
+    public function cookie(Response $response): Response
     {
-        return $response->withContentType(ContentType::XML)->withContent('xml data content');
+        return $response->setCookie('ck', 'val')->withContent('hello');
     }
 
     /**
@@ -52,10 +44,24 @@ class ContentTypeController
      *
      * @param Response $response
      *
-     * @return array
+     * @return Response
      */
-    public function userCt3(Response $response): array
+    public function htmlData(Response $response): Response
     {
-        return ['key' => 'data'];
+        return $response->withData('<h1>hello</h1>')->withContentType(ContentType::HTML);
+    }
+
+    /**
+     * @RequestMapping()
+     *
+     * @param Response $response
+     *
+     * @return Response
+     * @throws ContainerException
+     * @throws ReflectionException
+     */
+    public function htmlContent(Response $response): Response
+    {
+        return $response->withContent('<h1>hello</h1>')->withContentType(ContentType::HTML);
     }
 }

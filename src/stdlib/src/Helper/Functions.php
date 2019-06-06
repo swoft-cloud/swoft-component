@@ -27,3 +27,39 @@ if (!function_exists('fnmatch')) {
         );
     }
 }
+
+if (!function_exists('printr')) {
+    /**
+     * like print_r, but allow multi params
+     *
+     * @param mixed ...$vars
+     */
+    function printr(...$vars)
+    {
+        foreach ($vars as $var) {
+            /** @noinspection ForgottenDebugOutputInspection */
+            print_r($var);
+            echo PHP_EOL;
+        }
+    }
+}
+
+if (!function_exists('vdump')) {
+    /**
+     * like var_dump
+     *
+     * @param mixed ...$vars
+     */
+    function vdump(...$vars)
+    {
+        ob_start();
+        var_dump(...$vars);
+        $string = ob_get_clean();
+
+        echo preg_replace(
+            ["/Array[\s]*\(/", "/=>[\s]+/i"],
+            ['Array (', '=> '],
+            $string
+        );
+    }
+}

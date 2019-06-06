@@ -1,9 +1,8 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Http\Server\Testing\Controller;
 
-
+use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Annotation\Mapping\Controller;
 use Swoft\Http\Server\Annotation\Mapping\Middleware;
 use Swoft\Http\Server\Annotation\Mapping\Middlewares;

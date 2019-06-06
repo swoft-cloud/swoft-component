@@ -156,7 +156,8 @@ class Table extends MessageFormatter
             $tStyle      = $opts['titleStyle'] ?: 'bold';
             $title       = ucwords(trim($title));
             $titleLength = mb_strlen($title, 'UTF-8');
-            $indentSpace = str_pad(' ', ceil($tableWidth / 2) - ceil($titleLength / 2) + ($columnCount * 2), ' ');
+            $padLength   = ceil($tableWidth / 2) - ceil($titleLength / 2) + ($columnCount * 2);
+            $indentSpace = str_pad(' ', (int)$padLength, ' ');
             $buf->write("  {$indentSpace}<$tStyle>{$title}</$tStyle>\n");
         }
 

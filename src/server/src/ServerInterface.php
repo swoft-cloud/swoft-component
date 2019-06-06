@@ -26,6 +26,11 @@ interface ServerInterface
 
     // Swoole socket type list
     public const TYPE_LIST = [
+        // SWOOLE_SOCK_TCP | SWOOLE_SSL = 513
+        513                     => 'TCP & SSL',
+        // SWOOLE_SOCK_TCP6 | SWOOLE_SSL = 515
+        515                     => 'TCP6 & SSL',
+        // Normal
         SWOOLE_SOCK_TCP         => 'TCP',
         SWOOLE_SOCK_TCP6        => 'TCP6',
         SWOOLE_SOCK_UDP         => 'UDP',

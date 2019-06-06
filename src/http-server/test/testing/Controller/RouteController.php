@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Http\Server\Testing\Controller;
-
 
 use Swoft\Http\Server\Annotation\Mapping\Controller;
 use Swoft\Http\Server\Annotation\Mapping\RequestMapping;
@@ -70,8 +68,19 @@ class RouteController
     /**
      * @RequestMapping("method", method={RequestMethod::POST, RequestMethod::PUT})
      */
-    public function method()
+    public function method(): string
     {
         return 'post';
+    }
+
+    /**
+     * @RequestMapping("search/{name}", method=RequestMethod::GET)
+     * @param string $name
+     *
+     * @return string
+     */
+    public function search(string $name): string
+    {
+        return $name;
     }
 }

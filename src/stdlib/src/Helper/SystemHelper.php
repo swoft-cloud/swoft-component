@@ -2,6 +2,7 @@
 
 namespace Swoft\Stdlib\Helper;
 
+use RuntimeException;
 use function chdir;
 use function exec;
 use function fclose;
@@ -10,18 +11,14 @@ use function getcwd;
 use function getmyuid;
 use function implode;
 use function is_resource;
-use function ob_end_clean;
-use function ob_get_contents;
 use function ob_start;
 use function passthru;
 use function pclose;
 use function popen;
-use function posix_getpwuid;
 use function preg_match;
 use function preg_replace;
 use function proc_close;
 use function proc_open;
-use RuntimeException;
 use function shell_exec;
 use function stream_get_contents;
 use function sys_get_temp_dir;
@@ -57,8 +54,10 @@ class SystemHelper extends EnvHelper
 
     /**
      * Run a command. It is support windows
+     *
      * @param string      $command
      * @param string|null $cwd
+     *
      * @return array [$code, $output, $error]
      * @throws RuntimeException
      */
@@ -102,9 +101,11 @@ class SystemHelper extends EnvHelper
      * 2. passthru
      * 3. exec
      * 4. shell_exec
+     *
      * @param string      $command
      * @param bool        $returnStatus
      * @param string|null $cwd
+     *
      * @return array|string
      */
     public static function execute(string $command, bool $returnStatus = true, string $cwd = null)
@@ -119,15 +120,14 @@ class SystemHelper extends EnvHelper
         if (function_exists('system')) {
             ob_start();
             system($command, $exitStatus);
-            $output = ob_get_contents();
-            ob_end_clean();
+            $output = ob_get_clean();
 
             // passthru
         } elseif (function_exists('passthru')) {
             ob_start();
             passthru($command, $exitStatus);
-            $output = ob_get_contents();
-            ob_end_clean();
+            $output = ob_get_clean();
+
             //exec
         } elseif (function_exists('exec')) {
             exec($command, $output, $exitStatus);
@@ -137,7 +137,7 @@ class SystemHelper extends EnvHelper
         } elseif (function_exists('shell_exec')) {
             $output = shell_exec($command);
         } else {
-            $output = 'Command execution not possible on this system';
+            $output     = 'Command execution not possible on this system';
             $exitStatus = 0;
         }
 
@@ -153,6 +153,7 @@ class SystemHelper extends EnvHelper
 
     /**
      * run a command in background
+     *
      * @param string $cmd
      */
     public static function bgExec(string $cmd): void
@@ -162,6 +163,7 @@ class SystemHelper extends EnvHelper
 
     /**
      * run a command in background
+     *
      * @param string $cmd
      */
     public static function execInBackground(string $cmd): void
@@ -175,11 +177,16 @@ class SystemHelper extends EnvHelper
 
     /**
      * Get unix user of current process.
+     *
      * @return array
      */
     public static function getCurrentUser(): array
     {
-        return posix_getpwuid(getmyuid());
+        if (function_exists('posix_getpwuid')) {
+            return posix_getpwuid(getmyuid());
+        }
+
+        return [];
     }
 
     /**
@@ -214,6 +221,7 @@ class SystemHelper extends EnvHelper
 
     /**
      * get bash is available
+     *
      * @return bool
      */
     public static function shIsAvailable(): bool
@@ -227,6 +235,7 @@ class SystemHelper extends EnvHelper
 
     /**
      * get bash is available
+     *
      * @return bool
      */
     public static function bashIsAvailable(): bool
@@ -244,10 +253,13 @@ class SystemHelper extends EnvHelper
      * ```php
      * list($width, $height) = Sys::getScreenSize();
      * ```
+     *
      * @from Yii2
+     *
      * @param boolean $refresh whether to force checking and not re-use cached size value.
-     * This is useful to detect changing window size while the application is running but may
-     * not get up to date values on every terminal.
+     *                         This is useful to detect changing window size while the application is running but may
+     *                         not get up to date values on every terminal.
+     *
      * @return array|boolean An array of ($width, $height) or false when it was not able to determine size.
      */
     public static function getScreenSize(bool $refresh = false)
@@ -261,9 +273,8 @@ class SystemHelper extends EnvHelper
             // try stty if available
             $stty = [];
 
-            if (
-                exec('stty -a 2>&1', $stty) &&
-                preg_match('/rows\s+(\d+);\s*columns\s+(\d+);/mi', implode(' ', $stty), $matches)
+            if (exec('stty -a 2>&1', $stty)
+                && preg_match('/rows\s+(\d+);\s*columns\s+(\d+);/mi', implode(' ', $stty), $matches)
             ) {
                 return ($size = [$matches[2], $matches[1]]);
             }
