@@ -2,7 +2,6 @@
 
 namespace Swoft\Http\Server\Middleware;
 
-use function explode;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -15,6 +14,8 @@ use Swoft\Http\Server\Exception\HttpServerException;
 use Swoft\Http\Server\RequestHandler;
 use Swoft\Http\Server\Router\Route;
 use Swoft\Http\Server\Router\Router;
+use function context;
+use function explode;
 
 /**
  * Class UserMiddleware
@@ -40,12 +41,17 @@ class UserMiddleware implements MiddlewareInterface
         $uriPath = $request->getUriPath();
 
         /** @var Router $router */
-        $router        = Container::$instance->getSingleton('httpRouter');
-        $routerHandler = $router->match($uriPath, $method);
-        $request       = $request->withAttribute(Request::ROUTER_ATTRIBUTE, $routerHandler);
+        $router    = Container::$instance->getSingleton('httpRouter');
+        $routeData = $router->match($uriPath, $method);
+
+        // Save matched route data to context
+        context()->set(Request::ROUTER_ATTRIBUTE, $routeData);
+
+        // Notice: will remove it, please use context()->get(Request::ROUTER_ATTRIBUTE);
+        $request = $request->withAttribute(Request::ROUTER_ATTRIBUTE, $routeData);
 
         /* @var Route $route */
-        [$status, , $route] = $routerHandler;
+        [$status, , $route] = $routeData;
 
         if ($status !== Router::FOUND) {
             return $handler->handle($request);
