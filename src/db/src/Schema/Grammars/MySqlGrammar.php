@@ -19,6 +19,13 @@ use Swoft\Stdlib\Fluent;
 class MySqlGrammar extends Grammar
 {
     /**
+     * If this Grammar supports schema changes wrapped in a transaction.
+     *
+     * @var bool
+     */
+    protected $transactions = true;
+
+    /**
      * The possible column modifiers.
      *
      * @var array
@@ -245,7 +252,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    protected function compileKey(Blueprint $blueprint, Fluent $command, $type)
+    protected function compileKey(Blueprint $blueprint, Fluent $command, string $type)
     {
         return sprintf('alter table %s add %s %s%s(%s)',
             $this->wrapTable($blueprint),
@@ -383,6 +390,24 @@ class MySqlGrammar extends Grammar
         return "rename table {$from} to " . $this->wrapTable($command['to']);
     }
 
+    /**
+     * Compile a rename column command.
+     *
+     * @param Blueprint $blueprint
+     * @param Fluent    $command
+     *
+     * @return string
+     */
+    public function compileRenameColumn(Blueprint $blueprint, Fluent $command): string
+    {
+        return sprintf('alter table %s change %s %s %s(%d)',
+            $this->wrapTable($blueprint),
+            $command['from'],
+            $command['to'],
+            $command['type'],
+            $command['length']
+        );
+    }
 
     /**
      * Compile a rename index command.

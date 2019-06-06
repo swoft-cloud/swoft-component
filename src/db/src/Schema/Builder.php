@@ -21,6 +21,7 @@ use function bean;
 use function call_user_func;
 use function end;
 use function explode;
+use function get_class;
 use function in_array;
 use function is_callable;
 use function strtolower;
@@ -83,6 +84,41 @@ class Builder
     protected $resolver;
 
     /**
+     * Add custom builder
+     *
+     * @param string $driver
+     * @param string $builderClass
+     *
+     * @return void
+     * @throws ContainerException
+     * @throws ReflectionException
+     */
+    public static function addBuilder(string $driver, string $builderClass): void
+    {
+        static::getBeanBuilder($builderClass);
+        static::$builders[$driver] = $builderClass;
+    }
+
+    /**
+     * @param string $builderClass
+     *
+     * @return Builder
+     * @throws ContainerException
+     * @throws ReflectionException
+     */
+    protected static function getBeanBuilder(string $builderClass): self
+    {
+        $builder = bean($builderClass);
+        if (empty($builder)) {
+            throw new InvalidArgumentException('%s class is undefined @Bean()', $builderClass);
+        }
+        if (!$builder instanceof self) {
+            throw new InvalidArgumentException('%s class is not Builder instance', $builderClass);
+        }
+        return $builder;
+    }
+
+    /**
      * New builder instance
      *
      * @param mixed ...$params
@@ -132,12 +168,7 @@ class Builder
                 sprintf('Builder(driver=%s) is not exist!', $driver)
             );
         }
-
-        $builder = bean($builderName);
-        if (!$builder instanceof self) {
-            throw new InvalidArgumentException('%s class is not Builder instance', get_class($builder));
-        }
-
+        $builder           = static::getBeanBuilder($builderName);
         $builder->poolName = $poolName;
         return $builder;
     }
@@ -488,8 +519,8 @@ class Builder
     public function getDatabaseName(): string
     {
         $writes       = $this->database->getWrites();
-        $dsn          = current($writes);
-        $dsnArray     = explode(';', $dsn['dsn'], 2);
+        $node         = current($writes);
+        $dsnArray     = explode(';', $node['dsn'], 2);
         $databaseName = explode('=', $dsnArray[0], 2);
         return end($databaseName);
     }

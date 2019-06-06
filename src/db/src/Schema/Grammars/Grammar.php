@@ -48,39 +48,6 @@ abstract class Grammar extends BaseGrammar
         return $this->fluentCommands;
     }
 
-
-    /**
-     * Compile a rename column command.
-     *
-     * @param Blueprint  $blueprint
-     * @param Fluent     $command
-     * @param Connection $connection
-     *
-     * @return array  @todo ....
-     */
-    public function compileRenameColumn(Blueprint $blueprint, Fluent $command, Connection $connection)
-    {
-        //return RenameColumn::compile($this, $blueprint, $command, $connection);
-        return [];
-    }
-
-    /**
-     * Compile a change column command into a series of SQL statements.
-     *
-     * @param Blueprint  $blueprint
-     * @param Fluent     $command
-     * @param Connection $connection
-     *
-     * @return array  @todo ....
-     *
-     * @throws \RuntimeException
-     */
-    public function compileChange(Blueprint $blueprint, Fluent $command, Connection $connection)
-    {
-        //return ChangeColumn::compile($this, $blueprint, $command, $connection);
-        return [];
-    }
-
     /**
      * Compile a foreign key command.
      *
@@ -351,7 +318,10 @@ abstract class Grammar extends BaseGrammar
      *
      * @return string
      */
-    abstract public function compileDropAllTables(array $tables): string;
+    public function compileDropAllTables(array $tables): string
+    {
+        return '';
+    }
 
     /**
      * Compile the SQL needed to drop all views.
@@ -360,5 +330,8 @@ abstract class Grammar extends BaseGrammar
      *
      * @return string
      */
-    abstract public function compileDropAllViews(array $views): string;
+    public function compileDropAllViews(array $views): string
+    {
+        return '';
+    }
 }
