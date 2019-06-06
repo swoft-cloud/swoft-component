@@ -24,7 +24,7 @@ class MockResponse extends Response
     /**
      * Status success
      */
-    const STATUS_SUCCESS = 200;
+    public const STATUS_SUCCESS = 200;
 
     /**
      * @var string
@@ -35,6 +35,11 @@ class MockResponse extends Response
      * @var int
      */
     private $status = 0;
+
+    /**
+     * @var string
+     */
+    private $downFile = '';
 
     /**
      * @return MockResponse
@@ -76,7 +81,7 @@ class MockResponse extends Response
     /**
      * @param string $name
      * @param string $value
-     * @param int    $expires
+     * @param int|string $expires
      * @param string $path
      * @param string $domain
      * @param bool   $secure
@@ -153,7 +158,7 @@ class MockResponse extends Response
      */
     public function sendfile($filename, $offset = null, $length = null)
     {
-
+        $this->downFile = $filename;
     }
 
     /**
@@ -189,6 +194,14 @@ class MockResponse extends Response
     }
 
     /**
+     * @return array|mixed
+     */
+    public function getHeaders()
+    {
+        return $this->header;
+    }
+
+    /**
      * @return mixed
      */
     public function getCookie()
@@ -212,6 +225,14 @@ class MockResponse extends Response
      */
     public function getHeaderKey(string $key, $default = null)
     {
-        return $this->header[$key] ?? '';
+        return $this->header[$key] ?? $default;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDownFile(): string
+    {
+        return $this->downFile;
     }
 }

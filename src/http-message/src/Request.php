@@ -364,7 +364,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      *
      * @return Request
      */
-    public function withParsedQuery(array $query)
+    public function withParsedQuery(array $query): self
     {
         $clone = clone $this;
 

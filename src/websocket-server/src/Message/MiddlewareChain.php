@@ -7,6 +7,7 @@ use ReflectionException;
 use RuntimeException;
 use SplDoublyLinkedList;
 use SplStack;
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\ContainerException;
@@ -115,9 +116,8 @@ class MiddlewareChain implements MessageHandlerInterface
      * @param RequestInterface $request
      *
      * @return ResponseInterface
-     * @throws UnexpectedValueException
-     * @throws RuntimeException
-     * @throws InvalidArgumentException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function run(RequestInterface $request): ResponseInterface
     {
@@ -141,10 +141,12 @@ class MiddlewareChain implements MessageHandlerInterface
     /**
      * Do not call directly externally, internally called
      *
-     * @throws UnexpectedValueException
-     * @throws InvalidArgumentException
+     * @param RequestInterface $request
+     *
+     * @return ResponseInterface
+     * @throws ContainerException
+     * @throws ReflectionException
      * @internal
-     * {@inheritDoc}
      */
     public function handle(RequestInterface $request): ResponseInterface
     {
@@ -157,7 +159,8 @@ class MiddlewareChain implements MessageHandlerInterface
 
         // if is a class name
         if (is_string($middleware) && class_exists($middleware)) {
-            $middleware = new $middleware;
+            // $middleware = new $middleware;
+            $middleware = Swoft::getBean($middleware);
         }
 
         if ($middleware instanceof MiddlewareInterface) {

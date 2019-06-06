@@ -31,6 +31,13 @@ class HttpDispatcher extends Dispatcher
     protected $defaultMiddleware = DefaultMiddleware::class;
 
     /**
+     * 1 pre-match on run middleware
+     * 2 normal match on UserMiddleware
+     * @var int
+     */
+    private $routeMatchStrategy = 2;
+
+    /**
      * Dispatch http request
      *
      * @param array ...$params
@@ -76,8 +83,7 @@ class HttpDispatcher extends Dispatcher
      */
     public function preMiddleware(): array
     {
-        return [
-        ];
+        return [];
     }
 
     /**
