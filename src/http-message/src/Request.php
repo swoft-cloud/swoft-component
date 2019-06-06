@@ -637,6 +637,7 @@ class Request extends PsrRequest implements ServerRequestInterface
             if (($pos = strpos($contentType, ';')) !== false) {
                 $contentType = substr($contentType, 0, $pos);
             }
+
             $parser = $this->parsers[$contentType] ?? null;
             if ($parser && $parser instanceof RequestParserInterface) {
                 return $parser->parse($content);
