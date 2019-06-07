@@ -1,5 +1,9 @@
 <?php declare(strict_types=1);
 
+
+namespace SwoftTest\Db\Unit\Schema;
+
+use ReflectionException;
 use Swoft\Db\Schema;
 use SwoftTest\Db\Unit\TestCase;
 use Swoft\Db\Schema\Builder;

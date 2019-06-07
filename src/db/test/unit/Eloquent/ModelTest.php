@@ -84,6 +84,16 @@ class ModelTest extends TestCase
         ]);
         $this->assertGreaterThan(0, $getId);
 
+        $isOK = User::updateOrInsert(['id' => 22], [
+            'name'      => uniqid(),
+            'password'  => md5(uniqid()),
+            'age'       => mt_rand(1, 100),
+            'user_desc' => 'u desc',
+            'foo'       => 'bar',
+            'xxxx'      => '223asdf'
+        ]);
+        $this->assertTrue($isOK);
+
         $user = User::create($attributes);
         $this->assertIsObject($user);
     }
@@ -430,5 +440,23 @@ on A.id=B.id;', [$resCount - 20]);
         $field = 'count(*)';
         $res   = (array)Count::selectRaw($field)->first();
         $this->assertArrayHasKey($field, $res);
+    }
+
+    public function testSetter()
+    {
+
+        $expectAge = 18;
+        $expectId  = 1;
+
+        $user = User::new(['age' => 17, 'id' => 2]);
+        $user->setAge($expectAge);
+        $user->setId($expectId);
+
+        $result = $user->toArray();
+
+        $this->assertArrayHasKey('id', $result);
+        $this->assertArrayHasKey('age', $result);
+        $this->assertEquals($expectAge, $result['age']);
+        $this->assertEquals($expectId, $result['id']);
     }
 }

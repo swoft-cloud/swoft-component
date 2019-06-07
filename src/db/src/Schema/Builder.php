@@ -165,7 +165,7 @@ class Builder
         $builderName = static::$builders[$driver] ?? '';
         if (empty($builderName)) {
             throw new DbException(
-                sprintf('Builder(driver=%s) is not exist!', $driver)
+                sprintf('Schema Builder(driver=%s) is not exist!', $driver)
             );
         }
         $builder           = static::getBeanBuilder($builderName);
@@ -519,8 +519,7 @@ class Builder
     public function getDatabaseName(): string
     {
         $writes       = $this->database->getWrites();
-        $node         = current($writes);
-        $dsnArray     = explode(';', $node['dsn'], 2);
+        $dsnArray     = explode(';', $writes[0]['dsn'], 2);
         $databaseName = explode('=', $dsnArray[0], 2);
         return end($databaseName);
     }

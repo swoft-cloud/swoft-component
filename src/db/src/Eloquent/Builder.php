@@ -161,7 +161,6 @@ class Builder
         'implode',
         'pluck',
         'getConnection',
-        'updateOrInsert',
         'paginate',
         'join',
         'joinSub',
@@ -502,6 +501,24 @@ class Builder
         $instance = $this->firstOrNew($attributes);
         $instance->fill($values)->save();
         return $instance;
+    }
+
+    /**
+     * Insert or update a record matching the attributes, and fill it with values.
+     *
+     * @param array $attributes
+     * @param array $values
+     *
+     * @return bool
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function updateOrInsert(array $attributes, array $values = [])
+    {
+        // Get safe values
+        $values = $this->model->getSafeAttributes($values);
+        return $this->toBase()->updateOrInsert($attributes, $values);
     }
 
     /**
