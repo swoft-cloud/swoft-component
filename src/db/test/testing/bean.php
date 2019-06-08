@@ -11,7 +11,7 @@ return [
         'class'    => Database::class,
         'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
         'username' => 'root',
-        'password' => '123456',
+        'password' => 'swoft123456',
         'charset'  => 'utf8mb4',
         // 'prefix'   => 't_',
         'options'  => [
@@ -27,19 +27,20 @@ return [
         ],
     ],
     'db2'      => [
+        'charset'  => 'utf8mb4',
         'class'  => Database::class,
         'writes' => [
             [
                 'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
                 'username' => 'root',
-                'password' => '123456',
+                'password' => 'swoft123456',
             ],
         ],
         'reads'  => [
             [
                 'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
                 'username' => 'root',
-                'password' => '123456',
+                'password' => 'swoft123456',
             ]
         ],
     ],

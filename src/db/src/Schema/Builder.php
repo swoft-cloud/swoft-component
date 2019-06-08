@@ -25,6 +25,7 @@ use function get_class;
 use function in_array;
 use function is_callable;
 use function strtolower;
+use Swoft\Stdlib\Helper\StringHelper;
 use function tap;
 
 /**
@@ -223,7 +224,7 @@ class Builder
      */
     public function hasTable(string $table): bool
     {
-        $table = $this->getTableName($table);
+        $table = $this->getTablePrefixName($table);
 
         return $this->getConnection()->statement($this->grammar->compileTableExists(), [$table]);
     }
@@ -235,9 +236,22 @@ class Builder
      *
      * @return string
      */
-    public function getTableName(string $table): string
+    public function getTablePrefixName(string $table): string
     {
-        return $this->grammar->getTablePrefix() . $table;
+        $prefix = $this->grammar->getTablePrefix();
+        return $prefix . $this->removeTablePrefix($table);
+    }
+
+    /**
+     * @param string $table
+     *
+     * @return mixed|string
+     */
+    protected function removeTablePrefix(string $table)
+    {
+        $prefix = $this->grammar->getTablePrefix();
+        $table  = $prefix ? StringHelper::replaceFirst($prefix, '', $table) : $table;
+        return $table;
     }
 
     /**
@@ -294,12 +308,44 @@ class Builder
      */
     public function getColumnListing(string $table)
     {
-        $table      = $this->getTableName($table);
+        $table      = $this->getTablePrefixName($table);
         $connection = $this->getConnection();
         $results    = $connection->select(
             $this->grammar->compileColumnListing(), [$table], false
         );
         return $connection->getPostProcessor()->processColumnListing($results);
+    }
+
+    /**
+     * Get Columns detail
+     *
+     * @param string $table
+     * @param array  $addSelect
+     *
+     * @return array
+     */
+    public function getColumnsDetail(string $table, array $addSelect = []): array
+    {
+        return [];
+    }
+
+    /**
+     * Get table schema
+     *
+     * @param string $table
+     * @param array  $addSelect
+     * @param string $exclude
+     * @param string $tablePrefix
+     *
+     * @return array
+     */
+    public function getTableSchema(
+        string $table,
+        array $addSelect = [],
+        string $exclude = '',
+        string $tablePrefix = ''
+    ): array {
+        return [];
     }
 
     /**
@@ -522,5 +568,17 @@ class Builder
         $dsnArray     = explode(';', $writes[0]['dsn'], 2);
         $databaseName = explode('=', $dsnArray[0], 2);
         return end($databaseName);
+    }
+
+    /**
+     * convert database to php type
+     *
+     * @param string $databaseType
+     *
+     * @return string
+     */
+    public function convertType(string $databaseType): string
+    {
+        return $this->grammar->convertType($databaseType);
     }
 }

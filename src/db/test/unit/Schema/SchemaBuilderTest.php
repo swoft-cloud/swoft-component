@@ -64,7 +64,7 @@ class SchemaBuilderTest extends TestCase
         $builder = $this->getBuilder();
 
         $rename = 'user2';
-        $table  = 'user1';
+        $table  = 'user11';
 
         Schema::dropIfExists($rename);
         Schema::dropIfExists($table);

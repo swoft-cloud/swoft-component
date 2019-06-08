@@ -19,6 +19,41 @@ use Swoft\Stdlib\Fluent;
 class MySqlGrammar extends Grammar
 {
     /**
+     * @var array
+     */
+    public $phpMap = [
+        'tinyint'    => self::INT,
+        'bit'        => self::INT,
+        'smallint'   => self::INT,
+        'mediumint'  => self::INT,
+        'int'        => self::INT,
+        'integer'    => self::INT,
+        'bigint'     => self::INT,
+        'float'      => self::FLOAT,
+        'double'     => self::FLOAT,
+        'real'       => self::FLOAT,
+        'decimal'    => self::FLOAT,
+        'numeric'    => self::FLOAT,
+        'tinytext'   => self::STRING,
+        'mediumtext' => self::STRING,
+        'longtext'   => self::STRING,
+        'longblob'   => self::STRING,
+        'blob'       => self::STRING,
+        'text'       => self::STRING,
+        'varchar'    => self::STRING,
+        'string'     => self::STRING,
+        'char'       => self::STRING,
+        'datetime'   => self::STRING,
+        'year'       => self::STRING,
+        'date'       => self::STRING,
+        'time'       => self::STRING,
+        'timestamp'  => self::STRING,
+        'enum'       => self::STRING,
+        'varbinary'  => self::STRING,
+        'json'       => self::STRING,
+    ];
+
+    /**
      * If this Grammar supports schema changes wrapped in a transaction.
      *
      * @var bool
@@ -59,7 +94,7 @@ class MySqlGrammar extends Grammar
      */
     public function compileTableExists(): string
     {
-        return "select * from information_schema.tables where table_schema = ? and table_name = ? and table_type = 'BASE TABLE'";
+        return "select `table_name` from information_schema.tables where table_schema = ? and table_name = ? and table_type = 'BASE TABLE'";
     }
 
     /**
@@ -69,7 +104,7 @@ class MySqlGrammar extends Grammar
      */
     public function compileColumnListing(): string
     {
-        return 'select column_name as `column_name` from information_schema.columns where table_schema = ? and table_name = ?';
+        return "select column_name as `column_name` from information_schema.columns where table_schema = ? and table_name = ?";
     }
 
     /**
@@ -471,7 +506,7 @@ class MySqlGrammar extends Grammar
     }
 
     /**
-     * Compile the command to enable foreign key constraints.
+     * Compile the command to enable foreign key public constraints.
      *
      * @return string
      */
@@ -481,7 +516,7 @@ class MySqlGrammar extends Grammar
     }
 
     /**
-     * Compile the command to disable foreign key constraints.
+     * Compile the command to disable foreign key public constraints.
      *
      * @return string
      */

@@ -16,6 +16,23 @@ use Swoft\Stdlib\Fluent;
  */
 abstract class Grammar extends BaseGrammar
 {
+    /**
+     * php type
+     *
+     * @var string
+     */
+    public const INT      = 'int';
+    public const NUMBER   = 'number';
+    public const STRING   = 'string';
+    public const FLOAT    = 'float';
+    public const DATETIME = 'datetime';
+    public const BOOLEAN  = 'boolean';
+    public const BOOL     = 'bool';
+
+    /**
+     * @var array
+     */
+    public $phpMap = [];
 
     /**
      * If this Grammar supports schema changes wrapped in a transaction.
@@ -61,7 +78,7 @@ abstract class Grammar extends BaseGrammar
         // We need to prepare several of the elements of the foreign key definition
         // before we can create the SQL, such as wrapping the tables and convert
         // an array of columns to comma-delimited strings for the SQL queries.
-        $sql = sprintf('alter table %s add constraint %s ',
+        $sql = sprintf('alter table %s add public constraint %s ',
             $this->wrapTable($blueprint),
             $this->wrap($command['index'])
         );
@@ -75,7 +92,7 @@ abstract class Grammar extends BaseGrammar
             $this->columnize((array)$command['references'])
         );
 
-        // Once we have the basic foreign key creation statement constructed we can
+        // Once we have the basic foreign key creation statement public constructed we can
         // build out the syntax for what should happen on an update or delete of
         // the affected columns, which will get something like "cascade", etc.
         if (!is_null($command['onDelete'])) {
@@ -242,6 +259,18 @@ abstract class Grammar extends BaseGrammar
     }
 
     /**
+     * Convert database type To PHP Type
+     *
+     * @param string|array $databaseType
+     *
+     * @return string
+     */
+    public function convertType($databaseType): string
+    {
+        return $this->phpMap[$databaseType] ?? self::STRING;
+    }
+
+    /**
      * Check if this Grammar supports schema changes wrapped in a transaction.
      *
      * @return bool
@@ -252,7 +281,7 @@ abstract class Grammar extends BaseGrammar
     }
 
     /**
-     * Compile the command to enable foreign key constraints.
+     * Compile the command to enable foreign key public constraints.
      *
      * @return string
      */
@@ -262,7 +291,7 @@ abstract class Grammar extends BaseGrammar
     }
 
     /**
-     * Compile the command to disable foreign key constraints.
+     * Compile the command to disable foreign key public constraints.
      *
      * @return string
      */

@@ -43,7 +43,7 @@ class Schema
     ];
 
     /**
-     * @param string $name
+     * @param string $pool
      * @param Grammar $grammar
      *
      * @return Builder
@@ -51,9 +51,9 @@ class Schema
      * @throws ReflectionException
      * @throws ContainerException
      */
-    public static function getSchemaConnection(string $name = Pool::DEFAULT_POOL, Grammar $grammar = null)
+    public static function getSchemaConnection(string $pool = Pool::DEFAULT_POOL, Grammar $grammar = null)
     {
-        return Builder::new($name, $grammar);
+        return Builder::new($pool, $grammar);
     }
 
     /**
