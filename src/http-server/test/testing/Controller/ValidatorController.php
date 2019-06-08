@@ -89,4 +89,16 @@ class ValidatorController
 
         return $data;
     }
+
+    /**
+     * @RequestMapping()
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function noToValidate(Request $request): array
+    {
+        return [$request->getParsedBody()];
+    }
 }

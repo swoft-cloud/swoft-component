@@ -48,18 +48,26 @@ class ValidatorMiddleware implements MiddlewareInterface
         $handlerId = $route->getHandler();
         [$className, $method] = explode('@', $handlerId);
 
-        $data = $request->getParsedBody();
+        $data  = $request->getParsedBody();
         $query = $request->getQueryParams();
 
-        // Fix body is empty string
-        $data = empty($data) ? [] : $data;
+        // ParsedBody is empty string
+        $parsedBody    = $data = empty($data) ? [] : $data;
+        $notParsedBody = !is_array($data);
 
-        /* @var Validator $validator*/
+        if ($notParsedBody) {
+            $parsedBody = [];
+        }
+        /* @var Validator $validator */
         $validator = BeanFactory::getBean('validator');
 
-        /* @var Request $request*/
-        [$data, $query] = $validator->validate($data, $className, $method, $query);
-        $request = $request->withParsedBody($data)->withParsedQuery($query);
+        /* @var Request $request */
+        [$parsedBody, $query] = $validator->validate($parsedBody, $className, $method, $query);
+
+        if ($notParsedBody) {
+            $parsedBody = $data;
+        }
+        $request = $request->withParsedBody($parsedBody)->withParsedQuery($query);
 
         return $handler->handle($request);
     }
