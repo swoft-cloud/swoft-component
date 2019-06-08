@@ -634,7 +634,8 @@ class Request extends PsrRequest implements ServerRequestInterface
     {
         $contentTypes = $this->getHeader(ContentType::KEY);
         foreach ($contentTypes as $contentType) {
-            if (($pos = strpos($contentType, ';')) !== false) {
+            $pos = strpos($contentType, ';');
+            if ($pos !== false) {
                 $contentType = substr($contentType, 0, $pos);
             }
 

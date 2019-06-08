@@ -35,10 +35,6 @@ class ContentTypeTest extends TestCase
 
         $response->assertEqualHeader(ContentType::KEY, $response->getHeaderKey(ContentType::KEY));
         $response->assertEqualContent('xml data content');
-
-        $headers = [
-
-        ];
     }
 
     public function testUserCt3()
@@ -60,5 +56,19 @@ class ContentTypeTest extends TestCase
 
         $response->assertEqualHeader(ContentType::KEY, $response->getHeaderKey(ContentType::KEY));
         $response->assertEqualJson(['key' => 'data']);
+    }
+
+    public function testCtm()
+    {
+        $headers = [
+            'accept' => ContentType::JSON,
+            'content-type' => 'application/json;charset=utf-8',
+        ];
+
+        $data = [
+            'key' => 'value'
+        ];
+        $response = $this->mockServer->request('GET', '/ct/ctm', $data, $headers);
+        $response->assertEqualJson($data);
     }
 }
