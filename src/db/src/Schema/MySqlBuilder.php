@@ -107,7 +107,7 @@ class MySqlBuilder extends Builder
      * @param string $table
      * @param array  $addSelect
      * @param string $exclude
-     * @param string $tablePrefix
+     * @param string $likeTable
      *
      * @return array
      * @throws ContainerException
@@ -118,7 +118,7 @@ class MySqlBuilder extends Builder
         string $table,
         array $addSelect = [],
         string $exclude = '',
-        string $tablePrefix = ''
+        string $likeTable = ''
     ): array {
         $query   = QueryBuilder::new($this->poolName, null, null);
         $columns = [
@@ -133,6 +133,15 @@ class MySqlBuilder extends Builder
                         explode(',', $tableName)
                     )
                 );
+            }, function (QueryBuilder $query, $tableName) use ($likeTable, $exclude) {
+                $paramsEmpty = empty($exclude) && empty($tableName) && empty($likeTable);
+                if ($paramsEmpty && $tablePrefix = $this->grammar->getTablePrefix()) {
+                    $query->where(
+                        'table_name',
+                        'like',
+                        $tablePrefix . '%'
+                    );
+                }
             })
             ->when($exclude, function (QueryBuilder $query, $exclude) {
                 $query->whereNotIn('table_name', array_map(
@@ -141,11 +150,11 @@ class MySqlBuilder extends Builder
                     )
                 );
             })
-            ->when($tablePrefix, function (QueryBuilder $query, $tablePrefix) {
+            ->when($likeTable, function (QueryBuilder $query, $likeTable) {
                 $query->where(
                     'table_name',
                     'like',
-                    $tablePrefix . '%'
+                    $likeTable . '%'
                 );
             })
             ->where('table_type', 'BASE TABLE')
@@ -154,7 +163,6 @@ class MySqlBuilder extends Builder
             ->addSelect($addSelect)
             ->get()
             ->toArray();
-
         foreach ($results as $key => $item) {
             $item = (array)$item;
             // Re builder result

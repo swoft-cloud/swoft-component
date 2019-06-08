@@ -239,7 +239,7 @@ class Builder
     public function getTablePrefixName(string $table): string
     {
         $prefix = $this->grammar->getTablePrefix();
-        return $prefix . $this->removeTablePrefix($table);
+        return $prefix . $table;
     }
 
     /**
