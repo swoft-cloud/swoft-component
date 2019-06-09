@@ -927,6 +927,14 @@ class Connection extends AbstractConnection implements ConnectionInterface
     }
 
     /**
+     * @return string
+     */
+    public function getDb(): string
+    {
+        return $this->db;
+    }
+
+    /**
      * Perform a rollback within the database.
      *
      * @param int $toLevel
@@ -1033,20 +1041,19 @@ class Connection extends AbstractConnection implements ConnectionInterface
 
     /**
      * @param string $dns
-     *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     private function parseDbName(string $dns): void
     {
-        $result = preg_match('/.*dbname=(.*)(;|).*$/', $dns, $match);
+        $paramsStr = parse_url($dns, PHP_URL_PATH);
+        $paramsAry = explode(';', $paramsStr);
 
-        if ($result === false) {
-            Debug::log('Parse db name error(dns=%s)', $dns);
-            return;
+        $params = [];
+        foreach ($paramsAry as $param) {
+            [$key, $value] = explode('=', $param);
+            $params[$key] = $value;
         }
 
-        $this->db = $match[1] ?? '';
+        $this->db = $params['dbname'] ?? '';
     }
 
     /**
