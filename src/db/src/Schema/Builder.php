@@ -16,6 +16,7 @@ use Swoft\Db\Exception\DbException;
 use Swoft\Db\Pool;
 use Swoft\Db\Schema\Grammars\Grammar;
 use Swoft\Db\Schema\Grammars\MySqlGrammar;
+use Swoft\Stdlib\Helper\StringHelper;
 use function array_map;
 use function bean;
 use function call_user_func;
@@ -24,8 +25,8 @@ use function explode;
 use function get_class;
 use function in_array;
 use function is_callable;
+use function sprintf;
 use function strtolower;
-use Swoft\Stdlib\Helper\StringHelper;
 use function tap;
 
 /**
@@ -111,10 +112,10 @@ class Builder
     {
         $builder = bean($builderClass);
         if (empty($builder)) {
-            throw new InvalidArgumentException('%s class is undefined @Bean()', $builderClass);
+            throw new InvalidArgumentException(sprintf('%s class is undefined @Bean()', $builderClass));
         }
         if (!$builder instanceof self) {
-            throw new InvalidArgumentException('%s class is not Builder instance', $builderClass);
+            throw new InvalidArgumentException(sprintf('%s class is not Builder instance', $builderClass));
         }
         return $builder;
     }
