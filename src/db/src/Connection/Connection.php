@@ -6,6 +6,7 @@ namespace Swoft\Db\Connection;
 use Closure;
 use DateTimeInterface;
 use Generator;
+use InvalidArgumentException;
 use PDO;
 use PDOStatement;
 use ReflectionException;
@@ -21,6 +22,7 @@ use Swoft\Db\Query\Expression;
 use Swoft\Db\Query\Grammar\Grammar;
 use Swoft\Db\Query\Processor\Processor;
 use Swoft\Db\Exception\DbException;
+use Swoft\Log\Debug;
 use Throwable;
 use function bean;
 
@@ -88,6 +90,20 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @var int
      */
     protected $pdoType = 0;
+
+    /**
+     * Create connection for db name
+     *
+     * @var string
+     */
+    protected $db = '';
+
+    /**
+     * Select db name
+     *
+     * @var string
+     */
+    protected $selectDb = '';
 
     /**
      * Replace constructor
@@ -224,6 +240,11 @@ class Connection extends AbstractConnection implements ConnectionInterface
         $cm = $this->getConMananger();
         if (!$cm->isTransaction()) {
             $cm->releaseOrdinaryConnection($this->id);
+
+            // Reset select db name
+            $this->resetDb();
+
+            // Release connection
             parent::release($force);
         }
     }
@@ -242,37 +263,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
     public function setQueryGrammar(Grammar $queryGrammar): void
     {
         $this->queryGrammar = $queryGrammar;
-    }
-
-    /**
-     * Create pdo
-     *
-     * @throws ContainerException
-     * @throws DbException
-     * @throws ReflectionException
-     */
-    private function createPdo()
-    {
-        $writes = $this->database->getWrites();
-        $write  = $writes[array_rand($writes)];
-
-        $this->pdo = $this->database->getConnector()->connect($write);
-    }
-
-    /**
-     * Create read pdo
-     *
-     * @throws ContainerException
-     * @throws DbException
-     * @throws ReflectionException
-     */
-    private function createReadPdo()
-    {
-        $reads = $this->database->getReads();
-        if (!empty($reads)) {
-            $read          = $reads[array_rand($reads)];
-            $this->readPdo = $this->database->getConnector()->connect($read);
-        }
     }
 
     /**
@@ -383,6 +373,28 @@ class Connection extends AbstractConnection implements ConnectionInterface
 
             return $statement->fetchAll();
         });
+    }
+
+    /**
+     * @param string $dbname
+     *
+     * @return static
+     */
+    public function db(string $dbname)
+    {
+        if ($this->db == $dbname) {
+            return $this;
+        }
+
+        $this->selectDb($this->pdo, $dbname);
+
+        if (!empty($this->readPdo)) {
+            $this->selectDb($this->readPdo, $dbname);
+        }
+
+        $this->selectDb = $dbname;
+
+        return $this;
     }
 
     /**
@@ -907,6 +919,22 @@ class Connection extends AbstractConnection implements ConnectionInterface
     }
 
     /**
+     * @return Database
+     */
+    public function getDatabase(): Database
+    {
+        return $this->database;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDb(): string
+    {
+        return $this->db;
+    }
+
+    /**
      * Perform a rollback within the database.
      *
      * @param int $toLevel
@@ -976,11 +1004,94 @@ class Connection extends AbstractConnection implements ConnectionInterface
         return BeanFactory::getBean(ConnectionManager::class);
     }
 
+
     /**
-     * @return Database
+     * Create pdo
+     *
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
      */
-    public function getDatabase(): Database
+    private function createPdo()
     {
-        return $this->database;
+        $writes = $this->database->getWrites();
+        $write  = $writes[array_rand($writes)];
+
+        $dsn = $write['dsn'];
+        $this->parseDbName($dsn);
+
+        $this->pdo = $this->database->getConnector()->connect($write);
+    }
+
+    /**
+     * Create read pdo
+     *
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    private function createReadPdo()
+    {
+        $reads = $this->database->getReads();
+        if (!empty($reads)) {
+            $read          = $reads[array_rand($reads)];
+            $this->readPdo = $this->database->getConnector()->connect($read);
+        }
+    }
+
+    /**
+     * @param string $dns
+     */
+    private function parseDbName(string $dns): void
+    {
+        $paramsStr = parse_url($dns, PHP_URL_PATH);
+        $paramsAry = explode(';', $paramsStr);
+
+        $params = [];
+        foreach ($paramsAry as $param) {
+            [$key, $value] = explode('=', $param);
+            $params[$key] = $value;
+        }
+
+        $this->db = $params['dbname'] ?? '';
+    }
+
+    /**
+     * Select db name
+     *
+     * @param PDO    $pdo
+     * @param string $dbname
+     */
+    private function selectDb(PDO $pdo, string $dbname): void
+    {
+        $useStmt = sprintf('use %s', $dbname);
+        $result  = $pdo->exec($useStmt);
+        if ($result !== false) {
+            return;
+        }
+
+        $message = $pdo->errorInfo();
+        $message = $message[2] ?? '';
+
+        throw new InvalidArgumentException($message);
+    }
+
+    /**
+     * Reset db name
+     *
+     */
+    private function resetDb(): void
+    {
+        if (empty($this->selectDb) || $this->selectDb == $this->db) {
+            return;
+        }
+
+        $this->selectDb($this->pdo, $this->db);
+
+        if (!empty($this->readPdo)) {
+            $this->selectDb($this->readPdo, $this->db);
+        }
+
+        $this->selectDb = '';
     }
 }
