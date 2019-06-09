@@ -59,18 +59,40 @@ class ModelTest extends TestCase
                 'name'      => uniqid(),
                 'password'  => md5(uniqid()),
                 'age'       => mt_rand(1, 100),
-                'user_desc' => 'u desc'
+                'user_desc' => 'u desc',
+                'foo'       => 'bar'
             ],
             [
                 'name'      => uniqid(),
                 'password'  => md5(uniqid()),
                 'age'       => mt_rand(1, 100),
-                'user_desc' => 'u desc'
+                'user_desc' => 'u desc',
+                'xxxx'      => '223asdf'
             ]
         ]);
         $this->assertTrue($batch);
         $result3 = User::new($attributes)->save();
         $this->assertTrue($result3);
+
+        $getId = User::insertGetId([
+            'name'      => uniqid(),
+            'password'  => md5(uniqid()),
+            'age'       => mt_rand(1, 100),
+            'user_desc' => 'u desc',
+            'foo'       => 'bar',
+            'xxxx'      => '223asdf'
+        ]);
+        $this->assertGreaterThan(0, $getId);
+
+        $isOK = User::updateOrInsert(['id' => 22], [
+            'name'      => uniqid(),
+            'password'  => md5(uniqid()),
+            'age'       => mt_rand(1, 100),
+            'user_desc' => 'u desc',
+            'foo'       => 'bar',
+            'xxxx'      => '223asdf'
+        ]);
+        $this->assertTrue($isOK);
 
         $user = User::create($attributes);
         $this->assertIsObject($user);
@@ -344,7 +366,7 @@ on A.id=B.id;', [$resCount - 20]);
 
     public function testGetModels()
     {
-       User::updateOrCreate(['id' => 22], ['name' => "sakura", 'age' => 18]);
+        User::updateOrCreate(['id' => 22], ['name' => "sakura", 'age' => 18]);
         $users = User::where('id', 22)->getModels(['id', 'age']);
         /* @var User $user */
         foreach ($users as $user) {
@@ -418,5 +440,23 @@ on A.id=B.id;', [$resCount - 20]);
         $field = 'count(*)';
         $res   = (array)Count::selectRaw($field)->first();
         $this->assertArrayHasKey($field, $res);
+    }
+
+    public function testSetter()
+    {
+
+        $expectAge = 18;
+        $expectId  = 1;
+
+        $user = User::new(['age' => 17, 'id' => 2]);
+        $user->setAge($expectAge);
+        $user->setId($expectId);
+
+        $result = $user->toArray();
+
+        $this->assertArrayHasKey('id', $result);
+        $this->assertArrayHasKey('age', $result);
+        $this->assertEquals($expectAge, $result['age']);
+        $this->assertEquals($expectId, $result['id']);
     }
 }
