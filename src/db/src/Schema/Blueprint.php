@@ -116,7 +116,6 @@ class Blueprint
     public function build(Connection $connection, Grammar $grammar)
     {
         foreach ($this->toSql($connection, $grammar) as $statement) {
-            var_dump($statement);
             $connection->statement($statement);
         }
     }
@@ -279,8 +278,8 @@ class Blueprint
      */
     protected function creating()
     {
-        return Collection::new($this->commands)->contains(function ($command) {
-            return $command->name === 'create';
+        return Collection::new($this->commands)->contains(function (Fluent $command) {
+            return $command['name'] === 'create';
         });
     }
 
@@ -341,12 +340,14 @@ class Blueprint
      *
      * @param string $from
      * @param string $to
+     * @param string $type
+     * @param int    $length
      *
      * @return Fluent
      */
-    public function renameColumn($from, $to)
+    public function renameColumn(string $from, string $to, string $type, int $length)
     {
-        return $this->addCommand('renameColumn', compact('from', 'to'));
+        return $this->addCommand('renameColumn', compact('from', 'to', 'type', 'length'));
     }
 
     /**

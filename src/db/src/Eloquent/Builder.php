@@ -14,7 +14,6 @@ use Swoft\Db\Connection\Connection;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder as QueryBuilder;
 use Swoft\Stdlib\Contract\Arrayable;
-use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\PhpHelper;
 
 /**
@@ -103,8 +102,6 @@ use Swoft\Stdlib\Helper\PhpHelper;
  * @method Builder limit(int $value)
  * @method Builder forPage(int $page, int $perPage = 15)
  * @method Builder forPageAfterId(int $perPage = 15, int $lastId = null, string $column = 'id')
- * @method string insertGetId(array $values, string $sequence = null)
- * @method bool insert(array $values)
  * @method array getBindings()
  * @method string toSql()
  * @method bool exists()
@@ -151,8 +148,6 @@ class Builder
      * @var array
      */
     protected $passthru = [
-        'insert',
-        'insertGetId',
         'getBindings',
         'toSql',
         'exists',
@@ -166,7 +161,6 @@ class Builder
         'implode',
         'pluck',
         'getConnection',
-        'updateOrInsert',
         'paginate',
         'join',
         'joinSub',
@@ -178,7 +172,6 @@ class Builder
         'rightJoin',
         'rightJoinSub',
         'rightJoinWhere',
-        'whereSub',
         'createSub',
         'parseSub',
         'parseSub',
@@ -511,6 +504,24 @@ class Builder
     }
 
     /**
+     * Insert or update a record matching the attributes, and fill it with values.
+     *
+     * @param array $attributes
+     * @param array $values
+     *
+     * @return bool
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function updateOrInsert(array $attributes, array $values = [])
+    {
+        // Get safe values
+        $values = $this->model->getSafeAttributes($values);
+        return $this->toBase()->updateOrInsert($attributes, $values);
+    }
+
+    /**
      * Execute the query and get the first result or throw an exception.
      *
      * @param array $columns
@@ -634,7 +645,9 @@ class Builder
      * @param string|null $alias
      *
      * @return bool
+     * @throws ContainerException
      * @throws DbException
+     * @throws ReflectionException
      */
     public function chunkById(int $count, callable $callback, string $column = null, string $alias = null): bool
     {
@@ -887,6 +900,53 @@ class Builder
     public function qualifyColumn($column)
     {
         return $this->model->qualifyColumn($column);
+    }
+
+    /**
+     * Insert a new record and get the value of the primary key. only insert database exist field
+     *
+     * @param array       $values
+     * @param string|null $sequence
+     *
+     * @return string
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function insertGetId(array $values, string $sequence = null): string
+    {
+        $values = $this->model->getSafeAttributes($values);
+        if (empty($values)) {
+            return '0';
+        }
+        return $this->toBase()->insertGetId($values, $sequence);
+    }
+
+    /**
+     * Insert a new record into the database. only insert database exist field
+     *
+     * @param array $values
+     *
+     * @return bool
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function insert(array $values): bool
+    {
+        if (empty($values)) {
+            return true;
+        }
+        if (!is_array(reset($values))) {
+            $values = [$values];
+        }
+        foreach ($values as &$item) {
+            $item = $this->model->getSafeAttributes($item);
+        }
+        unset($item);
+        // Filter empty values
+        $values = array_filter($values);
+        return $this->toBase()->insert($values);
     }
 
     /**

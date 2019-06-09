@@ -1,6 +1,10 @@
 <?php declare(strict_types=1);
 
 
+namespace SwoftTest\Db\Unit\Schema;
+
+use ReflectionException;
+use Swoft\Db\Schema;
 use SwoftTest\Db\Unit\TestCase;
 use Swoft\Db\Schema\Builder;
 use Swoft\Db\Schema\Blueprint;
@@ -13,6 +17,14 @@ use Swoft\Db\Schema\Blueprint;
 class SchemaBuilderTest extends TestCase
 {
 
+    /**
+     *
+     *
+     * @return Builder
+     * @throws ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Db\Exception\DbException
+     */
     public function getBuilder(): Builder
     {
         $pool    = [
@@ -52,29 +64,38 @@ class SchemaBuilderTest extends TestCase
         $builder = $this->getBuilder();
 
         $rename = 'user2';
-        $table  = 'user1';
+        $table  = 'user11';
 
-        $builder->dropIfExists($rename);
-        $builder->dropIfExists($table);
+        Schema::dropIfExists($rename);
+        Schema::dropIfExists($table);
 
-        $builder->create($table, function (Blueprint $blueprint) {
+        Schema::create($table, function (Blueprint $blueprint) {
             $blueprint->integer('id')->primary();
             $blueprint->bigInteger('uid')->index();
             $blueprint->tinyInteger('status')->index('idx_status');
-            // todo
-            //$blueprint->renameColumn('id', 'user_id');
-
-            $blueprint->uuid('uuid');
+            $blueprint->uuid('uuid')->unique();
             $blueprint->integer('create_time');
+            $blueprint->index(['uid', 'id']);
+            $blueprint->unique(['uuid', 'id'], 'unq_uuid_id');
         });
 
-        // rename idx
-        $builder->table($table, function (Blueprint $blueprint) use ($rename) {
+        // Bind db pool
+        Schema::getSchemaConnection('db.pool2')->table($table, function (Blueprint $blueprint) use ($rename) {
+            // Rename index
             $blueprint->renameIndex('idx_status', 'idx_sta');
-            // rename table
+            // Rename table
             $blueprint->rename($rename);
         });
 
+        Schema::rename($rename, $table);
+
+        // Bind db pool
+        Schema::table($table, function (Blueprint $blueprint) {
+            // Rename column
+            $blueprint->renameColumn('id', 'user_id', 'bigint', 20);
+        });
+        Schema::enableForeignKeyConstraints();
+        Schema::disableForeignKeyConstraints();
 
         $this->assertTrue(true);
     }

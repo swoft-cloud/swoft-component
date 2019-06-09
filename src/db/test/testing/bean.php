@@ -27,6 +27,7 @@ return [
         ],
     ],
     'db2'      => [
+        'charset'  => 'utf8mb4',
         'class'  => Database::class,
         'writes' => [
             [
