@@ -2,6 +2,7 @@
 
 use Swoft\Db\Database;
 use Swoft\Db\Pool;
+use SwoftTest\Db\Testing\DbSelector;
 
 return [
     'config'   => [
@@ -27,16 +28,16 @@ return [
         ],
     ],
     'db2'      => [
-        'charset'  => 'utf8mb4',
-        'class'  => Database::class,
-        'writes' => [
+        'charset' => 'utf8mb4',
+        'class'   => Database::class,
+        'writes'  => [
             [
                 'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
                 'username' => 'root',
                 'password' => 'swoft123456',
             ],
         ],
-        'reads'  => [
+        'reads'   => [
             [
                 'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
                 'username' => 'root',
@@ -47,6 +48,17 @@ return [
     'db.pool2' => [
         'class'    => Pool::class,
         'database' => bean('db2')
-    ]
+    ],
+    'db3'      => [
+        'class'      => Database::class,
+        'dsn'        => 'mysql:dbname=test2;host=127.0.0.1',
+        'username'   => 'root',
+        'password'   => 'swoft123456',
+        'dbSelector' => bean(DbSelector::class)
+    ],
+    'db.pool3' => [
+        'class'    => Pool::class,
+        'database' => bean('db3')
+    ],
 ];
 

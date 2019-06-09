@@ -5,6 +5,8 @@ namespace Swoft\Db\Contract;
 
 use Closure;
 use Generator;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Expression;
 use Throwable;
@@ -74,6 +76,20 @@ interface ConnectionInterface
      * @return bool
      */
     public function insert(string $query, array $bindings = []): bool;
+
+    /**
+     * Run an insert statement against the database.
+     *
+     * @param string $query
+     * @param array  $bindings
+     * @param string $sequence
+     *
+     * @return string
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function insertGetId(string $query, array $bindings = [], string $sequence = null): string;
 
     /**
      * Run an update statement against the database.
