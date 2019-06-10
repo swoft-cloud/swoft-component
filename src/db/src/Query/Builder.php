@@ -2728,7 +2728,7 @@ class Builder implements PrototypeInterface
      *
      * @param string $column
      *
-     * @return mixed
+     * @return float|int
      */
     public function min(string $column)
     {
@@ -2740,7 +2740,7 @@ class Builder implements PrototypeInterface
      *
      * @param string $column
      *
-     * @return mixed
+     * @return float|int
      */
     public function max(string $column)
     {
@@ -2752,7 +2752,7 @@ class Builder implements PrototypeInterface
      *
      * @param string $column
      *
-     * @return mixed
+     * @return float|int
      */
     public function sum(string $column)
     {
@@ -2766,7 +2766,7 @@ class Builder implements PrototypeInterface
      *
      * @param string $column
      *
-     * @return mixed
+     * @return float|int
      */
     public function avg($column)
     {
@@ -2778,7 +2778,7 @@ class Builder implements PrototypeInterface
      *
      * @param string $column
      *
-     * @return mixed
+     * @return float|int
      */
     public function average(string $column)
     {
@@ -2791,7 +2791,7 @@ class Builder implements PrototypeInterface
      * @param string $function
      * @param array  $columns
      *
-     * @return mixed
+     * @return float|int
      */
     public function aggregate(string $function, array $columns = ['*'])
     {
@@ -2801,10 +2801,15 @@ class Builder implements PrototypeInterface
             ->get($columns);
 
         if (!$results->isEmpty()) {
-            return array_change_key_case((array)$results[0])['aggregate'];
+            $aggregate = array_change_key_case((array)$results[0])['aggregate'];
+
+            if (is_string($aggregate)) {
+                $aggregate = (int)$aggregate;
+            }
+            return $aggregate;
         }
 
-        return null;
+        return 0;
     }
 
     /**

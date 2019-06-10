@@ -146,12 +146,12 @@ use function bean;
  * @method static string toSql()
  * @method static bool exists()
  * @method static bool doesntExist()
- * @method static string count(string $columns = '*')
- * @method static mixed min(string $column)
- * @method static mixed max(string $column)
- * @method static mixed sum(string $column)
- * @method static mixed avg($column)
- * @method static mixed average(string $column)
+ * @method static int count(string $columns = '*')
+ * @method static float|int min(string $column)
+ * @method static float|int max(string $column)
+ * @method static float|int sum(string $column)
+ * @method static float|int avg($column)
+ * @method static float|int average(string $column)
  * @method static void truncate()
  */
 abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializable

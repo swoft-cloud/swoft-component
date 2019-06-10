@@ -44,13 +44,6 @@ class Builder
     public $poolName;
 
     /**
-     * The database config
-     *
-     * @var Database
-     */
-    public $database;
-
-    /**
      * The database query grammar instance.
      *
      * @var Grammar
@@ -187,9 +180,8 @@ class Builder
         /* @var Pool $pool */
         $pool = BeanFactory::getBean($this->poolName);
 
-        $this->database = $pool->getDatabase();
-        $driver         = $pool->getDatabase()->getDriver();
-        $prefix         = $pool->getDatabase()->getPrefix();
+        $driver = $pool->getDatabase()->getDriver();
+        $prefix = $pool->getDatabase()->getPrefix();
         if (!empty($grammar)) {
             $grammar->setTablePrefix($prefix);
             $this->grammar = $grammar;
@@ -562,10 +554,16 @@ class Builder
      * Get connection database name
      *
      * @return string
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
      */
     public function getDatabaseName(): string
     {
-        $writes       = $this->database->getWrites();
+        $connection = $this->getConnection();
+        $writes     = $connection->getDatabase()->getWrites();
+        // release
+        $connection->release();
         $dsnArray     = explode(';', $writes[0]['dsn'], 2);
         $databaseName = explode('=', $dsnArray[0], 2);
         return end($databaseName);

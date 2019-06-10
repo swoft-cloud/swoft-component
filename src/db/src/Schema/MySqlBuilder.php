@@ -4,12 +4,10 @@
 namespace Swoft\Db\Schema;
 
 use ReflectionException;
-use Swoft\Db\Query\Builder as QueryBuilder;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Exception\DbException;
-use function sprintf;
-use Swoft\Db\Query\Expression;
+use Swoft\Db\Query\Builder as QueryBuilder;
 
 /**
  * Class Builder
@@ -33,10 +31,11 @@ class MySqlBuilder extends Builder
      */
     public function hasTable(string $table): bool
     {
-        $table = $this->getTablePrefixName($table);
+        $table      = $this->getTablePrefixName($table);
+        $connection = $this->getConnection();
 
-        return count($this->getConnection()->select(
-                $this->grammar->compileTableExists(), [$this->getDatabaseName(), $table]
+        return count($connection->select(
+                $this->grammar->compileTableExists(), [$this->getDatabaseName(), $table], false
             )) > 0;
     }
 
@@ -73,7 +72,7 @@ class MySqlBuilder extends Builder
      */
     public function getColumnsDetail(string $table, array $addSelect = []): array
     {
-        $columns = [
+        $columns    = [
             'COLUMN_NAME as name',
             'DATA_TYPE as type',
             'COLUMN_DEFAULT as default',
@@ -82,10 +81,10 @@ class MySqlBuilder extends Builder
             'COLUMN_TYPE as columnType',
             'COLUMN_COMMENT as columnComment',
             'CHARACTER_MAXIMUM_LENGTH as length',
-            'extra'
+            'EXTRA as extra'
         ];
-        $query   = QueryBuilder::new($this->poolName, null, null);
-        $results = $query->fromRaw('information_schema.columns')
+        $query      = QueryBuilder::new($this->poolName, null, null);
+        $results    = $query->fromRaw('information_schema.columns')
             ->where('table_schema', $this->getDatabaseName())
             ->where('table_name', $this->getTablePrefixName($table))
             ->useWritePdo()
@@ -93,7 +92,6 @@ class MySqlBuilder extends Builder
             ->addSelect($addSelect)
             ->get()
             ->toArray();
-
         foreach ($results as &$item) {
             $item = (array)$item;
         }
@@ -120,12 +118,12 @@ class MySqlBuilder extends Builder
         string $exclude = '',
         string $likeTable = ''
     ): array {
-        $query   = QueryBuilder::new($this->poolName, null, null);
-        $columns = [
+        $query      = QueryBuilder::new($this->poolName, null, null);
+        $columns    = [
             'TABLE_NAME as name',
             'TABLE_COMMENT as comment',
         ];
-        $results = $query->fromRaw('information_schema.tables')
+        $results    = $query->fromRaw('information_schema.tables')
             ->where('table_schema', $this->getDatabaseName())
             ->when($table, function (QueryBuilder $query, $tableName) {
                 $query->whereIn('table_name', array_map(
