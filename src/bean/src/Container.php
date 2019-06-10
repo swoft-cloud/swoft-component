@@ -696,10 +696,10 @@ class Container implements ContainerInterface
     public function getNames(): array
     {
         return [
-            'session'    => array_keys($this->sessionPool),
-            'request'    => array_keys($this->requestPool),
             'singleton'  => array_keys($this->singletonPool),
             'prototype'  => array_keys($this->prototypePool),
+            'request'    => array_keys($this->requestPool),
+            'session'    => array_keys($this->sessionPool),
             'definition' => array_keys($this->definitions),
             // 'definition' => \count($this->r),
         ];

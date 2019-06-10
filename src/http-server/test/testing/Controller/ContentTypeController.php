@@ -6,6 +6,7 @@ namespace SwoftTest\Http\Server\Testing\Controller;
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\ContentType;
+use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Annotation\Mapping\Controller;
 use Swoft\Http\Server\Annotation\Mapping\RequestMapping;
@@ -57,5 +58,17 @@ class ContentTypeController
     public function userCt3(Response $response): array
     {
         return ['key' => 'data'];
+    }
+
+    /**
+     * @RequestMapping()
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function ctm(Request $request): array
+    {
+        return $request->getParsedQuery();
     }
 }

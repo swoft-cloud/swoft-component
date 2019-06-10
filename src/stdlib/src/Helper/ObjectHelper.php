@@ -3,12 +3,13 @@
 namespace Swoft\Stdlib\Helper;
 
 use InvalidArgumentException;
+use Throwable;
 use function is_numeric;
+use function json_encode;
 use function method_exists;
 use function property_exists;
 use ReflectionProperty;
 use function spl_object_hash;
-use Throwable;
 use function ucfirst;
 
 /**
@@ -106,7 +107,7 @@ class ObjectHelper
             }
         } catch (Throwable $e) {
             throw new InvalidArgumentException(
-                sprintf('Convert value(%s) to %s',  json_encode($value), $type)
+                sprintf('Error on convert value(%s) to %s', json_encode($value), $type)
             );
         }
 
@@ -121,18 +122,18 @@ class ObjectHelper
     public static function getPropertyBaseType(ReflectionProperty $property): string
     {
         $docComment = $property->getDocComment();
-        if ($docComment == false || empty($docComment)) {
+        if (!$docComment) {
             return '';
         }
 
         // Get the content of the @var annotation
         if (preg_match('/@var\s+([^\s]+)/', $docComment, $matches)) {
-            list(, $type) = $matches;
+            [, $type] = $matches;
         } else {
             return '';
         }
 
-        if (in_array($type, self::BASE_TYPES)) {
+        if (in_array($type, self::BASE_TYPES, true)) {
             return $type;
         }
 

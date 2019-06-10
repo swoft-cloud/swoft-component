@@ -1,10 +1,9 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Testing\Concern;
 
-use function in_array;
 use PHPUnit\Framework\Assert;
+use function in_array;
 use function strpos;
 
 /**

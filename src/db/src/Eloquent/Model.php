@@ -67,6 +67,7 @@ use function bean;
  * @method static Builder addSelect(array $column)
  * @method static Builder distinct()
  * @method static Builder from(string $table)
+ * @method static Builder db(string $dbname)
  * @method static Builder join(string $table, Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
  * @method static Builder joinWhere(string $table, Closure|string $first, string $operator, string $second, string $type = 'inner')
  * @method static Builder joinSub(Closure|QueryBuilder|string $query, string $as, Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)

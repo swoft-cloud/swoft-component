@@ -74,7 +74,7 @@ class DefaultMiddleware implements MiddlewareInterface
         $uriPath = $request->getUriPath();
 
         /* @var Route $route */
-        [$status, , $route] = $request->getAttribute(Request::ROUTER_ATTRIBUTE);
+        [$status, , $route] = context()->get(Request::ROUTER_ATTRIBUTE);
 
         // Not found
         if ($status === Router::NOT_FOUND) {

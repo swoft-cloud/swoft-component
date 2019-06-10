@@ -6,8 +6,8 @@ use PHPUnit\Framework\TestCase;
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\WebSocket\Server\Router\Router;
-use function bean;
 use SwoftTest\Testing\Concern\CommonTestAssertTrait;
+use function bean;
 
 /**
  * Class RouterTest
@@ -79,7 +79,15 @@ class RouterTest extends TestCase
         $this->assertNotEmpty($info);
         $this->assertSame('/users/{id}', $info['path']);
 
+        // open dynamic route
         $router->setEnableDynamicRoute(true);
+
+        $info = $router->match('/users/12');
+        $this->assertNotEmpty($info);
+        $this->assertArrayHasKey('routeParams', $info);
+        $this->assertArrayHasKey('id', $info['routeParams']);
+        $this->assertNotEmpty($info['routeParams']['id']);
+        $this->assertSame('12', $info['routeParams']['id']);
 
         $this->assertTrue($router->isEnableDynamicRoute());
         $router->setEnableDynamicRoute(false);

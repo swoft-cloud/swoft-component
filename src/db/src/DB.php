@@ -12,6 +12,7 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\Exception\ConnectionPoolException;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\Connection\ConnectionManager;
+use Swoft\Db\Contract\ConnectionInterface;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
@@ -36,6 +37,7 @@ use Throwable;
  * @method static mixed transaction(Closure $callback, $attempts = 1)
  * @method static void beginTransaction()
  * @method static void commit()
+ * @method static ConnectionInterface db(string $dbname)
  * @method static void rollBack(int $toLevel = null)
  */
 class DB
@@ -60,6 +62,7 @@ class DB
         'beginTransaction',
         'commit',
         'rollBack',
+        'db'
     ];
 
     /**

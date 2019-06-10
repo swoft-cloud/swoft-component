@@ -29,7 +29,7 @@ class JsonRequestParser implements RequestParserInterface
             $parsedBody = JsonHelper::decode($content, true);
         } catch (Throwable $e) {
             throw new HttpServerException(
-                sprintf('Request body parse to json errro(%s), body=%s', $e->getMessage(), $content)
+                sprintf('Request body parse to json error(%s), body=%s', $e->getMessage(), $content)
             );
         }
 

@@ -30,6 +30,7 @@ use Swoft\Stdlib\Helper\PhpHelper;
  * @method Builder addSelect(array $column)
  * @method Builder distinct()
  * @method Builder from(string $table)
+ * @method QueryBuilder db(string $dbname)
  * @method QueryBuilder join(string $table, Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
  * @method QueryBuilder joinWhere(string $table, Closure|string $first, string $operator, string $second, string $type = 'inner')
  * @method QueryBuilder joinSub(Closure|QueryBuilder|string $query, string $as, Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
