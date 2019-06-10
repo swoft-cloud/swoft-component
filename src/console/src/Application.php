@@ -154,7 +154,7 @@ class Application implements ConsoleInterface
      * @throws ContainerException
      * @throws Throwable
      */
-    public function doRun(string $inputCmd): void
+    protected function doRun(string $inputCmd): void
     {
         $output = $this->output;
         /* @var Router $router */
@@ -252,7 +252,7 @@ class Application implements ConsoleInterface
                     $sOpts[$name] = $lOpts[$name] = $inputVal;
 
                     // Required check
-                } elseif ($opts['mode'] === Command::OPT_REQUIRED) {
+                } elseif ($opt['mode'] === Command::OPT_REQUIRED) {
                     $short = $opt['short'] ? "(short: {$opt['short']})" : '';
                     throw new CommandFlagException(
                         "The option '{$name}'{$short} is required"
