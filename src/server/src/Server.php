@@ -29,7 +29,6 @@ use function file_get_contents;
 use function file_put_contents;
 use function sprintf;
 use function ucfirst;
-use function unlink;
 use const SWOOLE_PROCESS;
 use const SWOOLE_SOCK_TCP;
 
