@@ -1,23 +1,18 @@
 <?php declare(strict_types=1);
-/**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-03
- * Time: 10:24
- */
 
 namespace Swoft\Console\Input;
 
+use InvalidArgumentException;
+use Swoft\Console\Contract\InputInterface;
 use function array_merge;
 use function getcwd;
-use InvalidArgumentException;
 use function is_bool;
 use function is_int;
-use Swoft\Console\Contract\InputInterface;
 use function trim;
 
 /**
  * Class AbstractInput
+ *
  * @package Swoft\Console\Input
  */
 abstract class AbstractInput implements InputInterface
@@ -30,6 +25,7 @@ abstract class AbstractInput implements InputInterface
     /**
      * the script name
      * e.g `./bin/app` OR `bin/cli.php`
+     *
      * @var string
      */
     protected $script;
@@ -37,36 +33,42 @@ abstract class AbstractInput implements InputInterface
     /**
      * the command name(Is first argument)
      * e.g `start` OR `start`
+     *
      * @var string
      */
     protected $command = '';
 
     /**
      * eg `./examples/app home:useArg status=2 name=john arg0 -s=test --page=23`
+     *
      * @var string
      */
     protected $fullScript;
 
     /**
      * raw argv data.
+     *
      * @var array
      */
     protected $tokens;
 
     /**
      * Input args data
+     *
      * @var array
      */
     protected $args = [];
 
     /**
      * Input short-opts data
+     *
      * @var array
      */
     protected $sOpts = [];
 
     /**
      * Input long-opts data
+     *
      * @var array
      */
     protected $lOpts = [];
@@ -139,6 +141,7 @@ abstract class AbstractInput implements InputInterface
 
     /**
      * @param string|int $name
+     *
      * @return bool
      */
     public function hasArg($name): bool
@@ -148,8 +151,10 @@ abstract class AbstractInput implements InputInterface
 
     /**
      * Get command argument by index or name
+     *
      * @param int|string $name
      * @param mixed      $default
+     *
      * @return mixed
      */
     public function getArgument($name, $default = null)
@@ -159,8 +164,10 @@ abstract class AbstractInput implements InputInterface
 
     /**
      * Get command argument by index or name
+     *
      * @param int|string $name
      * @param mixed      $default
+     *
      * @return mixed
      */
     public function getArg($name, $default = null)
@@ -173,6 +180,7 @@ abstract class AbstractInput implements InputInterface
      *
      * @param int|string $name
      * @param mixed      $default
+     *
      * @return mixed
      */
     public function get($name, $default = null)
@@ -184,12 +192,13 @@ abstract class AbstractInput implements InputInterface
      * Get a required argument
      *
      * @param int|string $name argument index
+     *
      * @return mixed
      * @throws InvalidArgumentException
      */
     public function getRequiredArg($name)
     {
-        if ('' !== $this->get($name, '')) {
+        if (null !== $this->get($name)) {
             return $this->args[$name];
         }
 
@@ -198,7 +207,9 @@ abstract class AbstractInput implements InputInterface
 
     /**
      * Get first argument
+     *
      * @param string $default
+     *
      * @return string
      */
     public function getFirstArg(string $default = ''): string
@@ -208,7 +219,9 @@ abstract class AbstractInput implements InputInterface
 
     /**
      * Get second argument
+     *
      * @param string $default
+     *
      * @return string
      */
     public function getSecondArg(string $default = ''): string
@@ -219,6 +232,7 @@ abstract class AbstractInput implements InputInterface
     /**
      * @param string|int $key
      * @param int        $default
+     *
      * @return int
      */
     public function getInt($key, $default = 0): int
@@ -238,6 +252,7 @@ abstract class AbstractInput implements InputInterface
      *
      * @param array $names
      * @param mixed $default
+     *
      * @return bool|mixed|null
      */
     public function getSameArg(array $names, $default = null)
@@ -248,6 +263,7 @@ abstract class AbstractInput implements InputInterface
     /**
      * @param array $names
      * @param mixed $default
+     *
      * @return mixed
      */
     public function sameArg(array $names, $default = null)
@@ -276,8 +292,10 @@ abstract class AbstractInput implements InputInterface
     /**
      * Get (long/short) option value
      * eg: -e dev --name sam
+     *
      * @param string $name
      * @param mixed  $default
+     *
      * @return bool|mixed|null
      */
     public function getOpt(string $name, $default = null)
@@ -292,8 +310,10 @@ abstract class AbstractInput implements InputInterface
 
     /**
      * Alias of the getOpt()
+     *
      * @param string $name
      * @param mixed  $default
+     *
      * @return mixed
      */
     public function getOption(string $name, $default = null)
@@ -303,7 +323,9 @@ abstract class AbstractInput implements InputInterface
 
     /**
      * Get a required argument
+     *
      * @param string $name
+     *
      * @return mixed
      * @throws InvalidArgumentException
      */
@@ -320,8 +342,10 @@ abstract class AbstractInput implements InputInterface
      * Get (long/short) option value(bool)
      *
      * eg: -h --help
+     *
      * @param string $name
      * @param bool   $default
+     *
      * @return bool
      */
     public function getBoolOpt(string $name, bool $default = false): bool
@@ -336,7 +360,9 @@ abstract class AbstractInput implements InputInterface
 
     /**
      * check option exists
+     *
      * @param $name
+     *
      * @return bool
      */
     public function hasOpt(string $name): bool
@@ -354,6 +380,7 @@ abstract class AbstractInput implements InputInterface
      *
      * @param array $names
      * @param mixed $default
+     *
      * @return bool|mixed|null
      */
     public function getSameOpt(array $names, $default = null)
@@ -400,8 +427,10 @@ abstract class AbstractInput implements InputInterface
 
     /**
      * get short-opt value
+     *
      * @param string $name
      * @param null   $default
+     *
      * @return mixed|null
      */
     public function sOpt(string $name, $default = null)
@@ -409,6 +438,12 @@ abstract class AbstractInput implements InputInterface
         return $this->sOpts[$name] ?? $default;
     }
 
+    /**
+     * @param string $name
+     * @param null   $default
+     *
+     * @return mixed|null
+     */
     public function getShortOpt(string $name, $default = null)
     {
         return $this->sOpts[$name] ?? $default;
@@ -416,7 +451,9 @@ abstract class AbstractInput implements InputInterface
 
     /**
      * check short-opt exists
+     *
      * @param $name
+     *
      * @return bool
      */
     public function hasSOpt(string $name): bool
@@ -426,8 +463,10 @@ abstract class AbstractInput implements InputInterface
 
     /**
      * get short-opt value(bool)
+     *
      * @param string $name
      * @param bool   $default
+     *
      * @return bool
      */
     public function sBoolOpt(string $name, $default = false): bool
@@ -483,8 +522,10 @@ abstract class AbstractInput implements InputInterface
 
     /**
      * get long-opt value
+     *
      * @param string $name
      * @param null   $default
+     *
      * @return mixed|null
      */
     public function lOpt(string $name, $default = null)
@@ -495,6 +536,7 @@ abstract class AbstractInput implements InputInterface
     /**
      * @param string $name
      * @param null   $default
+     *
      * @return mixed|null
      */
     public function getLongOpt(string $name, $default = null)
@@ -504,7 +546,9 @@ abstract class AbstractInput implements InputInterface
 
     /**
      * check long-opt exists
+     *
      * @param $name
+     *
      * @return bool
      */
     public function hasLOpt(string $name): bool
@@ -514,8 +558,10 @@ abstract class AbstractInput implements InputInterface
 
     /**
      * get long-opt value(bool)
+     *
      * @param string $name
      * @param bool   $default
+     *
      * @return bool
      */
     public function lBoolOpt(string $name, $default = false): bool

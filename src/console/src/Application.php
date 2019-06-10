@@ -9,7 +9,7 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Concern\RenderHelpInfoTrait;
 use Swoft\Console\Contract\ConsoleInterface;
-use Swoft\Console\Exception\ConsoleArgumentException;
+use Swoft\Console\Exception\CommandFlagException;
 use Swoft\Console\Helper\Show;
 use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
@@ -190,7 +190,7 @@ class Application implements ConsoleInterface
         }
 
         // Parse default options and arguments
-        $this->bindOptionsAndArguments($info);
+        $this->bindCommandFlags($info);
 
         Swoft::triggerByArray(ConsoleEvent::DISPATCH_BEFORE, $this, $info);
 
@@ -226,9 +226,9 @@ class Application implements ConsoleInterface
      *
      * @param array $info
      *
-     * @throws ConsoleArgumentException
+     * @throws CommandFlagException
      */
-    protected function bindOptionsAndArguments(array $info): void
+    protected function bindCommandFlags(array $info): void
     {
         // Bind options
         if ($opts = $info['options']) {
@@ -240,7 +240,7 @@ class Application implements ConsoleInterface
 
                 // Exist short
                 if (null === $inputVal && $opt['short']) {
-                    $inputVal = $this->input->getSameOpt([$name, $opt['short']]);
+                    $inputVal = $this->input->getShortOpt($opt['short']);
                 }
 
                 // Exist default value
@@ -250,6 +250,13 @@ class Application implements ConsoleInterface
 
                 if (null !== $inputVal) {
                     $sOpts[$name] = $lOpts[$name] = $inputVal;
+
+                    // Required check
+                } elseif ($opts['mode'] === Command::OPT_REQUIRED) {
+                    $short = $opt['short'] ? "(short: {$opt['short']})" : '';
+                    throw new CommandFlagException(
+                        "The option '{$name}'{$short} is required"
+                    );
                 }
             }
 
@@ -273,9 +280,9 @@ class Application implements ConsoleInterface
                     $values[$index] = $arg['default'];
                 }
 
-                // arg is required
+                // Check arg is required
                 if ($arg['mode'] === Command::ARG_REQUIRED && empty($values[$name])) {
-                    throw new ConsoleArgumentException(
+                    throw new CommandFlagException(
                         "The argument '{$name}'(position: {$index}) is required"
                     );
                 }
@@ -292,7 +299,7 @@ class Application implements ConsoleInterface
      */
     protected function handleException(Throwable $e): void
     {
-        if ($e instanceof ConsoleArgumentException) {
+        if ($e instanceof CommandFlagException) {
             Show::error($e->getMessage());
             return;
         }
