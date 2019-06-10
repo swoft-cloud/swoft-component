@@ -235,6 +235,8 @@ class Builder implements PrototypeInterface
     public $poolName = Pool::DEFAULT_POOL;
 
     /**
+     * Select db name
+     *
      * @var string
      */
     public $db = '';
@@ -3222,17 +3224,14 @@ class Builder implements PrototypeInterface
     }
 
     /**
-     * Remove all of the expressions from a list of bindings.
+     * @param string $dbname
      *
-     * @param array $bindings
-     *
-     * @return array
+     * @return $this
      */
-    protected function cleanBindings(array $bindings)
+    public function db(string $dbname)
     {
-        return array_values(array_filter($bindings, function ($binding) {
-            return !$binding instanceof Expression;
-        }));
+        $this->db = $dbname;
+        return $this;
     }
 
     /**
@@ -3245,7 +3244,11 @@ class Builder implements PrototypeInterface
     {
         $connection = DB::connection($this->poolName);
 
-        // @todo select db
+        // Select db name
+        if(!empty($this->db)){
+            $connection->db($this->db);
+        }
+
         return $connection;
     }
 
@@ -3351,6 +3354,7 @@ class Builder implements PrototypeInterface
     protected function setQueryGrammar(string $driver, string $prefix, Grammar $grammar = null): void
     {
         if (!empty($grammar)) {
+            $grammar->setTablePrefix($prefix);
             $this->grammar = $grammar;
             return;
         }
@@ -3400,5 +3404,19 @@ class Builder implements PrototypeInterface
         }
 
         $this->processor = $processor;
+    }
+
+    /**
+     * Remove all of the expressions from a list of bindings.
+     *
+     * @param array $bindings
+     *
+     * @return array
+     */
+    protected function cleanBindings(array $bindings)
+    {
+        return array_values(array_filter($bindings, function ($binding) {
+            return !$binding instanceof Expression;
+        }));
     }
 }

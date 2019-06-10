@@ -5,6 +5,9 @@ namespace Swoft\Db\Contract;
 
 use Closure;
 use Generator;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Expression;
 use Throwable;
 
@@ -18,7 +21,7 @@ interface ConnectionInterface
     /**
      * Get a new raw query expression.
      *
-     * @param  mixed $value
+     * @param mixed $value
      *
      * @return Expression
      */
@@ -27,9 +30,9 @@ interface ConnectionInterface
     /**
      * Run a select statement and return a single result.
      *
-     * @param  string $query
-     * @param  array  $bindings
-     * @param  bool   $useReadPdo
+     * @param string $query
+     * @param array  $bindings
+     * @param bool   $useReadPdo
      *
      * @return mixed
      */
@@ -38,20 +41,27 @@ interface ConnectionInterface
     /**
      * Run a select statement against the database.
      *
-     * @param  string $query
-     * @param  array  $bindings
-     * @param  bool   $useReadPdo
+     * @param string $query
+     * @param array  $bindings
+     * @param bool   $useReadPdo
      *
      * @return array
      */
     public function select(string $query, array $bindings = [], bool $useReadPdo = true): array;
 
     /**
+     * @param string $dbname
+     *
+     * @return static
+     */
+    public function db(string $dbname);
+
+    /**
      * Run a select statement against the database and returns a generator.
      *
-     * @param  string $query
-     * @param  array  $bindings
-     * @param  bool   $useReadPdo
+     * @param string $query
+     * @param array  $bindings
+     * @param bool   $useReadPdo
      *
      * @return Generator
      */
@@ -60,18 +70,32 @@ interface ConnectionInterface
     /**
      * Run an insert statement against the database.
      *
-     * @param  string $query
-     * @param  array  $bindings
+     * @param string $query
+     * @param array  $bindings
      *
      * @return bool
      */
     public function insert(string $query, array $bindings = []): bool;
 
     /**
+     * Run an insert statement against the database.
+     *
+     * @param string $query
+     * @param array  $bindings
+     * @param string $sequence
+     *
+     * @return string
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function insertGetId(string $query, array $bindings = [], string $sequence = null): string;
+
+    /**
      * Run an update statement against the database.
      *
-     * @param  string $query
-     * @param  array  $bindings
+     * @param string $query
+     * @param array  $bindings
      *
      * @return int
      */
@@ -80,8 +104,8 @@ interface ConnectionInterface
     /**
      * Run a delete statement against the database.
      *
-     * @param  string $query
-     * @param  array  $bindings
+     * @param string $query
+     * @param array  $bindings
      *
      * @return int
      */
@@ -90,8 +114,8 @@ interface ConnectionInterface
     /**
      * Execute an SQL statement and return the boolean result.
      *
-     * @param  string $query
-     * @param  array  $bindings
+     * @param string $query
+     * @param array  $bindings
      *
      * @return bool
      */
@@ -100,8 +124,8 @@ interface ConnectionInterface
     /**
      * Run an SQL statement and get the number of rows affected.
      *
-     * @param  string $query
-     * @param  array  $bindings
+     * @param string $query
+     * @param array  $bindings
      *
      * @return int
      */
@@ -110,7 +134,7 @@ interface ConnectionInterface
     /**
      * Run a raw, unprepared query against the PDO connection.
      *
-     * @param  string $query
+     * @param string $query
      *
      * @return bool
      */
@@ -119,7 +143,7 @@ interface ConnectionInterface
     /**
      * Prepare the query bindings for execution.
      *
-     * @param  array $bindings
+     * @param array $bindings
      *
      * @return array
      */
@@ -128,8 +152,8 @@ interface ConnectionInterface
     /**
      * Execute a Closure within a transaction.
      *
-     * @param  Closure $callback
-     * @param  int      $attempts
+     * @param Closure $callback
+     * @param int     $attempts
      *
      * @return mixed
      *
@@ -175,7 +199,7 @@ interface ConnectionInterface
     /**
      * Execute the given callback in "dry run" mode.
      *
-     * @param  Closure $callback
+     * @param Closure $callback
      *
      * @return array
      */

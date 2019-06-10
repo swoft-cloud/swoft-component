@@ -634,6 +634,11 @@ class Request extends PsrRequest implements ServerRequestInterface
     {
         $contentTypes = $this->getHeader(ContentType::KEY);
         foreach ($contentTypes as $contentType) {
+            $pos = strpos($contentType, ';');
+            if ($pos !== false) {
+                $contentType = substr($contentType, 0, $pos);
+            }
+
             $parser = $this->parsers[$contentType] ?? null;
             if ($parser && $parser instanceof RequestParserInterface) {
                 return $parser->parse($content);

@@ -34,7 +34,7 @@ use Throwable;
  * @method static string getSet(string $key, string $value)
  * @method static string hDel(string $key, string $hashKey1, string $hashKey2 = null, string $hashKeyN = null)
  * @method static bool hExists(string $key, string $hashKey)
- * @method static array hGet(string $key, array $hashKey)
+ * @method static mixed hGet(string $key, string $hashKey)
  * @method static array hGetAll(string $key)
  * @method static int hIncrBy(string $key, string $hashKey, int $value)
  * @method static float hIncrByFloat(string $key, string $field, float $increment)

@@ -58,7 +58,6 @@ trait HasAttributes
         return $attributes;
     }
 
-
     /**
      * Get an attribute array of all arrayable attributes.
      *
@@ -66,7 +65,7 @@ trait HasAttributes
      */
     protected function getArrayableAttributes()
     {
-        return $this->modelAttributes;
+        return array_merge($this->modelAttributes, $this->getModelAttributes());
     }
 
     /**
@@ -118,6 +117,7 @@ trait HasAttributes
      * Get an attribute value from the model.
      *
      * @param string $key
+     *
      * @return mixed
      * @throws DbException
      */
@@ -357,14 +357,7 @@ trait HasAttributes
      */
     public function setRawAttributes(array $attributes, $sync = false)
     {
-        foreach ($attributes as $key => $value) {
-            $column = EntityRegister::getReverseMappingByColumn($this->getClassName(), $key);
-            // not found this key column annotation
-            if (empty($column)) {
-                continue;
-            }
-            $type  = $column['type'];
-            $value = ObjectHelper::parseParamType($type, $value);
+        foreach ($this->getSafeAttributes($attributes) as $key => $value) {
             $this->setModelAttribute($key, $value);
             $this->modelAttributes[$key] = $value;
         }
@@ -374,6 +367,29 @@ trait HasAttributes
         }
 
         return $this;
+    }
+
+    /**
+     * Get safe model attributes
+     *
+     * @param array $attributes
+     *
+     * @return array
+     */
+    public function getSafeAttributes(array $attributes): array
+    {
+        $safeAttributes = [];
+        foreach ($attributes as $key => $value) {
+            $column = EntityRegister::getReverseMappingByColumn($this->getClassName(), $key);
+            // not found this key column annotation
+            if (empty($column)) {
+                continue;
+            }
+            $type                 = $column['type'];
+            $value                = ObjectHelper::parseParamType($type, $value);
+            $safeAttributes[$key] = $value;
+        }
+        return $safeAttributes;
     }
 
     /**

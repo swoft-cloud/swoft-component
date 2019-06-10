@@ -4,12 +4,10 @@
 namespace Swoft\Db\Eloquent;
 
 use ArrayAccess;
-use function bean;
 use Closure;
 use DateTimeInterface;
 use Generator;
 use JsonSerializable;
-use function property_exists;
 use ReflectionException;
 use Swoft\Aop\Proxy;
 use Swoft\Bean\Exception\ContainerException;
@@ -26,6 +24,7 @@ use Swoft\Stdlib\Helper\JsonHelper;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoft\Stdlib\Helper\Str;
 use Throwable;
+use function bean;
 
 /**
  * Class Model
@@ -68,6 +67,7 @@ use Throwable;
  * @method static Builder addSelect(array $column)
  * @method static Builder distinct()
  * @method static Builder from(string $table)
+ * @method static Builder db(string $dbname)
  * @method static Builder join(string $table, Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
  * @method static Builder joinWhere(string $table, Closure|string $first, string $operator, string $second, string $type = 'inner')
  * @method static Builder joinSub(Closure|QueryBuilder|string $query, string $as, Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
@@ -535,7 +535,9 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param Builder $query
      *
      * @return bool
+     * @throws ContainerException
      * @throws DbException
+     * @throws ReflectionException
      */
     protected function performInsert(Builder $query)
     {
@@ -577,7 +579,9 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param array   $attributes
      *
      * @return void
+     * @throws ContainerException
      * @throws DbException
+     * @throws ReflectionException
      */
     protected function insertAndSetId(Builder $query, $attributes)
     {
