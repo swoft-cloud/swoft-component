@@ -70,6 +70,7 @@ class SystemHelper extends EnvHelper
             3 => ['pipe', 'r'], // stdin - This is the pipe we can feed the password into
         ];
 
+        $pipes   = [];
         $process = proc_open($command, $descriptors, $pipes, $cwd);
 
         if (!is_resource($process)) {

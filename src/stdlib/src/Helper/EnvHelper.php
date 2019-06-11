@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
+
 namespace Swoft\Stdlib\Helper;
 
+use function stripos;
 use const PHP_OS;
 use const PHP_SAPI;
-use function stripos;
 
 /**
  * Env helper
@@ -20,6 +21,16 @@ class EnvHelper
     public static function isCli(): bool
     {
         return PHP_SAPI === 'cli';
+    }
+
+    /**
+     * is phpdbg env
+     *
+     * @return  boolean
+     */
+    public static function isPhpDbg(): bool
+    {
+        return PHP_SAPI === 'phpdbg';
     }
 
     /**

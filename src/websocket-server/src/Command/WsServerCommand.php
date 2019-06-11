@@ -30,18 +30,18 @@ use function output;
 class WsServerCommand extends BaseServerCommand
 {
     /**
-     * Start the webSocket server
+     * Start the WebSocket server
      *
      * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
-     * @CommandOption("daemon", short="d", desc="Run server on the background")
+     * @CommandOption("daemon", short="d", desc="Run server on the background", default="false", type="bool")
      *
      * @throws ContainerException
      * @throws ReflectionException
      * @throws ServerException
      * @throws Throwable
      * @example
-     *  {fullCommand}
-     *  {fullCommand} -d  Start server on background
+     *   {fullCommand}
+     *   {fullCommand} -d  Start server on background
      *
      */
     public function start(): void

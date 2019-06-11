@@ -2,20 +2,21 @@
 
 namespace Swoft\Console\Input;
 
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Toolkit\Cli\Flags;
 use function array_map;
 use function array_shift;
 use function fgets;
 use function fwrite;
 use function implode;
 use function preg_match;
+use function trim;
 use const STDIN;
 use const STDOUT;
-use Swoft\Bean\Annotation\Mapping\Bean;
-use Toolkit\Cli\Flags;
-use function trim;
 
 /**
  * Class Input - The input information. by parse global var $argv.
+ *
  * @since 2.0
  *
  * @Bean("input")
@@ -29,6 +30,7 @@ class Input extends AbstractInput
 
     /**
      * Input constructor.
+     *
      * @param null|array $args
      * @param bool       $parsing
      */
@@ -74,8 +76,10 @@ class Input extends AbstractInput
 
     /**
      * Read input information
-     * @param  string $question 若不为空，则先输出文本消息
-     * @param  bool   $nl true 会添加换行符 false 原样输出，不添加换行符
+     *
+     * @param string $question 若不为空，则先输出文本消息
+     * @param bool   $nl       true 会添加换行符 false 原样输出，不添加换行符
+     *
      * @return string
      */
     public function read(string $question = '', bool $nl = false): string

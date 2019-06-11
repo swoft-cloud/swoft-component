@@ -25,7 +25,7 @@ final class Command
     public const ARG_OPTIONAL = 2;
     public const ARG_IS_ARRAY = 4;
 
-    public const OPT_BOOLEAN  = 1; // eq symfony InputOption::VALUE_NONE
+    public const OPT_BOOLEAN  = 1; // like symfony InputOption::VALUE_NONE
     public const OPT_REQUIRED = 2;
     public const OPT_OPTIONAL = 4;
     public const OPT_IS_ARRAY = 8; // allow multi value

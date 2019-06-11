@@ -107,6 +107,8 @@ final class CommandRegister
 
     /**
      * @param string $class
+     *
+     * @throws AnnotationException
      */
     private static function checkClass(string $class): void
     {

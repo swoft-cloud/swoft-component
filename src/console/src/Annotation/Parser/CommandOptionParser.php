@@ -19,13 +19,14 @@ class CommandOptionParser extends Parser
     /**
      * Parse object
      *
-     * @param int           $type Class or Method or Property
+     * @param int           $type       Class or Method or Property
      * @param CommandOption $annotation Annotation object
      *
      * @return array
      * Return empty array is nothing to do!
      * When class type return [$beanName, $className, $scope, $alias, $size] is to inject bean
      * When property type return [$propertyValue, $isRef] is to reference value
+     * @throws AnnotationException
      */
     public function parse(int $type, $annotation): array
     {
@@ -34,7 +35,8 @@ class CommandOptionParser extends Parser
         }
 
         $method = $this->methodName;
-        // add route info for controller action
+
+        // Add route info for group command action
         CommandRegister::bindOption($this->className, $method, $annotation->getName(), [
             'method'  => $method,
             'name'    => $annotation->getName(),

@@ -2,17 +2,9 @@
 
 namespace Swoft\Server;
 
-use function alias;
-use function array_keys;
-use function array_merge;
-use function dirname;
-use function explode;
-use function file_exists;
-use function file_get_contents;
-use function file_put_contents;
 use InvalidArgumentException;
-use function sprintf;
 use Swoft;
+use Swoft\Co;
 use Swoft\Console\Console;
 use Swoft\Http\Server\HttpServer;
 use Swoft\Server\Event\ServerStartEvent;
@@ -26,11 +18,19 @@ use Swoft\Stdlib\Helper\Sys;
 use Swoft\WebSocket\Server\WebSocketServer;
 use Swoole\Process;
 use Swoole\Server as CoServer;
-use Swoft\Stdlib\Helper\Arr;
+use Throwable;
+use function alias;
+use function array_keys;
+use function array_merge;
+use function dirname;
+use function explode;
+use function file_exists;
+use function file_get_contents;
+use function file_put_contents;
+use function sprintf;
+use function ucfirst;
 use const SWOOLE_PROCESS;
 use const SWOOLE_SOCK_TCP;
-use Throwable;
-use function ucfirst;
 
 /**
  * Class Server
@@ -229,7 +229,13 @@ abstract class Server implements ServerInterface
         // Save PID to file
         $pidFile = alias($this->pidFile);
         Dir::make(dirname($pidFile));
-        file_put_contents(alias($this->pidFile), $pidStr);
+        file_put_contents($pidFile, $pidStr);
+
+        // Listen signal: Ctrl+C (SIGINT = 2)
+        Process::signal(2, function() {
+            Console::colored("\nStop server by CTRL+C");
+            $this->swooleServer->shutdown();
+        });
 
         // Set process title
         Sys::setProcessTitle($title);
@@ -251,6 +257,7 @@ abstract class Server implements ServerInterface
     {
         // Server pid map
         $this->setPidMap($server);
+
         // Set process title
         Sys::setProcessTitle(sprintf('%s manager process', $this->pidName));
 
@@ -266,7 +273,24 @@ abstract class Server implements ServerInterface
      */
     public function onManagerStop(CoServer $server): void
     {
+        // Trigger event
         Swoft::trigger(new ServerStartEvent(SwooleEvent::MANAGER_STOP, $server));
+    }
+
+    /**
+     * Shutdown event
+     *
+     * @param CoServer $server
+     *
+     * @throws Throwable
+     */
+    public function onShutdown(CoServer $server): void
+    {
+        // Delete pid file
+        ServerHelper::removePidFile(alias($this->pidFile));
+
+        // Trigger event
+        Swoft::trigger(new ServerStartEvent(SwooleEvent::SHUTDOWN, $server));
     }
 
     /**
@@ -352,18 +376,6 @@ abstract class Server implements ServerInterface
     }
 
     /**
-     * Shutdown event
-     *
-     * @param CoServer $server
-     *
-     * @throws Throwable
-     */
-    public function onShutdown(CoServer $server): void
-    {
-        Swoft::trigger(new ServerStartEvent(SwooleEvent::SHUTDOWN, $server));
-    }
-
-    /**
      * Bind swoole event and start swoole server
      *
      * @throws ServerException
@@ -392,9 +404,9 @@ abstract class Server implements ServerInterface
         // Add port listener
         $this->addListener();
 
-        // @todo
+        // @TODO add process
 
-        // Trigger
+        // Trigger event
         Swoft::trigger(ServerEvent::BEFORE_START, $this, array_keys($swooleEvents));
 
         // Storage server instance
@@ -432,7 +444,7 @@ abstract class Server implements ServerInterface
     }
 
     /**
-     * Add events
+     * Add swoole events
      *
      * @param CoServer|CoServer\Port $server
      * @param array                  $swooleEvents
@@ -730,8 +742,8 @@ abstract class Server implements ServerInterface
         }
 
         if ($this->debug > 0) {
-            $tid = Swoft\Co::tid();
-            $cid = Swoft\Co::id();
+            $tid = Co::tid();
+            $cid = Co::id();
             $wid = $this->getPid('workerId');
 
             Console::log("[WorkerId:$wid, TID:$tid, CID:$cid] " . $msg, $data, $type);

@@ -2,15 +2,11 @@
 
 namespace Swoft;
 
-use function define;
-use function defined;
-use function dirname;
-use const IN_PHAR;
-use function realpath;
 use Swoft;
 use Swoft\Concern\SwoftTrait;
 use Swoft\Contract\ApplicationInterface;
 use Swoft\Contract\SwoftInterface;
+use Swoft\Helper\SwoftHelper;
 use Swoft\Processor\AnnotationProcessor;
 use Swoft\Processor\ApplicationProcessor;
 use Swoft\Processor\BeanProcessor;
@@ -25,6 +21,10 @@ use Swoft\Stdlib\Helper\FSHelper;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Stdlib\Helper\Str;
 use Swoft\Log\Helper\CLog;
+use function define;
+use function defined;
+use function dirname;
+use const IN_PHAR;
 
 /**
  * Swoft application
@@ -139,6 +139,9 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
      */
     public function __construct(array $config = [])
     {
+        // Check runtime env
+        SwoftHelper::checkRuntime();
+
         // Storage as global static property.
         Swoft::$app = $this;
 

@@ -129,12 +129,10 @@ class ObjectHelper
         // Get the content of the @var annotation
         if (preg_match('/@var\s+([^\s]+)/', $docComment, $matches)) {
             [, $type] = $matches;
-        } else {
-            return '';
-        }
 
-        if (in_array($type, self::BASE_TYPES, true)) {
-            return $type;
+            if (in_array($type, self::BASE_TYPES, true)) {
+                return $type;
+            }
         }
 
         return '';
