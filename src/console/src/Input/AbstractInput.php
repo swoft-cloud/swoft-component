@@ -2,8 +2,8 @@
 
 namespace Swoft\Console\Input;
 
-use InvalidArgumentException;
 use Swoft\Console\Contract\InputInterface;
+use Swoft\Console\Exception\CommandFlagException;
 use function array_merge;
 use function getcwd;
 use function is_bool;
@@ -194,7 +194,7 @@ abstract class AbstractInput implements InputInterface
      * @param int|string $name argument index
      *
      * @return mixed
-     * @throws InvalidArgumentException
+     * @throws CommandFlagException
      */
     public function getRequiredArg($name)
     {
@@ -202,7 +202,7 @@ abstract class AbstractInput implements InputInterface
             return $this->args[$name];
         }
 
-        throw new InvalidArgumentException("The argument '{$name}' is required");
+        throw new CommandFlagException("The argument '{$name}' is required");
     }
 
     /**
@@ -235,11 +235,24 @@ abstract class AbstractInput implements InputInterface
      *
      * @return int
      */
-    public function getInt($key, $default = 0): int
+    public function getInt($key, int $default = 0): int
     {
         $value = $this->get($key);
 
-        return $value === null ? (int)$default : (int)$value;
+        return $value === null ? $default : (int)$value;
+    }
+
+    /**
+     * @param string|int $key
+     * @param string     $default
+     *
+     * @return string
+     */
+    public function getString($key, string $default = ''): string
+    {
+        $value = $this->get($key);
+
+        return $value === null ? $default : (string)$value;
     }
 
     /**
@@ -327,15 +340,37 @@ abstract class AbstractInput implements InputInterface
      * @param string $name
      *
      * @return mixed
-     * @throws InvalidArgumentException
+     * @throws CommandFlagException
      */
     public function getRequiredOpt(string $name)
     {
         if (null === ($val = $this->getOpt($name))) {
-            throw new InvalidArgumentException("The option '{$name}' is required");
+            throw new CommandFlagException("The option '{$name}' is required");
         }
 
         return $val;
+    }
+
+    /**
+     * @param string $name
+     * @param int    $default
+     *
+     * @return int
+     */
+    public function getIntOpt(string $name, int $default = 0): int
+    {
+        return (int)$this->getOpt($name, $default);
+    }
+
+    /**
+     * @param string $name
+     * @param string $default
+     *
+     * @return string
+     */
+    public function getStringOpt(string $name, string $default = ''): string
+    {
+        return (string)$this->getOpt($name, $default);
     }
 
     /**
@@ -353,6 +388,12 @@ abstract class AbstractInput implements InputInterface
         return (bool)$this->getOpt($name, $default);
     }
 
+    /**
+     * @param string $name
+     * @param bool   $default
+     *
+     * @return bool
+     */
     public function boolOpt(string $name, bool $default = false): bool
     {
         return (bool)$this->getOpt($name, $default);
