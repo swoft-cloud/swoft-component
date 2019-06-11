@@ -935,6 +935,14 @@ class Connection extends AbstractConnection implements ConnectionInterface
     }
 
     /**
+     * @return string
+     */
+    public function getSelectDb(): string
+    {
+        return $this->selectDb;
+    }
+
+    /**
      * Perform a rollback within the database.
      *
      * @param int $toLevel

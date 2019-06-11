@@ -561,12 +561,11 @@ class Builder
     public function getDatabaseName(): string
     {
         $connection = $this->getConnection();
-        $writes     = $connection->getDatabase()->getWrites();
+        $db         = $connection->getSelectDb() ?: $connection->getDb();
         // release
         $connection->release();
-        $dsnArray     = explode(';', $writes[0]['dsn'], 2);
-        $databaseName = explode('=', $dsnArray[0], 2);
-        return end($databaseName);
+
+        return $db;
     }
 
     /**
