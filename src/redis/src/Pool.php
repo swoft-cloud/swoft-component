@@ -4,10 +4,14 @@
 namespace Swoft\Redis;
 
 use ReflectionException;
+use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\AbstractPool;
 use Swoft\Connection\Pool\Contract\ConnectionInterface;
-use Swoft\Connection\Pool\Exception\ConnectionPoolException;
+use Swoft\Redis\Connection\Connection;
+use Swoft\Redis\Connection\ConnectionManager;
+use Swoft\Redis\Exception\RedisException;
+use Throwable;
 
 /**
  * Class Pool
@@ -34,7 +38,7 @@ use Swoft\Connection\Pool\Exception\ConnectionPoolException;
  * @method string getSet(string $key, string $value)
  * @method string hDel(string $key, string $hashKey1, string $hashKey2 = null, string $hashKeyN = null)
  * @method bool hExists(string $key, string $hashKey)
- * @method array hGet(string $key, array $hashKey)
+ * @method array hGet(string $key, string $hashKey)
  * @method array hGetAll(string $key)
  * @method int hIncrBy(string $key, string $hashKey, int $value)
  * @method float hIncrByFloat(string $key, string $field, float $increment)
@@ -161,11 +165,33 @@ class Pool extends AbstractPool
      *
      * @param string $name
      * @param array  $arguments
-     * @return mixed
-     * @throws ConnectionPoolException
+     *
+     * @return ConnectionInterface
+     * @throws RedisException
      */
     public function __call(string $name, array $arguments)
     {
-        return $this->getConnection()->$name(...$arguments);
+        try {
+            /* @var ConnectionManager $conManager */
+            $conManager = BeanFactory::getBean(ConnectionManager::class);
+
+            $connection = $this->getConnection();
+
+            $connection->setRelease(true);
+            $conManager->setConnection($connection);
+        } catch (Throwable $e) {
+            throw new RedisException(
+                sprintf('Pool error is %s file=%s line=%d', $e->getMessage(), $e->getFile(), $e->getLine())
+            );
+        }
+
+        // Not instanceof Connection
+        if (!$connection instanceof Connection) {
+            throw new RedisException(
+                sprintf('%s is not instanceof %s', get_class($connection), Connection::class)
+            );
+        }
+
+        return $connection->{$name}($arguments);
     }
 }
