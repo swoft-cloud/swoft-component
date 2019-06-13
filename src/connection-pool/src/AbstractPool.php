@@ -239,7 +239,6 @@ abstract class AbstractPool implements PoolInterface
     private function popByChannel(): ?ConnectionInterface
     {
         $time       = time();
-        $connection = null;
 
         while (!$this->channel->isEmpty()) {
             /* @var ConnectionInterface $connection */
@@ -255,7 +254,7 @@ abstract class AbstractPool implements PoolInterface
             return $connection;
         }
 
-        return $connection;
+        return null;
     }
 
     /**
