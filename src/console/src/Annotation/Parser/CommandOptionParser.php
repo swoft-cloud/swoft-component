@@ -7,6 +7,7 @@ use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\Exception\AnnotationException;
 use Swoft\Console\Annotation\Mapping\CommandOption;
 use Swoft\Console\CommandRegister;
+use Toolkit\Cli\Flags;
 
 /**
  * Class CommandOptionParser
@@ -34,7 +35,9 @@ class CommandOptionParser extends Parser
             throw new AnnotationException('`@CommandOption` must be defined on class or method!');
         }
 
-        $method = $this->methodName;
+        $method  = $this->methodName;
+        $valType = $annotation->getType();
+        $defVal  = $annotation->getDefault();
 
         // Add route info for group command action
         CommandRegister::bindOption($this->className, $method, $annotation->getName(), [
@@ -44,7 +47,7 @@ class CommandOptionParser extends Parser
             'desc'    => $annotation->getDesc(),
             'mode'    => $annotation->getMode(),
             'type'    => $annotation->getType(),
-            'default' => $annotation->getDefault(),
+            'default' => $valType === 'BOOL' ? Flags::filterBool($defVal) : $defVal,
         ]);
 
         return [];

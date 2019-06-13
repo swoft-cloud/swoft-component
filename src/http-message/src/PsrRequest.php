@@ -2,13 +2,16 @@
 
 namespace Swoft\Http\Message;
 
-use function in_array;
 use InvalidArgumentException;
-use function preg_match;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
-use function strtoupper;
 use Swoft\Http\Message\Concern\MessageTrait;
+use function explode;
+use function in_array;
+use function preg_match;
+use function str_replace;
+use function strpos;
+use function strtoupper;
 
 /**
  * Class Request
@@ -112,6 +115,7 @@ class PsrRequest implements RequestInterface
 
     /**
      * @inheritdoc
+     *
      * @param string $method Case-sensitive method.
      *
      * @return static
@@ -147,7 +151,8 @@ class PsrRequest implements RequestInterface
     /**
      * @inheritdoc
      * @link http://tools.ietf.org/html/rfc3986#section-4.3
-     * @param UriInterface $uri New request URI to use.
+     *
+     * @param UriInterface $uri          New request URI to use.
      * @param bool         $preserveHost Preserve the original state of the Host header.
      *
      * @return static
@@ -244,5 +249,61 @@ class PsrRequest implements RequestInterface
 
         // Ensure Host is the first header.
         $this->headers = [$header => [$host]] + $this->headers;
+    }
+
+    /**
+     * Get client supported languages from header
+     * eg: `Accept-Language:zh-CN, zh;q=0.8, en;q=0.5`
+     *
+     * @return array [['zh-CN', 1], ['zh', 0.8]]
+     */
+    public function getAcceptLanguages(): array
+    {
+        $ls = [];
+
+        if ($value = $this->getHeaderLine('Accept-Language')) {
+            $value = str_replace(' ', '', $value);
+
+            if (strpos($value, ',')) {
+                $nodes = explode(',', $value);
+            } else {
+                $nodes = [$value];
+            }
+
+            foreach ($nodes as $node) {
+                if (strpos($node, ';')) {
+                    $info    = explode(';', $node);
+                    $info[1] = (float)substr($info[1], 2);
+                } else {
+                    $info = [$node, 1.0];
+                }
+
+                $ls[] = $info;
+            }
+        }
+
+        return $ls;
+    }
+
+    /**
+     * get client supported languages from header
+     * eg: `Accept-Encoding:gzip, deflate, sdch, br`
+     *
+     * @return array
+     */
+    public function getAcceptEncodes(): array
+    {
+        $ens = [];
+
+        if ($value = $this->getHeaderLine('Accept-Encoding')) {
+            if (strpos($value, ';')) {
+                [$value,] = explode(';', $value, 2);
+            }
+
+            $value = str_replace(' ', '', $value);
+            $ens   = explode(',', $value);
+        }
+
+        return $ens;
     }
 }

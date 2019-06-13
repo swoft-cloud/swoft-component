@@ -7,6 +7,7 @@ use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\Exception\AnnotationException;
 use Swoft\Console\Annotation\Mapping\CommandArgument;
 use Swoft\Console\CommandRegister;
+use Toolkit\Cli\Flags;
 
 /**
  * Class CommandArgumentParser
@@ -19,13 +20,14 @@ class CommandArgumentParser extends Parser
     /**
      * Parse object
      *
-     * @param int             $type Class or Method or Property
+     * @param int             $type       Class or Method or Property
      * @param CommandArgument $annotation Annotation object
      *
      * @return array
      * Return empty array is nothing to do!
      * When class type return [$beanName, $className, $scope, $alias, $size] is to inject bean
      * When property type return [$propertyValue, $isRef] is to reference value
+     * @throws AnnotationException
      */
     public function parse(int $type, $annotation): array
     {
@@ -33,13 +35,17 @@ class CommandArgumentParser extends Parser
             throw new AnnotationException('`@CommandArgument` must be defined on class method!');
         }
 
-        CommandRegister::bindArgument($this->className, $this->methodName, $annotation->getName(), [
-            'method'  => $this->methodName,
+        $method  = $this->methodName;
+        $valType = $annotation->getType();
+        $defVal  = $annotation->getDefault();
+
+        CommandRegister::bindArgument($this->className, $method, $annotation->getName(), [
+            'method'  => $method,
             'name'    => $annotation->getName(),
             'desc'    => $annotation->getDesc(),
             'mode'    => $annotation->getMode(),
             'type'    => $annotation->getType(),
-            'default' => $annotation->getDefault(),
+            'default' => $valType === 'BOOL' ? Flags::filterBool($defVal) : $defVal,
         ]);
 
         return [];
