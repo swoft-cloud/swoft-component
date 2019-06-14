@@ -192,6 +192,6 @@ class Pool extends AbstractPool
             );
         }
 
-        return $connection->{$name}($arguments);
+        return $connection->{$name}(...$arguments);
     }
 }
