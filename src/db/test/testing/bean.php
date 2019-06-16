@@ -60,5 +60,15 @@ return [
         'class'    => Pool::class,
         'database' => bean('db3')
     ],
+    'db4'      => [
+        'class'    => Database::class,
+        'dsn'      => 'mysql:dbname=test2;host=127.0.0.1',
+        'username' => 'root',
+        'password' => 'swoft123456',
+    ],
+    'db.pool4' => [
+        'class'    => Pool::class,
+        'database' => bean('db4')
+    ],
 ];
 

@@ -9,8 +9,11 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Annotation\Mapping\Column;
 use Swoft\Db\DB;
 use Swoft\Db\Exception\DbException;
+use Swoft\Stdlib\Helper\Str;
 use SwoftTest\Db\Testing\Entity\Count;
+use SwoftTest\Db\Testing\Entity\Count4;
 use SwoftTest\Db\Testing\Entity\User;
+use SwoftTest\Db\Testing\Entity\User4;
 use SwoftTest\Db\Unit\TestCase;
 
 /**
@@ -202,7 +205,7 @@ class TransactionTest extends TestCase
         $this->assertTrue($userDoesnt);
 
         $countDoesnt = Count::where('id', $countId)->doesntExist();
-        $this->assertTrue($countDoesnt);
+        $this->assertFalse($countDoesnt);
     }
 
     public function testRelationship2()
@@ -256,4 +259,47 @@ class TransactionTest extends TestCase
         $this->assertTrue($countDoesnt);
     }
 
+    public function testMultiPool()
+    {
+        DB::beginTransaction();
+
+        // db.pool4
+
+        /* @var User $user */
+        $user = User4::new();
+        $user->setAge(mt_rand(1, 100));
+        $user->setUserDesc('desc');
+
+        // Save result
+        $result = $user->save();
+        $this->assertTrue($result);
+
+        $uid4 = $user->getId();
+
+        // db.pool
+        $count = Count4::new();
+        $count->setUserId($uid4);
+        $count->setCreateTime(time());
+        $count->setAttributes(Str::random());
+
+        // Save result
+        $result = $count->save();
+        $this->assertTrue($result);
+
+        $cid = $count->getId();
+        $uid = $this->addRecord();
+
+        DB::rollBack();
+
+        $u4 = User4::find($uid4);
+
+        $this->assertIsArray($u4->toArray());
+
+        $c = Count4::find($cid);
+        $u = User::find($uid);
+
+        $this->assertTrue(empty($c));
+        $this->assertTrue(empty($u));
+
+    }
 }
