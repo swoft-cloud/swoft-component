@@ -7,7 +7,6 @@ use ReflectionException;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\Exception\ConnectionPoolException;
-use Swoft\Log\Debug;
 use Swoft\Rpc\Client\Connection;
 use Swoft\Rpc\Client\Exception\RpcClientException;
 use Swoft\Rpc\Client\Pool;
@@ -52,7 +51,10 @@ trait ServiceTrait
 
         $protocol = Protocol::new($version, $interfaceClass, $methodName, $params, $ext);
         $data     = $packet->encode($protocol);
-        $message = sprintf('Rpc call failed.interface=%s method=%s', $interfaceClass, $methodName);
+        $message  = sprintf(
+            'Rpc call failed.interface=%s method=%s pool=%s version=%s',
+            $interfaceClass, $methodName, $poolName, $version
+        );
 
         $result = $this->sendAndRecv($connection, $data, $message);
         $connection->release();
@@ -64,7 +66,10 @@ trait ServiceTrait
             $errorData = $response->getError()->getData();
 
             throw new RpcClientException(
-                sprintf('Rpc call error!code=%d message=%s data=%s', $code, $message, JsonHelper::encode($errorData))
+                sprintf(
+                    'Rpc call error!code=%d message=%s data=%s pool=%s version=%s',
+                    $code, $message, JsonHelper::encode($errorData), $poolName, $version
+                )
             );
         }
 
