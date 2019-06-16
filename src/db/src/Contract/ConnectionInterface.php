@@ -183,6 +183,11 @@ interface ConnectionInterface
     public function rollBack(): void;
 
     /**
+     * @return bool
+     */
+    public function inTransaction(): bool;
+
+    /**
      * Force rollback the active database transaction.
      *
      * @param int|null $toLevel

@@ -238,8 +238,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
     public function release(bool $force = false): void
     {
         $cm = $this->getConMananger();
-        if (!$cm->isTransaction()) {
-            $cm->releaseOrdinaryConnection($this->id);
+        if (!$cm->isTransaction($this->poolName)) {
+            $cm->releaseOrdinaryConnection($this->id, $this->poolName);
 
             // Reset select db name
             $this->resetDb();
@@ -247,6 +247,14 @@ class Connection extends AbstractConnection implements ConnectionInterface
             // Release connection
             parent::release($force);
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function inTransaction(): bool
+    {
+        return $this->getPdo()->inTransaction();
     }
 
     /**
@@ -768,7 +776,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
         $this->createTransaction($cm);
 
         // Inc transactions
-        $cm->incTransactionTransactons();
+        $cm->incTransactionTransactons($this->poolName);
 
         Swoft::trigger(DbEvent::BEGIN_TRANSACTION);
     }
@@ -780,7 +788,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     public function commit(): void
     {
         $cm = $this->getConMananger();
-        $ts = $cm->getTransactionTransactons();
+        $ts = $cm->getTransactionTransactons($this->poolName);
 
         // Not to commit
         if ($ts <= 0) {
@@ -792,13 +800,13 @@ class Connection extends AbstractConnection implements ConnectionInterface
             $this->getPdo()->commit();
 
             //Release from transaction manager
-            $cm->releaseTransaction();
+            $cm->releaseTransaction($this->poolName);
 
             // Release connection
             $this->release();
         } else {
             // Dec transaction
-            $cm->decTransactionTransactons();
+            $cm->decTransactionTransactons($this->poolName);
         }
 
         Swoft::trigger(DbEvent::COMMIT_TRANSACTION);
@@ -813,7 +821,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     public function rollBack(int $toLevel = null): void
     {
         $cm = $this->getConMananger();
-        $ts = $cm->getTransactionTransactons();
+        $ts = $cm->getTransactionTransactons($this->poolName);
 
         // We allow developers to rollback to a certain transaction level. We will verify
         // that this given transaction level is valid before attempting to rollback to
@@ -888,7 +896,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     public function getReadPdo(): PDO
     {
         $cm = $this->getConMananger();
-        if ($cm->isTransaction()) {
+        if ($cm->isTransaction($this->poolName)) {
             return $this->getPdo();
         }
 
@@ -958,7 +966,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
             $this->getPdo()->rollBack();
 
             //Release transaction
-            $cm->releaseTransaction();
+            $cm->releaseTransaction($this->poolName);
 
             // Release connection
             $this->release(true);
@@ -967,7 +975,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
                 $this->queryGrammar->compileSavepointRollBack('trans' . ($toLevel + 1))
             );
 
-            $cm->setTransactionTransactons($toLevel);
+            $cm->setTransactionTransactons($toLevel, $this->poolName);
         }
     }
 
@@ -978,10 +986,10 @@ class Connection extends AbstractConnection implements ConnectionInterface
      */
     protected function createTransaction(ConnectionManager $cm): void
     {
-        $ts = $cm->getTransactionTransactons();
+        $ts = $cm->getTransactionTransactons($this->poolName);
         if ($ts == 0) {
             $this->getPdo()->beginTransaction();
-            $cm->setTransactionConnection($this);
+            $cm->setTransactionConnection($this, $this->poolName);
         } elseif ($ts >= 1 && $this->queryGrammar->supportsSavepoints()) {
             $this->createSavepoint($ts);
         }

@@ -74,9 +74,10 @@ class DB
     public static function connection(string $name = Pool::DEFAULT_POOL): Connection
     {
         try {
+            /* @var ConnectionManager $cm */
             $cm = bean(ConnectionManager::class);
-            if ($cm->isTransaction()) {
-                return $cm->getTransactionConnection();
+            if ($cm->isTransaction($name)) {
+                return $cm->getTransactionConnection($name);
             }
 
             return self::getConnectionFromPool($name);
@@ -152,9 +153,10 @@ class DB
         /* @var ConnectionManager $conManager */
         $conManager = BeanFactory::getBean(ConnectionManager::class);
         $connection = $pool->getConnection();
+        $connection->setPoolName($name);
 
         $connection->setRelease(true);
-        $conManager->setOrdinaryConnection($connection);
+        $conManager->setOrdinaryConnection($connection, $name);
         return $connection;
     }
 }

@@ -55,6 +55,11 @@ interface ConnectionInterface
     public function setRelease(bool $release): void;
 
     /**
+     * @param string $poolName
+     */
+    public function setPoolName(string $poolName): void;
+
+    /**
      * Close connection
      */
     public function close(): void;

@@ -136,4 +136,24 @@ class RouteTest extends TestCase
 
         $this->assertSame('{"data":"中国"}', $response->getContent());
     }
+
+    /**
+     * @throws ContainerException
+     * @throws ReflectionException
+     */
+    public function testTrait(): void
+    {
+        $response = $this->mockServer->request(MockRequest::GET, '/testRoute/traitMethod');
+        $response->assertEqualJson(['traitMethod']);
+    }
+
+    /**
+     * @throws ContainerException
+     * @throws ReflectionException
+     */
+    public function testBaseAction(): void
+    {
+        $response = $this->mockServer->request(MockRequest::GET, '/testRoute/baseMethod');
+        $response->assertEqualJson(['baseMethod']);
+    }
 }

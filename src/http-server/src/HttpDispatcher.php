@@ -5,6 +5,7 @@ namespace Swoft\Http\Server;
 use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Dispatcher;
@@ -14,8 +15,8 @@ use Swoft\Http\Server\Formatter\AcceptResponseFormatter;
 use Swoft\Http\Server\Middleware\DefaultMiddleware;
 use Swoft\Http\Server\Middleware\UserMiddleware;
 use Swoft\Http\Server\Middleware\ValidatorMiddleware;
+use Swoft\Http\Server\Router\Router;
 use Throwable;
-use Swoft\Bean\Annotation\Mapping\Inject;
 
 /**
  * Class HttpDispatcher
@@ -33,7 +34,6 @@ class HttpDispatcher extends Dispatcher
     protected $defaultMiddleware = DefaultMiddleware::class;
 
     /**
-     * TODO
      * 1 pre-match before run middleware
      * 2 normal match on UserMiddleware
      * @var int
@@ -71,6 +71,9 @@ class HttpDispatcher extends Dispatcher
         try {
             // Trigger before handle event
             Swoft::trigger(HttpServerEvent::BEFORE_REQUEST, null, $request, $response);
+
+            // Match router and handle
+            $request  = $this->matchRouter($request);
             $response = $requestHandler->handle($request);
         } catch (Throwable $e) {
             /** @var HttpErrorDispatcher $errDispatcher */
@@ -104,5 +107,31 @@ class HttpDispatcher extends Dispatcher
             UserMiddleware::class,
             ValidatorMiddleware::class
         ];
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Request
+     * @throws ContainerException
+     */
+    private function matchRouter(Request $request): Request
+    {
+        /** @var Request $request $method */
+        $method  = $request->getMethod();
+        $uriPath = $request->getUriPath();
+
+        /** @var Router $router */
+        $router    = BeanFactory::getSingleton('httpRouter');
+        $routeData = $router->match($uriPath, $method);
+
+        // Save matched route data to context
+        context()->set(Request::ROUTER_ATTRIBUTE, $routeData);
+
+        // Set router
+        $request = $request->withAttribute(Request::ROUTER_ATTRIBUTE, $routeData);
+        context()->setRequest($request);
+
+        return $request;
     }
 }
