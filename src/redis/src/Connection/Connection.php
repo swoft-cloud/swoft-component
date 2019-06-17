@@ -45,7 +45,7 @@ use Throwable;
  * @method string getSet(string $key, string $value)
  * @method string hDel(string $key, string $hashKey1, string $hashKey2 = null, string $hashKeyN = null)
  * @method bool hExists(string $key, string $hashKey)
- * @method array hGet(string $key, array $hashKey)
+ * @method array hGet(string $key, string $hashKey)
  * @method array hGetAll(string $key)
  * @method int hIncrBy(string $key, string $hashKey, int $value)
  * @method float hIncrByFloat(string $key, string $field, float $increment)
@@ -116,7 +116,7 @@ use Throwable;
  * @method array zRevRangeByLex(string $key, int $min, int $max, int $offset = null, int $limit = null)
  * @method array zRevRangeByScore(string $key, int $start, int $end, array $options = [])
  * @method int zRevRank(string $key, string $member)
- * @method float zScore(string $key, float $member)
+ * @method float zScore(string $key, mixed $member)
  * @method array zScan(string $key, int &$iterator, string $pattern = null, int $count = 0)
  * @method int del(string $key1, string $key2 = null, string $key3 = null)
  * @method bool expire(string $key, int $ttl)
@@ -454,8 +454,13 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     {
         $params[] = $key;
         foreach ($scoreValues as $score => $value) {
-            $params[] = $score;
-            $params[] = $value;
+            if (is_string($score) && is_numeric($value)) {
+                $params[] = $value;
+                $params[] = $score;
+            } else {
+                $params[] = $score;
+                $params[] = $value;
+            }
         }
 
         $result = $this->command('zAdd', $params);

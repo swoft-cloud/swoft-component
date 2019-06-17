@@ -149,8 +149,13 @@ class MySqlGrammar extends Grammar
      */
     protected function compileCreateTable(Blueprint $blueprint, $command, $connection)
     {
-        return sprintf('%s table %s (%s)',
+        $ifNotExist = '';
+        if ($command['ifNotExist']) {
+            $ifNotExist = ' if not exist ';
+        }
+        return sprintf('%s table%s%s (%s)',
             $blueprint->temporary ? 'create temporary' : 'create',
+            $ifNotExist,
             $this->wrapTable($blueprint),
             implode(', ', $this->getColumns($blueprint))
         );

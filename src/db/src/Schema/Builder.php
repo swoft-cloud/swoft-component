@@ -138,7 +138,7 @@ class Builder
         // The driver builder
         $static = self::getBuilder($poolName);
         // Set schema config
-        $static->setSchemaGrammarAndDatabase($grammar);
+        $static->setSchemaGrammar($grammar);
 
         return $static;
     }
@@ -175,7 +175,7 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    protected function setSchemaGrammarAndDatabase(Grammar $grammar = null): void
+    protected function setSchemaGrammar(Grammar $grammar = null): void
     {
         /* @var Pool $pool */
         $pool = BeanFactory::getBean($this->poolName);
@@ -361,15 +361,35 @@ class Builder
      *
      * @param string  $table
      * @param Closure $callback
+     * @param bool    $ifNotExist
      *
      * @throws ContainerException
      * @throws DbException
      * @throws ReflectionException
      */
-    public function create(string $table, Closure $callback)
+    public function create(string $table, Closure $callback, bool $ifNotExist = false)
+    {
+        $this->build(tap($this->createBlueprint($table), function (Blueprint $blueprint) use ($callback, $ifNotExist) {
+            $blueprint->create($ifNotExist);
+
+            $callback($blueprint);
+        }));
+    }
+
+    /**
+     * Create a if not exist, new table on the schema.
+     *
+     * @param string  $table
+     * @param Closure $callback
+     *
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function createIfNotExist(string $table, Closure $callback)
     {
         $this->build(tap($this->createBlueprint($table), function (Blueprint $blueprint) use ($callback) {
-            $blueprint->create();
+            $blueprint->create(true);
 
             $callback($blueprint);
         }));

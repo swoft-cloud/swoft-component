@@ -23,8 +23,19 @@ class SortedSetTest extends TestCase
             16.9 => 'key4',
         ];
 
-        $result = Redis::zAdd($key, $scores);
+        $scores1 = [
+            'key1' => 12.1,
+            'key2' => 12.3,
+        ];
+        // zAdd 12.2 key1 14.2 key3 16.9 key4
+        $result  = Redis::zAdd($key, $scores);
+
+        // zAdd 12.1 key1 12.3 key2
+        $result1 = Redis::zAdd($key, $scores1);
+
         $this->assertEquals($result, \count($scores));
+        $this->assertEquals($result1, \count($scores1));
+
     }
 
     public function testZrem()
