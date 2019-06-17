@@ -35,6 +35,7 @@ class Schema
      */
     private static $passthru = [
         'create',
+        'createIfNotExist',
         'drop',
         'dropIfExists',
         'table',

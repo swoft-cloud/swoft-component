@@ -466,4 +466,13 @@ on A.id=B.id;', [$resCount - 20]);
         $this->assertEquals($expectAge, $result['age']);
         $this->assertEquals($expectId, $result['id']);
     }
+
+    public function testGet()
+    {
+        $res = User::get(['id']);
+
+        var_dump($res->toArray());
+
+        $this->assertTrue(true);
+    }
 }

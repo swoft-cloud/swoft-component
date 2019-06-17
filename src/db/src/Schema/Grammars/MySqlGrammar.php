@@ -151,7 +151,7 @@ class MySqlGrammar extends Grammar
     {
         $ifNotExist = '';
         if ($command['ifNotExist']) {
-            $ifNotExist = ' if not exist ';
+            $ifNotExist = ' if not exists ';
         }
         return sprintf('%s table%s%s (%s)',
             $blueprint->temporary ? 'create temporary' : 'create',
