@@ -453,13 +453,13 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     public function zAdd(string $key, array $scoreValues): int
     {
         $params[] = $key;
-        foreach ($scoreValues as $score => $value) {
-            if (is_string($score) && is_numeric($value)) {
-                $params[] = $value;
-                $params[] = $score;
+        foreach ($scoreValues as $scoreKey => $scoreValue) {
+            if (is_string($scoreKey) && is_numeric($scoreValue)) {
+                $params[] = $scoreValue;
+                $params[] = $scoreKey;
             } else {
-                $params[] = $score;
-                $params[] = $value;
+                $params[] = $scoreKey;
+                $params[] = $scoreValue;
             }
         }
 
