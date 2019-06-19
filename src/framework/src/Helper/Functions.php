@@ -87,6 +87,7 @@ if (!function_exists('config')) {
      *
      * @return mixed
      * @throws ContainerException
+     * @throws ReflectionException
      */
     function config(string $key = null, $default = null)
     {
@@ -95,7 +96,7 @@ if (!function_exists('config')) {
         }
 
         /* @var Config $config */
-        $config = BeanFactory::getSingleton('config');
+        $config = BeanFactory::getBean('config');
 
         return $config->get($key, $default);
     }
