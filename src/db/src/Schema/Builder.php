@@ -16,6 +16,7 @@ use Swoft\Db\Exception\DbException;
 use Swoft\Db\Pool;
 use Swoft\Db\Schema\Grammars\Grammar;
 use Swoft\Db\Schema\Grammars\MySqlGrammar;
+use Swoft\Stdlib\Helper\StringHelper;
 use function array_map;
 use function bean;
 use function call_user_func;
@@ -24,8 +25,8 @@ use function explode;
 use function get_class;
 use function in_array;
 use function is_callable;
+use function sprintf;
 use function strtolower;
-use Swoft\Stdlib\Helper\StringHelper;
 use function tap;
 
 /**
@@ -41,13 +42,6 @@ class Builder
      * @var string
      */
     public $poolName;
-
-    /**
-     * The database config
-     *
-     * @var Database
-     */
-    public $database;
 
     /**
      * The database query grammar instance.
@@ -111,10 +105,10 @@ class Builder
     {
         $builder = bean($builderClass);
         if (empty($builder)) {
-            throw new InvalidArgumentException('%s class is undefined @Bean()', $builderClass);
+            throw new InvalidArgumentException(sprintf('%s class is undefined @Bean()', $builderClass));
         }
         if (!$builder instanceof self) {
-            throw new InvalidArgumentException('%s class is not Builder instance', $builderClass);
+            throw new InvalidArgumentException(sprintf('%s class is not Builder instance', $builderClass));
         }
         return $builder;
     }
@@ -186,9 +180,8 @@ class Builder
         /* @var Pool $pool */
         $pool = BeanFactory::getBean($this->poolName);
 
-        $this->database = $pool->getDatabase();
-        $driver         = $pool->getDatabase()->getDriver();
-        $prefix         = $pool->getDatabase()->getPrefix();
+        $driver = $pool->getDatabase()->getDriver();
+        $prefix = $pool->getDatabase()->getPrefix();
         if (!empty($grammar)) {
             $grammar->setTablePrefix($prefix);
             $this->grammar = $grammar;
@@ -561,13 +554,18 @@ class Builder
      * Get connection database name
      *
      * @return string
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
      */
     public function getDatabaseName(): string
     {
-        $writes       = $this->database->getWrites();
-        $dsnArray     = explode(';', $writes[0]['dsn'], 2);
-        $databaseName = explode('=', $dsnArray[0], 2);
-        return end($databaseName);
+        $connection = $this->getConnection();
+        $db         = $connection->getSelectDb() ?: $connection->getDb();
+        // release
+        $connection->release();
+
+        return $db;
     }
 
     /**

@@ -289,19 +289,26 @@ on A.id=B.id;', [$resCount - 20]);
     public function testAggregate()
     {
         $result = DB::table('user')->max('age');;
+
+        $this->assertTrue(is_float($result) || is_int($result));
         $this->assertEquals($result, User::query()->max('age'));
 
         $result1 = User::min('age');
+
+        $this->assertTrue(is_float($result1) || is_int($result1));
         $this->assertEquals($result1, DB::table('user')->min('age'));
 
         $result2 = User::query()->average('age');
         $this->assertEquals($result2, DB::table('user')->average('age'));
 
         $result3 = User::query()->avg('age');
+
+        $this->assertTrue(is_float($result3) || is_int($result3));
         $this->assertEquals($result3, DB::table('user')->avg('age'));
         $this->assertEquals($result2, $result3);
 
         $result4 = User::query()->count();
+        $this->assertIsInt($result4);
         $this->assertEquals($result4, DB::table('user')->count());
 
         // sql = select max(`id`) as id from `user` group by user_desc

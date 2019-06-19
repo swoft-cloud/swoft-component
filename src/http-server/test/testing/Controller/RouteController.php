@@ -13,8 +13,10 @@ use Swoft\Http\Server\Annotation\Mapping\RequestMethod;
  *
  * @Controller("testRoute")
  */
-class RouteController
+class RouteController extends BaseController
 {
+    use TraitController;
+
     /**
      * @RequestMapping("string")
      *
