@@ -6,7 +6,7 @@
     "swoole",
     "swoft"
   ],
-  "description": "websocket server for swoft",
+  "description": "tcp server component for swoft",
   "license": "Apache-2.0",
   "require": {
   },

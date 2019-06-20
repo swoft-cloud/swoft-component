@@ -7,7 +7,20 @@ namespace Swoft\Tcp\Server;
  *
  * @since 2.0
  */
-class TcpServerEvent
+final class TcpServerEvent
 {
+    /**
+     * On connect
+     */
+    public const CONNECT = 'swoft.tcp.server.connect';
 
+    /**
+     * On receive
+     */
+    public const RECEIVE = 'swoft.tcp.server.receive';
+
+    /**
+     * On close
+     */
+    public const CLOSE = 'swoft.tcp.server.close';
 }

@@ -2,10 +2,16 @@
 
 namespace Swoft\Tcp\Server;
 
-use function dirname;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Helper\ComposerJSON;
 use Swoft\Server\Swoole\SwooleEvent;
 use Swoft\SwoftComponent;
+use Swoft\Tcp\Server\Swoole\CloseListener;
+use Swoft\Tcp\Server\Swoole\ConnectListener;
+use Swoft\Tcp\Server\Swoole\ReceiveListener;
+use function bean;
+use function dirname;
 
 /**
  * Class AutoLoader
@@ -41,17 +47,17 @@ class AutoLoader extends SwoftComponent
 
     /**
      * @return array
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function beans(): array
     {
         return [
             'tcpServer' => [
                 'on' => [
-                    SwooleEvent::CONNECT      => '${connectListener}',
-                    SwooleEvent::CLOSE        => '${closeListener}',
-                    SwooleEvent::RECEIVE      => '${tcpReceiveListener}',
-                    SwooleEvent::BUFFER_EMPTY => '${bufferEmptyListener}',
-                    SwooleEvent::BUFFER_FULL  => '${bufferFullListener}',
+                    SwooleEvent::CONNECT => bean(ConnectListener::class),
+                    SwooleEvent::CLOSE   => bean(CloseListener::class),
+                    SwooleEvent::RECEIVE => bean(ReceiveListener::class),
                 ]
             ]
         ];
