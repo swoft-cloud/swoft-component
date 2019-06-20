@@ -69,6 +69,11 @@ class ContentTypeController
      */
     public function ctm(Request $request): array
     {
-        return $request->getParsedQuery();
+        $data = [
+            $request->getParsedQuery(),
+            $request->getParsedQuery()
+        ];
+
+        return $data;
     }
 }

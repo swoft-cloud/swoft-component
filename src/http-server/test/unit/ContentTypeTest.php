@@ -61,14 +61,14 @@ class ContentTypeTest extends TestCase
     public function testCtm()
     {
         $headers = [
-            'accept' => ContentType::JSON,
+            'accept'       => ContentType::JSON,
             'content-type' => 'application/json;charset=utf-8',
         ];
 
-        $data = [
+        $data     = [
             'key' => 'value'
         ];
         $response = $this->mockServer->request('GET', '/ct/ctm', $data, $headers);
-        $response->assertEqualJson($data);
+        $response->assertEqualJson([$data, $data]);
     }
 }
