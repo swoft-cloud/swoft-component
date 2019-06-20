@@ -174,14 +174,17 @@ class AnnotationResource extends Resource
                 $this->notify('findLoaderClass', $this->clearBasePath($loaderFile));
 
                 // If is disable, will skip scan annotation classes
-                if ($isEnabled && $loaderObject instanceof LoaderInterface) {
+                $isLoaderInstance = $loaderObject instanceof LoaderInterface;
+                if ($isEnabled && $isLoaderInstance) {
                     AnnotationRegister::registerAutoLoaderFile($loaderFile);
                     $this->notify('addLoaderClass', $loaderClass);
                     $this->loadAnnotation($loaderObject);
                 }
 
                 // Storage auto loader to register
-                AnnotationRegister::addAutoLoader($ns, $loaderObject);
+                if ($isLoaderInstance) {
+                    AnnotationRegister::addAutoLoader($ns, $loaderObject);
+                }
             }
         }
     }
@@ -259,7 +262,7 @@ class AnnotationResource extends Resource
                 $className = sprintf('%s%s', $ns, $pathName);
 
                 // Fix repeat included file bug
-                $autoload  = in_array($filePath, $this->includedFiles, true);
+                $autoload = in_array($filePath, $this->includedFiles, true);
 
                 // Will filtering: interfaces and traits
                 if (!class_exists($className, !$autoload)) {
