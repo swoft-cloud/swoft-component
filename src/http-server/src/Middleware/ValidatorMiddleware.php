@@ -15,6 +15,7 @@ use Swoft\Http\Server\Contract\MiddlewareInterface;
 use Swoft\Http\Server\Router\Route;
 use Swoft\Http\Server\Router\Router;
 use Swoft\Validator\Exception\ValidatorException;
+use Swoft\Validator\ValidateRegister;
 use Swoft\Validator\Validator;
 
 /**
@@ -48,6 +49,12 @@ class ValidatorMiddleware implements MiddlewareInterface
         $handlerId = $route->getHandler();
         [$className, $method] = explode('@', $handlerId);
 
+        // Query validates
+        $validates = ValidateRegister::getValidates($className, $method);
+        if (empty($validates)) {
+            return $handler->handle($request);
+        }
+
         $data  = $request->getParsedBody();
         $query = $request->getQueryParams();
 
@@ -58,11 +65,12 @@ class ValidatorMiddleware implements MiddlewareInterface
         if ($notParsedBody) {
             $parsedBody = [];
         }
+
         /* @var Validator $validator */
         $validator = BeanFactory::getBean('validator');
 
         /* @var Request $request */
-        [$parsedBody, $query] = $validator->validate($parsedBody, $className, $method, $query);
+        [$parsedBody, $query] = $validator->validate($parsedBody, $validates, $query);
 
         if ($notParsedBody) {
             $parsedBody = $data;

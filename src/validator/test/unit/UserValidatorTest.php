@@ -4,7 +4,6 @@
 namespace SwoftTest\Validator\Unit;
 
 
-use PHPUnit\Framework\TestCase;
 use Swoft\Validator\Exception\ValidatorException;
 use Swoft\Validator\Validator;
 use SwoftTest\Validator\Testing\ValidateUser;
@@ -27,20 +26,20 @@ class UserValidatorTest extends TestCase
     {
         $data = [
             'start' => 123,
-            'end' => 121
+            'end'   => 121
         ];
-        (new Validator())->validate($data, ValidateUser::class, 'testUser');
+        (new Validator())->validate($data, $this->getValidates(ValidateUser::class, 'testUser'));
     }
 
     public function testFail()
     {
         $data = [
-            'start' => 123,
-            'end' => 126,
+            'start'  => 123,
+            'end'    => 126,
             'params' => [1, 'name']
         ];
 
-        [$result] = (new Validator())->validate($data, ValidateUser::class, 'testUser');
+        [$result] = (new Validator())->validate($data, $this->getValidates(ValidateUser::class, 'testUser'));
         $this->assertEquals($data, $result);
     }
 }

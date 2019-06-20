@@ -40,23 +40,17 @@ class Validator
     use ValidateItemTrait;
 
     /**
-     * @param array  $body
-     * @param string $className
-     * @param string $method
-     * @param array  $query
+     * @param array $body
+     * @param array $validates
+     * @param array $query
      *
      * @return array
-     * @throws ValidatorException
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
+     * @throws ValidatorException
      */
-    public function validate(array $body, string $className, string $method, array $query = []): array
+    public function validate(array $body, array $validates, array $query = []): array
     {
-        $validates = ValidateRegister::getValidates($className, $method);
-        if (empty($validates)) {
-            return [$body, $query];
-        }
-
         foreach ($validates as $validateName => $validate) {
             $validator = ValidatorRegister::getValidator($validateName);
 
