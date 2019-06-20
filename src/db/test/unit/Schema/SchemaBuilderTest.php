@@ -28,10 +28,10 @@ class SchemaBuilderTest extends TestCase
     public function getBuilder(): Builder
     {
         $pool    = [
-            'db.pool2',
+            'db.pool',
             'db.pool'
         ];
-        $builder = Builder::new($pool[array_rand($pool)], null);
+        $builder = Builder::new($pool[array_rand($pool)]);
 
         return $builder;
     }
