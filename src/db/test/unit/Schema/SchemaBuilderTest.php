@@ -70,6 +70,8 @@ class SchemaBuilderTest extends TestCase
         Schema::dropIfExists($table);
 
         Schema::create($table, function (Blueprint $blueprint) {
+            $blueprint->comment('test table');
+
             $blueprint->integer('id')->primary();
             $blueprint->bigInteger('uid')->index();
             $blueprint->tinyInteger('status')->index('idx_status');
