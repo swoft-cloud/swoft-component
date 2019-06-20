@@ -81,9 +81,9 @@ trait HasAttributes
     {
         [$pro, $hidden, $value] = $this->getHiddenAttribute($key);
         // hidden status
-        $hiddenStatus = $hidden || in_array($key, $this->getModelHidden()) || in_array($pro, $this->getModelHidden());
+        $hiddenStatus = $hidden || in_array($key, $this->getModelHidden());
         // visible status
-        $visibleStatus = in_array($key, $this->getModelVisible()) || in_array($pro, $this->getModelVisible());
+        $visibleStatus = in_array($key, $this->getModelVisible());
 
         if ($hiddenStatus === true && $visibleStatus === false) {
             return [false, false];
@@ -337,6 +337,7 @@ trait HasAttributes
             if (isset($map['column']) && !empty($map['column'])) {
                 $column = $map['column'];
             }
+
             try {
                 $value = $this->{$getter}();
                 if ($value !== null) {

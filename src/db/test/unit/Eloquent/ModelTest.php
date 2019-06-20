@@ -471,8 +471,19 @@ on A.id=B.id;', [$resCount - 20]);
     {
         $res = User::get(['id']);
 
-        var_dump($res->toArray());
+        foreach ($res as $user) {
+            $user = $user->toArray();
+            $this->assertTrue(count($user) == 1);
+            $this->assertArrayHasKey('id', $user);
+        }
+    }
 
-        $this->assertTrue(true);
+    public function testAndWheres()
+    {
+        $sql = 'select * from `user` where `id` = ? and `age` > ?';
+
+        $res = User::where('id', 1)->where('age', '>', 18)->toSql();
+
+        $this->assertEquals($sql, $res);
     }
 }

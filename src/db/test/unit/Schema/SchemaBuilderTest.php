@@ -98,6 +98,7 @@ class SchemaBuilderTest extends TestCase
         Schema::table($table, function (Blueprint $blueprint) {
             // Rename column
             $blueprint->renameColumn('id', 'user_id', 'bigint', 20);
+
         });
         Schema::enableForeignKeyConstraints();
         Schema::disableForeignKeyConstraints();
