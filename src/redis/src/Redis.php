@@ -106,7 +106,7 @@ use Throwable;
  * @method static array zRevRangeByLex(string $key, int $min, int $max, int $offset = null, int $limit = null)
  * @method static array zRevRangeByScore(string $key, int $start, int $end, array $options = [])
  * @method static int zRevRank(string $key, string $member)
- * @method static float zScore(string $key, float $member)
+ * @method static float zScore(string $key, mixed $member)
  * @method static array zScan(string $key, int &$iterator, string $pattern = null, int $count = 0)
  * @method static int del(string $key1, string $key2 = null, string $key3 = null)
  * @method static bool expire(string $key, int $ttl)
