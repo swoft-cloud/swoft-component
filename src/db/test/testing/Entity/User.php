@@ -95,7 +95,7 @@ class User extends Model
     /**
      * @return int|null
      */
-    public function getAge(): ?int
+    public function getAge(): int
     {
         return $this->age;
     }
@@ -127,7 +127,7 @@ class User extends Model
     /**
      * @return string|null
      */
-    public function getPwd(): ?string
+    public function getPwd(): string
     {
         return $this->pwd;
     }
@@ -143,7 +143,7 @@ class User extends Model
     /**
      * @return string|null
      */
-    public function getUserDesc(): ?string
+    public function getUserDesc(): string
     {
         return $this->userDesc;
     }

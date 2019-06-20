@@ -11,7 +11,8 @@ use Swoft\Db\Schema\Grammars\Grammar;
 use function in_array;
 
 /**
- * @method static Builder create(string $table, \Closure $callback)
+ * @method static Builder create(string $table, \Closure $callback, bool $ifNotExist = false)
+ * @method static Builder createIfNotExist(string $table, \Closure $callback)
  * @method static Builder drop(string $table)
  * @method static Builder dropIfExists(string $table)
  * @method static Builder table(string $table, \Closure $callback)
@@ -34,6 +35,7 @@ class Schema
      */
     private static $passthru = [
         'create',
+        'createIfNotExist',
         'drop',
         'dropIfExists',
         'table',

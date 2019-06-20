@@ -4,12 +4,13 @@
 namespace Swoft\Db\Concern;
 
 use BadMethodCallException;
-use function in_array;
 use Swoft\Db\EntityRegister;
 use Swoft\Db\Exception\DbException;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Stdlib\Helper\Str;
+use TypeError;
+use function in_array;
 
 /**
  * Trait HasAttributes
@@ -336,10 +337,14 @@ trait HasAttributes
             if (isset($map['column']) && !empty($map['column'])) {
                 $column = $map['column'];
             }
-
-            $value = $this->{$getter}();
-            if ($value !== null) {
-                $attributes[$column] = $value;
+            try {
+                $value = $this->{$getter}();
+                if ($value !== null) {
+                    $attributes[$column] = $value;
+                }
+            } catch (TypeError $e) {
+                unset($e);
+                continue;
             }
         }
 

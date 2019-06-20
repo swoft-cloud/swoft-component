@@ -79,6 +79,11 @@ class SchemaBuilderTest extends TestCase
             $blueprint->unique(['uuid', 'id'], 'unq_uuid_id');
         });
 
+        Schema::createIfNotExist($table, function (Blueprint $blueprint) {
+            $blueprint->integer('id');
+            $blueprint->integer('create_time');
+        });
+
         // Bind db pool
         Schema::getSchemaConnection('db.pool2')->table($table, function (Blueprint $blueprint) use ($rename) {
             // Rename index
