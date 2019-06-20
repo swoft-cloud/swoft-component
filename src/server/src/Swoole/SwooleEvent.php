@@ -100,16 +100,6 @@ final class SwooleEvent
     public const CLOSE = 'close';
 
     /**
-     * BufferFull
-     */
-    public const BUFFER_FULL = 'bufferFull';
-
-    /**
-     * BufferEmpty
-     */
-    public const BUFFER_EMPTY = 'bufferEmpty';
-
-    /**
      * Event interface listener mapping
      */
     public const LISTENER_MAPPING = [
@@ -118,15 +108,15 @@ final class SwooleEvent
         // For websocket server
         self::HANDSHAKE    => HandshakeInterface::class,
         self::MESSAGE      => MessageInterface::class,
-        // For tcp
+        // For tcp server
         self::CLOSE        => CloseInterface::class,
         self::RECEIVE      => ReceiveInterface::class,
         self::CONNECT      => ConnectInterface::class,
+        // For udp server
+        self::PACKET       => PacketInterface::class,
         // For task
         self::TASK         => TaskInterface::class,
         self::FINISH       => FinishInterface::class,
-        // For udp
-        self::PACKET       => PacketInterface::class,
         // For process
         self::PIPE_MESSAGE => PipeMessageInterface::class,
     ];
