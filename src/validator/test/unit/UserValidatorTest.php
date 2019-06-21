@@ -28,7 +28,7 @@ class UserValidatorTest extends TestCase
             'start' => 123,
             'end'   => 121
         ];
-        (new Validator())->validate($data, $this->getValidates(ValidateUser::class, 'testUser'));
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateUser::class, 'testUser'));
     }
 
     public function testFail()
@@ -39,7 +39,7 @@ class UserValidatorTest extends TestCase
             'params' => [1, 'name']
         ];
 
-        [$result] = (new Validator())->validate($data, $this->getValidates(ValidateUser::class, 'testUser'));
+        [$result] = (new Validator())->validateRequest($data, $this->getValidates(ValidateUser::class, 'testUser'));
         $this->assertEquals($data, $result);
     }
 }

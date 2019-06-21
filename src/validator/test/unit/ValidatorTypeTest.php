@@ -27,7 +27,7 @@ class ValidatorTypeTest extends TestCase
     public function testArrayType()
     {
         $data = [];
-        (new Validator())->validate($data, $this->getValidates( ValidateDemo::class, 'testArray'));
+        (new Validator())->validateRequest($data, $this->getValidates( ValidateDemo::class, 'testArray'));
     }
 
     /**
@@ -39,7 +39,7 @@ class ValidatorTypeTest extends TestCase
     public function testIntType()
     {
         $data = [];
-        (new Validator())->validate($data, $this->getValidates(ValidateDemo::class, 'testInt'));
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testInt'));
     }
 
     /**
@@ -51,7 +51,7 @@ class ValidatorTypeTest extends TestCase
     public function testBoolType()
     {
         $data = [];
-        (new Validator())->validate($data, $this->getValidates(ValidateDemo::class, 'testBool'));
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testBool'));
     }
 
     /**
@@ -63,7 +63,7 @@ class ValidatorTypeTest extends TestCase
     public function testStringType()
     {
         $data = [];
-        (new Validator())->validate($data, $this->getValidates(ValidateDemo::class, 'testString'));
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testString'));
     }
 
     /**
@@ -75,7 +75,7 @@ class ValidatorTypeTest extends TestCase
     public function testFloatType()
     {
         $data = [];
-        (new Validator())->validate($data, $this->getValidates(ValidateDemo::class, 'testFloat'));
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testFloat'));
     }
 
     /**
@@ -87,7 +87,7 @@ class ValidatorTypeTest extends TestCase
     public function testArrayTypeMessage()
     {
         $data = [];
-        (new Validator())->validate($data, $this->getValidates(ValidateDemo::class, 'testArrayMessage'));
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testArrayMessage'));
     }
 
     /**
@@ -99,7 +99,7 @@ class ValidatorTypeTest extends TestCase
     public function testIntTypeMessage()
     {
         $data = [];
-        (new Validator())->validate($data, $this->getValidates(ValidateDemo::class, 'testIntMessage'));
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testIntMessage'));
     }
 
     /**
@@ -111,7 +111,7 @@ class ValidatorTypeTest extends TestCase
     public function testBoolTypeMessage()
     {
         $data = [];
-        (new Validator())->validate($data, $this->getValidates(ValidateDemo::class, 'testBoolMessage'));
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testBoolMessage'));
     }
 
     /**
@@ -123,7 +123,7 @@ class ValidatorTypeTest extends TestCase
     public function testStringTypeMessage()
     {
         $data = [];
-        (new Validator())->validate($data, $this->getValidates(ValidateDemo::class, 'testStringMessage'));
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testStringMessage'));
     }
 
     /**
@@ -135,7 +135,7 @@ class ValidatorTypeTest extends TestCase
     public function testFloatTypeMessage()
     {
         $data = [];
-        (new Validator())->validate($data, $this->getValidates(ValidateDemo::class, 'testFloatMessage'));
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testFloatMessage'));
     }
 
     /**
@@ -144,7 +144,7 @@ class ValidatorTypeTest extends TestCase
     public function testDefault()
     {
         $data = [];
-        [$data] = (new Validator())->validate($data, $this->getValidates(ValidateDemo::class, 'testTypeDefault'));
+        [$data] = (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testTypeDefault'));
 
         $result = [
             'arrayDefault'  => [],
@@ -164,7 +164,7 @@ class ValidatorTypeTest extends TestCase
     public function testName()
     {
         $data = [];
-        [$result] = (new Validator())->validate($data, $this->getValidates(ValidateDemo::class, 'testName'));
+        [$result] = (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testName'));
         $this->assertEquals($result, ['swoftName' => 'swoft']);
     }
 
@@ -181,7 +181,7 @@ class ValidatorTypeTest extends TestCase
         $data = [
             'swoftName' => 12
         ];
-        (new Validator())->validate($data, $this->getValidates(ValidateDemo::class, 'testName'));
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testName'));
     }
 
 
@@ -196,7 +196,7 @@ class ValidatorTypeTest extends TestCase
         $data = [
             'int' => 1,
         ];
-        (new Validator())->validate($data, $this->getValidates(ValidateDemo::class, 'testIntQuery'));
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testIntQuery'));
     }
 
     /**
@@ -210,7 +210,7 @@ class ValidatorTypeTest extends TestCase
         $data = [
             'bool' => false
         ];
-        (new Validator())->validate($data, $this->getValidates(ValidateDemo::class, 'testBoolQuery'));
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testBoolQuery'));
     }
 
     /**
@@ -224,7 +224,7 @@ class ValidatorTypeTest extends TestCase
         $data = [
             'string' => 'string'
         ];
-        (new Validator())->validate($data, $this->getValidates(ValidateDemo::class, 'testStringQuery'));
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testStringQuery'));
     }
 
     /**
@@ -238,7 +238,7 @@ class ValidatorTypeTest extends TestCase
         $data = [
             'float' => 1.1
         ];
-        (new Validator())->validate($data, $this->getValidates(ValidateDemo::class, 'testFloatQuery'));
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testFloatQuery'));
     }
 
     /**
@@ -251,7 +251,7 @@ class ValidatorTypeTest extends TestCase
         $query = [
             'float' => '2.2'
         ];
-        [, $result] = (new Validator())->validate([], $this->getValidates(ValidateDemo::class,
+        [, $result] = (new Validator())->validateRequest([], $this->getValidates(ValidateDemo::class,
             'testFloatQuery'),
             $query);
 

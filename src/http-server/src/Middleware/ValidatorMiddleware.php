@@ -70,7 +70,7 @@ class ValidatorMiddleware implements MiddlewareInterface
         $validator = BeanFactory::getBean('validator');
 
         /* @var Request $request */
-        [$parsedBody, $query] = $validator->validate($parsedBody, $validates, $query);
+        [$parsedBody, $query] = $validator->validateRequest($parsedBody, $validates, $query);
 
         if ($notParsedBody) {
             $parsedBody = $data;

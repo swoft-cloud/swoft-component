@@ -39,6 +39,17 @@ class Validator
 {
     use ValidateItemTrait;
 
+    /***
+     * @param array  $data
+     * @param string $validator
+     * @param array  $fields
+     * @param array  $userValidator
+     */
+    public function validate(array $data, string $validator, array $fields = [], ...$userValidator)
+    {
+        
+    }
+
     /**
      * @param array $body
      * @param array $validates
@@ -49,7 +60,7 @@ class Validator
      * @throws ReflectionException
      * @throws ValidatorException
      */
-    public function validate(array $body, array $validates, array $query = []): array
+    public function validateRequest(array $body, array $validates, array $query = []): array
     {
         foreach ($validates as $validateName => $validate) {
             $validator = ValidatorRegister::getValidator($validateName);
