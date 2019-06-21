@@ -20,6 +20,26 @@ final class ServerEvent
     public const BEFORE_BIND_EVENT = 'swoft.server.bind.event';
 
     /**
+     * Before bind listener(s)
+     */
+    public const BEFORE_BIND_LISTENER = 'swoft.server.bind.listener.before';
+
+    /**
+     * After each listener is successfully added
+     */
+    public const AFTER_ADDED_LISTENER = 'swoft.server.added.listener.after';
+
+    /**
+     * Before bind process(es)
+     */
+    public const BEFORE_BIND_PROCESS = 'swoft.server.bind.process.before';
+
+    /**
+     * After each process is successfully added
+     */
+    public const AFTER_ADDED_PROCESS = 'swoft.server.added.process.after';
+
+    /**
      * Swoft before start server event
      */
     public const BEFORE_START = 'swoft.server.start.before';

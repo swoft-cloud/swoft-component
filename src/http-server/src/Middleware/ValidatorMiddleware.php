@@ -15,6 +15,7 @@ use Swoft\Http\Server\Contract\MiddlewareInterface;
 use Swoft\Http\Server\Router\Route;
 use Swoft\Http\Server\Router\Router;
 use Swoft\Validator\Exception\ValidatorException;
+use Swoft\Validator\ValidateRegister;
 use Swoft\Validator\Validator;
 
 /**
@@ -47,6 +48,11 @@ class ValidatorMiddleware implements MiddlewareInterface
         // Controller and method
         $handlerId = $route->getHandler();
         [$className, $method] = explode('@', $handlerId);
+
+        $validates = ValidateRegister::getValidates($className, $method);
+        if (empty($validates)) {
+            return $handler->handle($request);
+        }
 
         $data  = $request->getParsedBody();
         $query = $request->getQueryParams();
