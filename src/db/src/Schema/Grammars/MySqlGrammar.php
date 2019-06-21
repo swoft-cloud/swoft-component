@@ -191,6 +191,11 @@ class MySqlGrammar extends Grammar
             $sql .= " collate '{$collation}'";
         }
 
+        // Set table comment
+        if (isset($blueprint->comment)) {
+            $sql .= " comment '{$blueprint->comment}'";
+        }
+
         return $sql;
     }
 

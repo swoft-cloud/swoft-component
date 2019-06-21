@@ -443,24 +443,19 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
 
     /**
      * @param string $key
-     * @param array  $scoreValues
+     * @param array  $valueScores
      *
      * @return int Number of values added
      * @throws ContainerException
      * @throws RedisException
      * @throws ReflectionException
      */
-    public function zAdd(string $key, array $scoreValues): int
+    public function zAdd(string $key, array $valueScores): int
     {
         $params[] = $key;
-        foreach ($scoreValues as $scoreKey => $scoreValue) {
-            if (is_string($scoreKey) && is_numeric($scoreValue)) {
-                $params[] = $scoreValue;
-                $params[] = $scoreKey;
-            } else {
-                $params[] = $scoreKey;
-                $params[] = $scoreValue;
-            }
+        foreach ($valueScores as $member => $score) {
+            $params[] = $score;
+            $params[] = $member;
         }
 
         $result = $this->command('zAdd', $params);

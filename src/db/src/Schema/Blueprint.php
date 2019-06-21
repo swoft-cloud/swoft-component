@@ -80,6 +80,13 @@ class Blueprint
     public $temporary = false;
 
     /**
+     * Set table comment
+     *
+     * @var string
+     */
+    public $comment;
+
+    /**
      * Create a new schema blueprint.
      *
      * @param              $table
@@ -303,6 +310,18 @@ class Blueprint
     public function temporary()
     {
         $this->temporary = true;
+    }
+
+    /**
+     * Set table comment
+     *
+     * @param string $comment
+     *
+     * @return void
+     */
+    public function comment(string $comment)
+    {
+        $this->comment = $comment;
     }
 
     /**
