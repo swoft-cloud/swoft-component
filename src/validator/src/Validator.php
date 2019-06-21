@@ -39,24 +39,71 @@ class Validator
 {
     use ValidateItemTrait;
 
-    /**
-     * @param array  $body
-     * @param string $className
-     * @param string $method
-     * @param array  $query
+    /***
+     * @param array  $data
+     * @param string $validatorName
+     * @param array  $fields
+     * @param array  $userValidators
      *
      * @return array
-     * @throws ValidatorException
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
+     * @throws ValidatorException
      */
-    public function validate(array $body, string $className, string $method, array $query = []): array
+    public function validate(array $data, string $validatorName, array $fields = [], array $userValidators = []): array
     {
-        $validates = ValidateRegister::getValidates($className, $method);
-        if (empty($validates)) {
-            return [$body, $query];
+        if (empty($data)) {
+            throw new ValidatorException('Validator data is empty!');
         }
 
+        $type      = ValidatorRegister::TYPE_DEFAULT;
+        $validator = ValidatorRegister::getValidator($validatorName);
+
+        if (empty($validator)) {
+            throw new ValidatorException(
+                sprintf('Validator(%s) is not exist!', $validatorName)
+            );
+        }
+
+        $data = $this->validateValidator($data, $type, $validatorName, [], $validator, $fields);
+        if (empty($userValidators)) {
+            return $data;
+        }
+
+        foreach ($userValidators as $userValidator => $params) {
+            if (is_int($userValidator)) {
+                $userValidator = $params;
+                $params        = [];
+            }
+
+            $validator = ValidatorRegister::getValidator($userValidator);
+
+            // Check type
+            $type = $validator['type'];
+            if ($type != ValidatorRegister::TYPE_USER) {
+                throw new ValidatorException(
+                    sprintf('Validator(%s) is user validator!', $userValidator)
+                );
+            }
+
+            $data = $this->validateValidator($data, $type, $userValidator, $params, $validator, $fields);
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param array $body
+     * @param array $validates
+     * @param array $query
+     *
+     * @return array
+     * @throws ContainerException
+     * @throws ReflectionException
+     * @throws ValidatorException
+     */
+    public function validateRequest(array $body, array $validates, array $query = []): array
+    {
         foreach ($validates as $validateName => $validate) {
             $validator = ValidatorRegister::getValidator($validateName);
 

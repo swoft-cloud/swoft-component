@@ -80,9 +80,9 @@ class Request extends PsrRequest implements ServerRequestInterface
     private $parsedBody;
 
     /**
-     * @var array
+     * @var array|null
      */
-    private $parsedQuery = [];
+    private $parsedQuery;
 
     /**
      * @var array
@@ -356,6 +356,11 @@ class Request extends PsrRequest implements ServerRequestInterface
      */
     public function getParsedQuery(): array
     {
+        if ($this->parsedQuery !== null) {
+            return $this->parsedQuery;
+        }
+
+        $this->parsedQuery = $this->queryParams;
         return $this->parsedQuery;
     }
 
@@ -386,8 +391,8 @@ class Request extends PsrRequest implements ServerRequestInterface
     }
 
     /**
-     * @param string $key
-     * @param mixed|null   $default
+     * @param string     $key
+     * @param mixed|null $default
      *
      * @return mixed|null
      */
