@@ -2,7 +2,7 @@
 #
 # TODO with release message
 
-set -e
+set -ex
 
 binName="bash $(basename $0)"
 
@@ -17,10 +17,14 @@ fi
 
 #./subtree-push.sh
 
+SUB_REPOS=$2
 RELEASE_TAG=$1
 TARGET_BRANCH=master
 CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
-SUB_REPOS=$(ls src/)
+
+if [[ -z "$2" ]]; then
+    SUB_REPOS=$(ls src/)
+fi
 
 echo "Will released version: ${RELEASE_TAG}"
 echo "Will released projects:"
