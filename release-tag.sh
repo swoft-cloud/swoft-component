@@ -43,8 +43,6 @@ for LIB_NAME in ${SUB_REPOS} ; do
         git clone ${REMOTE_URL} . --depth=200
         git checkout ${CURRENT_BRANCH};
 
-        # gsort comes with coreutils packages. brew install coreutils
-        # LAST_RELEASE=$(git tag -l [0-9].* | gsort -V | tail -n1)
         # like: v2.0.0
         LAST_RELEASE=$(git describe --tags $(git rev-list --tags --max-count=1))
 
@@ -57,8 +55,7 @@ for LIB_NAME in ${SUB_REPOS} ; do
         else
             echo "Last release $LAST_RELEASE";
 
-            CHANGES_SINCE_LAST_RELEASE=$(git log "$LAST_RELEASE"...master)
-            CHANGES_SINCE_LAST_RELEASE="$CHANGES_SINCE_LAST_RELEASE" | xargs echo -n
+            CHANGES_SINCE_LAST_RELEASE=$(git log --oneline --decorate "$LAST_RELEASE"...master)
 
             if [[ ! -z "$CHANGES_SINCE_LAST_RELEASE" ]]; then
                 echo "There are changes since last release. Releasing $1";
