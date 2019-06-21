@@ -73,7 +73,7 @@ class Config extends Collection
         if (!isset($parsers[$this->type])) {
             throw new InvalidArgumentException('Resource is not exist! resourceType=' . $this->type);
         }
-\var_dump(__METHOD__);
+
         /* @var ParserInterface $parser */
         $parser    = $parsers[$this->type];
         $parseData = $parser->parse($this);
