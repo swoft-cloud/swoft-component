@@ -451,7 +451,7 @@ class Container implements ContainerInterface
 
         $instances = [];
         foreach ($instanceNames as $instanceName) {
-            $instances[] = self::get($instanceName);
+            $instances[] = $this->get($instanceName);
         }
 
         return $instances;
@@ -866,6 +866,11 @@ class Container implements ContainerInterface
      */
     private function newBean(string $beanName, string $id = '')
     {
+        // First, check bean whether has been create.
+        if (isset($this->singletonPool[$beanName]) || isset($this->prototypePool[$beanName])) {
+            return $this->get($beanName);
+        }
+
         // Get object definition
         $objectDefinition = $this->getNewObjectDefinition($beanName);
 
@@ -903,7 +908,7 @@ class Container implements ContainerInterface
             $this->aliases[$alias] = $beanName;
         }
 
-        // Init method
+        // Call init method if exist
         if ($reflectionClass->hasMethod(self::INIT_METHOD)) {
             $reflectObject->{self::INIT_METHOD}();
         }
