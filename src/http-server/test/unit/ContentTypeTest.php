@@ -81,6 +81,6 @@ class ContentTypeTest extends TestCase
             'key' => 'value'
         ];
         $response = $this->mockServer->request('GET', '/ct/ctm', $data, $headers);
-        $response->assertEqualJson([]);
+        $response->assertEqualJson([$data, $data]);
     }
 }

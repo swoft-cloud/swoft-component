@@ -4,7 +4,7 @@
 namespace SwoftTest\Validator\Unit;
 
 
-use PHPUnit\Framework\TestCase;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Validator\Exception\ValidatorException;
 use Swoft\Validator\Validator;
 use SwoftTest\Validator\Testing\ValidateDemo2;
@@ -25,7 +25,7 @@ class ValidatorTest extends TestCase
     public function testTypeEmail()
     {
         $data = [];
-        (new Validator())->validate($data, ValidateDemo2::class, 'testEmail');
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testEmail'));
     }
 
     /**
@@ -39,7 +39,22 @@ class ValidatorTest extends TestCase
         $data = [
             'email' => 'swoft'
         ];
-        (new Validator())->validate($data, ValidateDemo2::class, 'testEmail');
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testEmail'));
+    }
+
+    /**
+     * @expectedException Swoft\Validator\Exception\ValidatorException
+     * @expectedExceptionMessage email messsage
+     *
+     * @throws ValidatorException
+     */
+    public function testFailEmail2()
+    {
+        $data = [
+            'email' => 'swoft'
+        ];
+
+        (new Validator())->validate($data, 'testDefaultValidator', ['email']);
     }
 
     /**
@@ -47,10 +62,22 @@ class ValidatorTest extends TestCase
      */
     public function testEmail()
     {
+        $data = [
+            'email' => 'swoft@swoft.org'
+        ];
+        [$result] = (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testEmail'));
+        $this->assertEquals($result, $data);
+    }
+
+    /**
+     * @throws ValidatorException
+     */
+    public function testEmail2()
+    {
         $data   = [
             'email' => 'swoft@swoft.org'
         ];
-        [$result] = (new Validator())->validate($data, ValidateDemo2::class, 'testEmail');
+        $result = (new Validator())->validate($data, 'testDefaultValidator', ['email']);
         $this->assertEquals($result, $data);
     }
 
@@ -65,7 +92,7 @@ class ValidatorTest extends TestCase
         $data = [
             'enum' => 1,
         ];
-        (new Validator())->validate($data, ValidateDemo2::class, 'testEnum');
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testEnum'));
     }
 
     /**
@@ -73,10 +100,10 @@ class ValidatorTest extends TestCase
      */
     public function testEnum()
     {
-        $data   = [
+        $data = [
             'enum' => 4,
         ];
-        [$result] = (new Validator())->validate($data, ValidateDemo2::class, 'testEnum');
+        [$result] = (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testEnum'));
 
         $this->assertEquals($result, $data);
     }
@@ -92,7 +119,7 @@ class ValidatorTest extends TestCase
         $data = [
             'ip' => '11',
         ];
-        (new Validator())->validate($data, ValidateDemo2::class, 'testIp');
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testIp'));
     }
 
     /**
@@ -100,10 +127,10 @@ class ValidatorTest extends TestCase
      */
     public function testIp()
     {
-        $data   = [
+        $data = [
             'ip' => '127.0.0.1',
         ];
-        [$result] = (new Validator())->validate($data, ValidateDemo2::class, 'testIp');
+        [$result] = (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testIp'));
 
         $this->assertEquals($result, $data);
     }
@@ -119,7 +146,7 @@ class ValidatorTest extends TestCase
         $data = [
             'length' => '1',
         ];
-        (new Validator())->validate($data, ValidateDemo2::class, 'testLength');
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testLength'));
     }
 
     /**
@@ -127,10 +154,10 @@ class ValidatorTest extends TestCase
      */
     public function testLength()
     {
-        $data   = [
+        $data = [
             'length' => '12121',
         ];
-        [$result] = (new Validator())->validate($data, ValidateDemo2::class, 'testLength');
+        [$result] = (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testLength'));
 
         $this->assertEquals($result, $data);
     }
@@ -146,7 +173,7 @@ class ValidatorTest extends TestCase
         $data = [
             'max' => 18,
         ];
-        (new Validator())->validate($data, ValidateDemo2::class, 'testMax');
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testMax'));
     }
 
     /**
@@ -154,10 +181,10 @@ class ValidatorTest extends TestCase
      */
     public function testMax()
     {
-        $data   = [
+        $data = [
             'max' => 12,
         ];
-        [$result] = (new Validator())->validate($data, ValidateDemo2::class, 'testMax');
+        [$result] = (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testMax'));
 
         $this->assertEquals($result, $data);
     }
@@ -173,7 +200,7 @@ class ValidatorTest extends TestCase
         $data = [
             'min' => 0,
         ];
-        (new Validator())->validate($data, ValidateDemo2::class, 'testMin');
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testMin'));
     }
 
     /**
@@ -181,10 +208,10 @@ class ValidatorTest extends TestCase
      */
     public function testMin()
     {
-        $data   = [
+        $data = [
             'min' => 2,
         ];
-        [$result] = (new Validator())->validate($data, ValidateDemo2::class, 'testMin');
+        [$result] = (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testMin'));
 
         $this->assertEquals($result, $data);
     }
@@ -200,7 +227,7 @@ class ValidatorTest extends TestCase
         $data = [
             'mobile' => '13442',
         ];
-        (new Validator())->validate($data, ValidateDemo2::class, 'testMobile');
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testMobile'));
     }
 
     /**
@@ -208,10 +235,10 @@ class ValidatorTest extends TestCase
      */
     public function testMobile()
     {
-        $data   = [
+        $data = [
             'mobile' => '13511111111',
         ];
-        [$result] = (new Validator())->validate($data, ValidateDemo2::class, 'testMobile');
+        [$result] = (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testMobile'));
 
         $this->assertEquals($result, $data);
     }
@@ -227,7 +254,7 @@ class ValidatorTest extends TestCase
         $data = [
             'notEmpty' => '',
         ];
-        (new Validator())->validate($data, ValidateDemo2::class, 'testNotEmpty');
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testNotEmpty'));
     }
 
     /**
@@ -235,10 +262,11 @@ class ValidatorTest extends TestCase
      */
     public function testNotEmpty()
     {
-        $data   = [
+        $data = [
             'notEmpty' => '121',
         ];
-        [$result] = (new Validator())->validate($data, ValidateDemo2::class, 'testNotEmpty');
+        [$result] = (new Validator())->validateRequest($data,
+            $this->getValidates(ValidateDemo2::class, 'testNotEmpty'));
 
         $this->assertEquals($result, $data);
     }
@@ -254,7 +282,7 @@ class ValidatorTest extends TestCase
         $data = [
             'pattern' => 'swift',
         ];
-        (new Validator())->validate($data, ValidateDemo2::class, 'testPattern');
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testPattern'));
     }
 
     /**
@@ -262,10 +290,10 @@ class ValidatorTest extends TestCase
      */
     public function testPattern()
     {
-        $data   = [
+        $data = [
             'pattern' => 'swoft',
         ];
-        [$result] = (new Validator())->validate($data, ValidateDemo2::class, 'testPattern');
+        [$result] = (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testPattern'));
 
         $this->assertEquals($result, $data);
     }
@@ -283,7 +311,23 @@ class ValidatorTest extends TestCase
         $data = [
             'range' => 100,
         ];
-        (new Validator())->validate($data, ValidateDemo2::class, 'testRange');
+        (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testRange'));
+    }
+
+    /**
+     * @expectedException Swoft\Validator\Exception\ValidatorException
+     * @expectedExceptionMessage range message
+     *
+     * @throws ValidatorException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function testFailRange2()
+    {
+        $data = [
+            'range' => 100,
+        ];
+        (new Validator())->validate($data, 'testDefaultValidator', ['range']);
     }
 
     /**
@@ -291,10 +335,23 @@ class ValidatorTest extends TestCase
      */
     public function testRange()
     {
-        $data   = [
+        $data = [
             'range' => 99,
         ];
-        [$result] = (new Validator())->validate($data, ValidateDemo2::class, 'testRange');
+        [$result] = (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testRange'));
+
+        $this->assertEquals($result, $data);
+    }
+
+    /**
+     * @throws ValidatorException
+     */
+    public function testRange2()
+    {
+        $data = [
+            'range' => 99,
+        ];
+        $result = (new Validator())->validate($data, 'testDefaultValidator', ['range']);
 
         $this->assertEquals($result, $data);
     }

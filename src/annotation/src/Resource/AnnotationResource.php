@@ -262,7 +262,7 @@ class AnnotationResource extends Resource
                 $className = sprintf('%s%s', $ns, $pathName);
 
                 // Fix repeat included file bug
-                $autoload  = in_array($filePath, $this->includedFiles, true);
+                $autoload = in_array($filePath, $this->includedFiles, true);
 
                 // Will filtering: interfaces and traits
                 if (!class_exists($className, !$autoload)) {
