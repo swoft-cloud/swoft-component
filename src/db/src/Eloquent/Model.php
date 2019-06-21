@@ -50,7 +50,7 @@ use function bean;
  * @method static Builder firstOrFail(array $columns = ['*'])
  * @method static Builder firstOr(array $columns = ['*'], Closure $callback = null)
  * @method static mixed value(string $column)
- * @method static static get(array $columns = ['*'])
+ * @method static static[] get(array $columns = ['*'])
  * @method static static[] getModels($columns = ['*'])
  * @method static Generator cursor()
  * @method static bool chunkById(int $count, callable $callback, string $column = null, string $alias = null)

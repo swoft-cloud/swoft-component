@@ -27,6 +27,7 @@ use function explode;
 use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
+use function get_class;
 use function sprintf;
 use function ucfirst;
 use const SWOOLE_PROCESS;
@@ -398,13 +399,17 @@ abstract class Server implements ServerInterface
         $defaultEvents = $this->defaultEvents();
         $swooleEvents  = array_merge($defaultEvents, $this->on);
 
-        // Add event
+        // Add events
         $this->addEvent($this->swooleServer, $swooleEvents, $defaultEvents);
+
+        Swoft::trigger(ServerEvent::BEFORE_BIND_LISTENER, $this);
 
         // Add port listener
         $this->addListener();
 
-        // @TODO add process
+        // Swoft::trigger(ServerEvent::BEFORE_BIND_PROCESS, $this);
+        // @TODO Add processes
+        // $this->addProcesses();
 
         // Trigger event
         Swoft::trigger(ServerEvent::BEFORE_START, $this, array_keys($swooleEvents));
@@ -417,9 +422,10 @@ abstract class Server implements ServerInterface
     }
 
     /**
-     * Add listener
+     * Add listener serve to the main server
      *
      * @throws ServerException
+     * @throws Swoft\Bean\Exception\ContainerException
      */
     protected function addListener(): void
     {
@@ -431,15 +437,22 @@ abstract class Server implements ServerInterface
             $host = $listener->getHost();
             $port = $listener->getPort();
             $type = $listener->getType();
-            $on   = $listener->getOn();
+
+            if (!$events = $listener->getOn()) {
+                throw new ServerException(
+                    'Not add any event handler for the listener server: ' . get_class($listener)
+                );
+            }
 
             /* @var CoServer\Port $server */
             $server = $this->swooleServer->listen($host, $port, $type);
-            $server->set([
-                'open_eof_check'     => false,
-                'package_max_length' => 2048
-            ]);
-            $this->addEvent($server, $on);
+            $server->set($listener->getSetting());
+
+            // Bind events to the sub-server
+            $this->addEvent($server, $events);
+
+            // Trigger event
+            Swoft::trigger(ServerEvent::AFTER_ADDED_LISTENER, $server, $this);
         }
     }
 

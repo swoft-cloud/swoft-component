@@ -169,22 +169,22 @@ class AnnotationResource extends Resource
                 }
 
                 $loaderObject = new $loaderClass();
-                $isEnabled    = !isset($this->disabledAutoLoaders[$loaderClass]);
+                if (!$loaderObject instanceof LoaderInterface) {
+                    $this->notify('invalidLoader', $loaderFile);
+                    continue;
+                }
 
                 $this->notify('findLoaderClass', $this->clearBasePath($loaderFile));
 
                 // If is disable, will skip scan annotation classes
-                $isLoaderInstance = $loaderObject instanceof LoaderInterface;
-                if ($isEnabled && $isLoaderInstance) {
+                if (!isset($this->disabledAutoLoaders[$loaderClass])) {
                     AnnotationRegister::registerAutoLoaderFile($loaderFile);
                     $this->notify('addLoaderClass', $loaderClass);
                     $this->loadAnnotation($loaderObject);
                 }
 
                 // Storage auto loader to register
-                if ($isLoaderInstance) {
-                    AnnotationRegister::addAutoLoader($ns, $loaderObject);
-                }
+                AnnotationRegister::addAutoLoader($ns, $loaderObject);
             }
         }
     }

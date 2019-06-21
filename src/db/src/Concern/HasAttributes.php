@@ -337,6 +337,7 @@ trait HasAttributes
             if (isset($map['column']) && !empty($map['column'])) {
                 $column = $map['column'];
             }
+
             try {
                 $value = $this->{$getter}();
                 if ($value !== null) {

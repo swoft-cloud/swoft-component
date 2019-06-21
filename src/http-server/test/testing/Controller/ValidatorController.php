@@ -57,7 +57,7 @@ class ValidatorController
 
     /**
      * @Validate(validator=DefaultValidator::class, type=ValidateType::GET)
-     * @RequestMapping(route="defaultValidatorQuery", type=ValidateType::GET)
+     * @RequestMapping(route="defaultValidatorQuery")
      *
      * @param Request $request
      *

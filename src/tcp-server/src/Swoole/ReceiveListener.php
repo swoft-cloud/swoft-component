@@ -9,7 +9,7 @@ use Swoft\Server\Swoole\ReceiveInterface;
 /**
  * Class ReceiveListener
  *
- * @Bean("tcpReceiveListener")
+ * @Bean()
  *
  * @since 2.0
  */
@@ -23,5 +23,6 @@ class ReceiveListener implements ReceiveInterface
      */
     public function onReceive(Server $server, int $fd, int $reactorId, string $data): void
     {
+        echo "$fd receive data: $data\n";
     }
 }

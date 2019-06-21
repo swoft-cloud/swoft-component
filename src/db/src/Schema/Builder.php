@@ -10,6 +10,7 @@ use ReflectionException;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Connection\Connection;
+use Swoft\Db\Connection\ConnectionManager;
 use Swoft\Db\Database;
 use Swoft\Db\DB;
 use Swoft\Db\Exception\DbException;
@@ -20,8 +21,6 @@ use Swoft\Stdlib\Helper\StringHelper;
 use function array_map;
 use function bean;
 use function call_user_func;
-use function end;
-use function explode;
 use function get_class;
 use function in_array;
 use function is_callable;
@@ -41,7 +40,7 @@ class Builder
      *
      * @var string
      */
-    public $poolName;
+    protected $poolName;
 
     /**
      * The database query grammar instance.
@@ -133,7 +132,8 @@ class Builder
             $poolName = Pool::DEFAULT_POOL;
             $grammar  = null;
         } else {
-            [$poolName, $grammar] = $params;
+            $poolName = $params[0];
+            $grammar  = $params[1] ?? null;
         }
         // The driver builder
         $static = self::getBuilder($poolName);
@@ -582,8 +582,14 @@ class Builder
     {
         $connection = $this->getConnection();
         $db         = $connection->getSelectDb() ?: $connection->getDb();
-        // release
-        $connection->release();
+
+        /* @var ConnectionManager $cm */
+        $cm = bean(ConnectionManager::class);
+        // not transaction status
+        if ($cm->isTransaction($this->poolName) === false) {
+            // release
+            $connection->release();
+        }
 
         return $db;
     }
