@@ -42,7 +42,7 @@ class PhpRedisConnector implements ConnectorInterface
         }
 
         if (!empty($config['read_timeout'])) {
-            $client->setOption(Redis::OPT_READ_TIMEOUT, $config['read_timeout']);
+            $client->setOption(Redis::OPT_READ_TIMEOUT, (string)$config['read_timeout']);
         }
 
         if (!empty($option['prefix'])) {
@@ -99,7 +99,7 @@ class PhpRedisConnector implements ConnectorInterface
      * Establish a connection with the Redis host.
      *
      * @param Redis $client
-     * @param array  $config
+     * @param array $config
      *
      * @return void
      * @throws RedisException

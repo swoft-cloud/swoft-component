@@ -28,10 +28,10 @@ class SchemaBuilderTest extends TestCase
     public function getBuilder(): Builder
     {
         $pool    = [
-            'db.pool2',
+            'db.pool',
             'db.pool'
         ];
-        $builder = Builder::new($pool[array_rand($pool)], null);
+        $builder = Builder::new($pool[array_rand($pool)]);
 
         return $builder;
     }
@@ -70,6 +70,8 @@ class SchemaBuilderTest extends TestCase
         Schema::dropIfExists($table);
 
         Schema::create($table, function (Blueprint $blueprint) {
+            $blueprint->comment('test table');
+
             $blueprint->integer('id')->primary();
             $blueprint->bigInteger('uid')->index();
             $blueprint->tinyInteger('status')->index('idx_status');
@@ -98,6 +100,7 @@ class SchemaBuilderTest extends TestCase
         Schema::table($table, function (Blueprint $blueprint) {
             // Rename column
             $blueprint->renameColumn('id', 'user_id', 'bigint', 20);
+
         });
         Schema::enableForeignKeyConstraints();
         Schema::disableForeignKeyConstraints();
