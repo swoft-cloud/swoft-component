@@ -154,7 +154,7 @@ if (!function_exists('validate')) {
      * @throws ReflectionException
      * @throws ValidatorException
      */
-    function validate(array $data, string $validatorName, array $fields = [], ...$userValidators): array
+    function validate(array $data, string $validatorName, array $fields = [], array $userValidators = []): array
     {
         /* @var Validator $validator */
         $validator = BeanFactory::getBean('validator');
