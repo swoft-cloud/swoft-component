@@ -1,15 +1,21 @@
 #!/usr/bin/env bash
+#
 # TODO with release message
 
 set -e
 
-if (( "$1" != 1 ))
+binName="bash $(basename $0)"
+
+if [[ -z "$1" ]]
 then
-    echo "Tag has to be provided"
+    echo "Release all sub-repo to new tag version"
+    echo -e "Usage: $binName VERSION\n"
+    echo "Example:"
+    echo "  $binName v1.0.0        Tag has to be provided"
     exit 1
 fi
 
-./subtree-push.sh
+#./subtree-push.sh
 
 RELEASE_TAG=$1
 TARGET_BRANCH=master
