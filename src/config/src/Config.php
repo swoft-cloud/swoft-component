@@ -2,7 +2,6 @@
 
 namespace Swoft\Config;
 
-
 use InvalidArgumentException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Config\Contract\ParserInterface;
@@ -25,12 +24,12 @@ class Config extends Collection
     /**
      * Php formatter
      */
-    const TYPE_PHP = 'php';
+    public const TYPE_PHP = 'php';
 
     /**
      * Yaml formatter
      */
-    const TYPE_YAML = 'yaml';
+    public const TYPE_YAML = 'yaml';
 
     /**
      * Base file name
@@ -68,13 +67,13 @@ class Config extends Collection
     /**
      * Init
      */
-    public function init()
+    public function init(): void
     {
         $parsers = $this->getConfigParser();
         if (!isset($parsers[$this->type])) {
-            throw new InvalidArgumentException('Resourcer is not exist! resourceType=' . $this->type);
+            throw new InvalidArgumentException('Resource is not exist! resourceType=' . $this->type);
         }
-
+\var_dump(__METHOD__);
         /* @var ParserInterface $parser */
         $parser    = $parsers[$this->type];
         $parseData = $parser->parse($this);
