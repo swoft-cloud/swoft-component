@@ -41,13 +41,55 @@ class Validator
 
     /***
      * @param array  $data
-     * @param string $validator
+     * @param string $validatorName
      * @param array  $fields
-     * @param array  $userValidator
+     * @param array  $userValidators
+     *
+     * @return array
+     * @throws ContainerException
+     * @throws ReflectionException
+     * @throws ValidatorException
      */
-    public function validate(array $data, string $validator, array $fields = [], ...$userValidator)
+    public function validate(array $data, string $validatorName, array $fields = [], array $userValidators = []): array
     {
-        
+        if (empty($data)) {
+            throw new ValidatorException('Validator data is empty!');
+        }
+
+        $type      = ValidatorRegister::TYPE_DEFAULT;
+        $validator = ValidatorRegister::getValidator($validatorName);
+
+        if (empty($validator)) {
+            throw new ValidatorException(
+                sprintf('Validator(%s) is not exist!', $validatorName)
+            );
+        }
+
+        $data = $this->validateValidator($data, $type, $validatorName, [], $validator, $fields);
+        if (empty($userValidators)) {
+            return $data;
+        }
+
+        foreach ($userValidators as $userValidator => $params) {
+            if (is_int($userValidator)) {
+                $userValidator = $params;
+                $params        = [];
+            }
+
+            $validator = ValidatorRegister::getValidator($userValidator);
+
+            // Check type
+            $type = $validator['type'];
+            if ($type != ValidatorRegister::TYPE_USER) {
+                throw new ValidatorException(
+                    sprintf('Validator(%s) is user validator!', $userValidator)
+                );
+            }
+
+            $data = $this->validateValidator($data, $type, $userValidator, $params, $validator, $fields);
+        }
+
+        return $data;
     }
 
     /**

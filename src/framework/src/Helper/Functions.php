@@ -12,14 +12,16 @@ use Swoft\Rpc\Server\ServiceContext;
 use Swoft\Server\Server;
 use Swoft\Task\FinishContext;
 use Swoft\Task\TaskContext;
+use Swoft\Validator\Exception\ValidatorException;
+use Swoft\Validator\Validator;
 use Swoft\WebSocket\Server\WebSocketServer;
 
 if (!function_exists('env')) {
     /**
      * Gets the value of an environment variable.
      *
-     * @param  string $key
-     * @param  mixed  $default
+     * @param string $key
+     * @param mixed  $default
      *
      * @return mixed
      */
@@ -137,5 +139,25 @@ if (!function_exists('server')) {
     function server(): Server
     {
         return Server::getServer();
+    }
+}
+
+if (!function_exists('validate')) {
+    /**
+     * @param array  $data
+     * @param string $validatorName
+     * @param array  $fields
+     * @param array  $userValidators
+     *
+     * @return array
+     * @throws ContainerException
+     * @throws ReflectionException
+     * @throws ValidatorException
+     */
+    function validate(array $data, string $validatorName, array $fields = [], ...$userValidators): array
+    {
+        /* @var Validator $validator */
+        $validator = BeanFactory::getBean('validator');
+        return $validator->validate($data, $validatorName, $fields, $userValidators);
     }
 }
