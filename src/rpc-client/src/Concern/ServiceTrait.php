@@ -9,6 +9,7 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\Exception\ConnectionPoolException;
 use Swoft\Rpc\Client\Connection;
 use Swoft\Rpc\Client\Exception\RpcClientException;
+use Swoft\Rpc\Client\Exception\RpcResponseException;
 use Swoft\Rpc\Client\Pool;
 use Swoft\Rpc\Client\ReferenceRegister;
 use Swoft\Rpc\Protocol;
@@ -28,10 +29,11 @@ trait ServiceTrait
      * @param array  $params
      *
      * @return mixed
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws ConnectionPoolException
+     * @throws ContainerException
+     * @throws ReflectionException
      * @throws RpcClientException
+     * @throws RpcResponseException
      */
     protected function __proxyCall(string $interfaceClass, string $methodName, array $params)
     {
@@ -65,7 +67,7 @@ trait ServiceTrait
             $message   = $response->getError()->getMessage();
             $errorData = $response->getError()->getData();
 
-            throw new RpcClientException(
+            throw new RpcResponseException(
                 sprintf(
                     'Rpc call error!code=%d message=%s data=%s pool=%s version=%s',
                     $code, $message, JsonHelper::encode($errorData), $poolName, $version
