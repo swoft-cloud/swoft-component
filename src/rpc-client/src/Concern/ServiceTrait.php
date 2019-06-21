@@ -69,7 +69,8 @@ trait ServiceTrait
                 sprintf(
                     'Rpc call error!code=%d message=%s data=%s pool=%s version=%s',
                     $code, $message, JsonHelper::encode($errorData), $poolName, $version
-                )
+                ),
+                $code
             );
         }
 

@@ -26,7 +26,7 @@ class Swoft
     /**
      * Swoft version
      */
-    public const VERSION = '2.0.1-beta';
+    public const VERSION = '2.0.2-beta';
 
     /**
      * Swoft log

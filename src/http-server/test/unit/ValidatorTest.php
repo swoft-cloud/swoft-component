@@ -6,6 +6,7 @@ namespace SwoftTest\Http\Server\Unit;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\JsonHelper;
 use SwoftTest\Http\Server\Testing\MockRequest;
+use SwoftTest\Http\Server\Testing\Validator\UserBaseValidate;
 
 /**
  * Class ValidatorTest
@@ -62,6 +63,26 @@ class ValidatorTest extends TestCase
         ];
         $response = $this->mockServer->request(MockRequest::POST, '/testValidator/userValidator', $data);
         $response->assertEqualJson($data);
+    }
+
+    /**
+     * @throws \ReflectionException
+     * @throws ContainerException
+     */
+    public function testUserValidator2()
+    {
+        $data = [
+            'start'  => 12,
+            'end'    => 16,
+            'params' => [1, 2]
+        ];
+
+        $users = [
+            'testUserValidtor' => [1, 2]
+        ];
+
+        $result = validate($data, UserBaseValidate::class, [], $users);
+        $this->assertEquals($data, $result);
     }
 
 
