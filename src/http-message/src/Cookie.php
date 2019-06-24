@@ -2,7 +2,12 @@
 
 namespace Swoft\Http\Message;
 
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\ObjectHelper;
+use function bean;
+use function gmdate;
+use function urlencode;
 
 /**
  * Class Cookie
@@ -68,10 +73,12 @@ class Cookie
      * @param array $config
      *
      * @return self
+     * @throws ReflectionException
+     * @throws ContainerException
      */
-    public static function create(array $config = []): self
+    public static function new(array $config = []): self
     {
-        $self = new self();
+        $self = bean(static::class);
 
         if ($config) {
             ObjectHelper::init($self, $config);
@@ -101,7 +108,7 @@ class Cookie
      */
     public function toString(): string
     {
-        $result = \urlencode($this->name) . '=' . \urlencode($this->value);
+        $result = urlencode($this->name) . '=' . urlencode($this->value);
 
         if ($this->domain) {
             $result .= '; domain=' . $this->domain;
@@ -111,16 +118,8 @@ class Cookie
             $result .= '; path=' . $this->path;
         }
 
-        if ($expires = $this->expires) {
-            if (\is_string($expires)) {
-                $timestamp = \strtotime($expires);
-            } else {
-                $timestamp = $expires;
-            }
-
-            if ($timestamp !== 0) {
-                $result .= '; expires=' . \gmdate('D, d-M-Y H:i:s e', $timestamp);
-            }
+        if ($timestamp = $this->expires) {
+            $result .= '; expires=' . gmdate('D, d-M-Y H:i:s e', $timestamp);
         }
 
         if ($this->secure) {
