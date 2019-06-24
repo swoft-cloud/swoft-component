@@ -150,12 +150,7 @@
     "branch-alias": {
     }
   },
-  "repositories": {
-    "packagist": {
-      "type": "composer",
-      "url": "https://packagist.laravel-china.org"
-    }
-  },
+  "repositories": {},
   "scripts": {
     "component": "php run.php -c phpunit.xml",
     "aop": "php run.php -c src/aop/phpunit.xml",
