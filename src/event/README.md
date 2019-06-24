@@ -12,7 +12,7 @@ composer require swoft/event
 
 ## Document
 
-Please see [document site](https://doc.swoft.org)
+Please see [document site](https://swoft.org/docs)
 
 ## Unit testing
 

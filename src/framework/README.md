@@ -1,13 +1,13 @@
-# Swoft Http-message
+# Swoft Framework
 
-Swoft Http-message Component
+Swoft Framework Component
 
 ## Install
 
 - composer command
 
 ```bash
-composer require swoft/http-message
+composer require swoft/framework
 ```
 
 ## Resources
