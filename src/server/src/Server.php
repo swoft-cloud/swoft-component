@@ -447,7 +447,6 @@ abstract class Server implements ServerInterface
             /* @var CoServer\Port $server */
             $server = $this->swooleServer->listen($host, $port, $type);
             $server->set($listener->getSetting());
-            var_dump($listener->getSetting());
 
             // Bind events to the sub-server
             $this->addEvent($server, $events);
