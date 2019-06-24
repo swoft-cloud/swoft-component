@@ -41,7 +41,7 @@ class Validate
     /**
      * @var string
      */
-    private $type = ValidateType::body;
+    private $type = ValidateType::BODY;
 
     /**
      * @var string

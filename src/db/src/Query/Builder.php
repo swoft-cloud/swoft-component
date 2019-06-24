@@ -235,6 +235,8 @@ class Builder implements PrototypeInterface
     public $poolName = Pool::DEFAULT_POOL;
 
     /**
+     * Select db name
+     *
      * @var string
      */
     public $db = '';
@@ -434,7 +436,6 @@ class Builder implements PrototypeInterface
     public function addSelect(array $column): self
     {
         $this->columns = array_merge((array)$this->columns, $column);
-
         return $this;
     }
 
@@ -816,7 +817,7 @@ class Builder implements PrototypeInterface
                 if (is_numeric($key) && is_array($value)) {
                     $query->{$method}(...array_values($value));
                 } else {
-                    $query->$method($key, '=', $value, $boolean);
+                    $query->{$method}($key, '=', $value, $boolean);
                 }
             }
         }, $boolean);
@@ -2400,11 +2401,12 @@ class Builder implements PrototypeInterface
      */
     public function paginate(int $page = 1, int $perPage = 15, array $columns = ['*']): array
     {
+        $list = [];
         // Run a pagination count query
-        $count = $this->getCountForPagination($columns);
-        // Get paginate records
-        $list = $this->forPage($page, $perPage)->addSelect($columns)->get()->toArray();
-
+        if ($count = $this->getCountForPagination()) {
+            // Get paginate records
+            $list = $this->forPage($page, $perPage)->get($columns)->toArray();
+        }
         return [
             'count'     => $count,
             'list'      => $list,
@@ -2728,7 +2730,7 @@ class Builder implements PrototypeInterface
      *
      * @param string $column
      *
-     * @return mixed
+     * @return float|int
      */
     public function min(string $column)
     {
@@ -2740,7 +2742,7 @@ class Builder implements PrototypeInterface
      *
      * @param string $column
      *
-     * @return mixed
+     * @return float|int
      */
     public function max(string $column)
     {
@@ -2752,7 +2754,7 @@ class Builder implements PrototypeInterface
      *
      * @param string $column
      *
-     * @return mixed
+     * @return float|int
      */
     public function sum(string $column)
     {
@@ -2766,7 +2768,7 @@ class Builder implements PrototypeInterface
      *
      * @param string $column
      *
-     * @return mixed
+     * @return float|int
      */
     public function avg($column)
     {
@@ -2778,7 +2780,7 @@ class Builder implements PrototypeInterface
      *
      * @param string $column
      *
-     * @return mixed
+     * @return float|int
      */
     public function average(string $column)
     {
@@ -2791,7 +2793,7 @@ class Builder implements PrototypeInterface
      * @param string $function
      * @param array  $columns
      *
-     * @return mixed
+     * @return float|int
      */
     public function aggregate(string $function, array $columns = ['*'])
     {
@@ -2801,10 +2803,15 @@ class Builder implements PrototypeInterface
             ->get($columns);
 
         if (!$results->isEmpty()) {
-            return array_change_key_case((array)$results[0])['aggregate'];
+            $aggregate = array_change_key_case((array)$results[0])['aggregate'];
+
+            if (is_string($aggregate)) {
+                $aggregate = (int)$aggregate;
+            }
+            return $aggregate;
         }
 
-        return null;
+        return 0;
     }
 
     /**
@@ -3222,17 +3229,14 @@ class Builder implements PrototypeInterface
     }
 
     /**
-     * Remove all of the expressions from a list of bindings.
+     * @param string $dbname
      *
-     * @param array $bindings
-     *
-     * @return array
+     * @return $this
      */
-    protected function cleanBindings(array $bindings)
+    public function db(string $dbname)
     {
-        return array_values(array_filter($bindings, function ($binding) {
-            return !$binding instanceof Expression;
-        }));
+        $this->db = $dbname;
+        return $this;
     }
 
     /**
@@ -3245,7 +3249,11 @@ class Builder implements PrototypeInterface
     {
         $connection = DB::connection($this->poolName);
 
-        // @todo select db
+        // Select db name
+        if(!empty($this->db)){
+            $connection->db($this->db);
+        }
+
         return $connection;
     }
 
@@ -3351,6 +3359,7 @@ class Builder implements PrototypeInterface
     protected function setQueryGrammar(string $driver, string $prefix, Grammar $grammar = null): void
     {
         if (!empty($grammar)) {
+            $grammar->setTablePrefix($prefix);
             $this->grammar = $grammar;
             return;
         }
@@ -3400,5 +3409,19 @@ class Builder implements PrototypeInterface
         }
 
         $this->processor = $processor;
+    }
+
+    /**
+     * Remove all of the expressions from a list of bindings.
+     *
+     * @param array $bindings
+     *
+     * @return array
+     */
+    protected function cleanBindings(array $bindings)
+    {
+        return array_values(array_filter($bindings, function ($binding) {
+            return !$binding instanceof Expression;
+        }));
     }
 }

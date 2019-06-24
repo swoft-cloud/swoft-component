@@ -24,7 +24,7 @@ class MockResponse extends Response
     /**
      * Status success
      */
-    const STATUS_SUCCESS = 200;
+    public const STATUS_SUCCESS = 200;
 
     /**
      * @var string
@@ -37,15 +37,18 @@ class MockResponse extends Response
     private $status = 0;
 
     /**
+     * @var string
+     */
+    private $downFile = '';
+
+    /**
      * @return MockResponse
      * @throws ContainerException
      * @throws ReflectionException
      */
     public static function new()
     {
-        $instance = self::__instance();
-
-        return $instance;
+        return self::__instance();
     }
 
     /**
@@ -78,21 +81,50 @@ class MockResponse extends Response
     /**
      * @param string $name
      * @param string $value
-     * @param int    $expires
+     * @param int|string $expires
      * @param string $path
      * @param string $domain
      * @param bool   $secure
-     * @param bool   $httponly
+     * @param bool   $httpOnly
      */
     public function cookie(
-        $name,
-        $value = null,
-        $expires = null,
-        $path = null,
-        $domain = null,
-        $secure = null,
-        $httponly = null
+        $name, $value = null, $expires = null, $path = null, $domain = null, $secure = null, $httpOnly = null
     ) {
+        $result = \urlencode($name) . '=' . \urlencode($value);
+
+        if ($domain) {
+            $result .= '; domain=' . $domain;
+        }
+
+        if (isset($path)) {
+            $result .= '; path=' . $path;
+        }
+
+        if ($expires) {
+            if (\is_string($expires)) {
+                $timestamp = \strtotime($expires);
+            } else {
+                $timestamp = (int)$expires;
+            }
+
+            if ($timestamp !== 0) {
+                $result .= '; expires=' . \gmdate('D, d-M-Y H:i:s e', $timestamp);
+            }
+        }
+
+        if ($secure) {
+            $result .= '; secure';
+        }
+
+        // if ($hostOnly) {
+        //     $result .= '; HostOnly';
+        // }
+
+        if ($httpOnly) {
+            $result .= '; HttpOnly';
+        }
+
+        $this->cookie[$name] = $result;
     }
 
     /**
@@ -126,7 +158,7 @@ class MockResponse extends Response
      */
     public function sendfile($filename, $offset = null, $length = null)
     {
-
+        $this->downFile = $filename;
     }
 
     /**
@@ -162,6 +194,14 @@ class MockResponse extends Response
     }
 
     /**
+     * @return array|mixed
+     */
+    public function getHeaders()
+    {
+        return $this->header;
+    }
+
+    /**
      * @return mixed
      */
     public function getCookie()
@@ -185,6 +225,14 @@ class MockResponse extends Response
      */
     public function getHeaderKey(string $key, $default = null)
     {
-        return $this->header[$key] ?? '';
+        return $this->header[$key] ?? $default;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDownFile(): string
+    {
+        return $this->downFile;
     }
 }

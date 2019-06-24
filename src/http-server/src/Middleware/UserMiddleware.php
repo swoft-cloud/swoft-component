@@ -2,12 +2,10 @@
 
 namespace Swoft\Http\Server\Middleware;
 
-use function explode;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Container;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Server\Contract\MiddlewareInterface;
@@ -15,6 +13,7 @@ use Swoft\Http\Server\Exception\HttpServerException;
 use Swoft\Http\Server\RequestHandler;
 use Swoft\Http\Server\Router\Route;
 use Swoft\Http\Server\Router\Router;
+use function explode;
 
 /**
  * Class UserMiddleware
@@ -35,17 +34,11 @@ class UserMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        /** @var Request $request $method */
-        $method  = $request->getMethod();
-        $uriPath = $request->getUriPath();
-
-        /** @var Router $router */
-        $router        = Container::$instance->getSingleton('httpRouter');
-        $routerHandler = $router->match($uriPath, $method);
-        $request       = $request->withAttribute(Request::ROUTER_ATTRIBUTE, $routerHandler);
+        // Route data
+        $routeData = $request->getAttribute(Request::ROUTER_ATTRIBUTE);
 
         /* @var Route $route */
-        [$status, , $route] = $routerHandler;
+        [$status, , $route] = $routeData;
 
         if ($status !== Router::FOUND) {
             return $handler->handle($request);

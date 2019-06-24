@@ -191,11 +191,18 @@ trait RenderHelpInfoTrait
     protected function showCommandHelp(array $info): void
     {
         $script = input()->getScriptName();
+        $usage  = sprintf('%s %s [arg ...] [--opt ...]', $script, $info['cmdId']);
+
+        // If has been custom usage.
+        if ($info['usage']) {
+            $vars  = $this->getCommentsVars();
+            $usage = $this->parseCommentsVars($info['usage'], $vars);
+        }
 
         Console::startBuffer();
         Console::writeln($info['desc'] . PHP_EOL);
         Show::mList([
-            'Usage:'          => sprintf('%s %s [arg ...] [--opt ...]', $script, $info['cmdId']),
+            'Usage:'          => $usage,
             'Global Options:' => FormatUtil::alignOptions(self::$globalOptions),
         ], [
             'sepChar' => '   ',

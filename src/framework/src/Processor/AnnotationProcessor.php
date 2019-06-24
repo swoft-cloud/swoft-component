@@ -72,7 +72,7 @@ class AnnotationProcessor extends Processor
                 CLog::debug('Parse autoloader %s', $target);
                 break;
             case 'noExistClass':
-                CLog::debug('Not exist class %s', $target);
+                CLog::debug('Skip interface or trait %s', $target);
                 break;
         }
     }

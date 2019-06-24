@@ -88,11 +88,11 @@ class CLogger extends \Monolog\Logger
         $count    = count($traces);
 
         if ($count >= 6) {
-            $info = $traces[5];
+            $info = $traces[4];
             if (isset($info['file'], $info['class'])) {
-                $class    = $traces[5]['class'];
-                $lineNum  = $traces[5]['line'];
-                $function = $traces[5]['function'];
+                $class    = $info['class'];
+                $lineNum  = $traces[3]['line'];
+                $function = $info['function'];
                 $stackStr = sprintf('%s:%s(%s)', $class, $function, $lineNum);
             }
         }

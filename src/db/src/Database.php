@@ -10,6 +10,7 @@ use Swoft\Db\Connection\Connection;
 use Swoft\Db\Connection\MySqlConnection;
 use Swoft\Db\Connector\MySqlConnector;
 use Swoft\Db\Contract\ConnectorInterface;
+use Swoft\Db\Contract\DbSelectorInterface;
 use Swoft\Db\Exception\DbException;
 use Swoft\Exception\SessionException;
 use Swoft\Server\Swoole\ConnectInterface;
@@ -108,6 +109,13 @@ class Database
      * @var array
      */
     protected $reads = [];
+
+    /**
+     * Db selector
+     *
+     * @var DbSelectorInterface
+     */
+    protected $dbSelector;
 
     /**
      * @param Pool $pool
@@ -253,6 +261,14 @@ class Database
         }
 
         throw new DbException(sprintf('Driver parse error by dsn(%s)', $dsn));
+    }
+
+    /**
+     * @return DbSelectorInterface
+     */
+    public function getDbSelector(): ?DbSelectorInterface
+    {
+        return $this->dbSelector;
     }
 
     /**

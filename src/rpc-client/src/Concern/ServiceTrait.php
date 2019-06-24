@@ -9,9 +9,11 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\Exception\ConnectionPoolException;
 use Swoft\Rpc\Client\Connection;
 use Swoft\Rpc\Client\Exception\RpcClientException;
+use Swoft\Rpc\Client\Exception\RpcResponseException;
 use Swoft\Rpc\Client\Pool;
 use Swoft\Rpc\Client\ReferenceRegister;
 use Swoft\Rpc\Protocol;
+use Swoft\Stdlib\Helper\JsonHelper;
 
 /**
  * Class ServiceTrait
@@ -27,10 +29,11 @@ trait ServiceTrait
      * @param array  $params
      *
      * @return mixed
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws ConnectionPoolException
+     * @throws ContainerException
+     * @throws ReflectionException
      * @throws RpcClientException
+     * @throws RpcResponseException
      */
     protected function __proxyCall(string $interfaceClass, string $methodName, array $params)
     {
@@ -50,20 +53,26 @@ trait ServiceTrait
 
         $protocol = Protocol::new($version, $interfaceClass, $methodName, $params, $ext);
         $data     = $packet->encode($protocol);
-        $message = sprintf('Rpc call failed.interface=%s method=%s', $interfaceClass, $methodName);
+        $message  = sprintf(
+            'Rpc call failed.interface=%s method=%s pool=%s version=%s',
+            $interfaceClass, $methodName, $poolName, $version
+        );
 
         $result = $this->sendAndRecv($connection, $data, $message);
         $connection->release();
 
         $response = $packet->decodeResponse($result);
-
         if ($response->getError() !== null) {
             $code      = $response->getError()->getCode();
             $message   = $response->getError()->getMessage();
             $errorData = $response->getError()->getData();
 
-            throw new RpcClientException(
-                sprintf('Rpc call error!code=%d message=%d data=%s', $code, $message, $errorData)
+            throw new RpcResponseException(
+                sprintf(
+                    'Rpc call error!code=%d message=%s data=%s pool=%s version=%s',
+                    $code, $message, JsonHelper::encode($errorData), $poolName, $version
+                ),
+                $code
             );
         }
 

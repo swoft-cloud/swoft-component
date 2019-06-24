@@ -4,7 +4,9 @@
 namespace SwoftTest\Http\Server\Unit;
 
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Stdlib\Helper\JsonHelper;
 use SwoftTest\Http\Server\Testing\MockRequest;
+use SwoftTest\Http\Server\Testing\Validator\UserBaseValidate;
 
 /**
  * Class ValidatorTest
@@ -20,13 +22,15 @@ class ValidatorTest extends TestCase
     public function testDefaultValidator()
     {
         $data     = [
-            'string' => 'string',
-            'int'    => 1,
-            'float'  => 1.2,
-            'bool'   => true,
-            'array'  => [
+            'string'  => 'string',
+            'int'     => 1,
+            'float'   => 1.2,
+            'bool'    => true,
+            'array'   => [
                 'array'
-            ]
+            ],
+            'kString' => 'string',
+            'noKey'   => 'not',
         ];
         $response = $this->mockServer->request(MockRequest::POST, '/testValidator/defautValidator');
         $response->assertEqualJson($data);
@@ -61,6 +65,26 @@ class ValidatorTest extends TestCase
         $response->assertEqualJson($data);
     }
 
+    /**
+     * @throws \ReflectionException
+     * @throws ContainerException
+     */
+    public function testUserValidator2()
+    {
+        $data = [
+            'start'  => 12,
+            'end'    => 16,
+            'params' => [1, 2]
+        ];
+
+        $users = [
+            'testUserValidtor' => [1, 2]
+        ];
+
+        $result = validate($data, UserBaseValidate::class, [], $users);
+        $this->assertEquals($data, $result);
+    }
+
 
     /**
      * @throws \ReflectionException
@@ -69,13 +93,15 @@ class ValidatorTest extends TestCase
     public function testDefaultValidatorQuery()
     {
         $data     = [
-            'string' => 'string',
-            'int'    => 1,
-            'float'  => 1.2,
-            'bool'   => true,
-            'array'  => [
+            'string'  => 'string',
+            'int'     => 1,
+            'float'   => 1.2,
+            'bool'    => true,
+            'array'   => [
                 'array'
-            ]
+            ],
+            'kString' => 'string',
+            'noKey'   => 'not',
         ];
         $response = $this->mockServer->request(MockRequest::GET, '/testValidator/defaultValidatorQuery');
         $response->assertEqualJson($data);
@@ -108,5 +134,20 @@ class ValidatorTest extends TestCase
         ];
         $response = $this->mockServer->request(MockRequest::GET, '/testValidator/userValidatorQuery', $data);
         $response->assertEqualJson($data);
+    }
+
+    /**
+     * @throws \ReflectionException
+     * @throws ContainerException
+     */
+    public function testNoToValidate()
+    {
+        $content = 'swoft framework';
+        $ext     = [
+            'content' => $content
+        ];
+
+        $response = $this->mockServer->request(MockRequest::POST, '/testValidator/noToValidate', [], [], [], $ext);
+        $response->assertEqualContent(json_encode([$content]));
     }
 }

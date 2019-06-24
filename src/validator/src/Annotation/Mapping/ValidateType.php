@@ -18,5 +18,5 @@ class ValidateType
     /**
      * Post form and body
      */
-    public const body = 'body';
+    public const BODY = 'body';
 }

@@ -82,7 +82,12 @@ Quick run tests for component:
 Only tests an special component:
 
 ```bash
+./phpunit.sh event
+
+// use run.php
 php run.php -c src/event/phpunit.xml
+
+// filter test method name
 php run.php -c src/event/phpunit.xml --filter testAddModule
 ```
 

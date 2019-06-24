@@ -8,6 +8,7 @@ use ReflectionException;
 use function sprintf;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Dispatcher;
 use Swoft\Log\Debug;
@@ -50,12 +51,11 @@ class ServiceDispatcher extends Dispatcher
             $handler  = ServiceHandler::new($this->requestMiddleware(), $this->defaultMiddleware);
             $response = $handler->handle($request);
         } catch (Throwable $e) {
-            Debug::log(
-                sprintf("RPC Server Error: %s\nAt %s %d\n", $e->getMessage(), $e->getFile(), $e->getLine())
-            );
+            /** @var RpcErrorDispatcher $errDispatcher */
+            $errDispatcher = BeanFactory::getSingleton(RpcErrorDispatcher::class);
 
-            $error    = Error::new($e->getCode(), $e->getMessage(), null);
-            $response = $response->setError($error);
+            // Handle request error
+            $response = $errDispatcher->run($e, $response);
         }
 
         Swoft::trigger(ServiceServerEvent::AFTER_RECEIVE, null, $response);

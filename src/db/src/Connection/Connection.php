@@ -6,6 +6,7 @@ namespace Swoft\Db\Connection;
 use Closure;
 use DateTimeInterface;
 use Generator;
+use InvalidArgumentException;
 use PDO;
 use PDOStatement;
 use ReflectionException;
@@ -21,6 +22,7 @@ use Swoft\Db\Query\Expression;
 use Swoft\Db\Query\Grammar\Grammar;
 use Swoft\Db\Query\Processor\Processor;
 use Swoft\Db\Exception\DbException;
+use Swoft\Log\Debug;
 use Throwable;
 use function bean;
 
@@ -88,6 +90,20 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @var int
      */
     protected $pdoType = 0;
+
+    /**
+     * Create connection for db name
+     *
+     * @var string
+     */
+    protected $db = '';
+
+    /**
+     * Select db name
+     *
+     * @var string
+     */
+    protected $selectDb = '';
 
     /**
      * Replace constructor
@@ -222,10 +238,23 @@ class Connection extends AbstractConnection implements ConnectionInterface
     public function release(bool $force = false): void
     {
         $cm = $this->getConMananger();
-        if (!$cm->isTransaction()) {
-            $cm->releaseOrdinaryConnection($this->id);
+        if (!$cm->isTransaction($this->poolName)) {
+            $cm->releaseOrdinaryConnection($this->id, $this->poolName);
+
+            // Reset select db name
+            $this->resetDb();
+
+            // Release connection
             parent::release($force);
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function inTransaction(): bool
+    {
+        return $this->getPdo()->inTransaction();
     }
 
     /**
@@ -242,37 +271,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
     public function setQueryGrammar(Grammar $queryGrammar): void
     {
         $this->queryGrammar = $queryGrammar;
-    }
-
-    /**
-     * Create pdo
-     *
-     * @throws ContainerException
-     * @throws DbException
-     * @throws ReflectionException
-     */
-    private function createPdo()
-    {
-        $writes = $this->database->getWrites();
-        $write  = $writes[array_rand($writes)];
-
-        $this->pdo = $this->database->getConnector()->connect($write);
-    }
-
-    /**
-     * Create read pdo
-     *
-     * @throws ContainerException
-     * @throws DbException
-     * @throws ReflectionException
-     */
-    private function createReadPdo()
-    {
-        $reads = $this->database->getReads();
-        if (!empty($reads)) {
-            $read          = $reads[array_rand($reads)];
-            $this->readPdo = $this->database->getConnector()->connect($read);
-        }
     }
 
     /**
@@ -383,6 +381,28 @@ class Connection extends AbstractConnection implements ConnectionInterface
 
             return $statement->fetchAll();
         });
+    }
+
+    /**
+     * @param string $dbname
+     *
+     * @return static
+     */
+    public function db(string $dbname)
+    {
+        if ($this->db == $dbname) {
+            return $this;
+        }
+
+        $this->selectDb($this->pdo, $dbname);
+
+        if (!empty($this->readPdo)) {
+            $this->selectDb($this->readPdo, $dbname);
+        }
+
+        $this->selectDb = $dbname;
+
+        return $this;
     }
 
     /**
@@ -756,7 +776,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
         $this->createTransaction($cm);
 
         // Inc transactions
-        $cm->incTransactionTransactons();
+        $cm->incTransactionTransactons($this->poolName);
 
         Swoft::trigger(DbEvent::BEGIN_TRANSACTION);
     }
@@ -768,7 +788,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     public function commit(): void
     {
         $cm = $this->getConMananger();
-        $ts = $cm->getTransactionTransactons();
+        $ts = $cm->getTransactionTransactons($this->poolName);
 
         // Not to commit
         if ($ts <= 0) {
@@ -780,13 +800,13 @@ class Connection extends AbstractConnection implements ConnectionInterface
             $this->getPdo()->commit();
 
             //Release from transaction manager
-            $cm->releaseTransaction();
+            $cm->releaseTransaction($this->poolName);
 
             // Release connection
             $this->release();
         } else {
             // Dec transaction
-            $cm->decTransactionTransactons();
+            $cm->decTransactionTransactons($this->poolName);
         }
 
         Swoft::trigger(DbEvent::COMMIT_TRANSACTION);
@@ -801,7 +821,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     public function rollBack(int $toLevel = null): void
     {
         $cm = $this->getConMananger();
-        $ts = $cm->getTransactionTransactons();
+        $ts = $cm->getTransactionTransactons($this->poolName);
 
         // We allow developers to rollback to a certain transaction level. We will verify
         // that this given transaction level is valid before attempting to rollback to
@@ -876,7 +896,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     public function getReadPdo(): PDO
     {
         $cm = $this->getConMananger();
-        if ($cm->isTransaction()) {
+        if ($cm->isTransaction($this->poolName)) {
             return $this->getPdo();
         }
 
@@ -907,6 +927,30 @@ class Connection extends AbstractConnection implements ConnectionInterface
     }
 
     /**
+     * @return Database
+     */
+    public function getDatabase(): Database
+    {
+        return $this->database;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDb(): string
+    {
+        return $this->db;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSelectDb(): string
+    {
+        return $this->selectDb;
+    }
+
+    /**
      * Perform a rollback within the database.
      *
      * @param int $toLevel
@@ -922,7 +966,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
             $this->getPdo()->rollBack();
 
             //Release transaction
-            $cm->releaseTransaction();
+            $cm->releaseTransaction($this->poolName);
 
             // Release connection
             $this->release(true);
@@ -931,7 +975,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
                 $this->queryGrammar->compileSavepointRollBack('trans' . ($toLevel + 1))
             );
 
-            $cm->setTransactionTransactons($toLevel);
+            $cm->setTransactionTransactons($toLevel, $this->poolName);
         }
     }
 
@@ -942,10 +986,10 @@ class Connection extends AbstractConnection implements ConnectionInterface
      */
     protected function createTransaction(ConnectionManager $cm): void
     {
-        $ts = $cm->getTransactionTransactons();
+        $ts = $cm->getTransactionTransactons($this->poolName);
         if ($ts == 0) {
             $this->getPdo()->beginTransaction();
-            $cm->setTransactionConnection($this);
+            $cm->setTransactionConnection($this, $this->poolName);
         } elseif ($ts >= 1 && $this->queryGrammar->supportsSavepoints()) {
             $this->createSavepoint($ts);
         }
@@ -974,5 +1018,96 @@ class Connection extends AbstractConnection implements ConnectionInterface
     protected function getConMananger(): ConnectionManager
     {
         return BeanFactory::getBean(ConnectionManager::class);
+    }
+
+
+    /**
+     * Create pdo
+     *
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    private function createPdo()
+    {
+        $writes = $this->database->getWrites();
+        $write  = $writes[array_rand($writes)];
+
+        $dsn = $write['dsn'];
+        $this->parseDbName($dsn);
+
+        $this->pdo = $this->database->getConnector()->connect($write);
+    }
+
+    /**
+     * Create read pdo
+     *
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    private function createReadPdo()
+    {
+        $reads = $this->database->getReads();
+        if (!empty($reads)) {
+            $read          = $reads[array_rand($reads)];
+            $this->readPdo = $this->database->getConnector()->connect($read);
+        }
+    }
+
+    /**
+     * @param string $dns
+     */
+    private function parseDbName(string $dns): void
+    {
+        $paramsStr = parse_url($dns, PHP_URL_PATH);
+        $paramsAry = explode(';', $paramsStr);
+
+        $params = [];
+        foreach ($paramsAry as $param) {
+            [$key, $value] = explode('=', $param);
+            $params[$key] = $value;
+        }
+
+        $this->db = $params['dbname'] ?? '';
+    }
+
+    /**
+     * Select db name
+     *
+     * @param PDO    $pdo
+     * @param string $dbname
+     */
+    private function selectDb(PDO $pdo, string $dbname): void
+    {
+        $useStmt = sprintf('use %s', $dbname);
+        $result  = $pdo->exec($useStmt);
+        if ($result !== false) {
+            return;
+        }
+
+        $message = $pdo->errorInfo();
+        $message = $message[2] ?? '';
+
+        throw new InvalidArgumentException($message);
+    }
+
+    /**
+     * Reset db name
+     *
+     */
+    private function resetDb(): void
+    {
+        if (empty($this->selectDb) || $this->selectDb == $this->db) {
+            return;
+        }
+
+        $this->selectDb($this->pdo, $this->db);
+
+        if (!empty($this->readPdo)) {
+            $this->selectDb($this->readPdo, $this->db);
+        }
+
+        $this->selectDb = '';
     }
 }

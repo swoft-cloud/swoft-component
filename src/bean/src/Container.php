@@ -26,6 +26,7 @@ use Swoft\Bean\Definition\Parser\DefinitionObjParser;
 use Swoft\Bean\Definition\PropertyInjection;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\ArrayHelper;
+use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Stdlib\Reflections;
 use function ucfirst;
 
@@ -450,7 +451,7 @@ class Container implements ContainerInterface
 
         $instances = [];
         foreach ($instanceNames as $instanceName) {
-            $instances[] = self::get($instanceName);
+            $instances[] = $this->get($instanceName);
         }
 
         return $instances;
@@ -695,10 +696,10 @@ class Container implements ContainerInterface
     public function getNames(): array
     {
         return [
-            'session'    => array_keys($this->sessionPool),
-            'request'    => array_keys($this->requestPool),
             'singleton'  => array_keys($this->singletonPool),
             'prototype'  => array_keys($this->prototypePool),
+            'request'    => array_keys($this->requestPool),
+            'session'    => array_keys($this->sessionPool),
             'definition' => array_keys($this->definitions),
             // 'definition' => \count($this->r),
         ];
@@ -865,6 +866,11 @@ class Container implements ContainerInterface
      */
     private function newBean(string $beanName, string $id = '')
     {
+        // First, check bean whether has been create.
+        if (isset($this->singletonPool[$beanName]) || isset($this->prototypePool[$beanName])) {
+            return $this->get($beanName);
+        }
+
         // Get object definition
         $objectDefinition = $this->getNewObjectDefinition($beanName);
 
@@ -902,7 +908,7 @@ class Container implements ContainerInterface
             $this->aliases[$alias] = $beanName;
         }
 
-        // Init method
+        // Call init method if exist
         if ($reflectionClass->hasMethod(self::INIT_METHOD)) {
             $reflectObject->{self::INIT_METHOD}();
         }
@@ -1024,6 +1030,12 @@ class Container implements ContainerInterface
                 $propertyValue = $this->getRefValue($propertyValue, $id);
             }
 
+            // Parser property type
+            $propertyType = ObjectHelper::getPropertyBaseType($reflectProperty);
+            if (!empty($propertyType)) {
+                $propertyValue = ObjectHelper::parseParamType($propertyType, $propertyValue);
+            }
+
             // First, try set value by setter method
             $setter = 'set' . ucfirst($propertyName);
             if (method_exists($reflectObject, $setter)) {
@@ -1102,7 +1114,7 @@ class Container implements ContainerInterface
             return $value;
         }
 
-        if(strpos($value, '.') !== 0){
+        if (strpos($value, '.') !== 0) {
             return $this->newBean($value, $id);
         }
 

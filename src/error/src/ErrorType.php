@@ -12,7 +12,6 @@ final class ErrorType
     public const CLI  = 2;
     public const RPC  = 3;
     public const UDP  = 4;
-    public const TCP  = 5;
     public const SOCK = 7;
     public const TASK = 8;
 
@@ -24,6 +23,11 @@ final class ErrorType
     public const WS_OPN = 22;
     public const WS_MSG = 23;
     public const WS_CLS = 24;
+
+    // Tcp server
+    public const TCP_CNT = 31;
+    public const TCP_RCE = 32;
+    public const TCP_CLS = 33;
 
     public const SYS = 85;
 

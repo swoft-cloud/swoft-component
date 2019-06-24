@@ -102,7 +102,7 @@ class Router implements RouterInterface
             }
 
             $info['vars']  = $m[1];
-            $info['regex'] = strtr($path, $pairs);
+            $info['regex'] = '#^' . strtr($path, $pairs) . '$#';
         }
 
         // Add module

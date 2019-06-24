@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Http\Server\Unit;
 
-
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\ContentType;
 use Swoft\Stdlib\Helper\JsonHelper;
 use SwoftTest\Http\Server\Testing\MockRequest;
@@ -17,8 +17,8 @@ use SwoftTest\Http\Server\Testing\MockRequest;
 class RouteTest extends TestCase
 {
     /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function testReturnType()
     {
@@ -33,8 +33,8 @@ class RouteTest extends TestCase
     }
 
     /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function testAcceptType()
     {
@@ -57,15 +57,13 @@ class RouteTest extends TestCase
             'accept' => ContentType::XML
         ];
         $response = $this->mockServer->request(MockRequest::GET, '/testRoute/data', [], $headers);
-        $response->assertEqualContent(
-            '<xml><name><![CDATA[swoft]]></name><desc><![CDATA[framework]]></desc></xml>'
-        );
+        $response->assertEqualContent('<xml><name><![CDATA[swoft]]></name><desc><![CDATA[framework]]></desc></xml>');
         $response->assertEqualHeader(ContentType::KEY, $response->getHeaderKey(ContentType::KEY));
     }
 
     /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function testRequestContentParser()
     {
@@ -78,10 +76,10 @@ class RouteTest extends TestCase
             ContentType::KEY => ContentType::XML
         ];
 
-        $ext      = [
+        $ext = [
             'content' => '<xml><name><![CDATA[swoft]]></name><desc><![CDATA[framework]]></desc></xml>'
-
         ];
+
         $response = $this->mockServer->request(MockRequest::POST, '/testRoute/parser', [], $headers, [], $ext);
         $response->assertEqualJson($data);
 
@@ -98,10 +96,10 @@ class RouteTest extends TestCase
     }
 
     /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
-    public function testMethod()
+    public function testMethod(): void
     {
         $response = $this->mockServer->request(MockRequest::POST, '/testRoute/method');
         $response->assertEqualJson(['data' => 'post']);
@@ -111,12 +109,51 @@ class RouteTest extends TestCase
     }
 
     /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
-    public function testNotSupportedMethod()
+    public function testNotSupportedMethod(): void
     {
         $response = $this->mockServer->request(MockRequest::GET, '/testRoute/method');
         $response->assertContainContent('Route not found');
+    }
+
+    /**
+     * @throws ReflectionException
+     * @throws ContainerException
+     */
+    public function testRouteCNParam(): void
+    {
+        $response = $this->mockServer->request(MockRequest::GET, '/testRoute/search/tom');
+
+        $this->assertSame('{"data":"tom"}', $response->getContent());
+
+        $response = $this->mockServer->request(MockRequest::GET, '/testRoute/search/汤姆');
+
+        $this->assertSame('{"data":"汤姆"}', $response->getContent());
+
+        $response = $this->mockServer->request(MockRequest::GET, '/testRoute/search/中国');
+
+        $this->assertSame('{"data":"中国"}', $response->getContent());
+    }
+
+    /**
+     * @throws ContainerException
+     * @throws ReflectionException
+     */
+    public function testTrait(): void
+    {
+        $response = $this->mockServer->request(MockRequest::GET, '/testRoute/traitMethod');
+        $response->assertEqualJson(['traitMethod']);
+    }
+
+    /**
+     * @throws ContainerException
+     * @throws ReflectionException
+     */
+    public function testBaseAction(): void
+    {
+        $response = $this->mockServer->request(MockRequest::GET, '/testRoute/baseMethod');
+        $response->assertEqualJson(['baseMethod']);
     }
 }

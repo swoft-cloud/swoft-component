@@ -4,7 +4,10 @@
 namespace SwoftTest\Component\Unit;
 
 use PHPUnit\Framework\TestCase;
+use ReflectionException;
 use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Exception\ContainerException;
+use SwoftTest\Component\Testing\Config\BeanInitConfig;
 use SwoftTest\Component\Testing\Config\DemoConfig;
 
 /**
@@ -15,8 +18,8 @@ use SwoftTest\Component\Testing\Config\DemoConfig;
 class ConfigTest extends TestCase
 {
     /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function testA()
     {
@@ -58,5 +61,18 @@ class ConfigTest extends TestCase
         $this->assertEquals(['arr', 'arr2'], $config->getArray());
         $this->assertEquals('otherData', $config->getOtherData());
         $this->assertEquals(['arrOther', 'arr2Other'], $config->getOtherArray());
+    }
+
+    /**
+     * @throws ReflectionException
+     * @throws ContainerException
+     */
+    public function testInitMethodConfig(): void
+    {
+        /* @var BeanInitConfig $beanConfig */
+        $beanConfig = bean(BeanInitConfig::class);
+        $data       = $beanConfig->getConfigValue();
+
+        $this->assertEquals('baseData', $data);
     }
 }

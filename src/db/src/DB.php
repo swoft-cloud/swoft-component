@@ -12,6 +12,7 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\Exception\ConnectionPoolException;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\Connection\ConnectionManager;
+use Swoft\Db\Contract\ConnectionInterface;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
@@ -36,6 +37,7 @@ use Throwable;
  * @method static mixed transaction(Closure $callback, $attempts = 1)
  * @method static void beginTransaction()
  * @method static void commit()
+ * @method static ConnectionInterface db(string $dbname)
  * @method static void rollBack(int $toLevel = null)
  */
 class DB
@@ -60,6 +62,7 @@ class DB
         'beginTransaction',
         'commit',
         'rollBack',
+        'db'
     ];
 
     /**
@@ -71,9 +74,10 @@ class DB
     public static function connection(string $name = Pool::DEFAULT_POOL): Connection
     {
         try {
+            /* @var ConnectionManager $cm */
             $cm = bean(ConnectionManager::class);
-            if ($cm->isTransaction()) {
-                return $cm->getTransactionConnection();
+            if ($cm->isTransaction($name)) {
+                return $cm->getTransactionConnection($name);
             }
 
             return self::getConnectionFromPool($name);
@@ -149,9 +153,10 @@ class DB
         /* @var ConnectionManager $conManager */
         $conManager = BeanFactory::getBean(ConnectionManager::class);
         $connection = $pool->getConnection();
+        $connection->setPoolName($name);
 
         $connection->setRelease(true);
-        $conManager->setOrdinaryConnection($connection);
+        $conManager->setOrdinaryConnection($connection, $name);
         return $connection;
     }
 }

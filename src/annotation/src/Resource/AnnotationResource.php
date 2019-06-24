@@ -17,6 +17,7 @@ use Swoft\Stdlib\Helper\DirectoryHelper;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use function class_exists;
 use function file_exists;
+use function get_included_files;
 use function in_array;
 use function is_dir;
 use function realpath;
@@ -108,7 +109,7 @@ class AnnotationResource extends Resource
      *
      * @var array
      */
-    private $includedFiles = [];
+    private $includedFiles;
 
     /**
      * AnnotationResource constructor.
@@ -168,12 +169,15 @@ class AnnotationResource extends Resource
                 }
 
                 $loaderObject = new $loaderClass();
-                $isEnabled    = !isset($this->disabledAutoLoaders[$loaderClass]);
+                if (!$loaderObject instanceof LoaderInterface) {
+                    $this->notify('invalidLoader', $loaderFile);
+                    continue;
+                }
 
                 $this->notify('findLoaderClass', $this->clearBasePath($loaderFile));
 
                 // If is disable, will skip scan annotation classes
-                if ($isEnabled && $loaderObject instanceof LoaderInterface) {
+                if (!isset($this->disabledAutoLoaders[$loaderClass])) {
                     AnnotationRegister::registerAutoLoaderFile($loaderFile);
                     $this->notify('addLoaderClass', $loaderClass);
                     $this->loadAnnotation($loaderObject);
@@ -258,7 +262,7 @@ class AnnotationResource extends Resource
                 $className = sprintf('%s%s', $ns, $pathName);
 
                 // Fix repeat included file bug
-                $autoload  = in_array($filePath, $this->includedFiles);
+                $autoload = in_array($filePath, $this->includedFiles, true);
 
                 // Will filtering: interfaces and traits
                 if (!class_exists($className, !$autoload)) {

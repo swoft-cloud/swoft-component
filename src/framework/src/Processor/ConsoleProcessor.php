@@ -35,8 +35,8 @@ class ConsoleProcessor extends Processor
 
         CLog::info(
             'Console command route registered (group %d, command %d)',
-            $router->count(),
-            $router->groupCount()
+            $router->groupCount(),
+            $router->count()
         );
 
         // Run console application

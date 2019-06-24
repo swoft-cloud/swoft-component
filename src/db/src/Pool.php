@@ -8,6 +8,8 @@ use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\AbstractPool;
 use Swoft\Connection\Pool\Contract\ConnectionInterface;
+use Swoft\Connection\Pool\Exception\ConnectionPoolException;
+use Swoft\Db\Connection\Connection;
 use Swoft\Db\Exception\DbException;
 
 /**
@@ -28,6 +30,23 @@ class Pool extends AbstractPool
      * @var Database
      */
     protected $database;
+
+    /**
+     * @return ConnectionInterface
+     * @throws ConnectionPoolException
+     */
+    public function getConnection(): ConnectionInterface
+    {
+        $connection = parent::getConnection();
+        $dbSelector = $this->database->getDbSelector();
+
+        /* @var Connection $connection select db */
+        if (!empty($dbSelector)) {
+            $dbSelector->select($connection);
+        }
+
+        return $connection;
+    }
 
     /**
      * Create connection

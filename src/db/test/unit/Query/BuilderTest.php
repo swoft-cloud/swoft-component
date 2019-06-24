@@ -720,9 +720,13 @@ class BuilderTest extends TestCase
     {
         $perPage = 2;
         $page    = 1;
-
-        $res = DB::table('user')->paginate($page, $perPage);
-
+        $res     = DB::table('user')->paginate($page, $perPage, ['name', 'password', 'id']);
+        $res1    = DB::table('user')
+            ->select('id')
+            ->addSelect(['name', 'password'])
+            ->where('id', '>', 0)
+            ->paginate($page, $perPage);
+        $this->assertEquals($res, $res1);
         $this->assertIsArray($res);
         $this->assertArrayHasKey('list', $res);
         $this->assertArrayHasKey('count', $res);
@@ -736,10 +740,43 @@ class BuilderTest extends TestCase
 
     public function testChunkById()
     {
+        $this->addRecord();
         DB::table('user')->chunkById(2, function ($users) {
             foreach ($users as $user) {
                 $this->assertIsString($user['name']);
             }
         });
+    }
+
+    public function testWhereCallback()
+    {
+        $expectSql = 'select * from `user` where (`id` = ?) order by `id` desc';
+
+        $res = DB::table('user')
+            ->where(function (Builder $query) {
+                // wrong writing
+                $query->forPage(1, 10)
+                    ->orderBy('age', 'ase')
+                    ->where('id', 1);
+            })
+            ->orderBy('id', 'desc')
+            ->toSql();
+
+        $this->assertEquals($expectSql, $res);
+    }
+
+    public function testWhereArray()
+    {
+        $expectSql = 'select * from `user` where (`uid` = ? and `name` like ? or `phone` like ?)';
+
+        $where = [
+            'uid' => 1,
+            ['name', 'like', '%xx%'],
+            ['phone', 'like', 'xx%', 'or']
+        ];
+
+        $res = DB::table('user')->where($where)->toSql();
+
+        $this->assertEquals($expectSql, $res);
     }
 }

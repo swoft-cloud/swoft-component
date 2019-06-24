@@ -80,9 +80,9 @@ class Request extends PsrRequest implements ServerRequestInterface
     private $parsedBody;
 
     /**
-     * @var array
+     * @var array|null
      */
-    private $parsedQuery = [];
+    private $parsedQuery;
 
     /**
      * @var array
@@ -356,7 +356,25 @@ class Request extends PsrRequest implements ServerRequestInterface
      */
     public function getParsedQuery(): array
     {
+        if ($this->parsedQuery !== null) {
+            return $this->parsedQuery;
+        }
+
+        $this->parsedQuery = $this->queryParams;
         return $this->parsedQuery;
+    }
+
+    /**
+     * @param string $key
+     * @param null   $default
+     *
+     * @return mixed|null
+     */
+    public function parsedQuery(string $key, $default = null)
+    {
+        $parsedQuery = $this->getParsedQuery();
+
+        return $parsedQuery[$key] ?? $default;
     }
 
     /**
@@ -364,7 +382,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      *
      * @return Request
      */
-    public function withParsedQuery(array $query)
+    public function withParsedQuery(array $query): self
     {
         $clone = clone $this;
 
@@ -373,15 +391,15 @@ class Request extends PsrRequest implements ServerRequestInterface
     }
 
     /**
-     * @param string $key
-     * @param mixed|null   $default
+     * @param string     $key
+     * @param mixed|null $default
      *
      * @return mixed|null
      */
     public function parsedBody(string $key, $default = null)
     {
-        $parseBody = $this->getParsedBody();
-        return $parseBody[$key] ?? $default;
+        $parsedBody = $this->getParsedBody();
+        return $parsedBody[$key] ?? $default;
     }
 
     /**
@@ -621,6 +639,11 @@ class Request extends PsrRequest implements ServerRequestInterface
     {
         $contentTypes = $this->getHeader(ContentType::KEY);
         foreach ($contentTypes as $contentType) {
+            $pos = strpos($contentType, ';');
+            if ($pos !== false) {
+                $contentType = substr($contentType, 0, $pos);
+            }
+
             $parser = $this->parsers[$contentType] ?? null;
             if ($parser && $parser instanceof RequestParserInterface) {
                 return $parser->parse($content);

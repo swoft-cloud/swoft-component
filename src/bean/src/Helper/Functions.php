@@ -10,7 +10,7 @@ if (!function_exists('bean')) {
      *
      * @param string $name Bean name Or alias Or class name
      *
-     * @return object|string
+     * @return object|string|mixed
      * @throws ReflectionException
      * @throws ContainerException
      */

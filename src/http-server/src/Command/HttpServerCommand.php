@@ -33,7 +33,7 @@ class HttpServerCommand extends BaseServerCommand
      * Start the http server
      *
      * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
-     * @CommandOption("daemon", short="d", desc="Run server on the background")
+     * @CommandOption("daemon", short="d", desc="Run server on the background", type="bool", default="false")
      *
      * @example
      *  {fullCommand}

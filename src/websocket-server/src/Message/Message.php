@@ -35,6 +35,13 @@ class Message implements JsonSerializable
     private $data;
 
     /**
+     * Message extra data
+     *
+     * @var mixed
+     */
+    private $ext;
+
+    /**
      * @param string $cmd
      * @param mixed  $data
      *
@@ -59,10 +66,16 @@ class Message implements JsonSerializable
      */
     public function toArray(): array
     {
-        return [
+        $ret = [
             'cmd'  => $this->cmd,
             'data' => $this->data,
         ];
+
+        if ($this->ext !== null) {
+            $ret['ext'] = $this->ext;
+        }
+
+        return $ret;
     }
 
     /**
@@ -128,5 +141,21 @@ class Message implements JsonSerializable
     public function jsonSerialize()
     {
         return $this->toArray();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getExt()
+    {
+        return $this->ext;
+    }
+
+    /**
+     * @param mixed $ext
+     */
+    public function setExt($ext): void
+    {
+        $this->ext = $ext;
     }
 }

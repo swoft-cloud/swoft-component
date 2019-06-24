@@ -36,6 +36,11 @@ abstract class AbstractConnection implements ConnectionInterface
     protected $lastTime = 0;
 
     /**
+     * @var string
+     */
+    protected $poolName = '';
+
+    /**
      * @return int
      */
     public function getId(): int
@@ -68,6 +73,14 @@ abstract class AbstractConnection implements ConnectionInterface
     }
 
     /**
+     * @param string $poolName
+     */
+    public function setPoolName(string $poolName): void
+    {
+        $this->poolName = $poolName;
+    }
+
+    /**
      * Release Connection
      *
      * @param bool $force
@@ -79,4 +92,5 @@ abstract class AbstractConnection implements ConnectionInterface
             $this->pool->release($this);
         }
     }
+
 }

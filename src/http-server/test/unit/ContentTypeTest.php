@@ -4,6 +4,8 @@
 namespace SwoftTest\Http\Server\Unit;
 
 
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\ContentType;
 
 /**
@@ -25,7 +27,11 @@ class ContentTypeTest extends TestCase
         $response->assertEqualContent('imag data content');
     }
 
-    public function testUserCt2()
+    /**
+     * @throws ContainerException
+     * @throws ReflectionException
+     */
+    public function testUserCt2(): void
     {
         $headers = [
             'accept' => ContentType::XML,
@@ -35,13 +41,13 @@ class ContentTypeTest extends TestCase
 
         $response->assertEqualHeader(ContentType::KEY, $response->getHeaderKey(ContentType::KEY));
         $response->assertEqualContent('xml data content');
-
-        $headers = [
-
-        ];
     }
 
-    public function testUserCt3()
+    /**
+     * @throws ContainerException
+     * @throws ReflectionException
+     */
+    public function testUserCt3(): void
     {
         $headers = [
             'accept' => ContentType::XML,
@@ -50,15 +56,31 @@ class ContentTypeTest extends TestCase
         $response = $this->mockServer->request('POST', '/ct/userCt3', [], $headers);
 
         $response->assertEqualHeader(ContentType::KEY, $response->getHeaderKey(ContentType::KEY));
-        $response->assertEqualContent("<xml><key><![CDATA[data]]></key></xml>");
+        $response->assertEqualContent('<xml><key><![CDATA[data]]></key></xml>');
 
-
-        $headers = [
-        ];
+        $headers = [];
 
         $response = $this->mockServer->request('POST', '/ct/userCt3', [], $headers);
 
         $response->assertEqualHeader(ContentType::KEY, $response->getHeaderKey(ContentType::KEY));
         $response->assertEqualJson(['key' => 'data']);
+    }
+
+    /**
+     * @throws ReflectionException
+     * @throws ContainerException
+     */
+    public function testCtm(): void
+    {
+        $headers = [
+            'accept'       => ContentType::JSON,
+            'content-type' => 'application/json;charset=utf-8',
+        ];
+
+        $data     = [
+            'key' => 'value'
+        ];
+        $response = $this->mockServer->request('GET', '/ct/ctm', $data, $headers);
+        $response->assertEqualJson([$data, $data]);
     }
 }

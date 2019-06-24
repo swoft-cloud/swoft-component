@@ -4,6 +4,8 @@
 namespace SwoftTest\Unit;
 
 
+use function count;
+use Exception;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
@@ -43,12 +45,13 @@ class CoTest extends TestCase
                 $cli->close();
 
                 return $result;
-            }
+            },
+            'exception'    => [$this, 'exceptionMethod']
         ];
 
         $response = Co::multi($requests);
 
-        $this->assertEquals(\count($response), 3);
+        $this->assertEquals(count($response), 3);
     }
 
     /**
@@ -62,6 +65,14 @@ class CoTest extends TestCase
         $cli->close();
 
         return $result;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function exceptionMethod()
+    {
+        throw new Exception('xx exception');
     }
 
     /**

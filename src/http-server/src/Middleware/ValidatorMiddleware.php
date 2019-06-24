@@ -15,6 +15,7 @@ use Swoft\Http\Server\Contract\MiddlewareInterface;
 use Swoft\Http\Server\Router\Route;
 use Swoft\Http\Server\Router\Router;
 use Swoft\Validator\Exception\ValidatorException;
+use Swoft\Validator\ValidateRegister;
 use Swoft\Validator\Validator;
 
 /**
@@ -48,18 +49,33 @@ class ValidatorMiddleware implements MiddlewareInterface
         $handlerId = $route->getHandler();
         [$className, $method] = explode('@', $handlerId);
 
-        $data = $request->getParsedBody();
+        // Query validates
+        $validates = ValidateRegister::getValidates($className, $method);
+        if (empty($validates)) {
+            return $handler->handle($request);
+        }
+
+        $data  = $request->getParsedBody();
         $query = $request->getQueryParams();
 
-        // Fix body is empty string
-        $data = empty($data) ? [] : $data;
+        // ParsedBody is empty string
+        $parsedBody    = $data = empty($data) ? [] : $data;
+        $notParsedBody = !is_array($data);
 
-        /* @var Validator $validator*/
+        if ($notParsedBody) {
+            $parsedBody = [];
+        }
+
+        /* @var Validator $validator */
         $validator = BeanFactory::getBean('validator');
 
-        /* @var Request $request*/
-        [$data, $query] = $validator->validate($data, $className, $method, $query);
-        $request = $request->withParsedBody($data)->withParsedQuery($query);
+        /* @var Request $request */
+        [$parsedBody, $query] = $validator->validateRequest($parsedBody, $validates, $query);
+
+        if ($notParsedBody) {
+            $parsedBody = $data;
+        }
+        $request = $request->withParsedBody($parsedBody)->withParsedQuery($query);
 
         return $handler->handle($request);
     }

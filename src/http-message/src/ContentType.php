@@ -18,8 +18,10 @@ final class ContentType
     public const HTML = 'text/html';
     public const TEXT = 'text/plain';
     public const JSON = 'application/json';
-    public const XML = 'application/xml';
+    public const XML  = 'application/xml';
     public const FORM = 'application/x-www-form-urlencoded';
+
+    // For upload file
     public const FORM_DATA = 'multipart/form-data';
 
     // Content types mapping

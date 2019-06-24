@@ -28,7 +28,7 @@ class DemoCommand
      *
      * run:
      *  bin/swoft demo:index
-     *  bin/swoft demo:sub
+     *  bin/swoft demo:sub1
      * @CommandMapping("index", alias="sub")
      *
      * The follow options is for the command
@@ -38,10 +38,13 @@ class DemoCommand
      *
      * @CommandArgument("arg1", desc="arguemnt description 1", mode=Command::ARG_REQUIRED)
      * @CommandArgument("arg2", desc="arguemnt description 2", mode=Command::ARG_IS_ARRAY)
+     *
+     * @return string
      */
-    public function sub1(): void
+    public function sub1(): string
     {
         // do something...
+        return 'demo:sub1';
     }
 
     /**

@@ -14,7 +14,6 @@ use Swoft\Db\Connection\Connection;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder as QueryBuilder;
 use Swoft\Stdlib\Contract\Arrayable;
-use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\PhpHelper;
 
 /**
@@ -22,25 +21,26 @@ use Swoft\Stdlib\Helper\PhpHelper;
  *
  * @since 2.0
  * @method Builder select(string ...$columns)
- * @method Builder selectSub(Closure|QueryBuilder|string $query, string $as)
+ * @method QueryBuilder selectSub(Closure|QueryBuilder|string $query, string $as)
  * @method Builder selectRaw(string $expression, array $bindings = [])
- * @method Builder fromSub(Closure|QueryBuilder|string $query, string $as)
+ * @method QueryBuilder fromSub(Closure|QueryBuilder|string $query, string $as)
  * @method Builder fromRaw(string $expression, array $bindings = [])
- * @method Builder createSub(Closure|QueryBuilder|string $query)
- * @method Builder parseSub(Closure|QueryBuilder|string $query)
+ * @method QueryBuilder createSub(Closure|QueryBuilder|string $query)
+ * @method QueryBuilder parseSub(Closure|QueryBuilder|string $query)
  * @method Builder addSelect(array $column)
  * @method Builder distinct()
  * @method Builder from(string $table)
- * @method Builder join(string $table, Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
- * @method Builder joinWhere(string $table, Closure|string $first, string $operator, string $second, string $type = 'inner')
- * @method Builder joinSub(Closure|QueryBuilder|string $query, string $as, Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
- * @method Builder leftJoin(string $table, Closure|string $first, string $operator = null, string $second = null)
- * @method Builder leftJoinWhere(string $table, string $first, string $operator, string $second)
- * @method Builder leftJoinSub(Closure|QueryBuilder|string $query, string $as, string $first, string $operator = null, string $second = null)
- * @method Builder rightJoin(string $table, Closure|string $first, string $operator = null, string $second = null)
- * @method Builder rightJoinWhere(string $table, string $first, string $operator, string $second)
- * @method Builder rightJoinSub(Closure|QueryBuilder|string $query, string $as, string $first, string $operator = null, string $second = null)
- * @method Builder crossJoin(string $table, Closure|string $first = null, string $operator = null, string $second = null)
+ * @method QueryBuilder db(string $dbname)
+ * @method QueryBuilder join(string $table, Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
+ * @method QueryBuilder joinWhere(string $table, Closure|string $first, string $operator, string $second, string $type = 'inner')
+ * @method QueryBuilder joinSub(Closure|QueryBuilder|string $query, string $as, Closure|string $first, string $operator = null, string $second = null, string $type = 'inner', bool $where = false)
+ * @method QueryBuilder leftJoin(string $table, Closure|string $first, string $operator = null, string $second = null)
+ * @method QueryBuilder leftJoinWhere(string $table, string $first, string $operator, string $second)
+ * @method QueryBuilder leftJoinSub(Closure|QueryBuilder|string $query, string $as, string $first, string $operator = null, string $second = null)
+ * @method QueryBuilder rightJoin(string $table, Closure|string $first, string $operator = null, string $second = null)
+ * @method QueryBuilder rightJoinWhere(string $table, string $first, string $operator, string $second)
+ * @method QueryBuilder rightJoinSub(Closure|QueryBuilder|string $query, string $as, string $first, string $operator = null, string $second = null)
+ * @method QueryBuilder crossJoin(string $table, Closure|string $first = null, string $operator = null, string $second = null)
  * @method void mergeWheres(array $wheres, array $bindings)
  * @method Builder whereColumn(string|array $first, string $operator = null, string $second = null, string $boolean = 'and')
  * @method Builder orWhereColumn(string|array $first, string $operator = null, string $second = null)
@@ -73,7 +73,7 @@ use Swoft\Stdlib\Helper\PhpHelper;
  * @method Builder whereNested(Closure $callback, string $boolean = 'and')
  * @method Builder forNestedWhere()
  * @method Builder addNestedWhereQuery(QueryBuilder $query, string $boolean = 'and')
- * @method Builder whereSub(string $column, string $operator, Closure $callback, string $boolean)
+ * @method QueryBuilder whereSub(string $column, string $operator, Closure $callback, string $boolean)
  * @method Builder whereExists(Closure $callback, string $boolean = 'and', bool $not = false)
  * @method Builder orWhereExists(Closure $callback, bool $not = false)
  * @method Builder whereNotExists(Closure $callback, string $boolean = 'and')
@@ -103,20 +103,19 @@ use Swoft\Stdlib\Helper\PhpHelper;
  * @method Builder limit(int $value)
  * @method Builder forPage(int $page, int $perPage = 15)
  * @method Builder forPageAfterId(int $perPage = 15, int $lastId = null, string $column = 'id')
- * @method string insertGetId(array $values, string $sequence = null)
- * @method bool insert(array $values)
  * @method array getBindings()
  * @method string toSql()
  * @method bool exists()
  * @method bool doesntExist()
- * @method string count(string $columns = '*')
- * @method mixed min(string $column)
- * @method mixed max(string $column)
- * @method mixed sum(string $column)
- * @method mixed avg($column)
- * @method mixed average(string $column)
+ * @method int count(string $columns = '*')
+ * @method float|int min(string $column)
+ * @method float|int max(string $column)
+ * @method float|int sum(string $column)
+ * @method float|int avg($column)
+ * @method float|int average(string $column)
  * @method Connection getConnection()
  * @method string implode(string $column, string $glue = '')
+ * @method array paginate(int $page = 1, int $perPage = 15, array $columns = ['*'])
  *
  */
 class Builder
@@ -138,20 +137,6 @@ class Builder
     protected $model;
 
     /**
-     * All of the globally registered builder macros.
-     *
-     * @var array
-     */
-    protected static $macros = [];
-
-    /**
-     * All of the locally registered builder macros.
-     *
-     * @var array
-     */
-    protected $localMacros = [];
-
-    /**
      * A replacement for the typical delete function.
      *
      * @var Closure
@@ -164,8 +149,6 @@ class Builder
      * @var array
      */
     protected $passthru = [
-        'insert',
-        'insertGetId',
         'getBindings',
         'toSql',
         'exists',
@@ -179,8 +162,22 @@ class Builder
         'implode',
         'pluck',
         'getConnection',
-        'updateOrInsert',
-        'paginate'
+        'paginate',
+        'join',
+        'joinSub',
+        'joinWhere',
+        'crossJoin',
+        'leftJoin',
+        'leftJoinSub',
+        'leftJoinWhere',
+        'rightJoin',
+        'rightJoinSub',
+        'rightJoinWhere',
+        'createSub',
+        'parseSub',
+        'parseSub',
+        'fromSub',
+        'selectRaw',
     ];
 
     /**
@@ -505,6 +502,24 @@ class Builder
         $instance = $this->firstOrNew($attributes);
         $instance->fill($values)->save();
         return $instance;
+    }
+
+    /**
+     * Insert or update a record matching the attributes, and fill it with values.
+     *
+     * @param array $attributes
+     * @param array $values
+     *
+     * @return bool
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function updateOrInsert(array $attributes, array $values = [])
+    {
+        // Get safe values
+        $values = $this->model->getSafeAttributes($values);
+        return $this->toBase()->updateOrInsert($attributes, $values);
     }
 
     /**
@@ -889,15 +904,50 @@ class Builder
     }
 
     /**
-     * Get the given macro by name.
+     * Insert a new record and get the value of the primary key. only insert database exist field
      *
-     * @param string $name
+     * @param array       $values
+     * @param string|null $sequence
      *
-     * @return Closure
+     * @return string
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
      */
-    public function getMacro($name)
+    public function insertGetId(array $values, string $sequence = null): string
     {
-        return Arr::get($this->localMacros, $name);
+        $values = $this->model->getSafeAttributes($values);
+        if (empty($values)) {
+            return '0';
+        }
+        return $this->toBase()->insertGetId($values, $sequence);
+    }
+
+    /**
+     * Insert a new record into the database. only insert database exist field
+     *
+     * @param array $values
+     *
+     * @return bool
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function insert(array $values): bool
+    {
+        if (empty($values)) {
+            return true;
+        }
+        if (!is_array(reset($values))) {
+            $values = [$values];
+        }
+        foreach ($values as &$item) {
+            $item = $this->model->getSafeAttributes($item);
+        }
+        unset($item);
+        // Filter empty values
+        $values = array_filter($values);
+        return $this->toBase()->insert($values);
     }
 
     /**

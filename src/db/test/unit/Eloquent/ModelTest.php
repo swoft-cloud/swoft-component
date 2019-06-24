@@ -9,6 +9,7 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\DB;
 use Swoft\Db\Eloquent\Collection;
 use Swoft\Db\Exception\DbException;
+use SwoftTest\Db\Testing\Entity\Count;
 use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Unit\TestCase;
 
@@ -58,18 +59,40 @@ class ModelTest extends TestCase
                 'name'      => uniqid(),
                 'password'  => md5(uniqid()),
                 'age'       => mt_rand(1, 100),
-                'user_desc' => 'u desc'
+                'user_desc' => 'u desc',
+                'foo'       => 'bar'
             ],
             [
                 'name'      => uniqid(),
                 'password'  => md5(uniqid()),
                 'age'       => mt_rand(1, 100),
-                'user_desc' => 'u desc'
+                'user_desc' => 'u desc',
+                'xxxx'      => '223asdf'
             ]
         ]);
         $this->assertTrue($batch);
         $result3 = User::new($attributes)->save();
         $this->assertTrue($result3);
+
+        $getId = User::insertGetId([
+            'name'      => uniqid(),
+            'password'  => md5(uniqid()),
+            'age'       => mt_rand(1, 100),
+            'user_desc' => 'u desc',
+            'foo'       => 'bar',
+            'xxxx'      => '223asdf'
+        ]);
+        $this->assertGreaterThan(0, $getId);
+
+        $isOK = User::updateOrInsert(['id' => 22], [
+            'name'      => uniqid(),
+            'password'  => md5(uniqid()),
+            'age'       => mt_rand(1, 100),
+            'user_desc' => 'u desc',
+            'foo'       => 'bar',
+            'xxxx'      => '223asdf'
+        ]);
+        $this->assertTrue($isOK);
 
         $user = User::create($attributes);
         $this->assertIsObject($user);
@@ -206,7 +229,7 @@ class ModelTest extends TestCase
 
         $user = User::find(22);
         $user->addHidden(['age']);
-        $user->setVisible(['password']);
+        $user->setModelVisible(['password']);
         $user->addHidden(['password']);
         $user->addVisible(['age']);
         $user->addVisible(['pwd']);
@@ -266,30 +289,36 @@ on A.id=B.id;', [$resCount - 20]);
     public function testAggregate()
     {
         $result = DB::table('user')->max('age');;
+
+        $this->assertTrue(is_float($result) || is_int($result));
         $this->assertEquals($result, User::query()->max('age'));
 
-        $result1 = User::query()->min('age');
+        $result1 = User::min('age');
+
+        $this->assertTrue(is_float($result1) || is_int($result1));
         $this->assertEquals($result1, DB::table('user')->min('age'));
 
         $result2 = User::query()->average('age');
         $this->assertEquals($result2, DB::table('user')->average('age'));
 
         $result3 = User::query()->avg('age');
+
+        $this->assertTrue(is_float($result3) || is_int($result3));
         $this->assertEquals($result3, DB::table('user')->avg('age'));
         $this->assertEquals($result2, $result3);
 
         $result4 = User::query()->count();
+        $this->assertIsInt($result4);
         $this->assertEquals($result4, DB::table('user')->count());
 
         // sql = select max(`id`) as id from `user` group by user_desc
         $res = User::query()
-            ->selectRaw('max(`id`) as id')
+            ->selectRaw('max(`id`) as max_id')
             ->groupBy('user_desc')
             ->get();
 
-        /* @var User $v */
         foreach ($res as $v) {
-            $this->assertGreaterThan(0, $v->getId());
+            $this->assertGreaterThan(0, $v['max_id']);
         }
         $ages = array_column($res->toArray(), 'id');
         $this->assertIsArray($ages);
@@ -344,6 +373,7 @@ on A.id=B.id;', [$resCount - 20]);
 
     public function testGetModels()
     {
+        User::updateOrCreate(['id' => 22], ['name' => "sakura", 'age' => 18]);
         $users = User::where('id', 22)->getModels(['id', 'age']);
         /* @var User $user */
         foreach ($users as $user) {
@@ -367,9 +397,12 @@ on A.id=B.id;', [$resCount - 20]);
     {
         $perPage = 2;
         $page    = 1;
-
-        $res = User::paginate($page, $perPage);
-
+        $res     = User::paginate($page, $perPage, ['name', 'password', 'id']);
+        $res1    = User::select('id')
+            ->where('id', '>', 0)
+            ->addSelect(['name', 'password'])
+            ->paginate($page, $perPage);
+        $this->assertEquals($res, $res1);
         $this->assertIsArray($res);
         $this->assertArrayHasKey('list', $res);
         $this->assertArrayHasKey('count', $res);
@@ -392,5 +425,65 @@ on A.id=B.id;', [$resCount - 20]);
         $userArray = User::new()->fill($attributes)->toArray();
         $this->assertArrayHasKey('testHump', $userArray);
         $this->assertEquals($expect, $userArray['testHump']);
+    }
+
+    public function testJoin()
+    {
+        $this->addRecord();
+        $userCounts = User::join('count', 'user.id', '=', 'count.user_id')->get();
+
+        foreach ($userCounts as $user) {
+            $this->assertIsArray($user);
+            $this->assertArrayHasKey('user_id', $user);
+            $this->assertArrayHasKey('create_time', $user);
+            $this->assertArrayHasKey('name', $user);
+        }
+    }
+
+    public function testSelectRaw()
+    {
+        $this->addCountRecord();
+
+        $field = 'count(*)';
+        $res   = (array)Count::selectRaw($field)->first();
+        $this->assertArrayHasKey($field, $res);
+    }
+
+    public function testSetter()
+    {
+
+        $expectAge = 18;
+        $expectId  = 1;
+
+        $user = User::new(['age' => 17, 'id' => 2]);
+        $user->setAge($expectAge);
+        $user->setId($expectId);
+
+        $result = $user->toArray();
+
+        $this->assertArrayHasKey('id', $result);
+        $this->assertArrayHasKey('age', $result);
+        $this->assertEquals($expectAge, $result['age']);
+        $this->assertEquals($expectId, $result['id']);
+    }
+
+    public function testGet()
+    {
+        $res = User::get(['id']);
+
+        foreach ($res as $user) {
+            $user = $user->toArray();
+            $this->assertTrue(count($user) == 1);
+            $this->assertArrayHasKey('id', $user);
+        }
+    }
+
+    public function testAndWheres()
+    {
+        $sql = 'select * from `user` where `id` = ? and `age` > ?';
+
+        $res = User::where('id', 1)->where('age', '>', 18)->toSql();
+
+        $this->assertEquals($sql, $res);
     }
 }

@@ -30,7 +30,9 @@ class ValidatorController
      */
     public function defaultValidator(Request $request)
     {
-        $data = $request->getParsedBody();
+        $data            = $request->getParsedBody();
+        $data['kString'] = $request->parsedBody('string');
+        $data['noKey']   = $request->parsedBody('noKey', 'not');
 
         return $data;
     }
@@ -55,7 +57,7 @@ class ValidatorController
 
     /**
      * @Validate(validator=DefaultValidator::class, type=ValidateType::GET)
-     * @RequestMapping(route="defaultValidatorQuery", type=ValidateType::GET)
+     * @RequestMapping(route="defaultValidatorQuery")
      *
      * @param Request $request
      *
@@ -64,6 +66,9 @@ class ValidatorController
     public function defaultValidatorQuery(Request $request)
     {
         $data = $request->getParsedQuery();
+
+        $data['kString'] = $request->parsedQuery('string');
+        $data['noKey']   = $request->parsedQuery('noKey', 'not');
 
         return $data;
     }
@@ -83,5 +88,17 @@ class ValidatorController
         $data = $request->getParsedQuery();
 
         return $data;
+    }
+
+    /**
+     * @RequestMapping()
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function noToValidate(Request $request): array
+    {
+        return [$request->getParsedBody()];
     }
 }
