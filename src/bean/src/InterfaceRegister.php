@@ -3,7 +3,8 @@
 
 namespace Swoft\Bean;
 
-use Swoft\Bean\Exception\BeanException;
+use RuntimeException;
+use Swoft\Validator\Exception\ValidatorException;
 
 /**
  * Class InterfaceRegister
@@ -36,9 +37,19 @@ class InterfaceRegister
      */
     private static $interfaces;
 
+    /**
+     * @param string $interfaceClass
+     * @param string $className
+     *
+     * @throws ValidatorException
+     */
     public static function registerPrimary(string $interfaceClass, string $className): void
     {
+        if (isset(self::$primaryInterface[$interfaceClass])) {
+            throw new ValidatorException('`@Primary` for instance of interface must be only one!');
+        }
 
+        self::$primaryInterface[$interfaceClass] = $className;
     }
 
     /**
@@ -55,7 +66,6 @@ class InterfaceRegister
      * @param string $interfaceClass
      *
      * @return string
-     * @throws BeanException
      */
     public static function getInterfaceInjectBean(string $interfaceClass): string
     {
@@ -68,7 +78,7 @@ class InterfaceRegister
 
         $classNames = self::$interfaces[$interfaceClass] ?? [];
         if (empty($classNames)) {
-            throw new BeanException(
+            throw new RuntimeException(
                 sprintf('Interface(%s) has not inject instance!', $interfaceClass)
             );
         }

@@ -5,7 +5,9 @@ namespace SwoftTest\Bean\Testing\Definition;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
+use SwoftTest\Bean\Testing\Contract\PrimaryInterface;
 use SwoftTest\Bean\Testing\Contract\TestInterface;
+use SwoftTest\Bean\Testing\Definition\PrimaryInterfaceThree;
 
 /**
  * Class InterfaceBean
@@ -38,6 +40,20 @@ class InterfaceBean
     private $testInterface3;
 
     /**
+     * @Inject()
+     *
+     * @var PrimaryInterface
+     */
+    private $pInterface;
+
+    /**
+     * @Inject(PrimaryInterfaceThree::class)
+     *
+     * @var PrimaryInterfaceThree
+     */
+    private $pInterfaceThree;
+
+    /**
      * @return string
      */
     public function getName(): string
@@ -59,5 +75,21 @@ class InterfaceBean
     public function getName3(): string
     {
         return $this->testInterface3->getName();
+    }
+
+    /**
+     * @return string
+     */
+    public function getPname(): string
+    {
+        return $this->pInterface->getName();
+    }
+
+    /**
+     * @return string
+     */
+    public function getPname2(): string
+    {
+        return $this->pInterfaceThree->getName();
     }
 }

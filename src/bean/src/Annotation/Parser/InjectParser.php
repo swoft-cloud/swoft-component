@@ -51,11 +51,6 @@ class InjectParser extends Parser
             throw new BeanException('`@Inejct` must be define inejct value or `@var type` ');
         }
 
-        // Inject interface
-        if (interface_exists($docInject)) {
-            $docInject = InterfaceRegister::getInterfaceInjectBean($docInject);
-        }
-
         return [$docInject, true];
     }
 }

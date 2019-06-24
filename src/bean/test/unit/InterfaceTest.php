@@ -9,6 +9,7 @@ use ReflectionException;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
 use SwoftTest\Bean\Testing\Definition\InterfaceBean;
+use SwoftTest\Bean\Testing\Definition\InterfaceBeanDefinition;
 
 /**
  * Class InterfaceTest
@@ -34,5 +35,34 @@ class InterfaceTest extends TestCase
 
         $name3 = $testInterface->getName3();
         $this->assertEquals('InterfaceOne', $name3);
+    }
+
+    /**
+     * @throws ReflectionException
+     * @throws ContainerException
+     */
+    public function testGetPname(): void
+    {
+        /* @var InterfaceBean $testInterface */
+        $testInterface = BeanFactory::getBean(InterfaceBean::class);
+
+        $name = $testInterface->getPname();
+        $this->assertEquals('PrimaryInterfaceTwo', $name);
+
+        $name3 = $testInterface->getPname2();
+        $this->assertEquals('PrimaryInterfaceThree', $name3);
+    }
+
+    /**
+     * @throws ReflectionException
+     * @throws ContainerException
+     */
+    public function testGetPnameDefinition(): void
+    {
+        /* @var InterfaceBeanDefinition $testInterface */
+        $testInterface = BeanFactory::getBean(InterfaceBeanDefinition::class);
+
+        $name = $testInterface->getName();
+        $this->assertEquals('PrimaryInterfaceTwo', $name);
     }
 }
