@@ -12,6 +12,19 @@ use Swoft\Stdlib\Helper\ObjectHelper;
 class Cookie
 {
     /**
+     * Default cookie properties
+     */
+    public const DEFAULTS = [
+        'value'    => '',
+        'domain'   => '',
+        'path'     => '',
+        'expires'  => 0,
+        'secure'   => false,
+        'httpOnly' => false,
+        'hostOnly' => false,
+    ];
+
+    /**
      * @var string
      */
     private $name;
@@ -81,6 +94,56 @@ class Cookie
             'httpOnly' => $this->httpOnly,
             'hostOnly' => $this->hostOnly,
         ];
+    }
+
+    /**
+     * @return string
+     */
+    public function toString(): string
+    {
+        $result = \urlencode($this->name) . '=' . \urlencode($this->value);
+
+        if ($this->domain) {
+            $result .= '; domain=' . $this->domain;
+        }
+
+        if ($this->path) {
+            $result .= '; path=' . $this->path;
+        }
+
+        if ($expires = $this->expires) {
+            if (\is_string($expires)) {
+                $timestamp = \strtotime($expires);
+            } else {
+                $timestamp = $expires;
+            }
+
+            if ($timestamp !== 0) {
+                $result .= '; expires=' . \gmdate('D, d-M-Y H:i:s e', $timestamp);
+            }
+        }
+
+        if ($this->secure) {
+            $result .= '; secure';
+        }
+
+        // if ($hostOnly) {
+        //     $result .= '; HostOnly';
+        // }
+
+        if ($this->httpOnly) {
+            $result .= '; HttpOnly';
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->toString();
     }
 
     /**

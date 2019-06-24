@@ -10,13 +10,13 @@ use function count;
 use function get_class;
 
 /**
- * Class ErrorHandlers
+ * Class ErrorManager
  *
  * @since 2.0
  *
  * @Bean()
  */
-class ErrorHandlers
+class ErrorManager
 {
     /**
      * @var int

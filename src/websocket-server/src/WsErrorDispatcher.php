@@ -5,7 +5,7 @@ namespace Swoft\WebSocket\Server;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Error\DefaultErrorDispatcher;
-use Swoft\Error\ErrorHandlers;
+use Swoft\Error\ErrorManager;
 use Swoft\Error\ErrorType;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
@@ -41,8 +41,8 @@ class WsErrorDispatcher
             return $response->withStatus(404)->withAddedHeader('Failure-Reason', 'Route not found');
         }
 
-        /** @var ErrorHandlers $handlers */
-        $handlers = Swoft::getSingleton(ErrorHandlers::class);
+        /** @var ErrorManager $handlers */
+        $handlers = Swoft::getSingleton(ErrorManager::class);
 
         /** @var HandshakeErrorHandlerInterface $handler */
         if ($handler = $handlers->matchHandler($e, ErrorType::WS_HS)) {
@@ -60,8 +60,8 @@ class WsErrorDispatcher
      */
     public function openError(Throwable $e, Request $request): void
     {
-        /** @var ErrorHandlers $handlers */
-        $handlers = Swoft::getSingleton(ErrorHandlers::class);
+        /** @var ErrorManager $handlers */
+        $handlers = Swoft::getSingleton(ErrorManager::class);
 
         /** @var OpenErrorHandlerInterface $handler */
         if ($handler = $handlers->matchHandler($e, ErrorType::WS_OPN)) {
@@ -89,8 +89,8 @@ class WsErrorDispatcher
             return;
         }
 
-        /** @var ErrorHandlers $handlers */
-        $handlers = Swoft::getSingleton(ErrorHandlers::class);
+        /** @var ErrorManager $handlers */
+        $handlers = Swoft::getSingleton(ErrorManager::class);
 
         /** @var MessageErrorHandlerInterface $handler */
         if ($handler = $handlers->matchHandler($e, ErrorType::WS_MSG)) {
@@ -109,8 +109,8 @@ class WsErrorDispatcher
      */
     public function closeError(Throwable $e, int $fd): void
     {
-        /** @var ErrorHandlers $handlers */
-        $handlers = Swoft::getSingleton(ErrorHandlers::class);
+        /** @var ErrorManager $handlers */
+        $handlers = Swoft::getSingleton(ErrorManager::class);
 
         /** @var CloseErrorHandlerInterface $handler */
         if ($handler = $handlers->matchHandler($e, ErrorType::WS_CLS)) {

@@ -48,7 +48,7 @@ trait CookiesTrait
     public function setCookie(string $name, $value): self
     {
         if (is_string($value)) {
-            $cookieItem = self::$cookieDefaults;
+            $cookieItem = Cookie::DEFAULTS;
 
             // append value
             $cookieItem['value']  = $value;
@@ -56,7 +56,7 @@ trait CookiesTrait
         } elseif (is_object($value) && $value instanceof Cookie) {
             $this->cookies[$name] = $value->toArray();
         } elseif (is_array($value)) {
-            $this->cookies[$name] = array_replace(self::$cookieDefaults, $value);
+            $this->cookies[$name] = array_replace(Cookie::DEFAULTS, $value);
         }
 
         return $this;
