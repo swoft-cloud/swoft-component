@@ -1,13 +1,13 @@
-# Swoft Rpc-server
+# Swoft {{componentUpWord}}
 
-Swoft Rpc-server Component
+Swoft {{componentUpWord}} Component
 
 ## Install
 
 - composer command
 
 ```bash
-composer require swoft/rpc-server
+composer require swoft/{{component}}
 ```
 
 ## Resources
