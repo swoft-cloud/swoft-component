@@ -36,8 +36,8 @@ class HttpServerCommand extends BaseServerCommand
      * @CommandOption("daemon", short="d", desc="Run server on the background", type="bool", default="false")
      *
      * @example
-     *  {fullCommand}
-     *  {fullCommand} -d
+     *   {fullCommand}
+     *   {fullCommand} -d
      *
      * @throws ReflectionException
      * @throws ContainerException

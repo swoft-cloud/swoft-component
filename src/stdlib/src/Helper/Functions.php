@@ -40,7 +40,7 @@ if (!function_exists('tap')) {
      */
     function tap($value, Closure $callback = null)
     {
-        if (is_null($callback)) {
+        if (!$callback) {
             return $value;
         }
 
@@ -52,7 +52,7 @@ if (!function_exists('tap')) {
 
 if (!function_exists('printr')) {
     /**
-     * like print_r, but allow multi params
+     * Print data like print_r, but allow multi params
      *
      * @param mixed ...$vars
      */
@@ -68,14 +68,16 @@ if (!function_exists('printr')) {
 
 if (!function_exists('vdump')) {
     /**
-     * like var_dump
+     * Dump data like var_dump
      *
      * @param mixed ...$vars
      */
     function vdump(...$vars)
     {
         ob_start();
+        /** @noinspection ForgottenDebugOutputInspection */
         var_dump(...$vars);
+
         $string = ob_get_clean();
 
         echo preg_replace(
