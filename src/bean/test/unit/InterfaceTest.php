@@ -28,7 +28,7 @@ class InterfaceTest extends TestCase
         $testInterface = BeanFactory::getBean(InterfaceBean::class);
 
         $name = $testInterface->getName();
-        $this->assertEquals('InterfaceOne', $name);
+        $this->assertContains('Interface', $name);
 
         $name2 = $testInterface->getName2();
         $this->assertEquals('InterfaceTwo', $name2);
@@ -47,7 +47,7 @@ class InterfaceTest extends TestCase
         $testInterface = BeanFactory::getBean(InterfaceBean::class);
 
         $name = $testInterface->getPname();
-        $this->assertEquals('PrimaryInterfaceTwo', $name);
+        $this->assertContains('Primary', $name);
 
         $name3 = $testInterface->getPname2();
         $this->assertEquals('PrimaryInterfaceThree', $name3);
