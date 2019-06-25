@@ -150,8 +150,6 @@
     "branch-alias": {
     }
   },
-  "repositories": {
-  },
   "scripts": {
     "component": "php run.php -c phpunit.xml",
     "aop": "php run.php -c src/aop/phpunit.xml",

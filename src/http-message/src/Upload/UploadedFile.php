@@ -45,6 +45,11 @@ class UploadedFile implements UploadedFileInterface
     private $moved;
 
     /**
+     * @var string
+     */
+    private $path;
+
+    /**
      * @param string $tmpFile
      * @param int $size
      * @param int $errorStatus
@@ -207,6 +212,19 @@ class UploadedFile implements UploadedFileInterface
     }
 
     /**
+     * @return array
+     */
+    public function getFile()
+    {
+        return [
+            'size' => $this->getSize(),
+            'type' => $this->getClientMediaType(),
+            'file' => $this->getPath(),
+            'fileName' => $this->getClientFilename()
+        ];
+    }
+
+    /**
      * @return bool
      */
     public function isOk(): bool
@@ -262,6 +280,23 @@ class UploadedFile implements UploadedFileInterface
     }
 
     /**
+     * @return string
+     */
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
+    /**
+     * @param string $path
+     */
+    public function setPath(string $path): void
+    {
+        $this->path = $path;
+    }
+
+
+    /**
      * check file upload
      */
     public function validateActive()
@@ -286,5 +321,6 @@ class UploadedFile implements UploadedFileInterface
                 throw new \RuntimeException("Cannot create directory");
             }
         }
+        $this->setPath($targetPath);
     }
 }
