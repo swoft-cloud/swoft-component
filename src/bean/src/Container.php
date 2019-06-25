@@ -1022,6 +1022,12 @@ class Container implements ContainerInterface
 
             // Parse property value
             $propertyValue = $propertyInject->getValue();
+
+            // Inject interface
+            if (is_string($propertyValue) && interface_exists($propertyValue)) {
+                $propertyValue = InterfaceRegister::getInterfaceInjectBean($propertyValue);
+            }
+
             if (is_array($propertyValue)) {
                 $propertyValue = $this->newPropertyArray($propertyValue, $id);
             }

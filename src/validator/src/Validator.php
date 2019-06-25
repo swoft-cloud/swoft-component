@@ -4,29 +4,18 @@
 namespace Swoft\Validator;
 
 use ReflectionException;
-use function sprintf;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Validator\Annotation\Mapping\IsArray;
 use Swoft\Validator\Annotation\Mapping\IsBool;
-use Swoft\Validator\Annotation\Mapping\Email;
-use Swoft\Validator\Annotation\Mapping\Enum;
 use Swoft\Validator\Annotation\Mapping\IsFloat;
 use Swoft\Validator\Annotation\Mapping\IsInt;
-use Swoft\Validator\Annotation\Mapping\Ip;
-use Swoft\Validator\Annotation\Mapping\Length;
-use Swoft\Validator\Annotation\Mapping\Max;
-use Swoft\Validator\Annotation\Mapping\Min;
-use Swoft\Validator\Annotation\Mapping\Mobile;
-use Swoft\Validator\Annotation\Mapping\NotEmpty;
-use Swoft\Validator\Annotation\Mapping\Pattern;
-use Swoft\Validator\Annotation\Mapping\Range;
 use Swoft\Validator\Annotation\Mapping\IsString;
 use Swoft\Validator\Annotation\Mapping\ValidateType;
-use Swoft\Validator\Concern\ValidateItemTrait;
+use Swoft\Validator\Contract\RuleInterface;
 use Swoft\Validator\Contract\ValidatorInterface;
 use Swoft\Validator\Exception\ValidatorException;
+use function sprintf;
 
 /**
  * Class Validator
@@ -37,8 +26,6 @@ use Swoft\Validator\Exception\ValidatorException;
  */
 class Validator
 {
-    use ValidateItemTrait;
-
     /***
      * @param array  $data
      * @param string $validatorName
@@ -165,7 +152,8 @@ class Validator
      * @param array $fields
      *
      * @return array
-     * @throws ValidatorException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function validateDefaultValidator(array $data, array $validator, array $fields): array
     {
@@ -203,59 +191,16 @@ class Validator
      * @param mixed  $default
      *
      * @return array
-     * @throws ValidatorException
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function validateDefaultItem(array $data, string $propName, $item, $default = null): array
     {
         $itemClass = get_class($item);
-        switch ($itemClass) {
-            case IsArray::class:
-                $data = $this->validateIsArray($data, $propName, $item, $default);
-                break;
-            case IsBool::class:
-                $data = $this->validateIsBool($data, $propName, $item, $default);
-                break;
-            case IsFloat::class:
-                $data = $this->validateIsFloat($data, $propName, $item, $default);
-                break;
-            case IsInt::class:
-                $data = $this->validateIsInt($data, $propName, $item, $default);
-                break;
-            case IsString::class:
-                $data = $this->validateIsString($data, $propName, $item, $default);
-                break;
-            case Email::class:
-                $data = $this->validateEmail($data, $propName, $item);
-                break;
-            case Enum::class:
-                $data = $this->validateEnum($data, $propName, $item);
-                break;
-            case Ip::class:
-                $data = $this->validateIp($data, $propName, $item);
-                break;
-            case Length::class:
-                $data = $this->validateLength($data, $propName, $item);
-                break;
-            case Max::class:
-                $data = $this->validateMax($data, $propName, $item);
-                break;
-            case Min::class:
-                $data = $this->validateMin($data, $propName, $item);
-                break;
-            case Mobile::class:
-                $data = $this->validateMobile($data, $propName, $item);
-                break;
-            case NotEmpty::class:
-                $data = $this->validateNotEmpty($data, $propName, $item);
-                break;
-            case Pattern::class:
-                $data = $this->validatePattern($data, $propName, $item);
-                break;
-            case Range::class:
-                $data = $this->validateRange($data, $propName, $item);
-                break;
-        }
 
+        /* @var RuleInterface $rule */
+        $rule = BeanFactory::getBean($itemClass);
+        $data = $rule->validate($data, $propName, $item, $default);
         return $data;
     }
 

@@ -1,12 +1,14 @@
 <?php
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use SwoftTest\Bean\Testing\Contract\PrimaryInterface;
+use SwoftTest\Bean\Testing\Definition\InterfaceBeanDefinition;
 use SwoftTest\Bean\Testing\Definition\ManyInstance;
-use SwoftTest\Bean\Testing\Definition\SingletonClass;
-use SwoftTest\Bean\Testing\InjectBean;
 use SwoftTest\Bean\Testing\Definition\PrototypeClass;
 use SwoftTest\Bean\Testing\Definition\RequestClass;
 use SwoftTest\Bean\Testing\Definition\SessionClass;
+use SwoftTest\Bean\Testing\Definition\SingletonClass;
+use SwoftTest\Bean\Testing\InjectBean;
 
 return [
     'singleton'       => [
@@ -84,5 +86,9 @@ return [
         'integerVar' => '2',
         'floatVar'   => '1.1',
         'doubleVar'  => '1.2',
+    ],
+    'interfaceBeanDefinition' => [
+        'class' => InterfaceBeanDefinition::class,
+        'pinterface' => \bean(PrimaryInterface::class)
     ]
 ];
