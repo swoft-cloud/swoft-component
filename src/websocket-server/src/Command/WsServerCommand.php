@@ -163,6 +163,11 @@ class WsServerCommand extends BaseServerCommand
     {
         $server = $this->createServer();
 
+        // Check if it has started
+        if ($server->isRunning()) {
+            $server->stop();
+        }
+
         // Restart server
         $server->restart();
     }

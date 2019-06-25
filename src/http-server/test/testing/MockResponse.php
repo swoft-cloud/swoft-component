@@ -82,7 +82,7 @@ class MockResponse extends Response
      * @param string $name
      * @param string $value
      * @param int|string $expires
-     * @param string $path
+     * @param string|null $path
      * @param string $domain
      * @param bool   $secure
      * @param bool   $httpOnly
@@ -96,7 +96,7 @@ class MockResponse extends Response
             $result .= '; domain=' . $domain;
         }
 
-        if (isset($path)) {
+        if ($path) {
             $result .= '; path=' . $path;
         }
 

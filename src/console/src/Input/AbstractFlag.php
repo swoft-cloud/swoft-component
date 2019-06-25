@@ -50,6 +50,21 @@ abstract class AbstractFlag
     private $default;
 
     /**
+     * @var bool
+     */
+    private $array = false;
+
+    /**
+     * @var bool
+     */
+    private $optional = true;
+
+    /**
+     * @var bool
+     */
+    private $required = false;
+
+    /**
      * Class constructor.
      *
      * @param array $values
@@ -125,5 +140,29 @@ abstract class AbstractFlag
     public function getDefault()
     {
         return $this->default;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isArray(): bool
+    {
+        return $this->array;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOptional(): bool
+    {
+        return $this->optional;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRequired(): bool
+    {
+        return $this->required;
     }
 }

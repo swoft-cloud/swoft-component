@@ -1,13 +1,13 @@
-# Swoft Rpc-server
+# Swoft Framework
 
-Swoft Rpc-server Component
+Swoft Framework Component
 
 ## Install
 
 - composer command
 
 ```bash
-composer require swoft/rpc-server
+composer require swoft/framework
 ```
 
 ## Resources

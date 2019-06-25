@@ -55,6 +55,20 @@ class Uri implements UriInterface
     ];
 
     /**
+     * Default uri params
+     */
+    private const DEFAULT_PARAMS = [
+        'scheme'   => 'http',
+        'host'     => 'localhost',
+        'port'     => '80',
+        'user'     => '',
+        'pass'     => '',
+        'path'     => '/',
+        'query'    => '',
+        'fragment' => '',
+    ];
+
+    /**
      * @var string
      */
     private static $charUnreserved = 'a-zA-Z0-9_\-\.~';
@@ -156,6 +170,11 @@ class Uri implements UriInterface
         // Weak type check to also accept null until we can add scalar type hints
         if ($uri === '') {
             return $instance;
+        }
+
+        // If params is empty, padding defaults data
+        if (!$params) {
+            $instance->params = self::DEFAULT_PARAMS;
         }
 
         $parts = parse_url($uri);

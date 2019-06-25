@@ -25,6 +25,11 @@ final class SwoftEvent
     public const COROUTINE_COMPLETE = 'swoft.co.complete';
 
     /**
+     * Coroutine exception
+     */
+    public const COROUTINE_EXCEPTION = 'swoft.co.exception';
+
+    /**
      * Coroutine destroy
      */
     public const COROUTINE_DESTROY = 'swoft.co.destroy';

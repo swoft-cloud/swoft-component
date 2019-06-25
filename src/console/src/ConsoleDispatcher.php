@@ -8,6 +8,7 @@ use ReflectionException;
 use ReflectionType;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\BeanFactory;
 use Swoft\Co;
 use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
@@ -74,8 +75,11 @@ class ConsoleDispatcher implements DispatcherInterface
 
             $this->after($method);
         } catch (Throwable $e) {
-            // TODO: throw error
-            throw $e;
+            /** @var ConsoleErrorDispatcher $errDispatcher */
+            $errDispatcher = BeanFactory::getSingleton(ConsoleErrorDispatcher::class);
+
+            // Handle request error
+            $errDispatcher->run($e);
         } finally {
             // Defer
             Swoft::trigger(SwoftEvent::COROUTINE_DEFER);

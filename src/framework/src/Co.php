@@ -87,6 +87,9 @@ class Co
                     $e->getLine(),
                     $e->getTraceAsString()
                 );
+
+                // Trigger co error event
+                Swoft::trigger(SwoftEvent::COROUTINE_EXCEPTION, $e);
             }
 
             if ($wait) {
