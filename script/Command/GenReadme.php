@@ -2,11 +2,13 @@
 
 namespace SwoftTool\Command;
 
-use function file_put_contents;
+use InvalidArgumentException;
 use Toolkit\Cli\App;
 use Toolkit\Cli\Color;
 use function basename;
 use function file_get_contents;
+use function file_put_contents;
+use function glob;
 use function is_dir;
 use function strtr;
 use function ucwords;
@@ -56,7 +58,7 @@ STR,
             $flags  = GLOB_ONLYDIR | GLOB_MARK;
             $tplStr = file_get_contents($this->tplFile);
 
-            foreach (\glob($libsDir . '*', $flags) as $dir) {
+            foreach (glob($libsDir . '*', $flags) as $dir) {
                 $this->genReadmeFile($tplStr, $dir);
             }
 
@@ -65,7 +67,7 @@ STR,
 
         // For some components
         if (!$names = $app->getArgs()) {
-            throw new \InvalidArgumentException('Please input component names');
+            throw new InvalidArgumentException('Please input component names');
         }
 
         $tplStr = file_get_contents($this->tplFile);
