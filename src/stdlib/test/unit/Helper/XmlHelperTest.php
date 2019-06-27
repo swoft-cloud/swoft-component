@@ -20,12 +20,6 @@ class XmlHelperTest extends TestCase
         $res = XmlHelper::arrayToXml($arr);
         $this->assertTrue(is_string($res));
         $this->assertSame($xml, $res);
-
-        // $arr = ["note" => ["to" => "Tove", "form" => "Jani", "heading" => "Reminder", "body" => "Don't forget me this weekend!"]];
-        // $xml = "<note><to>Tove</to><from>Jani</from><heading>Reminder</heading><body>Don't forget me this weekend!</body></note>";
-        // $res = XmlHelper::arrayToXml($arr);
-        // $this->assertTrue(is_string($res));
-        // $this->assertSame($xml, $res);
     }
 
     public function testXmlToArray()
@@ -33,13 +27,7 @@ class XmlHelperTest extends TestCase
         $xml = "";
         $res = XmlHelper::xmlToArray($xml);
         $this->assertEquals(0, count($res));
-
-        // $arr = ['a' => 'aaa', 'b' => ['c' => '1234', 'd' => ""]];
-        // $xml = "<a><![CDATA[aaa]]></a><b><c>1234</c><d><![CDATA[]]></d></b>";
-        // $res = XmlHelper::xmlToArray($xml);
-        // $this->assertTrue(is_string($res));
-        // $this->assertEquals(count($arr), count($res));
-
+        
         $arr = ["note" => ["to" => "Tove", "form" => "Jani", "heading" => "Reminder", "body" => "Don't forget me this weekend!"]];
         $xml = "<xml><note><to>Tove</to><from>Jani</from><heading>Reminder</heading><body>Don't forget me this weekend!</body></note></xml>";
         $res = XmlHelper::xmlToArray($xml);
