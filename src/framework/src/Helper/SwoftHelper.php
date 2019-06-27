@@ -6,6 +6,8 @@ use RuntimeException;
 use function extension_loaded;
 use function implode;
 use function version_compare;
+use const PHP_VERSION;
+use const SWOOLE_VERSION_ID;
 
 /**
  * Class SwoftHelper
@@ -46,7 +48,11 @@ class SwoftHelper
         }
 
         if (!extension_loaded('swoole')) {
-            throw new RuntimeException("Run the server, extension 'swoole 4.3+' is required!");
+            throw new RuntimeException("Run the server, extension 'swoole' is required!");
+        }
+
+        if (SWOOLE_VERSION_ID < 40300) {
+            throw new RuntimeException("Run the server, swoole version '4.3+' is required!");
         }
 
         $conflicts = [

@@ -10,7 +10,6 @@ use Swoft\Stdlib\Helper\PhpHelper;
 use Swoole\Coroutine;
 use Throwable;
 use function count;
-use function go;
 use function sgo;
 
 /**
