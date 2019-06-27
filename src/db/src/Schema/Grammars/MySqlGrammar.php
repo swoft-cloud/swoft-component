@@ -150,7 +150,7 @@ class MySqlGrammar extends Grammar
     protected function compileCreateTable(Blueprint $blueprint, $command, $connection)
     {
         $ifNotExist = '';
-        if ($command['ifNotExist']) {
+        if ($command['ifNotExists']) {
             $ifNotExist = ' if not exists ';
         }
         return sprintf('%s table%s%s (%s)',

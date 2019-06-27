@@ -22,7 +22,7 @@ use Swoft\Stdlib\Helper\PhpHelper;
  * @since 2.0
  * @method Builder select(string ...$columns)
  * @method QueryBuilder selectSub(Closure|QueryBuilder|string $query, string $as)
- * @method Builder selectRaw(string $expression, array $bindings = [])
+ * @method QueryBuilder selectRaw(string $expression, array $bindings = [])
  * @method QueryBuilder fromSub(Closure|QueryBuilder|string $query, string $as)
  * @method Builder fromRaw(string $expression, array $bindings = [])
  * @method QueryBuilder createSub(Closure|QueryBuilder|string $query)

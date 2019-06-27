@@ -486,4 +486,36 @@ on A.id=B.id;', [$resCount - 20]);
 
         $this->assertEquals($sql, $res);
     }
+
+    public function testDistinct()
+    {
+        $expect = 'select distinct age from `user`';
+        $sql    = User::distinct()->selectRaw('age')->toSql();
+
+        $this->assertEquals($expect, $sql);
+    }
+
+    public function testWhereArray()
+    {
+        $ids = [1, 2];
+
+        $expectSql = 'select * from `user` where (`id` in (?, ?))';
+
+        $where = ['id' => $ids];
+        $sql   = User::where($where)->toSql();
+        $this->assertEquals($expectSql, $sql);
+
+        $expectSql1 = 'select * from `user` where `id` in (?, ?)';
+        $sql1       = User::where('id', '=', $ids)->toSql();
+        $this->assertEquals($expectSql1, $sql1);
+    }
+
+    public function testCollection()
+    {
+        $collection = \Swoft\Stdlib\Collection::make([1, 1, 2, 2, 3, 4, 2]);
+
+        $unq = $collection->unique();
+
+        $this->assertCount(4, $unq->all());
+    }
 }
