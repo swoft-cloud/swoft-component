@@ -2,19 +2,20 @@
 
 namespace Swoft;
 
-use function count;
-use function go;
 use ReflectionException;
-use function sgo;
 use Swoft;
 use Swoft\Context\Context;
 use Swoft\Log\Debug;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoole\Coroutine;
 use Throwable;
+use function count;
+use function go;
+use function sgo;
 
 /**
  * Class Co
+ *
  * @since   2.0
  */
 class Co
@@ -68,7 +69,7 @@ class Co
         $tid = self::tid();
 
         // return coroutine ID for created.
-        return go(function () use ($callable, $tid, $wait) {
+        return Coroutine::create(function () use ($callable, $tid, $wait) {
             try {
                 $id = Coroutine::getCid();
                 // Storage fd
@@ -80,13 +81,8 @@ class Co
 
                 PhpHelper::call($callable);
             } catch (Throwable $e) {
-                Debug::log(
-                    "Coroutine internal error: %s\nAt File %s line %d\nTrace:\n%s",
-                    $e->getMessage(),
-                    $e->getFile(),
-                    $e->getLine(),
-                    $e->getTraceAsString()
-                );
+                Debug::log("Coroutine internal error: %s\nAt File %s line %d\nTrace:\n%s", $e->getMessage(),
+                    $e->getFile(), $e->getLine(), $e->getTraceAsString());
 
                 // Trigger co error event
                 Swoft::trigger(SwoftEvent::COROUTINE_EXCEPTION, $e);
@@ -148,9 +144,7 @@ class Co
                     $data = PhpHelper::call($callback);
                     $channel->push([$key, $data]);
                 } catch (Throwable $e) {
-                    Debug::log(
-                        'Co multi errro(key=%s) is %s', $key, $e->getMessage()
-                    );
+                    Debug::log('Co multi errro(key=%s) is %s', $key, $e->getMessage());
 
                     $channel->push(false);
                 }
