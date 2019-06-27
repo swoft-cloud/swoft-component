@@ -149,7 +149,7 @@ class Co
                     $data = PhpHelper::call($callback);
                     $channel->push([$key, $data]);
                 } catch (Throwable $e) {
-                    Debug::log('Co multi errro(key=%s) is %s', $key, $e->getMessage());
+                    Debug::log('Co multi error(key=%s) is %s', $key, $e->getMessage());
 
                     $channel->push(false);
                 }
