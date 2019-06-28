@@ -9,6 +9,7 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\DB;
 use Swoft\Db\Eloquent\Collection;
 use Swoft\Db\Exception\DbException;
+use Swoft\Db\Query\Expression;
 use SwoftTest\Db\Testing\Entity\Count;
 use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Unit\TestCase;
@@ -517,5 +518,49 @@ on A.id=B.id;', [$resCount - 20]);
         $unq = $collection->unique();
 
         $this->assertCount(4, $unq->all());
+    }
+
+    public function testBatchUpdate()
+    {
+        $json = ['aa' => "hahhh", "有点厉害鸭" . time()];
+        $age  = mt_rand();
+
+        $this->testAutoJson();
+        $id  = $this->addRecord();
+        $id2 = $this->addRecord();
+        $id3 = $this->addRecord();
+
+        $values = [
+            ['id' => $id3, 'age' => $age, 'test_json' => $json,],
+            ['id' => $id2, 'age' => $age, 'test_json' => $json,],
+            ['id' => $id, 'age' => $age, 'test_json' => $json,],
+        ];
+        $count  = User::batchUpdateByIds($values);
+
+        $this->assertCount($count, $values);
+
+        $users = User::findMany([$id, $id2, $id3]);
+        $this->assertCount($count, $users);
+
+        /* @var $user User */
+        foreach ($users as $user) {
+            $this->assertEquals($age, $user->getAge());
+            $this->assertEquals($json, $user->getTestJson());
+        }
+    }
+
+    public function testAutoJson()
+    {
+        $id     = 18036;
+        $json   = ['aa' => "hahhh", "有点厉害鸭"];
+        $result = User::updateOrInsert(['id' => $id], [
+            'test_json' => $json,
+            'age'       => Expression::new('`age` + 1'),
+        ]);
+
+        $this->assertTrue($result);
+
+        $user = User::find($id);
+        $this->assertEquals($json, $user->getTestJson());
     }
 }

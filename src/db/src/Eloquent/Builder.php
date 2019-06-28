@@ -518,7 +518,7 @@ class Builder
     public function updateOrInsert(array $attributes, array $values = [])
     {
         // Get safe values
-        $values = $this->model->getSafeAttributes($values);
+        $values = $this->model->getSafeAttributes($values, true);
         return $this->toBase()->updateOrInsert($attributes, $values);
     }
 
@@ -731,6 +731,7 @@ class Builder
      */
     public function update(array $values)
     {
+        $values = $this->model->getSafeAttributes($values, true);
         return $this->toBase()->update($values);
     }
 
@@ -916,7 +917,7 @@ class Builder
      */
     public function insertGetId(array $values, string $sequence = null): string
     {
-        $values = $this->model->getSafeAttributes($values);
+        $values = $this->model->getSafeAttributes($values, true);
         if (empty($values)) {
             return '0';
         }
@@ -942,13 +943,49 @@ class Builder
             $values = [$values];
         }
         foreach ($values as &$item) {
-            $item = $this->model->getSafeAttributes($item);
+            $item = $this->model->getSafeAttributes($item, true);
         }
         unset($item);
         // Filter empty values
         $values = array_filter($values);
         return $this->toBase()->insert($values);
     }
+
+    /**
+     * Batch update by primary
+     *
+     * @param array $values
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function batchUpdateByIds(array $values): int
+    {
+        $primary = $this->model->getKeyName();
+        if (!is_array(reset($values))) {
+            $values = [$values];
+        }
+        $count = 0;
+        foreach ($values as &$item) {
+            $item = $this->model->getSafeAttributes($item, true);
+            // Check item
+            if (empty($item[$primary])) {
+                throw new DbException(__FUNCTION__ . ' method values must exists primary, please check values.');
+            }
+            if ($count === 0) {
+                $count = count($item);
+            } elseif ($count != count($item)) {
+                throw new DbException(__FUNCTION__ . ', The parameter length must be consistent.');
+            }
+        }
+        unset($item);
+        // Filter empty values
+        $values = array_filter($values);
+        return $this->toBase()->batchUpdateByIds($values, $primary);
+    }
+
 
     /**
      * Dynamically handle calls into the query instance.

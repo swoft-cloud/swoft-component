@@ -2939,6 +2939,27 @@ class Builder implements PrototypeInterface
     }
 
     /**
+     * Batch update records
+     *
+     * @param array  $values
+     * @param string $primary
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function batchUpdateByIds(array $values, string $primary = 'id')
+    {
+        $affectedRows = $this->getConnection()->update(
+            $this->grammar->compileBatchUpdateByIds($this, $values, $primary),
+            []
+        );
+
+        return $affectedRows;
+    }
+
+    /**
      * Insert a new record and get the value of the primary key.
      *
      * @param array       $values

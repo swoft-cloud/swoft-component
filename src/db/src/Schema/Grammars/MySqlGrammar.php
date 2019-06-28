@@ -50,7 +50,7 @@ class MySqlGrammar extends Grammar
         'timestamp'  => self::STRING,
         'enum'       => self::STRING,
         'varbinary'  => self::STRING,
-        'json'       => self::STRING,
+        'json'       => self::ARRAY,
     ];
 
     /**

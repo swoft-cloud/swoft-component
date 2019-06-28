@@ -6,6 +6,8 @@ namespace Swoft\Db\Concern;
 use BadMethodCallException;
 use Swoft\Db\EntityRegister;
 use Swoft\Db\Exception\DbException;
+use Swoft\Db\Query\Expression;
+use Swoft\Db\Schema\Grammars\Grammar;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Stdlib\Helper\Str;
@@ -379,20 +381,28 @@ trait HasAttributes
      * Get safe model attributes
      *
      * @param array $attributes
+     * @param bool  $encode
      *
      * @return array
      */
-    public function getSafeAttributes(array $attributes): array
+    public function getSafeAttributes(array $attributes, bool $encode = false): array
     {
         $safeAttributes = [];
         foreach ($attributes as $key => $value) {
             $column = EntityRegister::getReverseMappingByColumn($this->getClassName(), $key);
-            // not found this key column annotation
+            // Not found this key column annotation
             if (empty($column)) {
                 continue;
             }
-            $type                 = $column['type'];
-            $value                = ObjectHelper::parseParamType($type, $value);
+            // Not handler expression
+            if (!$value instanceof Expression) {
+                $type  = $column['type'];
+                $value = ObjectHelper::parseParamType($type, $value);
+                if ($encode === true && $type === Grammar::ARRAY && !is_scalar($value)) {
+                    // Array to string
+                    $value = json_encode($value, JSON_UNESCAPED_UNICODE);
+                }
+            }
             $safeAttributes[$key] = $value;
         }
         return $safeAttributes;

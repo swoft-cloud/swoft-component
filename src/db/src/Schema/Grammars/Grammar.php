@@ -28,6 +28,8 @@ abstract class Grammar extends BaseGrammar
     public const DATETIME = 'datetime';
     public const BOOLEAN  = 'boolean';
     public const BOOL     = 'bool';
+    public const ARRAY    = 'array';
+
 
     /**
      * @var array

@@ -931,6 +931,47 @@ class Grammar extends BaseGrammar
     }
 
     /**
+     * Compile batch update Sql
+     *
+     * @param Builder $query
+     * @param array   $values
+     * @param string  $primary
+     *
+     * @return string
+     */
+    public function compileBatchUpdateByIds(Builder $query, array $values, $primary)
+    {
+        $table = $this->wrapTable($query->from);
+
+        if (!is_array(reset($values))) {
+            $values = [$values];
+        }
+
+        // Take the first value as columns
+        $columns = array_keys(current($values));
+
+        $setStr = '';
+        foreach ($columns as $column) {
+            if ($column == $primary) {
+                continue;
+            }
+
+            $setStr .= " `$column` = case `$primary` ";
+            foreach ($values as $row) {
+                $setStr .= " when '$row[$primary]' then '$row[$column]' ";
+            }
+            $setStr .= ' end,';
+        }
+        // Remove the last character
+        $setStr = substr($setStr, 0, -1);
+
+        $ids    = array_column($values, $primary);
+        $idsStr = implode(',', $ids);
+
+        return "update $table set $setStr where $primary in ($idsStr)";
+    }
+
+    /**
      * Compile an insert and get ID statement into SQL.
      *
      * @param Builder $query

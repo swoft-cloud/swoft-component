@@ -61,6 +61,31 @@ class User extends Model
     private $testHump;
 
     /**
+     *
+     *
+     * @Column(name="test_json", prop="testJson")
+     * @var array|null
+     */
+    private $testJson;
+
+    /**
+     * @return null|array
+     */
+    public function getTestJson(): ?array
+    {
+        return $this->testJson;
+    }
+
+    /**
+     * @param null|array $testJson
+     */
+    public function setTestJson(?array $testJson): void
+    {
+        $this->testJson = $testJson;
+    }
+
+
+    /**
      * @return null|string
      */
     public function getTestHump(): ?string
