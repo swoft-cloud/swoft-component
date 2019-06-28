@@ -11,7 +11,7 @@
   "require": {
     "php": ">7.1",
     "vlucas/phpdotenv": "^3.4",
-    "symfony/yaml": "^4.2",
+    "symfony/yaml": "^4.3",
     "swoft/stdlib": "~2.0.0"
   },
   "autoload": {
