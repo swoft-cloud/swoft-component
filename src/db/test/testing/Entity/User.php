@@ -32,6 +32,27 @@ class User extends Model
     private $name;
 
     /**
+     * @Column()
+     * @var int|null
+     */
+    private $hahh;
+
+    /**
+     * @return null|int
+     */
+    public function getHahh(): ?int
+    {
+        return $this->hahh;
+    }
+
+    /**
+     * @param null|int $hahh
+     */
+    public function setHahh(?int $hahh): void
+    {
+        $this->hahh = $hahh;
+    }
+    /**
      * @Column(name="password", hidden=true)
      * @var string|null
      */

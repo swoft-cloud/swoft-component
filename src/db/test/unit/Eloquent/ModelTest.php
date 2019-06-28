@@ -531,7 +531,7 @@ on A.id=B.id;', [$resCount - 20]);
         $id3 = $this->addRecord();
 
         $values = [
-            ['id' => $id3, 'age' => $age, 'test_json' => $json,],
+            ['id' => $id3, 'test_json' => $json, 'age' => $age],
             ['id' => $id2, 'age' => $age, 'test_json' => $json,],
             ['id' => $id, 'age' => $age, 'test_json' => $json,],
         ];
@@ -553,6 +553,15 @@ on A.id=B.id;', [$resCount - 20]);
     {
         $id     = 18036;
         $json   = ['aa' => "hahhh", "有点厉害鸭"];
+        $result = User::updateOrCreate(['id' => $id], [
+            'test_json' => null,
+            'user_desc' => 'xxxxxx',
+            'hahh'      => 0,
+            'age'       => Expression::new('`age` + 1'),
+        ]);
+        $this->assertEquals(0, $result->getHahh());
+
+        $id     = 18037;
         $result = User::updateOrInsert(['id' => $id], [
             'test_json' => $json,
             'age'       => Expression::new('`age` + 1'),

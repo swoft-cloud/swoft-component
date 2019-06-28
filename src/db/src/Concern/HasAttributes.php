@@ -366,7 +366,9 @@ trait HasAttributes
     public function setRawAttributes(array $attributes, $sync = false)
     {
         foreach ($this->getSafeAttributes($attributes) as $key => $value) {
-            $this->setModelAttribute($key, $value);
+            if (!$value instanceof Expression) {
+                $this->setModelAttribute($key, $value);
+            }
             $this->modelAttributes[$key] = $value;
         }
 
@@ -572,12 +574,11 @@ trait HasAttributes
     {
         $dirty = [];
 
-        foreach ($this->getModelAttributes() as $key => $value) {
-            if (!$this->originalIsEquivalent($key, $value)) {
+        foreach ($this->modelAttributes as $key => $value) {
+            if ($value instanceof Expression || !$this->originalIsEquivalent($key, $value)) {
                 $dirty[$key] = $value;
             }
         }
-
         return $dirty;
     }
 
