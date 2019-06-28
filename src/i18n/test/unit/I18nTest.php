@@ -25,7 +25,9 @@ class I18nTest extends TestCase
         /** @var I18n $i18n */
         $i18n = BeanFactory::getBean('i18n');
 
-        $this->assertSame(['en', 'zh-CN'], $i18n->getLanguages());
+        $this->assertNotEmpty($ls = $i18n->getLanguages());
+        $this->assertContains('en', $ls);
+        $this->assertContains('zh-CN', $ls);
     }
 
     /**
@@ -47,7 +49,7 @@ class I18nTest extends TestCase
         $title = $i18n->translate('msg.body', ['name' => 'Swoft', 'base' => 'Swoole']);
         $this->assertEquals($title, 'Swoft framework，base on Swoole');
 
-        $title = $i18n->translate('msg.body', ['name' => 'Swoft', 'base' => 'Swoole'], 'zh-cn');
+        $title = $i18n->translate('msg.body', ['name' => 'Swoft', 'base' => 'Swoole'], 'zh-CN');
         $this->assertEquals($title, 'Swoft框架协程框架，基于Swoole');
     }
 }
