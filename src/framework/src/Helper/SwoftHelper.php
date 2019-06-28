@@ -7,7 +7,7 @@ use function extension_loaded;
 use function implode;
 use function version_compare;
 use const PHP_VERSION;
-use const SWOOLE_VERSION_ID;
+use const SWOOLE_VERSION;
 
 /**
  * Class SwoftHelper
@@ -35,24 +35,25 @@ class SwoftHelper
     /**
      * Check runtime extension conflict
      *
-     * @throws RuntimeException
+     * @param string $minPhp
+     * @param string $minSwoole
      */
-    public static function checkRuntime(): void
+    public static function checkRuntime(string $minPhp = '7.1', string $minSwoole = '4.3.0'): void
     {
         // if (!EnvHelper::isCli()) {
         //     throw new RuntimeException('Server must run in the CLI mode.');
         // }
 
-        if (!version_compare(PHP_VERSION, '7.1')) {
-            throw new RuntimeException('Run the server requires PHP version > 7.1');
+        if (version_compare(PHP_VERSION, $minPhp, '<')) {
+            throw new RuntimeException('Run the server requires PHP version > 7.1! current is ' . PHP_VERSION);
         }
 
         if (!extension_loaded('swoole')) {
             throw new RuntimeException("Run the server, extension 'swoole' is required!");
         }
 
-        if (SWOOLE_VERSION_ID < 40300) {
-            throw new RuntimeException("Run the server, swoole version '4.3+' is required!");
+        if (version_compare(SWOOLE_VERSION, $minSwoole, '<')) {
+            throw new RuntimeException('Run the server requires swoole version > 4.3.0! current is ' . SWOOLE_VERSION);
         }
 
         $conflicts = [

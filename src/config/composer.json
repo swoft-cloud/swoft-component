@@ -10,7 +10,7 @@
   "license": "Apache-2.0",
   "require": {
     "php": ">7.1",
-    "vlucas/phpdotenv": "^2.5",
+    "vlucas/phpdotenv": "^3.4",
     "symfony/yaml": "^4.2",
     "swoft/stdlib": "~2.0.0"
   },
