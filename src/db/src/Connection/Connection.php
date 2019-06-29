@@ -5,6 +5,7 @@ namespace Swoft\Db\Connection;
 
 use Closure;
 use DateTimeInterface;
+use Exception;
 use Generator;
 use InvalidArgumentException;
 use PDO;
@@ -755,11 +756,29 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param Closure $callback
      * @param int     $attempts
      *
-     * @return mixed|void
+     * @return mixed
+     * @throws ContainerException
+     * @throws Throwable
      */
     public function transaction(Closure $callback, $attempts = 1)
     {
+        for ($currentAttempt = 1; $currentAttempt <= $attempts; $currentAttempt++) {
+            $this->beginTransaction();
 
+            // We'll simply execute the given callback within a try / catch block and if we
+            // catch any exception we can rollback this transaction so that none of this
+            // gets actually persisted to a database or stored in a permanent fashion.
+            try {
+                return tap($callback($this), function () {
+                    $this->commit();
+                });
+            } catch (Throwable $e) {
+                $this->rollBack();
+
+                throw $e;
+            }
+        }
+        return false;
     }
 
     /**

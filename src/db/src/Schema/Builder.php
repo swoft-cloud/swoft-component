@@ -361,16 +361,16 @@ class Builder
      *
      * @param string  $table
      * @param Closure $callback
-     * @param bool    $ifNotExist
+     * @param bool    $ifNotExists
      *
      * @throws ContainerException
      * @throws DbException
      * @throws ReflectionException
      */
-    public function create(string $table, Closure $callback, bool $ifNotExist = false)
+    public function create(string $table, Closure $callback, bool $ifNotExists = false)
     {
-        $this->build(tap($this->createBlueprint($table), function (Blueprint $blueprint) use ($callback, $ifNotExist) {
-            $blueprint->create($ifNotExist);
+        $this->build(tap($this->createBlueprint($table), function (Blueprint $blueprint) use ($callback, $ifNotExists) {
+            $blueprint->create($ifNotExists);
 
             $callback($blueprint);
         }));
@@ -386,7 +386,7 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function createIfNotExist(string $table, Closure $callback)
+    public function createIfNotExists(string $table, Closure $callback)
     {
         $this->build(tap($this->createBlueprint($table), function (Blueprint $blueprint) use ($callback) {
             $blueprint->create(true);
@@ -582,14 +582,8 @@ class Builder
     {
         $connection = $this->getConnection();
         $db         = $connection->getSelectDb() ?: $connection->getDb();
-
-        /* @var ConnectionManager $cm */
-        $cm = bean(ConnectionManager::class);
-        // not transaction status
-        if ($cm->isTransaction($this->poolName) === false) {
-            // release
-            $connection->release();
-        }
+        // release
+        $connection->release();
 
         return $db;
     }

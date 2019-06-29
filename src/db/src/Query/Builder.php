@@ -769,10 +769,15 @@ class Builder implements PrototypeInterface
         }
 
         // If the value is "null", we will just assume the developer wants to add a
-        // where null clause to the query. So, we will allow a short-cut here to
+        // where null clause to the query. so, we will allow a short-cut here to
         // that method for convenience so the developer doesn't have to check.
         if (is_null($value)) {
             return $this->whereNull($column, $boolean, $operator !== '=');
+        }
+
+        // If the value is array, we will auto convert "wherein"
+        if (is_array($value)) {
+            return $this->whereIn($column, $value, $boolean, $operator !== '=');
         }
 
         // If the column is making a JSON reference we'll check to see if the value
@@ -2934,6 +2939,27 @@ class Builder implements PrototypeInterface
     }
 
     /**
+     * Batch update records
+     *
+     * @param array  $values
+     * @param string $primary
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function batchUpdateByIds(array $values, string $primary = 'id')
+    {
+        $affectedRows = $this->getConnection()->update(
+            $this->grammar->compileBatchUpdateByIds($this, $values, $primary),
+            []
+        );
+
+        return $affectedRows;
+    }
+
+    /**
      * Insert a new record and get the value of the primary key.
      *
      * @param array       $values
@@ -3250,7 +3276,7 @@ class Builder implements PrototypeInterface
         $connection = DB::connection($this->poolName);
 
         // Select db name
-        if(!empty($this->db)){
+        if (!empty($this->db)) {
             $connection->db($this->db);
         }
 

@@ -52,6 +52,7 @@ class PhpRedisConnector implements ConnectorInterface
         if (!empty($option['serializer'])) {
             $client->setOption(Redis::OPT_SERIALIZER, (string)$option['serializer']);
         }
+
         return $client;
     }
 
