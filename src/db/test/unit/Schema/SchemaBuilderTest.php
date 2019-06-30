@@ -71,13 +71,14 @@ class SchemaBuilderTest extends TestCase
 
         Schema::create($table, function (Blueprint $blueprint) {
             $blueprint->comment('test table');
-
+            $blueprint->json('test_json')->after('create_time');
             $blueprint->integer('id')->primary();
             $blueprint->bigInteger('uid')->index();
-            $blueprint->tinyInteger('status')->index('idx_status');
+            $blueprint->tinyInteger('status')->index('idx_status')->after('id');
             $blueprint->uuid('uuid')->unique();
-            $blueprint->integer('create_time');
+            $blueprint->integer('create_time')->after('id');
             $blueprint->index(['uid', 'id']);
+            $blueprint->jsonb('test_json_1');
             $blueprint->unique(['uuid', 'id'], 'unq_uuid_id');
         });
 

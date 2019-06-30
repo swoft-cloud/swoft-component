@@ -113,17 +113,16 @@ class Blueprint
     /**
      * Execute the blueprint against the database.
      *
-     * @param Connection $connection
-     * @param Grammar    $grammar
+     * @param Builder $builder
      *
      * @throws ContainerException
-     * @throws ReflectionException
      * @throws DbException
+     * @throws ReflectionException
      */
-    public function build(Connection $connection, Grammar $grammar)
+    public function build(Builder $builder)
     {
-        foreach ($this->toSql($connection, $grammar) as $statement) {
-            $connection->statement($statement);
+        foreach ($this->toSql($builder->getConnection(), $builder->grammar) as $statement) {
+            $builder->getConnection()->statement($statement);
         }
     }
 
@@ -153,7 +152,7 @@ class Blueprint
                 }
             }
         }
-
+        $connection->release();
         return $statements;
     }
 

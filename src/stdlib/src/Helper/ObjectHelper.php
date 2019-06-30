@@ -106,7 +106,7 @@ class ObjectHelper
                     break;
                 case 'array':
                     if (is_string($value)) {
-                        $value = json_decode($value, true, 512, JSON_UNESCAPED_UNICODE) ?: [];
+                        $value = json_decode($value, true) ?: [];
                     }
                     $value = (array)$value;
                     break;

@@ -277,10 +277,6 @@ class Collection extends BaseCollection
     }
 
     /**
-     * The following methods are intercepted to always return base collections.
-     */
-
-    /**
      * Get an array with the values of a given key.
      *
      * @param string      $value
