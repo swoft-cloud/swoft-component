@@ -125,10 +125,7 @@ class HttpDispatcher extends Dispatcher
         $router    = BeanFactory::getSingleton('httpRouter');
         $routeData = $router->match($uriPath, $method);
 
-        // Save matched route data to context
-        context()->set(Request::ROUTER_ATTRIBUTE, $routeData);
-
-        // Set router
+        // Save matched route data to request
         $request = $request->withAttribute(Request::ROUTER_ATTRIBUTE, $routeData);
         context()->setRequest($request);
 

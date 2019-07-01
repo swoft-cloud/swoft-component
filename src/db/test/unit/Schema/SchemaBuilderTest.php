@@ -81,7 +81,7 @@ class SchemaBuilderTest extends TestCase
             $blueprint->unique(['uuid', 'id'], 'unq_uuid_id');
         });
 
-        Schema::createIfNotExist($table, function (Blueprint $blueprint) {
+        Schema::createIfNotExists($table, function (Blueprint $blueprint) {
             $blueprint->integer('id');
             $blueprint->integer('create_time');
         });

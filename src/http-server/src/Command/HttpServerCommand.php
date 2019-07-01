@@ -40,8 +40,8 @@ class HttpServerCommand extends BaseServerCommand
      * @throws ContainerException
      * @throws ServerException
      * @example
-     *  {fullCommand}
-     *  {fullCommand} -d
+     *   {fullCommand}
+     *   {fullCommand} -d
      *
      */
     public function start(): void

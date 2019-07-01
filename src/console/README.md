@@ -12,7 +12,7 @@ composer require swoft/console
 
 ## Document
 
-Please see [document site](https://doc.swoft.org)
+Please see [document site](https://swoft.org/docs)
 
 ## LICENSE
 

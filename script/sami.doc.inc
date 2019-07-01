@@ -7,7 +7,7 @@ use Symfony\Component\Finder\Finder;
 $iterator = Finder::create()
   ->files()
   ->name('*.php')
-  ->notName('routes.php')
+  // ->notName('routes.php')
   ->exclude(['test'])
   ->in([
     __DIR__ . '/src/'

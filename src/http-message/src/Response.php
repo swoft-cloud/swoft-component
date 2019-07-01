@@ -28,6 +28,13 @@ class Response implements ResponseInterface
     use CookiesTrait, MessageTrait, PrototypeTrait;
 
     /**
+     * Mark response has been sent. deny repeat send
+     *
+     * @var bool
+     */
+    private $sent = false;
+
+    /**
      * @var string
      */
     protected $reasonPhrase = '';
@@ -109,10 +116,11 @@ class Response implements ResponseInterface
      */
     public static function new(CoResponse $coResponse): self
     {
+        /** @var Response $self */
         $self = self::__instance();
 
         // $self = \bean('httpResponse');
-        /** @var Response $self */
+        $self->sent       = false;
         $self->coResponse = $coResponse;
 
         return $self;
@@ -160,6 +168,9 @@ class Response implements ResponseInterface
     {
         // Is send file
         if ($this->filePath) {
+            $this->sent = true;
+
+            // Do send file
             $this->coResponse->header(ContentType::KEY, $this->fileType);
             $this->coResponse->sendfile($this->filePath);
             return;
@@ -206,6 +217,9 @@ class Response implements ResponseInterface
         // Set body
         $content = $response->getBody()->getContents();
         $coResponse->end($content);
+
+        // Ensure sent
+        $this->sent = true;
     }
 
     /**
@@ -574,5 +588,13 @@ class Response implements ResponseInterface
     public function isServerError(): bool
     {
         return $this->getStatusCode() >= 500 && $this->getStatusCode() < 600;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSent(): bool
+    {
+        return $this->sent;
     }
 }

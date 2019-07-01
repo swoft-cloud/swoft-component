@@ -293,13 +293,13 @@ class Blueprint
     /**
      * Indicate that the table needs to be created.
      *
-     * @param bool $ifNotExist
+     * @param bool $ifNotExists
      *
      * @return Fluent
      */
-    public function create(bool $ifNotExist)
+    public function create(bool $ifNotExists)
     {
-        return $this->addCommand('create', compact('ifNotExist'));
+        return $this->addCommand('create', compact('ifNotExists'));
     }
 
     /**

@@ -32,12 +32,12 @@ final class ErrorRegister
     }
 
     /**
-     * @param ErrorHandlers $chain
+     * @param ErrorManager $chain
      *
      * @return int
      * @throws ContainerException
      */
-    public static function register(ErrorHandlers $chain): int
+    public static function register(ErrorManager $chain): int
     {
         foreach (self::$handlers as $handlerClass => $exceptions) {
             /** @var ErrorHandlerInterface $handler */

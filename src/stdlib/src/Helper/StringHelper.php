@@ -736,4 +736,20 @@ class StringHelper
 
         return $path;
     }
+
+    /**
+     * @param array|string $queryData
+     *
+     * @return string
+     */
+    public static function buildQuery($queryData): string
+    {
+        // is string
+        if (is_string($queryData)) {
+            return $queryData;
+        }
+
+        // array: k-v map
+        return preg_replace('/%5B(?:\d|[1-9]\d+)%5D=/', '=', http_build_query($queryData));
+    }
 }

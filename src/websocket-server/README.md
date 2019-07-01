@@ -1,6 +1,6 @@
-# Swoft WebSocket Server
+# Swoft Websocket Server
 
-WebSocket server component for swoft
+Swoft Websocket server Component
 
 ## Install
 
@@ -10,17 +10,16 @@ WebSocket server component for swoft
 composer require swoft/websocket-server
 ```
 
-## Document
+## Resources
 
-Please see [document site](https://doc.swoft.org)
+* [Documentation](https://swoft.org/docs)
+* [Contributing](https://github.com/swoft-cloud/swoft/blob/master/CONTRIBUTING.md)
+* [Report Issues][issues] and [Send Pull Requests][pulls] in the [Main Swoft Repository][repository]
 
-## Unit testing
-
-```bash
-phpunit 
-```
+[pulls]: https://github.com/swoft-cloud/swoft-component/pulls
+[repository]: https://github.com/swoft-cloud/swoft
+[issues]: https://github.com/swoft-cloud/swoft/issues
 
 ## LICENSE
 
 The Component is open-sourced software licensed under the [Apache license](LICENSE).
-

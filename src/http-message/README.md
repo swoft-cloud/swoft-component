@@ -12,7 +12,7 @@ composer require swoft/http-message
 
 ## Resources
 
-* [Documentation](https://doc.swoft.org)
+* [Documentation](https://swoft.org/docs)
 * [Contributing](https://github.com/swoft-cloud/swoft/blob/master/CONTRIBUTING.md)
 * [Report Issues][issues] and [Send Pull Requests][pulls] in the [Main Swoft Repository][repository]
 

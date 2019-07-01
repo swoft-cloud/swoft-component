@@ -1792,7 +1792,8 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
                 return true;
             }
             $exists[] = $id;
-            return true;
+
+            return false;
         });
     }
 

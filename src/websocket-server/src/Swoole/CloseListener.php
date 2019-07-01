@@ -16,6 +16,7 @@ use Swoft\WebSocket\Server\WsErrorDispatcher;
 use Swoft\WebSocket\Server\WsServerEvent;
 use Swoole\Server;
 use Throwable;
+use function server;
 
 /**
  * Class CloseListener
@@ -51,16 +52,16 @@ class CloseListener implements CloseInterface
         Session::bindCo($sid);
 
         /** @var Connection $conn */
-        $conn  = Session::get();
-        $total = \server()->count() - 1;
+        $conn  = Session::mustGet();
+        $total = server()->count() - 1;
 
-        \server()->log("Close: conn#{$fd} has been closed. server conn count $total", [], 'debug');
+        server()->log("Close: conn#{$fd} has been closed. server conn count $total", [], 'debug');
         if (!$meta = $conn->getMetadata()) {
-            \server()->log("Close: conn#{$fd} connection meta info has been lost");
+            server()->log("Close: conn#{$fd} connection meta info has been lost");
             return;
         }
 
-        \server()->log("Close: conn#{$fd} meta info:", $meta, 'debug');
+        server()->log("Close: conn#{$fd} meta info:", $meta, 'debug');
 
         try {
             // Handshake successful callback close handle
@@ -73,7 +74,7 @@ class CloseListener implements CloseInterface
             // Call on close callback
             Swoft::trigger(WsServerEvent::AFTER_CLOSE, $fd, $server);
         } catch (Throwable $e) {
-            \server()->log("Close: conn#{$fd} error on handle close, ERR: " . $e->getMessage(), [], 'error');
+            server()->log("Close: conn#{$fd} error on handle close, ERR: " . $e->getMessage(), [], 'error');
             Swoft::trigger(WsServerEvent::CLOSE_ERROR, $e, $fd);
 
             /** @var WsErrorDispatcher $errDispatcher */

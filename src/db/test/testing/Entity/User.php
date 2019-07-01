@@ -32,6 +32,27 @@ class User extends Model
     private $name;
 
     /**
+     * @Column()
+     * @var int|null
+     */
+    private $hahh;
+
+    /**
+     * @return null|int
+     */
+    public function getHahh(): ?int
+    {
+        return $this->hahh;
+    }
+
+    /**
+     * @param null|int $hahh
+     */
+    public function setHahh(?int $hahh): void
+    {
+        $this->hahh = $hahh;
+    }
+    /**
      * @Column(name="password", hidden=true)
      * @var string|null
      */
@@ -59,6 +80,31 @@ class User extends Model
      * @var string|null
      */
     private $testHump;
+
+    /**
+     *
+     *
+     * @Column(name="test_json", prop="testJson")
+     * @var array|null
+     */
+    private $testJson;
+
+    /**
+     * @return null|array
+     */
+    public function getTestJson(): ?array
+    {
+        return $this->testJson;
+    }
+
+    /**
+     * @param null|array $testJson
+     */
+    public function setTestJson(?array $testJson): void
+    {
+        $this->testJson = $testJson;
+    }
+
 
     /**
      * @return null|string

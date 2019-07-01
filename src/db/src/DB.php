@@ -24,7 +24,6 @@ use Throwable;
  * @see   Connection
  * @since 2.0
  *
- * @method static Expression raw($value)
  * @method static mixed selectOne(string $query, $bindings = [], $useReadPdo = true)
  * @method static array select(string $query, array $bindings = [], bool $useReadPdo = true)
  * @method static Generator cursor(string $query, array $bindings = [], bool $useReadPdo = true)
@@ -48,7 +47,6 @@ class DB
      * @var array
      */
     private static $passthru = [
-        'raw',
         'selectOne',
         'select',
         'cursor',
@@ -131,6 +129,20 @@ class DB
 
         $connection = self::connection();
         return $connection->$name(...$arguments);
+    }
+
+    /**
+     * Get a new raw query expression.
+     *
+     * @param $value
+     *
+     * @return Expression
+     * @throws ContainerException
+     * @throws ReflectionException
+     */
+    public static function raw($value): Expression
+    {
+        return Expression::new($value);
     }
 
     /**
