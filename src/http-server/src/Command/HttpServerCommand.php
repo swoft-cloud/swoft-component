@@ -16,6 +16,7 @@ use Swoft\Http\Server\HttpServer;
 use Swoft\Server\Command\BaseServerCommand;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\ServerInterface;
+use Swoft\Stdlib\Helper\Sys;
 
 /**
  * Provide some commands to manage the swoft HTTP Server
@@ -35,13 +36,13 @@ class HttpServerCommand extends BaseServerCommand
      * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
      * @CommandOption("daemon", short="d", desc="Run server on the background", type="bool", default="false")
      *
+     * @throws ReflectionException
+     * @throws ContainerException
+     * @throws ServerException
      * @example
      *  {fullCommand}
      *  {fullCommand} -d
      *
-     * @throws ReflectionException
-     * @throws ContainerException
-     * @throws ServerException
      */
     public function start(): void
     {
@@ -159,11 +160,11 @@ class HttpServerCommand extends BaseServerCommand
      * @CommandMapping(usage="{fullCommand} [-d|--daemon]",)
      * @CommandOption("daemon", short="d", desc="Run server on the background")
      *
+     * @throws ReflectionException
+     * @throws ContainerException
      * @example
      *  {fullCommand}
      *  {fullCommand} -d
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function restart(): void
     {
@@ -175,7 +176,7 @@ class HttpServerCommand extends BaseServerCommand
         }
 
         output()->writef('<success>Server HTTP reload success !</success>');
-        $server->restart();
+        $server->startWithDaemonize();
     }
 
     /**
@@ -185,12 +186,14 @@ class HttpServerCommand extends BaseServerCommand
      */
     private function createServer(): HttpServer
     {
-        // check env
         // EnvHelper::check();
-        $script = input()->getScript();
+        $script  = input()->getScript();
+        $command = $this->getFullCommand();
+
         /** @var HttpServer $server */
         $server = bean('httpServer');
         $server->setScriptFile(Swoft::app()->getPath($script));
+        $server->setFullCommand($command);
 
         return $server;
     }

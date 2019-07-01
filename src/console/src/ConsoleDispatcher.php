@@ -13,6 +13,7 @@ use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
 use Swoft\Context\Context;
 use Swoft\Contract\DispatcherInterface;
+use Swoft\Log\Helper\CLog;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoft\SwoftEvent;
 use Swoole\Event;
@@ -74,7 +75,7 @@ class ConsoleDispatcher implements DispatcherInterface
 
             $this->after($method);
         } catch (Throwable $e) {
-            // TODO: throw error
+            CLog::error('Console error is %s(%s %d)', $e->getMessage(), $e->getFile(), $e->getLine());
             throw $e;
         } finally {
             // Defer

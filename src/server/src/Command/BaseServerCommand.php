@@ -4,6 +4,7 @@ namespace Swoft\Server\Command;
 
 use function input;
 use Swoft\Server\Server;
+use Swoft\Stdlib\Helper\Sys;
 
 /**
  * Class BaseServerCommand
@@ -22,5 +23,25 @@ abstract class BaseServerCommand
         if ($asDaemon) {
             $server->setDaemonize();
         }
+    }
+
+    /**
+     * @return string
+     */
+    protected function getFullCommand(): string
+    {
+        // Full script
+        $script = input()->getScript();
+
+        // Full command
+        $command = input()->getFullScript();
+
+        $phpBin = 'php';
+        [$ok, $ret,] = Sys::run('which php');
+        if ($ok === 0) {
+            $phpBin = \trim($ret);
+        }
+
+        return sprintf('%s %s %s', $phpBin, $script, $command);
     }
 }
