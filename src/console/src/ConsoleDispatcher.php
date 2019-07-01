@@ -2,8 +2,6 @@
 
 namespace Swoft\Console;
 
-use function get_class;
-use function get_parent_class;
 use ReflectionException;
 use ReflectionType;
 use Swoft;
@@ -14,11 +12,12 @@ use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
 use Swoft\Context\Context;
 use Swoft\Contract\DispatcherInterface;
-use Swoft\Log\Helper\CLog;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoft\SwoftEvent;
 use Swoole\Event;
 use Throwable;
+use function get_class;
+use function get_parent_class;
 
 /**
  * Class ConsoleDispatcher
