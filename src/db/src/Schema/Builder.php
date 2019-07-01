@@ -355,6 +355,16 @@ class Builder
     }
 
     /**
+     * Check database exists
+     *
+     * @return bool
+     */
+    public function checkDatabaseExists(): bool
+    {
+        return true;
+    }
+
+    /**
      * Modify a table on the schema.
      *
      * @param string  $table
