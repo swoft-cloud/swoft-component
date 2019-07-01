@@ -6,11 +6,11 @@ use Swoft\Error\Contract\ErrorHandlerInterface;
 use Throwable;
 
 /**
- * Class TcpConnectErrorHandlerInterface
+ * Class TcpCloseErrorHandlerInterface
  *
  * @since 2.0.3
  */
-interface TcpConnectErrorHandlerInterface extends ErrorHandlerInterface
+interface TcpCloseErrorHandlerInterface extends ErrorHandlerInterface
 {
     /**
      * @param Throwable $e

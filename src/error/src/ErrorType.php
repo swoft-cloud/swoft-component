@@ -26,7 +26,7 @@ final class ErrorType
 
     // Tcp server
     public const TCP_CNT = 31;
-    public const TCP_RCE = 32;
+    public const TCP_RCV = 32;
     public const TCP_CLS = 33;
 
     public const SYS = 85;

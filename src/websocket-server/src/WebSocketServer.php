@@ -52,6 +52,8 @@ class WebSocketServer extends Server
      */
     public function pushFrame(Frame $frame): bool
     {
+        /** @noinspection PhpParamsInspection */
+        /** @noinspection PhpStrictTypeCheckingInspection */
         return $this->swooleServer->push($frame);
     }
 
