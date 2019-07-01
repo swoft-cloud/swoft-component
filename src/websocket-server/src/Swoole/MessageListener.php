@@ -61,7 +61,7 @@ class MessageListener implements MessageInterface
 
             Swoft::trigger(WsServerEvent::MESSAGE_AFTER, $fd, $server, $frame);
         } catch (Throwable $e) {
-            Swoft::trigger(WsServerEvent::HANDSHAKE_ERROR, $e, $frame);
+            Swoft::trigger(WsServerEvent::MESSAGE_ERROR, $e, $frame);
 
             \server()->log("Message: conn#{$fd} error: " . $e->getMessage(), [], 'error');
 

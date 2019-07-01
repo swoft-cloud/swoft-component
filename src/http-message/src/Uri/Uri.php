@@ -804,6 +804,14 @@ class Uri implements UriInterface
     }
 
     /**
+     * @return array
+     */
+    public function getParams(): array
+    {
+        return $this->params;
+    }
+
+    /**
      * @param array $match
      *
      * @return string
