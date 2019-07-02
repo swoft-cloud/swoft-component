@@ -19,11 +19,11 @@ use function input;
 use function output;
 
 /**
- * Provide some commands to manage the swoft HTTP Server
+ * Provide some commands to manage the swoft HTTP server
  *
  * @since 2.0
  *
- * @Command("http", alias="httpserver,httpServer,http-server", coroutine=false)
+ * @Command("http", alias="httpserver,httpServer", coroutine=false)
  * @example
  *  {fullCmd}:start     Start the http server
  *  {fullCmd}:stop      Stop the http server

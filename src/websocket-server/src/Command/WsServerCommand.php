@@ -23,8 +23,8 @@ use function output;
  *
  * @Command("ws",
  *     coroutine=false,
- *     alias="ws-server,wsserver,websocket",
- *     desc="provide some commands to operate swoft WebSocket Server"
+ *     alias="wsserver,websocket",
+ *     desc="provide some commands to manage swoft WebSocket server"
  * )
  */
 class WsServerCommand extends BaseServerCommand

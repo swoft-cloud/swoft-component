@@ -33,10 +33,10 @@ class AppInitCompleteListener implements EventHandlerInterface
         // Register tcp routes
 
         /** @var Router $router */
-        $router = bean('wsRouter');
+        $router = bean('tcpRouter');
 
         RouteRegister::registerTo($router);
 
-        CLog::info('Tcp server route registered(module %d, message command %d)', $router->getModuleCount(), $router->getCounter());
+        CLog::info('Tcp server route registered(routes %d)', $router->getCount());
     }
 }
