@@ -40,6 +40,11 @@ class ServiceServer extends Server
     /**
      * @var string
      */
+    protected $commandFile = '@runtime/swoft-rpc.command';
+
+    /**
+     * @var string
+     */
     protected $pidFile = '@runtime/swoft-rpc.pid';
 
     /**

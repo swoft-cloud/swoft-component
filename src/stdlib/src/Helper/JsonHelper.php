@@ -23,8 +23,8 @@ class JsonHelper
      *                        into associative arrays.
      * @param int    $depth   User specified recursion depth.
      * @param int    $options Bitmask of JSON decode options.
+     *
      * @return mixed
-     * @throws InvalidArgumentException if the JSON cannot be decoded.
      * @link http://www.php.net/manual/en/function.json-decode.php
      */
     public static function decode(string $json, bool $assoc = false, int $depth = 512, int $options = 0)

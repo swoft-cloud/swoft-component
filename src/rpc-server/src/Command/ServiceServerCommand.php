@@ -179,7 +179,7 @@ class ServiceServerCommand extends BaseServerCommand
         }
 
         output()->writef('<success>RPC server reload success !</success>');
-        $server->restart();
+        $server->startWithDaemonize();
     }
 
     /**
@@ -192,10 +192,12 @@ class ServiceServerCommand extends BaseServerCommand
         // check env
         // EnvHelper::check();
         $script = input()->getScript();
+        $command = $this->getFullCommand();
 
         /** @var ServiceServer $server */
         $server = bean('rpcServer');
         $server->setScriptFile(Swoft::app()->getPath($script));
+        $server->setFullCommand($command);
 
         return $server;
     }

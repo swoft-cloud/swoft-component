@@ -169,7 +169,7 @@ class WsServerCommand extends BaseServerCommand
         }
 
         // Restart server
-        $server->restart();
+        $server->startWithDaemonize();
     }
 
     /**
@@ -183,10 +183,13 @@ class WsServerCommand extends BaseServerCommand
         // EnvHelper::check();
 
         // http server初始化
-        $script = input()->getScript();
+        $script  = input()->getScript();
+        $command = $this->getFullCommand();
 
+        /* @var WebSocketServer $server */
         $server = bean('wsServer');
         $server->setScriptFile($script);
+        $server->setFullCommand($command);
 
         return $server;
     }
