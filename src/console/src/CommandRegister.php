@@ -2,14 +2,14 @@
 
 namespace Swoft\Console;
 
-use function array_merge;
 use ReflectionException;
-use function strlen;
 use Swoft;
 use Swoft\Annotation\Exception\AnnotationException;
 use Swoft\Console\Helper\DocBlock;
 use Swoft\Console\Router\Router;
 use Swoft\Stdlib\Helper\Str;
+use function array_merge;
+use function strlen;
 use function ucfirst;
 
 /**
@@ -57,6 +57,8 @@ final class CommandRegister
      * @param string $class
      * @param string $method
      * @param array  $route
+     *
+     * @throws AnnotationException
      */
     public static function addRoute(string $class, string $method, array $route): void
     {
