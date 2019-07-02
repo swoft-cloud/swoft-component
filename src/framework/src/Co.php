@@ -130,6 +130,7 @@ class Co
         if ($result === false) {
             throw new SwoftException(sprintf('Read(%s) file error!', $filename));
         }
+
         return $result;
     }
 

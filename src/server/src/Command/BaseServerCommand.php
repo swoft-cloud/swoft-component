@@ -1,10 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Server\Command;
 
-use function input;
 use Swoft\Server\Server;
 use Swoft\Stdlib\Helper\Sys;
+use function input;
+use function trim;
 
 /**
  * Class BaseServerCommand
@@ -30,7 +31,7 @@ abstract class BaseServerCommand
      */
     protected function getFullCommand(): string
     {
-        // Full script
+        // Script file
         $script = input()->getScript();
 
         // Full command
@@ -39,7 +40,7 @@ abstract class BaseServerCommand
         $phpBin = 'php';
         [$ok, $ret,] = Sys::run('which php');
         if ($ok === 0) {
-            $phpBin = \trim($ret);
+            $phpBin = trim($ret);
         }
 
         return sprintf('%s %s %s', $phpBin, $script, $command);

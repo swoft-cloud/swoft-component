@@ -2,9 +2,6 @@
 
 namespace Swoft\Http\Server\Command;
 
-use function bean;
-use function input;
-use function output;
 use ReflectionException;
 use Swoft;
 use Swoft\Bean\Exception\ContainerException;
@@ -16,7 +13,10 @@ use Swoft\Http\Server\HttpServer;
 use Swoft\Server\Command\BaseServerCommand;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\ServerInterface;
-use Swoft\Stdlib\Helper\Sys;
+use function ucfirst;
+use function bean;
+use function input;
+use function output;
 
 /**
  * Provide some commands to manage the swoft HTTP Server
@@ -78,13 +78,15 @@ class HttpServerCommand extends BaseServerCommand
             ],
         ];
 
-        // Listener
+        // Port Listeners
         $listeners = $server->getListener();
         foreach ($listeners as $name => $listener) {
             if (!$listener instanceof ServerInterface) {
                 continue;
             }
-            $panel[$name] = [
+
+            $upperName = ucfirst($name);
+            $panel[$upperName] = [
                 'listen' => sprintf('%s:%s', $listener->getHost(), $listener->getPort()),
                 'type'   => $listener->getTypeName()
             ];
@@ -92,7 +94,7 @@ class HttpServerCommand extends BaseServerCommand
 
         Show::panel($panel);
 
-        output()->writef('<success>HTTP server start success !</success>');
+        output()->writeln('<success>HTTP server start success !</success>');
 
         // Start the server
         $server->start();
