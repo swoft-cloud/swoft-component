@@ -23,7 +23,20 @@ use const WEBSOCKET_OPCODE_TEXT;
  */
 class WebSocketServer extends Server
 {
+    /**
+     * @var string
+     */
     protected static $serverType = 'WebSocket';
+
+    /**
+     * @var string
+     */
+    protected $commandFile = '@runtime/swoft-ws.command';
+
+    /**
+     * @var string
+     */
+    protected $pidFile = '@runtime/swoft-ws.pid';
 
     /**
      * Start swoole server

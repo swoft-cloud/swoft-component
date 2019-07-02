@@ -2,6 +2,7 @@
 
 namespace Swoft\Bean\Concern;
 
+use function bean;
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
 
@@ -21,6 +22,6 @@ trait PrototypeTrait
      */
     protected static function __instance()
     {
-        return \bean(static::class);
+        return bean(static::class);
     }
 }

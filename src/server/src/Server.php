@@ -7,6 +7,7 @@ use Swoft;
 use Swoft\Co;
 use Swoft\Console\Console;
 use Swoft\Http\Server\HttpServer;
+use Swoft\Log\Helper\CLog;
 use Swoft\Server\Event\ServerStartEvent;
 use Swoft\Server\Event\WorkerEvent;
 use Swoft\Server\Exception\ServerException;
@@ -16,6 +17,7 @@ use Swoft\Stdlib\Helper\Dir;
 use Swoft\Stdlib\Helper\Str;
 use Swoft\Stdlib\Helper\Sys;
 use Swoft\WebSocket\Server\WebSocketServer;
+use Swoole\Coroutine;
 use Swoole\Process;
 use Swoole\Server as CoServer;
 use Throwable;
@@ -89,6 +91,11 @@ abstract class Server implements ServerInterface
      * @var array
      */
     protected $setting = [];
+
+    /**
+     * @var string
+     */
+    protected $commandFile = '@runtime/swoft.command';
 
     /**
      * Pid file
@@ -181,6 +188,11 @@ abstract class Server implements ServerInterface
     private $uniqid = '';
 
     /**
+     * @var string
+     */
+    private $fullCommand = '';
+
+    /**
      * Server constructor
      */
     public function __construct()
@@ -232,8 +244,13 @@ abstract class Server implements ServerInterface
         Dir::make(dirname($pidFile));
         file_put_contents($pidFile, $pidStr);
 
+        // Save pull command to file
+        $comamndFile = alias($this->commandFile);
+        Dir::make(dirname($comamndFile));
+        file_put_contents($comamndFile, $this->fullCommand);
+
         // Listen signal: Ctrl+C (SIGINT = 2)
-        Process::signal(2, function() {
+        Process::signal(2, function () {
             Console::colored("\nStop server by CTRL+C");
             $this->swooleServer->shutdown();
         });
@@ -289,6 +306,9 @@ abstract class Server implements ServerInterface
     {
         // Delete pid file
         ServerHelper::removePidFile(alias($this->pidFile));
+
+        // Delete command file
+        ServerHelper::removePidFile(alias($this->commandFile));
 
         // Trigger event
         Swoft::trigger(new ServerStartEvent(SwooleEvent::SHUTDOWN, $server));
@@ -491,6 +511,22 @@ abstract class Server implements ServerInterface
     /**
      * @return string
      */
+    public function getFullCommand(): string
+    {
+        return $this->fullCommand;
+    }
+
+    /**
+     * @param string $fullCommand
+     */
+    public function setFullCommand(string $fullCommand): void
+    {
+        $this->fullCommand = $fullCommand;
+    }
+
+    /**
+     * @return string
+     */
     public function getHost(): string
     {
         return $this->host;
@@ -645,13 +681,32 @@ abstract class Server implements ServerInterface
     /**
      * Restart server
      */
-    public function restart(): void
+    public function startWithDaemonize(): void
     {
         // Restart default is daemon
         $this->setDaemonize();
 
         // Start server
         $this->start();
+    }
+
+    /**
+     * Quick restart
+     */
+    public function restart(): void
+    {
+        if ($this->isRunning()) {
+            // Restart command
+            $command = Co::readFile(alias($this->commandFile));
+
+            // Stop server
+            $this->stop();
+
+            // Exe restart shell
+            Coroutine::exec($command);
+
+            CLog::info('Restart success(%s)!', $command);
+        }
     }
 
     /**
@@ -686,7 +741,9 @@ abstract class Server implements ServerInterface
 
         // SIGTERM = 15
         if (ServerHelper::killAndWait($pid, 15, $this->pidName)) {
-            return ServerHelper::removePidFile(alias($this->pidFile));
+            $rmPidFile     = ServerHelper::removePidFile(alias($this->pidFile));
+            $rmCommandFile = ServerHelper::removePidFile(alias($this->commandFile));
+            return $rmPidFile && $rmCommandFile;
         }
 
         return false;
@@ -824,6 +881,22 @@ abstract class Server implements ServerInterface
     public function getSwooleServer()
     {
         return $this->swooleServer;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCommandFile(): string
+    {
+        return $this->commandFile;
+    }
+
+    /**
+     * @param string $commandFile
+     */
+    public function setCommandFile(string $commandFile): void
+    {
+        $this->commandFile = $commandFile;
     }
 
     /**

@@ -11,8 +11,9 @@ interface InputInterface
     /**
      * 读取输入信息
      *
-     * @param  string $question 若不为空，则先输出文本消息
-     * @param  bool   $nl true 会添加换行符 false 原样输出，不添加换行符
+     * @param string $question 若不为空，则先输出文本消息
+     * @param bool   $nl       true 会添加换行符 false 原样输出，不添加换行符
+     *
      * @return string
      */
     public function read(string $question = '', bool $nl = false): string;

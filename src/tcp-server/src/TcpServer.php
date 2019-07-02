@@ -18,6 +18,16 @@ use function array_merge;
 class TcpServer extends Server
 {
     /**
+     * @var string
+     */
+    protected $commandFile = '@runtime/swoft-ws.command';
+
+    /**
+     * @var string
+     */
+    protected $pidFile = '@runtime/swoft-ws.pid';
+
+    /**
      * Start server
      *
      * @throws ContainerException
