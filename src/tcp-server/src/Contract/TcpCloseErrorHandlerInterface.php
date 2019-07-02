@@ -14,6 +14,7 @@ interface TcpCloseErrorHandlerInterface extends ErrorHandlerInterface
 {
     /**
      * @param Throwable $e
+     * @param int       $fd
      */
-    public function handle(Throwable $e): void;
+    public function handle(Throwable $e, int $fd): void;
 }

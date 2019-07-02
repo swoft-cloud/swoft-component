@@ -15,37 +15,30 @@ use Throwable;
 /**
  * Class TcpErrorDispatcher
  *
- * @since 2.0
- *
+ * @since 2.0.3
  * @Bean()
  */
 class TcpErrorDispatcher
 {
     /**
      * @param Throwable $e
-     * @param Response  $response
+     * @param int       $fd
      *
-     * @return Response
      * @throws ContainerException
      * @throws ReflectionException
      */
-    public function connectError(Throwable $e): void
+    public function connectError(Throwable $e, int $fd): void
     {
         /** @var ErrorManager $handlers */
         $handlers = Swoft::getSingleton(ErrorManager::class);
 
         /** @var TcpConnectErrorHandlerInterface $handler */
         if ($handler = $handlers->matchHandler($e, ErrorType::TCP_CNT)) {
-            $handler->handle($e);
+            $handler->handle($e, $fd);
             return;
         }
 
         $this->debugLog('Connect', $e);
-
-        $error = Error::new($e->getCode(), $e->getMessage(), null);
-
-        $response->setError($error);
-        return $response;
     }
 
     /**
@@ -76,18 +69,19 @@ class TcpErrorDispatcher
 
     /**
      * @param Throwable $e
+     * @param int       $fd
      *
      * @throws ContainerException
      * @throws ReflectionException
      */
-    public function closeError(Throwable $e): void
+    public function closeError(Throwable $e, int $fd): void
     {
         /** @var ErrorManager $handlers */
         $handlers = Swoft::getSingleton(ErrorManager::class);
 
         /** @var Swoft\Tcp\Server\Contract\TcpCloseErrorHandlerInterface $handler */
         if ($handler = $handlers->matchHandler($e, ErrorType::TCP_CLS)) {
-            $handler->handle($e);
+            $handler->handle($e, $fd);
             return;
         }
 
@@ -103,8 +97,7 @@ class TcpErrorDispatcher
      */
     private function debugLog(string $typeName, Throwable $e): void
     {
-        Debug::log(
-            "Tcp %s Error(no handler, %s): %s\nAt File %s line %d\nTrace:\n%s",
+        Debug::log("Tcp %s Error(no handler, %s): %s\nAt File %s line %d\nTrace:\n%s",
             $typeName,
             get_class($e),
             $e->getMessage(),
@@ -112,6 +105,5 @@ class TcpErrorDispatcher
             $e->getLine(),
             $e->getTraceAsString()
         );
-
     }
 }

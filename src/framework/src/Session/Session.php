@@ -123,6 +123,9 @@ class Session
     public static function set(string $sid, SessionInterface $session): void
     {
         self::$sessions[$sid] = $session;
+
+        // Bind cid => sid(fd)
+        self::bindCo($sid);
     }
 
     /**
