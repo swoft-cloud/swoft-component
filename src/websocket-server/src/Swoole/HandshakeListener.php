@@ -70,12 +70,10 @@ class HandshakeListener implements HandshakeInterface
         $ctx  = WsHandshakeContext::new($psr7Req, $psr7Res);
         $conn = Connection::new($fd, $psr7Req, $psr7Res);
 
-        // Bind connection
+        // Bind connection and bind cid => sid(fd)
         Session::set($sid, $conn);
         // Storage context
         Context::set($ctx);
-        // Bind cid => sid(fd)
-        Session::bindCo($sid);
 
         try {
             Swoft::trigger(WsServerEvent::HANDSHAKE_BEFORE, $fd, $request, $response);

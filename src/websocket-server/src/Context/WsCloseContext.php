@@ -2,6 +2,7 @@
 
 namespace Swoft\WebSocket\Server\Context;
 
+use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\ContainerException;
@@ -33,7 +34,7 @@ class WsCloseContext extends AbstractContext
      *
      * @return WsCloseContext
      * @throws ContainerException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public static function new(int $fd, int $reactorId): self
     {
