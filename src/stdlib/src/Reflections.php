@@ -8,7 +8,8 @@ use ReflectionException;
 use ReflectionMethod;
 
 /**
- * Class Reflections - use for cache some common classes reflection info
+ * Class Reflections
+ *
  * @since 2.0
  */
 final class Reflections

@@ -26,8 +26,8 @@ class PhpHelper
     /**
      * Call by callback
      *
-     * @param callable $cb   callback
-     * @param array    $args arguments
+     * @param callable|array $cb   callback
+     * @param array          $args arguments
      *
      * @return mixed
      */

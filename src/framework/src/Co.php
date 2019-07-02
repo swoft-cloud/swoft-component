@@ -2,19 +2,20 @@
 
 namespace Swoft;
 
-use function count;
-use function go;
 use ReflectionException;
-use function sgo;
 use Swoft;
 use Swoft\Context\Context;
+use Swoft\Exception\SwoftException;
 use Swoft\Log\Debug;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoole\Coroutine;
 use Throwable;
+use function count;
+use function sgo;
 
 /**
  * Class Co
+ *
  * @since   2.0
  */
 class Co
@@ -68,7 +69,7 @@ class Co
         $tid = self::tid();
 
         // return coroutine ID for created.
-        return go(function () use ($callable, $tid, $wait) {
+        return Coroutine::create(function () use ($callable, $tid, $wait) {
             try {
                 $id = Coroutine::getCid();
                 // Storage fd
@@ -121,10 +122,15 @@ class Co
      * @param string $filename
      *
      * @return string
+     * @throws SwoftException
      */
     public static function readFile(string $filename): string
     {
-        return Coroutine::readFile($filename);
+        $result = Coroutine::readFile($filename);
+        if ($result === false) {
+            throw new SwoftException(sprintf('Read(%s) file error!', $filename));
+        }
+        return $result;
     }
 
     /**
@@ -148,9 +154,7 @@ class Co
                     $data = PhpHelper::call($callback);
                     $channel->push([$key, $data]);
                 } catch (Throwable $e) {
-                    Debug::log(
-                        'Co multi errro(key=%s) is %s', $key, $e->getMessage()
-                    );
+                    Debug::log('Co multi error(key=%s) is %s', $key, $e->getMessage());
 
                     $channel->push(false);
                 }

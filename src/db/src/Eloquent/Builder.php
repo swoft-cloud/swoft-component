@@ -73,7 +73,7 @@ use Swoft\Stdlib\Helper\PhpHelper;
  * @method Builder whereNested(Closure $callback, string $boolean = 'and')
  * @method Builder forNestedWhere()
  * @method Builder addNestedWhereQuery(QueryBuilder $query, string $boolean = 'and')
- * @method QueryBuilder whereSub(string $column, string $operator, Closure $callback, string $boolean)
+ * @method Builder whereSub(string $column, string $operator, Closure $callback, string $boolean)
  * @method Builder whereExists(Closure $callback, string $boolean = 'and', bool $not = false)
  * @method Builder orWhereExists(Closure $callback, bool $not = false)
  * @method Builder whereNotExists(Closure $callback, string $boolean = 'and')
@@ -102,7 +102,6 @@ use Swoft\Stdlib\Helper\PhpHelper;
  * @method Builder take(int $value)
  * @method Builder limit(int $value)
  * @method Builder forPage(int $page, int $perPage = 15)
- * @method Builder forPageAfterId(int $perPage = 15, int $lastId = null, string $column = 'id')
  * @method array getBindings()
  * @method string toSql()
  * @method bool exists()
@@ -701,6 +700,28 @@ class Builder
         if (empty($this->query->orders) && empty($this->query->unionOrders)) {
             $this->orderBy($this->model->getQualifiedKeyName(), 'asc');
         }
+    }
+
+    /**
+     * Constrain the query to the next "page" of results after a given ID.
+     *
+     * @param int      $perPage
+     * @param int|null $lastId
+     * @param string   $column
+     *
+     * @return static
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function forPageAfterId(int $perPage = 15, int $lastId = null, string $column = ''): self
+    {
+        // If column is null default user primary column name
+        $column = is_null($column) ? $this->getModel()->getKeyName() : $column;
+
+        $this->query->forPageAfterId($perPage, $lastId, $column);
+
+        return $this;
     }
 
     /**

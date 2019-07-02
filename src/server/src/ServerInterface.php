@@ -56,7 +56,7 @@ interface ServerInterface
     /**
      * Restart server
      */
-    public function restart(): void;
+    public function startWithDaemonize(): void;
 
     /**
      * @return string
