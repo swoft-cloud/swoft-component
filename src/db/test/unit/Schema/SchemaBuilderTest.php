@@ -71,12 +71,12 @@ class SchemaBuilderTest extends TestCase
 
         Schema::create($table, function (Blueprint $blueprint) {
             $blueprint->comment('test table');
-            $blueprint->json('test_json')->after('create_time');
-            $blueprint->integer('id')->primary();
+            $blueprint->json('test_json');
+            $blueprint->integer('id')->autoIncrement();
             $blueprint->bigInteger('uid')->index();
-            $blueprint->tinyInteger('status')->index('idx_status')->after('id');
+            $blueprint->tinyInteger('status')->index('idx_status')->default(1);
             $blueprint->uuid('uuid')->unique();
-            $blueprint->integer('create_time')->after('id');
+            $blueprint->integer('create_time')->comment('create_time');
             $blueprint->index(['uid', 'id']);
             $blueprint->jsonb('test_json_1');
             $blueprint->unique(['uuid', 'id'], 'unq_uuid_id');
@@ -88,11 +88,14 @@ class SchemaBuilderTest extends TestCase
         });
 
         // Bind db pool
-        Schema::getSchemaConnection('db.pool2')->table($table, function (Blueprint $blueprint) use ($rename) {
+        Schema::getSchemaBuilder('db.pool2')->table($table, function (Blueprint $blueprint) use ($rename) {
             // Rename index
             $blueprint->renameIndex('idx_status', 'idx_sta');
             // Rename table
             $blueprint->rename($rename);
+            $blueprint->addColumn('integer', 'add_id')->after('id');
+            $blueprint->integer('t_id')->after('add_id');
+
         });
 
         Schema::rename($rename, $table);

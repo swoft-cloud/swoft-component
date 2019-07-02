@@ -282,7 +282,7 @@ class Blueprint
      * @throws ContainerException
      * @throws ReflectionException
      */
-    protected function creating()
+    public function creating()
     {
         return Collection::new($this->commands)->contains(function (Fluent $command) {
             return $command['name'] === 'create';

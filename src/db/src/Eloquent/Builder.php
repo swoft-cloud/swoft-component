@@ -178,6 +178,7 @@ class Builder
         'parseSub',
         'fromSub',
         'selectRaw',
+        'truncate',
     ];
 
     /**
