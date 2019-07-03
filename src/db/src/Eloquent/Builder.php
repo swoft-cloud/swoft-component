@@ -705,16 +705,16 @@ class Builder
     /**
      * Constrain the query to the next "page" of results after a given ID.
      *
-     * @param int      $perPage
-     * @param int|null $lastId
-     * @param string   $column
+     * @param int         $perPage
+     * @param int|null    $lastId
+     * @param string|null $column
      *
      * @return static
      * @throws ContainerException
      * @throws DbException
      * @throws ReflectionException
      */
-    public function forPageAfterId(int $perPage = 15, int $lastId = null, string $column = ''): self
+    public function forPageAfterId(int $perPage = 15, int $lastId = null, string $column = null): self
     {
         // If column is null default user primary column name
         $column = is_null($column) ? $this->getModel()->getKeyName() : $column;
