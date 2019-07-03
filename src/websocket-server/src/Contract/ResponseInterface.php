@@ -2,8 +2,6 @@
 
 namespace Swoft\WebSocket\Server\Contract;
 
-use Swoft\WebSocket\Server\Message\Response;
-
 /**
  * Interface ResponseInterface
  *

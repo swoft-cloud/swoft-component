@@ -2,13 +2,12 @@
 
 namespace SwoftTool\Command;
 
+use Swoft\Console\Helper\Show;
+use Swoft\Stdlib\Helper\Sys;
+use Toolkit\Cli\App;
 use function array_pop;
 use function explode;
 use function implode;
-use Swoft\Console\Helper\Show;
-use Swoft\Stdlib\Helper\PhpHelper;
-use Swoft\Stdlib\Helper\Sys;
-use Toolkit\Cli\App;
 use function trim;
 
 /**
