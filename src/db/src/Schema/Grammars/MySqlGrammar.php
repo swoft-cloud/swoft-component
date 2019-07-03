@@ -3,8 +3,10 @@
 
 namespace Swoft\Db\Schema\Grammars;
 
+use ReflectionException;
 use RuntimeException;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\Schema\Blueprint;
 use Swoft\Stdlib\Fluent;
@@ -1163,10 +1165,16 @@ class MySqlGrammar extends Grammar
      * @param Blueprint $blueprint
      * @param Fluent    $column
      *
-     * @return string|null
+     * @return null|string
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     protected function modifyAfter(Blueprint $blueprint, Fluent $column)
     {
+        // If is creating no support after grammar
+        if ($blueprint->creating()) {
+            return null;
+        }
         if ($column['after']) {
             return ' after ' . $this->wrap($column['after']);
         }

@@ -78,6 +78,19 @@ class Builder
     protected $resolver;
 
     /**
+     * @var string
+     */
+    protected $database;
+
+    /**
+     * @param string $database
+     */
+    public function setDatabase(string $database): void
+    {
+        $this->database = $database;
+    }
+
+    /**
      * Add custom builder
      *
      * @param string $driver
@@ -342,6 +355,16 @@ class Builder
     }
 
     /**
+     * Check database exists
+     *
+     * @return bool
+     */
+    public function checkDatabaseExists(): bool
+    {
+        return true;
+    }
+
+    /**
      * Modify a table on the schema.
      *
      * @param string  $table
@@ -485,7 +508,7 @@ class Builder
      */
     protected function build(Blueprint $blueprint)
     {
-        $blueprint->build($this->getConnection(), $this->grammar);
+        $blueprint->build($this);
     }
 
     /**
@@ -530,6 +553,13 @@ class Builder
     public function getConnection()
     {
         $connection = DB::connection($this->poolName);
+
+        if (isset($this->database)) {
+            $connectionDatabase = $connection->getSelectDb() ?: $connection->getDb();
+            if ($this->database !== $connectionDatabase) {
+                $connection->db($this->database);
+            }
+        }
 
         return $connection;
     }
@@ -580,6 +610,10 @@ class Builder
      */
     public function getDatabaseName(): string
     {
+        if (isset($this->database)) {
+            return $this->database;
+        }
+
         $connection = $this->getConnection();
         $db         = $connection->getSelectDb() ?: $connection->getDb();
         // release
