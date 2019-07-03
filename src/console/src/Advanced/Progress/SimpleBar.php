@@ -2,12 +2,12 @@
 
 namespace Swoft\Console\Advanced\Progress;
 
-use function array_merge;
-use function ceil;
 use Generator;
 use Swoft\Console\Advanced\NotifyMessage;
 use Swoft\Console\Console;
 use Toolkit\Cli\Cli;
+use function array_merge;
+use function ceil;
 
 /**
  * Class SimpleBar

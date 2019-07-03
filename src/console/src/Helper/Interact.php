@@ -4,9 +4,6 @@ namespace Swoft\Console\Helper;
 
 use Closure;
 use RuntimeException;
-use function sprintf;
-use const STDIN;
-use function strtolower;
 use Swoft\Console\Advanced\Interact\Checkbox;
 use Swoft\Console\Advanced\Interact\Choose;
 use Swoft\Console\Advanced\Interact\Confirm;
@@ -14,7 +11,10 @@ use Swoft\Console\Advanced\Interact\LimitedAsk;
 use Swoft\Console\Advanced\Interact\Password;
 use Swoft\Console\Advanced\Interact\Question;
 use Swoft\Console\Console;
+use function sprintf;
+use function strtolower;
 use function trim;
+use const STDIN;
 
 /**
  * Class Interact

@@ -2,20 +2,7 @@
 
 namespace Swoft\Console\Concern;
 
-use function implode;
-use function input;
-use function is_array;
-use function is_bool;
-use function is_scalar;
-use function ksort;
-use function ltrim;
-use const PHP_EOL;
-use const PHP_VERSION;
 use ReflectionException;
-use function sort;
-use function sprintf;
-use function strlen;
-use function strpos;
 use Swoft;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Console\Console;
@@ -25,8 +12,21 @@ use Swoft\Console\Output\Output;
 use Swoft\Console\Router\Router;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\Str;
-use const SWOOLE_VERSION;
+use function implode;
+use function input;
+use function is_array;
+use function is_bool;
+use function is_scalar;
+use function ksort;
+use function ltrim;
+use function sort;
+use function sprintf;
+use function strlen;
+use function strpos;
 use function trim;
+use const PHP_EOL;
+use const PHP_VERSION;
+use const SWOOLE_VERSION;
 
 /**
  * Trait RenderHelpInfoTrait

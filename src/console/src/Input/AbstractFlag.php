@@ -2,8 +2,8 @@
 
 namespace Swoft\Console\Input;
 
-use function strtoupper;
 use Swoft\Console\Annotation\Mapping\Command;
+use function strtoupper;
 use function trim;
 use function ucfirst;
 

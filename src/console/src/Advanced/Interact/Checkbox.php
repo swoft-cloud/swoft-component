@@ -2,14 +2,14 @@
 
 namespace Swoft\Console\Advanced\Interact;
 
+use Swoft\Console\Advanced\InteractMessage;
+use Swoft\Console\Console;
+use Swoft\Console\Helper\Show;
 use function array_filter;
 use function explode;
 use function is_array;
 use function str_replace;
 use function strpos;
-use Swoft\Console\Advanced\InteractMessage;
-use Swoft\Console\Console;
-use Swoft\Console\Helper\Show;
 use function trim;
 
 /**

@@ -2,6 +2,8 @@
 
 namespace Swoft\Console;
 
+use Swoft\Console\Style\Style;
+use Toolkit\Cli\ColorTag;
 use function array_merge;
 use function date;
 use function fflush;
@@ -13,19 +15,17 @@ use function implode;
 use function is_array;
 use function is_numeric;
 use function json_encode;
+use function sprintf;
+use function strpos;
+use function strtoupper;
+use function trim;
 use const JSON_PRETTY_PRINT;
 use const JSON_UNESCAPED_SLASHES;
 use const JSON_UNESCAPED_UNICODE;
 use const PHP_EOL;
-use function sprintf;
 use const STDERR;
 use const STDIN;
 use const STDOUT;
-use function strpos;
-use function strtoupper;
-use Swoft\Console\Style\Style;
-use Toolkit\Cli\ColorTag;
-use function trim;
 
 /**
  * Class Console

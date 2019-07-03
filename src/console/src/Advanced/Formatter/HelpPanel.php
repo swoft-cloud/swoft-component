@@ -2,16 +2,16 @@
 
 namespace Swoft\Console\Advanced\Formatter;
 
+use Swoft\Console\Advanced\MessageFormatter;
+use Swoft\Console\Helper\FormatUtil;
+use Swoft\Console\Helper\Show;
 use function array_merge;
 use function implode;
 use function is_array;
 use function is_string;
-use const PHP_EOL;
-use Swoft\Console\Advanced\MessageFormatter;
-use Swoft\Console\Helper\FormatUtil;
-use Swoft\Console\Helper\Show;
 use function trim;
 use function ucfirst;
+use const PHP_EOL;
 
 /**
  * Class HelpPanel

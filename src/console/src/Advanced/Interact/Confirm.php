@@ -2,10 +2,10 @@
 
 namespace Swoft\Console\Advanced\Interact;
 
-use function stripos;
 use Swoft\Console\Advanced\InteractMessage;
 use Swoft\Console\Console;
 use Swoft\Console\Helper\Show;
+use function stripos;
 use function trim;
 use function ucfirst;
 

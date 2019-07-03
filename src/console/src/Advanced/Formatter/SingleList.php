@@ -2,14 +2,14 @@
 
 namespace Swoft\Console\Advanced\Formatter;
 
-use function array_merge;
-use const PHP_EOL;
 use Swoft\Console\Advanced\MessageFormatter;
 use Swoft\Console\Console;
 use Swoft\Console\Helper\FormatUtil;
 use Toolkit\Cli\ColorTag;
+use function array_merge;
 use function trim;
 use function ucwords;
+use const PHP_EOL;
 
 /**
  * Class SingleList - Format and render a single list

@@ -6,13 +6,13 @@ use function array_merge;
 use function in_array;
 use function is_array;
 use function preg_match;
-use const PREG_OFFSET_CAPTURE;
 use function preg_replace;
 use function preg_split;
-use const PREG_SPLIT_NO_EMPTY;
 use function str_replace;
 use function substr;
 use function trim;
+use const PREG_OFFSET_CAPTURE;
+use const PREG_SPLIT_NO_EMPTY;
 
 /**
  * Class DocBlockHelper

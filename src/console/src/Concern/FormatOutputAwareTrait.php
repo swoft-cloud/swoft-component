@@ -2,17 +2,17 @@
 
 namespace Swoft\Console\Concern;
 
-use function array_merge;
 use Generator;
-use function json_encode;
 use LogicException;
+use Swoft\Console\Helper\Show;
+use Swoft\Console\Style\Style;
+use Swoft\Stdlib\Helper\PhpHelper;
+use function array_merge;
+use function json_encode;
 use function method_exists;
 use function sprintf;
 use function strpos;
 use function substr;
-use Swoft\Console\Helper\Show;
-use Swoft\Console\Style\Style;
-use Swoft\Stdlib\Helper\PhpHelper;
 
 /**
  * Class FormatOutputAwareTrait

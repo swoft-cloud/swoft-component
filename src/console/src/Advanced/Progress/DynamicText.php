@@ -3,10 +3,10 @@
 namespace Swoft\Console\Advanced\Progress;
 
 use Generator;
-use function printf;
 use Swoft\Console\Advanced\NotifyMessage;
 use Swoft\Console\Console;
 use Toolkit\Cli\Cli;
+use function printf;
 
 /**
  * Class DynamicText
