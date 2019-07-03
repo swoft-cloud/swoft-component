@@ -13,7 +13,7 @@ use Swoft\Http\Server\HttpServer;
 use Swoft\Server\Command\BaseServerCommand;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\ServerInterface;
-use function ucfirst;
+use function strtoupper;
 use function bean;
 use function input;
 use function output;
@@ -79,18 +79,7 @@ class HttpServerCommand extends BaseServerCommand
         ];
 
         // Port Listeners
-        $listeners = $server->getListener();
-        foreach ($listeners as $name => $listener) {
-            if (!$listener instanceof ServerInterface) {
-                continue;
-            }
-
-            $upperName = ucfirst($name);
-            $panel[$upperName] = [
-                'listen' => sprintf('%s:%s', $listener->getHost(), $listener->getPort()),
-                'type'   => $listener->getTypeName()
-            ];
-        }
+        $panel = $this->appendPortsToPanel($server, $panel);
 
         Show::panel($panel);
 

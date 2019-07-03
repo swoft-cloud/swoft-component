@@ -3,8 +3,11 @@
 namespace Swoft\Server\Command;
 
 use Swoft\Server\Server;
+use Swoft\Server\ServerInterface;
 use Swoft\Stdlib\Helper\Sys;
 use function input;
+use function sprintf;
+use function strtoupper;
 use function trim;
 
 /**
@@ -44,5 +47,31 @@ abstract class BaseServerCommand
         }
 
         return sprintf('%s %s %s', $phpBin, $script, $command);
+    }
+
+    /**
+     * @param Server $server
+     * @param array  $panel
+     *
+     * @return array
+     */
+    protected function appendPortsToPanel(Server $server, array $panel): array
+    {
+        // Port Listeners
+        $listeners = $server->getListener();
+
+        foreach ($listeners as $name => $listener) {
+            if (!$listener instanceof ServerInterface) {
+                continue;
+            }
+
+            $upperName = strtoupper($name);
+            $panel[$upperName] = [
+                'listen' => sprintf('%s:%s', $listener->getHost(), $listener->getPort()),
+                'type'   => $listener->getTypeName()
+            ];
+        }
+
+        return $panel;
     }
 }

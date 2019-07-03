@@ -16,8 +16,6 @@ use function bean;
 use function input;
 use function output;
 
-// use Swoft\Helper\EnvHelper;
-
 /**
  * Class WsServerCommand
  *
@@ -65,27 +63,27 @@ class WsServerCommand extends BaseServerCommand
         // Server startup parameters
         $mainHost = $server->getHost();
         $mainPort = $server->getPort();
-        $modeName = $server->getModeName();
-        $typeName = $server->getTypeName();
 
-        // TCP 启动参数
-        // $tcpStatus = $server->getTcpSetting();
-        // $httpEnable = $server->hasListener(SwooleEvent::REQUEST);
-
-        Show::panel([
+        // Main server
+        $panel = [
             'WebSocket' => [
                 'listen' => $mainHost . ':' . $mainPort,
-                'type'   => $typeName,
-                'mode'   => $modeName,
+                'type'   => $server->getTypeName(),
+                'mode'   => $server->getModeName(),
                 'worker' => $workerNum,
             ],
-            'Extra'     => [
-                // 'httpHandle' => $httpEnable,
-                'pidFile' => $server->getPidFile(),
-            ],
-        ]);
+            // 'Extra'     => [
+            // 'httpHandle' => $httpEnable,
+            //     'pidFile' => $server->getPidFile(),
+            // ],
+        ];
 
-        output()->writef('<success>Server start success !</success>');
+        // Port Listeners
+        $panel = $this->appendPortsToPanel($server, $panel);
+
+        Show::panel($panel);
+
+        output()->writef('<success>WebSocket Server start success !</success>');
 
         // Start the server
         $server->start();
