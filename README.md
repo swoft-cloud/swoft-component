@@ -73,8 +73,10 @@ Quick run tests for component:
 ```bash
 // For all components
 ./phpunit.sh all
+
 // For multi components
 ./phpunit.sh db event
+
 // For one component
 ./phpunit.sh event
 ```

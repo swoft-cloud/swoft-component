@@ -23,7 +23,7 @@ class ServiceServer extends Server
     /**
      * @var string
      */
-    protected static $serverType = 'rpc';
+    protected static $serverType = 'RPC';
 
     /**
      * Default port

@@ -10,6 +10,7 @@ use function file_get_contents;
 use function file_put_contents;
 use function glob;
 use function is_dir;
+use function str_replace;
 use function strtr;
 use function ucwords;
 use const BASE_PATH;
@@ -30,7 +31,6 @@ class GenReadme
 
     public function getHelpConfig(): array
     {
-
         return [
             'name'  => 'gen:readme',
             'desc'  => 'generate readme file for swoft component(s)',
@@ -40,6 +40,7 @@ Example:
   {{command}} --all
   {{command}} http-server
   {{command}} http-server http-message
+
 STR,
         ];
     }
@@ -92,7 +93,7 @@ STR,
 
         $data = [
             '{{component}}'       => $name,
-            '{{componentUpWord}}' => ucwords($name),
+            '{{componentUpWord}}' => ucwords(str_replace('-', ' ', $name)),
         ];
 
         $str  = strtr($str, $data);

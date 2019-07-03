@@ -2,12 +2,12 @@
 
 namespace Swoft\Console\Advanced\Formatter;
 
-use function array_merge;
-use function ceil;
-use function str_pad;
 use Swoft\Console\Advanced\MessageFormatter;
 use Swoft\Console\Helper\Show;
 use Swoft\Stdlib\Helper\Str;
+use function array_merge;
+use function ceil;
+use function str_pad;
 
 /**
  * Class Title

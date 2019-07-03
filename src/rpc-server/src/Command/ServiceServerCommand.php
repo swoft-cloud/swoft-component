@@ -24,7 +24,7 @@ use Swoft\Server\ServerInterface;
  *
  * @since 2.0
  *
- * @Command("rpc", coroutine=false)
+ * @Command("rpc", coroutine=false, desc="Provide some commands to manage swoft RPC server")
  *
  * @example
  *  {fullCmd}:start     Start the rpc server

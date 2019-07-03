@@ -54,7 +54,8 @@ class AutoLoader extends SwoftComponent
     {
         return [
             'tcpServer' => [
-                'on' => [
+                'port' => 18309,
+                'on'   => [
                     SwooleEvent::CONNECT => bean(ConnectListener::class),
                     SwooleEvent::CLOSE   => bean(CloseListener::class),
                     SwooleEvent::RECEIVE => bean(ReceiveListener::class),

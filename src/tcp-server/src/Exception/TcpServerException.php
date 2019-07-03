@@ -2,14 +2,14 @@
 
 namespace Swoft\Tcp\Server\Exception;
 
-use RuntimeException;
+use Swoft\Server\Exception\ServerException;
 
 /**
  * Class TcpServerException
  *
  * @since 2.0
  */
-class TcpServerException extends RuntimeException
+class TcpServerException extends ServerException
 {
 
 }

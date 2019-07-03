@@ -2,14 +2,14 @@
 
 namespace Swoft\Console\Advanced\Formatter;
 
-use function array_merge;
-use function is_array;
-use function is_scalar;
-use function str_pad;
 use Swoft\Console\Advanced\MessageFormatter;
 use Swoft\Console\Console;
 use Swoft\Console\Helper\FormatUtil;
 use Toolkit\Cli\Cli;
+use function array_merge;
+use function is_array;
+use function is_scalar;
+use function str_pad;
 
 /**
  * Class Tree

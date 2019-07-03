@@ -2,9 +2,9 @@
 
 namespace Swoft\Console\Advanced\Formatter;
 
-use function implode;
 use Swoft\Console\Advanced\MessageFormatter;
 use Swoft\Console\Console;
+use function implode;
 
 /**
  * Class MultiList

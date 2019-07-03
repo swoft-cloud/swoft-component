@@ -2,15 +2,15 @@
 
 namespace Swoft\Console\Advanced\Interact;
 
+use RuntimeException;
+use Swoft\Console\Advanced\InteractMessage;
+use Swoft\Stdlib\Helper\Sys;
 use function addslashes;
 use function escapeshellarg;
 use function file_put_contents;
 use function rtrim;
-use RuntimeException;
 use function shell_exec;
 use function sprintf;
-use Swoft\Console\Advanced\InteractMessage;
-use Swoft\Stdlib\Helper\Sys;
 use function unlink;
 
 /**

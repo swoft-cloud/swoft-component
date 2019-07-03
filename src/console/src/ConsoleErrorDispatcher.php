@@ -38,7 +38,7 @@ class ConsoleErrorDispatcher
         $manager = Swoft::getSingleton(ErrorManager::class);
 
         /** @var ConsoleErrorHandlerInterface $handler */
-        if ($handler = $manager->matchHandler($e, ErrorType::HTTP)) {
+        if ($handler = $manager->matchHandler($e, ErrorType::CLI)) {
             $handler->handle($e);
             return;
         }
