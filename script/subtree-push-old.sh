@@ -2,12 +2,7 @@
 
 set -e
 
-REPOS=$1
-
-if [[ -z "$1" ]]; then
-    REPOS=$(ls src/)
-fi
-
+REPOS=$(ls src/)
 TARGET_BRANCH=master
 
 echo "Update code to latest"
@@ -18,12 +13,12 @@ echo "Will pushed projects:"
 echo ${REPOS}
 
 # git subtree push --prefix=src/annotation git@github.com:swoft-cloud/swoft-annotation.git master --squash
-# git subtree push --prefix=src/stdlib stdlib master
+# git subtree pull --prefix=src/stdlib stdlib master
 for lbName in ${REPOS} ; do
     echo ""
     echo "======> Push the project:【${lbName}】"
-    echo "> git subtree push --prefix=src/${lbName} ${lbName} ${TARGET_BRANCH} --squash"
-    git subtree push --prefix=src/${lbName} ${lbName} ${TARGET_BRANCH} --squash
+    echo "> git subtree push --prefix=src/${lbName} git@github.com:swoft-cloud/swoft-${lbName}.git ${TARGET_BRANCH} --squash"
+    git subtree push --prefix=src/${lbName} git@github.com:swoft-cloud/swoft-${lbName}.git ${TARGET_BRANCH} --squash
 done
 
 echo ""
