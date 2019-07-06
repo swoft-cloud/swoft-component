@@ -20,10 +20,29 @@ git subtree push --prefix=src/stdlib stdlib master
 
 ## release flow
 
-```bash
-bash ./script/subtree-push.sh -a -t v2.0.4
-```
+- add git remote
 
 ```bash
-bash ./script/release-tag.sh -a -t v2.0.4
+bash ./script/add-remotes.sh all
+```
+
+- git subtree push
+
+```bash
+bash ./script/subtree-push.sh all
+```
+
+- release new tag
+
+```bash
+bash ./script/release-tag.sh -a -y -t v2.0.4
+```
+
+## use makefile
+
+```bash
+make # see help
+
+# do add remote and push and release tag
+make all tag=v2.0.4
 ```

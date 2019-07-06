@@ -53,7 +53,7 @@ while getopts "t:ahy" arg; do #选项后面的冒号表示该选项需要参数
         t)
             RELEASE_TAG=$OPTARG ;;
         ?)  #当有不认识的选项的时候arg为?
-            echo "Unknown argument"
+            echo "Missing argument"
             exit 1
         ;;
     esac

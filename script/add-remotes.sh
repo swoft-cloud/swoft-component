@@ -35,7 +35,7 @@ echo " " ${COMPONENTS}
 # git subtree pull --prefix=src/stdlib stdlib master
 # git subtree push --prefix=src/stdlib stdlib master
 for lbName in ${COMPONENTS} ; do
-    colored_text "Check sub-component remote"
+    colored_text "\n---- Check sub-component remote: ${lbName}"
     yellow_text "> git remote -v | grep ${lbName}"
     REMOTE_INFO=`git remote -v | grep ${lbName}`
 
