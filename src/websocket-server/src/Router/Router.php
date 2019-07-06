@@ -4,7 +4,7 @@ namespace Swoft\WebSocket\Server\Router;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Contract\RouterInterface;
-use Swoft\WebSocket\Server\Helper\WsHelper;
+use Swoft\Stdlib\Helper\Str;
 use function array_shift;
 use function count;
 use function preg_match;
@@ -66,42 +66,39 @@ class Router implements RouterInterface
     private $commands = [];
 
     /**
-     * @var bool Enable dynamic route
-     */
-    private $enableDynamicRoute = false;
-
-    /**
      * @param string $path
      * @param array  $info module Info
      */
     public function addModule(string $path, array $info = []): void
     {
-        $path = WsHelper::formatPath($path);
+        $path = Str::formatPath($path);
         // Re-set path
         $info['path'] = $path;
 
         // Exist path var. eg: "/users/{id}"
-        if (!$this->enableDynamicRoute || strpos($path, '{') === false) {
+        if (strpos($path, '{') === false) {
             $info['regex'] = '';
 
             // Add module
             $this->modules[$path] = $info;
+            return;
         }
 
-        $params = $info['params'] ?? [];
+        $matches = [];
+        $params  = $info['params'] ?? [];
 
         // Parse the parameters and replace them with the corresponding regular
-        if (preg_match_all('#\{([a-zA-Z_][\w-]*)\}#', $path, $m)) {
+        if (preg_match_all('#\{([a-zA-Z_][\w-]*)\}#', $path, $matches)) {
             /** @var array[] $m */
             $pairs = [];
 
-            foreach ($m[1] as $name) {
+            foreach ($matches[1] as $name) {
                 $regex = $params[$name] ?? self::DEFAULT_REGEX;
                 // Build pairs
                 $pairs['{' . $name . '}'] = '(' . $regex . ')';
             }
 
-            $info['vars']  = $m[1];
+            $info['vars']  = $matches[1];
             $info['regex'] = '#^' . strtr($path, $pairs) . '$#';
         }
 
@@ -116,7 +113,7 @@ class Router implements RouterInterface
      */
     public function addCommand(string $path, string $cmdId, $handler): void
     {
-        $path = WsHelper::formatPath($path);
+        $path = Str::formatPath($path);
 
         $this->counter++;
         $this->commands[$path][$cmdId] = $handler;
@@ -131,15 +128,9 @@ class Router implements RouterInterface
      */
     public function match(string $path): array
     {
-        $path = WsHelper::formatPath($path);
-
+        $path = Str::formatPath($path);
         if (isset($this->modules[$path])) {
             return $this->modules[$path];
-        }
-
-        // Not enable dynamic route
-        if (!$this->enableDynamicRoute) {
-            return [];
         }
 
         // If is dynamic route
@@ -149,6 +140,7 @@ class Router implements RouterInterface
             }
 
             // Regex match
+            $matches = [];
             if (preg_match($pathRegex, $path, $matches)) {
                 $params   = [];
                 $pathVars = $module['vars'];
@@ -179,7 +171,7 @@ class Router implements RouterInterface
      */
     public function matchCommand(string $path, string $route): array
     {
-        $path = WsHelper::formatPath($path);
+        $path = Str::formatPath($path);
         if (!isset($this->commands[$path])) {
             return [self::NOT_FOUND, null];
         }
@@ -233,21 +225,5 @@ class Router implements RouterInterface
     public function getCounter(): int
     {
         return $this->counter;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEnableDynamicRoute(): bool
-    {
-        return $this->enableDynamicRoute;
-    }
-
-    /**
-     * @param bool $enable
-     */
-    public function setEnableDynamicRoute(bool $enable): void
-    {
-        $this->enableDynamicRoute = $enable;
     }
 }

@@ -6,7 +6,6 @@ use ReflectionException;
 use ReflectionType;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\BeanFactory;
 use Swoft\Context\Context;
 use Swoft\Http\Message\Request;
 use Swoft\Session\Session;
@@ -53,7 +52,7 @@ class WsMessageDispatcher
             \server()->log("Message: conn#{$fd} call custom message handler '{$class}::{$method}'", [], 'debug');
 
             /** @var WsModuleInterface $module */
-            $module = BeanFactory::getSingleton($class);
+            $module = Swoft::getSingleton($class);
             $module->$method($server, $frame);
             return;
         }
@@ -62,7 +61,7 @@ class WsMessageDispatcher
         $parseClass = $info['messageParser'] ?? RawTextParser::class;
 
         /** @var MessageParserInterface $parser */
-        $parser = BeanFactory::getSingleton($parseClass);
+        $parser = Swoft::getSingleton($parseClass);
         if (!$parser) {
             throw new WsMessageException("message parser bean '$parseClass' is not exists");
         }
@@ -91,7 +90,7 @@ class WsMessageDispatcher
 
         \server()->log("Message: conn#{$fd} call message command handler '{$ctlClass}::{$ctlMethod}'", $msg->toArray(), 'debug');
 
-        $object = BeanFactory::getBean($ctlClass);
+        $object = Swoft::getBean($ctlClass);
         $params = $this->getBindParams($ctlClass, $ctlMethod, $frame, $data);
         $result = $object->$ctlMethod(...$params);
 
