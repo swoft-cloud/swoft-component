@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-set -e
+#set -e
+
+# import common functions
+source "$(dirname $0)/common-func.sh"
 
 binName="bash $(basename $0)"
 
@@ -16,22 +19,34 @@ fi
 
 # update one
 if [[ "$1" != "all" ]]; then
-    components=$@
+    COMPONENTS=$@
 else
-    components=$(ls src/)
+    COMPONENTS=$(ls src/)
 fi
+
+REMOTE_PREFIX='git@github.com:swoft-cloud/swoft-'
+
+echo "Will added components:"
+echo " " ${COMPONENTS}
 
 # git remote add stdlib http://github.com/swoft-cloud/swoft-stdlib.git
 # git remote add stdlib git@github.com:swoft-cloud/swoft-stdlib.git
 # git subtree add --prefix=src/stdlib stdlib master
 # git subtree pull --prefix=src/stdlib stdlib master
 # git subtree push --prefix=src/stdlib stdlib master
-for lbName in ${components} ; do
-    echo ""
-    echo "======> Add the project:【${lbName}】"
-    echo "> git remote add ${lbName} git@github.com:swoft-cloud/swoft-${lbName}.git"
-    git remote add ${lbName} git@github.com:swoft-cloud/swoft-${lbName}.git
+for lbName in ${COMPONENTS} ; do
+    colored_text "Check sub-component remote"
+    yellow_text "> git remote -v | grep ${lbName}"
+    REMOTE_INFO=`git remote -v | grep ${lbName}`
+
+    if [[ -n "$REMOTE_INFO" ]]; then
+        colored_text "${lbName}: has been add remote, skip add"
+        continue
+    fi
+
+    cyan_text "\n======> Add the project:【${lbName}】"
+    yellow_text "> git remote add ${lbName} ${REMOTE_PREFIX}${lbName}.git"
+    git remote add ${lbName} ${REMOTE_PREFIX}${lbName}.git
 done
 
-echo ""
-echo "Add Remote Completed!"
+colored_text "\nAdd Remote Completed!"

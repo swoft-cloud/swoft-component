@@ -1,6 +1,7 @@
 
 spush:
-    subtree-push.sh
+    ./script/subtree-push.sh -a
 release:
-
+    ./script/subtree-push.sh -a
 all:
+

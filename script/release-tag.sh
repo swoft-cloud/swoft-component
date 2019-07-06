@@ -84,14 +84,14 @@ if [[ "$NEED_CONFIRM" = "Y" ]]; then
     fi
 fi
 
-TMP_DIR="/tmp/swoft-components-git"
+TMP_DIR="/tmp/release-components-git"
 
 yellow_text "> rm -rf ${TMP_DIR} && mkdir ${TMP_DIR}"
 rm -rf ${TMP_DIR} && mkdir ${TMP_DIR};
-pwd
+#pwd
 yellow_text "> cp -R $(pwd)/. ${TMP_DIR}"
 cp -R $(pwd)/. ${TMP_DIR}
-cd ${TMP_DIR} && pwd && git status;
+cd ${TMP_DIR} && pwd;
 
 for LIB_NAME in ${COMPONENTS} ; do
     colored_text "\n====== Releasing the component:【${LIB_NAME}】" cyan
@@ -153,5 +153,4 @@ done
 yellow_text "> git checkout ${CURRENT_BRANCH}"
 git checkout ${CURRENT_BRANCH}
 
-colored_text "\nCompleted!"
-exit
+colored_text "\nRelease Completed!"
