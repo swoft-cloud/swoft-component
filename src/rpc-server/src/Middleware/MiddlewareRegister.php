@@ -4,6 +4,8 @@
 namespace Swoft\Rpc\Server\Middleware;
 
 use function array_unique;
+use Swoft\Rpc\Server\Exception\RpcServerException;
+use Swoft\Rpc\Server\Router\RouteRegister;
 
 /**
  * Class MiddlewareRegister
@@ -91,6 +93,11 @@ class MiddlewareRegister
     public static function register(): void
     {
         foreach (self::$middlewares as $className => $middlewares) {
+            // `@Service` is undefined on class
+            if (!RouteRegister::hasRouteByClassName($className)) {
+                throw new RpcServerException(sprintf('`@Service` is undefined on class(%s)', $className));
+            }
+
             $classMiddlewares  = $middlewares['class'] ?? [];
             $methodMiddlewares = $middlewares['methods'] ?? [];
 

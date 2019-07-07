@@ -24,6 +24,19 @@ class RouteRegister
     private static $services = [];
 
     /**
+     * @var array
+     *
+     * @example
+     * [
+     *      'className' => [
+     *          'interface',
+     *          'interface',
+     *      ]
+     * ]
+     */
+    private static $serviceClassNames = [];
+
+    /**
      * @param string $interface
      * @param string $version
      * @param string $className
@@ -31,6 +44,19 @@ class RouteRegister
     public static function register(string $interface, string $version, string $className): void
     {
         self::$services[$interface][$version] = $className;
+
+        // Record classNames
+        self::$serviceClassNames[$className] = $interface;
+    }
+
+    /**
+     * @param string $className
+     *
+     * @return bool
+     */
+    public static function hasRouteByClassName(string $className): bool
+    {
+        return isset(self::$serviceClassNames[$className]);
     }
 
     /**

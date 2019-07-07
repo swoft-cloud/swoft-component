@@ -157,9 +157,6 @@ class Aop
             // Class reg
             $classReg = '/' . $executionClass . '/';
 
-            if($class == RegAop::class){
-                var_dump(preg_match($classReg, $class), $classReg, $class);
-            }
             if ($executionClass !== $class && !preg_match($classReg, $class)) {
                 continue;
             }
