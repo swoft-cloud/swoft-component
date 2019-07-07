@@ -11,6 +11,7 @@ use SwoftTest\Component\Testing\Aop\Aspect\OrderAspect2;
 use SwoftTest\Component\Testing\Aop\DemoAop;
 use SwoftTest\Component\Testing\Aop\ExecutionAop;
 use SwoftTest\Component\Testing\Aop\OrderAop;
+use SwoftTest\Component\Testing\Aop\RegAop;
 
 /**
  * Class AopTest
@@ -69,7 +70,7 @@ class AopTest extends TestCase
     {
         /* @var ExecutionAop $executionAop */
         $executionAop = BeanFactory::getBean(ExecutionAop::class);
-        $result  = $executionAop->method();
+        $result       = $executionAop->method();
         $this->assertEquals('beforeAround-before-doMethod-afterAround-after-afterReturn(doMethod)-', $result);
 
         /* @var DemoAop $executionAop */
@@ -79,5 +80,13 @@ class AopTest extends TestCase
         /* @var BeanAspect $spect */
         $spect = BeanFactory::getBean(BeanAspect::class);
         $this->assertEquals('beforeAround-before-after-afterThrowing(exception message)-', $spect->getTrace());
+    }
+
+    public function testRegExecution()
+    {
+        /* @var RegAop $regAop */
+        $regAop = BeanFactory::getBean(RegAop::class);
+        $result = $regAop->method();
+        $this->assertEquals('RegAspect=method', $result);
     }
 }
