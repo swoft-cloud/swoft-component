@@ -1,8 +1,9 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Swoft;
 
-use function array_merge;
 use Swoft\Contract\ComponentInterface;
+use function array_merge;
 
 /**
  * Class SwoftComponent

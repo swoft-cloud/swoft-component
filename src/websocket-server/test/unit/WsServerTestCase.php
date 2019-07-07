@@ -2,7 +2,6 @@
 
 namespace SwoftTest\WebSocket\Server\Unit;
 
-
 use PHPUnit\Framework\TestCase;
 use SwoftTest\WebSocket\Server\Testing\MockWsServer;
 

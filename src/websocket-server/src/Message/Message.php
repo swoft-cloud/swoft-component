@@ -8,6 +8,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\JsonHelper;
+use function bean;
 use function is_scalar;
 
 /**
@@ -21,7 +22,7 @@ class Message implements JsonSerializable
     use PrototypeTrait;
 
     /**
-     * Message command. it's must exists.
+     * Message command. it's must exists. eg: 'home.index'
      *
      * @var string
      */
@@ -45,18 +46,21 @@ class Message implements JsonSerializable
      * @param string $cmd
      * @param mixed  $data
      *
+     * @param array  $ext
+     *
      * @return Message
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      */
-    public static function new(string $cmd, $data): self
+    public static function new(string $cmd, $data, array $ext = []): self
     {
         /** @var self $self */
-        $self = self::__instance();
+        $self = bean(self::class);
 
         // Set properties
         $self->cmd  = $cmd;
         $self->data = $data;
+        $self->ext  = $ext;
 
         return $self;
     }
@@ -66,16 +70,11 @@ class Message implements JsonSerializable
      */
     public function toArray(): array
     {
-        $ret = [
+        return [
             'cmd'  => $this->cmd,
             'data' => $this->data,
+            'ext'  => $this->ext,
         ];
-
-        if ($this->ext !== null) {
-            $ret['ext'] = $this->ext;
-        }
-
-        return $ret;
     }
 
     /**

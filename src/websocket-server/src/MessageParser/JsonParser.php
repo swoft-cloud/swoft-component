@@ -32,26 +32,29 @@ class JsonParser implements MessageParserInterface
      *
      * @param string $data Message data. It's {@see \Swoole\WebSocket\Frame::$data)
      *
-     * @return Message [
-     *                     [
-     *                      'cmd'  => 'home.index', // message command. it's must exists.
-     *                      'data' => message data,
-     *                      ...
-     *                     ]
-     *                  ]
+     * @return Message
      * @throws ReflectionException
      * @throws ContainerException
      */
     public function decode(string $data): Message
     {
         $cmd = '';
+        $ext = [];
         $map = JsonHelper::decode($data, true);
 
+        // Find message route command
         if (isset($map['cmd'])) {
             $cmd = (string)$map['cmd'];
             unset($map['cmd']);
         }
 
-        return Message::new($cmd, $map['data'] ?? $map);
+        if (isset($map['data'])) {
+            $data = $map['data'];
+            $ext  = $map['ext'] ?? [];
+        } else {
+            $data = $map;
+        }
+
+        return Message::new($cmd, $data, $ext);
     }
 }
