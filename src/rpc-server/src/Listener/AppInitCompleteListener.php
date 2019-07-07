@@ -37,5 +37,8 @@ class AppInitCompleteListener implements EventHandlerInterface
 
         // Register router
         RouteRegister::registerRoutes($router);
+
+        // Register middleware
+        MiddlewareRegister::register();
     }
 }

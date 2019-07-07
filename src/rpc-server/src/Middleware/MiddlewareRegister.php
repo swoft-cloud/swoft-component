@@ -38,6 +38,21 @@ class MiddlewareRegister
     private static $middlewares = [];
 
     /**
+     * @var array
+     *
+     * @example
+     * [
+     *      'className' => [
+     *          'methodName' => [
+     *              'middlewareName',
+     *              'middlewareName',
+     *          ]
+     *      ]
+     * ]
+     */
+    private static $handlerMiddlewares = [];
+
+    /**
      * Register class middleware
      *
      * @param string $name      middleware name
@@ -71,6 +86,25 @@ class MiddlewareRegister
     }
 
     /**
+     * Register handler middleware
+     */
+    public static function register(): void
+    {
+        foreach (self::$middlewares as $className => $middlewares) {
+            $classMiddlewares  = $middlewares['class'] ?? [];
+            $methodMiddlewares = $middlewares['methods'] ?? [];
+
+            foreach ($methodMiddlewares as $methodName => $oneMethodMiddlewares) {
+                if (!empty($oneMethodMiddlewares)) {
+                    $allMiddlewares = array_merge($classMiddlewares, $oneMethodMiddlewares);
+
+                    self::$handlerMiddlewares[$className][$methodName] = array_unique($allMiddlewares);
+                }
+            }
+        }
+    }
+
+    /**
      * @param string $className
      * @param string $methodName
      *
@@ -78,11 +112,12 @@ class MiddlewareRegister
      */
     public static function getMiddlewares(string $className, string $methodName): array
     {
-        $classMiddlewares  = self::$middlewares[$className]['class'] ?? [];
-        $methodMiddlewares = self::$middlewares[$className]['methods'][$methodName] ?? [];
+        $middlewares = self::$handlerMiddlewares[$className][$methodName] ?? [];
+        if (!empty($middlewares)) {
+            return $middlewares;
+        }
 
-        $middlewares = array_merge($classMiddlewares, $methodMiddlewares);
-        $middlewares = array_unique($middlewares);
+        $middlewares = self::$middlewares[$className]['class'] ?? [];
         return $middlewares;
     }
 }
