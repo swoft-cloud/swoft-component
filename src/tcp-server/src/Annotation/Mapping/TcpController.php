@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\WebSocket\Server\Annotation\Mapping;
+namespace Swoft\Tcp\Server\Annotation\Mapping;
 
 use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;
