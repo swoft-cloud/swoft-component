@@ -35,8 +35,8 @@ class TcpMappingParser extends Parser
         }
 
         RouteRegister::bindCommand($this->className, $this->methodName, [
-            'route'  => $annotation->getRoute() ?: $this->methodName,
-            'params' => $annotation->getParams(),
+            'route' => $annotation->getRoute() ?: $this->methodName,
+            'root'  => $annotation->isRoot(),
         ]);
 
         return [];

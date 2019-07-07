@@ -3,6 +3,7 @@
 namespace Swoft\Tcp\Server\Router;
 
 use Swoft\Stdlib\Helper\Str;
+use Swoft\Tcp\Server\Exception\TcpServerRouteException;
 
 /**
  * Class RouteRegister
@@ -50,17 +51,25 @@ final class RouteRegister
 
     /**
      * @param Router $router
+     *
+     * @throws TcpServerRouteException
      */
     public static function registerTo(Router $router): void
     {
-        // Modules
+        $delimiter = $router->getDelimiter();
+
         foreach (self::$routes as $ctrlClass => $group) {
             $prefix = $group['prefix'];
-            // save module class
-            $group['controller'] = $ctrlClass;
 
+            // Register routes
             foreach ($group['routes'] as $route) {
-                $cmdId = $prefix . '.' . $route['command'];
+                $path = $route['route'];
+
+                // Is not root command route. prepend group prefix.
+                if ($prefix && !$route['root']) {
+                    $path = $prefix . $delimiter . $path;
+                }
+
                 $router->add($path, [$ctrlClass, $route['method']]);
             }
         }
