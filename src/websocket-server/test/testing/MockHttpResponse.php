@@ -1,12 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace SwoftTest\Http\Server\Testing;
+namespace SwoftTest\WebSocket\Server\Testing;
 
 use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\ContainerException;
-use SwoftTest\Http\Server\Testing\Concern\HttpResponseAssertTrait;
 use Swoole\Http\Response;
 
 /**
@@ -18,7 +17,7 @@ use Swoole\Http\Response;
  */
 class MockHttpResponse extends Response
 {
-    use PrototypeTrait, HttpResponseAssertTrait;
+    use PrototypeTrait;
 
     /**
      * Status success

@@ -45,6 +45,7 @@
     "swoft/server": "self.version",
     "swoft/stdlib": "self.version",
     "swoft/tcp-server": "self.version",
+    "swoft/tcp-protocol": "self.version",
     "swoft/websocket-server": "self.version",
     "swoft/connection-pool": "self.version",
     "swoft/db": "self.version",
