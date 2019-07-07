@@ -101,7 +101,9 @@ class Packet
     public static function unpackResponse(string $string): array
     {
         $data = JsonHelper::decode($string, true);
-        if (isset($data['result'])) {
+
+        // Fix isset result= null, must to use array_key_exists
+        if (array_key_exists('result', $data)) {
             return [$data['result'], null, ''];
         }
 
