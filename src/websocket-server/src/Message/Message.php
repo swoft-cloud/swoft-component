@@ -80,13 +80,21 @@ class Message implements JsonSerializable
     /**
      * @return string
      */
-    public function toString(): string
+    public function getDataString(): string
     {
         if (is_scalar($this->data)) {
             return (string)$this->data;
         }
 
         return JsonHelper::encode($this->data);
+    }
+
+    /**
+     * @return string
+     */
+    public function toString(): string
+    {
+        return JsonHelper::encode($this->toArray());
     }
 
     /**
