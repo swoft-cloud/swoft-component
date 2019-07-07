@@ -60,6 +60,11 @@ class DemoServiceV2 implements DemoInterface
         return [];
     }
 
+    public function returnNull(): void
+    {
+        return ;
+    }
+
     /**
      * @param int $id
      *

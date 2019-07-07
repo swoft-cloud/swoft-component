@@ -68,6 +68,11 @@ class DemoMdService implements DemoInterface
         ];
     }
 
+    public function returnNull(): void
+    {
+        return ;
+    }
+
     public function delete(int $id): bool
     {
         return true;

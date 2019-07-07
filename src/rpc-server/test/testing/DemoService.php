@@ -70,6 +70,11 @@ class DemoService implements DemoInterface
         return false;
     }
 
+    public function returnNull(): void
+    {
+        return ;
+    }
+
     /**
      * @return bool
      * @throws \Exception

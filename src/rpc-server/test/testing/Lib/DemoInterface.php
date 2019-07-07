@@ -41,4 +41,9 @@ interface DemoInterface
      * @return bool
      */
     public function error(): bool;
+
+    /**
+     * Return null
+     */
+    public function returnNull(): void;
 }
