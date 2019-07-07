@@ -17,7 +17,7 @@ use function in_array;
 /**
  * Trait HasAttributes
  *
- * @package Swoft\Db\Concern
+ * @since 2.0
  */
 trait HasAttributes
 {
@@ -391,14 +391,14 @@ trait HasAttributes
     {
         $safeAttributes = [];
         foreach ($attributes as $key => $value) {
-            $column = EntityRegister::getReverseMappingByColumn($this->getClassName(), $key);
-            // Not found this key column annotation
-            if (empty($column)) {
+            $mapping = EntityRegister::getReverseMappingByColumn($this->getClassName(), $key);
+            // Not found this key mapping annotation
+            if (empty($mapping)) {
                 continue;
             }
             // Not handler expression
             if (!$value instanceof Expression) {
-                $type  = $column['type'];
+                $type  = $mapping['type'];
                 $value = ObjectHelper::parseParamType($type, $value);
                 if ($encode === true && $type === Grammar::ARRAY && !is_scalar($value)) {
                     // Array to string

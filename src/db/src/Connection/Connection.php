@@ -5,7 +5,6 @@ namespace Swoft\Db\Connection;
 
 use Closure;
 use DateTimeInterface;
-use Exception;
 use Generator;
 use InvalidArgumentException;
 use PDO;
@@ -15,15 +14,15 @@ use Swoft;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\AbstractConnection;
+use Swoft\Db\Concern\HasEvent;
 use Swoft\Db\Contract\ConnectionInterface;
 use Swoft\Db\Database;
 use Swoft\Db\DbEvent;
+use Swoft\Db\Exception\DbException;
 use Swoft\Db\Pool;
 use Swoft\Db\Query\Expression;
 use Swoft\Db\Query\Grammar\Grammar;
 use Swoft\Db\Query\Processor\Processor;
-use Swoft\Db\Exception\DbException;
-use Swoft\Log\Debug;
 use Throwable;
 use function bean;
 
@@ -34,6 +33,8 @@ use function bean;
  */
 class Connection extends AbstractConnection implements ConnectionInterface
 {
+    use HasEvent;
+
     /**
      * Default fetch mode
      */
@@ -376,7 +377,11 @@ class Connection extends AbstractConnection implements ConnectionInterface
             $statement = $this->getPdoForSelect($useReadPdo)->prepare($query);
             $statement = $this->prepared($statement);
 
-            $this->bindValues($statement, $this->prepareBindings($bindings));
+            $prepareBindings = $this->prepareBindings($bindings);
+
+            $this->bindValues($statement, $prepareBindings);
+
+            $this->fireEvent('selecting', $statement, $prepareBindings);
 
             $statement->execute();
 
@@ -574,7 +579,11 @@ class Connection extends AbstractConnection implements ConnectionInterface
             // to execute the statement and then we'll use PDO to fetch the affected.
             $statement = $this->getPdo()->prepare($query);
 
-            $this->bindValues($statement, $this->prepareBindings($bindings));
+            $prepareBindings = $this->prepareBindings($bindings);
+
+            $this->bindValues($statement, $prepareBindings);
+
+            $this->fireEvent('affectingStatementing', $statement, $prepareBindings);
 
             $statement->execute();
             $count = $statement->rowCount();
@@ -646,6 +655,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
         // Here we will run this query. If an exception occurs we'll determine if it was
         // caused by a connection that has been lost. If that is the cause, we'll try
         $result = $this->runQueryCallback($query, $bindings, $callback);
+
+        $this->fireEvent('ran', $query, $bindings);
 
         // Once we have run the query we will calculate the time that it took to run and
         // then log the query, bindings, and execution time so we will report them on
