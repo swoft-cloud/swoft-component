@@ -26,6 +26,11 @@ interface DemoInterface
     public function getInfo($uid);
 
     /**
+     * @return array
+     */
+    public function notClassMd(): array;
+
+    /**
      * @param int $id
      *
      * @return bool

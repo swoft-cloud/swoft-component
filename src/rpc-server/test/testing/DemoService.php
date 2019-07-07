@@ -50,6 +50,14 @@ class DemoService implements DemoInterface
     }
 
     /**
+     * @return array
+     */
+    public function notClassMd(): array
+    {
+        return [];
+    }
+
+    /**
      * @param int $id
      *
      * @return bool
