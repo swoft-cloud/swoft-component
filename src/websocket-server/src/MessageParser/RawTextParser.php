@@ -25,7 +25,7 @@ class RawTextParser implements MessageParserInterface
      */
     public function encode(Message $message): string
     {
-        return $message->toString();
+        return $message->getDataString();
     }
 
     /**

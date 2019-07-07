@@ -3,8 +3,8 @@
 namespace Swoft\WebSocket\Server;
 
 use InvalidArgumentException;
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
@@ -14,6 +14,7 @@ use Swoft\WebSocket\Server\Exception\WsModuleRouteException;
 use Swoft\WebSocket\Server\Router\Router;
 use Swoole\WebSocket\Server;
 use Throwable;
+use function server;
 use function sprintf;
 
 /**
@@ -38,7 +39,7 @@ class WsDispatcher
     public function handshake(Request $request, Response $response): array
     {
         /** @var Router $router */
-        $router = BeanFactory::getSingleton('wsRouter');
+        $router = Swoft::getSingleton('wsRouter');
 
         /** @var Connection $conn */
         $conn = Session::mustGet();
@@ -51,10 +52,10 @@ class WsDispatcher
         $class = $info['class'];
         $conn->setModuleInfo($info);
 
-        \server()->log("Handshake: found handler for path '$path', ws module class is $class", [], 'debug');
+        server()->log("Handshake: found handler for path '$path', ws module class is $class", [], 'debug');
 
         /** @var WsModuleInterface $module */
-        $module = BeanFactory::getSingleton($class);
+        $module = Swoft::getSingleton($class);
 
         // Call user method
         if ($method = $info['eventMethods']['handshake'] ?? '') {
@@ -85,10 +86,10 @@ class WsDispatcher
         }
 
         $class = $info['class'];
-        \server()->log("conn#{$fd} call ws close handler '{$class}::{$method}'", [], 'debug');
+        server()->log("conn#{$fd} call ws close handler '{$class}::{$method}'", [], 'debug');
 
         /** @var WsModuleInterface $module */
-        $module = BeanFactory::getSingleton($class);
+        $module = Swoft::getSingleton($class);
         $module->$method($server, $fd);
     }
 }

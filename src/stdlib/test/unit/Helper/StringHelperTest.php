@@ -21,6 +21,14 @@ class StringHelperTest extends TestCase
         $this->assertSame('App\Http\Controller\UserController', $name);
     }
 
+    public function testFormatPath(): void
+    {
+        $this->assertSame('/', Str::formatPath(''));
+        $this->assertSame('/a', Str::formatPath('a'));
+        $this->assertSame('/a', Str::formatPath('a/'));
+        $this->assertSame('/a', Str::formatPath('/a/'));
+    }
+
     public function testRmPharPrefix(): void
     {
         $path = Str::rmPharPrefix('phar:///path/to/some.phar/vendor/composer');

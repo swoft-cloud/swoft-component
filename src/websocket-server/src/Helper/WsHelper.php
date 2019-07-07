@@ -105,16 +105,4 @@ class WsHelper
         $response->end();
         return true;
     }
-
-    /**
-     * @param string $path
-     *
-     * @return string
-     */
-    public static function formatPath(string $path): string
-    {
-        $path = '/' . trim($path, '/ ');
-
-        return $path ?: '/';
-    }
 }

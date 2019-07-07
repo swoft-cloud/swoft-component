@@ -13,8 +13,6 @@ use function implode;
 use function is_resource;
 use function ob_start;
 use function passthru;
-use function pclose;
-use function popen;
 use function preg_match;
 use function preg_replace;
 use function proc_close;
@@ -170,10 +168,11 @@ class SystemHelper extends EnvHelper
     public static function execInBackground(string $cmd): void
     {
         if (self::isWindows()) {
-            pclose(popen('start /B ' . $cmd, 'r'));
-        } else {
-            exec($cmd . ' > /dev/null &');
+            // pclose(popen('start /B ' . $cmd, 'r'));
+            throw new RuntimeException('cannot support current system');
         }
+
+        exec($cmd . ' > /dev/null &');
     }
 
     /**
@@ -184,6 +183,7 @@ class SystemHelper extends EnvHelper
     public static function getCurrentUser(): array
     {
         if (function_exists('posix_getpwuid')) {
+            /** @noinspection PhpComposerExtensionStubsInspection */
             return posix_getpwuid(getmyuid());
         }
 

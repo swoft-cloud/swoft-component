@@ -28,16 +28,16 @@ class TokenTextParser implements MessageParserInterface
      */
     public function encode(Message $message): string
     {
-        return $message->toString();
+        return $message->getDataString();
     }
 
     /**
      * Decode data to array
      *
-     * @param string $data
-     *  Format like:
-     *  'login:message body data'
-     *  =>
+     * @param string $data The raw message, use ':' to split cmd and data.
+     * Format like:
+     *  login:message body data
+     * =>
      *  cmd: 'login'
      *  body: 'message body data'
      *
