@@ -28,14 +28,23 @@ class DateRule implements RuleInterface
     public function validate(array $data, string $propertyName, $item, $default = null): array
     {
         $value = $data[$propertyName];
-        if (strtotime($value)) {
-            return $data;
+        if (is_string($value)) {
+            $dt = \DateTime::createFromFormat("Y-m-d H:i:s", $value);
+            if ($dt !== false && !array_sum($dt::getLastErrors())) {
+                return $data;
+            } elseif (ctype_digit($value)) {
+                if (date('Y-m-d', (int)$value)) {
+                    return $data;
+                }
+            }
+        } elseif (filter_var($value, FILTER_VALIDATE_INT)) {
+            if ($value >= PHP_INT_MIN && $value <= PHP_INT_MAX) {
+                return $data;
+            }
         }
-
         /* @var Date $item */
         $message = $item->getMessage();
         $message = (empty($message)) ? sprintf('%s must date!', $propertyName) : $message;
         throw new ValidatorException($message);
     }
-
 }

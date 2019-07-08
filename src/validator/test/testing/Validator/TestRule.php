@@ -19,7 +19,7 @@ use Swoft\Validator\Annotation\Mapping\Dns;
 use Swoft\Validator\Annotation\Mapping\FileMediaType;
 use Swoft\Validator\Annotation\Mapping\FileSize;
 use Swoft\Validator\Annotation\Mapping\FileSuffix;
-use Swoft\Validator\Annotation\Mapping\IsFile;
+use Swoft\Validator\Annotation\Mapping\File;
 use Swoft\Validator\Annotation\Mapping\IsInt;
 use Swoft\Validator\Annotation\Mapping\IsString;
 use Swoft\Validator\Annotation\Mapping\Low;
@@ -122,25 +122,25 @@ class TestRule
     protected $dataDns;
 
     /**
-     * @IsFile()
+     * @File()
      * @FileMediaType(mediaType={"image/png"})
      */
     protected $dataFileMediaType;
 
     /**
-     * @IsFile()
+     * @File()
      * @FileSize(size=10000)
      */
     protected $dataFileSize;
 
     /**
-     * @IsFile()
+     * @File()
      * @FileSuffix(suffix={"png"})
      */
     protected $dataFileSuffix;
 
     /**
-     * @IsFile()
+     * @File()
      */
     protected $dataIsFile;
 

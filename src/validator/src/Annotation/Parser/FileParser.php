@@ -5,7 +5,7 @@ namespace Swoft\Validator\Annotation\Parser;
 use ReflectionException;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
-use Swoft\Validator\Annotation\Mapping\IsFile;
+use Swoft\Validator\Annotation\Mapping\File;
 use Swoft\Validator\Exception\ValidatorException;
 use Swoft\Validator\ValidatorRegister;
 
@@ -14,9 +14,9 @@ use Swoft\Validator\ValidatorRegister;
  *
  * @since 2.0
  *
- * @AnnotationParser(IsFile::class)
+ * @AnnotationParser(File::class)
  */
-class IsFileParser extends Parser
+class FileParser extends Parser
 {
     /**
      * @param int $type

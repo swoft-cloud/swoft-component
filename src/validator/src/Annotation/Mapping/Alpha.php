@@ -14,7 +14,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
  * @Annotation
  * @Target("PROPERTY")
  * @Attributes({
- *      @Attribute("message",type="string")
+ *      @Attribute("message", type="string")
  * })
  */
 class Alpha
@@ -31,6 +31,9 @@ class Alpha
      */
     public function __construct(array $values)
     {
+        if (isset($values['value'])) {
+            $this->message = $values['value'];
+        }
         if (isset($values['message'])) {
             $this->message = $values['message'];
         }

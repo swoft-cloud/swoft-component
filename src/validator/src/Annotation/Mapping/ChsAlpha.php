@@ -15,7 +15,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
  * @Annotation
  * @Target("PROPERTY")
  * @Attributes({
- *      @Attribute("message",type="string")
+ *      @Attribute("message", type="string")
  * })
  */
 class ChsAlpha

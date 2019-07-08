@@ -37,6 +37,9 @@ class NotInEnum
      */
     public function __construct(array $values)
     {
+        if (isset($values['value'])) {
+            $this->message = $values['value'];
+        }
         if (isset($values['values'])) {
             $this->values = $values['values'];
         }

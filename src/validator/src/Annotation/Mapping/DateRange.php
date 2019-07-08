@@ -42,6 +42,9 @@ class DateRange
      */
     public function __construct(array $values)
     {
+        if (isset($values['value'])) {
+            $this->message = $values['value'];
+        }
         if (isset($values['message'])) {
             $this->message = $values['message'];
         }

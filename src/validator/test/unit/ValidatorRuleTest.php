@@ -28,7 +28,7 @@ class ValidatorRuleTest extends TestCase
     public function testAfterDateSuccess()
     {
         $data = [
-            'dataAfterDate' => '2019-07-09'
+            'dataAfterDate' => '2019-07-09 00:00:00'
         ];
         [$result] = (new Validator())->validateRequest($data,
             $this->getValidates(ValidatorRule::class, 'testAfterDate'));
@@ -132,7 +132,7 @@ class ValidatorRuleTest extends TestCase
     public function testBeforeDateSuccess()
     {
         $data = [
-            'dataBeforeDate' => '2019-07-01'
+            'dataBeforeDate' => '2019-07-01 00:00:00'
         ];
         [$result] = (new Validator())->validateRequest($data,
             $this->getValidates(ValidatorRule::class, 'testBeforeDate'));
@@ -282,7 +282,7 @@ class ValidatorRuleTest extends TestCase
     public function testDateError()
     {
         $data = [
-            'dataDate' => '123'
+            'dataDate' => '2019f'
         ];
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testDate'));
     }
@@ -316,7 +316,7 @@ class ValidatorRuleTest extends TestCase
     public function testDateRangeSuccess()
     {
         $data = [
-            'dataDateRange' => '2019-07-08'
+            'dataDateRange' => '2019-07-07 00:00:00'
         ];
         [$result] = (new Validator())->validateRequest($data,
             $this->getValidates(ValidatorRule::class, 'testDateRange'));
@@ -372,15 +372,12 @@ class ValidatorRuleTest extends TestCase
 //    public function testFileSuffixSuccess()
 //    {
 //    }
-
 //    public function testIsFileError()
 //    {
 //    }
-
 //    public function testIsFileSuccess()
 //    {
 //    }
-
     /**
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage low message
@@ -499,7 +496,6 @@ class ValidatorRuleTest extends TestCase
             'dataUrl' => 'baidu.com'
         ];
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testUrl'));
-
     }
 
     public function testUrlSuccess()

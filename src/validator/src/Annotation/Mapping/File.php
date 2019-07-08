@@ -18,7 +18,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
  *     @Attribute("name", type="string")
  * })
  */
-class IsFile extends Type
+class File extends Type
 {
     /**
      * @var string
@@ -37,6 +37,9 @@ class IsFile extends Type
      */
     public function __construct(array $values)
     {
+        if (isset($values['value'])) {
+            $this->message = $values['value'];
+        }
         if (isset($values['message'])) {
             $this->message = $values['message'];
         }

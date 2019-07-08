@@ -5,7 +5,7 @@ namespace Swoft\Validator\Rule;
 use Psr\Http\Message\UploadedFileInterface;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Context\Context;
-use Swoft\Validator\Annotation\Mapping\IsFile;
+use Swoft\Validator\Annotation\Mapping\File;
 use Swoft\Validator\Contract\RuleInterface;
 use Swoft\Validator\Exception\ValidatorException;
 
@@ -14,9 +14,9 @@ use Swoft\Validator\Exception\ValidatorException;
  *
  * @since 2.0
  *
- * @Bean(IsFile::class)
+ * @Bean(File::class)
  */
-class IsFileRule implements RuleInterface
+class FileRule implements RuleInterface
 {
     /**
      * @param array $data
@@ -32,7 +32,7 @@ class IsFileRule implements RuleInterface
         $request = Context::mustGet()->getRequest();
         $filesFields = $request->getUploadedFiles();
 
-        /* @var IsFile $item */
+        /* @var File $item */
         $message = $item->getMessage();
         $message = (empty($message)) ? sprintf('%s must be file!', $propertyName) : $message;
         if (!isset($filesFields[$propertyName])) {

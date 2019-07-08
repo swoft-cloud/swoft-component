@@ -30,13 +30,22 @@ class BeforeDateRule implements RuleInterface
         /* @var BeforeDate $item */
         $date = $item->getDate();
         $value = $data[$propertyName];
-        if (strtotime($value) <= strtotime($date)) {
-            return $data;
+        if (is_string($value)) {
+            $dt = \DateTime::createFromFormat("Y-m-d H:i:s", $value);
+            if (($dt !== false && !array_sum($dt::getLastErrors())) && strtotime($value) <= strtotime($date)) {
+                return $data;
+            } elseif (ctype_digit($value)) {
+                if (date('Y-m-d', (int)$value) && $value <= strtotime($date)) {
+                    return $data;
+                }
+            }
+        } elseif (filter_var($value, FILTER_VALIDATE_INT)) {
+            if ($value <= strtotime($date)) {
+                return $data;
+            }
         }
-
         $message = $item->getMessage();
         $message = (empty($message)) ? sprintf('%s must be before %s', $propertyName, $date) : $message;
-
         throw new ValidatorException($message);
     }
 }

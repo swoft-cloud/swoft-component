@@ -31,16 +31,23 @@ class DateRangeRule implements RuleInterface
         $start = $item->getStart();
         $end = $item->getEnd();
         $value = $data[$propertyName];
-
-        if (strtotime($value) >= strtotime($start) && strtotime($value) <= strtotime($end)) {
-            return $data;
+        if (is_string($value)) {
+            $dt = \DateTime::createFromFormat("Y-m-d H:i:s", $value);
+            if (($dt !== false && !array_sum($dt::getLastErrors())) && strtotime($value) >= strtotime($start) && $value <= strtotime($end)) {
+                return $data;
+            } elseif (ctype_digit($value)) {
+                if (date('Y-m-d', (int)$value) && $value >= strtotime($start) && $value <= strtotime($end)) {
+                    return $data;
+                }
+            }
+        } elseif (filter_var($value, FILTER_VALIDATE_INT)) {
+            if ($value >= strtotime($start) && $value <= strtotime($end)) {
+                return $data;
+            }
         }
-
         $message = $item->getMessage();
         $message = (empty($message)) ? sprintf('%s is invalid  date range(start=%s, end=%s)', $propertyName, $start,
             $end) : $message;
-
         throw new ValidatorException($message);
     }
-
 }
