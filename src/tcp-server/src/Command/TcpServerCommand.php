@@ -19,16 +19,16 @@ use function output;
 /**
  * Class TcpServerCommand
  *
- * @Command("ws",
+ * @Command("tcp",
  *     coroutine=false,
- *     alias="wsserver,websocket",
+ *     alias="tcpsrv,tcpserver",
  *     desc="provide some commands to manage swoft tcp server"
  * )
  */
 class TcpServerCommand extends BaseServerCommand
 {
     /**
-     * Start the WebSocket server
+     * Start the tcp server
      *
      * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
      * @CommandOption("daemon", short="d", desc="Run server on the background", default="false", type="bool")
@@ -142,7 +142,7 @@ class TcpServerCommand extends BaseServerCommand
     }
 
     /**
-     * Restart the http server
+     * Restart the tcp server
      *
      * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
      * @CommandOption("daemon", short="d", desc="Run server on the background")

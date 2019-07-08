@@ -23,13 +23,13 @@ use function output;
  * @Command("ws",
  *     coroutine=false,
  *     alias="wsserver,websocket",
- *     desc="provide some commands to manage swoft webSocket server"
+ *     desc="provide some commands to manage swoft websocket server"
  * )
  */
 class WsServerCommand extends BaseServerCommand
 {
     /**
-     * Start the WebSocket server
+     * Start the websocket server
      *
      * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
      * @CommandOption("daemon", short="d", desc="Run server on the background", default="false", type="bool")
@@ -150,7 +150,7 @@ class WsServerCommand extends BaseServerCommand
     }
 
     /**
-     * Restart the http server
+     * Restart the websocket server
      *
      * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
      * @CommandOption("daemon", short="d", desc="Run server on the background")
