@@ -112,12 +112,14 @@ for LIB_NAME in ${COMPONENTS} ; do
     yellow_text "> git pull ${LIB_NAME}"
     git pull ${LIB_NAME};
 
-    yellow_text "> git checkout -b ${LIB_NAME}-master ${LIB_NAME}/master"
-    git checkout -b ${LIB_NAME}-master ${LIB_NAME}/master;
+    NEW_BRANCH=${LIB_NAME}-master
 
-#    yellow_text "> git pull ${LIB_NAME} ${TARGET_BRANCH}"
-#    git pull ${LIB_NAME} ${TARGET_BRANCH};
-#    exit
+    yellow_text "> git checkout -b ${NEW_BRANCH} ${LIB_NAME}/master"
+    git checkout -b ${NEW_BRANCH} ${LIB_NAME}/master;
+
+    yellow_text "> git pull ${LIB_NAME} ${TARGET_BRANCH}"
+    git pull ${LIB_NAME} ${TARGET_BRANCH};
+
     # like: v2.0.0
     LAST_RELEASE=$(git describe --tags $(git rev-list --tags --max-count=1))
 
@@ -150,7 +152,7 @@ for LIB_NAME in ${COMPONENTS} ; do
     yellow_text "> git tag -a $1 -m \"Release $RELEASE_TAG\""
     git tag -a ${RELEASE_TAG} -m "Release $RELEASE_TAG";
 
-    yellow_text "> git $LIB_NAME origin $RELEASE_TAG"
+    yellow_text "> git push $LIB_NAME origin $RELEASE_TAG"
     git push ${LIB_NAME} ${RELEASE_TAG};
 done
 
