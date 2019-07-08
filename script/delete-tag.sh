@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
 
 TAG=$1
-COMPONENTS=$(ls src/)
 
 # import common functions
 source "$(dirname $0)/common-func.sh"
+
+# update one
+if [[ "$2" != "" ]]; then
+    COMPONENTS=$@
+else
+    COMPONENTS=$(ls src/)
+fi
 
 for LIB_NAME in ${COMPONENTS} ; do
     colored_text "\n====== Releasing the component:【${LIB_NAME}】" cyan
