@@ -11,7 +11,7 @@
   "require": {
     "php": ">7.1",
     "swoft/framework": "~2.0.0",
-    "swoft/tcp-protocol": "~2.0.0"
+    "swoft/tcp": "~2.0.0"
   },
   "autoload": {
     "psr-4": {
