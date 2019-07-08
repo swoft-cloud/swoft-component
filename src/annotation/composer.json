@@ -6,7 +6,7 @@
     "swoole",
     "swoft"
   ],
-  "description": "micro-service framework base on swoole",
+    "description": "swoft annotation component",
   "license": "Apache-2.0",
   "require": {
     "php": ">7.1",

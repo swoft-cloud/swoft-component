@@ -4,9 +4,10 @@
   "keywords": [
     "php",
     "swoole",
-    "swoft"
+    "swoft",
+    "aop"
   ],
-  "description": "micro-service framework base on swoole",
+    "description": "swoft aop component",
   "license": "Apache-2.0",
   "require": {
     "php": ">=7.1",

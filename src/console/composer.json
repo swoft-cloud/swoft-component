@@ -7,7 +7,7 @@
     "swoft",
     "console"
   ],
-  "description": "micro-service framework base on swoole",
+  "description": "swoft connection pool component",
   "license": "Apache-2.0",
   "require": {
     "php": ">7.1.0",
