@@ -161,7 +161,7 @@ trait HasAttributes
      */
     public function hasGetMutator($key)
     {
-        return method_exists($this, 'get' . Str::studly($key) . 'Attribute');
+        return method_exists($this, 'get' . Str::studly($key));
     }
 
     /**
@@ -174,7 +174,7 @@ trait HasAttributes
      */
     protected function mutateAttribute($key, $value)
     {
-        return $this->{'get' . Str::studly($key) . 'Attribute'}($value);
+        return $this->{'get' . Str::studly($key)}($value);
     }
 
     /**
@@ -208,7 +208,7 @@ trait HasAttributes
      */
     public function hasSetter($key)
     {
-        return method_exists($this, 'set' . Str::studly($key) . 'Attribute');
+        return method_exists($this, 'set' . Str::studly($key));
     }
 
     /**
@@ -221,7 +221,7 @@ trait HasAttributes
      */
     protected function setMutatedAttributeValue($key, $value)
     {
-        return $this->{'set' . Str::studly($key) . 'Attribute'}($value);
+        return $this->{'set' . Str::studly($key)}($value);
     }
 
     /**

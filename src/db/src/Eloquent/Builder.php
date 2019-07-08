@@ -296,14 +296,22 @@ class Builder
     /**
      * Add an "order by" clause for a timestamp to the query.
      *
-     * @param string $column
+     * @param string|null $column
      *
      * @return $this
+     * @throws DbException
      */
     public function latest(string $column = null)
     {
         if (is_null($column)) {
-            $column = $this->model->getCreatedAtColumn() ?: Model::CREATED_AT;
+            $createAtColumn = $this->model->getCreatedAtColumn();
+
+            // If exist "createAtColumn" use it, otherwise use primary
+            if ($createAtColumn && $this->model->hasSetter($createAtColumn)) {
+                $column = $createAtColumn;
+            } else {
+                $column = $this->model->getKeyName();
+            }
         }
 
         $this->query->latest($column);
@@ -314,14 +322,22 @@ class Builder
     /**
      * Add an "order by" clause for a timestamp to the query.
      *
-     * @param string $column
+     * @param string|null $column
      *
      * @return $this
+     * @throws DbException
      */
     public function oldest(string $column = null)
     {
         if (is_null($column)) {
-            $column = $this->model->getCreatedAtColumn() ?: Model::CREATED_AT;
+            $createAtColumn = $this->model->getCreatedAtColumn();
+
+            // If exist "createAtColumn" use it, otherwise use primary
+            if ($createAtColumn && $this->model->hasSetter($createAtColumn)) {
+                $column = $createAtColumn;
+            } else {
+                $column = $this->model->getKeyName();
+            }
         }
 
         $this->query->oldest($column);
@@ -818,13 +834,15 @@ class Builder
      */
     protected function addUpdatedAtColumn(array $values)
     {
-        if (!$this->model->usesTimestamps() || is_null($this->model->getUpdatedAtColumn())) {
+        $updatedAtColumn = $this->model->getUpdatedAtColumn();
+
+        if (!$this->model->usesTimestamps() ||
+            is_null($updatedAtColumn) ||
+            !$this->model->hasSetter($updatedAtColumn)) {
             return $values;
         }
 
-        $column = $this->model->getUpdatedAtColumn();
-
-        return $this->fillTimestampColumn($column, $values);
+        return $this->fillTimestampColumn($updatedAtColumn, $values);
     }
 
     /**
@@ -833,17 +851,18 @@ class Builder
      * @param array $values
      *
      * @return array
-     * @throws DbException
      */
     protected function addCreatedAtColumn(array $values)
     {
-        if (!$this->model->usesTimestamps() || is_null($this->model->getCreatedAtColumn())) {
+        $createdAtColumn = $this->model->getCreatedAtColumn();
+
+        if (!$this->model->usesTimestamps() ||
+            is_null($createdAtColumn) ||
+            !$this->model->hasSetter($createdAtColumn)) {
             return $values;
         }
 
-        $column = $this->model->getCreatedAtColumn();
-
-        return $this->fillTimestampColumn($column, $values);
+        return $this->fillTimestampColumn($createdAtColumn, $values);
     }
 
     /**
@@ -853,12 +872,11 @@ class Builder
      * @param array  $values
      *
      * @return array
-     * @throws DbException
      */
     private function fillTimestampColumn(string $column, array $values): array
     {
         $values = array_merge(
-            [$column => $this->model->freshTimestamp()],
+            [$column => $this->model->freshTimestamp($column)],
             $values
         );
 

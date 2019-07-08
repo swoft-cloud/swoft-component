@@ -17,6 +17,7 @@ use Swoft\Db\Concern\HasTimestamps;
 use Swoft\Db\Concern\HidesAttributes;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\DB;
+use Swoft\Db\DbEvent;
 use Swoft\Db\EntityRegister;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder as QueryBuilder;
@@ -167,35 +168,14 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @var string
      */
-    public const CREATED_AT = 'created_at';
+    protected const CREATED_AT = 'created_at';
 
     /**
      * The name of the "updated at" column.
      *
      * @var string
      */
-    public const UPDATED_AT = 'updated_at';
-
-    /**
-     * write time type is date, eg: "2019-1-1 23:59:59"
-     *
-     * @var string
-     */
-    protected const DATE_TYPE = 'date';
-
-    /**
-     * write time type is now timestamp
-     *
-     * @var string
-     */
-    protected const TIME_TYPE = 'time';
-
-    /**
-     * The "created" and "updated" write time type, If is empty system auto choose
-     *
-     * @var string
-     */
-    protected const WRITE_TIMESTAMP_TYPE = null;
+    protected const UPDATED_AT = 'updated_at';
 
     /**
      * Indicates if the model exists.
@@ -452,7 +432,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         // If the "saving" event returns false we'll bail out of the save and return
         // false, indicating that the save failed. This provides a chance for any
         // listeners to cancel save operations if validations fail or whatever.
-        if ($this->fireEvent('saving') === false) {
+        if ($this->fireEvent(DbEvent::MODEL_SAVING) === false) {
             return false;
         }
 
@@ -505,7 +485,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     protected function finishSave()
     {
-        $this->fireEvent('saved');
+        $this->fireEvent(DbEvent::MODEL_SAVED);
 
         $this->syncOriginal();
     }
@@ -525,7 +505,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         // If the updating event returns false, we will cancel the update operation so
         // developers can hook Validation systems into their models and cancel this
         // operation if the model does not pass validation. Otherwise, we update.
-        if ($this->fireEvent('updating') === false) {
+        if ($this->fireEvent(DbEvent::MODEL_UPDATING) === false) {
             return false;
         }
 
@@ -546,7 +526,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 
             $this->syncChanges();
 
-            $this->fireEvent('updated');
+            $this->fireEvent(DbEvent::MODEL_UPDATED);
         }
 
         return true;
@@ -593,7 +573,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     protected function performInsert(Builder $query)
     {
-        if ($this->fireEvent('creating') === false) {
+        if ($this->fireEvent(DbEvent::MODEL_CREATING) === false) {
             return false;
         }
 
@@ -629,7 +609,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         // during the event. This will allow them to do so and run an update here.
         $this->swoftExists = true;
 
-        $this->fireEvent('created');
+        $this->fireEvent(DbEvent::MODEL_CREATED);
 
         return true;
     }
@@ -674,7 +654,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
             return false;
         }
 
-        if ($this->fireEvent('deleting') === false) {
+        if ($this->fireEvent(DbEvent::MODEL_DELETING) === false) {
             return false;
         }
 
@@ -683,7 +663,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         // Once the model has been deleted, we will fire off the deleted event so that
         // the developers may hook into post-delete operations. We will then return
         // a boolean true as the delete is presumably successful on the database.
-        $this->fireEvent('deleted');
+        $this->fireEvent(DbEvent::MODEL_DELETED);
 
         return true;
     }

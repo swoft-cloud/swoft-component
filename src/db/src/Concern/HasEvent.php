@@ -26,7 +26,7 @@ trait HasEvent
     protected function fireEvent(string $event, ...$args): bool
     {
         // Trigger method public event
-        $eventPublicResult = Swoft::trigger($this->getPublicEventName($event), null, $this);
+        $eventPublicResult = Swoft::trigger($event, $this, ...$args);
         if ($eventPublicResult->isPropagationStopped() === true) {
             return false;
         }
@@ -36,7 +36,7 @@ trait HasEvent
             return true;
         }
         // Trigger model method event
-        $modelEventResult = Swoft::trigger($this->getEventName($event), null, $this, ...$args);
+        $modelEventResult = Swoft::trigger($this->getModelEventName($event), $this, ...$args);
         if ($modelEventResult->isPropagationStopped() === true) {
             return false;
         }
@@ -45,12 +45,15 @@ trait HasEvent
     }
 
     /**
-     * @param string $method
+     * @param string $event
      *
      * @return string
      */
-    private function getEventName(string $method): string
+    private function getModelEventName(string $event): string
     {
+        $methods = explode('.', $event);
+        $method  = end($methods);
+
         $name = str_replace('\\', '/', static::class);
         $name = basename($name);
 
@@ -62,23 +65,11 @@ trait HasEvent
     }
 
     /**
-     * @param string $method
-     *
-     * @return string
-     */
-    protected function getPublicEventName(string $method)
-    {
-        $prefix = $this->getContextName();
-
-        return "swoft.$prefix.$method";
-    }
-
-    /**
      * @return string
      */
     private function getContextName(): string
     {
-        if (static::class instanceof Model) {
+        if ($this instanceof Model) {
             return 'model';
         }
         return 'db';

@@ -381,7 +381,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
 
             $this->bindValues($statement, $prepareBindings);
 
-            $this->fireEvent('selecting', $statement, $prepareBindings);
+            if ($this->fireEvent(DbEvent::SELECTING, $statement, $prepareBindings) === false) {
+                return [];
+            }
 
             $statement->execute();
 
@@ -583,7 +585,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
 
             $this->bindValues($statement, $prepareBindings);
 
-            $this->fireEvent('affectingStatementing', $statement, $prepareBindings);
+            if ($this->fireEvent(DbEvent::AFFECTING_STATEMENTING, $statement, $prepareBindings) === false) {
+                return 0;
+            }
 
             $statement->execute();
             $count = $statement->rowCount();
@@ -656,12 +660,11 @@ class Connection extends AbstractConnection implements ConnectionInterface
         // caused by a connection that has been lost. If that is the cause, we'll try
         $result = $this->runQueryCallback($query, $bindings, $callback);
 
-        $this->fireEvent('ran', $query, $bindings);
+        $this->fireEvent(DbEvent::SQL_RAN, $query, $bindings);
 
         // Once we have run the query we will calculate the time that it took to run and
         // then log the query, bindings, and execution time so we will report them on
         // the event that the developer needs them. We'll log time in milliseconds.
-
         return $result;
     }
 

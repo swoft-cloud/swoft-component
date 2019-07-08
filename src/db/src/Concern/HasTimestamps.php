@@ -3,8 +3,6 @@
 
 namespace Swoft\Db\Concern;
 
-use Swoft\Db\EntityRegister;
-use Swoft\Db\Exception\DbException;
 use Swoft\Db\Schema\Grammars\Grammar;
 use function time;
 use function date;
@@ -22,20 +20,19 @@ trait HasTimestamps
      *
      * @var bool
      */
-    public $modelTimestamps = false;
+    protected $modelTimestamps = true;
 
     /**
      * Write date format
      *
      * @var string
      */
-    public $modelDateFormat = 'Y-m-d H:i:s';
+    protected $modelDateFormat = 'Y-m-d H:i:s';
 
     /**
      * Update the model's update timestamp.
      *
      * @return bool
-     * @throws DbException
      */
     public function touch(): bool
     {
@@ -52,45 +49,37 @@ trait HasTimestamps
      * Update the creation and update timestamps.
      *
      * @return void
-     * @throws DbException
      */
     protected function updateTimestamps(): void
     {
-        $time = $this->freshTimestamp();
-
-        if (!is_null(static::UPDATED_AT) && !$this->isDirty(static::UPDATED_AT)) {
-            $this->setModelAttribute(static::UPDATED_AT, $time);
+        if (!is_null(static::UPDATED_AT) &&
+            !$this->isDirty(static::UPDATED_AT) &&
+            $this->hasSetter(static::UPDATED_AT)
+        ) {
+            $this->setModelAttribute(static::UPDATED_AT, $this->freshTimestamp(static::UPDATED_AT));
         }
 
-        if (!$this->swoftExists && !is_null(static::CREATED_AT)
-            && !$this->isDirty(static::CREATED_AT)) {
-            $this->setModelAttribute(static::CREATED_AT, $time);
+        if (!$this->swoftExists &&
+            !is_null(static::CREATED_AT) &&
+            !$this->isDirty(static::CREATED_AT) &&
+            $this->hasSetter(static::CREATED_AT)
+        ) {
+            $this->setModelAttribute(static::CREATED_AT, $this->freshTimestamp(static::CREATED_AT));
         }
     }
 
     /**
      * Get a fresh timestamp for the model.
      *
-     * @return int|string
-     * @throws DbException
+     * @param string $column
+     *
+     * @return false|int|string
      */
-    public function freshTimestamp()
+    public function freshTimestamp(string $column)
     {
-        if (!is_null(static::WRITE_TIMESTAMP_TYPE)) {
-            return static::WRITE_TIMESTAMP_TYPE === static::DATE_TYPE ? date($this->modelDateFormat) : time();
-        }
+        $mapping = $this->getMappingByColumn($column);
 
         // Auto choose timestamp type
-        $mapping = EntityRegister::getReverseMappingByColumn($this->getClassName(), static::CREATED_AT);
-        if (empty($mapping)) {
-            $mapping = EntityRegister::getReverseMappingByColumn($this->getClassName(), static::UPDATED_AT);
-        }
-
-        if (empty($mapping)) {
-            throw new DbException(sprintf('Column(%s) is not exist!',
-                static::CREATED_AT . ' or ' . static::UPDATED_AT));
-        }
-
         return $mapping['type'] === Grammar::STRING ? date($this->modelDateFormat) : time();
     }
 
