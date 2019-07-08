@@ -15,10 +15,8 @@
     "swoft/stdlib": "~2.0.0"
   },
   "autoload": {
-    "classmap": [
-    ],
     "psr-4": {
-      "Swoft\\Tcp\\Protocol\\": "src/"
+      "Swoft\\Tcp\\": "src/"
     }
   },
   "require-dev": {
@@ -26,8 +24,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "SwoftTest\\Tcp\\Protocol\\Unit\\": "test/unit/",
-      "SwoftTest\\Tcp\\Protocol\\Testing\\": "test/testing/"
+      "SwoftTest\\Tcp\\Unit\\": "test/unit/",
+      "SwoftTest\\Tcp\\Testing\\": "test/testing/"
     }
   },
   "scripts": {

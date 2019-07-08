@@ -44,8 +44,8 @@
     "swoft/log": "self.version",
     "swoft/server": "self.version",
     "swoft/stdlib": "self.version",
+    "swoft/tcp": "self.version",
     "swoft/tcp-server": "self.version",
-    "swoft/tcp-protocol": "self.version",
     "swoft/websocket-server": "self.version",
     "swoft/connection-pool": "self.version",
     "swoft/db": "self.version",
@@ -61,6 +61,7 @@
   },
   "autoload": {
     "psr-4": {
+      "Swoft\\": "src/framework/src/",
       "Swoft\\Annotation\\": "src/annotation/src/",
       "Swoft\\Aop\\": "src/aop/src/",
       "Swoft\\Bean\\": "src/bean/src/",
@@ -79,15 +80,14 @@
       "Swoft\\Rpc\\": "src/rpc/src/",
       "Swoft\\Rpc\\Client\\": "src/rpc-client/src/",
       "Swoft\\Rpc\\Server\\": "src/rpc-server/src/",
-      "Swoft\\Tcp\\Protocol\\": "src/tcp-protocol/src/",
+      "Swoft\\Tcp\\": "src/tcp/src/",
       "Swoft\\Tcp\\Server\\": "src/tcp-server/src/",
       "Swoft\\Task\\": "src/task/src/",
       "Swoft\\Redis\\": "src/redis/src/",
       "Swoft\\Proxy\\": "src/proxy/src/",
       "Swoft\\I18n\\": "src/i18n/src",
       "Swoft\\Validator\\": "src/validator/src",
-      "Swoft\\Test\\": "src/test/src/",
-      "Swoft\\": "src/framework/src/"
+      "Swoft\\Test\\": "src/test/src/"
     },
     "files": [
       "src/framework/src/Swoft.php",
@@ -133,8 +133,8 @@
       "SwoftTest\\Rpc\\Client\\Testing\\": "src/rpc-client/test/testing/",
       "SwoftTest\\Rpc\\Server\\Unit\\": "src/rpc-server/test/unit/",
       "SwoftTest\\Rpc\\Server\\Testing\\": "src/rpc-server/test/testing/",
-      "SwoftTest\\Tcp\\Protocol\\Unit\\": "src/tcp-protocol/test/unit/",
-      "SwoftTest\\Tcp\\Protocol\\Testing\\": "src/tcp-protocol/test/testing/",
+      "SwoftTest\\Tcp\\Unit\\": "src/tcp/test/unit/",
+      "SwoftTest\\Tcp\\Testing\\": "src/tcp/test/testing/",
       "SwoftTest\\Tcp\\Server\\Unit\\": "src/tcp-server/test/unit/",
       "SwoftTest\\Tcp\\Server\\Testing\\": "src/tcp-server/test/testing/",
       "SwoftTest\\Task\\Unit\\": "src/task/test/unit/",

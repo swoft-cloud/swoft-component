@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Tcp\Protocol;
+namespace Swoft\Tcp;
 
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;

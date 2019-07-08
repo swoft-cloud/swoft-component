@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Tcp\Protocol\Exception;
+namespace Swoft\Tcp\Exception;
 
 use RuntimeException;
 

@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Tcp\Protocol;
+namespace Swoft\Tcp;
 
 use Swoft;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Tcp\Protocol\Contract\PackerInterface;
-use Swoft\Tcp\Protocol\Exception\ProtocolException;
-use Swoft\Tcp\Protocol\Packer\JsonPacker;
-use Swoft\Tcp\Protocol\Packer\SimpleTokenPacker;
+use Swoft\Tcp\Contract\PackerInterface;
+use Swoft\Tcp\Exception\ProtocolException;
+use Swoft\Tcp\Packer\JsonPacker;
+use Swoft\Tcp\Packer\SimpleTokenPacker;
 use function array_keys;
 use function array_merge;
 

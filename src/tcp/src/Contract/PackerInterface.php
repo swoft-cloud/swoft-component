@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Tcp\Protocol\Contract;
+namespace Swoft\Tcp\Contract;
 
-use Swoft\Tcp\Protocol\Package;
+use Swoft\Tcp\Package;
 
 /**
  * Interface PackerInterface - Data packer interface

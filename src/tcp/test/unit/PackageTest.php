@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace SwoftTest\Tcp\Protocol\Unit;
+namespace SwoftTest\Tcp\Unit;
 
 use PHPUnit\Framework\TestCase;
-use Swoft\Tcp\Protocol\Package;
+use Swoft\Tcp\Package;
 
 /**
  * Class PackageTest

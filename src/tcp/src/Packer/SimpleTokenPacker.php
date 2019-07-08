@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Tcp\Protocol\Packer;
+namespace Swoft\Tcp\Packer;
 
 use function explode;
 use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Tcp\Protocol\Contract\PackerInterface;
-use Swoft\Tcp\Protocol\Package;
+use Swoft\Tcp\Contract\PackerInterface;
+use Swoft\Tcp\Package;
 use function trim;
 
 /**
