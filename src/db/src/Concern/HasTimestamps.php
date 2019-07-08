@@ -77,7 +77,7 @@ trait HasTimestamps
      */
     public function freshTimestamp(string $column)
     {
-        [,$type,,] = $this->getMappingByColumn($column);
+        [, $type, ,] = $this->getMappingByColumn($column);
 
         // Auto choose timestamp type
         return $type === Grammar::STRING ? date($this->modelDateFormat) : time();
