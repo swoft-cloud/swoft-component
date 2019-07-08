@@ -7,7 +7,7 @@
         "swoft",
         "redis"
     ],
-    "description": "Redis Component for Swoft",
+    "description": "swoft redis component",
     "license": "Apache-2.0",
     "require": {
         "swoft/framework": "~2.0.0",

@@ -7,6 +7,7 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Helper\ComposerJSON;
 use Swoft\Server\Swoole\SwooleEvent;
 use Swoft\SwoftComponent;
+use Swoft\Tcp\Protocol\Protocol;
 use Swoft\Tcp\Server\Swoole\CloseListener;
 use Swoft\Tcp\Server\Swoole\ConnectListener;
 use Swoft\Tcp\Server\Swoole\ReceiveListener;
@@ -60,7 +61,10 @@ class AutoLoader extends SwoftComponent
                     SwooleEvent::RECEIVE => bean(ReceiveListener::class),
                     SwooleEvent::CLOSE   => bean(CloseListener::class),
                 ]
-            ]
+            ],
+            'tcpServerProtocol' => [
+                'class' => Protocol::class,
+            ],
         ];
     }
 }

@@ -1,45 +1,45 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Http\Server\Command;
+namespace Swoft\Tcp\Server\Command;
 
 use ReflectionException;
-use Swoft;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Annotation\Mapping\CommandMapping;
 use Swoft\Console\Annotation\Mapping\CommandOption;
 use Swoft\Console\Helper\Show;
-use Swoft\Http\Server\HttpServer;
 use Swoft\Server\Command\BaseServerCommand;
 use Swoft\Server\Exception\ServerException;
+use Swoft\Tcp\Server\TcpServer;
+use Throwable;
 use function bean;
 use function input;
 use function output;
 
 /**
- * Provide some commands to manage the swoft HTTP server
+ * Class TcpServerCommand
  *
- * @since 2.0
- *
- * @Command("http", alias="httpserver,httpServer", coroutine=false)
- * @example
- *  {fullCmd}:start     Start the http server
- *  {fullCmd}:stop      Stop the http server
+ * @Command("tcp",
+ *     coroutine=false,
+ *     alias="tcpsrv,tcpserver",
+ *     desc="provide some commands to manage swoft tcp server"
+ * )
  */
-class HttpServerCommand extends BaseServerCommand
+class TcpServerCommand extends BaseServerCommand
 {
     /**
-     * Start the http server
+     * Start the tcp server
      *
      * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
-     * @CommandOption("daemon", short="d", desc="Run server on the background", type="bool", default="false")
+     * @CommandOption("daemon", short="d", desc="Run server on the background", default="false", type="bool")
      *
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
      * @throws ServerException
+     * @throws Throwable
      * @example
      *   {fullCommand}
-     *   {fullCommand} -d
+     *   {fullCommand} -d  Start server on background
      *
      */
     public function start(): void
@@ -49,7 +49,7 @@ class HttpServerCommand extends BaseServerCommand
         // Check if it has started
         if ($server->isRunning()) {
             $masterPid = $server->getPid();
-            output()->writeln("<error>The HTTP server have been running!(PID: {$masterPid})</error>");
+            output()->writeln("<error>The server have been running!(PID: {$masterPid})</error>");
             return;
         }
 
@@ -63,15 +63,13 @@ class HttpServerCommand extends BaseServerCommand
         // Server startup parameters
         $mainHost = $server->getHost();
         $mainPort = $server->getPort();
-        $modeName = $server->getModeName();
-        $typeName = $server->getTypeName();
 
-        // Http
+        // Main server
         $panel = [
-            'HTTP' => [
+            'TCP' => [
                 'listen' => $mainHost . ':' . $mainPort,
-                'type'   => $typeName,
-                'mode'   => $modeName,
+                'type'   => $server->getTypeName(),
+                'mode'   => $server->getModeName(),
                 'worker' => $workerNum,
             ],
         ];
@@ -81,7 +79,7 @@ class HttpServerCommand extends BaseServerCommand
 
         Show::panel($panel);
 
-        output()->writeln('<success>HTTP server start success !</success>');
+        output()->writef('<success>Tcp server start success !</success>');
 
         // Start the server
         $server->start();
@@ -103,7 +101,7 @@ class HttpServerCommand extends BaseServerCommand
 
         // Check if it has started
         if (!$server->isRunning()) {
-            output()->writeln('<error>The HTTP server is not running! cannot reload</error>');
+            output()->writeln('<error>The server is not running! cannot reload</error>');
             return;
         }
 
@@ -118,7 +116,7 @@ class HttpServerCommand extends BaseServerCommand
             return;
         }
 
-        output()->writef('<success>HTTP server %s reload success</success>', $script);
+        output()->writef('<success>Tcp Server %s reload success</success>', $script);
     }
 
     /**
@@ -135,7 +133,7 @@ class HttpServerCommand extends BaseServerCommand
 
         // Check if it has started
         if (!$server->isRunning()) {
-            output()->writeln('<error>The HTTP server is not running! cannot stop.</error>');
+            output()->writeln('<error>The server is not running! cannot stop.</error>');
             return;
         }
 
@@ -144,16 +142,16 @@ class HttpServerCommand extends BaseServerCommand
     }
 
     /**
-     * Restart the http server
+     * Restart the tcp server
      *
-     * @CommandMapping(usage="{fullCommand} [-d|--daemon]",)
+     * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
      * @CommandOption("daemon", short="d", desc="Run server on the background")
      *
      * @throws ReflectionException
      * @throws ContainerException
      * @example
-     *  {fullCommand}
-     *  {fullCommand} -d
+     * {fullCommand}
+     * {fullCommand} -d
      */
     public function restart(): void
     {
@@ -169,25 +167,26 @@ class HttpServerCommand extends BaseServerCommand
             }
         }
 
-        output()->writef('<success>Server HTTP restart success !</success>');
+        // Restart server
         $server->startWithDaemonize();
     }
 
     /**
-     * @return HttpServer
+     * @return TcpServer
      * @throws ReflectionException
      * @throws ContainerException
      */
-    private function createServer(): HttpServer
+    private function createServer(): TcpServer
     {
         $script  = input()->getScript();
         $command = $this->getFullCommand();
 
-        /** @var HttpServer $server */
-        $server = bean('httpServer');
-        $server->setScriptFile(Swoft::app()->getPath($script));
+        /* @var TcpServer $server */
+        $server = bean('tcpServer');
+        $server->setScriptFile($script);
         $server->setFullCommand($command);
 
         return $server;
     }
 }
+

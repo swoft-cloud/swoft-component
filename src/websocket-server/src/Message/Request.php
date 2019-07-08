@@ -13,7 +13,6 @@ use Swoole\WebSocket\Frame;
  * Class Request
  *
  * @since 2.0
- *
  * @Bean(scope=Bean::PROTOTYPE)
  */
 class Request implements RequestInterface

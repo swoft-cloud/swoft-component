@@ -31,6 +31,11 @@ class WebSocketServer extends Server
     /**
      * @var string
      */
+    protected $pidName = 'swoft-ws';
+
+    /**
+     * @var string
+     */
     protected $commandFile = '@runtime/swoft-ws.command';
 
     /**

@@ -105,7 +105,7 @@ abstract class Server implements ServerInterface
     protected $pidFile = '@runtime/swoft.pid';
 
     /**
-     * Pid name
+     * The server unique name
      *
      * @var string
      */
@@ -394,6 +394,22 @@ abstract class Server implements ServerInterface
         ]);
 
         Swoft::trigger($event);
+    }
+
+    /**
+     * @return string
+     */
+    public function getPidName(): string
+    {
+        return $this->pidName;
+    }
+
+    /**
+     * @param string $pidName
+     */
+    public function setPidName(string $pidName): void
+    {
+        $this->pidName = $pidName;
     }
 
     /**
