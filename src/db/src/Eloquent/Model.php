@@ -12,9 +12,12 @@ use ReflectionException;
 use Swoft\Aop\Proxy;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Concern\HasAttributes;
+use Swoft\Db\Concern\HasEvent;
+use Swoft\Db\Concern\HasTimestamps;
 use Swoft\Db\Concern\HidesAttributes;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\DB;
+use Swoft\Db\DbEvent;
 use Swoft\Db\EntityRegister;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder as QueryBuilder;
@@ -158,7 +161,21 @@ use function bean;
  */
 abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
 {
-    use HidesAttributes, HasAttributes;
+    use HidesAttributes, HasAttributes, HasTimestamps, HasEvent;
+
+    /**
+     * The name of the "created at" column.
+     *
+     * @var string
+     */
+    protected const CREATED_AT = 'created_at';
+
+    /**
+     * The name of the "updated at" column.
+     *
+     * @var string
+     */
+    protected const UPDATED_AT = 'updated_at';
 
     /**
      * Indicates if the model exists.
@@ -415,8 +432,9 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         // If the "saving" event returns false we'll bail out of the save and return
         // false, indicating that the save failed. This provides a chance for any
         // listeners to cancel save operations if validations fail or whatever.
-
-        // fire saving
+        if ($this->fireEvent(DbEvent::MODEL_SAVING) === false) {
+            return false;
+        }
 
         // If the model already exists in the database we can just update our record
         // that is already in this database using the current IDs in this "where"
@@ -463,10 +481,11 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Perform any actions that are necessary after the model is saved.
      *
      * @return void
+     * @throws ContainerException
      */
     protected function finishSave()
     {
-        // fire saved
+        $this->fireEvent(DbEvent::MODEL_SAVED);
 
         $this->syncOriginal();
     }
@@ -483,7 +502,19 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     protected function performUpdate(Builder $query)
     {
-        // fire updating
+        // If the updating event returns false, we will cancel the update operation so
+        // developers can hook Validation systems into their models and cancel this
+        // operation if the model does not pass validation. Otherwise, we update.
+        if ($this->fireEvent(DbEvent::MODEL_UPDATING) === false) {
+            return false;
+        }
+
+        // First we need to create a fresh query instance and touch the creation and
+        // update timestamp on the model which are maintained by us for developer
+        // convenience. Then we will just continue saving the model instances.
+        if ($this->usesTimestamps()) {
+            $this->updateTimestamps();
+        }
 
         // Once we have run the update operation, we will fire the "updated" event for
         // this model instance. This will allow developers to hook into these after
@@ -495,7 +526,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 
             $this->syncChanges();
 
-            // fire updated
+            $this->fireEvent(DbEvent::MODEL_UPDATED);
         }
 
         return true;
@@ -542,7 +573,16 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     protected function performInsert(Builder $query)
     {
-        // fire creating
+        if ($this->fireEvent(DbEvent::MODEL_CREATING) === false) {
+            return false;
+        }
+
+        // First we'll need to create a fresh query instance and touch the creation and
+        // update timestamps on this model, which are maintained by us for developer
+        // convenience. After, we will just continue saving these model instances.
+        if ($this->usesTimestamps()) {
+            $this->updateTimestamps();
+        }
 
         // If the model has an incrementing key, we can use the "insertGetId" method on
         // the query builder, which will give us back the final inserted ID for this
@@ -569,7 +609,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         // during the event. This will allow them to do so and run an update here.
         $this->swoftExists = true;
 
-        // fire created
+        $this->fireEvent(DbEvent::MODEL_CREATED);
+
         return true;
     }
 
@@ -613,15 +654,16 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
             return false;
         }
 
-        // fire deleting
+        if ($this->fireEvent(DbEvent::MODEL_DELETING) === false) {
+            return false;
+        }
 
         $this->performDeleteOnModel();
 
         // Once the model has been deleted, we will fire off the deleted event so that
         // the developers may hook into post-delete operations. We will then return
         // a boolean true as the delete is presumably successful on the database.
-
-        // fire deleted
+        $this->fireEvent(DbEvent::MODEL_DELETED);
 
         return true;
     }

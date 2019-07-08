@@ -15,6 +15,7 @@ use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder as QueryBuilder;
 use Swoft\Stdlib\Contract\Arrayable;
 use Swoft\Stdlib\Helper\PhpHelper;
+use function is_null;
 
 /**
  * Class Builder
@@ -295,12 +296,24 @@ class Builder
     /**
      * Add an "order by" clause for a timestamp to the query.
      *
-     * @param string $column
+     * @param string|null $column
      *
      * @return $this
+     * @throws DbException
      */
     public function latest(string $column = null)
     {
+        if (is_null($column)) {
+            $createAtColumn = $this->model->getCreatedAtColumn();
+
+            // If exist "createAtColumn" use it, otherwise use primary
+            if ($createAtColumn && $this->model->hasSetter($createAtColumn)) {
+                $column = $createAtColumn;
+            } else {
+                $column = $this->model->getKeyName();
+            }
+        }
+
         $this->query->latest($column);
 
         return $this;
@@ -309,12 +322,24 @@ class Builder
     /**
      * Add an "order by" clause for a timestamp to the query.
      *
-     * @param string $column
+     * @param string|null $column
      *
      * @return $this
+     * @throws DbException
      */
     public function oldest(string $column = null)
     {
+        if (is_null($column)) {
+            $createAtColumn = $this->model->getCreatedAtColumn();
+
+            // If exist "createAtColumn" use it, otherwise use primary
+            if ($createAtColumn && $this->model->hasSetter($createAtColumn)) {
+                $column = $createAtColumn;
+            } else {
+                $column = $this->model->getKeyName();
+            }
+        }
+
         $this->query->oldest($column);
 
         return $this;
@@ -519,6 +544,8 @@ class Builder
     {
         // Get safe values
         $values = $this->model->getSafeAttributes($values, true);
+        // Update timestamp
+        $values = $this->addUpdatedAtColumn($values);
         return $this->toBase()->updateOrInsert($attributes, $values);
     }
 
@@ -754,6 +781,8 @@ class Builder
     public function update(array $values)
     {
         $values = $this->model->getSafeAttributes($values, true);
+        // Update timestamp
+        $values = $this->addUpdatedAtColumn($values);
         return $this->toBase()->update($values);
     }
 
@@ -772,7 +801,7 @@ class Builder
     public function increment(string $column, $amount = 1, array $extra = [])
     {
         return $this->toBase()->increment(
-            $column, $amount, $extra
+            $column, $amount, $this->addUpdatedAtColumn($extra)
         );
     }
 
@@ -791,8 +820,75 @@ class Builder
     public function decrement($column, $amount = 1, array $extra = [])
     {
         return $this->toBase()->decrement(
-            $column, $amount, $extra
+            $column, $amount, $this->addUpdatedAtColumn($extra)
         );
+    }
+
+    /**
+     * Add the "updated at" column to an array of values.
+     *
+     * @param array $values
+     *
+     * @return array
+     * @throws DbException
+     */
+    protected function addUpdatedAtColumn(array $values)
+    {
+        $updatedAtColumn = $this->model->getUpdatedAtColumn();
+
+        if (!$this->model->usesTimestamps() ||
+            is_null($updatedAtColumn) ||
+            !$this->model->hasSetter($updatedAtColumn)) {
+            return $values;
+        }
+
+        return $this->fillTimestampColumn($updatedAtColumn, $values);
+    }
+
+    /**
+     * Add the "create at" column to an array of values.
+     *
+     * @param array $values
+     *
+     * @return array
+     */
+    protected function addCreatedAtColumn(array $values)
+    {
+        $createdAtColumn = $this->model->getCreatedAtColumn();
+
+        if (!$this->model->usesTimestamps() ||
+            is_null($createdAtColumn) ||
+            !$this->model->hasSetter($createdAtColumn)) {
+            return $values;
+        }
+
+        return $this->fillTimestampColumn($createdAtColumn, $values);
+    }
+
+    /**
+     * Fill timestamp column
+     *
+     * @param string $column
+     * @param array  $values
+     *
+     * @return array
+     */
+    private function fillTimestampColumn(string $column, array $values): array
+    {
+        $values = array_merge(
+            [$column => $this->model->freshTimestamp($column)],
+            $values
+        );
+
+        $segments = preg_split('/\s+as\s+/i', $this->query->from);
+
+        $qualifiedColumn = end($segments) . '.' . $column;
+
+        $values[$qualifiedColumn] = $values[$column];
+
+        unset($values[$column]);
+
+        return $values;
     }
 
     /**
@@ -943,6 +1039,7 @@ class Builder
         if (empty($values)) {
             return '0';
         }
+        $values = $this->addCreatedAtColumn($values);
         return $this->toBase()->insertGetId($values, $sequence);
     }
 
@@ -966,6 +1063,7 @@ class Builder
         }
         foreach ($values as &$item) {
             $item = $this->model->getSafeAttributes($item, true);
+            $item = $this->addCreatedAtColumn($item);
         }
         unset($item);
         // Filter empty values
@@ -992,15 +1090,19 @@ class Builder
         $count = 0;
         foreach ($values as &$item) {
             $item = $this->model->getSafeAttributes($item, true);
+
             // Check item
             if (empty($item[$primary])) {
                 throw new DbException(__FUNCTION__ . ' method values must exists primary, please check values.');
             }
+
             if ($count === 0) {
                 $count = count($item);
             } elseif ($count != count($item)) {
                 throw new DbException(__FUNCTION__ . ', The parameter length must be consistent.');
             }
+
+            $item = $this->addUpdatedAtColumn($item);
         }
         unset($item);
         // Filter empty values

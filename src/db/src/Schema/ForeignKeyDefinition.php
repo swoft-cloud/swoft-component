@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 
-namespace Illuminate\Database\Schema;
+namespace Swoft\Db\Schema;
 
 use Swoft\Stdlib\Fluent;
 

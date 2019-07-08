@@ -21,14 +21,12 @@ abstract class Grammar extends BaseGrammar
      *
      * @var string
      */
-    public const INT      = 'int';
-    public const NUMBER   = 'number';
-    public const STRING   = 'string';
-    public const FLOAT    = 'float';
-    public const DATETIME = 'datetime';
-    public const BOOLEAN  = 'boolean';
-    public const BOOL     = 'bool';
-    public const ARRAY    = 'array';
+    public const INT     = 'int';      // php integer type
+    public const STRING  = 'string';   // php string type
+    public const FLOAT   = 'float';    // php float type
+    public const BOOLEAN = 'boolean';  // php boolean type
+    public const BOOL    = 'bool';     // php boolean type
+    public const ARRAY   = 'array';    // php array type
 
 
     /**

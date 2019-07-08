@@ -572,4 +572,16 @@ on A.id=B.id;', [$resCount - 20]);
         $user = User::find($id);
         $this->assertEquals($json, $user->getTestJson());
     }
+
+    public function testAutoTimestamp()
+    {
+        $count = Count::new();
+        $count->setUserId($this->addRecord());
+        $count->save();
+
+        $newCount = Count::find($count->getId());
+
+        $this->assertGreaterThan(0, $newCount->getCreateTime());
+        $this->assertGreaterThan(0, strtotime($newCount->getUpdateTime()));
+    }
 }
