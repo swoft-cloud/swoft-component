@@ -2,15 +2,16 @@
 
 namespace Swoft\Server\Helper;
 
+use Swoole\Process;
 use function file_exists;
 use function sleep;
-use Swoole\Process;
 use function time;
 use function unlink;
 use function usleep;
 
 /**
  * Class ServerHelper
+ *
  * @since 2.0
  */
 class ServerHelper
@@ -21,7 +22,6 @@ class ServerHelper
      * @param int    $pid      Process Pid
      * @param int    $signal   SIGTERM = 15
      * @param string $name
-     * @param bool   $force
      * @param int    $waitTime Seconds
      *
      * @return bool
@@ -30,7 +30,6 @@ class ServerHelper
         int $pid,
         int $signal = 15,
         string $name = 'process',
-        bool $force = false,
         int $waitTime = 10
     ): bool {
         // Do stop
@@ -56,7 +55,7 @@ class ServerHelper
             }
 
             if (time() - $startTime > $waitTime) {
-                $errorMsg = "Stop the $name(PID:$pid) failed(timeout)!";
+                $errorMsg = "Stop the $name(PID:$pid) failed(timeout:{$waitTime}s)!";
                 break;
             }
 
@@ -65,12 +64,11 @@ class ServerHelper
         }
 
         if ($errorMsg) {
-            echo PHP_EOL . $errorMsg;
+            echo PHP_EOL . $errorMsg . PHP_EOL;
             return false;
         }
 
-        echo PHP_EOL . 'Stop success !' . PHP_EOL;
-
+        echo ' Successful!' . PHP_EOL;
         return true;
     }
 

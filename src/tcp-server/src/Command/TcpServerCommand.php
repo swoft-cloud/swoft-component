@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\WebSocket\Server\Command;
+namespace Swoft\Tcp\Server\Command;
 
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
@@ -10,23 +10,22 @@ use Swoft\Console\Annotation\Mapping\CommandOption;
 use Swoft\Console\Helper\Show;
 use Swoft\Server\Command\BaseServerCommand;
 use Swoft\Server\Exception\ServerException;
-use Swoft\Server\Swoole\SwooleEvent;
-use Swoft\WebSocket\Server\WebSocketServer;
+use Swoft\Tcp\Server\TcpServer;
 use Throwable;
 use function bean;
 use function input;
 use function output;
 
 /**
- * Class WsServerCommand
+ * Class TcpServerCommand
  *
  * @Command("ws",
  *     coroutine=false,
  *     alias="wsserver,websocket",
- *     desc="provide some commands to manage swoft webSocket server"
+ *     desc="provide some commands to manage swoft tcp server"
  * )
  */
-class WsServerCommand extends BaseServerCommand
+class TcpServerCommand extends BaseServerCommand
 {
     /**
      * Start the WebSocket server
@@ -65,21 +64,14 @@ class WsServerCommand extends BaseServerCommand
         $mainHost = $server->getHost();
         $mainPort = $server->getPort();
 
-        $allowHttp = $server->hasListener(SwooleEvent::REQUEST);
-        $httpText = $allowHttp ? 'enabled' : 'disabled';
-
         // Main server
         $panel = [
             'WebSocket' => [
                 'listen' => $mainHost . ':' . $mainPort,
                 'type'   => $server->getTypeName(),
                 'mode'   => $server->getModeName(),
-                'worker' => $workerNum . " (HTTP:$httpText)",
+                'worker' => $workerNum,
             ],
-            // 'ExtraInfo' => [
-            //     'HttpHandle' => $server->hasListener(SwooleEvent::REQUEST),
-            //     'pidFile'    => $server->getPidFile(),
-            // ],
         ];
 
         // Port Listeners
@@ -87,7 +79,7 @@ class WsServerCommand extends BaseServerCommand
 
         Show::panel($panel);
 
-        output()->writef('<success>WebSocket Server start success !</success>');
+        output()->writef('<success>Tcp Server start success !</success>');
 
         // Start the server
         $server->start();
@@ -124,7 +116,7 @@ class WsServerCommand extends BaseServerCommand
             return;
         }
 
-        output()->writef('<success>Server %s reload success</success>', $script);
+        output()->writef('<success>Tcp Server %s reload success</success>', $script);
     }
 
     /**
@@ -180,17 +172,17 @@ class WsServerCommand extends BaseServerCommand
     }
 
     /**
-     * @return WebSocketServer
+     * @return TcpServer
      * @throws ReflectionException
      * @throws ContainerException
      */
-    private function createServer(): WebSocketServer
+    private function createServer(): TcpServer
     {
         $script  = input()->getScript();
         $command = $this->getFullCommand();
 
-        /* @var WebSocketServer $server */
-        $server = bean('wsServer');
+        /* @var TcpServer $server */
+        $server = bean('tcpServer');
         $server->setScriptFile($script);
         $server->setFullCommand($command);
 

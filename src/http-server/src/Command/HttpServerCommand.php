@@ -12,8 +12,6 @@ use Swoft\Console\Helper\Show;
 use Swoft\Http\Server\HttpServer;
 use Swoft\Server\Command\BaseServerCommand;
 use Swoft\Server\Exception\ServerException;
-use Swoft\Server\ServerInterface;
-use function strtoupper;
 use function bean;
 use function input;
 use function output;
@@ -163,10 +161,15 @@ class HttpServerCommand extends BaseServerCommand
 
         // Check if it has started
         if ($server->isRunning()) {
-            $server->stop();
+            $success = $server->stop();
+
+            if (!$success) {
+                output()->error('Stop the old server failed!');
+                return;
+            }
         }
 
-        output()->writef('<success>Server HTTP reload success !</success>');
+        output()->writef('<success>Server HTTP restart success !</success>');
         $server->startWithDaemonize();
     }
 
@@ -177,7 +180,6 @@ class HttpServerCommand extends BaseServerCommand
      */
     private function createServer(): HttpServer
     {
-        // EnvHelper::check();
         $script  = input()->getScript();
         $command = $this->getFullCommand();
 
