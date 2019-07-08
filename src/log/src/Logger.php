@@ -199,12 +199,12 @@ class Logger extends \Monolog\Logger
     /**
      * Format record
      *
-     * @param string    $message
-     * @param array     $context
-     * @param int       $level
-     * @param string    $levelName
+     * @param string   $message
+     * @param array    $context
+     * @param int      $level
+     * @param string   $levelName
      * @param DateTime $ts
-     * @param array     $extra
+     * @param array    $extra
      *
      * @return array
      */
@@ -604,6 +604,39 @@ class Logger extends \Monolog\Logger
     public function isJson(): bool
     {
         return $this->json;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getLevelsMap(): array
+    {
+        return self::$levels;
+    }
+
+    /**
+     * @param array $levelNames
+     *
+     * @return array
+     */
+    public static function getLevelByNames(array $levelNames): array
+    {
+        $levels = [];
+        foreach ($levelNames as $levelName) {
+            $levelName = trim($levelName);
+
+            // Skip empty, like ''
+            if (empty($levelName)) {
+                continue;
+            }
+
+            $level = array_search($levelName, self::$levels);
+            if ($level !== false) {
+                $levels[] = $level;
+            }
+        }
+
+        return $levels;
     }
 
     /**

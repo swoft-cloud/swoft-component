@@ -9,6 +9,7 @@ use Monolog\Formatter\FormatterInterface;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
 use function sprintf;
+use Swoft\Log\Logger as SwoftLogger;
 use Toolkit\Cli\Color;
 use Toolkit\Cli\ColorTag;
 
@@ -32,16 +33,21 @@ class CEchoHandler extends AbstractProcessingHandler
     /**
      * Write log levels
      *
-     * @var array
+     * @var string
      */
-    protected $levels = [];
+    protected $levels = '';
 
     /**
      * Write log to command line
      *
      * @var bool
      */
-    private $output = true;
+    protected $output = true;
+
+    /**
+     * @var array
+     */
+    protected $levelValues = [];
 
     /**
      * Output message to command line
@@ -75,11 +81,22 @@ class CEchoHandler extends AbstractProcessingHandler
     }
 
     /**
-     * @param array $levels
+     * @param string $levels
      */
-    public function setLevels(array $levels): void
+    public function setLevels(string $levels): void
     {
         $this->levels = $levels;
+
+        if (is_array($this->levels)) {
+            $this->levelValues = $this->levels;
+            return;
+        }
+
+        // Levels like 'notice,error'
+        if (is_string($this->levels)) {
+            $levelNames        = explode(',', $this->levels);
+            $this->levelValues = SwoftLogger::getLevelByNames($levelNames);
+        }
     }
 
     /**
@@ -96,5 +113,19 @@ class CEchoHandler extends AbstractProcessingHandler
     public function setOutput(bool $output): void
     {
         $this->output = $output;
+    }
+
+    /**
+     * @param array $record
+     *
+     * @return bool
+     */
+    public function isHandling(array $record)
+    {
+        if (empty($this->levelValues)) {
+            return true;
+        }
+
+        return in_array($record['level'], $this->levelValues, true);
     }
 }

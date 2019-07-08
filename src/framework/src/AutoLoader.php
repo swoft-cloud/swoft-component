@@ -60,21 +60,13 @@ class AutoLoader extends AnnotationAutoLoader implements DefinitionInterface
                 'class'     => FileHandler::class,
                 'logFile'   => '@runtime/logs/notice.log',
                 'formatter' => bean('lineFormatter'),
-                'levels'    => [
-                    Logger::NOTICE,
-                    Logger::INFO,
-                    Logger::DEBUG,
-                    Logger::TRACE,
-                ],
+                'levels'    => 'notice,info,debug,trace',
             ],
             'applicationHandler' => [
                 'class'     => FileHandler::class,
                 'logFile'   => '@runtime/logs/error.log',
                 'formatter' => bean('lineFormatter'),
-                'levels'    => [
-                    Logger::ERROR,
-                    Logger::WARNING,
-                ],
+                'levels'    => 'error,warning',
             ],
             'logger'             => [
                 'class'        => Logger::class,
