@@ -91,7 +91,8 @@ rm -rf ${TMP_DIR} && mkdir ${TMP_DIR};
 #pwd
 yellow_text "> cp -R $(pwd)/. ${TMP_DIR}"
 cp -R $(pwd)/. ${TMP_DIR}
-cd ${TMP_DIR} && pwd;
+#cd ${TMP_DIR} && git checkout . && pwd;
+cd ${TMP_DIR} && git checkout . && pwd;
 
 for LIB_NAME in ${COMPONENTS} ; do
     colored_text "\n====== Releasing the component:【${LIB_NAME}】" cyan
@@ -108,12 +109,15 @@ for LIB_NAME in ${COMPONENTS} ; do
         continue
     fi
 
-    yellow_text "> git checkout ${LIB_NAME}"
-    git checkout ${LIB_NAME};
+    yellow_text "> git pull ${LIB_NAME}"
+    git pull ${LIB_NAME};
 
-    yellow_text "> git pull ${LIB_NAME} ${TARGET_BRANCH}"
-    git pull ${LIB_NAME} ${TARGET_BRANCH};
+    yellow_text "> git checkout -b ${LIB_NAME}-master ${LIB_NAME}/master"
+    git checkout -b ${LIB_NAME}-master ${LIB_NAME}/master;
 
+#    yellow_text "> git pull ${LIB_NAME} ${TARGET_BRANCH}"
+#    git pull ${LIB_NAME} ${TARGET_BRANCH};
+#    exit
     # like: v2.0.0
     LAST_RELEASE=$(git describe --tags $(git rev-list --tags --max-count=1))
 

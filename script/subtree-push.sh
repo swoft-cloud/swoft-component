@@ -37,8 +37,8 @@ echo ${COMPONENTS}
 # git subtree push --prefix=src/stdlib stdlib master
 for lbName in ${COMPONENTS} ; do
     colored_text "\n======> Push the project:【${lbName}】"
-    yellow_text "> git subtree pull --prefix=src/${lbName} ${lbName} ${TARGET_BRANCH} --squash"
-    git subtree pull --prefix=src/${lbName} ${lbName} ${TARGET_BRANCH} --squash
+#    yellow_text "> git subtree pull --prefix=src/${lbName} ${lbName} ${TARGET_BRANCH} --squash"
+#    git subtree pull --prefix=src/${lbName} ${lbName} ${TARGET_BRANCH} --squash
 
     yellow_text "> git subtree push --prefix=src/${lbName} ${lbName} ${TARGET_BRANCH} --squash"
     git subtree push --prefix=src/${lbName} ${lbName} ${TARGET_BRANCH} --squash
