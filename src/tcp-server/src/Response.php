@@ -6,6 +6,7 @@ use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Tcp\Server\Exception\TcpResponseException;
 use Swoole\Server;
 
 /**
@@ -22,6 +23,13 @@ class Response
      * @var int
      */
     private $reqFd = -1;
+
+    /**
+     * Response fd
+     *
+     * @var int
+     */
+    private $fd = -1;
 
     /**
      * @var mixed
@@ -56,6 +64,7 @@ class Response
      * @param Server|null $server
      *
      * @return int
+     * @throws TcpResponseException
      */
     public function send(Server $server = null): int
     {
@@ -65,7 +74,10 @@ class Response
 
         $server = $server ?: Swoft::server()->getSwooleServer();
 
-        $server->
+        if ($server->send($this->fd, $this->data) === false) {
+            $code = $server->getLastError();
+            throw new TcpResponseException('Error on send data to client', $code);
+        }
     }
 
     /**
@@ -98,5 +110,21 @@ class Response
     public function isSent(): bool
     {
         return $this->sent;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFd(): int
+    {
+        return $this->fd;
+    }
+
+    /**
+     * @param int $fd
+     */
+    public function setFd(int $fd): void
+    {
+        $this->fd = $fd;
     }
 }
