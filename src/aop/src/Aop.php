@@ -8,6 +8,7 @@ use function array_multisort;
 use function count;
 use function explode;
 use function preg_match;
+use SwoftTest\Component\Testing\Aop\RegAop;
 
 /**
  * Class AopRegister
@@ -152,7 +153,11 @@ class Aop
 
             // Class
             [$executionClass, $executionMethod] = $executionAry;
-            if ($executionClass !== $class) {
+
+            // Class reg
+            $classReg = '/' . $executionClass . '/';
+
+            if ($executionClass !== $class && !preg_match($classReg, $class)) {
                 continue;
             }
 

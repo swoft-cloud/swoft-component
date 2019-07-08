@@ -181,43 +181,6 @@ trait InteractsWithInput
     }
 
     /**
-     * Retrieve a json format raw body from the request,
-     * The Content-Type of request must be equal to 'application/json'
-     * When Content-Type is not vaild or can not found the key result,
-     * The method will always return $default.
-     *
-     * @param null|string $key
-     * @param null|mixed  $default
-     *
-     * @return array|string|mixed
-     */
-    public function json(string $key = null, $default = null)
-    {
-        $map = [];
-        try {
-            $contentType = $this->getHeader('content-type');
-            if (!$contentType || false === stripos($contentType[0], 'application/json')) {
-                throw new InvalidArgumentException(sprintf('Invalid Content-Type of the request, expects %s, %s given',
-                    'application/json', ($contentType ? current($contentType) : 'null')));
-            }
-
-            $body = $this->getBody();
-            if ($body instanceof Stream) {
-                $raw = $body->getContents();
-                $map = JsonHelper::decode($raw, true);
-            }
-        } catch (Exception $e) {
-            return $default;
-        }
-
-        if ($key === null) {
-            return $map ?: $default;
-        }
-
-        return ArrayHelper::get($map, $key, $default);
-    }
-
-    /**
      * Retrieve a upload item from the request
      *
      * @param string $key

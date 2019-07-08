@@ -437,7 +437,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
             'name'    => 'swoft',
             'enable'  => true,
             'output'  => true,
-            'levels'  => [],
+            'levels'  => '',
             'logFile' => ''
         ];
     }

@@ -29,12 +29,13 @@ before_install:
     PRIMARY KEY (`id`)
     ) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     CREATE TABLE `count` (
-    `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-    `user_id` int(11) DEFAULT NULL,
-    `create_time` int(11) DEFAULT NULL,
-    `attributes` varchar(244) DEFAULT NULL,
-    PRIMARY KEY (`id`)
-    ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+      `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+      `user_id` int(11) DEFAULT NULL,
+      `create_time` int(11) DEFAULT NULL,
+      `attributes` varchar(244) DEFAULT NULL,
+      `update_time` timestamp NULL DEFAULT NULL,
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
     CREATE DATABASE IF NOT EXISTS test2;
     USE test2;
     CREATE TABLE `user` (
