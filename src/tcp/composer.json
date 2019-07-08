@@ -1,5 +1,5 @@
 {
-  "name": "swoft/tcp-protocol",
+  "name": "swoft/tcp",
   "type": "library",
   "keywords": [
     "php",
