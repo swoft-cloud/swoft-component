@@ -53,7 +53,6 @@ class ConnectListener implements ConnectInterface
 
             /** @var TcpDispatcher $dispatcher */
             // $dispatcher = Swoft::getSingleton('tcpDispatcher');
-
         } catch (Throwable $e) {
             Swoft::trigger(TcpServerEvent::CONNECT_ERROR, $e, $fd);
 

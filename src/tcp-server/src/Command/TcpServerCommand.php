@@ -66,7 +66,7 @@ class TcpServerCommand extends BaseServerCommand
 
         // Main server
         $panel = [
-            'WebSocket' => [
+            'TCP' => [
                 'listen' => $mainHost . ':' . $mainPort,
                 'type'   => $server->getTypeName(),
                 'mode'   => $server->getModeName(),
@@ -79,7 +79,7 @@ class TcpServerCommand extends BaseServerCommand
 
         Show::panel($panel);
 
-        output()->writef('<success>Tcp Server start success !</success>');
+        output()->writef('<success>Tcp server start success !</success>');
 
         // Start the server
         $server->start();
