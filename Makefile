@@ -16,7 +16,7 @@ addrmt:
 spush:
 	bash ./script/subtree-push.sh all
 
-  release:	## Release all sub-repo to new tag version and push to remote repo
+  release:	## Release all sub-repo to new tag version and push to remote repo. eg: tag=v2.0.3
 release:
 	bash ./script/release-tag.sh -a -y -t $(TAG)
 
