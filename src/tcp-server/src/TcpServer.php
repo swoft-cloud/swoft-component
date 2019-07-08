@@ -22,6 +22,11 @@ class TcpServer extends Server
     /**
      * @var string
      */
+    protected $pidName = 'swoft-tcp';
+
+    /**
+     * @var string
+     */
     protected $pidFile = '@runtime/swoft-ws.pid';
 
     /**

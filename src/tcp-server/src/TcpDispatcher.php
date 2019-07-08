@@ -15,9 +15,9 @@ class TcpDispatcher
 {
     /**
      * @param SwServer $server
-     * @param int      $fd
+     * @param Request  $request
      */
-    public function close(SwServer $server, int $fd): void
+    public function dispatch(SwServer $server, Request $request): Response
     {
         // TODO ...
     }

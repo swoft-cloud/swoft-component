@@ -23,13 +23,13 @@ use function output;
  * @Command("ws",
  *     coroutine=false,
  *     alias="wsserver,websocket",
- *     desc="provide some commands to manage swoft WebSocket server"
+ *     desc="provide some commands to manage swoft websocket server"
  * )
  */
 class WsServerCommand extends BaseServerCommand
 {
     /**
-     * Start the WebSocket server
+     * Start the websocket server
      *
      * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
      * @CommandOption("daemon", short="d", desc="Run server on the background", default="false", type="bool")
@@ -150,7 +150,7 @@ class WsServerCommand extends BaseServerCommand
     }
 
     /**
-     * Restart the http server
+     * Restart the websocket server
      *
      * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
      * @CommandOption("daemon", short="d", desc="Run server on the background")
@@ -167,7 +167,12 @@ class WsServerCommand extends BaseServerCommand
 
         // Check if it has started
         if ($server->isRunning()) {
-            $server->stop();
+            $success = $server->stop();
+
+            if (!$success) {
+                output()->error('Stop the old server failed!');
+                return;
+            }
         }
 
         // Restart server
@@ -181,10 +186,6 @@ class WsServerCommand extends BaseServerCommand
      */
     private function createServer(): WebSocketServer
     {
-        // check env
-        // EnvHelper::check();
-
-        // http server初始化
         $script  = input()->getScript();
         $command = $this->getFullCommand();
 

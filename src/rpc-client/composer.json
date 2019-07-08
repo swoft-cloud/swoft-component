@@ -7,7 +7,7 @@
         "swoft",
         "rpc"
     ],
-    "description": "microservice framework base on swoole",
+    "description": "swoft rpc client component",
     "license": "Apache-2.0",
     "require": {
         "swoft/framework": "~2.0.0",

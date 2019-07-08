@@ -20,11 +20,6 @@ final class TcpServerEvent
     public const CONNECT_ERROR = 'swoft.tcp.server.connect.error';
 
     /**
-     * On connect after
-     */
-    public const AFTER_CONNECT = 'swoft.tcp.server.connect.after';
-
-    /**
      * On receive
      */
     public const RECEIVE = 'swoft.tcp.server.receive';
@@ -43,11 +38,6 @@ final class TcpServerEvent
      * On close
      */
     public const CLOSE = 'swoft.tcp.server.close';
-
-    /**
-     * After close
-     */
-    public const AFTER_CLOSE = 'swoft.tcp.server.close.after';
 
     /**
      * On close error

@@ -7,7 +7,7 @@
         "swoft",
         "rpc"
     ],
-    "description": "microservice framework base on swoole",
+    "description": "swoft proxy component",
     "license": "Apache-2.0",
     "require": {
         "nikic/php-parser": "~4.2",
