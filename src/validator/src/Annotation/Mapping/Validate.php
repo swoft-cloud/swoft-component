@@ -36,6 +36,11 @@ class Validate
     /**
      * @var array
      */
+    private $unfields = [];
+
+    /**
+     * @var array
+     */
     private $params = [];
 
     /**
@@ -63,6 +68,9 @@ class Validate
         }
         if (isset($values['fields'])) {
             $this->fields = $values['fields'];
+        }
+        if (isset($values['unfields'])) {
+            $this->unfields = $values['unfields'];
         }
         if (isset($values['params'])) {
             $this->params = $values['params'];
@@ -97,6 +105,14 @@ class Validate
     public function getFields(): array
     {
         return $this->fields;
+    }
+
+    /**
+     * @return array
+     */
+    public function getUnfields(): array
+    {
+        return $this->unfields;
     }
 
     /**
