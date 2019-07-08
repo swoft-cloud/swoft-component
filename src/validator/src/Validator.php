@@ -32,13 +32,20 @@ class Validator
      * @param array  $fields
      * @param array  $userValidators
      *
+     * @param array  $unfields
+     *
      * @return array
      * @throws ContainerException
      * @throws ReflectionException
      * @throws ValidatorException
      */
-    public function validate(array $data, string $validatorName, array $fields = [], array $userValidators = []): array
-    {
+    public function validate(
+        array $data,
+        string $validatorName,
+        array $fields = [],
+        array $userValidators = [],
+        array $unfields = []
+    ): array {
         if (empty($data)) {
             throw new ValidatorException('Validator data is empty!');
         }
@@ -52,7 +59,7 @@ class Validator
             );
         }
 
-        $data = $this->validateValidator($data, $type, $validatorName, [], $validator, $fields);
+        $data = $this->validateValidator($data, $type, $validatorName, [], $validator, $fields, $unfields);
         if (empty($userValidators)) {
             return $data;
         }
@@ -73,7 +80,7 @@ class Validator
                 );
             }
 
-            $data = $this->validateValidator($data, $type, $userValidator, $params, $validator, $fields);
+            $data = $this->validateValidator($data, $type, $userValidator, $params, $validator, $fields, $unfields);
         }
 
         return $data;
@@ -100,19 +107,21 @@ class Validator
                 );
             }
 
-            $type   = $validator['type'];
-            $fields = $validate['fields'] ?? [];
-            $params = $validate['params'] ?? [];
+            $type     = $validator['type'];
+            $fields   = $validate['fields'] ?? [];
+            $unfields = $validate['unfields'] ?? [];
+            $params   = $validate['params'] ?? [];
 
             $validateType = $validate['type'];
 
             // Get query params
             if ($validateType == ValidateType::GET) {
-                $query = $this->validateValidator($query, $type, $validateName, $params, $validator, $fields);
+                $query = $this->validateValidator($query, $type, $validateName, $params, $validator, $fields,
+                    $unfields);
                 continue;
             }
 
-            $body = $this->validateValidator($body, $type, $validateName, $params, $validator, $fields);
+            $body = $this->validateValidator($body, $type, $validateName, $params, $validator, $fields, $unfields);
         }
         return [$body, $query];
     }
@@ -125,6 +134,8 @@ class Validator
      * @param array  $validator
      * @param array  $fields
      *
+     * @param array  $unfields
+     *
      * @return array
      * @throws ContainerException
      * @throws ReflectionException
@@ -136,14 +147,15 @@ class Validator
         string $validateName,
         array $params,
         array $validator,
-        array $fields
+        array $fields,
+        array $unfields = []
     ): array {
         // User validator
         if ($type == ValidatorRegister::TYPE_USER) {
             return $this->validateUserValidator($validateName, $data, $params);
         }
 
-        return $this->validateDefaultValidator($data, $validator, $fields);
+        return $this->validateDefaultValidator($data, $validator, $fields, $unfields);
     }
 
     /**
@@ -151,15 +163,22 @@ class Validator
      * @param array $validator
      * @param array $fields
      *
+     * @param array $unfields
+     *
      * @return array
      * @throws ContainerException
      * @throws ReflectionException
      */
-    protected function validateDefaultValidator(array $data, array $validator, array $fields): array
+    protected function validateDefaultValidator(array $data, array $validator, array $fields, array $unfields): array
     {
         $properties = $validator['properties'] ?? [];
         foreach ($properties as $propName => $property) {
             if (!empty($fields) && !in_array($propName, $fields)) {
+                continue;
+            }
+
+            // Unfields
+            if (in_array($propName, $unfields)) {
                 continue;
             }
 
