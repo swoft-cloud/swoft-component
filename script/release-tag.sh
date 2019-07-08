@@ -115,9 +115,9 @@ for LIB_NAME in ${COMPONENTS} ; do
     yellow_text "> git checkout -b ${LIB_NAME}-master ${LIB_NAME}/master"
     git checkout -b ${LIB_NAME}-master ${LIB_NAME}/master;
 
-    yellow_text "> git pull ${LIB_NAME} ${TARGET_BRANCH}"
-    git pull ${LIB_NAME} ${TARGET_BRANCH};
-    exit
+#    yellow_text "> git pull ${LIB_NAME} ${TARGET_BRANCH}"
+#    git pull ${LIB_NAME} ${TARGET_BRANCH};
+#    exit
     # like: v2.0.0
     LAST_RELEASE=$(git describe --tags $(git rev-list --tags --max-count=1))
 
