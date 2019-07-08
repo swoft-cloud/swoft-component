@@ -65,7 +65,7 @@ class Response
 
         $server = $server ?: Swoft::server()->getSwooleServer();
 
-        $server->
+        //$server->
     }
 
     /**
