@@ -10,6 +10,7 @@ use Swoft\Console\Annotation\Mapping\CommandOption;
 use Swoft\Console\Helper\Show;
 use Swoft\Server\Command\BaseServerCommand;
 use Swoft\Server\Exception\ServerException;
+use Swoft\Server\Swoole\SwooleEvent;
 use Swoft\WebSocket\Server\WebSocketServer;
 use Throwable;
 use function bean;
@@ -64,17 +65,20 @@ class WsServerCommand extends BaseServerCommand
         $mainHost = $server->getHost();
         $mainPort = $server->getPort();
 
+        $allowHttp = $server->hasListener(SwooleEvent::REQUEST);
+        $httpText = $allowHttp ? 'enabled' : 'disabled';
+
         // Main server
         $panel = [
             'WebSocket' => [
                 'listen' => $mainHost . ':' . $mainPort,
                 'type'   => $server->getTypeName(),
                 'mode'   => $server->getModeName(),
-                'worker' => $workerNum,
+                'worker' => $workerNum . " (HTTP:$httpText)",
             ],
-            // 'Extra'     => [
-            // 'httpHandle' => $httpEnable,
-            //     'pidFile' => $server->getPidFile(),
+            // 'ExtraInfo' => [
+            //     'HttpHandle' => $server->hasListener(SwooleEvent::REQUEST),
+            //     'pidFile'    => $server->getPidFile(),
             // ],
         ];
 

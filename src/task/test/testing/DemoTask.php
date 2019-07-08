@@ -103,4 +103,22 @@ class DemoTask
     {
         return true;
     }
+
+    /**
+     * @TaskMapping()
+     *
+     * @return null
+     */
+    public function nullReturn()
+    {
+        return null;
+    }
+
+    /**
+     * @TaskMapping()
+     */
+    public function voidReturn2()
+    {
+        return;
+    }
 }

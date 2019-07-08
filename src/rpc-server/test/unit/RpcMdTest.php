@@ -47,4 +47,23 @@ class RpcMdTest extends TestCase
         $response = $this->mockRpcServer->call(DemoInterface::class, 'getInfo', [12], [], '1.3');
         $this->assertEquals($data, $response->getData());
     }
+
+    /**
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Rpc\Exception\RpcException
+     */
+    public function testNotClassMd()
+    {
+        $data = [
+            'name'     => 'notClassMd',
+            'ClassMd2' => 'ClassMd2',
+            'ClassMd3' => 'ClassMd3',
+            'ClassMd'  => 'ClassMd',
+            'userMd'   => 'userMd'
+        ];
+
+        $response = $this->mockRpcServer->call(DemoInterface::class, 'notClassMd', [12], [], '1.3');
+        $this->assertEquals($data, $response->getData());
+    }
 }

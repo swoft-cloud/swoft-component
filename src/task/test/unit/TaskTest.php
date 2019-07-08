@@ -132,4 +132,26 @@ class TaskTest extends TestCase
         $result = $this->mockTaskServer->co('demoTestTask', 'booReturn', []);
         $this->assertTrue($result);
     }
+
+    /**
+     * @throws TaskException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function testNullReturn()
+    {
+        $result = $this->mockTaskServer->co('demoTestTask', 'nullReturn', []);
+        $this->assertNull($result);
+    }
+
+    /**
+     * @throws TaskException
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     */
+    public function testVoidReturn()
+    {
+        $result = $this->mockTaskServer->co('demoTestTask', 'voidReturn2', []);
+        $this->assertNull($result);
+    }
 }

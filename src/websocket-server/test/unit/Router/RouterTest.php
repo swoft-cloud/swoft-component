@@ -27,7 +27,6 @@ class RouterTest extends TestCase
         /** @var Router $router */
         $router = bean('wsRouter');
 
-        $this->assertFalse($router->isEnableDynamicRoute());
         $this->assertTrue($router->hasModule('/ws-test/chat'));
         $this->assertGreaterThan(0, $router->getCounter());
         $this->assertGreaterThan(0, $router->getModuleCount());
@@ -67,20 +66,17 @@ class RouterTest extends TestCase
     {
         /** @var Router $router */
         $router = new Router();
+        $router->addModule('/page/{name}', ['name' => 'test']);
 
-        // not enable
-        $this->assertFalse($router->isEnableDynamicRoute());
-        $router->addModule('/users/{id}', ['name' => 'test']);
-
-        $info = $router->match('/users/12');
-        $this->assertEmpty($info);
-
-        $info = $router->match('/users/{id}');
+        $info = $router->match('/page/about');
         $this->assertNotEmpty($info);
-        $this->assertSame('/users/{id}', $info['path']);
 
-        // open dynamic route
-        $router->setEnableDynamicRoute(true);
+        // limit by regex
+        $router->addModule('/users/{id}', [
+            'params' => [
+                'id' => '\d+'
+            ]
+        ]);
 
         $info = $router->match('/users/12');
         $this->assertNotEmpty($info);
@@ -89,7 +85,7 @@ class RouterTest extends TestCase
         $this->assertNotEmpty($info['routeParams']['id']);
         $this->assertSame('12', $info['routeParams']['id']);
 
-        $this->assertTrue($router->isEnableDynamicRoute());
-        $router->setEnableDynamicRoute(false);
+        $info = $router->match('/users/tom');
+        $this->assertEmpty($info);
     }
 }

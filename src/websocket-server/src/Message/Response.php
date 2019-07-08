@@ -4,23 +4,20 @@ namespace Swoft\WebSocket\Server\Message;
 
 use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\WebSocket\Server\Contract\ResponseInterface;
 use Swoft\WebSocket\Server\WebSocketServer;
+use function bean;
 use const WEBSOCKET_OPCODE_TEXT;
 
 /**
  * Class Response
  *
- * @since 2.0
- *
+ * @since 2.0.1
  * @Bean(scope=Bean::PROTOTYPE)
  */
 class Response implements ResponseInterface
 {
-    use PrototypeTrait;
-
     /**
      * Receiver fd
      *
@@ -81,7 +78,7 @@ class Response implements ResponseInterface
      */
     public static function new(int $sender = -1): self
     {
-        $self = self::__instance();
+        $self = bean(self::class);
 
         // Set properties
         $self->sent      = false;

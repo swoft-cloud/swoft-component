@@ -726,6 +726,18 @@ class StringHelper
 
     /**
      * @param string $path
+     *
+     * @return string
+     */
+    public static function formatPath(string $path): string
+    {
+        $path = '/' . trim($path, '/ ');
+
+        return $path ?: '/';
+    }
+
+    /**
+     * @param string $path
      * @return string
      */
     public static function rmPharPrefix(string $path): string

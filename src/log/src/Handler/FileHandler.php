@@ -17,6 +17,8 @@ use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Co;
 use Swoft\Log\Helper\Log;
+use Swoft\Log\Logger;
+use Swoft\Log\Logger as SwoftLogger;
 use Swoft\Stdlib\Helper\JsonHelper;
 use UnexpectedValueException;
 
@@ -30,9 +32,9 @@ class FileHandler extends AbstractProcessingHandler
     /**
      * Write log levels
      *
-     * @var array
+     * @var string
      */
-    protected $levels = [];
+    protected $levels = '';
 
     /**
      * Write log file
@@ -42,12 +44,28 @@ class FileHandler extends AbstractProcessingHandler
     protected $logFile = '';
 
     /**
+     * @var array
+     */
+    protected $levelValues = [];
+
+    /**
      * Will exec on construct
      */
     public function init(): void
     {
         $this->logFile = alias($this->logFile);
         $this->createDir();
+
+        if (is_array($this->levels)) {
+            $this->levelValues = $this->levels;
+            return;
+        }
+
+        // Levels like 'notice,error'
+        if (is_string($this->levels)) {
+            $levelNames        = explode(',', $this->levels);
+            $this->levelValues = SwoftLogger::getLevelByNames($levelNames);
+        }
     }
 
     /**
@@ -167,10 +185,10 @@ class FileHandler extends AbstractProcessingHandler
      */
     public function isHandling(array $record): bool
     {
-        if (empty($this->levels)) {
+        if (empty($this->levelValues)) {
             return true;
         }
 
-        return in_array($record['level'], $this->levels, true);
+        return in_array($record['level'], $this->levelValues, true);
     }
 }

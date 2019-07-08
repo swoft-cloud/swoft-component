@@ -58,6 +58,21 @@ class DemoMdService implements DemoInterface
         return ['name' => 'info'];
     }
 
+    /**
+     * @return array
+     */
+    public function notClassMd(): array
+    {
+        return [
+            'name' => 'notClassMd'
+        ];
+    }
+
+    public function returnNull(): void
+    {
+        return ;
+    }
+
     public function delete(int $id): bool
     {
         return true;

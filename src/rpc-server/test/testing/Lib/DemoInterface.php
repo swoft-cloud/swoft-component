@@ -26,6 +26,11 @@ interface DemoInterface
     public function getInfo($uid);
 
     /**
+     * @return array
+     */
+    public function notClassMd(): array;
+
+    /**
      * @param int $id
      *
      * @return bool
@@ -36,4 +41,9 @@ interface DemoInterface
      * @return bool
      */
     public function error(): bool;
+
+    /**
+     * Return null
+     */
+    public function returnNull(): void;
 }
