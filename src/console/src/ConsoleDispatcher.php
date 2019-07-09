@@ -15,12 +15,14 @@ use Swoft\Contract\DispatcherInterface;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoft\SwoftEvent;
 use Swoole\Event;
+use Swoole\Runtime;
 use Throwable;
 use function get_class;
 use function get_parent_class;
 
 /**
  * Class ConsoleDispatcher
+ *
  * @since 2.0
  * @Bean("cliDispatcher")
  */
@@ -28,6 +30,7 @@ class ConsoleDispatcher implements DispatcherInterface
 {
     /**
      * @param array $params
+     *
      * @return void
      * @throws ReflectionException
      * @throws Throwable
@@ -50,6 +53,9 @@ class ConsoleDispatcher implements DispatcherInterface
             return;
         }
 
+        // Hook php io function
+        Runtime::enableCoroutine();
+
         // Coroutine running
         Co::create(function () use ($beanObject, $method, $bindParams) {
             $this->executeByCo($beanObject, $method, $bindParams);
@@ -62,6 +68,7 @@ class ConsoleDispatcher implements DispatcherInterface
      * @param object $beanObject
      * @param string $method
      * @param array  $bindParams
+     *
      * @throws Throwable
      */
     public function executeByCo($beanObject, string $method, array $bindParams): void
@@ -94,6 +101,7 @@ class ConsoleDispatcher implements DispatcherInterface
      *
      * @param string $class
      * @param string $method
+     *
      * @return array
      * @throws ReflectionException
      */
@@ -109,9 +117,9 @@ class ConsoleDispatcher implements DispatcherInterface
         $methodParams = $classInfo['methods'][$method]['params'];
 
         /**
-         * @var string          $name
+         * @var string         $name
          * @var ReflectionType $paramType
-         * @var mixed           $devVal
+         * @var mixed          $devVal
          */
         foreach ($methodParams as [, $paramType, $devVal]) {
             // Defined type of the param
@@ -153,6 +161,7 @@ class ConsoleDispatcher implements DispatcherInterface
      * Before dispatch
      *
      * @param array $params
+     *
      * @throws Throwable
      */
     public function before(...$params): void
@@ -166,6 +175,7 @@ class ConsoleDispatcher implements DispatcherInterface
      * After dispatch
      *
      * @param array $params
+     *
      * @throws Throwable
      */
     public function after(...$params): void
