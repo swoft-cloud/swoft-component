@@ -2,9 +2,6 @@
 
 namespace SwoftTest\WebSocket\Server\Testing;
 
-use ReflectionException;
-use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\Arr;
 use Swoole\Http\Request;
 
@@ -12,8 +9,6 @@ use Swoole\Http\Request;
  * Class MockHttpRequest
  *
  * @since 2.0
- *
- * @Bean(scope=Bean::PROTOTYPE)
  */
 class MockHttpRequest extends Request
 {
@@ -84,22 +79,20 @@ class MockHttpRequest extends Request
      * @param array $params
      *
      * @return self
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(array $server, array $headers, array $cookies, array $params): self
     {
-        $instance = \bean(self::class);
+        $instance = new self;
 
         $instance->cookie = $cookies;
         $instance->header = Arr::merge(self::defaultHeaders(), $headers);
         $instance->server = Arr::merge(self::defaultServers(), $server);
 
-        if ($server['request_method'] == self::GET) {
+        if ($server['request_method'] === self::GET) {
             $instance->get = $params;
         }
 
-        if ($server['request_method'] == self::POST) {
+        if ($server['request_method'] === self::POST) {
             $instance->post = $params;
         }
 

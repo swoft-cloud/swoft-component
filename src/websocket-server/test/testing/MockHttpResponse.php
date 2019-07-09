@@ -2,27 +2,19 @@
 
 namespace SwoftTest\WebSocket\Server\Testing;
 
-use ReflectionException;
-use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\ContainerException;
 use Swoole\Http\Response;
 
 /**
  * Class MockHttpResponse
  *
  * @since 2.0
- *
- * @Bean(scope=Bean::PROTOTYPE)
  */
 class MockHttpResponse extends Response
 {
-    use PrototypeTrait;
-
     /**
      * Status success
      */
-    public const STATUS_SUCCESS = 200;
+    public const STATUS200 = 200;
 
     /**
      * @var string
@@ -41,12 +33,10 @@ class MockHttpResponse extends Response
 
     /**
      * @return self
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function new(): self
     {
-        return \bean(self::class);
+        return new self;
     }
 
     /**
@@ -77,16 +67,22 @@ class MockHttpResponse extends Response
     }
 
     /**
-     * @param string $name
-     * @param string $value
-     * @param int|string $expires
+     * @param string      $name
+     * @param string      $value
+     * @param int|string  $expires
      * @param string|null $path
-     * @param string $domain
-     * @param bool   $secure
-     * @param bool   $httpOnly
+     * @param string      $domain
+     * @param bool        $secure
+     * @param bool        $httpOnly
      */
     public function cookie(
-        $name, $value = null, $expires = null, $path = null, $domain = null, $secure = null, $httpOnly = null
+        $name,
+        $value = null,
+        $expires = null,
+        $path = null,
+        $domain = null,
+        $secure = null,
+        $httpOnly = null
     ) {
         $result = \urlencode($name) . '=' . \urlencode($value);
 
