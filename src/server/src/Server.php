@@ -759,9 +759,10 @@ abstract class Server implements ServerInterface
 
         // SIGTERM = 15
         if (ServerHelper::killAndWait($pid, 15, $this->pidName)) {
-            $rmPidFile     = ServerHelper::removePidFile(alias($this->pidFile));
-            $rmCommandFile = ServerHelper::removePidFile(alias($this->commandFile));
-            return $rmPidFile && $rmCommandFile;
+            ServerHelper::removePidFile(alias($this->pidFile));
+            ServerHelper::removePidFile(alias($this->commandFile));
+
+            return true;
         }
 
         return false;
