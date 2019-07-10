@@ -418,8 +418,10 @@ abstract class Server implements ServerInterface
             throw new ServerException('You must to new server before start swoole!');
         }
 
-        // Hook php io function
-        Runtime::enableCoroutine();
+        // Always enable coroutine hook on server
+        if (!Swoft::app()->isEnableCoroutine()) {
+            Runtime::enableCoroutine();
+        }
 
         Swoft::trigger(ServerEvent::BEFORE_SETTING, $this);
 
