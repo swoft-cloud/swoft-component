@@ -2,27 +2,22 @@
 
 namespace SwoftTool\Command;
 
-use InvalidArgumentException;
 use Toolkit\Cli\App;
 use Toolkit\Cli\Color;
 use function basename;
 use function file_get_contents;
 use function file_put_contents;
-use function glob;
-use function is_dir;
 use function str_replace;
 use function strtr;
 use function ucwords;
 use const BASE_PATH;
-use const GLOB_MARK;
-use const GLOB_ONLYDIR;
 
 /**
  * Class GenReadme
  *
  * @package SwoftTool\Command
  */
-class GenReadme
+class GenReadme extends BaseCommand
 {
     /**
      * @var string
@@ -36,6 +31,12 @@ class GenReadme
             'desc'  => 'generate readme file for swoft component(s)',
             'usage' => 'gen:readme NAME(s)',
             'help'  => <<<STR
+Arguments:
+  names   The component names
+
+Options:
+  --all     Apply for all components
+
 Example:
   {{command}} --all
   {{command}} http-server
@@ -47,44 +48,26 @@ STR,
 
     public function __construct()
     {
+        parent::__construct();
+
         $this->tplFile = BASE_PATH . '/script/template/readme.tpl';
     }
 
     public function __invoke(App $app): void
     {
-        $libsDir = BASE_PATH . '/src/';
-
-        // For all components
-        if ($app->getOpt('all', false)) {
-            $flags  = GLOB_ONLYDIR | GLOB_MARK;
-            $tplStr = file_get_contents($this->tplFile);
-
-            foreach (glob($libsDir . '*', $flags) as $dir) {
-                $this->genReadmeFile($tplStr, $dir);
-            }
-
-            return;
-        }
-
-        // For some components
-        if (!$names = $app->getArgs()) {
-            throw new InvalidArgumentException('Please input component names');
-        }
-
         $tplStr = file_get_contents($this->tplFile);
 
-        foreach ($names as $name) {
-            $dir = $libsDir . $name;
-
-            if (!is_dir($dir)) {
-                echo Color::render("Invalid component name: $name\n", 'error');
-                continue;
-            }
-
-            $this->genReadmeFile($tplStr, $dir . '/');
+        foreach ($this->findComponents($app) as $dir) {
+            $this->genReadmeFile($tplStr, $dir);
         }
+
+        echo Color::render("Complete\n", 'cyan');
     }
 
+    /**
+     * @param string $str
+     * @param string $dir
+     */
     private function genReadmeFile(string $str, string $dir): void
     {
         $name = basename($dir);
@@ -96,9 +79,8 @@ STR,
             '{{componentUpWord}}' => ucwords(str_replace('-', ' ', $name)),
         ];
 
-        $str  = strtr($str, $data);
-        $file = $dir . 'README.md';
+        $str = strtr($str, $data);
 
-        file_put_contents($file, $str);
+        file_put_contents($dir . 'README.md', $str);
     }
 }

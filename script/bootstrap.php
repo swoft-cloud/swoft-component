@@ -38,9 +38,3 @@ spl_autoload_register(function ($class) use ($npMap) {
         }
     }
 });
-
-// Runtime::enableCoroutine();
-//
-// $application = new TestApplication();
-// $application->setBeanFile(__DIR__ . '/testing/bean.php');
-// $application->run();

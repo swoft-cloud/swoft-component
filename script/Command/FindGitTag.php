@@ -15,14 +15,14 @@ use function trim;
  *
  * @package SwoftTool\Command
  */
-class GitInfo
+class FindGitTag
 {
     public function getHelpConfig(): array
     {
         return [
-            'name'  => 'git:tag',
+            'name'  => 'tag:find',
             'desc'  => 'get the latest/next tag from the project directory',
-            'usage' => 'gen:latest-tag [DIR]',
+            'usage' => 'tag:find [DIR]',
             'help'  => <<<STR
 Options:
   --dir, -d      The project directory path. default is current directory.
@@ -64,7 +64,6 @@ STR,
 
         // run
         [$code, $tagName, ] = Sys::run($cmd, $dir);
-
         if ($code !== 0) {
             Show::error('No any tags of the project', -2);
             return;
