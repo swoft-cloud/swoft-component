@@ -159,7 +159,7 @@ trait HasAttributes
      *
      * @return bool
      */
-    public function hasGetMutator($key)
+    public function hasGetter($key)
     {
         return method_exists($this, 'get' . Str::studly($key));
     }
@@ -282,7 +282,7 @@ trait HasAttributes
      */
     protected function asJson($value)
     {
-        return json_encode($value);
+        return json_encode($value, JSON_UNESCAPED_UNICODE);
     }
 
     /**
@@ -402,7 +402,7 @@ trait HasAttributes
                 $value = ObjectHelper::parseParamType($type, $value);
                 if ($encode === true && $type === Grammar::ARRAY && !is_scalar($value)) {
                     // Array to string
-                    $value = json_encode($value, JSON_UNESCAPED_UNICODE);
+                    $value = $this->asJson($value);
                 }
             }
             $safeAttributes[$key] = $value;
@@ -449,7 +449,10 @@ trait HasAttributes
      */
     public function syncOriginal()
     {
-        $this->modelOriginal = $this->modelAttributes;
+        $attributes = $this->getArrayableAttributes();
+
+        $this->modelAttributes = $attributes;
+        $this->modelOriginal   = $attributes;
 
         return $this;
     }

@@ -80,6 +80,7 @@ class SchemaBuilderTest extends TestCase
             $blueprint->index(['uid', 'id']);
             $blueprint->jsonb('test_json_1');
             $blueprint->unique(['uuid', 'id'], 'unq_uuid_id');
+            $blueprint->softDeletes();
         });
 
         Schema::createIfNotExists($table, function (Blueprint $blueprint) {

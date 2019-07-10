@@ -624,7 +624,7 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function get(array $columns = ['*'])
+    public function get(array $columns = ['*']): Collection
     {
         $builder = $this;
 
@@ -657,7 +657,7 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function cursor()
+    public function cursor(): Generator
     {
         foreach ($this->query->cursor() as $record) {
             yield $this->model->newFromBuilder($record);
@@ -722,7 +722,7 @@ class Builder
      * @return void
      * @throws DbException
      */
-    protected function enforceOrderBy()
+    protected function enforceOrderBy(): void
     {
         if (empty($this->query->orders) && empty($this->query->unionOrders)) {
             $this->orderBy($this->model->getQualifiedKeyName(), 'asc');
@@ -761,7 +761,7 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function create(array $attributes = [])
+    public function create(array $attributes = []): Model
     {
         $instance = $this->newModelInstance($attributes);
         $instance->save();
@@ -778,7 +778,7 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function update(array $values)
+    public function update(array $values): int
     {
         $values = $this->model->getSafeAttributes($values, true);
         // Update timestamp
@@ -798,7 +798,7 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function increment(string $column, $amount = 1, array $extra = [])
+    public function increment(string $column, $amount = 1, array $extra = []): int
     {
         return $this->toBase()->increment(
             $column, $amount, $this->addUpdatedAtColumn($extra)
@@ -817,7 +817,7 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function decrement($column, $amount = 1, array $extra = [])
+    public function decrement($column, $amount = 1, array $extra = []): int
     {
         return $this->toBase()->decrement(
             $column, $amount, $this->addUpdatedAtColumn($extra)
@@ -832,13 +832,14 @@ class Builder
      * @return array
      * @throws DbException
      */
-    protected function addUpdatedAtColumn(array $values)
+    protected function addUpdatedAtColumn(array $values): array
     {
         $updatedAtColumn = $this->model->getUpdatedAtColumn();
 
         if (!$this->model->usesTimestamps() ||
-            is_null($updatedAtColumn) ||
-            !$this->model->hasSetter($updatedAtColumn)) {
+            !$this->model->hasSetter($updatedAtColumn) ||
+            is_null($updatedAtColumn)
+        ) {
             return $values;
         }
 
@@ -852,13 +853,15 @@ class Builder
      *
      * @return array
      */
-    protected function addCreatedAtColumn(array $values)
+    protected function addCreatedAtColumn(array $values): array
     {
         $createdAtColumn = $this->model->getCreatedAtColumn();
 
         if (!$this->model->usesTimestamps() ||
+            !$this->model->hasSetter($createdAtColumn) ||
             is_null($createdAtColumn) ||
-            !$this->model->hasSetter($createdAtColumn)) {
+            $this->model->getAttributeValue($createdAtColumn)
+        ) {
             return $values;
         }
 
@@ -918,7 +921,7 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function forceDelete()
+    public function forceDelete(): int
     {
         return $this->query->delete();
     }
@@ -930,7 +933,7 @@ class Builder
      *
      * @return void
      */
-    public function onDelete(Closure $callback)
+    public function onDelete(Closure $callback): void
     {
         $this->onDelete = $callback;
     }
@@ -943,7 +946,7 @@ class Builder
      * @return Model
      * @throws DbException
      */
-    public function newModelInstance($attributes = [])
+    public function newModelInstance($attributes = []): Model
     {
         return $this->model->newInstance($attributes);
     }
@@ -953,7 +956,7 @@ class Builder
      *
      * @return QueryBuilder
      */
-    public function getQuery()
+    public function getQuery(): QueryBuilder
     {
         return $this->query;
     }
@@ -965,7 +968,7 @@ class Builder
      *
      * @return $this
      */
-    public function setQuery($query)
+    public function setQuery($query): self
     {
         $this->query = $query;
 
@@ -977,7 +980,7 @@ class Builder
      *
      * @return QueryBuilder
      */
-    public function toBase()
+    public function toBase(): QueryBuilder
     {
         return $this->getQuery();
     }
@@ -987,7 +990,7 @@ class Builder
      *
      * @return Model
      */
-    public function getModel()
+    public function getModel(): Model
     {
         return $this->model;
     }
@@ -1000,7 +1003,7 @@ class Builder
      * @return $this
      * @throws DbException
      */
-    public function setModel(Model $model)
+    public function setModel(Model $model): self
     {
         $this->model = $model;
 
@@ -1017,7 +1020,7 @@ class Builder
      * @return string
      * @throws DbException
      */
-    public function qualifyColumn($column)
+    public function qualifyColumn($column): string
     {
         return $this->model->qualifyColumn($column);
     }
