@@ -116,6 +116,36 @@ class ValidatorRule
     }
 
     /**
+     * @Validate(validator="testRule",fields={"dataDifferent"})
+     *
+     * @return bool
+     */
+    public function testDifferent(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @Validate(validator="testRule",fields={"dataGreaterThan"})
+     *
+     * @return bool
+     */
+    public function testGreaterThan(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @Validate(validator="testRule",fields={"dataLessThan"})
+     *
+     * @return bool
+     */
+    public function testLessThan(): bool
+    {
+        return true;
+    }
+
+    /**
      * @Validate(validator="testRule",fields={"dataDate"})
      *
      * @return bool

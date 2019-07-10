@@ -7,7 +7,7 @@ use Doctrine\Common\Annotations\Annotation\Attributes;
 use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
- * Class File
+ * Class Different
  *
  * @since 2.0
  *
@@ -15,23 +15,23 @@ use Doctrine\Common\Annotations\Annotation\Target;
  * @Target("PROPERTY")
  * @Attributes({
  *     @Attribute("message", type="string"),
- *     @Attribute("name", type="string")
+ *     @Attribute("name", type="string"),
  * })
  */
-class File extends Type
+class Different
 {
-    /**
-     * @var string
-     */
-    private $message = '';
-
     /**
      * @var string
      */
     private $name = '';
 
     /**
-     * IsFile constructor.
+     * @var string
+     */
+    private $message = '';
+
+    /**
+     * Confirm constructor.
      *
      * @param array $values
      */

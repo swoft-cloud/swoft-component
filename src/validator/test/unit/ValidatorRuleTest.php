@@ -273,6 +273,90 @@ class ValidatorRuleTest extends TestCase
 
     /**
      * @expectedException Swoft\Validator\Exception\ValidatorException
+     * @expectedExceptionMessage different message
+     *
+     * @throws ContainerException
+     * @throws ValidatorException
+     * @throws \ReflectionException
+     */
+    public function testDifferentError()
+    {
+        $data = [
+            'dataDifferent' => '123',
+            'different' => '123'
+        ];
+        (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testDifferent'));
+    }
+
+    public function testDifferentSuccess()
+    {
+        $data = [
+            'dataDifferent' => '123',
+            'different' => '1234a'
+        ];
+        [$result] = (new Validator())->validateRequest($data,
+            $this->getValidates(ValidatorRule::class, 'testDifferent'));
+        $this->assertEquals($data, $result);
+    }
+
+    /**
+     * @expectedException Swoft\Validator\Exception\ValidatorException
+     * @expectedExceptionMessage greaterthan message
+     *
+     * @throws ContainerException
+     * @throws ValidatorException
+     * @throws \ReflectionException
+     */
+    public function testGreaterThanError()
+    {
+        $data = [
+            'dataGreaterThan' => '12',
+            'gt' => '123'
+        ];
+        (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testGreaterThan'));
+    }
+
+    public function testGreaterThanSuccess()
+    {
+        $data = [
+            'dataGreaterThan' => '124',
+            'gt' => '123'
+        ];
+        [$result] = (new Validator())->validateRequest($data,
+            $this->getValidates(ValidatorRule::class, 'testGreaterThan'));
+        $this->assertEquals($data, $result);
+    }
+
+    /**
+     * @expectedException Swoft\Validator\Exception\ValidatorException
+     * @expectedExceptionMessage lessthan message
+     *
+     * @throws ContainerException
+     * @throws ValidatorException
+     * @throws \ReflectionException
+     */
+    public function testLessThanError()
+    {
+        $data = [
+            'dataLessThan' => '124',
+            'lt' => '123'
+        ];
+        (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testLessThan'));
+    }
+
+    public function testLessThanSuccess()
+    {
+        $data = [
+            'dataLessThan' => '122',
+            'lt' => '123'
+        ];
+        [$result] = (new Validator())->validateRequest($data,
+            $this->getValidates(ValidatorRule::class, 'testLessThan'));
+        $this->assertEquals($data, $result);
+    }
+
+    /**
+     * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage date message
      *
      * @throws ContainerException

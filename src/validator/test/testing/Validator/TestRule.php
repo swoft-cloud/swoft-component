@@ -15,13 +15,16 @@ use Swoft\Validator\Annotation\Mapping\ChsAlphaNum;
 use Swoft\Validator\Annotation\Mapping\Confirm;
 use Swoft\Validator\Annotation\Mapping\Date;
 use Swoft\Validator\Annotation\Mapping\DateRange;
+use Swoft\Validator\Annotation\Mapping\Different;
 use Swoft\Validator\Annotation\Mapping\Dns;
 use Swoft\Validator\Annotation\Mapping\FileMediaType;
 use Swoft\Validator\Annotation\Mapping\FileSize;
 use Swoft\Validator\Annotation\Mapping\FileSuffix;
 use Swoft\Validator\Annotation\Mapping\File;
+use Swoft\Validator\Annotation\Mapping\GreaterThan;
 use Swoft\Validator\Annotation\Mapping\IsInt;
 use Swoft\Validator\Annotation\Mapping\IsString;
+use Swoft\Validator\Annotation\Mapping\LessThan;
 use Swoft\Validator\Annotation\Mapping\Low;
 use Swoft\Validator\Annotation\Mapping\NotInEnum;
 use Swoft\Validator\Annotation\Mapping\NotInRange;
@@ -100,8 +103,41 @@ class TestRule
 
     /**
      * @IsString()
+     * @Different(name="different",message="different message")
+     */
+    protected $dataDifferent;
+
+    /**
+     * @IsString()
+     * @GreaterThan(name="gt",message="greaterthan message")
+     */
+    protected $dataGreaterThan;
+
+    /**
+     * @IsString()
+     * @LessThan(name="lt",message="lessthan message")
+     */
+    protected $dataLessThan;
+
+    /**
+     * @IsString()
      */
     protected $confirm;
+
+    /**
+     * @IsString()
+     */
+    protected $different;
+
+    /**
+     * @IsString()
+     */
+    protected $gt;
+
+    /**
+     * @IsString()
+     */
+    protected $lt;
 
     /**
      * @IsString()
