@@ -152,7 +152,7 @@ for LIB_NAME in ${COMPONENTS} ; do
     yellow_text "> git tag -a $1 -m \"Release $RELEASE_TAG\""
     git tag -a ${RELEASE_TAG} -m "Release $RELEASE_TAG";
 
-    yellow_text "> git push $LIB_NAME origin $RELEASE_TAG"
+    yellow_text "> git push $LIB_NAME $RELEASE_TAG"
     git push ${LIB_NAME} ${RELEASE_TAG};
 done
 

@@ -26,6 +26,7 @@ Arguments:
 
 Options:
   --all         Apply for all components
+  --debug       Open debug mode
 
 Example:
   {{fullCmd}} --all
@@ -38,24 +39,37 @@ STR,
 
     public function __invoke(App $app)
     {
+        $targetBranch = 'master';
+        $this->debug = $app->getBoolOpt('debug');
+
+        // git subtree push --prefix=src/annotation git@github.com:swoft-cloud/swoft-annotation.git master --squash
+        // git subtree push --prefix=src/stdlib stdlib master
         foreach ($this->findComponents($app) as $dir) {
             $name = basename($dir);
-            $cmd = "git push $name :refs/tags/$tag";
+            $cmd = "git subtree push --prefix=src/{$name} {$name} $targetBranch --squash";
 
             Coroutine::create(function () use ($name, $cmd) {
+                Color::println("\n====== Push the component:【{$name}】");
                 Color::println("> $cmd", 'yellow');
+
+                if ($this->debug) {
+                    Color::println('[DEBUG] use co::sleep(2) to mock remote operation');
+                    Coroutine::sleep(2);
+                    return;
+                }
 
                 $ret = Coroutine::exec($cmd);
                 if ((int)$ret['code'] !== 0) {
-                    $msg = "Delete remote tag fail of the {$name}. Output: {$ret['output']}";
+                    $msg = "Push to remote fail of the {$name}. Output: {$ret['output']}";
                     Color::println($msg, 'error');
                     return;
                 }
 
-                echo $ret['output'];
+                echo "Complete for {$name}. Output:", $ret['output'], "\n";
             });
         }
 
         Event::wait();
+        Color::println("\nComplete", 'cyan');
     }
 }

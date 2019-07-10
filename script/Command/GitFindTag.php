@@ -8,6 +8,7 @@ use Toolkit\Cli\App;
 use function array_pop;
 use function explode;
 use function implode;
+use function is_dir;
 use function trim;
 
 /**
@@ -15,7 +16,7 @@ use function trim;
  *
  * @package SwoftTool\Command
  */
-class FindGitTag
+class GitFindTag
 {
     public function getHelpConfig(): array
     {
@@ -49,34 +50,22 @@ STR,
         $dir = $app->getOpt('dir', $app->getOpt('d'));
         $dir = $dir ?: $app->getPwd();
 
-        $cmd = 'git describe --tags $(git rev-list --tags --max-count=1)';
-
         $onlyTag = $app->getBoolOpt('only-tag');
         $nextTag = $app->getBoolOpt('next-tag');
 
-        if (!$onlyTag) {
-            $info = [
-                'project' => $dir,
-                'command' => $cmd,
-            ];
-            Show::aList($info, 'info');
-        }
-
-        // run
-        [$code, $tagName, ] = Sys::run($cmd, $dir);
-        if ($code !== 0) {
+        $tagName = $this->findTag($dir, !$onlyTag);
+        if (!$tagName) {
             Show::error('No any tags of the project', -2);
             return;
         }
 
-        $tagName = trim($tagName);
-        $title  = 'The latest tag: %s';
-
-        $nodes = explode('.', $tagName);
-        $lastNum = array_pop($nodes);
+        $title = 'The latest tag: %s';
 
         if ($nextTag) {
-            $title   = "The next tag: %s (current: $tagName)";
+            $title = "The next tag: %s (current: $tagName)";
+            $nodes = explode('.', $tagName);
+
+            $lastNum = array_pop($nodes);
             $nodes[] = (int)$lastNum + 1;
             $tagName = implode('.', $nodes);
         }
@@ -87,5 +76,52 @@ STR,
         }
 
         Show::writef("<info>$title</info>", $tagName);
+    }
+
+    /**
+     * @param string $workDir
+     * @param bool   $showInfo
+     *
+     * @return string
+     */
+    public function findTag(string $workDir, bool $showInfo = false): string
+    {
+        if (!is_dir($workDir)) {
+            return '';
+        }
+
+        $cmd = 'git describe --tags $(git rev-list --tags --max-count=1)';
+
+        if ($showInfo) {
+            $info = [
+                'command' => $cmd,
+                'workDir' => $workDir,
+            ];
+            Show::aList($info, 'info');
+        }
+
+        [$code, $tagName,] = Sys::run($cmd, $workDir);
+        if ($code !== 0) {
+            return '';
+        }
+
+        return trim($tagName);
+    }
+
+    /**
+     * Get next tag version. eg: v2.0.3 => v2.0.4
+     *
+     * @param string $tagName
+     *
+     * @return string
+     */
+    public function buildNextTag(string $tagName): string
+    {
+        $nodes = explode('.', $tagName);
+
+        $lastNum = array_pop($nodes);
+        $nodes[] = (int)$lastNum + 1;
+
+        return implode('.', $nodes);
     }
 }

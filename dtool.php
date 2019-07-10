@@ -6,7 +6,7 @@
 use SwoftTool\Command\DeleteRemoteTag;
 use SwoftTool\Command\GenReadme;
 use SwoftTool\Command\GenVersion;
-use SwoftTool\Command\FindGitTag;
+use SwoftTool\Command\GitFindTag;
 use SwoftTool\Command\GitAddRemote;
 use SwoftTool\Command\GitReleaseTag;
 use SwoftTool\Command\GitSubtreePush;
@@ -18,7 +18,7 @@ define('BASE_PATH', __DIR__);
 
 $cli = new App();
 
-$cli->addByConfig($gi = new FindGitTag(), $gi->getHelpConfig());
+$cli->addByConfig($gi = new GitFindTag(), $gi->getHelpConfig());
 $cli->addByConfig($drt = new DeleteRemoteTag(), $drt->getHelpConfig());
 $cli->addByConfig($gar = new GitAddRemote(), $gar->getHelpConfig());
 $cli->addByConfig($gsp = new GitSubtreePush(), $gsp->getHelpConfig());

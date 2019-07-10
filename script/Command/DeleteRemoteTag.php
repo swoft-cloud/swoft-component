@@ -15,11 +15,6 @@ use function basename;
  */
 class DeleteRemoteTag extends BaseCommand
 {
-    /**
-     * @var bool
-     */
-    private $debug;
-
     public function getHelpConfig(): array
     {
         return [
@@ -48,7 +43,7 @@ STR,
     {
         $tag = $app->getOpt('tag', $app->getOpt('t'));
         if (!$tag) {
-            Color::println('please input an exist tag for delete', 'error');
+            Color::println('Please input an exist tag for delete', 'error');
             return;
         }
 
@@ -59,10 +54,11 @@ STR,
             $cmd = "git push $name :refs/tags/$tag";
 
             Coroutine::create(function () use ($name, $cmd) {
+                Color::println("====== Delete remote tag for component:【{$name}】");
                 Color::println("> $cmd", 'yellow');
 
                 if ($this->debug) {
-                    Color::println('[DEBUG] use sleep(1) to mock remote operation');
+                    Color::println('[DEBUG] use co::sleep(1) to mock remote operation');
                     Coroutine::sleep(1);
                     return;
                 }
@@ -74,10 +70,11 @@ STR,
                     return;
                 }
 
-                echo $ret['output'];
+                echo "Complete for {$name}. Output:", $ret['output'], "\n";
             });
         }
 
         Event::wait();
+        Color::println("\nComplete", 'cyan');
     }
 }

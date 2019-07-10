@@ -24,6 +24,11 @@ abstract class BaseCommand
      */
     protected $libsDir;
 
+    /**
+     * @var bool
+     */
+    protected $debug = false;
+
     public function __construct()
     {
         $this->baseDir = BASE_PATH;
