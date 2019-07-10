@@ -49,23 +49,24 @@ if (!defined('PHPUNIT_COMPOSER_INSTALL')) {
         '        composer install' . PHP_EOL . PHP_EOL .
         'You can learn all about Composer on https://getcomposer.org/.' . PHP_EOL
     );
-    die(1);
-} else {
-    if (array_reverse(explode('/', __DIR__))[0] ?? '' === 'tests') {
-        $vendor_dir = dirname(PHPUNIT_COMPOSER_INSTALL);
-        $bin_unit   = "{$vendor_dir}/bin/phpunit";
-        $unit_uint  = "{$vendor_dir}/phpunit/phpunit/phpunit";
-        if (file_exists($bin_unit)) {
-            @unlink($bin_unit);
-            @symlink(__FILE__, $bin_unit);
-        }
-        if (file_exists($unit_uint)) {
-            @unlink($unit_uint);
-            @symlink(__FILE__, $unit_uint);
-        }
+    exit(1);
+}
+
+if (array_reverse(explode('/', __DIR__))[0] ?? '' === 'tests') {
+    $vendor_dir = dirname(PHPUNIT_COMPOSER_INSTALL);
+    $bin_unit   = "{$vendor_dir}/bin/phpunit";
+    $unit_uint  = "{$vendor_dir}/phpunit/phpunit/phpunit";
+    if (file_exists($bin_unit)) {
+        @unlink($bin_unit);
+        @symlink(__FILE__, $bin_unit);
+    }
+    if (file_exists($unit_uint)) {
+        @unlink($unit_uint);
+        @symlink(__FILE__, $unit_uint);
     }
 }
-if (!in_array('-c', $_SERVER['argv'])) {
+
+if (!in_array('-c', $_SERVER['argv'], true)) {
     $_SERVER['argv'][] = '-c';
     $_SERVER['argv'][] = __DIR__ . '/phpunit.xml';
 }
@@ -83,7 +84,6 @@ go(function (){
         $status = $e->getCode();
     }
 });
-
 
 Swoole\Event::wait();
 

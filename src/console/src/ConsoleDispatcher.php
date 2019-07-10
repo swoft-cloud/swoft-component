@@ -60,6 +60,10 @@ class ConsoleDispatcher implements DispatcherInterface
         Co::create(function () use ($beanObject, $method, $bindParams) {
             $this->executeByCo($beanObject, $method, $bindParams);
         });
+        // Coroutine::create(function () use ($beanObject, $method, $bindParams) {
+        //     \var_dump(__METHOD__);
+        //     $this->executeByCo($beanObject, $method, $bindParams);
+        // });
 
         Event::wait();
     }
@@ -91,7 +95,7 @@ class ConsoleDispatcher implements DispatcherInterface
             // Defer
             Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
 
-            // Destroy
+            // Complete
             Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
         }
     }

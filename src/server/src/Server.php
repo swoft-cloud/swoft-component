@@ -419,9 +419,8 @@ abstract class Server implements ServerInterface
         }
 
         // Always enable coroutine hook on server
-        if (!Swoft::app()->isEnableCoroutine()) {
-            Runtime::enableCoroutine();
-        }
+        CLog::info('Swoole\Runtime::enableCoroutine');
+        Runtime::enableCoroutine();
 
         Swoft::trigger(ServerEvent::BEFORE_SETTING, $this);
 
@@ -861,7 +860,8 @@ abstract class Server implements ServerInterface
             $this->pidMap['masterPid']  = $masterPID;
             $this->pidMap['managerPid'] = $managerPID;
 
-            return $masterPID > 0 && Process::kill($masterPID, 0);
+            // Notice: skip pid 1, resolve start server on docker.
+            return $masterPID > 1 && Process::kill($masterPID, 0);
         }
 
         return false;

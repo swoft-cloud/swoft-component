@@ -33,6 +33,8 @@ if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
     exit('Please run "composer install" to install the dependencies' . PHP_EOL);
 }
 
-$application = new TestApplication(['enableCoroutine' => false]);
+// \Swoole\Runtime::enableCoroutine();
+
+$application = new TestApplication();
 $application->setBeanFile(__DIR__ . '/testing/bean.php');
 $application->run();
