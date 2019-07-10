@@ -17,10 +17,16 @@ abstract class BaseCommand
     /**
      * @var string
      */
+    protected $baseDir;
+
+    /**
+     * @var string
+     */
     protected $libsDir;
 
     public function __construct()
     {
+        $this->baseDir = BASE_PATH;
         $this->libsDir = BASE_PATH . '/src/';
     }
 

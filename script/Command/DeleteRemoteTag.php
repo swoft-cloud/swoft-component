@@ -2,7 +2,11 @@
 
 namespace SwoftTool\Command;
 
+use Swoole\Coroutine;
+use Swoole\Event;
 use Toolkit\Cli\App;
+use Toolkit\Cli\Color;
+use function basename;
 
 /**
  * Class DeleteRemoteTag
@@ -11,25 +15,30 @@ use Toolkit\Cli\App;
  */
 class DeleteRemoteTag extends BaseCommand
 {
+    /**
+     * @var bool
+     */
+    private $debug;
+
     public function getHelpConfig(): array
     {
         return [
             'name'  => 'tag:delete',
             'desc'  => 'delete git remote tag for components',
-            'usage' => 'tag:delete [DIR]',
+            'usage' => 'tag:delete [options] [arguments]',
             'help'  => <<<STR
 Arguments:
   names   The component names
 
 Options:
-  --all         Apply for all components
-  -t, --tag     Display the project next tag version. eg: v2.0.2
+  --all                 Apply for all components
+  --debug               Open debug mode
+  -t, --tag <version>   The tag version. eg: v2.0.2
 
 Example:
-  {{fullCmd}}
-  {{fullCmd}} --only-tag
-  {{fullCmd}} -d ../view --next-tag
-  {{fullCmd}} -d ../view --next-tag --only-tag
+  {{fullCmd}} -t v2.0.3 --all
+  {{fullCmd}} -t v2.0.3 event
+  {{fullCmd}} -t v2.0.3 event config
 
 STR,
         ];
@@ -37,8 +46,38 @@ STR,
 
     public function __invoke(App $app): void
     {
-        foreach ($this->findComponents($app) as $dir) {
-            \vdump($dir, \basename($dir));
+        $tag = $app->getOpt('tag', $app->getOpt('t'));
+        if (!$tag) {
+            Color::println('please input an exist tag for delete', 'error');
+            return;
         }
+
+        $this->debug = $app->getBoolOpt('debug');
+
+        foreach ($this->findComponents($app) as $dir) {
+            $name = basename($dir);
+            $cmd = "git push $name :refs/tags/$tag";
+
+            Coroutine::create(function () use ($name, $cmd) {
+                Color::println("> $cmd", 'yellow');
+
+                if ($this->debug) {
+                    Color::println('[DEBUG] use sleep(1) to mock remote operation');
+                    Coroutine::sleep(1);
+                    return;
+                }
+
+                $ret = Coroutine::exec($cmd);
+                if ((int)$ret['code'] !== 0) {
+                    $msg = "Delete remote tag fail of the {$name}. Output: {$ret['output']}";
+                    Color::println($msg, 'error');
+                    return;
+                }
+
+                echo $ret['output'];
+            });
+        }
+
+        Event::wait();
     }
 }
