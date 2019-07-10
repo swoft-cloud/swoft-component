@@ -120,7 +120,7 @@ class Blueprint
     public function build(Builder $builder)
     {
         foreach ($this->toSql($builder->getConnection(), $builder->grammar) as $statement) {
-            $builder->getConnection()->statement($statement);
+            $builder->getConnection()->unprepared($statement);
         }
     }
 
