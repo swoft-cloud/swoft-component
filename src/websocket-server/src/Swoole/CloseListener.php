@@ -8,6 +8,7 @@ use Swoft\Bean\BeanFactory;
 use Swoft\Context\Context;
 use Swoft\Server\Swoole\CloseInterface;
 use Swoft\Session\Session;
+use Swoft\Stdlib\Helper\JsonHelper;
 use Swoft\SwoftEvent;
 use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\Context\WsCloseContext;
@@ -44,6 +45,23 @@ class CloseListener implements CloseInterface
         }
 
         $sid = (string)$fd;
+
+        // Session data not exist the worker, notify other worker clear session.
+        if (!Session::has($sid)) {
+            server()->log("Close: conn#{$fd} session not exist current worker, notify other worker handle");
+
+            $data = [
+                'from'  => 'wsServer',
+                'event' => 'wsClose',
+                'fd'    => $fd,
+                'sid'   => $sid,
+            ];
+
+            // $server->sendMessage($message, $dst_worker_id);
+            server()->notifyWorkers(JsonHelper::encode($data), [], [$server->worker_id]);
+            return;
+        }
+
         $ctx = WsCloseContext::new($fd, $reactorId);
 
         // Storage context
