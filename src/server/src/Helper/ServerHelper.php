@@ -132,7 +132,7 @@ class ServerHelper
             return unlink($pidFile);
         }
 
-        return false;
+        return true;
     }
 
     /**
