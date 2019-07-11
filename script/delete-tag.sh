@@ -12,8 +12,9 @@ else
     COMPONENTS=$(ls src/)
 fi
 
+# git push REMOTE :refs/tags/TAG
 for LIB_NAME in ${COMPONENTS} ; do
-    colored_text "\n====== Releasing the component:【${LIB_NAME}】" cyan
+    colored_text "\n====== Delete remote tag for component:【${LIB_NAME}】" cyan
 
     echo "> git push ${LIB_NAME} :refs/tags/${TAG}"
     git push ${LIB_NAME} :refs/tags/${TAG}

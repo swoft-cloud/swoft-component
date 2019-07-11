@@ -1,10 +1,9 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Client\Listener;
 
-
 use Swoft\Bean\BeanFactory;
+use Swoft\Co;
 use Swoft\Event\Annotation\Mapping\Subscriber;
 use Swoft\Event\EventInterface;
 use Swoft\Event\EventSubscriberInterface;
@@ -12,7 +11,6 @@ use Swoft\Log\Helper\CLog;
 use Swoft\Rpc\Client\Pool;
 use Swoft\Server\Swoole\SwooleEvent;
 use Swoft\SwoftEvent;
-use Swoole\Event;
 
 /**
  * Class WorkerStopAndErrorListener
@@ -39,7 +37,7 @@ class WorkerStopAndErrorListener implements EventSubscriberInterface
      */
     public function handle(EventInterface $event): void
     {
-        go(function () use ($event) {
+        Co::rawRun(function () use ($event) {
             $pools = BeanFactory::getBeans(Pool::class);
 
             /* @var Pool $pool */
@@ -49,7 +47,5 @@ class WorkerStopAndErrorListener implements EventSubscriberInterface
                 CLog::info('Close %d rpc client connection on %s!', $count, $event->getName());
             }
         });
-
-        Event::wait();
     }
 }

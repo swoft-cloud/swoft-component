@@ -19,6 +19,7 @@ use Swoft\Stdlib\Helper\Sys;
 use Swoft\WebSocket\Server\WebSocketServer;
 use Swoole\Coroutine;
 use Swoole\Process;
+use Swoole\Runtime;
 use Swoole\Server as CoServer;
 use Throwable;
 use function alias;
@@ -57,18 +58,18 @@ abstract class Server implements ServerInterface
     protected static $serverType = 'TCP';
 
     /**
-     * Default host
-     *
-     * @var string
-     */
-    protected $host = '0.0.0.0';
-
-    /**
      * Default port
      *
      * @var int
      */
     protected $port = 80;
+
+    /**
+     * Default host
+     *
+     * @var string
+     */
+    protected $host = '0.0.0.0';
 
     /**
      * Default mode
@@ -93,9 +94,11 @@ abstract class Server implements ServerInterface
     protected $setting = [];
 
     /**
+     * The server unique name
+     *
      * @var string
      */
-    protected $commandFile = '@runtime/swoft.command';
+    protected $pidName = 'swoft';
 
     /**
      * Pid file
@@ -105,11 +108,9 @@ abstract class Server implements ServerInterface
     protected $pidFile = '@runtime/swoft.pid';
 
     /**
-     * The server unique name
-     *
      * @var string
      */
-    protected $pidName = 'swoft';
+    protected $commandFile = '@runtime/swoft.command';
 
     /**
      * Record started server PIDs and with current workerId
@@ -143,7 +144,6 @@ abstract class Server implements ServerInterface
      * Add port listener
      *
      * @var array
-     *
      * @example
      * [
      *    'name' => ServerInterface,
@@ -245,15 +245,9 @@ abstract class Server implements ServerInterface
         file_put_contents($pidFile, $pidStr);
 
         // Save pull command to file
-        $comamndFile = alias($this->commandFile);
-        Dir::make(dirname($comamndFile));
-        file_put_contents($comamndFile, $this->fullCommand);
-
-        // Listen signal: Ctrl+C (SIGINT = 2)
-        Process::signal(2, function () {
-            Console::colored("\nStop server by CTRL+C");
-            $this->swooleServer->shutdown();
-        });
+        $commandFile = alias($this->commandFile);
+        Dir::make(dirname($commandFile));
+        file_put_contents($commandFile, $this->fullCommand);
 
         // Set process title
         Sys::setProcessTitle($title);
@@ -423,6 +417,10 @@ abstract class Server implements ServerInterface
         if (!$this->swooleServer) {
             throw new ServerException('You must to new server before start swoole!');
         }
+
+        // Always enable coroutine hook on server
+        CLog::info('Swoole\Runtime::enableCoroutine');
+        Runtime::enableCoroutine();
 
         Swoft::trigger(ServerEvent::BEFORE_SETTING, $this);
 
@@ -759,9 +757,10 @@ abstract class Server implements ServerInterface
 
         // SIGTERM = 15
         if (ServerHelper::killAndWait($pid, 15, $this->pidName)) {
-            $rmPidFile     = ServerHelper::removePidFile(alias($this->pidFile));
-            $rmCommandFile = ServerHelper::removePidFile(alias($this->commandFile));
-            return $rmPidFile && $rmCommandFile;
+            $rmPidOk = ServerHelper::removePidFile(alias($this->pidFile));
+            $rmCmdOk = ServerHelper::removePidFile(alias($this->commandFile));
+
+            return $rmPidOk && $rmCmdOk;
         }
 
         return false;
@@ -861,7 +860,8 @@ abstract class Server implements ServerInterface
             $this->pidMap['masterPid']  = $masterPID;
             $this->pidMap['managerPid'] = $managerPID;
 
-            return $masterPID > 0 && Process::kill($masterPID, 0);
+            // Notice: skip pid 1, resolve start server on docker.
+            return $masterPID > 1 && Process::kill($masterPID, 0);
         }
 
         return false;

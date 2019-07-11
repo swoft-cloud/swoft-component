@@ -5,6 +5,7 @@ namespace Swoft\Redis\Listener;
 
 
 use Swoft\Bean\BeanFactory;
+use Swoft\Co;
 use Swoft\Event\Annotation\Mapping\Subscriber;
 use Swoft\Event\EventInterface;
 use Swoft\Event\EventSubscriberInterface;
@@ -39,7 +40,7 @@ class WorkerStopAndErrorListener implements EventSubscriberInterface
      */
     public function handle(EventInterface $event): void
     {
-        go(function () use ($event) {
+        Co::rawRun(function () use ($event) {
             $pools = BeanFactory::getBeans(Pool::class);
 
             /* @var Pool $pool */
@@ -49,7 +50,5 @@ class WorkerStopAndErrorListener implements EventSubscriberInterface
                 CLog::info('Close %d redis connection on %s!', $count, $event->getName());
             }
         });
-
-        Event::wait();
     }
 }

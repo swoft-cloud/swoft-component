@@ -60,6 +60,5 @@ class ApplicationTest extends TestCase
         $app->run();
 
         $this->assertIsArray($vars = $app->getCommentsVars());
-
     }
 }

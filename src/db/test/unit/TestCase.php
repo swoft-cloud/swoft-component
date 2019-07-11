@@ -3,7 +3,6 @@
 
 namespace SwoftTest\Db\Unit;
 
-
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Exception\DbException;

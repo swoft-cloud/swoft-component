@@ -1,12 +1,8 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Http\Server\Testing;
 
-use ReflectionException;
-use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\Arr;
 use Swoole\Http\Request;
 
@@ -14,8 +10,6 @@ use Swoole\Http\Request;
  * Class MockRequest
  *
  * @since 2.0
- *
- * @Bean(scope=Bean::PROTOTYPE)
  */
 class MockRequest extends Request
 {
@@ -24,22 +18,22 @@ class MockRequest extends Request
     /**
      * GET
      */
-    const GET = 'GET';
-
-    /**
-     * POST
-     */
-    const POST = 'POST';
+    public const GET = 'GET';
 
     /**
      * PUT
      */
-    const PUT = 'PUT';
+    public const PUT = 'PUT';
+
+    /**
+     * POST
+     */
+    public const POST = 'POST';
 
     /**
      * DELETE
      */
-    const DELETE = 'DELETE';
+    public const DELETE = 'DELETE';
 
     /**
      * @var int
@@ -102,23 +96,22 @@ class MockRequest extends Request
      * @param array $cookies
      * @param array $params
      *
-     * @return \Swoft\Test\Http\MockRequest
-     * @throws ReflectionException
-     * @throws ContainerException
+     * @return self
      */
     public static function new(array $server, array $headers, array $cookies, array $params): self
     {
-        $instance = self::__instance();
+        // $instance = self::__instance();
+        $instance = new self();
 
         $instance->cookie = $cookies;
         $instance->header = Arr::merge(self::defaultHeaders(), $headers);
         $instance->server = Arr::merge(self::defaultServers(), $server);
 
-        if ($server['request_method'] == self::GET) {
+        if ($server['request_method'] === self::GET) {
             $instance->get = $params;
         }
 
-        if ($server['request_method'] == self::POST) {
+        if ($server['request_method'] === self::POST) {
             $instance->post = $params;
         }
 

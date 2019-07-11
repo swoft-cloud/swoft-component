@@ -1,9 +1,9 @@
 language: php
 
 php:
-  - 7.1
-  - 7.2
-  - 7.3
+  - '7.1'
+  - '7.2'
+  - '7.3'
 addons:
   apt:
     sources:
@@ -60,7 +60,6 @@ install:
 before_script:
   - composer config -g process-timeout 900 && composer update
   - phpenv config-rm xdebug.ini
-
 
 script:
   - composer component

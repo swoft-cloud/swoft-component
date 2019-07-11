@@ -29,6 +29,13 @@ class WebSocketServer extends Server
     protected static $serverType = 'WebSocket';
 
     /**
+     * Default listen port
+     *
+     * @var int
+     */
+    protected $port = 18308;
+
+    /**
      * @var string
      */
     protected $pidName = 'swoft-ws';
@@ -36,12 +43,12 @@ class WebSocketServer extends Server
     /**
      * @var string
      */
-    protected $commandFile = '@runtime/swoft-ws.command';
+    protected $pidFile = '@runtime/swoft-ws.pid';
 
     /**
      * @var string
      */
-    protected $pidFile = '@runtime/swoft-ws.pid';
+    protected $commandFile = '@runtime/swoft-ws.command';
 
     /**
      * Start swoole server

@@ -43,16 +43,15 @@ class MockHttpServer
         array $cookies = [],
         array $ext = []
     ): MockResponse {
+        $request = $this->mockRequest($method, $uri, $params, $headers, $cookies, $ext);
 
-        $request  = $this->mockRequest($method, $uri, $params, $headers, $cookies, $ext);
-        $response = MockResponse::new();
-
-        $response = $this->onRequest($request, $response);
+        $response = $this->onRequest($request, new MockResponse);
         $response = $response->getCoResponse();
 
         if (!$response instanceof MockResponse) {
             throw new RuntimeException('Mock request return is not MockResponse');
         }
+
         return $response;
     }
 
