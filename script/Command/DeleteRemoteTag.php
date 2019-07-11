@@ -49,11 +49,13 @@ STR,
 
         $this->debug = $app->getBoolOpt('debug');
 
+        $runner = Scheduler::new();
+
         foreach ($this->findComponents($app) as $dir) {
             $name = basename($dir);
             $cmd = "git push $name :refs/tags/$tag";
 
-            Coroutine::create(function () use ($name, $cmd) {
+            $runner->add(function () use ($name, $cmd) {
                 Color::println("====== Delete remote tag for component:【{$name}】");
                 Color::println("> $cmd", 'yellow');
 
@@ -74,7 +76,8 @@ STR,
             });
         }
 
-        Event::wait();
+        $runner->start();
+
         Color::println("\nComplete", 'cyan');
     }
 }

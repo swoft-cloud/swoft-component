@@ -3,7 +3,6 @@
 namespace SwoftTool\Command;
 
 use Swoole\Coroutine;
-use Swoole\Event;
 use Toolkit\Cli\App;
 use Toolkit\Cli\Color;
 
@@ -42,13 +41,15 @@ STR,
         $targetBranch = 'master';
         $this->debug = $app->getBoolOpt('debug');
 
+        $runner = Scheduler::new();
+
         // git subtree push --prefix=src/annotation git@github.com:swoft-cloud/swoft-annotation.git master --squash
         // git subtree push --prefix=src/stdlib stdlib master
         foreach ($this->findComponents($app) as $dir) {
             $name = basename($dir);
             $cmd = "git subtree push --prefix=src/{$name} {$name} $targetBranch --squash";
 
-            Coroutine::create(function () use ($name, $cmd) {
+            $runner->add(function () use ($name, $cmd) {
                 Color::println("\n====== Push the component:【{$name}】");
                 Color::println("> $cmd", 'yellow');
 
@@ -69,7 +70,7 @@ STR,
             });
         }
 
-        Event::wait();
+        $runner->start();
         Color::println("\nComplete", 'cyan');
     }
 }

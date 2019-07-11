@@ -5,7 +5,6 @@ namespace SwoftTool\Command;
 use Swoft\Console\Helper\Interact;
 use Swoft\Stdlib\Helper\Sys;
 use Swoole\Coroutine;
-use Swoole\Event;
 use Toolkit\Cli\App;
 use Toolkit\Cli\Color;
 use function sprintf;
@@ -79,15 +78,23 @@ STR,
         }
 
         $finder = new GitFindTag();
+        $runner = Scheduler::new();
+
         foreach ($this->findComponents($app) as $dir) {
-            $this->releaseTag($finder, basename($dir), $newTag);
+            $this->releaseTag($runner, $finder, basename($dir), $newTag);
         }
 
-        Event::wait();
+        $runner->start();
         Color::println("\nComplete", 'cyan');
     }
 
-    public function releaseTag(GitFindTag $finder, string $name, string $newTag): void
+    /**
+     * @param Scheduler  $runner
+     * @param GitFindTag $finder
+     * @param string     $name
+     * @param string     $newTag
+     */
+    public function releaseTag(Scheduler $runner, GitFindTag $finder, string $name, string $newTag): void
     {
         $tmpDir  = $this->tmpDir;
         $repoDir = $tmpDir . '/' . $name;
@@ -130,7 +137,7 @@ STR,
             return;
         }
 
-        Coroutine::create(function () use ($name, $newTag, $repoDir) {
+        $runner->add(function () use ($name, $newTag, $repoDir) {
             $pushTagCmd = "cd {$repoDir}; git push origin {$newTag}";
             $addTagCmd  = "cd {$repoDir}; git tag -a {$newTag} -m \"Release {$newTag}\"";
 
