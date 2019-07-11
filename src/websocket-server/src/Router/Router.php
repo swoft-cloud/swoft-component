@@ -33,7 +33,8 @@ class Router implements RouterInterface
     private $counter = 0;
 
     /**
-     * @var array
+     * WebSocket modules
+     *
      * [
      *  '/echo' => [
      *      'path'   => route path,
@@ -50,20 +51,37 @@ class Router implements RouterInterface
      *  ],
      *  ... ...
      * ]
+     *
+     * @var array
      */
     private $modules = [];
 
     /**
-     * @var array
+     * Message commands for each module
+     *
      * [
      *  '/echo' => [
      *      'prefix1.cmd1' => [controllerClass1, method1],
      *      'prefix1.cmd2' => [controllerClass1, method2],
      *      'prefix2.cmd1' => [controllerClass2, method1],
-     *  ]
+     *  ],
      * ]
+     *
+     * @var array
      */
     private $commands = [];
+
+    /**
+     * Want disabled modules
+     *
+     * [
+     *  // path => 1,
+     *  '/echo' => 1,
+     * ]
+     *
+     * @var array
+     */
+    private $disabledModules = [];
 
     /**
      * @param string $path
@@ -72,14 +90,18 @@ class Router implements RouterInterface
     public function addModule(string $path, array $info = []): void
     {
         $path = Str::formatPath($path);
+
+        // It's an disabled module
+        if (isset($this->disabledModules[$path])) {
+            return;
+        }
+
         // Re-set path
-        $info['path'] = $path;
+        $info['path']  = $path;
+        $info['regex'] = '';
 
-        // Exist path var. eg: "/users/{id}"
+        // Not exist path var. eg: "/users/{id}"
         if (strpos($path, '{') === false) {
-            $info['regex'] = '';
-
-            // Add module
             $this->modules[$path] = $info;
             return;
         }
@@ -102,7 +124,6 @@ class Router implements RouterInterface
             $info['regex'] = '#^' . strtr($path, $pairs) . '$#';
         }
 
-        // Add module
         $this->modules[$path] = $info;
     }
 
@@ -114,6 +135,11 @@ class Router implements RouterInterface
     public function addCommand(string $path, string $cmdId, $handler): void
     {
         $path = Str::formatPath($path);
+
+        // It's an disabled module
+        if (isset($this->disabledModules[$path])) {
+            return;
+        }
 
         $this->counter++;
         $this->commands[$path][$cmdId] = $handler;
@@ -225,5 +251,23 @@ class Router implements RouterInterface
     public function getCounter(): int
     {
         return $this->counter;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDisabledModules(): array
+    {
+        return $this->disabledModules;
+    }
+
+    /**
+     * @param array $paths
+     */
+    public function setDisabledModules(array $paths): void
+    {
+        foreach ($paths as $path) {
+            $this->disabledModules[$path] = 1;
+        }
     }
 }

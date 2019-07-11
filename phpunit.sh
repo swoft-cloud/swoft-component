@@ -5,8 +5,6 @@
 
 #binName="sh vi"
 binName="./$(basename $0)"
-components="component annotation aop bean config connection-pool i18n console db error framework http-message http-server
-  log proxy redis rpc rpc-client rpc-server server stdlib task tcp-server websocket-server"
 
 if [[ -z "$1" ]] || [[ "$1" == "-h" ]]; then
     echo "Use for run phpunit for swoft components."
@@ -20,14 +18,14 @@ if [[ -z "$1" ]] || [[ "$1" == "-h" ]]; then
     echo "  $binName db event   Run phpunit for 'db' and 'event' component"
     echo "  $binName all"
     echo ""
-    echo "All Components:"
-    echo "  ${components}"
     exit
 fi
 
 # for one or multi component
-if [ "$1" != "all" ]; then
+if [[ "$1" != "all" ]]; then
     components=$@
+else
+    components=$(ls src/)
 fi
 
 echo "Will test components:"
