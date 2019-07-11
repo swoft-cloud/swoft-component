@@ -54,6 +54,8 @@ class ModelTest extends TestCase
             'age'       => mt_rand(1, 100),
             'user_desc' => 'u desc'
         ];
+        $result3 = User::new($attributes)->save();
+        $this->assertTrue($result3);
 
         $batch = User::insert([
             [
@@ -72,8 +74,7 @@ class ModelTest extends TestCase
             ]
         ]);
         $this->assertTrue($batch);
-        $result3 = User::new($attributes)->save();
-        $this->assertTrue($result3);
+
 
         $getId = User::insertGetId([
             'name'      => uniqid(),

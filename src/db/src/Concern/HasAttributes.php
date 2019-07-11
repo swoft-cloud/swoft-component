@@ -577,7 +577,7 @@ trait HasAttributes
     {
         $dirty = [];
 
-        foreach ($this->modelAttributes as $key => $value) {
+        foreach ($this->getArrayableAttributes() as $key => $value) {
             if ($value instanceof Expression || !$this->originalIsEquivalent($key, $value)) {
                 $dirty[$key] = $value;
             }
