@@ -7,8 +7,8 @@ use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Server\Event\ServerStartEvent;
+use Swoft\Server\Helper\ServerHelper;
 use Swoole\Process;
-use const SWOOLE_VERSION_ID;
 
 /**
  * Class MasterStartListener
@@ -23,7 +23,7 @@ class MasterStartListener implements EventHandlerInterface
     public function handle(EventInterface $event): void
     {
         // Not listen ctrl+c on 4.4
-        if (SWOOLE_VERSION_ID >= 404000) {
+        if (ServerHelper::isGteSwoole44()) {
             return;
         }
 

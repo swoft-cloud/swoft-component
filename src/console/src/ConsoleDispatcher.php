@@ -14,7 +14,6 @@ use Swoft\Context\Context;
 use Swoft\Contract\DispatcherInterface;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoft\SwoftEvent;
-use Swoole\Event;
 use Swoole\Runtime;
 use Throwable;
 use function get_class;
@@ -42,13 +41,13 @@ class ConsoleDispatcher implements DispatcherInterface
         [$className, $method] = $route['handler'];
 
         // Bind method params
-        $bindParams = $this->getBindParams($className, $method);
-        $beanObject = Swoft::getSingleton($className);
+        $params = $this->getBindParams($className, $method);
+        $object = Swoft::getSingleton($className);
 
         // Blocking running
         if (!$route['coroutine']) {
-            $this->before(get_parent_class($beanObject), $method);
-            PhpHelper::call([$beanObject, $method], ...$bindParams);
+            $this->before(get_parent_class($object), $method);
+            PhpHelper::call([$object, $method], ...$params);
             $this->after($method);
             return;
         }
@@ -56,16 +55,16 @@ class ConsoleDispatcher implements DispatcherInterface
         // Hook php io function
         Runtime::enableCoroutine();
 
-        // Coroutine running
-        Co::create(function () use ($beanObject, $method, $bindParams) {
-            $this->executeByCo($beanObject, $method, $bindParams);
-        });
-        // Coroutine::create(function () use ($beanObject, $method, $bindParams) {
-        //     \var_dump(__METHOD__);
-        //     $this->executeByCo($beanObject, $method, $bindParams);
-        // });
+        // If in unit test env, has been in coroutine.
+        if (\defined('PHPUNIT_COMPOSER_INSTALL')) {
+            $this->executeByCo($object, $method, $params);
+            return;
+        }
 
-        Event::wait();
+        // Coroutine running
+        Co::rawRun(function () use ($object, $method, $params) {
+            $this->executeByCo($object, $method, $params);
+        });
     }
 
     /**

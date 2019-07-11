@@ -8,6 +8,7 @@ use Swoole\Coroutine;
 use Swoole\Event;
 use Toolkit\Cli\App;
 use Toolkit\Cli\Color;
+use function sprintf;
 
 /**
  * Class GitReleaseTag
@@ -57,8 +58,9 @@ STR,
 
         $this->tmpDir = '/tmp/sub-repos';
         $this->debug  = $app->getBoolOpt('debug');
+        $debugText = $this->debug ? 'True' : 'False';
 
-        Color::println("Will release new tag: $newTag");
+        Color::println("Will release new tag: $newTag (DEBUG: $debugText)");
 
         $yes = $app->getBoolOpt('yes', $app->getBoolOpt('y'));
         if (!$yes && Interact::unConfirm('Now, continue')) {
@@ -70,7 +72,7 @@ STR,
         $makeTmpDir = "rm -rf {$this->tmpDir} && mkdir {$this->tmpDir}";
 
         Color::println("> $makeTmpDir", 'yellow');
-        [$code, $msg, ] = Sys::run($makeTmpDir);
+        [$code, $msg,] = Sys::run($makeTmpDir);
         if ($code !== 0) {
             Color::println('[ERROR]' . $msg, 'error');
             return;
@@ -90,16 +92,27 @@ STR,
         $tmpDir  = $this->tmpDir;
         $repoDir = $tmpDir . '/' . $name;
 
-        // $remoteTpl = 'https://github.com/swoft-cloud/swoft-%s.git';
-        // $remoteTpl = 'git@github.com:swoft-cloud/swoft-%s.git';
-        $remoteUrl = \sprintf('git@github.com:swoft-cloud/swoft-%s.git', $name);
+        // - ensure no repo dir
+        $rmRepoDir = "rm -rf $repoDir";
+        Color::println("> $rmRepoDir", 'yellow');
 
-        // 1. clone remote repo
+        [$code, $msg,] = Sys::run($rmRepoDir);
+        if ($code !== 0) {
+            $msg = "Remove repo dir fail of the {$name}. Output: {$msg}";
+            Color::println($msg, 'error');
+            return;
+        }
+
+        // $remoteTpl = 'https://github.com/swoft-cloud/swoft-%s.git';
+        $remoteTpl = 'git@github.com:swoft-cloud/swoft-%s.git';
+        $remoteUrl = sprintf($remoteTpl, $name);
+
+        // - clone remote repo
         $cloneCmd = "cd {$tmpDir}; git clone {$remoteUrl} $name";
         Color::println("> $cloneCmd", 'yellow');
 
         if (!$this->debug) {
-            [$code, $msg, ] = Sys::run($cloneCmd, $tmpDir);
+            [$code, $msg,] = Sys::run($cloneCmd, $tmpDir);
 
             if ($code !== 0) {
                 $msg = "Clone repo fail of the {$name}. Output: {$msg}";
@@ -108,7 +121,7 @@ STR,
             }
         }
 
-        // 2. check last tag
+        // - check last tag
         Color::println("------ Check last tag for thr component: $name");
 
         $lastTag = $finder->findTag($repoDir);
@@ -134,7 +147,7 @@ STR,
                 return;
             }
 
-            // 3. add new tag
+            // - add new tag
             $ret = Coroutine::exec($addTagCmd);
             if ((int)$ret['code'] !== 0) {
                 $msg = "Add tag fail of the {$name}. Output: {$ret['output']}";
@@ -144,7 +157,7 @@ STR,
 
             Color::println("> $pushTagCmd", 'yellow');
 
-            // 4. push new tag
+            // - push new tag
             $ret = Coroutine::exec($addTagCmd);
             if ((int)$ret['code'] !== 0) {
                 $msg = "Push tag fail of the {$name}. Output: {$ret['output']}";

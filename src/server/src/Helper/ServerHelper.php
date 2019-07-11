@@ -144,4 +144,24 @@ class ServerHelper
     {
         return ($pid > 0) && Process::kill($pid, 0);
     }
+
+    /**
+     * Check swoole is > 4.4.0
+     *
+     * @return bool
+     */
+    public static function isGtSwoole44(): bool
+    {
+        return SWOOLE_VERSION_ID > 40400;
+    }
+
+    /**
+     * Check swoole is >= 4.4.0
+     *
+     * @return bool
+     */
+    public static function isGteSwoole44(): bool
+    {
+        return SWOOLE_VERSION_ID >= 40400;
+    }
 }
