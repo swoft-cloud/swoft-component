@@ -377,15 +377,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param string    $method
      *
      * @return void
-     */
-    /**
-     *
-     *
-     * @param string $column
-     * @param        $amount
-     * @param        $extra
-     * @param        $method
-     *
      * @throws DbException
      */
     protected function incrementOrDecrementAttributeValue(string $column, $amount, $extra, $method)

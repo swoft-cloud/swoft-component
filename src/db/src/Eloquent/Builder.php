@@ -542,11 +542,8 @@ class Builder
      */
     public function updateOrInsert(array $attributes, array $values = [])
     {
-        // Get safe values
-        $values = $this->model->getSafeAttributes($values, true);
-        // Update timestamp
-        $values = $this->addUpdatedAtColumn($values);
-        return $this->toBase()->updateOrInsert($attributes, $values);
+        $instance = $this->firstOrNew($attributes);
+        return $instance->fill($values)->save();
     }
 
     /**
@@ -838,6 +835,7 @@ class Builder
 
         if (!$this->model->usesTimestamps() ||
             !$this->model->hasSetter($updatedAtColumn) ||
+            $this->model->isDirty($updatedAtColumn) ||
             is_null($updatedAtColumn)
         ) {
             return $values;
@@ -847,47 +845,27 @@ class Builder
     }
 
     /**
-     * Add the "create at" column to an array of values.
-     *
-     * @param array $values
-     *
-     * @return array
-     */
-    protected function addCreatedAtColumn(array $values): array
-    {
-        $createdAtColumn = $this->model->getCreatedAtColumn();
-
-        if (!$this->model->usesTimestamps() ||
-            !$this->model->hasSetter($createdAtColumn) ||
-            is_null($createdAtColumn) ||
-            $this->model->getAttributeValue($createdAtColumn)
-        ) {
-            return $values;
-        }
-
-        return $this->fillTimestampColumn($createdAtColumn, $values);
-    }
-
-    /**
      * Fill timestamp column
      *
      * @param string $column
      * @param array  $values
      *
      * @return array
+     * @throws DbException
      */
     private function fillTimestampColumn(string $column, array $values): array
     {
-        $values = array_merge(
-            [$column => $this->model->freshTimestamp($column)],
-            $values
-        );
+        $values[$column] = $this->model->freshTimestamp($column);
+
+        // Update model field
+        $this->model->setModelAttribute($column, $values[$column]);
 
         $segments = preg_split('/\s+as\s+/i', $this->query->from);
 
         $qualifiedColumn = end($segments) . '.' . $column;
 
         $values[$qualifiedColumn] = $values[$column];
+
 
         unset($values[$column]);
 
@@ -1042,7 +1020,8 @@ class Builder
         if (empty($values)) {
             return '0';
         }
-        $values = $this->addCreatedAtColumn($values);
+        $values = array_merge($values, $this->model->updateTimestamps());
+
         return $this->toBase()->insertGetId($values, $sequence);
     }
 
@@ -1065,12 +1044,14 @@ class Builder
             $values = [$values];
         }
         foreach ($values as &$item) {
-            $item = $this->model->getSafeAttributes($item, true);
-            $item = $this->addCreatedAtColumn($item);
+            $model = $this->model->setRawAttributes($item, true);
+
+            $item = array_merge($model->getModelAttributesValue(), $model->updateTimestamps());
         }
         unset($item);
         // Filter empty values
         $values = array_filter($values);
+
         return $this->toBase()->insert($values);
     }
 
