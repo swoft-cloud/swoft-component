@@ -24,15 +24,10 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "SwoftTest\\Process\\": "test"
+            "SwoftTest\\Process\\Unit\\": "test/unit/",
+            "SwoftTest\\Process\\Testing\\": "test/testing/"
         }
     },
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://packagist.laravel-china.org"
-        }
-    ],
     "require-dev": {
         "swoft/swoole-ide-helper": "dev-master",
         "phpunit/phpunit": "^5.7"
