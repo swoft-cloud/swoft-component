@@ -2,7 +2,6 @@
 
 namespace Swoft\Http\Server\Middleware;
 
-use function explode;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -17,6 +16,7 @@ use Swoft\Http\Server\Router\Router;
 use Swoft\Validator\Exception\ValidatorException;
 use Swoft\Validator\ValidateRegister;
 use Swoft\Validator\Validator;
+use function explode;
 
 /**
  * Class ValidatorMiddleware

@@ -3,7 +3,6 @@
 namespace SwoftTool\Command;
 
 use Swoole\Coroutine;
-use Swoole\Event;
 use Toolkit\Cli\App;
 use Toolkit\Cli\Color;
 use function basename;

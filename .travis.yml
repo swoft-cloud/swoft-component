@@ -83,6 +83,7 @@ script:
   - composer rpc-server
   - composer stdlib
   - composer task
+  - composer tcp
   - composer tcp-server
   - composer validator
   - composer websocket-server

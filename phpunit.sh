@@ -3,7 +3,9 @@
 # Tool for run unit test for swoft components
 #
 
-#binName="sh vi"
+# import common functions
+source "$(dirname $0)/script/common-func.sh"
+
 binName="./$(basename $0)"
 
 if [[ -z "$1" ]] || [[ "$1" == "-h" ]]; then

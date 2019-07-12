@@ -63,7 +63,7 @@ class PipeMessageListener implements PipeMessageInterface
         $sid = $data['sid'];
 
         if (Session::has($sid)) {
-            server()->log("PipeMessage: destroy ws connection data for fd=$sid fromWID=$srcWID");
+            server()->log("PipeMessage: destroy ws connection for fd=$sid fromWID=$srcWID");
             Session::destroy($sid);
         }
     }
