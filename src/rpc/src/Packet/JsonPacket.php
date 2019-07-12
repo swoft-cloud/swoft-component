@@ -102,18 +102,19 @@ class JsonPacket extends AbstractPacket
      * @param mixed  $result
      * @param int    $code
      * @param string $message
-     * @param Error  $data
+     * @param mixed  $data
      *
      * @return string
      */
     public function encodeResponse($result, int $code = null, string $message = '', $data = null): string
     {
-        $data['jsonrpc'] = self::VERSION;
+        //fix bug: when type of $data is string ,it will throw Exception
+        $res['jsonrpc'] = self::VERSION;
 
         if ($code === null) {
-            $data['result'] = $result;
+            $res['result'] = $result;
 
-            $string = JsonHelper::encode($data, JSON_UNESCAPED_UNICODE);
+            $string = JsonHelper::encode($res, JSON_UNESCAPED_UNICODE);
             $string = $this->addPackageEof($string);
 
             return $string;
@@ -128,9 +129,9 @@ class JsonPacket extends AbstractPacket
             $error['data'] = $data;
         }
 
-        $data['error'] = $error;
+        $res['error'] = $error;
 
-        $string = JsonHelper::encode($data, JSON_UNESCAPED_UNICODE);
+        $string = JsonHelper::encode($res, JSON_UNESCAPED_UNICODE);
         $string = $this->addPackageEof($string);
 
         return $string;
