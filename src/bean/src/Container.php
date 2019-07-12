@@ -526,7 +526,7 @@ class Container implements ContainerInterface
             ];
         }
 
-        $definitionObjParser = new DefinitionObjParser($definition, [], [], $this->aliases);
+        $definitionObjParser = new DefinitionObjParser([$name=>$definition], [], [], $this->aliases);
         [, $objectDefinitions] = $definitionObjParser->parseDefinitions();
 
         $this->objectDefinitions[$name] = $objectDefinitions[$name];
