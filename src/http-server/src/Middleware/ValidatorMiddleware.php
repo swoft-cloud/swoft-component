@@ -40,7 +40,6 @@ class ValidatorMiddleware implements MiddlewareInterface
     {
         /* @var Route $route */
         [$status, , $route] = $request->getAttribute(Request::ROUTER_ATTRIBUTE);
-
         if ($status !== Router::FOUND) {
             return $handler->handle($request);
         }
@@ -61,7 +60,6 @@ class ValidatorMiddleware implements MiddlewareInterface
         // ParsedBody is empty string
         $parsedBody    = $data = empty($data) ? [] : $data;
         $notParsedBody = !is_array($data);
-
         if ($notParsedBody) {
             $parsedBody = [];
         }
@@ -75,6 +73,7 @@ class ValidatorMiddleware implements MiddlewareInterface
         if ($notParsedBody) {
             $parsedBody = $data;
         }
+
         $request = $request->withParsedBody($parsedBody)->withParsedQuery($query);
 
         return $handler->handle($request);
