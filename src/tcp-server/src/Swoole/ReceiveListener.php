@@ -4,22 +4,20 @@ namespace Swoft\Tcp\Server\Swoole;
 
 use ReflectionException;
 use Swoft;
-use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\Context;
+use Swoft\Server\Swoole\ReceiveInterface;
 use Swoft\Session\Session;
 use Swoft\SwoftEvent;
-use Swoft\Tcp\Server\Connection;
-use Swoft\Tcp\Server\Context\TcpCloseContext;
 use Swoft\Tcp\Server\Context\TcpReceiveContext;
+use Swoft\Tcp\Server\Exception\TcpResponseException;
 use Swoft\Tcp\Server\Request;
 use Swoft\Tcp\Server\Response;
 use Swoft\Tcp\Server\TcpDispatcher;
 use Swoft\Tcp\Server\TcpErrorDispatcher;
 use Swoft\Tcp\Server\TcpServerEvent;
 use Swoole\Server;
-use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Server\Swoole\ReceiveInterface;
 use Throwable;
 
 /**
@@ -39,21 +37,23 @@ class ReceiveListener implements ReceiveInterface
      *
      * @throws ContainerException
      * @throws ReflectionException
+     * @throws TcpResponseException
      */
     public function onReceive(Server $server, int $fd, int $reactorId, string $data): void
     {
         $sid = (string)$fd;
-        $ctx = TcpReceiveContext::new($fd, $reactorId, $data);
+
+        server()->log("Receive: conn#{$fd} received data: {$data}", [], 'debug');
+
+        $response = Response::new($fd);
+        $request  = Request::new($fd, $data, $reactorId);
+
+        $ctx = TcpReceiveContext::new($fd, $request, $response);
 
         // Storage context
         Context::set($ctx);
         // Bind cid => sid(fd)
         Session::bindCo($sid);
-
-        $response = Response::new($fd);
-        $request  = Request::new($fd, $data, $reactorId);
-
-        server()->log("Receive: conn#{$fd} received data: {$data}", [], 'debug');
 
         /** @var TcpDispatcher $dispatcher */
         $dispatcher = Swoft::getSingleton('tcpDispatcher');

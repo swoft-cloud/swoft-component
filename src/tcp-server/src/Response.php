@@ -13,7 +13,7 @@ use Swoole\Server;
  * Class Response
  *
  * @since 2.0
- * @Bean(scope=Bean::PROTOTYPE)
+ * @Bean(name="tcpResponse", scope=Bean::PROTOTYPE)
  */
 class Response
 {
@@ -51,11 +51,12 @@ class Response
     public static function new(int $fd = -1): self
     {
         /** @var self $self */
-        $self = bean(self::class);
+        $self = bean('tcpResponse');
 
         // Set properties
-        $self->reqFd = $fd;
+        $self->fd    = $fd;
         $self->sent  = false;
+        $self->reqFd = $fd;
 
         return $self;
     }
@@ -76,8 +77,10 @@ class Response
 
         if ($server->send($this->fd, $this->data) === false) {
             $code = $server->getLastError();
-            throw new TcpResponseException('Error on send data to client', $code);
+            throw new TcpResponseException("Error on send data to client #{$this->fd}", $code);
         }
+
+        return 1;
     }
 
     /**

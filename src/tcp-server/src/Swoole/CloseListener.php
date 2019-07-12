@@ -11,7 +11,6 @@ use Swoft\Context\Context;
 use Swoft\Server\Swoole\CloseInterface;
 use Swoft\Session\Session;
 use Swoft\SwoftEvent;
-use Swoft\Tcp\Server\TcpDispatcher;
 use Swoft\Tcp\Server\TcpErrorDispatcher;
 use Swoft\Tcp\Server\TcpServerEvent;
 use Swoft\Tcp\Server\Connection;
@@ -38,6 +37,8 @@ class CloseListener implements CloseInterface
     public function onClose(Server $server, int $fd, int $reactorId): void
     {
         $sid = (string)$fd;
+        // TODO handle close other worker connection
+
         $ctx = TcpCloseContext::new($fd, $reactorId);
 
         // Storage context

@@ -10,7 +10,7 @@ use Swoft\Bean\Exception\ContainerException;
  * Class Request
  *
  * @since 2.0
- * @Bean(scope=Bean::PROTOTYPE)
+ * @Bean(name="tcpRequest", scope=Bean::PROTOTYPE)
  */
 class Request
 {
@@ -43,7 +43,7 @@ class Request
     public static function new(int $fd, string $data, int $reactorId): self
     {
         /** @var self $self */
-        $self = bean(self::class);
+        $self = bean('tcpRequest');
 
         // Set properties
         $self->fd      = $fd;
