@@ -630,5 +630,14 @@ on A.id=B.id;', [$resCount - 20]);
         $this->assertEquals($time, $count->getUpdateTime());
         $this->assertEquals($time, Count::find($count->getId())->getUpdateTime());
         $this->assertEquals(null, $count->getUserId());
+
+
+        $expect = 'swoft-framework';
+        $count1 = Count::find($count->getId());
+        $count1->setAttributes($expect);
+        $count1->save();
+
+        $this->assertEquals($expect, $count1->getAttributes());
+        $this->assertEquals($expect, Count::find($count->getId())->getAttributes());
     }
 }
