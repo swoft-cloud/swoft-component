@@ -31,7 +31,7 @@ final class ListenerRegister
      */
     public static function addListener(string $className, array $definition = []): void
     {
-        // collect listeners
+        // Collect listeners
         self::$listeners[$className] = $definition;
     }
 

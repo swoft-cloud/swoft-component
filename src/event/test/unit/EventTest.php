@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 use Swoft\Event\Event;
 
 /**
- * Class EventManagerTest
+ * Class EventTest
  */
 class EventTest extends TestCase
 {
@@ -77,7 +77,7 @@ class EventTest extends TestCase
         $this->assertEmpty($e->getParams());
     }
 
-    public function testBadName()
+    public function testBadName(): void
     {
         $e = new Event();
 
