@@ -7,6 +7,7 @@ use Swoft;
 use Swoft\Context\Context;
 use Swoft\Exception\SwoftException;
 use Swoft\Log\Debug;
+use Swoft\Log\Helper\CLog;
 use Swoft\Server\Helper\ServerHelper;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoole\Coroutine;
@@ -63,29 +64,18 @@ class Co
      * Start and wait execute complete
      *
      * @param callable $callable
-     *
-     * @return bool
-     */
-    public static function run(callable $callable): bool
-    {
-        // >= 4.4
-        // TODO ...
-
-        // < 4.4
-
-        return true;
-    }
-
-    /**
-     * Start and wait execute complete
-     *
-     * @param callable $callable
      * @param mixed    ...$args
      *
      * @return bool
      */
-    public static function rawRun(callable $callable, ...$args): bool
+    public static function run(callable $callable, ...$args): bool
     {
+        // Is coroutine to return
+        if (self::id() > 0) {
+            CLog::warning('Already is in coroutine, not need to use `run`!');
+            return PhpHelper::call($callable, ... $args);
+        }
+
         // >= 4.4
         if (ServerHelper::isGteSwoole44()) {
             $scheduler = new Scheduler;

@@ -3,6 +3,7 @@
 namespace Swoft\Server;
 
 use InvalidArgumentException;
+use function srun;
 use Swoft;
 use Swoft\Co;
 use Swoft\Console\Console;
@@ -255,7 +256,10 @@ abstract class Server implements ServerInterface
         // Update setting property
         $this->setSetting($server->setting);
 
-        Swoft::trigger(new ServerStartEvent(SwooleEvent::START, $server), $this);
+        // Use `go` to open coroutine
+        sgo(function () use ($server) {
+            Swoft::trigger(new ServerStartEvent(SwooleEvent::START, $server), $this);
+        }, false);
     }
 
     /**
@@ -273,7 +277,8 @@ abstract class Server implements ServerInterface
         // Set process title
         Sys::setProcessTitle(sprintf('%s manager process', $this->pidName));
 
-        Swoft::trigger(new ServerStartEvent(SwooleEvent::MANAGER_START, $server));
+        // Swoole no supported to open coroutine
+       Swoft::trigger(new ServerStartEvent(SwooleEvent::MANAGER_START, $server), $this);
     }
 
     /**
@@ -285,8 +290,8 @@ abstract class Server implements ServerInterface
      */
     public function onManagerStop(CoServer $server): void
     {
-        // Trigger event
-        Swoft::trigger(new ServerStartEvent(SwooleEvent::MANAGER_STOP, $server));
+        // Swoole no supported to open coroutine
+        Swoft::trigger(new ServerStartEvent(SwooleEvent::MANAGER_STOP, $server), $this);
     }
 
     /**
@@ -304,8 +309,12 @@ abstract class Server implements ServerInterface
         // Delete command file
         ServerHelper::removePidFile(alias($this->commandFile));
 
-        // Trigger event
-        Swoft::trigger(new ServerStartEvent(SwooleEvent::SHUTDOWN, $server));
+        // Use `Scheduler` to open coroutine
+        srun(function () use ($server) {
+
+            // Trigger event
+            Swoft::trigger(new ServerStartEvent(SwooleEvent::SHUTDOWN, $server));
+        });
     }
 
     /**
@@ -344,6 +353,8 @@ abstract class Server implements ServerInterface
         $newEvent->setName($eventName);
 
         Sys::setProcessTitle(sprintf('%s %s process', $this->pidName, $procRole));
+
+        // Already in coroutine
         Swoft::trigger($newEvent);
     }
 
@@ -362,7 +373,11 @@ abstract class Server implements ServerInterface
         // is task process
         $event->taskProcess = $workerId >= $server->setting['worker_num'];
 
-        Swoft::trigger($event);
+        // Use `Scheduler` to open coroutine
+        srun(function () use ($event) {
+            // Trigger
+            Swoft::trigger($event);
+        });
     }
 
     /**
@@ -387,7 +402,10 @@ abstract class Server implements ServerInterface
             'workerPid' => $workerPid,
         ]);
 
-        Swoft::trigger($event);
+        // Use `Scheduler` to open coroutine
+        srun(function () use ($event) {
+            Swoft::trigger($event);
+        });
     }
 
     /**

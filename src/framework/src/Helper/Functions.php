@@ -111,10 +111,24 @@ if (!function_exists('sgo')) {
      *
      * @param callable $callable
      * @param bool     $wait
+     *
+     * @return int
      */
-    function sgo(callable $callable, bool $wait = true)
+    function sgo(callable $callable, bool $wait = true): int
     {
-        \Swoft\Co::create($callable, $wait);
+        return \Swoft\Co::create($callable, $wait);
+    }
+}
+
+if (!function_exists('srun')) {
+    /**
+     * @param callable $callable
+     *
+     * @return bool
+     */
+    function srun(callable $callable): bool
+    {
+        return \Swoft\Co::run($callable);
     }
 }
 
