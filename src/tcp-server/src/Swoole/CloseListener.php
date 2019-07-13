@@ -8,14 +8,13 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\Context;
-use Swoft\Server\Swoole\CloseInterface;
+use Swoft\Server\Contract\CloseInterface;
 use Swoft\Session\Session;
 use Swoft\SwoftEvent;
-use Swoft\Tcp\Server\TcpDispatcher;
-use Swoft\Tcp\Server\TcpErrorDispatcher;
-use Swoft\Tcp\Server\TcpServerEvent;
 use Swoft\Tcp\Server\Connection;
 use Swoft\Tcp\Server\Context\TcpCloseContext;
+use Swoft\Tcp\Server\TcpErrorDispatcher;
+use Swoft\Tcp\Server\TcpServerEvent;
 use Swoole\Server;
 use Throwable;
 

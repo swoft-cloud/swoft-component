@@ -9,6 +9,7 @@ use Swoft\Co;
 use Swoft\Console\Console;
 use Swoft\Http\Server\HttpServer;
 use Swoft\Log\Helper\CLog;
+use Swoft\Server\Contract\ServerInterface;
 use Swoft\Server\Event\ServerStartEvent;
 use Swoft\Server\Event\WorkerEvent;
 use Swoft\Server\Exception\ServerException;
@@ -258,7 +259,14 @@ abstract class Server implements ServerInterface
 
         // Use `go` to open coroutine
         sgo(function () use ($server) {
+            // Before
+            Swoft::trigger(ServerEvent::BEFORE_START_EVENT, $this, $server);
+
+            // Trigger
             Swoft::trigger(new ServerStartEvent(SwooleEvent::START, $server), $this);
+
+            // After event
+            Swoft::trigger(ServerEvent::AFTER_EVENT, $this);
         }, false);
     }
 
@@ -278,7 +286,7 @@ abstract class Server implements ServerInterface
         Sys::setProcessTitle(sprintf('%s manager process', $this->pidName));
 
         // Swoole no supported to open coroutine
-       Swoft::trigger(new ServerStartEvent(SwooleEvent::MANAGER_START, $server), $this);
+        Swoft::trigger(new ServerStartEvent(SwooleEvent::MANAGER_START, $server), $this);
     }
 
     /**
@@ -311,9 +319,14 @@ abstract class Server implements ServerInterface
 
         // Use `Scheduler` to open coroutine
         srun(function () use ($server) {
+            // Before
+            Swoft::trigger(ServerEvent::BEFORE_SHUTDOWN_EVENT, $this, $server);
 
             // Trigger event
-            Swoft::trigger(new ServerStartEvent(SwooleEvent::SHUTDOWN, $server));
+            Swoft::trigger(new ServerStartEvent(SwooleEvent::SHUTDOWN, $server), $this);
+
+            // After event
+            Swoft::trigger(ServerEvent::AFTER_EVENT, $this);
         });
     }
 
@@ -354,8 +367,14 @@ abstract class Server implements ServerInterface
 
         Sys::setProcessTitle(sprintf('%s %s process', $this->pidName, $procRole));
 
+        // Before
+        Swoft::trigger(ServerEvent::BEFORE_WORKER_START_EVENT, $this, $server, $workerId);
+
         // Already in coroutine
-        Swoft::trigger($newEvent);
+        Swoft::trigger($newEvent, $this);
+
+        // After event
+        Swoft::trigger(ServerEvent::AFTER_EVENT, $this);
     }
 
     /**
@@ -374,9 +393,15 @@ abstract class Server implements ServerInterface
         $event->taskProcess = $workerId >= $server->setting['worker_num'];
 
         // Use `Scheduler` to open coroutine
-        srun(function () use ($event) {
+        srun(function () use ($event, $server, $workerId) {
+            // Before
+            Swoft::trigger(ServerEvent::BEFORE_WORKER_STOP_EVENT, $this, $server, $workerId);
+
             // Trigger
-            Swoft::trigger($event);
+            Swoft::trigger($event, $this);
+
+            // After event
+            Swoft::trigger(ServerEvent::AFTER_EVENT, $this);
         });
     }
 
@@ -403,8 +428,23 @@ abstract class Server implements ServerInterface
         ]);
 
         // Use `Scheduler` to open coroutine
-        srun(function () use ($event) {
-            Swoft::trigger($event);
+        srun(function () use ($event, $workerId, $workerPid, $exitCode, $signal) {
+            $params = [
+                $event,
+                $workerId,
+                $workerPid,
+                $exitCode,
+                $signal
+            ];
+
+            // Before
+            Swoft::trigger(ServerEvent::BEFORE_WORKER_ERROR_EVENT, $this, ...$params);
+
+            // Trigger
+            Swoft::trigger($event, $this);
+
+            // After event
+            Swoft::trigger(ServerEvent::AFTER_EVENT, $this);
         });
     }
 

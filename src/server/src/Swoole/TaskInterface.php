@@ -2,24 +2,12 @@
 
 namespace Swoft\Server\Swoole;
 
-use Swoole\Server;
-
 /**
  * Interface TaskInterface
  *
- * @since 2.0
+ * @since      2.0
+ * @deprecated  since Swoft 2.0.4, use '\Swoft\Server\Contract\TaskInterface' for instead.
  */
-interface TaskInterface
+interface TaskInterface extends \Swoft\Server\Contract\TaskInterface
 {
-    /**
-     * Task event
-     *
-     * @param Server $server
-     * @param int    $taskId
-     * @param int    $srcWorkerId
-     * @param mixed  $data
-     *
-     * @return mixed
-     */
-//    public function onTask(Server $server,  $taskId, int $srcWorkerId, $data);
 }

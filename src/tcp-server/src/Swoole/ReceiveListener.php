@@ -4,13 +4,12 @@ namespace Swoft\Tcp\Server\Swoole;
 
 use ReflectionException;
 use Swoft;
-use Swoft\Bean\BeanFactory;
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\Context;
+use Swoft\Server\Contract\ReceiveInterface;
 use Swoft\Session\Session;
 use Swoft\SwoftEvent;
-use Swoft\Tcp\Server\Connection;
-use Swoft\Tcp\Server\Context\TcpCloseContext;
 use Swoft\Tcp\Server\Context\TcpReceiveContext;
 use Swoft\Tcp\Server\Request;
 use Swoft\Tcp\Server\Response;
@@ -18,8 +17,6 @@ use Swoft\Tcp\Server\TcpDispatcher;
 use Swoft\Tcp\Server\TcpErrorDispatcher;
 use Swoft\Tcp\Server\TcpServerEvent;
 use Swoole\Server;
-use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Server\Swoole\ReceiveInterface;
 use Throwable;
 
 /**

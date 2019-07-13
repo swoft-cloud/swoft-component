@@ -7,7 +7,7 @@ use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\Context;
-use Swoft\Server\Swoole\ConnectInterface;
+use Swoft\Server\Contract\ConnectInterface;
 use Swoft\Session\Session;
 use Swoft\SwoftEvent;
 use Swoft\Tcp\Server\Connection;
