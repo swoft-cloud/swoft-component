@@ -8,7 +8,7 @@ use Swoft\Stdlib\Helper\JsonHelper;
 use function bean;
 
 /**
- * Class Package Structure
+ * Class Package - Request package structure
  *
  * @since 2.0.3
  */
@@ -74,6 +74,10 @@ class Package
      */
     public function getDataString(): string
     {
+        if (!$this->data) {
+            return '';
+        }
+
         if (is_scalar($this->data)) {
             return (string)$this->data;
         }

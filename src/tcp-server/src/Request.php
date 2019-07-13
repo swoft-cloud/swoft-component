@@ -5,6 +5,7 @@ namespace Swoft\Tcp\Server;
 use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Tcp\Server\Contract\RequestInterface;
 
 /**
  * Class Request
@@ -12,7 +13,7 @@ use Swoft\Bean\Exception\ContainerException;
  * @since 2.0
  * @Bean(name="tcpRequest", scope=Bean::PROTOTYPE)
  */
-class Request
+class Request implements RequestInterface
 {
     /**
      * Receiver fd

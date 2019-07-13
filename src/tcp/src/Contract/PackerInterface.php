@@ -17,7 +17,7 @@ interface PackerInterface
     public static function getType(): string;
 
     /**
-     * Encode Package object to string data.
+     * Encode [Package] object to string data.
      *
      * @param Package $package
      *
@@ -26,7 +26,7 @@ interface PackerInterface
     public function encode(Package $package): string;
 
     /**
-     * Decode tcp package data to Package object
+     * Decode tcp package data to [Package] object
      *
      * @param string $data package data
      *
