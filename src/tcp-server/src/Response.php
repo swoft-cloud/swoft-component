@@ -11,6 +11,7 @@ use Swoft\Tcp\Server\Contract\ResponseInterface;
 use Swoft\Tcp\Server\Exception\TcpResponseException;
 use Swoft\Tcp\Response as TcpResponse;
 use Swoole\Server;
+use function bean;
 
 /**
  * Class Response
@@ -75,13 +76,13 @@ class Response extends TcpResponse implements ResponseInterface
 
         $server = $server ?: Swoft::server()->getSwooleServer();
 
-        if (!$str = $this->content) {
+        if (!$content = $this->content) {
             /** @var Protocol $protocol */
-            $protocol = \bean('tcpServerProtocol');
-            $protocol->packing($this);
+            $protocol = bean('tcpServerProtocol');
+            $content  = $protocol->packResponse($this);
         }
 
-        if ($server->send($this->fd, $this->data) === false) {
+        if ($server->send($this->fd, $content) === false) {
             $code = $server->getLastError();
             throw new TcpResponseException("Error on send data to client #{$this->fd}", $code);
         }

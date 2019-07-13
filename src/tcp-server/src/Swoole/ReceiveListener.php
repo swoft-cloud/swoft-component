@@ -41,13 +41,12 @@ class ReceiveListener implements ReceiveInterface
      */
     public function onReceive(Server $server, int $fd, int $reactorId, string $data): void
     {
-        $sid = (string)$fd;
-
-        server()->log("Receive: conn#{$fd} received data: {$data}", [], 'debug');
-
         $response = Response::new($fd);
         $request  = Request::new($fd, $data, $reactorId);
 
+        server()->log("Receive: conn#{$fd} received data: {$data}", [], 'debug');
+
+        $sid = (string)$fd;
         $ctx = TcpReceiveContext::new($fd, $request, $response);
 
         // Storage context
@@ -59,10 +58,11 @@ class ReceiveListener implements ReceiveInterface
         $dispatcher = Swoft::getSingleton('tcpDispatcher');
 
         try {
-            $dispatcher->dispatch($server, $request);
-
             // Trigger event
             Swoft::trigger(TcpServerEvent::RECEIVE, $fd, $server, $reactorId);
+
+            $response = $dispatcher->dispatch($request, $response);
+            $response->send($server);
         } catch (Throwable $e) {
             server()->log("Receive: conn#{$fd} error: " . $e->getMessage(), [], 'error');
             Swoft::trigger(TcpServerEvent::RECEIVE_ERROR, $e, $fd);

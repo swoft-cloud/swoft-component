@@ -10,7 +10,6 @@ use Swoft\SwoftComponent;
 use Swoft\Tcp\Protocol;
 use Swoft\Tcp\Server\Swoole\CloseListener;
 use Swoft\Tcp\Server\Swoole\ConnectListener;
-use Swoft\Tcp\Server\Swoole\PipeMessageListener;
 use Swoft\Tcp\Server\Swoole\ReceiveListener;
 use function bean;
 use function dirname;
@@ -58,11 +57,11 @@ class AutoLoader extends SwoftComponent
             'tcpServer'         => [
                 'port' => 18309,
                 'on'   => [
-                    SwooleEvent::CONNECT      => bean(ConnectListener::class),
-                    SwooleEvent::RECEIVE      => bean(ReceiveListener::class),
-                    SwooleEvent::CLOSE        => bean(CloseListener::class),
+                    SwooleEvent::CONNECT => bean(ConnectListener::class),
+                    SwooleEvent::RECEIVE => bean(ReceiveListener::class),
+                    SwooleEvent::CLOSE   => bean(CloseListener::class),
                     // For handle clone connection on exist multi worker
-                    SwooleEvent::PIPE_MESSAGE => bean(PipeMessageListener::class),
+                    // SwooleEvent::PIPE_MESSAGE => bean(PipeMessageListener::class),
                 ]
             ],
             'tcpServerProtocol' => [
