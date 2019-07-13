@@ -9,6 +9,7 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Tcp\Protocol;
 use Swoft\Tcp\Server\Contract\ResponseInterface;
 use Swoft\Tcp\Server\Exception\TcpResponseException;
+use Swoft\Tcp\Response as TcpResponse;
 use Swoole\Server;
 
 /**
@@ -17,7 +18,7 @@ use Swoole\Server;
  * @since 2.0
  * @Bean(name="tcpResponse", scope=Bean::PROTOTYPE)
  */
-class Response extends \Swoft\Tcp\Response implements ResponseInterface
+class Response extends TcpResponse implements ResponseInterface
 {
     /**
      * Response fd
@@ -41,11 +42,11 @@ class Response extends \Swoft\Tcp\Response implements ResponseInterface
     /**
      * @param int $fd
      *
-     * @return self
+     * @return self|TcpResponse
      * @throws ContainerException
      * @throws ReflectionException
      */
-    public static function new(int $fd = -1): self
+    public static function new(int $fd = -1): TcpResponse
     {
         /** @var self $self */
         $self = bean('tcpResponse');

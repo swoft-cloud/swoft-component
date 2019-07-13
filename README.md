@@ -100,6 +100,7 @@ Output coverage data(**require swoole 4.4+**):
 phpunit --coverage-text
 
 // output coverage without xdebug
+./coverage.sh event
 phpdbg -dauto_globals_jit=Off -qrr /usr/local/bin/phpunit --coverage-text
 phpdbg -dauto_globals_jit=Off -qrr run.php --coverage-text -c src/event/phpunit.xml
 ```
