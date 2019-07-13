@@ -3,7 +3,6 @@
 namespace Swoft\Server;
 
 use InvalidArgumentException;
-use function srun;
 use Swoft;
 use Swoft\Co;
 use Swoft\Console\Console;
@@ -14,7 +13,6 @@ use Swoft\Server\Event\ServerStartEvent;
 use Swoft\Server\Event\WorkerEvent;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Helper\ServerHelper;
-use Swoft\Server\SwooleEvent;
 use Swoft\Stdlib\Helper\Dir;
 use Swoft\Stdlib\Helper\Str;
 use Swoft\Stdlib\Helper\Sys;
@@ -25,6 +23,7 @@ use Swoole\Runtime;
 use Swoole\Server as CoServer;
 use Throwable;
 use function alias;
+use function array_diff;
 use function array_keys;
 use function array_merge;
 use function dirname;
@@ -33,7 +32,9 @@ use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
 use function get_class;
+use function range;
 use function sprintf;
+use function srun;
 use function ucfirst;
 use const SWOOLE_PROCESS;
 use const SWOOLE_SOCK_TCP;
@@ -67,14 +68,14 @@ abstract class Server implements ServerInterface
     protected $port = 80;
 
     /**
-     * Default host
+     * Default host address
      *
      * @var string
      */
     protected $host = '0.0.0.0';
 
     /**
-     * Default mode
+     * Default mode type
      *
      * @var int
      */
@@ -253,9 +254,6 @@ abstract class Server implements ServerInterface
 
         // Set process title
         Sys::setProcessTitle($title);
-
-        // Update setting property
-        $this->setSetting($server->setting);
 
         // Use `go` to open coroutine
         sgo(function () use ($server) {
@@ -484,6 +482,8 @@ abstract class Server implements ServerInterface
 
         // Set settings
         $this->swooleServer->set($this->setting);
+        // Update setting property
+        // $this->setSetting($this->swooleServer->setting);
 
         Swoft::trigger(ServerEvent::BEFORE_BIND_EVENT, $this);
 
@@ -923,6 +923,37 @@ abstract class Server implements ServerInterface
         }
 
         return false;
+    }
+
+    /**
+     * @return int
+     */
+    public function count(): int
+    {
+        return count($this->swooleServer->connections);
+    }
+
+    /**
+     * Send message to notify workers, like swooleServer->sendMessage().
+     *
+     * @param mixed $data
+     * @param array $dstWIDs
+     * @param array $excludeWIDs
+     */
+    public function notifyWorkers($data, array $dstWIDs = [], array $excludeWIDs = []): void
+    {
+        // Send to all workers
+        if (!$dstWIDs) {
+            $dstWIDs = range(0, $this->swooleServer->setting['worker_num']);
+        }
+
+        if ($excludeWIDs) {
+            $dstWIDs = array_diff($dstWIDs, $excludeWIDs);
+        }
+
+        foreach ($dstWIDs as $wid) {
+            $this->swooleServer->sendMessage($data, $wid);
+        }
     }
 
     /**

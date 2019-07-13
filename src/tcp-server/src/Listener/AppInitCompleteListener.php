@@ -18,7 +18,6 @@ use function bean;
  * Class AppInitCompleteListener
  *
  * @since 2.0
- *
  * @Listener(SwoftEvent::APP_INIT_COMPLETE)
  */
 class AppInitCompleteListener implements EventHandlerInterface
