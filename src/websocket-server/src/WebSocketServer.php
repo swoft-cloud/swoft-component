@@ -5,7 +5,7 @@ namespace Swoft\WebSocket\Server;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Server;
-use Swoft\Server\Swoole\SwooleEvent;
+use Swoft\Server\SwooleEvent;
 use Swoole\Websocket\Frame;
 use Throwable;
 use function array_flip;

@@ -14,7 +14,7 @@ use Swoft\Server\Event\ServerStartEvent;
 use Swoft\Server\Event\WorkerEvent;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Helper\ServerHelper;
-use Swoft\Server\Swoole\SwooleEvent;
+use Swoft\Server\SwooleEvent;
 use Swoft\Stdlib\Helper\Dir;
 use Swoft\Stdlib\Helper\Str;
 use Swoft\Stdlib\Helper\Sys;

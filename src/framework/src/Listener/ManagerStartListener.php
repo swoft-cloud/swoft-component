@@ -7,7 +7,7 @@ use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Server\Event\ServerStartEvent;
-use Swoft\Server\Swoole\SwooleEvent;
+use Swoft\Server\SwooleEvent;
 
 /**
  * Class ManagerStartListener

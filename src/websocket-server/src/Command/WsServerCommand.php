@@ -10,7 +10,7 @@ use Swoft\Console\Annotation\Mapping\CommandOption;
 use Swoft\Console\Helper\Show;
 use Swoft\Server\Command\BaseServerCommand;
 use Swoft\Server\Exception\ServerException;
-use Swoft\Server\Swoole\SwooleEvent;
+use Swoft\Server\SwooleEvent;
 use Swoft\WebSocket\Server\WebSocketServer;
 use Throwable;
 use function bean;
