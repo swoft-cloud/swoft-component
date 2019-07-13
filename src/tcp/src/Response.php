@@ -2,6 +2,7 @@
 
 namespace Swoft\Tcp;
 
+use Swoft\Stdlib\Helper\JsonHelper;
 use Swoft\Tcp\Contract\ResponseInterface;
 
 /**
@@ -11,18 +12,15 @@ use Swoft\Tcp\Contract\ResponseInterface;
  */
 class Response implements ResponseInterface
 {
-    // private $body;
-    public const OK = 0;
-
     /**
      * @var int
      */
-    protected $code = 0;
+    protected $code = self::OK;
 
     /**
      * @var string
      */
-    protected $msg = 'ok';
+    protected $msg = self::DEFAULT_MSG;
 
     /**
      * @var array
@@ -37,7 +35,29 @@ class Response implements ResponseInterface
     /**
      * @var string
      */
-    protected $content;
+    protected $content = '';
+
+    /**
+     * Class constructor.
+     *
+     * @param int    $code
+     * @param string $msg
+     * @param mixed  $data
+     */
+    public function __construct(int $code = self::OK, string $msg = self::DEFAULT_MSG, $data = null)
+    {
+        $this->code = $code;
+        $this->msg  = $msg;
+        $this->data = $data;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->toString();
+    }
 
     /**
      * @return array
@@ -50,6 +70,46 @@ class Response implements ResponseInterface
             'data' => $this->data,
             'ext'  => $this->ext,
         ];
+    }
+
+    /**
+     * @return string
+     */
+    public function toString(): string
+    {
+        return JsonHelper::encode($this->toArray());
+    }
+
+    /**
+     * @return string
+     */
+    public function getDataString(): string
+    {
+        if (!$this->data) {
+            return '';
+        }
+
+        if (is_scalar($this->data)) {
+            return (string)$this->data;
+        }
+
+        return JsonHelper::encode($this->data);
+    }
+
+    /**
+     * @return int
+     */
+    public function getCode(): int
+    {
+        return $this->code;
+    }
+
+    /**
+     * @param int $code
+     */
+    public function setCode(int $code): void
+    {
+        $this->code = $code;
     }
 
     /**
@@ -69,22 +129,6 @@ class Response implements ResponseInterface
     }
 
     /**
-     * @return string
-     */
-    public function getContent(): string
-    {
-        return $this->content;
-    }
-
-    /**
-     * @param string $content
-     */
-    public function setContent(string $content): void
-    {
-        $this->content = $content;
-    }
-
-    /**
      * @return array
      */
     public function getExt(): array
@@ -98,5 +142,37 @@ class Response implements ResponseInterface
     public function setExt(array $ext): void
     {
         $this->ext = $ext;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMsg(): string
+    {
+        return $this->msg;
+    }
+
+    /**
+     * @param string $msg
+     */
+    public function setMsg(string $msg): void
+    {
+        $this->msg = $msg;
+    }
+
+    /**
+     * @return string
+     */
+    public function getContent(): string
+    {
+        return $this->content;
+    }
+
+    /**
+     * @param string $content
+     */
+    public function setContent(string $content): void
+    {
+        $this->content = $content;
     }
 }

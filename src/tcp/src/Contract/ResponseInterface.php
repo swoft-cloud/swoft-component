@@ -9,5 +9,7 @@ namespace Swoft\Tcp\Contract;
  */
 interface ResponseInterface
 {
+    public const OK = 0;
 
+    public const DEFAULT_MSG = 'OK';
 }

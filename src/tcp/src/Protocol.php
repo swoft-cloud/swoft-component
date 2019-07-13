@@ -152,7 +152,7 @@ class Protocol
      */
     public function packResponse(Response $response): string
     {
-        return $this->getPacker()->encode($response);
+        return $this->getPacker()->encodeResponse($response);
     }
 
     /*********************************************************************
@@ -160,6 +160,8 @@ class Protocol
      ********************************************************************/
 
     /**
+     * Unpacking the server response data as an [Response]
+     *
      * @param string $data
      *
      * @return Response
@@ -167,10 +169,12 @@ class Protocol
      */
     public function unpackResponse(string $data): Response
     {
-        return $this->getPacker()->decode($data);
+        return $this->getPacker()->decodeResponse($data);
     }
 
     /**
+     * Packing [Package] to string for request server
+     *
      * @param Package $package
      *
      * @return string
