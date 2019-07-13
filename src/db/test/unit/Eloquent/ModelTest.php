@@ -54,6 +54,8 @@ class ModelTest extends TestCase
             'age'       => mt_rand(1, 100),
             'user_desc' => 'u desc'
         ];
+        $result3    = User::new($attributes)->save();
+        $this->assertTrue($result3);
 
         $batch = User::insert([
             [
@@ -71,9 +73,22 @@ class ModelTest extends TestCase
                 'xxxx'      => '223asdf'
             ]
         ]);
+
+        Count::insert([
+            [
+                'user_id'     => 1,
+                'attributes'  => uniqid(),
+                'create_time' => 111,
+            ],
+            [
+                'user_id'     => 2,
+                'attributes'  => uniqid(),
+                'create_time' => 222,
+
+            ],
+        ]);
         $this->assertTrue($batch);
-        $result3 = User::new($attributes)->save();
-        $this->assertTrue($result3);
+
 
         $getId = User::insertGetId([
             'name'      => uniqid(),
@@ -575,13 +590,54 @@ on A.id=B.id;', [$resCount - 20]);
 
     public function testAutoTimestamp()
     {
+        // create time
         $count = Count::new();
         $count->setUserId($this->addRecord());
         $count->save();
+        $this->assertGreaterThan(0, $count->getCreateTime());
+        $this->assertGreaterThan(0, strtotime($count->getUpdateTime()));
+
 
         $newCount = Count::find($count->getId());
+        $divTime  = '2019-07-11 17:00:1';
 
-        $this->assertGreaterThan(0, $newCount->getCreateTime());
+        $newCount->setUpdateTime($divTime);
+        // update time
+        $result = $newCount->update(['user_id' => 12233]);
+
+        $this->assertTrue($result);
+        $this->assertEquals($divTime, $newCount->getUpdateTime());
         $this->assertGreaterThan(0, strtotime($newCount->getUpdateTime()));
+    }
+
+    public function testUpdateEntity()
+    {
+        $count = Count::new(['create_time' => 0]);
+        $count->setAttributes("swoft");
+
+        $this->assertTrue($count->save());
+        $this->assertEquals('swoft', $count->getAttributes());
+        $this->assertEquals(0, $count->getCreateTime());
+        $this->assertEquals(time(), strtotime($count->getUpdateTime()));
+
+
+        $time   = '2018-03-06 21:09:18';
+        $result = $count->fill([
+            'update_time' => $time,
+            'user_id'     => Expression::new('`create_time` + 1'),
+        ])->update();
+        $this->assertTrue($result);
+        $this->assertEquals($time, $count->getUpdateTime());
+        $this->assertEquals($time, Count::find($count->getId())->getUpdateTime());
+        $this->assertEquals(null, $count->getUserId());
+
+
+        $expect = 'swoft-framework';
+        $count1 = Count::find($count->getId());
+        $count1->setAttributes($expect);
+        $count1->save();
+
+        $this->assertEquals($expect, $count1->getAttributes());
+        $this->assertEquals($expect, Count::find($count->getId())->getAttributes());
     }
 }

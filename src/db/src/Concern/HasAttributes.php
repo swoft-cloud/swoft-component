@@ -62,11 +62,21 @@ trait HasAttributes
     }
 
     /**
+     * Get model attributes value
+     *
+     * @return array
+     */
+    public function getModelAttributesValue(): array
+    {
+        return $this->modelAttributes;
+    }
+
+    /**
      * Get an attribute array of all arrayable attributes.
      *
      * @return array
      */
-    protected function getArrayableAttributes()
+    public function getArrayableAttributes()
     {
         return array_merge($this->modelAttributes, $this->getModelAttributes());
     }
@@ -159,7 +169,7 @@ trait HasAttributes
      *
      * @return bool
      */
-    public function hasGetMutator($key)
+    public function hasGetter($key)
     {
         return method_exists($this, 'get' . Str::studly($key));
     }
@@ -276,13 +286,14 @@ trait HasAttributes
     /**
      * Encode the given value as JSON.
      *
-     * @param mixed $value
+     * @param     $value
+     * @param int $option
      *
-     * @return string
+     * @return false|string
      */
-    protected function asJson($value)
+    protected function asJson($value, $option = JSON_UNESCAPED_UNICODE)
     {
-        return json_encode($value);
+        return json_encode($value, $option);
     }
 
     /**
@@ -402,7 +413,7 @@ trait HasAttributes
                 $value = ObjectHelper::parseParamType($type, $value);
                 if ($encode === true && $type === Grammar::ARRAY && !is_scalar($value)) {
                     // Array to string
-                    $value = json_encode($value, JSON_UNESCAPED_UNICODE);
+                    $value = $this->asJson($value);
                 }
             }
             $safeAttributes[$key] = $value;
@@ -449,7 +460,10 @@ trait HasAttributes
      */
     public function syncOriginal()
     {
-        $this->modelOriginal = $this->modelAttributes;
+        $attributes = $this->getArrayableAttributes();
+
+        $this->modelAttributes = $attributes;
+        $this->modelOriginal   = $attributes;
 
         return $this;
     }
@@ -574,11 +588,18 @@ trait HasAttributes
     {
         $dirty = [];
 
+        foreach ($this->getModelAttributes() as $key => $value) {
+            if (!$this->originalIsEquivalent($key, $value)) {
+                $dirty[$key] = $value;
+            }
+        }
+
         foreach ($this->modelAttributes as $key => $value) {
             if ($value instanceof Expression || !$this->originalIsEquivalent($key, $value)) {
                 $dirty[$key] = $value;
             }
         }
+
         return $dirty;
     }
 

@@ -542,11 +542,8 @@ class Builder
      */
     public function updateOrInsert(array $attributes, array $values = [])
     {
-        // Get safe values
-        $values = $this->model->getSafeAttributes($values, true);
-        // Update timestamp
-        $values = $this->addUpdatedAtColumn($values);
-        return $this->toBase()->updateOrInsert($attributes, $values);
+        $instance = $this->firstOrNew($attributes);
+        return $instance->fill($values)->save();
     }
 
     /**
@@ -624,7 +621,7 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function get(array $columns = ['*'])
+    public function get(array $columns = ['*']): Collection
     {
         $builder = $this;
 
@@ -657,7 +654,7 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function cursor()
+    public function cursor(): Generator
     {
         foreach ($this->query->cursor() as $record) {
             yield $this->model->newFromBuilder($record);
@@ -722,7 +719,7 @@ class Builder
      * @return void
      * @throws DbException
      */
-    protected function enforceOrderBy()
+    protected function enforceOrderBy(): void
     {
         if (empty($this->query->orders) && empty($this->query->unionOrders)) {
             $this->orderBy($this->model->getQualifiedKeyName(), 'asc');
@@ -761,7 +758,7 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function create(array $attributes = [])
+    public function create(array $attributes = []): Model
     {
         $instance = $this->newModelInstance($attributes);
         $instance->save();
@@ -778,7 +775,7 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function update(array $values)
+    public function update(array $values): int
     {
         $values = $this->model->getSafeAttributes($values, true);
         // Update timestamp
@@ -798,7 +795,7 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function increment(string $column, $amount = 1, array $extra = [])
+    public function increment(string $column, $amount = 1, array $extra = []): int
     {
         return $this->toBase()->increment(
             $column, $amount, $this->addUpdatedAtColumn($extra)
@@ -817,7 +814,7 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function decrement($column, $amount = 1, array $extra = [])
+    public function decrement($column, $amount = 1, array $extra = []): int
     {
         return $this->toBase()->decrement(
             $column, $amount, $this->addUpdatedAtColumn($extra)
@@ -832,37 +829,19 @@ class Builder
      * @return array
      * @throws DbException
      */
-    protected function addUpdatedAtColumn(array $values)
+    protected function addUpdatedAtColumn(array $values): array
     {
         $updatedAtColumn = $this->model->getUpdatedAtColumn();
 
         if (!$this->model->usesTimestamps() ||
-            is_null($updatedAtColumn) ||
-            !$this->model->hasSetter($updatedAtColumn)) {
+            !$this->model->hasSetter($updatedAtColumn) ||
+            $this->model->isDirty($updatedAtColumn) ||
+            is_null($updatedAtColumn)
+        ) {
             return $values;
         }
 
         return $this->fillTimestampColumn($updatedAtColumn, $values);
-    }
-
-    /**
-     * Add the "create at" column to an array of values.
-     *
-     * @param array $values
-     *
-     * @return array
-     */
-    protected function addCreatedAtColumn(array $values)
-    {
-        $createdAtColumn = $this->model->getCreatedAtColumn();
-
-        if (!$this->model->usesTimestamps() ||
-            is_null($createdAtColumn) ||
-            !$this->model->hasSetter($createdAtColumn)) {
-            return $values;
-        }
-
-        return $this->fillTimestampColumn($createdAtColumn, $values);
     }
 
     /**
@@ -872,19 +851,21 @@ class Builder
      * @param array  $values
      *
      * @return array
+     * @throws DbException
      */
     private function fillTimestampColumn(string $column, array $values): array
     {
-        $values = array_merge(
-            [$column => $this->model->freshTimestamp($column)],
-            $values
-        );
+        $values[$column] = $this->model->freshTimestamp($column);
+
+        // Update model field
+        $this->model->setModelAttribute($column, $values[$column]);
 
         $segments = preg_split('/\s+as\s+/i', $this->query->from);
 
         $qualifiedColumn = end($segments) . '.' . $column;
 
         $values[$qualifiedColumn] = $values[$column];
+
 
         unset($values[$column]);
 
@@ -918,7 +899,7 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function forceDelete()
+    public function forceDelete(): int
     {
         return $this->query->delete();
     }
@@ -930,7 +911,7 @@ class Builder
      *
      * @return void
      */
-    public function onDelete(Closure $callback)
+    public function onDelete(Closure $callback): void
     {
         $this->onDelete = $callback;
     }
@@ -943,7 +924,7 @@ class Builder
      * @return Model
      * @throws DbException
      */
-    public function newModelInstance($attributes = [])
+    public function newModelInstance($attributes = []): Model
     {
         return $this->model->newInstance($attributes);
     }
@@ -953,7 +934,7 @@ class Builder
      *
      * @return QueryBuilder
      */
-    public function getQuery()
+    public function getQuery(): QueryBuilder
     {
         return $this->query;
     }
@@ -965,7 +946,7 @@ class Builder
      *
      * @return $this
      */
-    public function setQuery($query)
+    public function setQuery($query): self
     {
         $this->query = $query;
 
@@ -977,7 +958,7 @@ class Builder
      *
      * @return QueryBuilder
      */
-    public function toBase()
+    public function toBase(): QueryBuilder
     {
         return $this->getQuery();
     }
@@ -987,7 +968,7 @@ class Builder
      *
      * @return Model
      */
-    public function getModel()
+    public function getModel(): Model
     {
         return $this->model;
     }
@@ -1000,7 +981,7 @@ class Builder
      * @return $this
      * @throws DbException
      */
-    public function setModel(Model $model)
+    public function setModel(Model $model): self
     {
         $this->model = $model;
 
@@ -1017,7 +998,7 @@ class Builder
      * @return string
      * @throws DbException
      */
-    public function qualifyColumn($column)
+    public function qualifyColumn($column): string
     {
         return $this->model->qualifyColumn($column);
     }
@@ -1039,7 +1020,8 @@ class Builder
         if (empty($values)) {
             return '0';
         }
-        $values = $this->addCreatedAtColumn($values);
+        $values = array_merge($values, $this->model->updateTimestamps());
+
         return $this->toBase()->insertGetId($values, $sequence);
     }
 
@@ -1062,12 +1044,14 @@ class Builder
             $values = [$values];
         }
         foreach ($values as &$item) {
-            $item = $this->model->getSafeAttributes($item, true);
-            $item = $this->addCreatedAtColumn($item);
+            $model = $this->model->setRawAttributes($item, true);
+
+            $item = array_merge($model->getModelAttributesValue(), $model->updateTimestamps());
         }
         unset($item);
         // Filter empty values
         $values = array_filter($values);
+
         return $this->toBase()->insert($values);
     }
 

@@ -120,7 +120,7 @@ class Blueprint
     public function build(Builder $builder)
     {
         foreach ($this->toSql($builder->getConnection(), $builder->grammar) as $statement) {
-            $builder->getConnection()->statement($statement);
+            $builder->getConnection()->unprepared($statement);
         }
     }
 
@@ -459,6 +459,30 @@ class Blueprint
     public function dropTimestampsTz()
     {
         $this->dropTimestamps();
+    }
+
+    /**
+     * Add a "deleted at" timestamp for the table.
+     *
+     * @param  string  $column
+     * @param  int  $precision
+     * @return ColumnDefinition
+     */
+    public function softDeletes($column = 'deleted_at', $precision = 0)
+    {
+        return $this->timestamp($column, $precision)->nullable();
+    }
+
+    /**
+     * Add a "deleted at" timestampTz for the table.
+     *
+     * @param  string  $column
+     * @param  int  $precision
+     * @return ColumnDefinition
+     */
+    public function softDeletesTz($column = 'deleted_at', $precision = 0)
+    {
+        return $this->timestampTz($column, $precision)->nullable();
     }
 
     /**
