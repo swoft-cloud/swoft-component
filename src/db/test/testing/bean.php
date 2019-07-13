@@ -10,7 +10,7 @@ return [
     ],
     'db'       => [
         'class'    => Database::class,
-        'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
+        'dsn'      => 'mysql:dbname=test;host=192.168.4.11',
         'username' => 'root',
         'password' => 'swoft123456',
         'charset'  => 'utf8mb4',
@@ -32,14 +32,14 @@ return [
         'class'   => Database::class,
         'writes'  => [
             [
-                'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
+                'dsn'      => 'mysql:dbname=test;host=192.168.4.11',
                 'username' => 'root',
                 'password' => 'swoft123456',
             ],
         ],
         'reads'   => [
             [
-                'dsn'      => 'mysql:dbname=test;host=127.0.0.1',
+                'dsn'      => 'mysql:dbname=test;host=192.168.4.11',
                 'username' => 'root',
                 'password' => 'swoft123456',
             ]
@@ -51,7 +51,7 @@ return [
     ],
     'db3'      => [
         'class'      => Database::class,
-        'dsn'        => 'mysql:dbname=test2;host=127.0.0.1',
+        'dsn'        => 'mysql:dbname=test2;host=192.168.4.11',
         'username'   => 'root',
         'password'   => 'swoft123456',
         'dbSelector' => bean(DbSelector::class)
@@ -62,7 +62,7 @@ return [
     ],
     'db4'      => [
         'class'    => Database::class,
-        'dsn'      => 'mysql:dbname=test2;host=127.0.0.1',
+        'dsn'      => 'mysql:dbname=test2;host=192.168.4.11',
         'username' => 'root',
         'password' => 'swoft123456',
     ],
