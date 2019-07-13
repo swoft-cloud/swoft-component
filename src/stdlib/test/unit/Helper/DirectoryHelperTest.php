@@ -2,7 +2,6 @@
 
 namespace SwoftTest\Stdlib\Unit\Helper;
 
-use function foo\func;
 use PHPUnit\Framework\TestCase;
 use Swoft\Stdlib\Helper\Dir;
 
