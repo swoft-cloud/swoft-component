@@ -17,6 +17,9 @@ use function trim;
 class Router implements RouterInterface
 {
     /**
+     * [
+     *  'command' => [class, method]
+     * ]
      * @var array
      */
     private $routes = [];
@@ -27,39 +30,46 @@ class Router implements RouterInterface
     private $delimiter = '.';
 
     /**
-     * @param string $path
+     * Default command. eg: 'home.index'
+     *
+     * @var string
+     */
+    private $defaultCommand = '';
+
+    /**
+     * @param string $cmd
      * @param array  $info
      *
      * @throws TcpServerRouteException
      */
-    public function add(string $path, array $info): void
+    public function add(string $cmd, array $info): void
     {
-        if (!$path = trim($path)) {
-            throw new TcpServerRouteException('The tcp server route path cannot be empty');
+        if (!$cmd = trim($cmd)) {
+            throw new TcpServerRouteException('The tcp server route command cannot be empty');
         }
 
         // Re-set path
-        $info['path'] = $path;
+        $info['path'] = $cmd;
 
         // Add module
-        $this->routes[$path] = $info;
+        $this->routes[$cmd] = $info;
     }
 
     /**
      * Match route path for find module info
      *
-     * @param string $path e.g 'home.echo'
+     * @param string $cmd e.g 'home.echo'
      *
      * @return array [status, route info]
      */
-    public function match(string $path): array
+    public function match(string $cmd): array
     {
-        if (!$path = trim($path)) {
+        if (!$cmd = trim($cmd)) {
             return [self::NOT_FOUND, null];
         }
 
-        if (isset($this->routes[$path])) {
-            return [self::FOUND, $this->routes[$path]];
+        if (isset($this->routes[$cmd])) {
+            return [self::FOUND, $this->routes[$cmd]];
         }
 
         return [self::NOT_FOUND, null];
@@ -87,5 +97,21 @@ class Router implements RouterInterface
     public function setDelimiter(string $delimiter): void
     {
         $this->delimiter = $delimiter;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultCommand(): string
+    {
+        return $this->defaultCommand;
+    }
+
+    /**
+     * @param string $defaultCommand
+     */
+    public function setDefaultCommand(string $defaultCommand): void
+    {
+        $this->defaultCommand = $defaultCommand;
     }
 }

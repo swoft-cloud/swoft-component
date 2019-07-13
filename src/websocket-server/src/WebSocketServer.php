@@ -321,7 +321,7 @@ class WebSocketServer extends Server
     }
 
     /**
-     * Disconnect for client
+     * Disconnect for client, will trigger onClose
      *
      * @param int    $fd
      * @param int    $code
@@ -331,7 +331,11 @@ class WebSocketServer extends Server
      */
     public function disconnect(int $fd, int $code = 0, string $reason = ''): bool
     {
-        return $this->swooleServer->disconnect($fd, $code, $reason);
+        if ($this->swooleServer->isEstablished($fd)) {
+            return $this->swooleServer->disconnect($fd, $code, $reason);
+        }
+
+        return true;
     }
 
     /**
@@ -360,5 +364,28 @@ class WebSocketServer extends Server
     public function count(): int
     {
         return count($this->swooleServer->connections);
+    }
+
+    /**
+     * Send message to notify workers, like swooleServer->sendMessage().
+     *
+     * @param mixed $data
+     * @param array $dstWIDs
+     * @param array $excludeWIDs
+     */
+    public function notifyWorkers($data, array $dstWIDs = [], array $excludeWIDs = []): void
+    {
+        // Send to all workers
+        if (!$dstWIDs) {
+            $dstWIDs = \range(0, $this->swooleServer->setting['worker_num']);
+        }
+
+        if ($excludeWIDs) {
+            $dstWIDs = \array_diff($dstWIDs, $excludeWIDs);
+        }
+
+        foreach ($dstWIDs as $wid) {
+            $this->swooleServer->sendMessage($data, $wid);
+        }
     }
 }

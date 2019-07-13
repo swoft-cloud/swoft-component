@@ -82,6 +82,10 @@ class Message implements JsonSerializable
      */
     public function getDataString(): string
     {
+        if (!$this->data) {
+            return '';
+        }
+
         if (is_scalar($this->data)) {
             return (string)$this->data;
         }

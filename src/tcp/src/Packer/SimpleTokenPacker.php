@@ -2,12 +2,13 @@
 
 namespace Swoft\Tcp\Packer;
 
-use function explode;
 use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Tcp\Contract\PackerInterface;
 use Swoft\Tcp\Package;
+use Swoft\Tcp\Response;
+use function explode;
 use function trim;
 
 /**
@@ -29,7 +30,7 @@ class SimpleTokenPacker implements PackerInterface
     }
 
     /**
-     * Encode Package object to string data.
+     * Encode [Package] to string for request server
      *
      * @param Package $package
      *
@@ -41,14 +42,15 @@ class SimpleTokenPacker implements PackerInterface
     }
 
     /**
-     * Decode tcp package data to Package object
+     * Decode client request body data to [Package] object
      *
-     * @param string $data package data, use first space to split cmd and data.
-     * Format like:
+     * Data format like:
      *      login message text
      *  =>
      *      cmd: 'login'
      *      data: 'message text'
+     *
+     * @param string $data Request package data, use first space to split cmd and data.
      *
      * @return Package
      * @throws ReflectionException
@@ -68,5 +70,38 @@ class SimpleTokenPacker implements PackerInterface
         }
 
         return Package::new($cmd, $body);
+    }
+
+    /**
+     * Encode [Response] to string for response client
+     *
+     * @param Response $response
+     *
+     * @return string
+     */
+    public function encodeResponse(Response $response): string
+    {
+        // If Response.content is not empty
+        if ($content = $response->getContent()) {
+            return $content;
+        }
+
+        return $response->getDataString();
+    }
+
+    /**
+     * Decode the server response data as an [Response]
+     *
+     * @param string $data package data
+     *
+     * @return Response
+     */
+    public function decodeResponse(string $data): Response
+    {
+        $resp = new Response();
+        $resp->setData($data);
+        $resp->setContent($data);
+
+        return $resp;
     }
 }

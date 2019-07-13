@@ -5,8 +5,8 @@ namespace Swoft\WebSocket\Server\Message;
 use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Context\Context;
 use Swoft\WebSocket\Server\Contract\ResponseInterface;
-use Swoft\WebSocket\Server\WebSocketServer;
 use function bean;
 use const WEBSOCKET_OPCODE_TEXT;
 
@@ -29,6 +29,11 @@ class Response implements ResponseInterface
      * @var mixed
      */
     private $data;
+
+    /**
+     * @var string
+     */
+    private $content = '';
 
     /**
      * Receiver fd list
@@ -152,6 +157,8 @@ class Response implements ResponseInterface
 
     /**
      * @return int
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function send(): int
     {
@@ -159,20 +166,27 @@ class Response implements ResponseInterface
             return 0;
         }
 
-        $server = $this->wsServer();
+        $server = bean('wsServer');
+
+        // Content for response
+        $content = $this->content;
+        if ($content === '') {
+            $parser  = Context::mustGet()->getParser();
+            $content = $parser->encode(Message::new('', $this->data));
+        }
 
         // To all
         if ($this->sendToAll) {
-            return $server->sendToAll($this->data, $this->sender);
+            return $server->sendToAll($content, $this->sender);
         }
 
         // To some
         if ($this->fds) {
-            return $server->sendToSome($this->data, $this->fds, [], $this->sender);
+            return $server->sendToSome($content, $this->fds, [], $this->sender);
         }
 
         // To one
-        $ok = $server->sendTo($this->fd, $this->data, $this->sender, $this->opcode, $this->finish);
+        $ok = $server->sendTo($this->fd, $content, $this->sender, $this->opcode, $this->finish);
 
         return $ok ? 1 : 0;
     }
@@ -254,14 +268,6 @@ class Response implements ResponseInterface
     }
 
     /**
-     * @return WebSocketServer
-     */
-    public function wsServer(): WebSocketServer
-    {
-        return WebSocketServer::getServer();
-    }
-
-    /**
      * @return mixed
      */
     public function getData()
@@ -277,6 +283,24 @@ class Response implements ResponseInterface
     public function setData($data): ResponseInterface
     {
         $this->data = $data;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getContent(): string
+    {
+        return $this->content;
+    }
+
+    /**
+     * @param string $content
+     * @return Response|ResponseInterface
+     */
+    public function setContent(string $content): ResponseInterface
+    {
+        $this->content = $content;
         return $this;
     }
 }

@@ -11,6 +11,7 @@ use Swoft\WebSocket\Server\Router\Router;
 use Swoft\WebSocket\Server\Swoole\CloseListener;
 use Swoft\WebSocket\Server\Swoole\HandshakeListener;
 use Swoft\WebSocket\Server\Swoole\MessageListener;
+use Swoft\WebSocket\Server\Swoole\PipeMessageListener;
 use function bean;
 use function dirname;
 use function env;
@@ -70,10 +71,12 @@ class AutoLoader extends SwoftComponent
                 'on'   => [
                     // Enable http handle
                     // SwooleEvent::REQUEST   => \bean(RequestListener::class),
-                    // websocket
-                    SwooleEvent::HANDSHAKE => bean(HandshakeListener::class),
-                    SwooleEvent::MESSAGE   => bean(MessageListener::class),
-                    SwooleEvent::CLOSE     => bean(CloseListener::class),
+                    // WebSocket
+                    SwooleEvent::HANDSHAKE    => bean(HandshakeListener::class),
+                    SwooleEvent::MESSAGE      => bean(MessageListener::class),
+                    SwooleEvent::CLOSE        => bean(CloseListener::class),
+                    // For handle clone connection on exist multi worker
+                    SwooleEvent::PIPE_MESSAGE => bean(PipeMessageListener::class),
                 ]
             ],
             'wsRouter'     => [

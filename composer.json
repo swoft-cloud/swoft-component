@@ -182,6 +182,7 @@
     "rpc-server": "php run.php -c src/rpc-server/phpunit.xml",
     "stdlib": "php run.php -c src/stdlib/phpunit.xml",
     "task": "php run.php -c src/task/phpunit.xml",
+    "tcp": "php run.php -c src/tcp/phpunit.xml",
     "tcp-server": "php run.php -c src/tcp-server/phpunit.xml",
     "validator": "php run.php -c src/validator/phpunit.xml",
     "websocket-server": "php run.php -c src/websocket-server/phpunit.xml"

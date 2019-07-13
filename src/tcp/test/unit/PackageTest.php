@@ -15,7 +15,20 @@ class PackageTest extends TestCase
         $pkg = new Package();
 
         $this->assertEmpty($pkg->getCmd());
+        $this->assertEmpty($pkg->getExt());
         $this->assertEmpty($pkg->getData());
         $this->assertEmpty($pkg->getDataString());
+        $this->assertSame('{"cmd":"","data":null,"ext":[]}', $pkg->toString());
+
+        $pkg->setCmd('test');
+        $pkg->setExt(['id' => 23]);
+        $pkg->setData('data');
+
+        $this->assertSame('test', $pkg->getCmd());
+        $this->assertSame('data', $pkg->getData());
+        $this->assertSame('data', $pkg->getDataString());
+        $this->assertSame(['id' => 23], $pkg->getExt());
+        $this->assertSame('data', $pkg->toArray()['data']);
+        $this->assertSame('{"cmd":"test","data":"data","ext":{"id":23}}', $pkg->toString());
     }
 }

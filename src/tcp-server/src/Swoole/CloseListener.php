@@ -37,6 +37,8 @@ class CloseListener implements CloseInterface
     public function onClose(Server $server, int $fd, int $reactorId): void
     {
         $sid = (string)$fd;
+        // TODO handle close other worker connection
+
         $ctx = TcpCloseContext::new($fd, $reactorId);
 
         // Storage context

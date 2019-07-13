@@ -5,14 +5,15 @@ namespace Swoft\Tcp\Server;
 use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Tcp\Server\Contract\RequestInterface;
 
 /**
  * Class Request
  *
  * @since 2.0
- * @Bean(scope=Bean::PROTOTYPE)
+ * @Bean(name="tcpRequest", scope=Bean::PROTOTYPE)
  */
-class Request
+class Request implements RequestInterface
 {
     /**
      * Receiver fd
@@ -43,7 +44,7 @@ class Request
     public static function new(int $fd, string $data, int $reactorId): self
     {
         /** @var self $self */
-        $self = bean(self::class);
+        $self = bean('tcpRequest');
 
         // Set properties
         $self->fd      = $fd;

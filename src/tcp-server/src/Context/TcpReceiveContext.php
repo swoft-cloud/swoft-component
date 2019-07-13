@@ -7,6 +7,8 @@ use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\AbstractContext;
+use Swoft\Tcp\Server\Request;
+use Swoft\Tcp\Server\Response;
 
 /**
  * Class TcpReceiveContext
@@ -22,36 +24,44 @@ class TcpReceiveContext extends AbstractContext
     private $fd;
 
     /**
-     * @var string
+     * @var Request
      */
-    private $rawData;
+    private $request;
 
     /**
-     * @var int
+     * @var Response
      */
-    private $reactorId;
+    private $response;
 
     /**
-     * @param int    $fd
-     * @param int    $reactorId
-     *
-     * @param string $data
+     * @param int      $fd
+     * @param Request  $request
+     * @param Response $response
      *
      * @return self
      * @throws ContainerException
      * @throws ReflectionException
      */
-    public static function new(int $fd, int $reactorId, string $data): self
+    public static function new(int $fd, Request $request, Response $response): self
     {
         /** @var self $ctx */
         $ctx = Swoft::getBean(self::class);
 
         // Initial properties
-        $ctx->fd        = $fd;
-        $ctx->rawData    = $data;
-        $ctx->reactorId = $reactorId;
+        $ctx->fd = $fd;
+
+        $ctx->request  = $request;
+        $ctx->response = $response;
 
         return $ctx;
+    }
+
+    public function clear(): void
+    {
+        parent::clear();
+
+        $this->request = null;
+        $this->response = null;
     }
 
     /**
@@ -63,18 +73,34 @@ class TcpReceiveContext extends AbstractContext
     }
 
     /**
-     * @return int
+     * @return Request
      */
-    public function getReactorId(): int
+    public function getRequest(): Request
     {
-        return $this->reactorId;
+        return $this->request;
     }
 
     /**
-     * @return string
+     * @param Request $request
      */
-    public function getRawData(): string
+    public function setRequest(Request $request): void
     {
-        return $this->rawData;
+        $this->request = $request;
+    }
+
+    /**
+     * @return Response
+     */
+    public function getResponse(): Response
+    {
+        return $this->response;
+    }
+
+    /**
+     * @param Response $response
+     */
+    public function setResponse(Response $response): void
+    {
+        $this->response = $response;
     }
 }

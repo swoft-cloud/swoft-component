@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
-# Tool for run unit test for swoft components
+# Tool for run unit test and display coverage information
 #
 
 # import common functions
@@ -9,7 +9,7 @@ source "$(dirname $0)/script/common-func.sh"
 binName="./$(basename $0)"
 
 if [[ -z "$1" ]] || [[ "$1" == "-h" ]]; then
-    echo "Use for run phpunit for swoft components."
+    echo "Use for run phpunit and output coverage for swoft components."
     echo ""
     echo "Usage:"
     echo "  $binName NAME(S)    Run phpunit for the given component in the src/NAME"
@@ -43,17 +43,17 @@ echo ""
 # set -ex
 for lbName in ${components} ; do
     if [[ "${lbName}" == "component" ]]; then
-        echo "======> Testing the【component】"
-        echo "> php run.php -c phpunit.xml"
-        php run.php -c phpunit.xml
+        echo "======> Testing the【components】"
+          yellow_text "> phpdbg -dauto_globals_jit=Off -qrr run.php --coverage-text -c phpunit.xml"
+          phpdbg -dauto_globals_jit=Off -qrr run.php --coverage-text -c phpunit.xml
         echo $?
     else
         if [[ ! -d "src/${lbName}" ]]; then
             echo "!! Skip invalid component: ${lbName}"
         else
           echo "======> Testing the component【${lbName}】"
-          echo "> php run.php -c src/${lbName}/phpunit.xml"
-          php run.php -c src/${lbName}/phpunit.xml
+          yellow_text "> phpdbg -dauto_globals_jit=Off -qrr run.php --coverage-text -c src/${lbName}/phpunit.xml"
+          phpdbg -dauto_globals_jit=Off -qrr run.php --coverage-text -c src/${lbName}/phpunit.xml
           echo $?
         fi
     fi

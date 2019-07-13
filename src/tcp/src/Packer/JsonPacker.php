@@ -8,6 +8,7 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\JsonHelper;
 use Swoft\Tcp\Contract\PackerInterface;
 use Swoft\Tcp\Package;
+use Swoft\Tcp\Response;
 
 /**
  * Class JsonPacker
@@ -28,7 +29,7 @@ class JsonPacker implements PackerInterface
     }
 
     /**
-     * Encode Package object to string data.
+     * Encode [Package] to string for request server
      *
      * @param Package $package
      *
@@ -40,7 +41,7 @@ class JsonPacker implements PackerInterface
     }
 
     /**
-     * Decode tcp package data to Package object
+     * Decode client request body data to [Package] object
      *
      * @param string $data package data
      *
@@ -68,5 +69,55 @@ class JsonPacker implements PackerInterface
         }
 
         return Package::new($cmd, $data, $ext);
+    }
+
+    /**
+     * Encode [Response] to string for response client
+     *
+     * @param Response $response
+     *
+     * @return string
+     */
+    public function encodeResponse(Response $response): string
+    {
+        // If Response.content is not empty
+        if ($content = $response->getContent()) {
+            return $content;
+        }
+
+        return JsonHelper::encode($response->toArray());
+    }
+
+    /**
+     * Decode the server response data as an [Response]
+     *
+     * @param string $data package data
+     *
+     * @return Response
+     */
+    public function decodeResponse(string $data): Response
+    {
+        $map = JsonHelper::decode($data, true);
+
+        $resp = new Response();
+        $resp->setContent($data);
+
+        if (isset($map['code'])) {
+            $resp->setCode((int)$map['code']);
+        }
+
+        if (isset($map['msg'])) {
+            $resp->setMsg($map['msg']);
+        }
+
+        if (isset($map['data'])) {
+            $resp->setData($map['data']);
+        }
+
+        if (isset($map['data'])) {
+            $resp->setData($map['data']);
+        }
+
+        return $resp;
     }
 }

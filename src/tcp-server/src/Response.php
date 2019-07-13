@@ -6,24 +6,21 @@ use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Tcp\Protocol;
+use Swoft\Tcp\Server\Contract\ResponseInterface;
 use Swoft\Tcp\Server\Exception\TcpResponseException;
+use Swoft\Tcp\Response as TcpResponse;
 use Swoole\Server;
+use function bean;
 
 /**
  * Class Response
  *
  * @since 2.0
- * @Bean(scope=Bean::PROTOTYPE)
+ * @Bean(name="tcpResponse", scope=Bean::PROTOTYPE)
  */
-class Response
+class Response extends TcpResponse implements ResponseInterface
 {
-    /**
-     * Request fd
-     *
-     * @var int
-     */
-    private $reqFd = -1;
-
     /**
      * Response fd
      *
@@ -32,9 +29,11 @@ class Response
     private $fd = -1;
 
     /**
-     * @var mixed
+     * Request fd
+     *
+     * @var int
      */
-    private $data;
+    private $reqFd = -1;
 
     /**
      * @var bool
@@ -44,18 +43,19 @@ class Response
     /**
      * @param int $fd
      *
-     * @return self
+     * @return self|TcpResponse
      * @throws ContainerException
      * @throws ReflectionException
      */
-    public static function new(int $fd = -1): self
+    public static function new(int $fd = -1): TcpResponse
     {
         /** @var self $self */
-        $self = bean(self::class);
+        $self = bean('tcpResponse');
 
         // Set properties
-        $self->reqFd = $fd;
+        $self->fd    = $fd;
         $self->sent  = false;
+        $self->reqFd = $fd;
 
         return $self;
     }
@@ -64,6 +64,8 @@ class Response
      * @param Server|null $server
      *
      * @return int
+     * @throws ContainerException
+     * @throws ReflectionException
      * @throws TcpResponseException
      */
     public function send(Server $server = null): int
@@ -74,10 +76,18 @@ class Response
 
         $server = $server ?: Swoft::server()->getSwooleServer();
 
-        if ($server->send($this->fd, $this->data) === false) {
-            $code = $server->getLastError();
-            throw new TcpResponseException('Error on send data to client', $code);
+        if (!$content = $this->content) {
+            /** @var Protocol $protocol */
+            $protocol = bean('tcpServerProtocol');
+            $content  = $protocol->packResponse($this);
         }
+
+        if ($server->send($this->fd, $content) === false) {
+            $code = $server->getLastError();
+            throw new TcpResponseException("Error on send data to client #{$this->fd}", $code);
+        }
+
+        return 1;
     }
 
     /**
@@ -86,22 +96,6 @@ class Response
     public function getReqFd(): int
     {
         return $this->reqFd;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    /**
-     * @param mixed $data
-     */
-    public function setData($data): void
-    {
-        $this->data = $data;
     }
 
     /**
