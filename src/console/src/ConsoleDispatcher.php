@@ -4,6 +4,7 @@ namespace Swoft\Console;
 
 use ReflectionException;
 use ReflectionType;
+use function srun;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
@@ -62,7 +63,7 @@ class ConsoleDispatcher implements DispatcherInterface
         }
 
         // Coroutine running
-        Co::rawRun(function () use ($object, $method, $params) {
+        srun(function () use ($object, $method, $params) {
             $this->executeByCo($object, $method, $params);
         });
     }

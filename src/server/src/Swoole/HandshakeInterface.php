@@ -2,22 +2,12 @@
 
 namespace Swoft\Server\Swoole;
 
-use Swoole\Http\Request;
-use Swoole\Http\Response;
-
 /**
  * Interface HandshakeInterface
  *
- * @since 2.0
+ * @since       2.0
+ * @deprecated  since Swoft 2.0.4, use '\Swoft\Server\Contract\HandshakeInterface' for instead.
  */
-interface HandshakeInterface
+interface HandshakeInterface extends \Swoft\Server\Contract\HandshakeInterface
 {
-    /**
-     * Ws Handshake event
-     *
-     * @param Request  $request
-     * @param Response $response
-     * @return bool
-     */
-    public function onHandshake(Request $request, Response $response): bool;
 }

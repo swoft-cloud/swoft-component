@@ -2,24 +2,12 @@
 
 namespace Swoft\Server\Swoole;
 
-use Swoole\Server;
-
 /**
  * Interface CloseInterface
  *
- * @since 2.0
+ * @since       2.0
+ * @deprecated  since Swoft 2.0.4, use '\Swoft\Server\Contract\CloseInterface' for instead.
  */
-interface CloseInterface
+interface CloseInterface extends \Swoft\Server\Contract\CloseInterface
 {
-    /**
-     * Close event
-     *
-     * on connection closed
-     * - you can do something. eg. record log
-     *
-     * @param Server $server
-     * @param int      $fd
-     * @param int      $reactorId
-     */
-    public function onClose(Server $server, int $fd, int $reactorId): void;
 }

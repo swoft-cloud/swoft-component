@@ -1,18 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Server;
 
-use const SWOOLE_BASE;
-use const SWOOLE_PROCESS;
-use const SWOOLE_SOCK_TCP;
-use const SWOOLE_SOCK_TCP6;
-use const SWOOLE_SOCK_UDP;
-use const SWOOLE_SOCK_UDP6;
-use const SWOOLE_SOCK_UNIX_DGRAM;
-use const SWOOLE_SOCK_UNIX_STREAM;
+namespace Swoft\Server\Contract;
 
 /**
- * Interface ServerInterface
+ * Class ServerInterface
  *
  * @since 2.0
  */

@@ -58,4 +58,34 @@ final class ServerEvent
      * on user process start event
      */
     public const USER_PROCESS_START = 'swoft.process.user.start';
+
+    /**
+     * Before after event
+     */
+    public const AFTER_EVENT = 'swoft.server.event.after';
+
+    /**
+     * Before shutdown event
+     */
+    public const BEFORE_SHUTDOWN_EVENT = 'swoft.server.event.shutdown.before';
+
+    /**
+     * Before start event
+     */
+    public const BEFORE_START_EVENT = 'swoft.server.event.start.before';
+
+    /**
+     * Before worker error event
+     */
+    public const BEFORE_WORKER_ERROR_EVENT = 'swoft.server.event.worker.error.before';
+
+    /**
+     * Before worker start event
+     */
+    public const BEFORE_WORKER_START_EVENT = 'swoft.server.event.worker.start.before';
+
+    /**
+     * Before worker stop event
+     */
+    public const BEFORE_WORKER_STOP_EVENT = 'swoft.server.event.worker.stop.before';
 }

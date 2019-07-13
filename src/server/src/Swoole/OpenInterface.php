@@ -2,21 +2,12 @@
 
 namespace Swoft\Server\Swoole;
 
-use Swoft\Http\Message\Request;
-use Swoole\Websocket\Server;
-
 /**
  * Interface OpenInterface
  *
- * @since 2.0
+ * @since      2.0
+ * @deprecated  since Swoft 2.0.4, use '\Swoft\Server\Contract\OpenInterface' for instead.
  */
-interface OpenInterface
+interface OpenInterface extends \Swoft\Server\Contract\OpenInterface
 {
-    /**
-     * Open event
-     *
-     * @param Server  $server
-     * @param Request $request
-     */
-    public function onOpen(Server $server, Request $request): void;
 }
