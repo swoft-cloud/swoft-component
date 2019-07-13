@@ -10,7 +10,7 @@ use Swoole\Event;
 /**
  * Class Scheduler
  *
- * @package SwoftTool\Command
+ * @since 2.0
  */
 class Scheduler
 {

@@ -48,15 +48,21 @@ trait HasTimestamps
     /**
      * Update the creation and update timestamps.
      *
-     * @return void
+     * @return array
      */
-    protected function updateTimestamps(): void
+    public function updateTimestamps(): array
     {
+        $updated = [];
+
         if (!is_null(static::UPDATED_AT) &&
             !$this->isDirty(static::UPDATED_AT) &&
             $this->hasSetter(static::UPDATED_AT)
         ) {
-            $this->setModelAttribute(static::UPDATED_AT, $this->freshTimestamp(static::UPDATED_AT));
+            $createTimestamp = $this->freshTimestamp(static::UPDATED_AT);
+
+            $this->setModelAttribute(static::UPDATED_AT, $createTimestamp);
+
+            $updated[static::UPDATED_AT] = $createTimestamp;
         }
 
         if (!$this->swoftExists &&
@@ -64,8 +70,14 @@ trait HasTimestamps
             !$this->isDirty(static::CREATED_AT) &&
             $this->hasSetter(static::CREATED_AT)
         ) {
-            $this->setModelAttribute(static::CREATED_AT, $this->freshTimestamp(static::CREATED_AT));
+            $createTimestamp = $this->freshTimestamp(static::CREATED_AT);
+
+            $this->setModelAttribute(static::CREATED_AT, $createTimestamp);
+
+            $updated[static::CREATED_AT] = $createTimestamp;
         }
+
+        return $updated;
     }
 
     /**
@@ -73,7 +85,7 @@ trait HasTimestamps
      *
      * @param string $column
      *
-     * @return false|int|string
+     * @return int|string
      */
     public function freshTimestamp(string $column)
     {

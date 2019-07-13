@@ -13,9 +13,9 @@ use Swoft\Http\Message\Response;
 /**
  * Class HttpContext
  *
- * @Bean(scope=Bean::PROTOTYPE)
- *
  * @since 2.0
+ *
+ * @Bean(scope=Bean::PROTOTYPE)
  */
 class HttpContext extends AbstractContext
 {
@@ -43,7 +43,7 @@ class HttpContext extends AbstractContext
      */
     public static function new(Request $request, Response $response): self
     {
-         $instance = self::__instance();
+        $instance = self::__instance();
 
         $instance->request  = $request;
         $instance->response = $response;

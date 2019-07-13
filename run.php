@@ -80,7 +80,7 @@ if (!in_array('-c', $_SERVER['argv'], true)) {
 require PHPUNIT_COMPOSER_INSTALL;
 
 $status = 0;
-\Swoft\Co::rawRun(function () {
+\Swoft\Co::run(function () {
     // Status
     global $status;
 

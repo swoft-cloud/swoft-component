@@ -19,14 +19,6 @@ use Swoole\Event;
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Wait event
-     */
-    public function tearDown(): void
-    {
-        Event::wait();
-    }
-
-    /**
      * @return int
      * @throws ContainerException
      * @throws DbException

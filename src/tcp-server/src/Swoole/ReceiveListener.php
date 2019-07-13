@@ -7,7 +7,7 @@ use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\Context;
-use Swoft\Server\Swoole\ReceiveInterface;
+use Swoft\Server\Contract\ReceiveInterface;
 use Swoft\Session\Session;
 use Swoft\SwoftEvent;
 use Swoft\Tcp\Server\Context\TcpReceiveContext;

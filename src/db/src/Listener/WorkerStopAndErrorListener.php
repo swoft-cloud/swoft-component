@@ -2,8 +2,9 @@
 
 namespace Swoft\Db\Listener;
 
+use ReflectionException;
 use Swoft\Bean\BeanFactory;
-use Swoft\Co;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Pool;
 use Swoft\Event\Annotation\Mapping\Subscriber;
 use Swoft\Event\EventInterface;
@@ -34,18 +35,19 @@ class WorkerStopAndErrorListener implements EventSubscriberInterface
 
     /**
      * @param EventInterface $event
+     *
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function handle(EventInterface $event): void
     {
-        Co::rawRun(function () use ($event){
-            $pools = BeanFactory::getBeans(Pool::class);
+        $pools = BeanFactory::getBeans(Pool::class);
 
-            /* @var Pool $pool */
-            foreach ($pools as $pool) {
-                $count = $pool->close();
+        /* @var Pool $pool */
+        foreach ($pools as $pool) {
+            $count = $pool->close();
 
-                CLog::info('Close %d database connection on %s!', $count, $event->getName());
-            }
-        });
+            CLog::info('Close %d database connection on %s!', $count, $event->getName());
+        }
     }
 }
