@@ -9,6 +9,7 @@ use Swoft\Co;
 use Swoft\Console\Console;
 use Swoft\Http\Server\HttpServer;
 use Swoft\Log\Helper\CLog;
+use Swoft\Process\Contract\UserProcessInterface;
 use Swoft\Server\Contract\ServerInterface;
 use Swoft\Server\Event\ServerStartEvent;
 use Swoft\Server\Event\WorkerEvent;
@@ -153,6 +154,19 @@ abstract class Server implements ServerInterface
      * ]
      */
     protected $listener = [];
+
+    /**
+     * Add process
+     *
+     * @var array
+     *
+     * @example
+     * [
+     *     'name' => UserProcessInterface,
+     *     'name2' => UserProcessInterface,
+     * ]
+     */
+    protected $process = [];
 
     /**
      * Script file
@@ -485,7 +499,8 @@ abstract class Server implements ServerInterface
         // Set settings
         $this->swooleServer->set($this->setting);
 
-        Swoft::trigger(ServerEvent::BEFORE_BIND_EVENT, $this);
+        // Before Add event
+        Swoft::trigger(ServerEvent::BEFORE_ADDED_EVENT, $this);
 
         // Register events
         $defaultEvents = $this->defaultEvents();
@@ -494,14 +509,23 @@ abstract class Server implements ServerInterface
         // Add events
         $this->addEvent($this->swooleServer, $swooleEvents, $defaultEvents);
 
-        Swoft::trigger(ServerEvent::BEFORE_BIND_LISTENER, $this);
+        //After add event
+        Swoft::trigger(ServerEvent::AFTER_ADDED_EVENT, $this);
+
+        // Before listener
+        Swoft::trigger(ServerEvent::BEFORE_ADDED_LISTENER, $this);
 
         // Add port listener
         $this->addListener();
 
-        // Swoft::trigger(ServerEvent::BEFORE_BIND_PROCESS, $this);
-        // @TODO Add processes
-        // $this->addProcesses();
+        // Before bind process
+        Swoft::trigger(ServerEvent::BEFORE_ADDED_PROCESS, $this);
+
+        // Add Process
+        Swoft::trigger(ServerEvent::ADDED_PROCESS, $this);
+
+        // After bind process
+        Swoft::trigger(ServerEvent::AFTER_ADDED_PROCESS, $this);
 
         // Trigger event
         Swoft::trigger(ServerEvent::BEFORE_START, $this, array_keys($swooleEvents));
@@ -1092,6 +1116,14 @@ abstract class Server implements ServerInterface
     public function getUniqid(): string
     {
         return $this->uniqid;
+    }
+
+    /**
+     * @return array
+     */
+    public function getProcess(): array
+    {
+        return $this->process;
     }
 
     /**

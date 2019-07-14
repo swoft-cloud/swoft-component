@@ -8,6 +8,8 @@ use \Swoft\Context\ContextInterface;
 use Swoft\Event\Manager\EventManager;
 use Swoft\Http\Server\HttpContext;
 use Swoft\Http\Server\HttpServer;
+use Swoft\Process\Context\ProcessContext;
+use Swoft\Process\Context\UserProcessContext;
 use Swoft\Rpc\Server\ServiceContext;
 use Swoft\Server\Server;
 use Swoft\Task\FinishContext;
@@ -136,7 +138,7 @@ if (!function_exists('context')) {
     /**
      * Get current context
      *
-     * @return ContextInterface|HttpContext|ServiceContext|TaskContext|FinishContext
+     * @return ContextInterface|HttpContext|ServiceContext|TaskContext|FinishContext|UserProcessContext|ProcessContext
      */
     function context(): ContextInterface
     {

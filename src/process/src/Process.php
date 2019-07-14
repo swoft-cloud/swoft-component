@@ -21,19 +21,46 @@ class Process
     protected $process;
 
     /**
+     * @param SwooleProcess $process
+     *
+     * @return Process
+     * @throws ProcessException
+     */
+    public static function new(SwooleProcess $process): self
+    {
+        $self = new self(null, false, 2, true, $process);
+
+        $self->process = $process;
+        return $self;
+    }
+
+    /**
      * Process constructor.
      *
-     * @param callable $callback
-     * @param bool     $inout
-     * @param int      $pipeType
-     * @param bool     $coroutine
+     * @param callable           $callback
+     * @param bool               $inout
+     * @param int                $pipeType
+     * @param bool               $coroutine
+     * @param SwooleProcess|null $process
+     *
+     * @throws ProcessException
      */
     public function __construct(
-        callable $callback,
+        callable $callback = null,
         bool $inout = false,
         int $pipeType = 2,
-        bool $coroutine = false
+        bool $coroutine = true,
+        SwooleProcess $process = null
     ) {
+        if (!empty($process)) {
+            $this->process = $process;
+            return;
+        }
+
+        if (empty($callback)) {
+            throw new ProcessException('Process callback must be not empty!');
+        }
+
         $this->process = new SwooleProcess($callback, $inout, $pipeType, $coroutine);
     }
 
