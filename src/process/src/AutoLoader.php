@@ -4,6 +4,9 @@
 namespace Swoft\Process;
 
 
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Process\Swoole\WorkerStartListener;
 use Swoft\SwoftComponent;
 
 /**
@@ -20,6 +23,23 @@ class AutoLoader extends SwoftComponent
     {
         return [
             __NAMESPACE__ => __DIR__,
+        ];
+    }
+
+    /**
+     * @return array
+     * @throws ReflectionException
+     * @throws ContainerException
+     */
+    public function beans(): array
+    {
+        return [
+            'processPool' => [
+                'class' => ProcessPool::class,
+                'on'    => [
+                    SwooleEvent::WORKER_START => bean(WorkerStartListener::class)
+                ]
+            ]
         ];
     }
 
