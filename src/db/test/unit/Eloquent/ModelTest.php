@@ -555,6 +555,7 @@ on A.id=B.id;', [$resCount - 20]);
         $this->assertCount($count, $values);
 
         $users = User::findMany([$id, $id2, $id3]);
+
         $this->assertCount($count, $users);
 
         /* @var $user User */

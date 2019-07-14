@@ -116,6 +116,7 @@ use function is_null;
  * @method Connection getConnection()
  * @method string implode(string $column, string $glue = '')
  * @method array paginate(int $page = 1, int $perPage = 15, array $columns = ['*'])
+ * @method Builder useWritePdo()
  *
  */
 class Builder

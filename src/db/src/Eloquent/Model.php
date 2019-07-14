@@ -158,6 +158,7 @@ use function bean;
  * @method static float|int avg($column)
  * @method static float|int average(string $column)
  * @method static void truncate()
+ * @method static Builder useWritePdo()
  */
 abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
 {
