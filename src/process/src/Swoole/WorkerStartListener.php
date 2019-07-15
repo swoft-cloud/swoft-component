@@ -4,13 +4,18 @@
 namespace Swoft\Process\Swoole;
 
 
+use ReflectionException;
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Process\Contract\WorkerStartInterface;
+use Swoft\Process\ProcessDispatcher;
+use Swoft\Process\ProcessEvent;
 use Swoft\Process\ProcessPool;
-use Swoft\Stdlib\Helper\Dir;
-use Swoft\Stdlib\Helper\Sys;
 use Swoole\Coroutine;
 use Swoole\Process\Pool;
+use Swoft\Bean\Annotation\Mapping\Inject;
+
 
 /**
  * Class WorkerStartListener
@@ -22,18 +27,31 @@ use Swoole\Process\Pool;
 class WorkerStartListener implements WorkerStartInterface
 {
     /**
+     * @Inject()
+     *
+     * @var ProcessDispatcher
+     */
+    private $processDispatcher;
+
+    /**
      * @param Pool $pool
      * @param int  $workerId
+     *
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function onWorkerStart(Pool $pool, int $workerId): void
     {
         // Init
         ProcessPool::$processPool->initProcessPool($pool);
 
-        while (true) {
-            Coroutine::sleep(3);
+        // Before
+        Swoft::trigger(ProcessEvent::BEFORE_PROCESS, $this, $pool, $workerId);
 
-            var_dump('worker');
-        }
+        // Dispatcher
+        $this->processDispatcher->dispatcher($pool, $workerId);
+
+        // After
+        Swoft::trigger(ProcessEvent::BEFORE_PROCESS, $this, $pool, $workerId);
     }
 }

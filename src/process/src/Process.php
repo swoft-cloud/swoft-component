@@ -270,12 +270,12 @@ class Process
     }
 
     /**
-     * @param int      $signo
-     * @param callable $callback
+     * @param int           $signo
+     * @param callable|null $callback
      *
      * @return bool
      */
-    public static function signal(int $signo, callable $callback)
+    public static function signal(int $signo, callable $callback = null)
     {
         return (bool)SwooleProcess::signal($signo, $callback);
     }

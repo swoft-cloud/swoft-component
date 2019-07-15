@@ -17,5 +17,5 @@ interface WorkerStopInterface
      * @param Pool $pool
      * @param int  $workerId
      */
-    public function onWorkerStart(Pool $pool, int $workerId): void;
+    public function onWorkerStop(Pool $pool, int $workerId): void;
 }

@@ -234,7 +234,7 @@ class ProcessPool
     public function setDaemonize(bool $yes = true): self
     {
         if ($yes) {
-            Process::daemon();
+            Process::daemon(true, false);
         }
 
         return $this;
