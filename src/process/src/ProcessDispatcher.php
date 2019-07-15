@@ -39,6 +39,7 @@ class ProcessDispatcher
      */
     public function dispatcher(Pool $pool, int $workerId): void
     {
+        $workerId = $workerId + 1;
 
         try {
             $process = $this->getProcess($workerId);

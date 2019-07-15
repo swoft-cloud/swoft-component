@@ -47,7 +47,6 @@ class ProcessRegister
      */
     public static function getProcess(int $workerId): string
     {
-        $workerId  = $workerId + 1;
         $className = self::$process[$workerId]['class'] ?? '';
         if (!empty($className)) {
             return $className;
