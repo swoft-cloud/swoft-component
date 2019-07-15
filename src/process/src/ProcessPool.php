@@ -4,9 +4,17 @@
 namespace Swoft\Process;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Co;
+use Swoft\Console\Console;
+use Swoft\Exception\SwoftException;
+use Swoft\Log\Helper\CLog;
 use Swoft\Process\Exception\ProcessException;
+use Swoft\Server\Helper\ServerHelper;
+use Swoft\Server\Server;
 use Swoft\Stdlib\Helper\Dir;
 use Swoft\Stdlib\Helper\Sys;
+use Swoole\Coroutine;
+use Swoole\Process;
 use Swoole\Process\Pool;
 
 /**
@@ -83,6 +91,11 @@ class ProcessPool
     private $masterPid = 0;
 
     /**
+     * @var string
+     */
+    private $commandFile = '@runtime/swoft-process.command';
+
+    /**
      * Start process pool
      *
      * @throws ProcessException
@@ -113,6 +126,60 @@ class ProcessPool
     }
 
     /**
+     * @return bool
+     */
+    public function reload(): bool
+    {
+        if (($pid = $this->masterPid) < 1) {
+            return false;
+        }
+
+        // SIGUSR1 to reload
+        return ServerHelper::sendSignal($pid, 10);
+    }
+
+    /**
+     * @return bool
+     */
+    public function stop(): bool
+    {
+        $pid = $this->getPid();
+        if ($pid < 1) {
+            return false;
+        }
+
+        // SIGTERM = 15
+        if (ServerHelper::killAndWait($pid, 15, $this->pidName)) {
+            $rmPidOk = ServerHelper::removePidFile(alias($this->pidFile));
+            $rmCmdOk = ServerHelper::removePidFile(alias($this->commandFile));
+
+            return $rmPidOk && $rmCmdOk;
+        }
+
+        return false;
+    }
+
+    /**
+     * Quick restart
+     * @throws SwoftException
+     */
+    public function restart(): void
+    {
+        if ($this->isRunning()) {
+            // Restart command
+            $command = Co::readFile(alias($this->commandFile));
+
+            // Stop server
+            $this->stop();
+
+            // Exe restart shell
+            Coroutine::exec($command);
+
+            CLog::info('Restart success(%s)!', $command);
+        }
+    }
+
+    /**
      * @param Pool $pool
      */
     public function initProcessPool(Pool $pool): void
@@ -124,6 +191,11 @@ class ProcessPool
         $pidFile = alias($this->pidFile);
         Dir::make(dirname($pidFile));
         file_put_contents($pidFile, $pool->master_pid);
+
+        // Save pull command to file
+        $commandFile = alias($this->commandFile);
+        Dir::make(dirname($commandFile));
+        file_put_contents($commandFile, $this->fullCommand);
     }
 
     /**
@@ -150,6 +222,22 @@ class ProcessPool
         }
 
         return false;
+    }
+
+    /**
+     * Set server, run server on the background
+     *
+     * @param bool $yes
+     *
+     * @return $this
+     */
+    public function setDaemonize(bool $yes = true): self
+    {
+        if ($yes) {
+            Process::daemon();
+        }
+
+        return $this;
     }
 
     /**

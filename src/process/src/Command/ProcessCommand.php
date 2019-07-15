@@ -7,6 +7,8 @@ use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Annotation\Mapping\CommandMapping;
+use Swoft\Console\Annotation\Mapping\CommandOption;
+use Swoft\Console\Helper\Show;
 use Swoft\Process\Exception\ProcessException;
 use Swoft\Process\Process;
 use Swoft\Process\ProcessPool;
@@ -25,17 +27,19 @@ use Swoft\Server\Command\BaseServerCommand;
 class ProcessCommand extends BaseServerCommand
 {
     /**
-     * @CommandMapping()
+     * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
+     * @CommandOption("daemon", short="d", desc="Run server on the background", type="bool", default="false")
      *
      * @throws ContainerException
      * @throws ReflectionException
      * @throws ProcessException
+     * @example
+     *   {fullCommand}
+     *   {fullCommand} -d
      */
     public function start(): void
     {
         $server = $this->createServer();
-
-        Process::daemon();
 
         // Check if it has started
         if ($server->isRunning()) {
@@ -44,23 +48,86 @@ class ProcessCommand extends BaseServerCommand
             return;
         }
 
+        // Daemon
+        $asDaemon = input()->getSameOpt(['d', 'daemon'], false);
+        if ($asDaemon) {
+            $server->setDaemonize();
+        }
+
         $server->start();
     }
 
     /**
      * @CommandMapping()
+     *
+     * @throws ContainerException
+     * @throws ProcessException
+     * @throws ReflectionException
      */
     public function restart(): void
     {
+        $server = $this->createServer();
 
+        // Check if it has started
+        if ($server->isRunning()) {
+            $success = $server->stop();
+            if (!$success) {
+                output()->error('Stop the old process pool failed!');
+                return;
+            }
+        }
+
+        output()->writef('<success>Process pool restart success !</success>');
+
+        $server->setDaemonize();
+        $server->start();
     }
 
     /**
      * @CommandMapping()
+     *
+     * @throws ContainerException
+     * @throws ReflectionException
+     */
+    public function reload(): void
+    {
+        $server = $this->createServer();
+        $script = input()->getScript();
+
+        // Check if it has started
+        if (!$server->isRunning()) {
+            output()->writeln('<error>The Process pool is not running! cannot reload</error>');
+            return;
+        }
+
+        output()->writef('<info>Server %s is reloading</info>', $script);
+
+        if (!$server->reload()) {
+            Show::error('The process pool worker process reload fail!');
+            return;
+        }
+
+        output()->writef('<success>Process pool %s reload success</success>', $script);
+    }
+
+    /**
+     * @CommandMapping()
+     *
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function stop(): void
     {
+        $server = $this->createServer();
 
+        // Check if it has started
+        if (!$server->isRunning()) {
+            output()->writeln('<error>The Process pool is not running! cannot stop.</error>');
+            return;
+        }
+
+        // Do stopping.
+        $server->stop();
     }
 
     /**
