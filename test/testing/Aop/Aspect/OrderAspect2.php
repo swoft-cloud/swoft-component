@@ -62,7 +62,6 @@ class OrderAspect2
         $result      = $joinPoint->getReturn();
         $this->trace .= sprintf('afterReturn2(%s)-', $result);
 
-
         $ret = $this->trace;
         $this->clear();
 
