@@ -23,9 +23,8 @@ use Throwable;
 /**
  * Class ReceiveListener
  *
- * @Bean()
- *
  * @since 2.0
+ * @Bean()
  */
 class ReceiveListener implements ReceiveInterface
 {

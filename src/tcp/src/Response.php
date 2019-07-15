@@ -2,6 +2,7 @@
 
 namespace Swoft\Tcp;
 
+use Swoft\Server\Concern\CommonProtocolDataTrait;
 use Swoft\Stdlib\Helper\JsonHelper;
 use Swoft\Tcp\Contract\ResponseInterface;
 
@@ -12,6 +13,8 @@ use Swoft\Tcp\Contract\ResponseInterface;
  */
 class Response implements ResponseInterface
 {
+    use CommonProtocolDataTrait;
+
     /**
      * @var int
      */
@@ -21,16 +24,6 @@ class Response implements ResponseInterface
      * @var string
      */
     protected $msg = self::DEFAULT_MSG;
-
-    /**
-     * @var array
-     */
-    protected $ext = [];
-
-    /**
-     * @var mixed
-     */
-    protected $data;
 
     /**
      * @var string
@@ -81,22 +74,6 @@ class Response implements ResponseInterface
     }
 
     /**
-     * @return string
-     */
-    public function getDataString(): string
-    {
-        if (!$this->data) {
-            return '';
-        }
-
-        if (is_scalar($this->data)) {
-            return (string)$this->data;
-        }
-
-        return JsonHelper::encode($this->data);
-    }
-
-    /**
      * @return int
      */
     public function getCode(): int
@@ -110,38 +87,6 @@ class Response implements ResponseInterface
     public function setCode(int $code): void
     {
         $this->code = $code;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    /**
-     * @param mixed $data
-     */
-    public function setData($data): void
-    {
-        $this->data = $data;
-    }
-
-    /**
-     * @return array
-     */
-    public function getExt(): array
-    {
-        return $this->ext;
-    }
-
-    /**
-     * @param array $ext
-     */
-    public function setExt(array $ext): void
-    {
-        $this->ext = $ext;
     }
 
     /**

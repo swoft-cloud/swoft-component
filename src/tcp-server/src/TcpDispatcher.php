@@ -13,7 +13,6 @@ use Swoft\Tcp\Server\Exception\CommandNotFoundException;
 use Swoft\Tcp\Server\Exception\TcpUnpackingException;
 use Swoft\Tcp\Server\Router\Router;
 use Throwable;
-use function bean;
 
 /**
  * Class TcpDispatcher
@@ -36,7 +35,7 @@ class TcpDispatcher
     public function dispatch(Request $request, Response $response): Response
     {
         /** @var Protocol $protocol */
-        $protocol = bean('tcpServerProtocol');
+        $protocol = Swoft::getBean('tcpServerProtocol');
 
         try {
             $package = $protocol->unpack($request->getRawData());
@@ -45,7 +44,7 @@ class TcpDispatcher
         }
 
         /** @var Router $router */
-        $router = bean('tcpRouter');
+        $router = Swoft::getBean('tcpRouter');
 
         $cmd = $package->getCmd() ?: $router->getDefaultCommand();
 

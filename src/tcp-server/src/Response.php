@@ -36,6 +36,8 @@ class Response extends TcpResponse implements ResponseInterface
     private $reqFd = -1;
 
     /**
+     * Mark whether the response has been sent
+     *
      * @var bool
      */
     private $sent = false;

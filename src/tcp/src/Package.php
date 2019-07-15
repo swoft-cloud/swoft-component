@@ -4,6 +4,7 @@ namespace Swoft\Tcp;
 
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Server\Concern\CommonProtocolDataTrait;
 use Swoft\Stdlib\Helper\JsonHelper;
 use function bean;
 
@@ -14,26 +15,14 @@ use function bean;
  */
 class Package
 {
+    use CommonProtocolDataTrait;
+
     /**
      * Message request command. it's must exists.
      *
      * @var string
      */
     private $cmd = '';
-
-    /**
-     * Message body data
-     *
-     * @var mixed
-     */
-    private $data;
-
-    /**
-     * Message extra data
-     *
-     * @var array
-     */
-    private $ext = [];
 
     /**
      * @param string $route
@@ -72,22 +61,6 @@ class Package
     /**
      * @return string
      */
-    public function getDataString(): string
-    {
-        if (!$this->data) {
-            return '';
-        }
-
-        if (is_scalar($this->data)) {
-            return (string)$this->data;
-        }
-
-        return JsonHelper::encode($this->data);
-    }
-
-    /**
-     * @return string
-     */
     public function toString(): string
     {
         return JsonHelper::encode($this->toArray());
@@ -118,37 +91,5 @@ class Package
     {
         $this->cmd = $cmd;
         return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    /**
-     * @param mixed $data
-     */
-    public function setData($data): void
-    {
-        $this->data = $data;
-    }
-
-    /**
-     * @return array
-     */
-    public function getExt(): array
-    {
-        return $this->ext;
-    }
-
-    /**
-     * @param array $ext
-     */
-    public function setExt(array $ext): void
-    {
-        $this->ext = $ext;
     }
 }
