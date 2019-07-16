@@ -381,14 +381,17 @@ abstract class Server implements ServerInterface
 
         Sys::setProcessTitle(sprintf('%s %s process', $this->pidName, $procRole));
 
-        // Before
-        Swoft::trigger(ServerEvent::BEFORE_WORKER_START_EVENT, $this, $server, $workerId);
+        // In coroutine, sync task is not in coroutine
+        if (Co::id() > 0) {
+            // Before
+            Swoft::trigger(ServerEvent::BEFORE_WORKER_START_EVENT, $this, $server, $workerId);
 
-        // Already in coroutine
-        Swoft::trigger($newEvent, $this);
+            // Already in coroutine
+            Swoft::trigger($newEvent, $this);
 
-        // After event
-        Swoft::trigger(ServerEvent::AFTER_EVENT, $this);
+            // After event
+            Swoft::trigger(ServerEvent::AFTER_EVENT, $this);
+        }
     }
 
     /**
@@ -590,6 +593,12 @@ abstract class Server implements ServerInterface
                 continue;
             }
 
+            // Coroutine task and sync task
+            if ($name === SwooleEvent::TASK) {
+                $this->addTaskEvent($server, $listener, $name);
+                continue;
+            }
+
             if (!isset(SwooleEvent::LISTENER_MAPPING[$name])) {
                 throw new ServerException(sprintf('Swoole %s event is not defined!', $name));
             }
@@ -602,6 +611,38 @@ abstract class Server implements ServerInterface
             $listenerMethod = sprintf('on%s', ucfirst($name));
             $server->on($name, [$listener, $listenerMethod]);
         }
+    }
+
+    /**
+     * @param CoServer|CoServer\Port $server
+     * @param object                 $listener
+     * @param string                 $name
+     *
+     * @throws ServerException
+     */
+    protected function addTaskEvent($server, $listener, string $name): void
+    {
+        $index = (int)$this->isCoroutineTask();
+
+        $taskListener = SwooleEvent::LISTENER_MAPPING[$name][$index] ?? '';
+        if (empty($taskListener)) {
+            throw new ServerException(sprintf('Swoole %s event is not defined!', $name));
+        }
+
+        if (!$listener instanceof $taskListener) {
+            throw new ServerException(sprintf('Swoole %s event listener is not %s', $name, $taskListener));
+        }
+
+        $listenerMethod = sprintf('on%s', ucfirst($name));
+        $server->on($name, [$listener, $listenerMethod]);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCoroutineTask(): bool
+    {
+        return $this->setting['task_enable_coroutine'] ?? false;
     }
 
     /**

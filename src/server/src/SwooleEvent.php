@@ -12,6 +12,7 @@ use Swoft\Server\Contract\PacketInterface;
 use Swoft\Server\Contract\PipeMessageInterface;
 use Swoft\Server\Contract\ReceiveInterface;
 use Swoft\Server\Contract\RequestInterface;
+use Swoft\Server\Contract\SyncTaskInterface;
 use Swoft\Server\Contract\TaskInterface;
 
 /**
@@ -127,7 +128,10 @@ class SwooleEvent
         // For udp server
         self::PACKET       => PacketInterface::class,
         // For task
-        self::TASK         => TaskInterface::class,
+        self::TASK         => [
+            SyncTaskInterface::class,
+            TaskInterface::class
+        ],
         self::FINISH       => FinishInterface::class,
         // For process
         self::PIPE_MESSAGE => PipeMessageInterface::class,
