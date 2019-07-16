@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Rpc\Server\Exception\Handler;
+namespace Swoft\Tcp\Server\Exception\Handler;
 
 use Swoft\Error\ErrorType;
 use Swoft\Tcp\Server\Contract\TcpCloseErrorHandlerInterface;

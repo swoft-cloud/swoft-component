@@ -1,14 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Listener;
 
-use function implode;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Log\Helper\CLog;
 use Swoft\Server\Server;
 use Swoft\Server\ServerEvent;
+use function implode;
 
 /**
  * Class BeforeStartListener
@@ -22,8 +22,9 @@ class BeforeStartListener implements EventHandlerInterface
     public function handle(EventInterface $event): void
     {
         /** @var Server $server */
-        // $server = $event->getTarget();
+        $server = $event->getTarget();
 
+        CLog::info('Server extra info: pidFile <info>%s</info>', $server->getPidFile());
         CLog::info("Registered swoole events:\n <info>%s</info>", implode(', ', $event->getParam(0)));
     }
 }

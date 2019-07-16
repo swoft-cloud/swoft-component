@@ -3,6 +3,8 @@
 
 namespace Swoft\Rpc\Client\Contract;
 
+use Swoft\Rpc\Client\Client;
+
 /**
  * Class ProviderInterface
  *
@@ -11,6 +13,8 @@ namespace Swoft\Rpc\Client\Contract;
 interface ProviderInterface
 {
     /**
+     * @param Client $client
+     *
      * @return array
      *
      * @example
@@ -20,5 +24,5 @@ interface ProviderInterface
      *     'host:port',
      * ]
      */
-    public function getList(): array;
+    public function getList(Client $client): array;
 }

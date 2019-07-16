@@ -15,23 +15,25 @@ use Doctrine\Common\Annotations\Annotation\Target;
  * @Annotation
  * @Target("METHOD")
  * @Attributes(
- *     @Attribute("command", type="string")
+ *     @Attribute("route", type="string")
  * )
  */
 final class TcpMapping
 {
     /**
+     * The tcp server route path. eg: 'home.index'
+     *
      * @var string
      * @Required()
      */
     private $route = '';
 
     /**
-     * Routing path params binding. eg. ["id" => "\d+"]
+     * Mark current route is root command.
      *
-     * @var array
+     * @var bool
      */
-    private $params = [];
+    private $root = false;
 
     /**
      * Class constructor.
@@ -46,8 +48,8 @@ final class TcpMapping
             $this->route = (string)$values['route'];
         }
 
-        if (isset($values['params'])) {
-            $this->route = (array)$values['params'];
+        if (isset($values['root'])) {
+            $this->root = (bool)$values['root'];
         }
     }
 
@@ -60,10 +62,10 @@ final class TcpMapping
     }
 
     /**
-     * @return array
+     * @return bool
      */
-    public function getParams(): array
+    public function isRoot(): bool
     {
-        return $this->params;
+        return $this->root;
     }
 }

@@ -85,6 +85,18 @@ class Session
      ****************************************************************************/
 
     /**
+     * Check session has exist on current worker
+     *
+     * @param string $sid
+     *
+     * @return bool
+     */
+    public static function has(string $sid): bool
+    {
+        return isset(self::$sessions[$sid]);
+    }
+
+    /**
      * Get session by FD
      *
      * @param string $sid If not specified, return the current corresponding session

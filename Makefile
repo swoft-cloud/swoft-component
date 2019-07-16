@@ -10,15 +10,15 @@ help:
 
   addrmt:	## Add the remote repository address of each component to the local remote
 addrmt:
-	./script/add-remotes.sh all
+	bash ./script/add-remotes.sh all
 
   spush:	## Push all update to remote sub-repo by git subtree push
 spush:
-	./script/subtree-push.sh all
+	bash ./script/subtree-push.sh all
 
-  release:	## Release all sub-repo to new tag version and push to remote repo
+  release:	## Release all sub-repo to new tag version and push to remote repo. eg: tag=v2.0.3
 release:
-	./script/release-tag.sh -a -y -t $(TAG)
+	bash ./script/release-tag.sh -a -y -t $(TAG)
 
   sami:		## Gen classes docs by sami.phar
 classdoc:

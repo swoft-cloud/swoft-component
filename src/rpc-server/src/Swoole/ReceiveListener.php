@@ -12,7 +12,7 @@ use Swoft\Rpc\Exception\RpcException;
 use Swoft\Rpc\Server\Request;
 use Swoft\Rpc\Server\Response;
 use Swoft\Rpc\Server\ServiceDispatcher;
-use Swoft\Server\Swoole\ReceiveInterface;
+use Swoft\Server\Contract\ReceiveInterface;
 use Swoole\Server;
 
 /**

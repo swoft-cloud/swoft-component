@@ -53,6 +53,19 @@ class DemoServiceV2 implements DemoInterface
     }
 
     /**
+     * @return array
+     */
+    public function notClassMd(): array
+    {
+        return [];
+    }
+
+    public function returnNull(): void
+    {
+        return ;
+    }
+
+    /**
      * @param int $id
      *
      * @return bool

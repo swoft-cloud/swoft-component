@@ -20,14 +20,26 @@ class TcpServer extends Server
     // protected static $serverType = 'TCP';
 
     /**
-     * @var string
+     * Default listen port
+     *
+     * @var int
      */
-    protected $pidFile = '@runtime/swoft-ws.pid';
+    protected $port = 18309;
 
     /**
      * @var string
      */
-    protected $commandFile = '@runtime/swoft-ws.command';
+    protected $pidName = 'swoft-tcp';
+
+    /**
+     * @var string
+     */
+    protected $pidFile = '@runtime/swoft-tcp.pid';
+
+    /**
+     * @var string
+     */
+    protected $commandFile = '@runtime/swoft-tcp.command';
 
     /**
      * Start server

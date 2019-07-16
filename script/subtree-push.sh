@@ -2,6 +2,9 @@
 
 set -e
 
+# import common functions
+source "$(dirname $0)/common-func.sh"
+
 binName="bash $(basename $0)"
 
 if [[ -z "$1" ]]
@@ -33,11 +36,12 @@ echo ${COMPONENTS}
 # git subtree push --prefix=src/annotation git@github.com:swoft-cloud/swoft-annotation.git master --squash
 # git subtree push --prefix=src/stdlib stdlib master
 for lbName in ${COMPONENTS} ; do
-    echo ""
-    echo "======> Push the project:【${lbName}】"
-    echo "> git subtree push --prefix=src/${lbName} ${lbName} ${TARGET_BRANCH} --squash"
+    colored_text "\n======> Push the project:【${lbName}】"
+#    yellow_text "> git subtree pull --prefix=src/${lbName} ${lbName} ${TARGET_BRANCH} --squash"
+#    git subtree pull --prefix=src/${lbName} ${lbName} ${TARGET_BRANCH} --squash
+
+    yellow_text "> git subtree push --prefix=src/${lbName} ${lbName} ${TARGET_BRANCH} --squash"
     git subtree push --prefix=src/${lbName} ${lbName} ${TARGET_BRANCH} --squash
 done
 
-echo ""
-echo "Push Completed!"
+colored_text "\nPush Completed!"

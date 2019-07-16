@@ -149,11 +149,11 @@ class Connection extends AbstractConnection implements ConnectionInterface
     private function getHostPort(): array
     {
         $provider = $this->client->getProvider();
-        if (empty($provider) || !$provider instanceof ProviderInterface || empty($provider->getList())) {
+        if (empty($provider) || !$provider instanceof ProviderInterface || empty($provider->getList($this->client))) {
             return [$this->client->getHost(), $this->client->getPort()];
         }
 
-        $list = $provider->getList();
+        $list = $provider->getList($this->client);
         if (!is_array($list)) {
             throw new RpcClientException(
                 sprintf('Provider(%s) return format is error!', JsonHelper::encode($list))

@@ -26,7 +26,7 @@ class Swoft
     /**
      * Swoft version
      */
-    public const VERSION = '2.0.2-beta';
+    public const VERSION = '2.0.3-beta';
 
     /**
      * Swoft log
@@ -157,7 +157,7 @@ class Swoft
      * @throws ReflectionException
      * @throws ContainerException
      */
-    public static function t(string $key, array $params, string $locale = I18n::DEFAULT_LANG): string
+    public static function t(string $key, array $params, string $locale = ''): string
     {
         /* @var I18n $i18n */
         $i18n = BeanFactory::getBean('i18n');

@@ -36,8 +36,8 @@ echo " " ${COMPONENTS}
 # git subtree push --prefix=src/stdlib stdlib master
 for lbName in ${COMPONENTS} ; do
     colored_text "\n---- Check sub-component remote: ${lbName}"
-    yellow_text "> git remote -v | grep ${lbName}"
-    REMOTE_INFO=`git remote -v | grep ${lbName}`
+    yellow_text "> git remote -v | grep swoft-${lbName}"
+    REMOTE_INFO=`git remote -v | grep swoft-${lbName}`
 
     if [[ -n "$REMOTE_INFO" ]]; then
         colored_text "${lbName}: has been add remote, skip add"

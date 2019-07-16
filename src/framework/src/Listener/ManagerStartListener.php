@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Listener;
 
@@ -25,10 +25,11 @@ class ManagerStartListener implements EventHandlerInterface
     {
         $server = $event->coServer;
 
-        Console::writef(
-            'Server start success (Master PID: <mga>%d</mga>, Manager PID: <mga>%d</mga>)',
-            $server->master_pid,
-            $server->manager_pid
-        );
+//        Console::writef(
+//            'Server start success (Master PID: <mga>%d</mga>, Manager PID: <mga>%d</mga>)',
+//            $server->master_pid,
+//            $server->manager_pid
+//        );
+
     }
 }

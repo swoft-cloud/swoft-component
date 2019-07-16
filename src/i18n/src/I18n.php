@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\I18n;
 
 use InvalidArgumentException;
@@ -82,7 +81,7 @@ class I18n
         }
 
         if (!is_readable($sourcePath)) {
-            throw new I18nException(sprintf(' I18n resources(%s) is not readable', $sourcePath));
+            throw new I18nException(sprintf(' I18n resource path(%s) is not readable', $sourcePath));
         }
 
         $this->loadLanguages($sourcePath);
@@ -122,12 +121,12 @@ class I18n
      *
      * @param string $key "category.key" or "locale.category.key"
      * @param array  $params
-     * @param string $locale
+     * @param string $locale If is empty will use default locale
      *
      * @return string
      * @throws InvalidArgumentException
      */
-    public function translate(string $key, array $params = [], string $locale = self::DEFAULT_LANG): string
+    public function translate(string $key, array $params = [], string $locale = ''): string
     {
         $realKey = $this->getRealKey($key, $locale);
         $message = ArrayHelper::get($this->messages, $realKey);
@@ -186,6 +185,8 @@ class I18n
      */
     private function getRealKey(string $key, string $locale): string
     {
+        $locale = $locale ?: $this->defaultLanguage;
+
         if (strpos($key, '.') === false) {
             $key = implode('.', [$this->defaultCategory, $key]);
         }

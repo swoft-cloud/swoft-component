@@ -15,6 +15,8 @@ final class ErrorType
     public const SOCK = 7;
     public const TASK = 8;
 
+    public const WORKER = 9;
+
     // HTTP server
     public const HTTP = 16;
 

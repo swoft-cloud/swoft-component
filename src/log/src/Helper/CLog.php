@@ -35,7 +35,7 @@ class CLog
         $name    = $config['name'] ?? '';
         $enable  = $config['enable'] ?? true;
         $output  = $config['output'] ?? true;
-        $levels  = $config['levels'] ?? [];
+        $levels  = $config['levels'] ?? '';
         $logFile = $config['logFile'] ?? '';
 
         $lineFormatter = new LineFormatter();
@@ -66,7 +66,7 @@ class CLog
      */
     public static function debug(string $message, ...$params): void
     {
-        if(SWOFT_DEBUG){
+        if (SWOFT_DEBUG) {
             self::$cLogger->debug(sprintf($message, ...$params), []);
         }
     }

@@ -7,7 +7,7 @@ use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\Context;
-use Swoft\Server\Swoole\ConnectInterface;
+use Swoft\Server\Contract\ConnectInterface;
 use Swoft\Session\Session;
 use Swoft\SwoftEvent;
 use Swoft\Tcp\Server\Connection;
@@ -53,7 +53,6 @@ class ConnectListener implements ConnectInterface
 
             /** @var TcpDispatcher $dispatcher */
             // $dispatcher = Swoft::getSingleton('tcpDispatcher');
-
         } catch (Throwable $e) {
             Swoft::trigger(TcpServerEvent::CONNECT_ERROR, $e, $fd);
 

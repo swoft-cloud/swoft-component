@@ -11,7 +11,7 @@ use Swoft\Co;
 use Swoft\Context\Context;
 use Swoft\Http\Message\Request as Psr7Request;
 use Swoft\Http\Message\Response as Psr7Response;
-use Swoft\Server\Swoole\HandshakeInterface;
+use Swoft\Server\Contract\HandshakeInterface;
 use Swoft\Session\Session;
 use Swoft\SwoftEvent;
 use Swoft\WebSocket\Server\Connection;

@@ -26,8 +26,8 @@ final class Reflections
      *         'methods'  => [
      *             'methodName' => [
      *                'params'     => [
-     *                    'argType',  // like `int $arg`
-     *                    'argType',  // like `class $arg`
+     *                    'argName',  // like `name`
+     *                    'argType',  // like `int`
      *                    null // like `$arg`
      *                ],
      *                'comments'   => 'method doc comments',

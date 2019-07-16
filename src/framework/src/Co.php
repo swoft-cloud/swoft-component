@@ -7,8 +7,12 @@ use Swoft;
 use Swoft\Context\Context;
 use Swoft\Exception\SwoftException;
 use Swoft\Log\Debug;
+use Swoft\Log\Helper\CLog;
+use Swoft\Server\Helper\ServerHelper;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoole\Coroutine;
+use Swoole\Coroutine\Scheduler;
+use Swoole\Event;
 use Throwable;
 use function count;
 use function sgo;
@@ -54,6 +58,37 @@ class Co
     {
         $id = self::id();
         return self::$mapping[$id] ?? $id;
+    }
+
+    /**
+     * Start and wait execute complete
+     *
+     * @param callable $callable
+     * @param mixed    ...$args
+     *
+     * @return bool
+     */
+    public static function run(callable $callable, ...$args): bool
+    {
+        // Is coroutine to return
+        if (self::id() > 0) {
+            CLog::warning('Already is in coroutine, not need to use `run`!');
+            return PhpHelper::call($callable, ... $args);
+        }
+
+        // >= 4.4
+        if (ServerHelper::isGteSwoole44()) {
+            $scheduler = new Scheduler;
+            $scheduler->add($callable, ...$args);
+
+            return $scheduler->start();
+        }
+
+        // < 4.4
+        Coroutine::create($callable, ...$args);
+        Event::wait();
+
+        return true;
     }
 
     /**

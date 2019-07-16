@@ -25,6 +25,7 @@ use function define;
 use function defined;
 use function dirname;
 use const IN_PHAR;
+use Swoole\Runtime;
 
 /**
  * Swoft application
@@ -33,9 +34,6 @@ use const IN_PHAR;
  */
 class SwoftApplication implements SwoftInterface, ApplicationInterface
 {
-    /**
-     * Swoft trait
-     */
     use SwoftTrait;
 
     /**
@@ -89,6 +87,11 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
      * @var ApplicationProcessor
      */
     private $processor;
+
+    /**
+     * @var bool
+     */
+    private $enableCoroutine = false;
 
     /**
      * Can disable processor class before handle.
@@ -145,34 +148,29 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
         // Storage as global static property.
         Swoft::$app = $this;
 
-        // before init
+        // Before init
         $this->beforeInit();
 
         // Init console logger
         $this->initCLogger();
-
-        // Enable swoole hook
-        CLog::info('Swoole\Runtime::enableCoroutine');
 
         // Can setting properties by array
         if ($config) {
             ObjectHelper::init($this, $config);
         }
 
-        // Init system path aliases
-        $this->findBasePath();
-        $this->setSystemAlias();
+        // Enable swoole hook
+        if ($this->enableCoroutine) {
+            CLog::info('Swoole\Runtime::enableCoroutine');
+            Runtime::enableCoroutine();
+        }
 
-        $processors = $this->processors();
-
-        $this->processor = new ApplicationProcessor($this);
-        $this->processor->addFirstProcessor(...$processors);
-
+        // Init application
         $this->init();
 
         CLog::info('Project path is <info>%s</info>', $this->basePath);
 
-        // after init
+        // After init
         $this->afterInit();
     }
 
@@ -186,6 +184,14 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
     protected function init(): void
     {
+        // Init system path aliases
+        $this->findBasePath();
+        $this->setSystemAlias();
+
+        $processors = $this->processors();
+
+        $this->processor = new ApplicationProcessor($this);
+        $this->processor->addFirstProcessor(...$processors);
     }
 
     protected function afterInit(): void
@@ -437,7 +443,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
             'name'    => 'swoft',
             'enable'  => true,
             'output'  => true,
-            'levels'  => [],
+            'levels'  => '',
             'logFile' => ''
         ];
     }
@@ -491,5 +497,13 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
         CLog::info('Set alias @app=%s', $appPath);
         CLog::info('Set alias @config=%s', $configPath);
         CLog::info('Set alias @runtime=%s', $runtimePath);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnableCoroutine(): bool
+    {
+        return $this->enableCoroutine;
     }
 }

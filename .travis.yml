@@ -1,9 +1,9 @@
 language: php
 
 php:
-  - 7.1
-  - 7.2
-  - 7.3
+  - '7.1'
+  - '7.2'
+  - '7.3'
 addons:
   apt:
     sources:
@@ -32,12 +32,13 @@ before_install:
     PRIMARY KEY (`id`)
     ) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     CREATE TABLE `count` (
-    `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-    `user_id` int(11) DEFAULT NULL,
-    `create_time` int(11) DEFAULT NULL,
-    `attributes` varchar(244) DEFAULT NULL,
-    PRIMARY KEY (`id`)
-    ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+      `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+      `user_id` int(11) DEFAULT NULL,
+      `create_time` int(11) DEFAULT NULL,
+      `attributes` varchar(244) DEFAULT NULL,
+      `update_time` timestamp NULL DEFAULT NULL,
+      PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
     CREATE DATABASE IF NOT EXISTS test2;
     USE test2;
     CREATE TABLE `user` (
@@ -53,13 +54,12 @@ before_install:
     ) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;'
 install:
   - echo 'no' | pecl install -f redis
-  - wget https://github.com/swoole/swoole-src/archive/v4.3.5.tar.gz -O swoole.tar.gz && mkdir -p swoole && tar -xf swoole.tar.gz -C swoole --strip-components=1 && rm swoole.tar.gz && cd swoole && phpize && ./configure && make -j$(nproc) && make install && cd -
+  - wget https://github.com/swoole/swoole-src/archive/v4.4.0.tar.gz -O swoole.tar.gz && mkdir -p swoole && tar -xf swoole.tar.gz -C swoole --strip-components=1 && rm swoole.tar.gz && cd swoole && phpize && ./configure && make -j$(nproc) && make install && cd -
   - echo "extension = swoole.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
 before_script:
   - composer config -g process-timeout 900 && composer update
   - phpenv config-rm xdebug.ini
-
 
 script:
   - composer component
@@ -83,6 +83,7 @@ script:
   - composer rpc-server
   - composer stdlib
   - composer task
+  - composer tcp
   - composer tcp-server
   - composer validator
   - composer websocket-server

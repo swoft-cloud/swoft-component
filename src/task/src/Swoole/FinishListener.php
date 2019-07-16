@@ -7,7 +7,7 @@ namespace Swoft\Task\Swoole;
 use function go;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Server\Swoole\FinishInterface;
+use Swoft\Server\Contract\FinishInterface;
 use Swoft\Task\TaskEvent;
 use Swoole\Server;
 

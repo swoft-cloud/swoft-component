@@ -9,6 +9,7 @@ use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Log\Helper\CLog;
 use Swoft\SwoftEvent;
+use Swoft\Tcp\Server\Exception\TcpServerRouteException;
 use Swoft\Tcp\Server\Router\Router;
 use Swoft\Tcp\Server\Router\RouteRegister;
 use function bean;
@@ -27,6 +28,7 @@ class AppInitCompleteListener implements EventHandlerInterface
      *
      * @throws ReflectionException
      * @throws ContainerException
+     * @throws TcpServerRouteException
      */
     public function handle(EventInterface $event): void
     {

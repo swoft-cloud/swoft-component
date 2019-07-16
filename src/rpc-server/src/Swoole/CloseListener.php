@@ -8,7 +8,7 @@ use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Rpc\Server\ServiceServerEvent;
-use Swoft\Server\Swoole\CloseInterface;
+use Swoft\Server\Contract\CloseInterface;
 use Swoole\Server;
 
 /**

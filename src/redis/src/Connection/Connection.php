@@ -460,7 +460,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
 
         $result = $this->command('zAdd', $params);
 
-        return $result;
+        return (int)$result;
     }
 
     /**

@@ -4,11 +4,9 @@
   "keywords": [
     "php",
     "swoole",
-    "swoft",
-    "websocket-server",
-    "websocket"
+    "swoft"
   ],
-  "description": "base server component for swoft",
+    "description": "swoft base server component",
   "license": "Apache-2.0",
   "require": {
     "swoft/stdlib": "~2.0.0"
