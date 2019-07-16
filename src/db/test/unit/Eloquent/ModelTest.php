@@ -641,4 +641,55 @@ on A.id=B.id;', [$resCount - 20]);
         $this->assertEquals($expect, $count1->getAttributes());
         $this->assertEquals($expect, Count::find($count->getId())->getAttributes());
     }
+
+    public function testModify()
+    {
+        $id          = 18039;
+        $expectLabel = 'CCP';
+
+        User::updateOrCreate(['id' => $id], [
+            'test_json' => [],
+            'user_desc' => 'CP',
+            'age'       => 1,
+        ]);
+
+        $row = User::modify(['user_desc' => 'CP'], ['user_desc' => $expectLabel]);
+        $this->assertEquals(true, $row);
+        $this->assertEquals($expectLabel, User::find($id)->getUserDesc());
+
+        $row = User::modifyById($id, ['user_desc' => $expectLabel]);
+        $this->assertEquals(true, $row);
+    }
+
+    public function testUpdateAllCounters()
+    {
+        $id          = 18038;
+        $expectLabel = 'CCP';
+
+        $user = User::updateOrCreate(['id' => $id], [
+            'test_json' => [],
+            'user_desc' => 'HH',
+            'age'       => 1,
+        ]);
+
+        User::updateAllCounters((array)$id, ['age' => 1], ['user_desc' => $expectLabel]);
+
+        $this->assertEquals($user->getAge() + 1, User::find($id)->getAge());
+        $this->assertEquals($expectLabel, User::find($id)->getUserDesc());
+
+        User::updateAllCountersByWhere(['user_desc' => $expectLabel], ['age' => -1]);
+
+        $this->assertEquals($user->getAge(), User::find($id)->getAge());
+    }
+
+    public function testGetEmpty()
+    {
+        $emptyCollection = User::where('id', '<', 0)->get(['age']);
+        $this->assertEquals([], $emptyCollection->toArray());
+
+        $userCounts = User::where('user.id', '<', 0)
+            ->join('count', 'user.id', '=', 'count.user_id')
+            ->get(['user.id']);
+        $this->assertEquals([], $userCounts->toArray());
+    }
 }

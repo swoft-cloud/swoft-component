@@ -136,6 +136,8 @@ use Throwable;
  * @method int zInterStore(string $Output, array $ZSetKeys, array $Weights = null, string $aggregateFunction = 'SUM')
  * @method int zUnionStore(string $Output, array $ZSetKeys, array $Weights = null, string $aggregateFunction = 'SUM')
  * @method bool hMSet(string $key, array $keyValues)
+ * @method string|null getLastError()
+
  */
 abstract class Connection extends AbstractConnection implements ConnectionInterface
 {
@@ -269,6 +271,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
         'punsubscribe',
         'subscribe',
         'unsubscribe',
+        'getlasterror',
     ];
 
     /**

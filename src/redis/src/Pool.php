@@ -136,6 +136,7 @@ use Throwable;
  * @method bool mset(array $keyValues, int $ttl = 0)
  * @method array pipeline(callable $callback)
  * @method array transaction(callable $callback)
+ * @method string|null getLastError()
  */
 class Pool extends AbstractPool
 {
@@ -166,7 +167,7 @@ class Pool extends AbstractPool
      * @param string $name
      * @param array  $arguments
      *
-     * @return ConnectionInterface
+     * @return Connection
      * @throws RedisException
      */
     public function __call(string $name, array $arguments)

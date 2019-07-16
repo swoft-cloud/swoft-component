@@ -13,7 +13,9 @@ use Swoft\Db\Concern\BuildsQueries;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder as QueryBuilder;
+use Swoft\Db\Query\Expression;
 use Swoft\Stdlib\Contract\Arrayable;
+use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\PhpHelper;
 use function is_null;
 
@@ -763,6 +765,7 @@ class Builder
     {
         $instance = $this->newModelInstance($attributes);
         $instance->save();
+
         return $instance;
     }
 
@@ -782,6 +785,97 @@ class Builder
         // Update timestamp
         $values = $this->addUpdatedAtColumn($values);
         return $this->toBase()->update($values);
+    }
+
+    /**
+     * If `$attributes` exist record on update
+     *
+     * @param array $attributes
+     * @param array $values
+     *
+     * @return bool
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function modify(array $attributes, array $values): bool
+    {
+        /* @var Model $model */
+        $model = $this->where($attributes)->first();
+        if (empty($model)) {
+            return false;
+        }
+
+        return $model->update($values);
+    }
+
+    /**
+     * If `id` exist record on update
+     *
+     * @param int   $id Id
+     * @param array $values
+     *
+     * @return bool
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function modifyById(int $id, array $values): bool
+    {
+        /* @var Model $model */
+        $model = $this->find($id);
+        if (empty($model)) {
+            return false;
+        }
+
+        return $model->update($values);
+    }
+
+    /**
+     * Update counters by primary key
+     *
+     * @param array $ids
+     * @param array $counters
+     * @param array $extra
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function updateAllCounters(array $ids, array $counters, array $extra = []): int
+    {
+        $key = $this->model->getKeyName();
+
+        if (empty($ids)) {
+            return 0;
+        }
+        // Convert counters to expression
+        foreach ($counters as $column => &$value) {
+            $value = Expression::new("$column + $value");
+        }
+
+        return $this->where([$key => $ids])->update($counters + $extra);
+    }
+
+    /**
+     * Update counters by `$attributes`
+     *
+     * @param array $attributes
+     * @param array $counters
+     * @param array $extra
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function updateAllCountersByWhere(array $attributes, array $counters, array $extra = []): int
+    {
+        $key = $this->model->getKeyName();
+        $ids = $this->where($attributes)->get([$key])->pluck($key)->toArray();
+
+        return $this->updateAllCounters($ids, $counters, $extra);
     }
 
     /**
@@ -1078,13 +1172,13 @@ class Builder
 
             // Check item
             if (empty($item[$primary])) {
-                throw new DbException(__FUNCTION__ . ' method values must exists primary, please check values.');
+                throw new DbException('batchUpdateByIds values must exists primary, please check values.');
             }
 
             if ($count === 0) {
                 $count = count($item);
             } elseif ($count != count($item)) {
-                throw new DbException(__FUNCTION__ . ', The parameter length must be consistent.');
+                throw new DbException('batchUpdateByIds The parameter length must be consistent.');
             }
 
             $item = $this->addUpdatedAtColumn($item);
