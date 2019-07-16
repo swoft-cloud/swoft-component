@@ -2,8 +2,8 @@
 
 namespace Swoft\Server\Command;
 
+use Swoft\Server\Contract\ServerInterface;
 use Swoft\Server\Server;
-use Swoft\Server\ServerInterface;
 use Swoft\Stdlib\Helper\Sys;
 use function input;
 use function sprintf;

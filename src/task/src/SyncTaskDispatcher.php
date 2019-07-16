@@ -3,61 +3,63 @@
 
 namespace Swoft\Task;
 
-
 use ReflectionException;
-use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Log\Helper\CLog;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoft\Task\Exception\TaskException;
 use Swoft\Task\Router\Router;
 use Throwable;
 
 /**
- * Class TaskDispatcher
+ * Class SyncTaskDispatcher
  *
  * @since 2.0
- * @Bean("taskDispatcher")
+ *
+ * @Bean()
  */
-class TaskDispatcher
+class SyncTaskDispatcher
 {
     /**
-     * @param Request  $request
-     * @param Response $response
+     * Dispatch
      *
-     * @throws ContainerException
+     * @param string $type
+     * @param string $name
+     * @param string $method
+     * @param array  $params
+     * @param array  $ext
+     *
+     * @return string
      */
-    public function dispatch(Request $request, Response $response)
+    public function dispatch(string $type, string $name, string $method, array $params, array $ext): string
     {
-        Swoft::trigger(TaskEvent::BEFORE_TASK, null, $request, $response);
-
-        $result = null;
         try {
-            $result = $this->handle($request);
-            $response->setResult($result);
+            $result   = $this->handle($name, $method, $params);
+            $response = Packet::packResponse($result);
         } catch (Throwable $e) {
-            $response->setErrorCode($e->getCode());
-            $response->setErrorMessage($e->getMessage());
+            $response = Packet::packResponse(null, $e->getCode(), $e->getMessage());
+            CLog::error('Sync task fail(%s %s %d)!', $e->getMessage(), $e->getFile(), $e->getLine());
         }
 
-        Swoft::trigger(TaskEvent::AFTER_TASK, null, $response);
+        return $response;
     }
 
     /**
-     * @param Request $request
+     * Handle task
+     *
+     * @param string $name
+     * @param string $method
+     * @param array  $params
      *
      * @return mixed
-     * @throws TaskException
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
+     * @throws TaskException
      */
-    private function handle(Request $request)
+    private function handle(string $name, string $method, array $params)
     {
-        $name   = $request->getName();
-        $method = $request->getMethod();
-        $params = $request->getParams();
-
         /* @var Router $router */
         $router = BeanFactory::getBean('taskRouter');
 
