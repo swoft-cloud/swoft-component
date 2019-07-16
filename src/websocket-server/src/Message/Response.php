@@ -282,4 +282,15 @@ class Response implements ResponseInterface
         $this->content = $content;
         return $this;
     }
+
+    /**
+     * @param mixed $data
+     *
+     * @return ResponseInterface
+     */
+    public function setData($data): ResponseInterface
+    {
+        $this->data = $data;
+        return $this;
+    }
 }

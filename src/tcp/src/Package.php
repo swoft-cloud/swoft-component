@@ -3,6 +3,7 @@
 namespace Swoft\Tcp;
 
 use ReflectionException;
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Server\Concern\CommonProtocolDataTrait;
 use Swoft\Stdlib\Helper\JsonHelper;
@@ -12,6 +13,7 @@ use function bean;
  * Class Package - Request package structure
  *
  * @since 2.0.3
+ * @Bean(scope=Bean::PROTOTYPE)
  */
 class Package
 {

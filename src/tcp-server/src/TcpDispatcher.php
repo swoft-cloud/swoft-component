@@ -13,6 +13,7 @@ use Swoft\Tcp\Server\Exception\CommandNotFoundException;
 use Swoft\Tcp\Server\Exception\TcpUnpackingException;
 use Swoft\Tcp\Server\Router\Router;
 use Throwable;
+use function server;
 
 /**
  * Class TcpDispatcher
@@ -45,21 +46,23 @@ class TcpDispatcher
 
         /** @var Router $router */
         $router = Swoft::getBean('tcpRouter');
-
-        $cmd = $package->getCmd() ?: $router->getDefaultCommand();
+        $cmd    = $package->getCmd() ?: $router->getDefaultCommand();
+        $request->setPackage($package);
 
         [$status, $info] = $router->match($cmd);
         if ($status === Router::NOT_FOUND) {
-            throw new CommandNotFoundException("request command '$cmd' is not found, in module {$info['path']}");
+            throw new CommandNotFoundException("request command '{$cmd}' is not found of the tcp server");
         }
 
         [$ctlClass, $ctlMethod] = $info;
 
+        server()->log("Tcp command: '{$cmd}', will call tcp request handler {$ctlClass}@{$ctlMethod}");
+
         $object = Swoft::getBean($ctlClass);
-        $params = $this->getBindParams($ctlClass, $ctlMethod, $package, $request);
+        $params = $this->getBindParams($ctlClass, $ctlMethod, $package, $request, $response);
         $result = $object->$ctlMethod(...$params);
 
-        if (!$result instanceof Response) {
+        if ($result && !$result instanceof Response) {
             $response->setData($result);
         }
 
@@ -72,12 +75,13 @@ class TcpDispatcher
      * @param string  $class
      * @param string  $method
      * @param Package $package
-     * @param Request $request
+     * @param Request $r
+     * @param Response $w
      *
      * @return array
      * @throws ReflectionException
      */
-    private function getBindParams(string $class, string $method, Package $package, Request $request): array
+    private function getBindParams(string $class, string $method, Package $package, Request $r, Response $w): array
     {
         $classInfo = Swoft::getReflection($class);
         if (!isset($classInfo['methods'][$method])) {
@@ -100,7 +104,9 @@ class TcpDispatcher
             if ($type === Package::class) {
                 $bindParams[] = $package;
             } elseif ($type === Request::class) {
-                $bindParams[] = $request;
+                $bindParams[] = $r;
+            } elseif ($type === Response::class) {
+                $bindParams[] = $w;
             } else {
                 $bindParams[] = null;
             }

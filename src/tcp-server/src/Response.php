@@ -6,6 +6,7 @@ use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Log\Helper\CLog;
 use Swoft\Tcp\Protocol;
 use Swoft\Tcp\Server\Contract\ResponseInterface;
 use Swoft\Tcp\Server\Exception\TcpResponseException;
@@ -82,6 +83,12 @@ class Response extends TcpResponse implements ResponseInterface
             /** @var Protocol $protocol */
             $protocol = bean('tcpServerProtocol');
             $content  = $protocol->packResponse($this);
+        }
+
+        // Content is empty
+        if (!$content) {
+            CLog::debug('cannot send empty content to tcp client');
+            return 0;
         }
 
         if ($server->send($this->fd, $content) === false) {

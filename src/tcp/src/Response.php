@@ -2,6 +2,7 @@
 
 namespace Swoft\Tcp;
 
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Server\Concern\CommonProtocolDataTrait;
 use Swoft\Stdlib\Helper\JsonHelper;
 use Swoft\Tcp\Contract\ResponseInterface;
@@ -10,6 +11,7 @@ use Swoft\Tcp\Contract\ResponseInterface;
  * Class Response
  *
  * @since 2.0.4
+ * @Bean(scope=Bean::PROTOTYPE)
  */
 class Response implements ResponseInterface
 {

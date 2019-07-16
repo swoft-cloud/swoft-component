@@ -217,8 +217,9 @@ class Protocol
     public function getPackerClass(string $type = ''): string
     {
         $type = $type ?: $this->type;
-        if (isset($this->packers[$type])) {
-            throw new ProtocolException("The data packer is not exist! type: $type");
+
+        if (!isset($this->packers[$type])) {
+            throw new ProtocolException("The data packer(type: $type) is not exist! ");
         }
 
         return $this->packers[$type];
@@ -236,6 +237,7 @@ class Protocol
                 'open_eof_split'     => $this->openEofSplit,
                 'package_eof'        => $this->packageEof,
                 'package_max_length' => $this->packageMaxLength,
+                'open_length_check'  => false,
             ];
         }
 
@@ -246,6 +248,7 @@ class Protocol
             'package_length_offset' => $this->packageLengthOffset,
             'package_body_offset'   => $this->packageBodyOffset,
             'package_max_length'    => $this->packageMaxLength,
+            'open_eof_check'        => false,
         ];
     }
 
