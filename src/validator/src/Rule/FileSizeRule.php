@@ -38,9 +38,6 @@ class FileSizeRule implements RuleInterface
             if (!is_array($field)) {
                 /* @var UploadedFile $field */
                 if ($field->getSize() > $size) {
-
-                    var_dump($field->getSize());
-
                     throw new ValidatorException($message);
                 }
             } else {

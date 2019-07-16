@@ -2,6 +2,7 @@
 
 namespace Swoft\Validator\Rule;
 
+use DateTime;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Validator\Annotation\Mapping\DateRange;
 use Swoft\Validator\Contract\RuleInterface;
@@ -32,7 +33,7 @@ class DateRangeRule implements RuleInterface
         $end = $item->getEnd();
         $value = $data[$propertyName];
         if (is_string($value)) {
-            $dt = \DateTime::createFromFormat("Y-m-d H:i:s", $value);
+            $dt = DateTime::createFromFormat("Y-m-d H:i:s", $value);
             if (($dt !== false && !array_sum($dt::getLastErrors())) && strtotime($value) >= strtotime($start) && $value <= strtotime($end)) {
                 return $data;
             } elseif (ctype_digit($value)) {

@@ -2,6 +2,7 @@
 
 namespace Swoft\Validator\Rule;
 
+use DateTime;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Validator\Annotation\Mapping\BeforeDate;
 use Swoft\Validator\Contract\RuleInterface;
@@ -31,7 +32,7 @@ class BeforeDateRule implements RuleInterface
         $date = $item->getDate();
         $value = $data[$propertyName];
         if (is_string($value)) {
-            $dt = \DateTime::createFromFormat("Y-m-d H:i:s", $value);
+            $dt = DateTime::createFromFormat("Y-m-d H:i:s", $value);
             if (($dt !== false && !array_sum($dt::getLastErrors())) && strtotime($value) <= strtotime($date)) {
                 return $data;
             } elseif (ctype_digit($value)) {
