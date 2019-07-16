@@ -672,14 +672,18 @@ on A.id=B.id;', [$resCount - 20]);
             'age'       => 1,
         ]);
 
-        User::updateAllCounters((array)$id, ['age' => 1], ['user_desc' => $expectLabel]);
+        User::updateAllCountersById((array)$id, ['age' => 1], ['user_desc' => $expectLabel]);
 
         $this->assertEquals($user->getAge() + 1, User::find($id)->getAge());
         $this->assertEquals($expectLabel, User::find($id)->getUserDesc());
 
-        User::updateAllCountersByWhere(['user_desc' => $expectLabel], ['age' => -1]);
+        User::updateAllCounters(['user_desc' => $expectLabel], ['age' => -1]);
 
         $this->assertEquals($user->getAge(), User::find($id)->getAge());
+
+        DB::table('user')->updateAllCounters(['user_desc' => $expectLabel], ['age' => -1]);
+
+        $this->assertEquals($user->getAge() - 1, User::find($id)->getAge());
     }
 
     public function testGetEmpty()

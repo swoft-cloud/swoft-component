@@ -15,7 +15,6 @@ use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder as QueryBuilder;
 use Swoft\Db\Query\Expression;
 use Swoft\Stdlib\Contract\Arrayable;
-use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\PhpHelper;
 use function is_null;
 
@@ -812,7 +811,7 @@ class Builder
     /**
      * If `id` exist record on update
      *
-     * @param int   $id Id
+     * @param int   $id
      * @param array $values
      *
      * @return bool
@@ -843,19 +842,17 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function updateAllCounters(array $ids, array $counters, array $extra = []): int
+    public function updateAllCountersById(array $ids, array $counters, array $extra = []): int
     {
-        $key = $this->model->getKeyName();
-
         if (empty($ids)) {
             return 0;
         }
-        // Convert counters to expression
-        foreach ($counters as $column => &$value) {
-            $value = Expression::new("$column + $value");
+        if (count($ids) === 1) {
+            $ids = current($ids);
         }
 
-        return $this->where([$key => $ids])->update($counters + $extra);
+        $key = $this->model->getKeyName();
+        return $this->toBase()->updateAllCounters([$key => $ids], $counters, $extra);
     }
 
     /**
@@ -870,12 +867,16 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function updateAllCountersByWhere(array $attributes, array $counters, array $extra = []): int
+    public function updateAllCounters(array $attributes, array $counters, array $extra = []): int
     {
         $key = $this->model->getKeyName();
-        $ids = $this->where($attributes)->get([$key])->pluck($key)->toArray();
 
-        return $this->updateAllCounters($ids, $counters, $extra);
+        $ids = $this->where($attributes)
+            ->get([$key])
+            ->pluck($key)
+            ->toArray();
+
+        return $this->updateAllCountersById($ids, $counters, $extra);
     }
 
     /**
