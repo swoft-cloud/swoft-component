@@ -33,7 +33,7 @@ class TaskListener implements TaskInterface
      * @throws ContainerException
      * @throws TaskException
      */
-    public function onTask(Server $server, SwooleTask $task)
+    public function onTask(Server $server, SwooleTask $task): void
     {
         $request  = Request::new($server, $task);
         $response = Response::new($task);

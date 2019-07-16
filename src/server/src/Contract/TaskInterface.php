@@ -4,19 +4,26 @@
 namespace Swoft\Server\Contract;
 
 
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
+use Swoft\Task\Exception\TaskException;
 use Swoole\Server;
+use Swoole\Server\Task as SwooleTask;
 
+/**
+ * Class TaskInterface
+ *
+ * @since 2.0
+ */
 interface TaskInterface
 {
     /**
-     * Task event
+     * @param Server     $server
+     * @param SwooleTask $task
      *
-     * @param Server $server
-     * @param int    $taskId
-     * @param int    $srcWorkerId
-     * @param mixed  $data
-     *
-     * @return mixed
+     * @throws ReflectionException
+     * @throws ContainerException
+     * @throws TaskException
      */
-//    public function onTask(Server $server,  $taskId, int $srcWorkerId, $data);
+    public function onTask(Server $server, SwooleTask $task): void;
 }
