@@ -138,7 +138,7 @@ if (!function_exists('context')) {
     /**
      * Get current context
      *
-     * @return ContextInterface|HttpContext|ServiceContext|TaskContext|FinishContext|UserProcessContext|ProcessContext
+     * @return ContextInterface|HttpContext|ServiceContext|TaskContext|FinishContext|UserProcessContext|ProcessContext|
      */
     function context(): ContextInterface
     {

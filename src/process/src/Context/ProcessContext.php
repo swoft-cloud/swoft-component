@@ -48,4 +48,20 @@ class ProcessContext extends AbstractContext
 
         return $self;
     }
+
+    /**
+     * @return Pool
+     */
+    public function getPool(): Pool
+    {
+        return $this->pool;
+    }
+
+    /**
+     * @return int
+     */
+    public function getWorkerId(): int
+    {
+        return $this->workerId;
+    }
 }

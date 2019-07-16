@@ -39,7 +39,7 @@ class ProcessPool
     /**
      * @var int
      */
-    private $workerNum = 2;
+    private $workerNum = 3;
 
     /**
      * @var int

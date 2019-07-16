@@ -15,15 +15,22 @@ use Doctrine\Common\Annotations\Annotation\Target;
  * @Annotation
  * @Target("CLASS")
  * @Attributes({
- *     @Attribute("workerId", type="int"),
+ *     @Attribute("workerId", type="array"),
  * })
  */
 class Process
 {
     /**
-     * @var int
+     * Default
      */
-    private $workerId = 0;
+    public const DEFAULT = -1;
+
+    /**
+     * @var array
+     */
+    private $workerId = [
+        self::DEFAULT
+    ];
 
     /**
      * Process constructor.
@@ -33,17 +40,17 @@ class Process
     public function __construct(array $values)
     {
         if (isset($values['value'])) {
-            $this->workerId = $values['value'];
+            $this->workerId = (array)$values['value'];
         }
         if (isset($values['workerId'])) {
-            $this->workerId = $values['workerId'];
+            $this->workerId = (array)$values['workerId'];
         }
     }
 
     /**
-     * @return int
+     * @return array
      */
-    public function getWorkerId(): int
+    public function getWorkerId(): array
     {
         return $this->workerId;
     }

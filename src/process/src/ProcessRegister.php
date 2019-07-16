@@ -3,7 +3,7 @@
 
 namespace Swoft\Process;
 
-use Exception;
+use Swoft\Process\Annotation\Mapping\Process as ProcessAnnotation;
 use Swoft\Process\Exception\ProcessException;
 
 /**
@@ -26,17 +26,19 @@ class ProcessRegister
 
     /**
      * @param string $className
-     * @param int    $workerId
+     * @param array  $workerIds
      *
-     * @throws Exception
+     * @throws ProcessException
      */
-    public static function registerProcess(string $className, int $workerId): void
+    public static function registerProcess(string $className, array $workerIds): void
     {
-        if (isset(self::$process[$workerId])) {
-            throw new ProcessException(sprintf('Worker process(%d) for process pool must be only one!', $workerId));
-        }
+        foreach ($workerIds as $workerId) {
+            if (isset(self::$process[$workerId])) {
+                throw new ProcessException(sprintf('Worker process(%d) for process pool must be only one!', $workerId));
+            }
 
-        self::$process[$workerId]['class'] = $className;
+            self::$process[$workerId]['class'] = $className;
+        }
     }
 
     /**
@@ -52,7 +54,8 @@ class ProcessRegister
             return $className;
         }
 
-        $className = self::$process[0]['class'] ?? '';
+        $default   = ProcessAnnotation::DEFAULT;
+        $className = self::$process[$default]['class'] ?? '';
         if (empty($className)) {
             throw new ProcessException(sprintf('Worker process(%d) for process pool must be defined!', $workerId));
         }
