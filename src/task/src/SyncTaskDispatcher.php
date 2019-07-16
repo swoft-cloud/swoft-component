@@ -23,6 +23,8 @@ use Throwable;
 class SyncTaskDispatcher
 {
     /**
+     * Dispatch
+     *
      * @param string $type
      * @param string $name
      * @param string $method
@@ -45,6 +47,8 @@ class SyncTaskDispatcher
     }
 
     /**
+     * Handle task
+     *
      * @param string $name
      * @param string $method
      * @param array  $params
@@ -72,7 +76,7 @@ class SyncTaskDispatcher
         $object = BeanFactory::getBean($className);
         if (!method_exists($object, $methodName)) {
             throw new TaskException(
-                sprintf('Task(name=%s method=%s) is not exist!', $name, $method)
+                sprintf('Task(name=%s method=%s) method is not exist!', $name, $method)
             );
         }
 

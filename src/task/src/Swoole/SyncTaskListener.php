@@ -29,6 +29,8 @@ class SyncTaskListener implements SyncTaskInterface
     private $dispatcher;
 
     /**
+     * Dispatch
+     *
      * @param Server $server
      * @param int    $taskId
      * @param int    $srcWorkerId
@@ -39,6 +41,7 @@ class SyncTaskListener implements SyncTaskInterface
      */
     public function onTask(Server $server, $taskId, int $srcWorkerId, $data)
     {
+        // Task params
         [$type, $name, $method, $params, $ext] = Packet::unpack($data);
 
         return $this->dispatcher->dispatch($type, $name, $method, $params, $ext);

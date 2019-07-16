@@ -74,7 +74,7 @@ class TaskDispatcher
         $object = BeanFactory::getBean($className);
         if (!method_exists($object, $methodName)) {
             throw new TaskException(
-                sprintf('Task(name=%s method=%s) is not exist!', $name, $method)
+                sprintf('Task(name=%s method=%s) method is not exist!', $name, $method)
             );
         }
 
