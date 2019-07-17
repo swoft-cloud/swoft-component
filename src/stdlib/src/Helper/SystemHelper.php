@@ -151,31 +151,6 @@ class SystemHelper extends EnvHelper
     }
 
     /**
-     * run a command in background
-     *
-     * @param string $cmd
-     */
-    public static function bgExec(string $cmd): void
-    {
-        self::execInBackground($cmd);
-    }
-
-    /**
-     * run a command in background
-     *
-     * @param string $cmd
-     */
-    public static function execInBackground(string $cmd): void
-    {
-        if (self::isWindows()) {
-            // pclose(popen('start /B ' . $cmd, 'r'));
-            throw new RuntimeException('cannot support current system');
-        }
-
-        exec($cmd . ' > /dev/null &');
-    }
-
-    /**
      * Get unix user of current process.
      *
      * @return array
