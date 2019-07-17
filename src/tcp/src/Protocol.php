@@ -2,6 +2,10 @@
 
 namespace Swoft\Tcp;
 
+use function pack;
+use function rtrim;
+use function strlen;
+use function substr;
 use Swoft;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\ObjectHelper;
@@ -12,6 +16,7 @@ use Swoft\Tcp\Packer\PhpPacker;
 use Swoft\Tcp\Packer\SimpleTokenPacker;
 use function array_keys;
 use function array_merge;
+use function unpack;
 
 /**
  * Class PackerFactory
@@ -20,6 +25,16 @@ use function array_merge;
  */
 class Protocol
 {
+    /**
+     * Use for pack data for length type
+     */
+    public const HEADER_PACK_FORMAT   = 'NNNN';
+
+    /**
+     * Use for unpack data for length type
+     */
+    public const HEADER_UNPACK_FORMAT = 'Nuid/Ntype/Nlen/Nserid';
+
     /**
      * The default packers
      */
@@ -52,48 +67,7 @@ class Protocol
      */
     private $packageMaxLength = 81920;
 
-    // ------- use package length check
-
-    /**
-     * Open package length check
-     *
-     * swoole.setting => [
-     *  'package_max_length'    => 81920,
-     *  'open_length_check'     => true,
-     *  'package_length_type'   => 'N',
-     *  'package_length_offset' => 8,
-     *  'package_body_offset'   => 16,
-     * ]
-     *          8-11 length
-     *            |
-     * [0===4===8===12===16|BODY...]
-     *
-     * @link https://wiki.swoole.com/wiki/page/287.html
-     * @var bool
-     */
-    private $openLengthCheck = false;
-
-    /**
-     * @link https://wiki.swoole.com/wiki/page/463.html
-     * @var string
-     */
-    private $packageLengthType = 'N';
-
-    /**
-     * The Nth byte is the value of the packet length
-     *
-     * @var int
-     */
-    private $packageLengthOffset = 8;
-
-    /**
-     * The first few bytes start to calculate the length
-     *
-     * @var int
-     */
-    private $packageBodyOffset = 16;
-
-    // ------- use package eof check
+    // -------------- use package eof check --------------
 
     /**
      * Open package EOF check
@@ -120,6 +94,48 @@ class Protocol
      */
     private $packageEof = "\r\n\r\n";
 
+    // -------------- use package length check --------------
+
+    /**
+     * Open package length check
+     *
+     * swoole.setting => [
+     *  'package_max_length'    => 81920,
+     *  'open_length_check'     => true,
+     *  'package_length_type'   => 'N',
+     *  'package_length_offset' => 8,
+     *  'package_body_offset'   => 16,
+     * ]
+     *          8-11 length
+     *            |
+     * [0===4===8===12===16|BODY...]
+     *
+     * @link https://wiki.swoole.com/wiki/page/287.html
+     * @link https://github.com/matyhtf/framework/blob/3.0/src/core/Protocol/RPCServer.php
+     * @var bool
+     */
+    private $openLengthCheck = false;
+
+    /**
+     * @link https://wiki.swoole.com/wiki/page/463.html
+     * @var string
+     */
+    private $packageLengthType = 'N';
+
+    /**
+     * The Nth byte is the value of the packet length
+     *
+     * @var int
+     */
+    private $packageLengthOffset = 8;
+
+    /**
+     * The first few bytes start to calculate the length
+     *
+     * @var int
+     */
+    private $packageBodyOffset = 16;
+
     /**
      * Class constructor.
      *
@@ -134,7 +150,7 @@ class Protocol
     }
 
     /*********************************************************************
-     * (Un)Packing data for server
+     * (Un)Packing data for server use
      ********************************************************************/
 
     /**
@@ -164,7 +180,7 @@ class Protocol
     }
 
     /*********************************************************************
-     * (Un)Packing data for client
+     * (Un)Packing data for client use
      ********************************************************************/
 
     /**
@@ -177,7 +193,22 @@ class Protocol
      */
     public function unpackResponse(string $data): Response
     {
-        return $this->getPacker()->decodeResponse($data);
+        // Use eof check
+        if ($this->openEofCheck) {
+            $type = '';
+            $data = rtrim($data, $this->packageEof);
+
+            // Use length check
+        } else {
+            $headLen = $this->packageBodyOffset;
+
+            // data like: ['type' => 'json', 'len' => 254, ]
+            $head = (array)unpack(self::HEADER_UNPACK_FORMAT, $data, $headLen);
+            $type = $head['type'];
+            $data = substr($data, $headLen);
+        }
+
+        return $this->getPacker($type)->decodeResponse($data);
     }
 
     /**
@@ -190,28 +221,17 @@ class Protocol
      */
     public function pack(Package $package): string
     {
-        return $this->getPacker()->encode($package);
-    }
+        $body = $this->getPacker()->encode($package);
 
-    // @link https://github.com/matyhtf/framework/blob/3.0/src/core/Protocol/RPCServer.php
-    public function packString(string $string): string
-    {
+        // Use eof check
         if ($this->openEofCheck) {
-            return $string . $this->packageEof;
+            return $body . $this->packageEof;
         }
 
-        return \pack($this->packageLengthType, $string);
-    }
+        // Use length check
+        $format = self::HEADER_PACK_FORMAT;
 
-    public function unpackString(string $data): string
-    {
-        if ($this->openEofCheck) {
-            return \rtrim($data, $this->packageEof);
-        }
-
-        $arr = (array)\unpack($this->packageLengthType, $data, $this->packageLengthOffset);
-
-        return $arr[0] ?? '';
+        return pack($format, 0, $this->type, strlen($body), 0) . $body;
     }
 
     /*********************************************************************
@@ -294,7 +314,9 @@ class Protocol
      */
     public function setType(string $type): void
     {
-        $this->type = $type;
+        if ($type) {
+            $this->type = $type;
+        }
     }
 
     /**
