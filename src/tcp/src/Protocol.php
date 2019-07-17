@@ -4,9 +4,11 @@ namespace Swoft\Tcp;
 
 use Swoft;
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Tcp\Contract\PackerInterface;
 use Swoft\Tcp\Exception\ProtocolException;
 use Swoft\Tcp\Packer\JsonPacker;
+use Swoft\Tcp\Packer\PhpPacker;
 use Swoft\Tcp\Packer\SimpleTokenPacker;
 use function array_keys;
 use function array_merge;
@@ -22,7 +24,9 @@ class Protocol
      * The default packers
      */
     public const DEFAULT_PACKERS = [
+        PhpPacker::TYPE         => PhpPacker::class,
         JsonPacker::TYPE        => JsonPacker::class,
+        // For test or demo
         SimpleTokenPacker::TYPE => SimpleTokenPacker::class,
     ];
 
@@ -118,11 +122,15 @@ class Protocol
 
     /**
      * Class constructor.
+     *
+     * @param array $config
      */
-    public function __construct()
+    public function __construct(array $config = [])
     {
         // Ensure packers always available
         $this->packers = self::DEFAULT_PACKERS;
+
+        ObjectHelper::init($this, $config);
     }
 
     /*********************************************************************
@@ -183,6 +191,27 @@ class Protocol
     public function pack(Package $package): string
     {
         return $this->getPacker()->encode($package);
+    }
+
+    // @link https://github.com/matyhtf/framework/blob/3.0/src/core/Protocol/RPCServer.php
+    public function packString(string $string): string
+    {
+        if ($this->openEofCheck) {
+            return $string . $this->packageEof;
+        }
+
+        return \pack($this->packageLengthType, $string);
+    }
+
+    public function unpackString(string $data): string
+    {
+        if ($this->openEofCheck) {
+            return \rtrim($data, $this->packageEof);
+        }
+
+        $arr = (array)\unpack($this->packageLengthType, $data, $this->packageLengthOffset);
+
+        return $arr[0] ?? '';
     }
 
     /*********************************************************************
@@ -315,6 +344,8 @@ class Protocol
     public function setOpenLengthCheck($openLengthCheck): void
     {
         $this->openLengthCheck = (bool)$openLengthCheck;
+
+        $this->openEofCheck = !$this->openLengthCheck;
     }
 
     /**
@@ -379,6 +410,8 @@ class Protocol
     public function setOpenEofCheck($openEofCheck): void
     {
         $this->openEofCheck = (bool)$openEofCheck;
+
+        $this->openLengthCheck = !$this->openEofCheck;
     }
 
     /**

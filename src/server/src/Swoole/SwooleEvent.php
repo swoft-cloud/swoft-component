@@ -8,7 +8,7 @@ namespace Swoft\Server\Swoole;
  *
  * @since      2.0
  *
- * @deprecated since Swoft 2.0.4, use '\Swoft\Server\SwooleEvent'for `Swoft\Server\SwooleEvent` instead.
+ * @deprecated since Swoft 2.0.4, use '\Swoft\Server\SwooleEvent' instead.
  */
 final class SwooleEvent extends \Swoft\Server\SwooleEvent
 {
