@@ -2,10 +2,6 @@
 
 namespace Swoft\Tcp;
 
-use function pack;
-use function rtrim;
-use function strlen;
-use function substr;
 use Swoft;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\ObjectHelper;
@@ -16,6 +12,10 @@ use Swoft\Tcp\Packer\PhpPacker;
 use Swoft\Tcp\Packer\SimpleTokenPacker;
 use function array_keys;
 use function array_merge;
+use function pack;
+use function rtrim;
+use function strlen;
+use function substr;
 use function unpack;
 
 /**
@@ -28,7 +28,7 @@ class Protocol
     /**
      * Use for pack data for length type
      */
-    public const HEADER_PACK_FORMAT   = 'NNNN';
+    public const HEADER_PACK_FORMAT = 'NNNN';
 
     /**
      * Use for unpack data for length type
@@ -193,22 +193,9 @@ class Protocol
      */
     public function unpackResponse(string $data): Response
     {
-        // Use eof check
-        if ($this->openEofCheck) {
-            $type = '';
-            $data = rtrim($data, $this->packageEof);
+        [$head, $body] = $this->unpackData($data);
 
-            // Use length check
-        } else {
-            $headLen = $this->packageBodyOffset;
-
-            // data like: ['type' => 'json', 'len' => 254, ]
-            $head = (array)unpack(self::HEADER_UNPACK_FORMAT, $data, $headLen);
-            $type = $head['type'];
-            $data = substr($data, $headLen);
-        }
-
-        return $this->getPacker($type)->decodeResponse($data);
+        return $this->getPacker($head['type'])->decodeResponse($body);
     }
 
     /**
@@ -223,6 +210,20 @@ class Protocol
     {
         $body = $this->getPacker()->encode($package);
 
+        return $this->packBody($body);
+    }
+
+    /*********************************************************************
+     * Simple pack methods(For quick test)
+     ********************************************************************/
+
+    /**
+     * @param string $body
+     *
+     * @return string
+     */
+    public function packBody(string $body): string
+    {
         // Use eof check
         if ($this->openEofCheck) {
             return $body . $this->packageEof;
@@ -231,7 +232,36 @@ class Protocol
         // Use length check
         $format = self::HEADER_PACK_FORMAT;
 
+        // Args sort please see self::HEADER_UNPACK_FORMAT
         return pack($format, 0, $this->type, strlen($body), 0) . $body;
+    }
+
+    /**
+     * @param string $data
+     *
+     * @return array Return like: [head(null|array), body(string)]
+     */
+    public function unpackData(string $data): array
+    {
+        // Use eof check
+        if ($this->openEofCheck) {
+            return [
+                'head' => ['type' => $this->type],
+                'body' => rtrim($data, $this->packageEof),
+            ];
+        }
+
+        // Use length check
+        $format  = self::HEADER_UNPACK_FORMAT;
+        $headLen = $this->packageBodyOffset;
+
+        // Like: ['type' => 'json', 'len' => 254, ]
+        $headers = (array)unpack($format, substr($data, 0, $headLen));
+
+        return [
+            'head' => $headers,
+            'body' => substr($data, $headLen),
+        ];
     }
 
     /*********************************************************************
