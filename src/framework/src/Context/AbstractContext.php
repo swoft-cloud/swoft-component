@@ -2,7 +2,7 @@
 
 namespace Swoft\Context;
 
-use Swoft\Concern\DataPropertyTrait;
+use Swoft\Concern\SimpleDataPropertyTrait;
 
 /**
  * Class AbstractContext
@@ -11,7 +11,7 @@ use Swoft\Concern\DataPropertyTrait;
  */
 abstract class AbstractContext implements ContextInterface
 {
-    use DataPropertyTrait;
+    use SimpleDataPropertyTrait;
 
     /**
      * Clear
