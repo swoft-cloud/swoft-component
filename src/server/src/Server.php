@@ -270,7 +270,7 @@ abstract class Server implements ServerInterface
         Sys::setProcessTitle($title);
 
         // Use `go` to open coroutine
-        sgo(function () use ($server) {
+        go(function () use ($server) {
             // Before
             Swoft::trigger(ServerEvent::BEFORE_START_EVENT, $this, $server);
 
@@ -279,7 +279,7 @@ abstract class Server implements ServerInterface
 
             // After event
             Swoft::trigger(ServerEvent::AFTER_EVENT, $this);
-        }, false);
+        });
     }
 
     /**
@@ -391,7 +391,12 @@ abstract class Server implements ServerInterface
 
             // After event
             Swoft::trigger(ServerEvent::AFTER_EVENT, $this);
+
+            return ;
         }
+
+        // Trigger task event
+        Swoft::trigger($newEvent, $this);
     }
 
     /**

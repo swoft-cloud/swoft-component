@@ -11,6 +11,10 @@ use Swoft\Http\Server\HttpServer;
 use Swoft\Process\Context\ProcessContext;
 use Swoft\Process\Context\UserProcessContext;
 use Swoft\Rpc\Server\ServiceContext;
+use Swoft\Server\Context\ShutdownContext;
+use Swoft\Server\Context\StartContext;
+use Swoft\Server\Context\WorkerStartContext;
+use Swoft\Server\Context\WorkerStopContext;
 use Swoft\Server\Server;
 use Swoft\Task\FinishContext;
 use Swoft\Task\TaskContext;
@@ -138,7 +142,7 @@ if (!function_exists('context')) {
     /**
      * Get current context
      *
-     * @return ContextInterface|HttpContext|ServiceContext|TaskContext|FinishContext|UserProcessContext|ProcessContext|
+     * @return ContextInterface|HttpContext|ServiceContext|TaskContext|FinishContext|UserProcessContext|ProcessContext|StartContext|WorkerStartContext|WorkerStopContext|ShutdownContext
      */
     function context(): ContextInterface
     {
