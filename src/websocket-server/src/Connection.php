@@ -7,7 +7,7 @@ use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Concern\SimpleDataPropertyTrait;
+use Swoft\Concern\DataPropertyTrait;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\Session\SessionInterface;
@@ -25,7 +25,7 @@ use const WEBSOCKET_OPCODE_TEXT;
  */
 class Connection implements SessionInterface
 {
-    use SimpleDataPropertyTrait;
+    use DataPropertyTrait;
 
     private const METADATA_KEY = 'metadata';
 

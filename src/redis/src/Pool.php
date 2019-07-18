@@ -195,4 +195,12 @@ class Pool extends AbstractPool
 
         return $connection->{$name}(...$arguments);
     }
+
+    /**
+     * @return RedisDb
+     */
+    public function getRedisDb(): RedisDb
+    {
+        return $this->redisDb;
+    }
 }

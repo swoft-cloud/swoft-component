@@ -20,20 +20,18 @@ trait DataPropertyTrait
     protected $data = [];
 
     /**
-     * Set value to  context
-     * If key is like `a.b`. Equal to set $context['a']['b'] = $value
+     * Set value to data
      *
      * @param string $key
      * @param mixed  $value
      */
     public function set(string $key, $value): void
     {
-        ArrayHelper::set($this->data, $key, $value);
+        $this->data[$key] = $value;
     }
 
     /**
-     * Get value from context
-     * If key is like `a.b`. Equal to get $context['a']['b']
+     * Get value from data by key
      *
      * @param string $key
      * @param mixed  $default
@@ -42,7 +40,7 @@ trait DataPropertyTrait
      */
     public function get(string $key, $default = null)
     {
-        return ArrayHelper::get($this->data, $key, $default);
+        return $this->data[$key] ?? $default;
     }
 
     /**
@@ -52,7 +50,7 @@ trait DataPropertyTrait
      */
     public function unset(string $key): void
     {
-        ArrayHelper::forget($this->data, $key);
+        unset($this->data[$key]);
     }
 
     /**
@@ -64,7 +62,7 @@ trait DataPropertyTrait
      */
     public function has(string $key): bool
     {
-        return ArrayHelper::has($this->data, $key);
+        return isset($this->data[$key]);
     }
 
     /**
