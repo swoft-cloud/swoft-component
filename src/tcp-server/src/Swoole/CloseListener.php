@@ -38,7 +38,6 @@ class CloseListener implements CloseInterface
     {
         $sid = (string)$fd;
         // TODO handle close other worker connection
-
         $ctx = TcpCloseContext::new($fd, $reactorId);
 
         // Storage context
@@ -46,19 +45,19 @@ class CloseListener implements CloseInterface
         // Bind cid => sid(fd)
         Session::bindCo($sid);
 
-        /** @var Connection $conn */
-        $conn  = Session::mustGet();
-        $total = server()->count() - 1;
-
-        server()->log("Close: conn#{$fd} has been closed. server conn count $total", [], 'debug');
-        if (!$meta = $conn->getMetadata()) {
-            server()->log("Close: conn#{$fd} connection meta info has been lost");
-            return;
-        }
-
-        server()->log("Close: conn#{$fd} meta info:", $meta, 'debug');
-
         try {
+            /** @var Connection $conn */
+            $conn  = Session::mustGet();
+            $total = server()->count() - 1;
+
+            server()->log("Close: conn#{$fd} has been closed. server conn count $total", [], 'debug');
+            if (!$meta = $conn->getMetadata()) {
+                server()->log("Close: conn#{$fd} connection meta info has been lost");
+                return;
+            }
+
+            server()->log("Close: conn#{$fd} meta info:", $meta, 'debug');
+
             // Trigger event
             Swoft::trigger(TcpServerEvent::CLOSE, $fd, $server, $reactorId);
         } catch (Throwable $e) {

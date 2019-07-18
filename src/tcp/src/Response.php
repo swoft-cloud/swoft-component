@@ -76,6 +76,22 @@ class Response implements ResponseInterface
     }
 
     /**
+     * @return bool
+     */
+    public function isOK(): bool
+    {
+        return $this->code === self::OK;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFail(): bool
+    {
+        return $this->code !== self::OK;
+    }
+
+    /**
      * @return int
      */
     public function getCode(): int
