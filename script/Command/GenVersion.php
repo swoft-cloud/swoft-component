@@ -29,11 +29,7 @@ class GenVersion extends BaseCommand
 
     public function getHelpConfig(): array
     {
-        return [
-            'name'  => 'gen:version',
-            'desc'  => 'generate an version info to composer.json',
-            'usage' => 'gen:version NAME(s)',
-            'help'  => <<<STR
+        $help = <<<STR
 Arguments:
   names   The component names
 
@@ -46,7 +42,13 @@ Example:
   {{command}} -v v2.0.3 http-server
   {{command}} -v v2.0.3 http-server http-message
 
-STR,
+STR;
+
+        return [
+            'name'  => 'gen:version',
+            'desc'  => 'generate an version info to composer.json',
+            'usage' => 'gen:version NAME(s)',
+            'help'  => $help,
         ];
     }
 

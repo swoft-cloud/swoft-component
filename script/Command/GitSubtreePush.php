@@ -15,11 +15,7 @@ class GitSubtreePush extends BaseCommand
 {
     public function getHelpConfig(): array
     {
-        return [
-            'name'  => 'git:spush',
-            'desc'  => 'Push all update to remote sub-repo by git subtree push',
-            'usage' => 'git:spush [options] [arguments]',
-            'help'  => <<<STR
+        $help = <<<STR
 Arguments:
   names   The component names
 
@@ -32,7 +28,13 @@ Example:
   {{fullCmd}} event
   {{fullCmd}} event config
 
-STR,
+STR;
+
+        return [
+            'name'  => 'git:spush',
+            'desc'  => 'Push all update to remote sub-repo by git subtree push',
+            'usage' => 'git:spush [options] [arguments]',
+            'help'  => $help,
         ];
     }
 
