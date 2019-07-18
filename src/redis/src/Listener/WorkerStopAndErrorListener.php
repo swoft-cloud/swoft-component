@@ -12,7 +12,7 @@ use Swoft\Event\EventInterface;
 use Swoft\Event\EventSubscriberInterface;
 use Swoft\Log\Helper\CLog;
 use Swoft\Redis\Pool;
-use Swoft\Server\Swoole\SwooleEvent;
+use Swoft\Server\SwooleEvent;
 use Swoft\SwoftEvent;
 
 /**

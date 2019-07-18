@@ -62,7 +62,7 @@ STR,
         $title = 'The latest tag: %s';
 
         if ($nextTag) {
-            $title = "The next tag: %s (current: $tagName)";
+            $title = "The next tag: %s (current: {$tagName})";
             $nodes = explode('.', $tagName);
 
             $lastNum = array_pop($nodes);

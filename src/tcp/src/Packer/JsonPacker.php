@@ -62,13 +62,13 @@ class JsonPacker implements PackerInterface
         }
 
         if (isset($map['data'])) {
-            $data = $map['data'];
+            $body = $map['data'];
             $ext  = $map['ext'] ?? [];
         } else {
-            $data = $map;
+            $body = $map;
         }
 
-        return Package::new($cmd, $data, $ext);
+        return Package::new($cmd, $body, $ext);
     }
 
     /**
@@ -97,9 +97,9 @@ class JsonPacker implements PackerInterface
      */
     public function decodeResponse(string $data): Response
     {
-        $map = JsonHelper::decode($data, true);
-
         $resp = new Response();
+        $map  = JsonHelper::decode($data, true);
+
         $resp->setContent($data);
 
         if (isset($map['code'])) {

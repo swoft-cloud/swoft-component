@@ -11,7 +11,7 @@ use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Log\Helper\Log;
-use Swoft\Server\Swoole\SwooleEvent;
+use Swoft\Server\SwooleEvent;
 use Swoft\Task\FinishContext;
 use Swoft\Task\TaskEvent;
 

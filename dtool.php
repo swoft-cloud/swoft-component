@@ -17,14 +17,14 @@ require __DIR__ . '/script/bootstrap.php';
 define('BASE_PATH', __DIR__);
 
 $cli = new App();
+//
+//$cli->addByConfig($gi = new GitFindTag(), $gi->getHelpConfig());
+//$cli->addByConfig($drt = new DeleteRemoteTag(), $drt->getHelpConfig());
+//$cli->addByConfig($grt = new GitReleaseTag(), $grt->getHelpConfig());
+//$cli->addByConfig($gar = new GitAddRemote(), $gar->getHelpConfig());
+//$cli->addByConfig($gsp = new GitSubtreePush(), $gsp->getHelpConfig());
 
-$cli->addByConfig($gi = new GitFindTag(), $gi->getHelpConfig());
-$cli->addByConfig($drt = new DeleteRemoteTag(), $drt->getHelpConfig());
-$cli->addByConfig($grt = new GitReleaseTag(), $grt->getHelpConfig());
-$cli->addByConfig($gar = new GitAddRemote(), $gar->getHelpConfig());
-$cli->addByConfig($gsp = new GitSubtreePush(), $gsp->getHelpConfig());
-
-$cli->addCommand('gen:readme', $gr = new GenReadme(), $gr->getHelpConfig());
+//$cli->addCommand('gen:readme', $gr = new GenReadme(), $gr->getHelpConfig());
 $cli->addCommand('gen:version', $gv = new GenVersion(), $gv->getHelpConfig());
 
 $cli->run();

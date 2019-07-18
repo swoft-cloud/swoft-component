@@ -1052,6 +1052,19 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     }
 
     /**
+     * Get entity table name
+     *
+     * @return string
+     * @throws DbException
+     */
+    public static function tableName()
+    {
+        $className = Proxy::getClassName(static::class);
+
+        return EntityRegister::getTable($className);
+    }
+
+    /**
      * Handle dynamic method calls into the model.
      *
      * @param string $method

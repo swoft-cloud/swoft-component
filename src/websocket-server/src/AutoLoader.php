@@ -5,7 +5,7 @@ namespace Swoft\WebSocket\Server;
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Helper\ComposerJSON;
-use Swoft\Server\Swoole\SwooleEvent;
+use Swoft\Server\SwooleEvent;
 use Swoft\SwoftComponent;
 use Swoft\WebSocket\Server\Router\Router;
 use Swoft\WebSocket\Server\Swoole\CloseListener;

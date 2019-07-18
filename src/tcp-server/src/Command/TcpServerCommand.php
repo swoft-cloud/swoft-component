@@ -21,8 +21,8 @@ use function output;
  *
  * @Command("tcp",
  *     coroutine=false,
- *     alias="tcpsrv,tcpserver",
- *     desc="provide some commands to manage swoft tcp server"
+ *     alias="tcpsrv",
+ *     desc="provide some commands to manage swoft TCP server"
  * )
  */
 class TcpServerCommand extends BaseServerCommand

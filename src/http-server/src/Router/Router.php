@@ -70,7 +70,7 @@ class Router implements RouterInterface
      *
      * @var Route[][]
      * [
-     *     // 使用完整的第一节作为key进行分组
+     *     // Group the entire first section as a key
      *     'edit' => [
      *          Route, // '/edit/{id}'
      *      ],
@@ -86,7 +86,7 @@ class Router implements RouterInterface
      *
      * @var Route[][]
      * [
-     *     // 使用 HTTP METHOD 作为 key进行分组
+     *     // Group using HTTP METHOD as key
      *     'GET' => [
      *          Route, // '/{name}/profile'
      *          ...
@@ -498,7 +498,7 @@ class Router implements RouterInterface
         }
 
         // It is a regular dynamic route(the first node is 1th level index key).
-        if ($fKey && $routeList = $this->regularRoutes[$fKey] ?? false) {
+        if ($fKey && $routeList = $this->regularRoutes[$fKey] ?? []) {
             /** @var Route $route */
             foreach ($routeList as $route) {
                 $result = $route->match($path);
@@ -509,7 +509,7 @@ class Router implements RouterInterface
         }
 
         // It is a irregular dynamic route
-        if ($routeList = $this->vagueRoutes[$method] ?? false) {
+        if ($routeList = $this->vagueRoutes[$method] ?? []) {
             foreach ($routeList as $route) {
                 $result = $route->match($path);
                 if ($result[0]) {

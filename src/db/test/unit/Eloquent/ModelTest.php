@@ -702,7 +702,7 @@ on A.id=B.id;', [$resCount - 20]);
         $id   = 18038;
         $user = User::updateOrCreate(['id' => $id], [
             'test_json' => [
-//                'user_status' => 1,
+                'user_status' => mt_rand(),
 //                'balance'     => 0,
 //                'updated_at'  => null
             ],
@@ -731,6 +731,7 @@ on A.id=B.id;', [$resCount - 20]);
 
         DB::update("update `user` set `test_json` = null where `id` = :id", [':id' => 18038]);
 
-
+        $name = User::tableName();
+        $this->assertEquals('user', $name);
     }
 }

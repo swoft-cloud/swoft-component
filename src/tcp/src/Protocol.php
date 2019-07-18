@@ -4,12 +4,19 @@ namespace Swoft\Tcp;
 
 use Swoft;
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Tcp\Contract\PackerInterface;
 use Swoft\Tcp\Exception\ProtocolException;
 use Swoft\Tcp\Packer\JsonPacker;
+use Swoft\Tcp\Packer\PhpPacker;
 use Swoft\Tcp\Packer\SimpleTokenPacker;
 use function array_keys;
 use function array_merge;
+use function pack;
+use function rtrim;
+use function strlen;
+use function substr;
+use function unpack;
 
 /**
  * Class PackerFactory
@@ -19,10 +26,22 @@ use function array_merge;
 class Protocol
 {
     /**
+     * Use for pack data for length type
+     */
+    public const HEADER_PACK_FORMAT = 'NNNN';
+
+    /**
+     * Use for unpack data for length type
+     */
+    public const HEADER_UNPACK_FORMAT = 'Nuid/Ntype/Nlen/Nserid';
+
+    /**
      * The default packers
      */
     public const DEFAULT_PACKERS = [
+        PhpPacker::TYPE         => PhpPacker::class,
         JsonPacker::TYPE        => JsonPacker::class,
+        // For test or demo
         SimpleTokenPacker::TYPE => SimpleTokenPacker::class,
     ];
 
@@ -48,48 +67,7 @@ class Protocol
      */
     private $packageMaxLength = 81920;
 
-    // ------- use package length check
-
-    /**
-     * Open package length check
-     *
-     * swoole.setting => [
-     *  'package_max_length'    => 81920,
-     *  'open_length_check'     => true,
-     *  'package_length_type'   => 'N',
-     *  'package_length_offset' => 8,
-     *  'package_body_offset'   => 16,
-     * ]
-     *          8-11 length
-     *            |
-     * [0===4===8===12===16|BODY...]
-     *
-     * @link https://wiki.swoole.com/wiki/page/287.html
-     * @var bool
-     */
-    private $openLengthCheck = false;
-
-    /**
-     * @link https://wiki.swoole.com/wiki/page/463.html
-     * @var string
-     */
-    private $packageLengthType = 'N';
-
-    /**
-     * The Nth byte is the value of the packet length
-     *
-     * @var int
-     */
-    private $packageLengthOffset = 8;
-
-    /**
-     * The first few bytes start to calculate the length
-     *
-     * @var int
-     */
-    private $packageBodyOffset = 16;
-
-    // ------- use package eof check
+    // -------------- use package eof check --------------
 
     /**
      * Open package EOF check
@@ -116,17 +94,63 @@ class Protocol
      */
     private $packageEof = "\r\n\r\n";
 
+    // -------------- use package length check --------------
+
+    /**
+     * Open package length check
+     *
+     * swoole.setting => [
+     *  'package_max_length'    => 81920,
+     *  'open_length_check'     => true,
+     *  'package_length_type'   => 'N',
+     *  'package_length_offset' => 8,
+     *  'package_body_offset'   => 16,
+     * ]
+     *          8-11 length
+     *            |
+     * [0===4===8===12===16|BODY...]
+     *
+     * @link https://wiki.swoole.com/wiki/page/287.html
+     * @link https://github.com/matyhtf/framework/blob/3.0/src/core/Protocol/RPCServer.php
+     * @var bool
+     */
+    private $openLengthCheck = false;
+
+    /**
+     * @link https://wiki.swoole.com/wiki/page/463.html
+     * @var string
+     */
+    private $packageLengthType = 'N';
+
+    /**
+     * The Nth byte is the value of the packet length
+     *
+     * @var int
+     */
+    private $packageLengthOffset = 8;
+
+    /**
+     * The first few bytes start to calculate the length
+     *
+     * @var int
+     */
+    private $packageBodyOffset = 16;
+
     /**
      * Class constructor.
+     *
+     * @param array $config
      */
-    public function __construct()
+    public function __construct(array $config = [])
     {
         // Ensure packers always available
         $this->packers = self::DEFAULT_PACKERS;
+
+        ObjectHelper::init($this, $config);
     }
 
     /*********************************************************************
-     * (Un)Packing data for server
+     * (Un)Packing data for server use
      ********************************************************************/
 
     /**
@@ -156,7 +180,7 @@ class Protocol
     }
 
     /*********************************************************************
-     * (Un)Packing data for client
+     * (Un)Packing data for client use
      ********************************************************************/
 
     /**
@@ -169,7 +193,9 @@ class Protocol
      */
     public function unpackResponse(string $data): Response
     {
-        return $this->getPacker()->decodeResponse($data);
+        [$head, $body] = $this->unpackData($data);
+
+        return $this->getPacker($head['type'])->decodeResponse($body);
     }
 
     /**
@@ -182,7 +208,60 @@ class Protocol
      */
     public function pack(Package $package): string
     {
-        return $this->getPacker()->encode($package);
+        $body = $this->getPacker()->encode($package);
+
+        return $this->packBody($body);
+    }
+
+    /*********************************************************************
+     * Simple pack methods(For quick test)
+     ********************************************************************/
+
+    /**
+     * @param string $body
+     *
+     * @return string
+     */
+    public function packBody(string $body): string
+    {
+        // Use eof check
+        if ($this->openEofCheck) {
+            return $body . $this->packageEof;
+        }
+
+        // Use length check
+        $format = self::HEADER_PACK_FORMAT;
+
+        // Args sort please see self::HEADER_UNPACK_FORMAT
+        return pack($format, 0, $this->type, strlen($body), 0) . $body;
+    }
+
+    /**
+     * @param string $data
+     *
+     * @return array Return like: [head(null|array), body(string)]
+     */
+    public function unpackData(string $data): array
+    {
+        // Use eof check
+        if ($this->openEofCheck) {
+            return [
+                'head' => ['type' => $this->type],
+                'body' => rtrim($data, $this->packageEof),
+            ];
+        }
+
+        // Use length check
+        $format  = self::HEADER_UNPACK_FORMAT;
+        $headLen = $this->packageBodyOffset;
+
+        // Like: ['type' => 'json', 'len' => 254, ]
+        $headers = (array)unpack($format, substr($data, 0, $headLen));
+
+        return [
+            'head' => $headers,
+            'body' => substr($data, $headLen),
+        ];
     }
 
     /*********************************************************************
@@ -217,8 +296,9 @@ class Protocol
     public function getPackerClass(string $type = ''): string
     {
         $type = $type ?: $this->type;
-        if (isset($this->packers[$type])) {
-            throw new ProtocolException("The data packer is not exist! type: $type");
+
+        if (!isset($this->packers[$type])) {
+            throw new ProtocolException("The data packer(type: $type) is not exist! ");
         }
 
         return $this->packers[$type];
@@ -236,6 +316,7 @@ class Protocol
                 'open_eof_split'     => $this->openEofSplit,
                 'package_eof'        => $this->packageEof,
                 'package_max_length' => $this->packageMaxLength,
+                'open_length_check'  => false,
             ];
         }
 
@@ -246,6 +327,7 @@ class Protocol
             'package_length_offset' => $this->packageLengthOffset,
             'package_body_offset'   => $this->packageBodyOffset,
             'package_max_length'    => $this->packageMaxLength,
+            'open_eof_check'        => false,
         ];
     }
 
@@ -262,7 +344,9 @@ class Protocol
      */
     public function setType(string $type): void
     {
-        $this->type = $type;
+        if ($type) {
+            $this->type = $type;
+        }
     }
 
     /**
@@ -312,6 +396,8 @@ class Protocol
     public function setOpenLengthCheck($openLengthCheck): void
     {
         $this->openLengthCheck = (bool)$openLengthCheck;
+
+        $this->openEofCheck = !$this->openLengthCheck;
     }
 
     /**
@@ -376,6 +462,8 @@ class Protocol
     public function setOpenEofCheck($openEofCheck): void
     {
         $this->openEofCheck = (bool)$openEofCheck;
+
+        $this->openLengthCheck = !$this->openEofCheck;
     }
 
     /**
