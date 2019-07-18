@@ -4,7 +4,7 @@ use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Config\Config;
 use Swoft\Context\Context;
-use \Swoft\Context\ContextInterface;
+use Swoft\Contract\ContextInterface;
 use Swoft\Event\Manager\EventManager;
 use Swoft\Http\Server\HttpContext;
 use Swoft\Http\Server\HttpServer;
