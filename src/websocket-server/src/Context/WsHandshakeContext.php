@@ -6,7 +6,7 @@ use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Context\AbstractSimpleContext;
+use Swoft\Context\AbstractContext;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 
@@ -16,7 +16,7 @@ use Swoft\Http\Message\Response;
  * @since 2.0
  * @Bean(scope=Bean::PROTOTYPE)
  */
-class WsHandshakeContext extends AbstractSimpleContext
+class WsHandshakeContext extends AbstractContext
 {
     use PrototypeTrait;
 

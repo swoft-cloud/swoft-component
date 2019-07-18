@@ -7,7 +7,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
-use Swoft\Context\AbstractSimpleContext;
+use Swoft\Context\AbstractContext;
 use Throwable;
 use function uniqid;
 
@@ -17,7 +17,7 @@ use function uniqid;
  * @since 2.0
  * @Bean(scope=Bean::PROTOTYPE)
  */
-class ConsoleContext extends AbstractSimpleContext
+class ConsoleContext extends AbstractContext
 {
     use PrototypeTrait;
 

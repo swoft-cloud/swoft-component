@@ -6,7 +6,7 @@ use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Context\AbstractSimpleContext;
+use Swoft\Context\AbstractContext;
 use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 use Swoft\WebSocket\Server\Message\Request;
 use Swoft\WebSocket\Server\Message\Response;
@@ -18,7 +18,7 @@ use Swoole\WebSocket\Frame;
  * @since 2.0
  * @Bean(scope=Bean::PROTOTYPE)
  */
-class WsMessageContext extends AbstractSimpleContext
+class WsMessageContext extends AbstractContext
 {
     use PrototypeTrait;
 
