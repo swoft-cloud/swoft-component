@@ -895,7 +895,7 @@ class Builder
     public function increment(string $column, $amount = 1, array $extra = []): int
     {
         return $this->toBase()->increment(
-            $column, $amount, $this->addUpdatedAtColumn($extra)
+            $column, $amount, $this->addUpdatedAtColumn($this->model->getSafeAttributes($extra))
         );
     }
 
@@ -914,7 +914,7 @@ class Builder
     public function decrement($column, $amount = 1, array $extra = []): int
     {
         return $this->toBase()->decrement(
-            $column, $amount, $this->addUpdatedAtColumn($extra)
+            $column, $amount, $this->addUpdatedAtColumn($this->model->getSafeAttributes($extra))
         );
     }
 
