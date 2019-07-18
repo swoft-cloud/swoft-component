@@ -11,6 +11,7 @@ use SwoftTest\Component\Testing\Aop\Aspect\OrderAspect2;
 use SwoftTest\Component\Testing\Aop\DemoAop;
 use SwoftTest\Component\Testing\Aop\ExecutionAop;
 use SwoftTest\Component\Testing\Aop\OrderAop;
+use SwoftTest\Component\Testing\Aop\ParamsAop;
 use SwoftTest\Component\Testing\Aop\RegAop;
 
 /**
@@ -88,5 +89,18 @@ class AopTest extends TestCase
         $regAop = BeanFactory::getBean(RegAop::class);
         $result = $regAop->method();
         $this->assertEquals('RegAspect=method', $result);
+    }
+
+    public function testParamsAop()
+    {
+        /* @var ParamsAop $paramsAop */
+        $paramsAop = BeanFactory::getBean(ParamsAop::class);
+        $result    = $paramsAop->method('swoft', 12, 3);
+        $this->assertEquals($result,
+            'method{"name":"swoft","count":12,"type":3,"max":null}SwoftTest\Component\Testing\Aop\ParamsAop');
+
+        $result = $paramsAop->method('swoft', 12, 3, 16);
+        $this->assertEquals($result,
+            'method{"name":"swoft","count":12,"type":3,"max":16}SwoftTest\Component\Testing\Aop\ParamsAop');
     }
 }

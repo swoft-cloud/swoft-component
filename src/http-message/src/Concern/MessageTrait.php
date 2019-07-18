@@ -178,6 +178,21 @@ trait MessageTrait
     }
 
     /**
+     * Get all headerLines
+     *
+     * @return array
+     */
+    public function getHeaderLines(): array
+    {
+        $headers = [];
+        foreach ($this->getHeaders() as $name => $header) {
+            $headers[$name] = implode(', ', $header);
+        }
+
+        return $headers;
+    }
+
+    /**
      * Return an instance with the provided value replacing the specified header.
      *
      * While header names are case-insensitive, the casing of the header will
@@ -214,13 +229,13 @@ trait MessageTrait
     }
 
     /**
-     * @see MessageInterface::withAddedHeader()
-     *
      * @param string          $name  Case-insensitive header field name to add.
      * @param string|string[] $value Header value(s).
      *
      * @return static
      * @throws InvalidArgumentException for invalid header names or values.
+     * @see MessageInterface::withAddedHeader()
+     *
      */
     public function withAddedHeader($name, $value)
     {
