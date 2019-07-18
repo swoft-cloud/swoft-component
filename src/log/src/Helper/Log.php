@@ -22,7 +22,11 @@ class Log
      */
     public static function emergency(string $message, ...$params): bool
     {
-        return self::getLogger()->emergency(sprintf($message, ...$params));
+        if (!empty($params)) {
+            $message = sprintf($message, ...$params);
+        }
+
+        return self::getLogger()->emergency($message);
     }
 
     /**
@@ -35,10 +39,14 @@ class Log
      */
     public static function debug(string $message, ...$params): bool
     {
-        if (APP_DEBUG) {
-            return self::getLogger()->debug(sprintf($message, ...$params));
+        if (!empty($params)) {
+            $message = sprintf($message, ...$params);
         }
-        
+
+        if (APP_DEBUG) {
+            return self::getLogger()->debug($message);
+        }
+
         return true;
     }
 
@@ -52,7 +60,11 @@ class Log
      */
     public static function alert(string $message, ...$params): bool
     {
-        return self::getLogger()->alert(sprintf($message, ...$params));
+        if (!empty($params)) {
+            $message = sprintf($message, ...$params);
+        }
+
+        return self::getLogger()->alert($message);
     }
 
     /**
@@ -65,7 +77,11 @@ class Log
      */
     public static function info(string $message, ...$params): bool
     {
-        return self::getLogger()->info(sprintf($message, ...$params));
+        if (!empty($params)) {
+            $message = sprintf($message, ...$params);
+        }
+
+        return self::getLogger()->info($message);
     }
 
     /**
@@ -78,7 +94,11 @@ class Log
      */
     public static function warning(string $message, ...$params): bool
     {
-        return self::getLogger()->warning(sprintf($message, ...$params));
+        if (!empty($params)) {
+            $message = sprintf($message, ...$params);
+        }
+
+        return self::getLogger()->warning($message);
     }
 
     /**
@@ -91,7 +111,11 @@ class Log
      */
     public static function error(string $message, ...$params): bool
     {
-        return self::getLogger()->error(sprintf($message, ...$params));
+        if (!empty($params)) {
+            $message = sprintf($message, ...$params);
+        }
+
+        return self::getLogger()->error($message);
     }
 
     /**
@@ -119,7 +143,11 @@ class Log
      */
     public static function profileStart(string $name, ...$params): void
     {
-        self::getLogger()->profileStart(sprintf($name, ...$params));
+        if (!empty($params)) {
+            $name = sprintf($name, ...$params);
+        }
+
+        self::getLogger()->profileStart($name);
     }
 
     /**
@@ -146,7 +174,11 @@ class Log
      */
     public static function profileEnd(string $name, ...$params): void
     {
-        self::getLogger()->profileEnd(sprintf($name, ...$params));
+        if (!empty($params)) {
+            $name = sprintf($name, ...$params);
+        }
+
+        self::getLogger()->profileEnd($name);
     }
 
     /**
