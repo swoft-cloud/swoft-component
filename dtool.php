@@ -24,7 +24,7 @@ $cli->addByConfig($grt = new GitReleaseTag(), $grt->getHelpConfig());
 $cli->addByConfig($gar = new GitAddRemote(), $gar->getHelpConfig());
 $cli->addByConfig($gsp = new GitSubtreePush(), $gsp->getHelpConfig());
 
-$cli->addCommand('gen:readme', $gr = new GenReadme(), $gr->getHelpConfig());
-$cli->addCommand('gen:version', $gv = new GenVersion(), $gv->getHelpConfig());
+$cli->addByConfig($gr = new GenReadme(), $gr->getHelpConfig());
+$cli->addByConfig($gv = new GenVersion(), $gv->getHelpConfig());
 
 $cli->run();

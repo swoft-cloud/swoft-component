@@ -26,11 +26,7 @@ class GenReadme extends BaseCommand
 
     public function getHelpConfig(): array
     {
-        return [
-            'name'  => 'gen:readme',
-            'desc'  => 'generate readme file for swoft component(s)',
-            'usage' => 'gen:readme NAME(s)',
-            'help'  => <<<STR
+        $help = <<<STR
 Arguments:
   names   The component names
 
@@ -42,7 +38,13 @@ Example:
   {{command}} http-server
   {{command}} http-server http-message
 
-STR,
+STR;
+
+        return [
+            'name'  => 'gen:readme',
+            'desc'  => 'generate readme file for swoft component(s)',
+            'usage' => 'gen:readme NAME(s)',
+            'help'  => $help,
         ];
     }
 

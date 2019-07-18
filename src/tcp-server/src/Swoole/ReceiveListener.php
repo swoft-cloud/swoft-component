@@ -43,7 +43,7 @@ class ReceiveListener implements ReceiveInterface
         $response = Response::new($fd);
         $request  = Request::new($fd, $data, $reactorId);
 
-        server()->log("Receive: conn#{$fd} received data: {$data}", [], 'debug');
+        server()->log("Receive: conn#{$fd} begin init context, received data: {$data}", [], 'debug');
 
         $sid = (string)$fd;
         $ctx = TcpReceiveContext::new($fd, $request, $response);
@@ -70,6 +70,7 @@ class ReceiveListener implements ReceiveInterface
             /** @var TcpErrorDispatcher $errDispatcher */
             $errDispatcher = Swoft::getSingleton(TcpErrorDispatcher::class);
 
+            // Dispatching error handle
             $response = $errDispatcher->receiveError($e, $response);
             $response->send($server);
         } finally {
@@ -78,9 +79,6 @@ class ReceiveListener implements ReceiveInterface
 
             // Destroy
             Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
-
-            // Remove connection
-            Swoft::trigger(SwoftEvent::SESSION_COMPLETE, $sid);
 
             // Unbind cid => sid(fd)
             Session::unbindCo();
