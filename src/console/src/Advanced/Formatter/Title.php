@@ -25,7 +25,7 @@ class Title extends MessageFormatter
             'width'      => 80,
             'char'       => self::CHAR_EQUAL,
             'titlePos'   => self::POS_LEFT,
-            'indent'     => 2,
+            'indent'     => 0,
             'showBorder' => true,
         ], $opts);
 
@@ -34,7 +34,7 @@ class Title extends MessageFormatter
         // list($sW, $sH) = Helper::getScreenSize();
         $width  = (int)$opts['width'];
         $char   = trim($opts['char']);
-        $indent = (int)$opts['indent'] >= 0 ? $opts['indent'] : 2;
+        $indent = (int)$opts['indent'] >= 0 ? $opts['indent'] : 0;
 
         $title   = ucwords(trim($title));
         $tLength = Str::len($title);

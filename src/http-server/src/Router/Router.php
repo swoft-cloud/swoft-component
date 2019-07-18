@@ -705,31 +705,53 @@ class Router implements RouterInterface
     }
 
     /**
+     * @param callable|null $filter
+     *
      * @return string
      */
-    public function toString(): string
+    public function toString(callable $filter = null): string
     {
-        $indent    = '  ';
-        $strings   = ['#Routes Number: ' . $this->count()];
-        $strings[] = "\n#Static Routes:";
+        $count  = 0;
+        $indent = '  ';
+
+        $strings   = ['# Routes Number: ' . $this->count()];
+        $strings[] = "\n# Static Routes:";
+
         /** @var Route $route */
         foreach ($this->staticRoutes as $route) {
-            $strings[] = $indent . $route->toString();
+            $routeString = $route->toString();
+
+            if ($filter && $filter($routeString)) {
+                $count++;
+                $strings[] = $indent . $routeString;
+            }
         }
 
         $strings[] = "\n# Regular Routes:";
         foreach ($this->regularRoutes as $routes) {
             foreach ($routes as $route) {
-                $strings[] = $indent . $route->toString();
+                $routeString = $route->toString();
+
+                if ($filter && $filter($routeString)) {
+                    $count++;
+                    $strings[] = $indent . $routeString;
+                }
             }
         }
 
         $strings[] = "\n# Vague Routes:";
         foreach ($this->vagueRoutes as $routes) {
             foreach ($routes as $route) {
-                $strings[] = $indent . $route->toString();
+                $routeString = $route->toString();
+
+                if ($filter && $filter($routeString)) {
+                    $count++;
+                    $strings[] = $indent . $routeString;
+                }
             }
         }
+
+        $strings[] = "\nCurrent displayed count: $count";
 
         return implode("\n", $strings);
     }

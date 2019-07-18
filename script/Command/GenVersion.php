@@ -30,9 +30,9 @@ class GenVersion extends BaseCommand
     public function getHelpConfig(): array
     {
         return [
-            'name'  => 'gen:readme',
+            'name'  => 'gen:version',
             'desc'  => 'generate an version info to composer.json',
-            'usage' => 'gen:readme NAME(s)',
+            'usage' => 'gen:version NAME(s)',
             'help'  => <<<STR
 Arguments:
   names   The component names
