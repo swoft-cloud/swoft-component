@@ -17,7 +17,6 @@ require __DIR__ . '/script/bootstrap.php';
 define('BASE_PATH', __DIR__);
 
 $cli = new App();
-
 $cli->addByConfig($gi = new GitFindTag(), $gi->getHelpConfig());
 $cli->addByConfig($drt = new DeleteRemoteTag(), $drt->getHelpConfig());
 $cli->addByConfig($grt = new GitReleaseTag(), $grt->getHelpConfig());

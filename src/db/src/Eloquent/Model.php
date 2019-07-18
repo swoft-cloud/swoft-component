@@ -51,6 +51,10 @@ use function bean;
  * @method static static updateOrCreate(array $attributes, array $values = [])
  * @method static bool updateOrInsert(array $attributes, array $values = [])
  * @method static int batchUpdateByIds(array $values)
+ * @method static int updateAllCounters(array $attributes, array $counters, array $extra = [])
+ * @method static int updateAllCountersById(array $ids, array $counters, array $extra = [])
+ * @method static bool modifyById(int $id, array $values)
+ * @method static bool modify(array $attributes, array $values)
  * @method static Builder firstOrFail(array $columns = ['*'])
  * @method static Builder firstOr(array $columns = ['*'], Closure $callback = null)
  * @method static mixed value(string $column)
@@ -158,6 +162,7 @@ use function bean;
  * @method static float|int avg($column)
  * @method static float|int average(string $column)
  * @method static void truncate()
+ * @method static Builder useWritePdo()
  */
 abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
 {
@@ -407,6 +412,31 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 
         return $this->fill($attributes)->save();
     }
+
+    /**
+     * Update counters by primary key
+     *
+     * @param array $counters
+     * @param array $extra
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function updateCounters(array $counters, array $extra = []): int
+    {
+        if (!$this->swoftExists) {
+            return 0;
+        }
+
+        $query = $this->newModelQuery();
+        $key   = $this->getKeyName();
+        $id    = $this->getAttributeValue($key);
+
+        return $query->updateAllCountersById((array)$id, $counters, $extra);
+    }
+
 
     /**
      * Save the model to the database.
@@ -1019,6 +1049,19 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     protected function getClassName(): string
     {
         return Proxy::getClassName(static::class);
+    }
+
+    /**
+     * Get entity table name
+     *
+     * @return string
+     * @throws DbException
+     */
+    public static function tableName()
+    {
+        $className = Proxy::getClassName(static::class);
+
+        return EntityRegister::getTable($className);
     }
 
     /**

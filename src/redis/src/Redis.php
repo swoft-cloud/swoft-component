@@ -132,6 +132,7 @@ use Throwable;
  * @method static bool mset(array $keyValues, int $ttl = 0)
  * @method static array pipeline(callable $callback)
  * @method static array transaction(callable $callback)
+ * @method static mixed call(callable $callback, bool $reconnect = false)
  */
 class Redis
 {
