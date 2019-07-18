@@ -23,12 +23,7 @@ class GitReleaseTag extends BaseCommand
 
     public function getHelpConfig(): array
     {
-        //   --recopy              Recopy components codes to tmp dir for operation
-        return [
-            'name'  => 'tag:release',
-            'desc'  => 'Release all sub-repo to new tag version and push to remote repo',
-            'usage' => 'tag:release [options] [arguments]',
-            'help'  => <<<STR
+        $help = <<<STR
 Arguments:
   names   The component names
 
@@ -43,7 +38,14 @@ Example:
   {{fullCmd}} -t v2.0.3 event
   {{fullCmd}} -t v2.0.3 event config
 
-STR,
+STR;
+
+        //   --recopy              Recopy components codes to tmp dir for operation
+        return [
+            'name'  => 'tag:release',
+            'desc'  => 'Release all sub-repo to new tag version and push to remote repo',
+            'usage' => 'tag:release [options] [arguments]',
+            'help'  => $help,
         ];
     }
 

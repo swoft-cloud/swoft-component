@@ -16,11 +16,7 @@ class DeleteRemoteTag extends BaseCommand
 {
     public function getHelpConfig(): array
     {
-        return [
-            'name'  => 'tag:delete',
-            'desc'  => 'delete git remote tag for components',
-            'usage' => 'tag:delete [options] [arguments]',
-            'help'  => <<<STR
+        $help = <<<STR
 Arguments:
   names   The component names
 
@@ -34,7 +30,13 @@ Example:
   {{fullCmd}} -t v2.0.3 event
   {{fullCmd}} -t v2.0.3 event config
 
-STR,
+STR;
+
+        return [
+            'name'  => 'tag:delete',
+            'desc'  => 'delete git remote tag for components',
+            'usage' => 'tag:delete [options] [arguments]',
+            'help'  => $help,
         ];
     }
 

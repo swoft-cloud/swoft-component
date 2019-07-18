@@ -1,7 +1,7 @@
 {
   "name": "swoft/aop",
   "type": "library",
-  "version": "v2.0.3",
+  "version": "v2.0.4",
   "keywords": [
     "php",
     "swoole",

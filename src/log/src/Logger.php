@@ -561,14 +561,6 @@ class Logger extends \Monolog\Logger
     }
 
     /**
-     * @param string $message
-     * @param array  $context
-     *
-     * @return bool
-     * @throws Exception
-     */
-
-    /**
      * Add trace
      *
      * @param mixed $message
@@ -630,7 +622,7 @@ class Logger extends \Monolog\Logger
                 continue;
             }
 
-            $level = array_search($levelName, self::$levels);
+            $level = array_search($levelName, self::$levels, true);
             if ($level !== false) {
                 $levels[] = $level;
             }

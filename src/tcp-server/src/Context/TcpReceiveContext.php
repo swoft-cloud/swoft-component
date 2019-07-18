@@ -6,7 +6,7 @@ use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Context\AbstractContext;
+use Swoft\Context\AbstractSimpleContext;
 use Swoft\Tcp\Server\Request;
 use Swoft\Tcp\Server\Response;
 
@@ -16,7 +16,7 @@ use Swoft\Tcp\Server\Response;
  * @since 2.0.3
  * @Bean(scope=Bean::PROTOTYPE)
  */
-class TcpReceiveContext extends AbstractContext
+class TcpReceiveContext extends AbstractSimpleContext
 {
     /**
      * @var int

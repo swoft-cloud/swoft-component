@@ -5,7 +5,7 @@ namespace Swoft\Tcp\Server;
 use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Concern\DataPropertyTrait;
+use Swoft\Concern\SimpleDataPropertyTrait;
 use Swoft\Session\SessionInterface;
 use function bean;
 use function microtime;
@@ -18,7 +18,7 @@ use function microtime;
  */
 class Connection implements SessionInterface
 {
-    use DataPropertyTrait;
+    use SimpleDataPropertyTrait;
 
     private const METADATA_KEY = 'metadata';
 

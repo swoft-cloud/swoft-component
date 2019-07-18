@@ -20,11 +20,7 @@ class GitFindTag
 {
     public function getHelpConfig(): array
     {
-        return [
-            'name'  => 'tag:find',
-            'desc'  => 'get the latest/next tag from the project directory',
-            'usage' => 'tag:find [DIR]',
-            'help'  => <<<STR
+        $help = <<<STR
 Options:
   --dir, -d      The project directory path. default is current directory.
   --next-tag     Display the project next tag version. eg: v2.0.2 => v2.0.3
@@ -36,7 +32,13 @@ Example:
   {{fullCmd}} -d ../view --next-tag
   {{fullCmd}} -d ../view --next-tag --only-tag
 
-STR,
+STR;
+
+        return [
+            'name'  => 'tag:find',
+            'desc'  => 'get the latest/next tag from the project directory',
+            'usage' => 'tag:find [DIR]',
+            'help'  => $help,
         ];
     }
 
