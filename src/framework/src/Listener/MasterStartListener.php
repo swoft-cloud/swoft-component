@@ -7,13 +7,13 @@ use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Server\Event\ServerStartEvent;
-use Swoft\Server\Helper\ServerHelper;
 use Swoole\Process;
+use Swoft\Server\SwooleEvent;
 
 /**
  * Class MasterStartListener
  *
- * @Listener()
+ * @Listener(event=SwooleEvent::START)
  */
 class MasterStartListener implements EventHandlerInterface
 {
@@ -22,14 +22,8 @@ class MasterStartListener implements EventHandlerInterface
      */
     public function handle(EventInterface $event): void
     {
-        // Not listen ctrl+c on 4.4
-        if (ServerHelper::isGteSwoole44()) {
-            return;
-        }
-
-        $server = $event->coServer;
-
         // Listen signal: Ctrl+C (SIGINT = 2)
+        $server = $event->coServer;
         Process::signal(2, function () use ($server) {
             Console::colored("\nStop server by CTRL+C");
             $server->shutdown();
