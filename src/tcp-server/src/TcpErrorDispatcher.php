@@ -10,6 +10,7 @@ use Swoft\Error\ErrorManager;
 use Swoft\Error\ErrorType;
 use Swoft\Log\Debug;
 use Swoft\Tcp\Server\Contract\TcpConnectErrorHandlerInterface;
+use Swoft\Tcp\Server\Contract\TcpReceiveErrorHandlerInterface;
 use Throwable;
 
 /**
@@ -54,16 +55,16 @@ class TcpErrorDispatcher
         /** @var ErrorManager $handlers */
         $handlers = Swoft::getSingleton(ErrorManager::class);
 
-        /** @var Swoft\Tcp\Server\Contract\TcpReceiveErrorHandlerInterface $handler */
+        /** @var TcpReceiveErrorHandlerInterface $handler */
         if ($handler = $handlers->matchHandler($e, ErrorType::TCP_RCV)) {
             return $handler->handle($e, $response);
         }
 
         $this->debugLog('Receive', $e);
 
-        $error = Error::new($e->getCode(), $e->getMessage(), null);
+        $response->setCode($e->getCode());
+        $response->setMsg($e->getMessage());
 
-        $response->setError($error);
         return $response;
     }
 

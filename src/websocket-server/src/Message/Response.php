@@ -6,6 +6,7 @@ use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\Context;
+use Swoft\Server\Concern\CommonProtocolDataTrait;
 use Swoft\WebSocket\Server\Contract\ResponseInterface;
 use function bean;
 use const WEBSOCKET_OPCODE_TEXT;
@@ -18,17 +19,14 @@ use const WEBSOCKET_OPCODE_TEXT;
  */
 class Response implements ResponseInterface
 {
+    use CommonProtocolDataTrait;
+
     /**
      * Receiver fd
      *
      * @var int
      */
     private $fd = -1;
-
-    /**
-     * @var mixed
-     */
-    private $data;
 
     /**
      * @var string
@@ -268,25 +266,6 @@ class Response implements ResponseInterface
     }
 
     /**
-     * @return mixed
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    /**
-     * @param mixed $data
-     *
-     * @return Response|ResponseInterface
-     */
-    public function setData($data): ResponseInterface
-    {
-        $this->data = $data;
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getContent(): string
@@ -301,6 +280,17 @@ class Response implements ResponseInterface
     public function setContent(string $content): ResponseInterface
     {
         $this->content = $content;
+        return $this;
+    }
+
+    /**
+     * @param mixed $data
+     *
+     * @return ResponseInterface
+     */
+    public function setData($data): ResponseInterface
+    {
+        $this->data = $data;
         return $this;
     }
 }

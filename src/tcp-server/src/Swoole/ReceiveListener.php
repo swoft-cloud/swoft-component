@@ -23,9 +23,8 @@ use Throwable;
 /**
  * Class ReceiveListener
  *
- * @Bean()
- *
  * @since 2.0
+ * @Bean()
  */
 class ReceiveListener implements ReceiveInterface
 {
@@ -54,13 +53,14 @@ class ReceiveListener implements ReceiveInterface
         // Bind cid => sid(fd)
         Session::bindCo($sid);
 
-        /** @var TcpDispatcher $dispatcher */
-        $dispatcher = Swoft::getSingleton('tcpDispatcher');
-
         try {
             // Trigger event
             Swoft::trigger(TcpServerEvent::RECEIVE, $fd, $server, $reactorId);
 
+            /** @var TcpDispatcher $dispatcher */
+            $dispatcher = Swoft::getSingleton('tcpDispatcher');
+
+            // Dispatching
             $response = $dispatcher->dispatch($request, $response);
             $response->send($server);
         } catch (Throwable $e) {

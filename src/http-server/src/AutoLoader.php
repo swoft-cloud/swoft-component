@@ -15,7 +15,7 @@ use Swoft\Http\Server\Formatter\XmlResponseFormatter;
 use Swoft\Http\Server\Parser\JsonRequestParser;
 use Swoft\Http\Server\Parser\XmlRequestParser;
 use Swoft\Http\Server\Swoole\RequestListener;
-use Swoft\Server\Swoole\SwooleEvent;
+use Swoft\Server\SwooleEvent;
 use Swoft\SwoftComponent;
 
 /**

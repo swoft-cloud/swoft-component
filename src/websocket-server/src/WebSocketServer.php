@@ -5,7 +5,7 @@ namespace Swoft\WebSocket\Server;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Server;
-use Swoft\Server\Swoole\SwooleEvent;
+use Swoft\Server\SwooleEvent;
 use Swoole\Websocket\Frame;
 use Throwable;
 use function array_flip;
@@ -356,36 +356,5 @@ class WebSocketServer extends Server
     public function httpIsEnabled(): bool
     {
         return isset($this->on[SwooleEvent::REQUEST]);
-    }
-
-    /**
-     * @return int
-     */
-    public function count(): int
-    {
-        return count($this->swooleServer->connections);
-    }
-
-    /**
-     * Send message to notify workers, like swooleServer->sendMessage().
-     *
-     * @param mixed $data
-     * @param array $dstWIDs
-     * @param array $excludeWIDs
-     */
-    public function notifyWorkers($data, array $dstWIDs = [], array $excludeWIDs = []): void
-    {
-        // Send to all workers
-        if (!$dstWIDs) {
-            $dstWIDs = \range(0, $this->swooleServer->setting['worker_num']);
-        }
-
-        if ($excludeWIDs) {
-            $dstWIDs = \array_diff($dstWIDs, $excludeWIDs);
-        }
-
-        foreach ($dstWIDs as $wid) {
-            $this->swooleServer->sendMessage($data, $wid);
-        }
     }
 }
