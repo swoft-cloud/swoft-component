@@ -7,7 +7,7 @@ use function array_merge;
 /**
  * Trait SimpleDataPropertyTrait
  *
- * @since 2.0
+ * @since 2.0.4
  */
 trait SimpleDataPropertyTrait
 {
@@ -73,5 +73,13 @@ trait SimpleDataPropertyTrait
     public function setMulti(array $map): void
     {
         $this->data = array_merge($this->data, $map);
+    }
+
+    /**
+     * @return array
+     */
+    public function getData(): array
+    {
+        return $this->data;
     }
 }

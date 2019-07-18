@@ -7,18 +7,20 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
-use Swoft\Context\AbstractContext;
+use Swoft\Context\AbstractSimpleContext;
 use Throwable;
 use function uniqid;
 
 /**
  * Class ConsoleContext
+ *
  * @since 2.0
  * @Bean(scope=Bean::PROTOTYPE)
  */
-class ConsoleContext extends AbstractContext
+class ConsoleContext extends AbstractSimpleContext
 {
     use PrototypeTrait;
+
     /**
      * @return ConsoleContext
      * @throws Throwable

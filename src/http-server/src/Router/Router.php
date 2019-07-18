@@ -721,7 +721,7 @@ class Router implements RouterInterface
         foreach ($this->staticRoutes as $route) {
             $routeString = $route->toString();
 
-            if ($filter && $filter($routeString)) {
+            if (!$filter || $filter($routeString)) {
                 $count++;
                 $strings[] = $indent . $routeString;
             }
@@ -732,7 +732,7 @@ class Router implements RouterInterface
             foreach ($routes as $route) {
                 $routeString = $route->toString();
 
-                if ($filter && $filter($routeString)) {
+                if (!$filter || $filter($routeString)) {
                     $count++;
                     $strings[] = $indent . $routeString;
                 }
@@ -744,7 +744,7 @@ class Router implements RouterInterface
             foreach ($routes as $route) {
                 $routeString = $route->toString();
 
-                if ($filter && $filter($routeString)) {
+                if (!$filter || $filter($routeString)) {
                     $count++;
                     $strings[] = $indent . $routeString;
                 }

@@ -77,4 +77,12 @@ trait DataPropertyTrait
     {
         $this->data = array_merge($this->data, $map);
     }
+
+    /**
+     * @return array
+     */
+    public function getData(): array
+    {
+        return $this->data;
+    }
 }
