@@ -3,24 +3,25 @@
 namespace Swoft\Tcp\Packer;
 
 use ReflectionException;
-use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Stdlib\Helper\JsonHelper;
 use Swoft\Tcp\Contract\PackerInterface;
 use Swoft\Tcp\Package;
 use Swoft\Tcp\Response;
+use function serialize;
+use function unserialize;
 
 /**
- * Class JsonPacker
+ * Class PhpPacker
  *
- * @since 2.0.3
- * @Bean()
+ * @since 2.0.4
  */
-class JsonPacker implements PackerInterface
+class PhpPacker implements PackerInterface
 {
-    public const TYPE = 'json';
+    public const TYPE = 'php';
 
     /**
+     * The data packer type name.
+     *
      * @return string
      */
     public static function getType(): string
@@ -37,7 +38,7 @@ class JsonPacker implements PackerInterface
      */
     public function encode(Package $package): string
     {
-        return JsonHelper::encode($package->toArray());
+        return serialize($package->toArray());
     }
 
     /**
@@ -53,7 +54,7 @@ class JsonPacker implements PackerInterface
     {
         $cmd = '';
         $ext = [];
-        $map = JsonHelper::decode($data, true);
+        $map = (array)unserialize($data, ['allowed_classes' => false]);
 
         // Find message route
         if (isset($map['cmd'])) {
@@ -85,7 +86,7 @@ class JsonPacker implements PackerInterface
             return $content;
         }
 
-        return JsonHelper::encode($response->toArray());
+        return serialize($response->toArray());
     }
 
     /**
@@ -98,7 +99,7 @@ class JsonPacker implements PackerInterface
     public function decodeResponse(string $data): Response
     {
         $resp = new Response();
-        $map  = JsonHelper::decode($data, true);
+        $map  = (array)unserialize($data, ['allowed_classes' => false]);
 
         $resp->setContent($data);
 

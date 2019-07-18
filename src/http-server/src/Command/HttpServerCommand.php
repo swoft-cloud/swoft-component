@@ -21,7 +21,7 @@ use function output;
  *
  * @since 2.0
  *
- * @Command("http", alias="httpserver,httpServer", coroutine=false)
+ * @Command("http", alias="httpsrv", coroutine=false)
  * @example
  *  {fullCmd}:start     Start the http server
  *  {fullCmd}:stop      Stop the http server

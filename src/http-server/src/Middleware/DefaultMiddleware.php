@@ -78,7 +78,7 @@ class DefaultMiddleware implements MiddlewareInterface
 
         // Not found
         if ($status === Router::NOT_FOUND) {
-            throw new NotFoundRouteException(sprintf('Route not found(path %s)!', $uriPath));
+            throw new NotFoundRouteException("Route not found(path {$uriPath})!");
         }
 
         // Method not allowed

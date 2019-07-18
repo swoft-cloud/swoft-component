@@ -12,7 +12,7 @@ use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Log\Helper\Log;
 use Swoft\Rpc\Server\ServiceConnectContext;
-use Swoft\Server\Swoole\SwooleEvent;
+use Swoft\Server\SwooleEvent;
 use Swoft\Rpc\Server\ServiceServerEvent;
 
 /**

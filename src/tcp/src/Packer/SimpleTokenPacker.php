@@ -38,7 +38,11 @@ class SimpleTokenPacker implements PackerInterface
      */
     public function encode(Package $package): string
     {
-        return (string)$package->getData();
+        if ($cmd = $package->getCmd()) {
+            return $cmd . ' ' . $package->getDataString();
+        }
+
+        return $package->getDataString();
     }
 
     /**

@@ -9,7 +9,7 @@ use Swoft\Rpc\Packet;
 use Swoft\Rpc\Server\Swoole\CloseListener;
 use Swoft\Rpc\Server\Swoole\ConnectListener;
 use Swoft\Rpc\Server\Swoole\ReceiveListener;
-use Swoft\Server\Swoole\SwooleEvent;
+use Swoft\Server\SwooleEvent;
 use Swoft\SwoftComponent;
 use function bean;
 

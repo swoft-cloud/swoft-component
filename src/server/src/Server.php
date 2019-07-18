@@ -3,7 +3,6 @@
 namespace Swoft\Server;
 
 use InvalidArgumentException;
-use function srun;
 use Swoft;
 use Swoft\Co;
 use Swoft\Console\Console;
@@ -15,7 +14,6 @@ use Swoft\Server\Event\ServerStartEvent;
 use Swoft\Server\Event\WorkerEvent;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Helper\ServerHelper;
-use Swoft\Server\Swoole\SwooleEvent;
 use Swoft\Stdlib\Helper\Dir;
 use Swoft\Stdlib\Helper\Str;
 use Swoft\Stdlib\Helper\Sys;
@@ -26,6 +24,7 @@ use Swoole\Runtime;
 use Swoole\Server as CoServer;
 use Throwable;
 use function alias;
+use function array_diff;
 use function array_keys;
 use function array_merge;
 use function dirname;
@@ -34,7 +33,9 @@ use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
 use function get_class;
+use function range;
 use function sprintf;
+use function srun;
 use function ucfirst;
 use const SWOOLE_PROCESS;
 use const SWOOLE_SOCK_TCP;
@@ -68,14 +69,14 @@ abstract class Server implements ServerInterface
     protected $port = 80;
 
     /**
-     * Default host
+     * Default host address
      *
      * @var string
      */
     protected $host = '0.0.0.0';
 
     /**
-     * Default mode
+     * Default mode type
      *
      * @var int
      */
@@ -268,9 +269,6 @@ abstract class Server implements ServerInterface
         // Set process title
         Sys::setProcessTitle($title);
 
-        // Update setting property
-        $this->setSetting($server->setting);
-
         // Use `go` to open coroutine
         sgo(function () use ($server) {
             // Before
@@ -299,7 +297,7 @@ abstract class Server implements ServerInterface
         // Set process title
         Sys::setProcessTitle(sprintf('%s manager process', $this->pidName));
 
-        // Swoole no supported to open coroutine
+        // NOTICE: Swoole not support to open coroutine on manager process
         Swoft::trigger(new ServerStartEvent(SwooleEvent::MANAGER_START, $server), $this);
     }
 
@@ -312,7 +310,7 @@ abstract class Server implements ServerInterface
      */
     public function onManagerStop(CoServer $server): void
     {
-        // Swoole no supported to open coroutine
+        // NOTICE: Swoole not support to open coroutine on manager process
         Swoft::trigger(new ServerStartEvent(SwooleEvent::MANAGER_STOP, $server), $this);
     }
 
@@ -325,6 +323,8 @@ abstract class Server implements ServerInterface
      */
     public function onShutdown(CoServer $server): void
     {
+        $this->log("Shutdown: pidFile={$this->pidFile}");
+
         // Delete pid file
         ServerHelper::removePidFile(alias($this->pidFile));
 
@@ -404,6 +404,8 @@ abstract class Server implements ServerInterface
      */
     public function onWorkerStop(CoServer $server, int $workerId): void
     {
+        $this->log("WorkerStop: workerId=$workerId");
+
         $event = new WorkerEvent(SwooleEvent::WORKER_STOP, $server, $workerId);
 
         // is task process
@@ -423,7 +425,7 @@ abstract class Server implements ServerInterface
     }
 
     /**
-     * Worker error stop event
+     * Worker error stop event(in manager process)
      *
      * @param CoServer $server
      * @param int      $workerId
@@ -435,7 +437,10 @@ abstract class Server implements ServerInterface
      */
     public function onWorkerError(CoServer $server, int $workerId, int $workerPid, int $exitCode, int $signal): void
     {
+        $this->log("WorkerError: exitCode=$exitCode, Error worker: workerId=$workerId workerPid=$workerPid");
+
         $event = new WorkerEvent(SwooleEvent::WORKER_ERROR, $server, $workerId);
+
         // is task process
         $event->taskProcess = $workerId >= $server->setting['worker_num'];
         $event->setParams([
@@ -444,25 +449,10 @@ abstract class Server implements ServerInterface
             'workerPid' => $workerPid,
         ]);
 
-        // Use `Scheduler` to open coroutine
-        srun(function () use ($event, $workerId, $workerPid, $exitCode, $signal) {
-            $params = [
-                $event,
-                $workerId,
-                $workerPid,
-                $exitCode,
-                $signal
-            ];
-
-            // Before
-            Swoft::trigger(ServerEvent::BEFORE_WORKER_ERROR_EVENT, $this, ...$params);
-
-            // Trigger
-            Swoft::trigger($event, $this);
-
-            // After event
-            Swoft::trigger(ServerEvent::AFTER_EVENT, $this);
-        });
+        // NOTICE:
+        //  WorkerError at manager process
+        //  but swoole not support to open coroutine on manager process
+        Swoft::trigger($event, $this);
     }
 
     /**
@@ -501,6 +491,8 @@ abstract class Server implements ServerInterface
 
         // Set settings
         $this->swooleServer->set($this->setting);
+        // Update setting property
+        // $this->setSetting($this->swooleServer->setting);
 
         // Before Add event
         Swoft::trigger(ServerEvent::BEFORE_ADDED_EVENT, $this);
@@ -988,6 +980,37 @@ abstract class Server implements ServerInterface
         }
 
         return false;
+    }
+
+    /**
+     * @return int
+     */
+    public function count(): int
+    {
+        return count($this->swooleServer->connections);
+    }
+
+    /**
+     * Send message to notify workers, like swooleServer->sendMessage().
+     *
+     * @param mixed $data
+     * @param array $dstWIDs
+     * @param array $excludeWIDs
+     */
+    public function notifyWorkers($data, array $dstWIDs = [], array $excludeWIDs = []): void
+    {
+        // Send to all workers
+        if (!$dstWIDs) {
+            $dstWIDs = range(0, $this->swooleServer->setting['worker_num']);
+        }
+
+        if ($excludeWIDs) {
+            $dstWIDs = array_diff($dstWIDs, $excludeWIDs);
+        }
+
+        foreach ($dstWIDs as $wid) {
+            $this->swooleServer->sendMessage($data, $wid);
+        }
     }
 
     /**

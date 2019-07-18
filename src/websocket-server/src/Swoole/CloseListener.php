@@ -4,7 +4,6 @@ namespace Swoft\WebSocket\Server\Swoole;
 
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\BeanFactory;
 use Swoft\Context\Context;
 use Swoft\Server\Contract\CloseInterface;
 use Swoft\Session\Session;
@@ -48,8 +47,6 @@ class CloseListener implements CloseInterface
 
         // Session data not exist the worker, notify other worker clear session.
         if (!Session::has($sid)) {
-            server()->log("Close: conn#{$fd} session not exist current worker, notify other worker handle");
-
             $data = [
                 'from'  => 'wsServer',
                 'event' => 'wsClose',
@@ -58,6 +55,7 @@ class CloseListener implements CloseInterface
             ];
 
             // $server->sendMessage($message, $dst_worker_id);
+            server()->log("Close: conn#{$fd} session not exist current worker, notify other worker handle");
             server()->notifyWorkers(JsonHelper::encode($data), [], [$server->worker_id]);
             return;
         }
@@ -69,23 +67,23 @@ class CloseListener implements CloseInterface
         // Unbind cid => sid(fd)
         Session::bindCo($sid);
 
-        /** @var Connection $conn */
-        $conn  = Session::mustGet();
-        $total = server()->count() - 1;
-
-        server()->log("Close: conn#{$fd} has been closed. server conn count $total", [], 'debug');
-        if (!$meta = $conn->getMetadata()) {
-            server()->log("Close: conn#{$fd} connection meta info has been lost");
-            return;
-        }
-
-        server()->log("Close: conn#{$fd} meta info:", $meta, 'debug');
-
         try {
+            /** @var Connection $conn */
+            $conn  = Session::mustGet();
+            $total = server()->count() - 1;
+
+            server()->log("Close: conn#{$fd} has been closed. server conn count $total", [], 'debug');
+            if (!$meta = $conn->getMetadata()) {
+                server()->log("Close: conn#{$fd} connection meta info has been lost");
+                return;
+            }
+
+            server()->log("Close: conn#{$fd} meta info:", $meta, 'debug');
+
             // Handshake successful callback close handle
             if ($conn->isHandshake()) {
                 /** @var WsDispatcher $dispatcher */
-                $dispatcher = BeanFactory::getSingleton('wsDispatcher');
+                $dispatcher = Swoft::getSingleton('wsDispatcher');
                 $dispatcher->close($server, $fd);
             }
 
@@ -96,7 +94,7 @@ class CloseListener implements CloseInterface
             Swoft::trigger(WsServerEvent::CLOSE_ERROR, $e, $fd);
 
             /** @var WsErrorDispatcher $errDispatcher */
-            $errDispatcher = BeanFactory::getSingleton(WsErrorDispatcher::class);
+            $errDispatcher = Swoft::getSingleton(WsErrorDispatcher::class);
             $errDispatcher->closeError($e, $fd);
         } finally {
             // Defer

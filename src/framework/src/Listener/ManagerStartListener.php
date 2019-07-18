@@ -7,7 +7,7 @@ use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Server\Event\ServerStartEvent;
-use Swoft\Server\Swoole\SwooleEvent;
+use Swoft\Server\SwooleEvent;
 
 /**
  * Class ManagerStartListener
@@ -25,11 +25,10 @@ class ManagerStartListener implements EventHandlerInterface
     {
         $server = $event->coServer;
 
-//        Console::writef(
-//            'Server start success (Master PID: <mga>%d</mga>, Manager PID: <mga>%d</mga>)',
-//            $server->master_pid,
-//            $server->manager_pid
-//        );
-
+       Console::writef(
+           'Server start success (Master PID: <mga>%d</mga>, Manager PID: <mga>%d</mga>)',
+           $server->master_pid,
+           $server->manager_pid
+       );
     }
 }
