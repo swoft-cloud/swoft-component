@@ -165,7 +165,7 @@ class Protocol
     {
         [$head, $body] = $this->unpackData($data);
 
-        return $this->getPacker($head['type'])->decode($body);
+        return $this->getPacker((string)$head['type'])->decode($body);
     }
 
     /**
@@ -199,7 +199,7 @@ class Protocol
     {
         [$head, $body] = $this->unpackData($data);
 
-        return $this->getPacker($head['type'])->decodeResponse($body);
+        return $this->getPacker((string)$head['type'])->decodeResponse($body);
     }
 
     /**
@@ -236,8 +236,10 @@ class Protocol
         // Use length check
         $format = self::HEADER_PACK_FORMAT;
 
+        // TODO
         // Args sort please see self::HEADER_UNPACK_FORMAT
-        return pack($format, 0, $this->type, strlen($body), 0) . $body;
+        // return pack($format, 0, $this->type, strlen($body), 0) . $body;
+        return pack($format, 0, 0, strlen($body), 0) . $body;
     }
 
     /**

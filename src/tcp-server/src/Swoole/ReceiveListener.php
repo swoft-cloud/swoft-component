@@ -43,7 +43,7 @@ class ReceiveListener implements ReceiveInterface
         $response = Response::new($fd);
         $request  = Request::new($fd, $data, $reactorId);
 
-        server()->log("Receive: conn#{$fd} begin init context, received data: {$data}", [], 'debug');
+        server()->log("Receive: conn#{$fd} received client request, begin init context", [], 'debug');
 
         $sid = (string)$fd;
         $ctx = TcpReceiveContext::new($fd, $request, $response);
