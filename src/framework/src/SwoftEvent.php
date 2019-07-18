@@ -16,6 +16,7 @@ final class SwoftEvent
     /**
      * Session complete
      *  - webSocket connection close
+     *  - tcp connection close
      */
     public const SESSION_COMPLETE = 'swoft.session.complete';
 

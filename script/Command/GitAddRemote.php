@@ -18,11 +18,7 @@ class GitAddRemote extends BaseCommand
 
     public function getHelpConfig(): array
     {
-        return [
-            'name'  => 'git:addrmt',
-            'desc'  => 'Add the remote repository address of each component',
-            'usage' => 'git:addrmt [options] [arguments]',
-            'help'  => <<<STR
+        $help = <<<STR
 Arguments:
   names   The component names
 
@@ -34,7 +30,13 @@ Example:
   {{fullCmd}} event
   {{fullCmd}} event config
 
-STR,
+STR;
+
+        return [
+            'name'  => 'git:addrmt',
+            'desc'  => 'Add the remote repository address of each component',
+            'usage' => 'git:addrmt [options] [arguments]',
+            'help'  => $help,
         ];
     }
 

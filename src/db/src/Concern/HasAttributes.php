@@ -293,7 +293,8 @@ trait HasAttributes
      */
     protected function asJson($value, $option = JSON_UNESCAPED_UNICODE)
     {
-        return json_encode($value, $option);
+        // Compatible MySQL `json_set()` method
+        return $value ? json_encode($value, $option) : '{}';
     }
 
     /**
@@ -377,7 +378,7 @@ trait HasAttributes
     public function setRawAttributes(array $attributes, $sync = false)
     {
         foreach ($this->getSafeAttributes($attributes) as $key => $value) {
-            if (!$value instanceof Expression) {
+            if (!$value instanceof Expression && !$this->isJsonSelector($key)) {
                 $this->setModelAttribute($key, $value);
             }
             $this->modelAttributes[$key] = $value;
@@ -402,6 +403,12 @@ trait HasAttributes
     {
         $safeAttributes = [];
         foreach ($attributes as $key => $value) {
+            // Check is json field
+            if ($this->isJsonSelector($key)) {
+                $safeAttributes[$key] = $value;
+                continue;
+            }
+            // Get `@Column` Mapping
             $mapping = EntityRegister::getReverseMappingByColumn($this->getClassName(), $key);
             // Not found this key mapping annotation
             if (empty($mapping)) {
@@ -420,6 +427,19 @@ trait HasAttributes
         }
         return $safeAttributes;
     }
+
+    /**
+     * Determine if the given string is a JSON selector.
+     *
+     * @param string $value
+     *
+     * @return bool
+     */
+    protected function isJsonSelector($value)
+    {
+        return Str::contains($value, '->');
+    }
+
 
     /**
      * Get the model's original attribute values.

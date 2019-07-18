@@ -1090,6 +1090,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
 
     /**
      * @param string $dns
+     *
+     * @throws DbException
      */
     private function parseDbName(string $dns): void
     {
@@ -1098,7 +1100,11 @@ class Connection extends AbstractConnection implements ConnectionInterface
 
         $params = [];
         foreach ($paramsAry as $param) {
-            [$key, $value] = explode('=', $param);
+            $explodeParams = explode('=', $param);
+            if (count($explodeParams) !== 2) {
+                throw new DbException(sprintf('Dsn(%s) format error, please check Dsn', $dns));
+            }
+            [$key, $value] = $explodeParams;
             $params[$key] = $value;
         }
 

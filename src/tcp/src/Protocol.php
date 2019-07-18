@@ -163,7 +163,9 @@ class Protocol
      */
     public function unpack(string $data): Package
     {
-        return $this->getPacker()->decode($data);
+        [$head, $body] = $this->unpackData($data);
+
+        return $this->getPacker($head['type'])->decode($body);
     }
 
     /**
@@ -176,7 +178,9 @@ class Protocol
      */
     public function packResponse(Response $response): string
     {
-        return $this->getPacker()->encodeResponse($response);
+        $body = $this->getPacker()->encodeResponse($response);
+
+        return $this->packBody($body);
     }
 
     /*********************************************************************
@@ -246,8 +250,8 @@ class Protocol
         // Use eof check
         if ($this->openEofCheck) {
             return [
-                'head' => ['type' => $this->type],
-                'body' => rtrim($data, $this->packageEof),
+                ['type' => $this->type], // head
+                rtrim($data, $this->packageEof), // body
             ];
         }
 
@@ -259,8 +263,8 @@ class Protocol
         $headers = (array)unpack($format, substr($data, 0, $headLen));
 
         return [
-            'head' => $headers,
-            'body' => substr($data, $headLen),
+            $headers,
+            substr($data, $headLen), // body
         ];
     }
 
@@ -347,6 +351,14 @@ class Protocol
         if ($type) {
             $this->type = $type;
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getSplitType(): string
+    {
+        return $this->openEofCheck ? 'EOF' : 'LEN';
     }
 
     /**

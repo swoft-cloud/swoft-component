@@ -3093,6 +3093,40 @@ class Builder implements PrototypeInterface
     }
 
     /**
+     * Updates the whole table using the provided counter changes and conditions.
+     *
+     * For example, to increment all customers' age by 1,
+     *
+     * ```php
+     * Customer::updateAllCounters([], ['age' => 1]);
+     * ```
+     *
+     * Note that this method will not trigger any events.
+     *
+     * @param array $where
+     * @param array $counters
+     * @param array $extra
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function updateAllCounters(array $where, array $counters, array $extra = []): int
+    {
+        // Convert counters to expression
+        foreach ($counters as $column => $value) {
+            $counters[$column] = Expression::new("$column + $value");
+        }
+
+        if (!empty($where)) {
+            $this->where($where);
+        }
+
+        return $this->update($counters + $extra);
+    }
+
+    /**
      * Delete a record from the database.
      *
      * @param mixed $id

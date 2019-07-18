@@ -555,6 +555,7 @@ on A.id=B.id;', [$resCount - 20]);
         $this->assertCount($count, $values);
 
         $users = User::findMany([$id, $id2, $id3]);
+
         $this->assertCount($count, $users);
 
         /* @var $user User */
@@ -639,5 +640,98 @@ on A.id=B.id;', [$resCount - 20]);
 
         $this->assertEquals($expect, $count1->getAttributes());
         $this->assertEquals($expect, Count::find($count->getId())->getAttributes());
+    }
+
+    public function testModify()
+    {
+        $id          = 18039;
+        $expectLabel = 'CCP';
+
+        User::updateOrCreate(['id' => $id], [
+            'test_json' => [],
+            'user_desc' => 'CP',
+            'age'       => 1,
+        ]);
+
+        $row = User::modify(['user_desc' => 'CP'], ['user_desc' => $expectLabel]);
+        $this->assertEquals(true, $row);
+        $this->assertEquals($expectLabel, User::find($id)->getUserDesc());
+
+        $row = User::modifyById($id, ['user_desc' => $expectLabel]);
+        $this->assertEquals(true, $row);
+    }
+
+    public function testUpdateAllCounters()
+    {
+        $id          = 18038;
+        $expectLabel = 'CCP';
+
+        $user = User::updateOrCreate(['id' => $id], [
+            'test_json' => [],
+            'user_desc' => 'HH',
+            'age'       => 1,
+        ]);
+
+        User::updateAllCountersById((array)$id, ['age' => 1], ['user_desc' => $expectLabel]);
+        $this->assertEquals($user->getAge() + 1, User::find($id)->getAge());
+        $this->assertEquals($expectLabel, User::find($id)->getUserDesc());
+
+        User::updateAllCounters(['user_desc' => $expectLabel], ['age' => -1]);
+        $this->assertEquals($user->getAge(), User::find($id)->getAge());
+
+        DB::table('user')->updateAllCounters(['user_desc' => $expectLabel], ['age' => -1]);
+        $this->assertEquals($user->getAge() - 1, User::find($id)->getAge());
+
+        User::find($id)->updateCounters(['age' => -1]);
+        $this->assertEquals($user->getAge() - 2, User::find($id)->getAge());
+    }
+
+    public function testGetEmpty()
+    {
+        $emptyCollection = User::where('id', '<', 0)->get(['age']);
+        $this->assertEquals([], $emptyCollection->toArray());
+
+        $userCounts = User::where('user.id', '<', 0)
+            ->join('count', 'user.id', '=', 'count.user_id')
+            ->get(['user.id']);
+        $this->assertEquals([], $userCounts->toArray());
+    }
+
+    public function testUpdateJson()
+    {
+        $id   = 18038;
+        $user = User::updateOrCreate(['id' => $id], [
+            'test_json' => [
+                'user_status' => mt_rand(),
+//                'balance'     => 0,
+//                'updated_at'  => null
+            ],
+            'user_desc' => 'HH',
+            'age'       => 1,
+        ]);
+
+        // Model
+        $row = $user->update(['test_json->user_status' => 2]);
+        $this->assertEquals(1, $row);
+        $this->assertEquals(2, User::find($id)->getTestJson()['user_status']);
+
+        // Db
+        $data = ['test_json->user_status' => 3];
+        DB::table('user')->where('id', $id)->update($data);
+
+        $this->assertEquals(3, User::where($data)->first()->getTestJson()['user_status']);
+
+        $this->assertEquals(3, User::whereJsonContains('test_json->user_status', 3)
+                                   ->first()
+                                   ->getTestJson()['user_status']);
+
+        $this->assertEquals(3, User::whereJsonLength('test_json->user_status', 1)
+                                   ->first()
+                                   ->getTestJson()['user_status']);
+
+        DB::update("update `user` set `test_json` = null where `id` = :id", [':id' => 18038]);
+
+        $name = User::tableName();
+        $this->assertEquals('user', $name);
     }
 }

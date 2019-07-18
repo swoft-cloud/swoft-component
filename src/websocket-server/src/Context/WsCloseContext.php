@@ -6,7 +6,7 @@ use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Context\AbstractContext;
+use Swoft\Context\AbstractSimpleContext;
 use function bean;
 
 /**
@@ -15,7 +15,7 @@ use function bean;
  * @since 2.0
  * @Bean(scope=Bean::PROTOTYPE)
  */
-class WsCloseContext extends AbstractContext
+class WsCloseContext extends AbstractSimpleContext
 {
     use PrototypeTrait;
 

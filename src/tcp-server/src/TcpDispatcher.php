@@ -7,6 +7,7 @@ use ReflectionType;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Tcp\ErrCode;
 use Swoft\Tcp\Package;
 use Swoft\Tcp\Protocol;
 use Swoft\Tcp\Server\Exception\CommandNotFoundException;
@@ -14,6 +15,7 @@ use Swoft\Tcp\Server\Exception\TcpUnpackingException;
 use Swoft\Tcp\Server\Router\Router;
 use Throwable;
 use function server;
+use function sprintf;
 
 /**
  * Class TcpDispatcher
@@ -37,11 +39,13 @@ class TcpDispatcher
     {
         /** @var Protocol $protocol */
         $protocol = Swoft::getBean('tcpServerProtocol');
+        server()->log("Tcp protocol data packer is {$protocol->getPackerClass()}");
 
         try {
             $package = $protocol->unpack($request->getRawData());
         } catch (Throwable $e) {
-            throw new TcpUnpackingException("unpack request data error '{$e->getMessage()}", 500, $e);
+            $errMsg = sprintf('unpack request data error - %s', $e->getMessage());
+            throw new TcpUnpackingException($errMsg, ErrCode::UNPACKING_FAIL, $e);
         }
 
         /** @var Router $router */
@@ -51,7 +55,8 @@ class TcpDispatcher
 
         [$status, $info] = $router->match($cmd);
         if ($status === Router::NOT_FOUND) {
-            throw new CommandNotFoundException("request command '{$cmd}' is not found of the tcp server");
+            $errMsg = sprintf("request command '%s' is not found of the tcp server", $cmd);
+            throw new CommandNotFoundException($errMsg, ErrCode::ROUTE_NOT_FOUND);
         }
 
         [$ctlClass, $ctlMethod] = $info;

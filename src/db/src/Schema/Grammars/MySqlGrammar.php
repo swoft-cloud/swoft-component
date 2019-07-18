@@ -518,7 +518,7 @@ class MySqlGrammar extends Grammar
     }
 
     /**
-     * Compile the command to enable foreign key public constraints.
+     * Compile the command to enable foreign key constraints.
      *
      * @return string
      */
@@ -528,7 +528,7 @@ class MySqlGrammar extends Grammar
     }
 
     /**
-     * Compile the command to disable foreign key public constraints.
+     * Compile the command to disable foreign key constraints.
      *
      * @return string
      */

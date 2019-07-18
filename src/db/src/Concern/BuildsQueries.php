@@ -106,9 +106,9 @@ trait BuildsQueries
     /**
      * Apply the callback's query changes if the given "value" is true.
      *
-     * @param  mixed    $value
-     * @param  callable $callback
-     * @param  callable $default
+     * @param mixed    $value
+     * @param callable $callback
+     * @param callable $default
      *
      * @return mixed|$this
      */
@@ -126,7 +126,7 @@ trait BuildsQueries
     /**
      * Pass the query to a given callback.
      *
-     * @param  Closure $callback
+     * @param Closure $callback
      *
      * @return Builder
      */
@@ -138,9 +138,9 @@ trait BuildsQueries
     /**
      * Apply the callback's query changes if the given "value" is false.
      *
-     * @param  mixed    $value
-     * @param  callable $callback
-     * @param  callable $default
+     * @param mixed    $value
+     * @param callable $callback
+     * @param callable $default
      *
      * @return mixed|$this
      */

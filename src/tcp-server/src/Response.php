@@ -77,25 +77,23 @@ class Response extends TcpResponse implements ResponseInterface
             return 0;
         }
 
-        $server = $server ?: Swoft::server()->getSwooleServer();
+        /** @var Protocol $protocol */
+        $protocol = bean('tcpServerProtocol');
 
-        if (!$content = $this->content) {
-            /** @var Protocol $protocol */
-            $protocol = bean('tcpServerProtocol');
-            $content  = $protocol->packResponse($this);
-        }
-
-        // Content is empty
-        if (!$content) {
-            CLog::debug('cannot send empty content to tcp client');
+        // Content is empty, skip send
+        if (!$content = $protocol->packResponse($this)) {
+            $this->sent = true;
+            CLog::warning('cannot send empty content to tcp client');
             return 0;
         }
 
+        $server = $server ?: Swoft::server()->getSwooleServer();
         if ($server->send($this->fd, $content) === false) {
             $code = $server->getLastError();
             throw new TcpResponseException("Error on send data to client #{$this->fd}", $code);
         }
 
+        $this->sent = true;
         return 1;
     }
 
@@ -113,6 +111,14 @@ class Response extends TcpResponse implements ResponseInterface
     public function isSent(): bool
     {
         return $this->sent;
+    }
+
+    /**
+     * @param bool $sent
+     */
+    public function setSent(bool $sent): void
+    {
+        $this->sent = $sent;
     }
 
     /**
