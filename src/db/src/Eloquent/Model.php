@@ -414,6 +414,31 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     }
 
     /**
+     * Update counters by primary key
+     *
+     * @param array $counters
+     * @param array $extra
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function updateCounters(array $counters, array $extra = []): int
+    {
+        if (!$this->swoftExists) {
+            return 0;
+        }
+
+        $query = $this->newModelQuery();
+        $key   = $this->getKeyName();
+        $id    = $this->getAttributeValue($key);
+
+        return $query->updateAllCountersById((array)$id, $counters, $extra);
+    }
+
+
+    /**
      * Save the model to the database.
      *
      * @return bool

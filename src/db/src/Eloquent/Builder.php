@@ -852,7 +852,11 @@ class Builder
         }
 
         $key = $this->model->getKeyName();
-        return $this->toBase()->updateAllCounters([$key => $ids], $counters, $extra);
+        return $this->toBase()->updateAllCounters(
+            [$key => $ids],
+            $this->model->getSafeAttributes($counters, true),
+            $this->model->getSafeAttributes($extra, true)
+        );
     }
 
     /**
@@ -869,14 +873,11 @@ class Builder
      */
     public function updateAllCounters(array $attributes, array $counters, array $extra = []): int
     {
-        $key = $this->model->getKeyName();
-
-        $ids = $this->where($attributes)
-            ->get([$key])
-            ->pluck($key)
-            ->toArray();
-
-        return $this->updateAllCountersById($ids, $counters, $extra);
+        return $this->toBase()->updateAllCounters(
+            $attributes,
+            $this->model->getSafeAttributes($counters, true),
+            $this->model->getSafeAttributes($extra, true)
+        );
     }
 
     /**

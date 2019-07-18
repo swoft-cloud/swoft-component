@@ -3098,7 +3098,7 @@ class Builder implements PrototypeInterface
      * For example, to increment all customers' age by 1,
      *
      * ```php
-     * Customer::updateAllCounters(["id"=>1], ['age' => 1]);
+     * Customer::updateAllCounters([], ['age' => 1]);
      * ```
      *
      * Note that this method will not trigger any events.
@@ -3119,7 +3119,11 @@ class Builder implements PrototypeInterface
             $counters[$column] = Expression::new("$column + $value");
         }
 
-        return $this->where($where)->update($counters + $extra);
+        if (!empty($where)) {
+            $this->where($where);
+        }
+
+        return $this->update($counters + $extra);
     }
 
     /**

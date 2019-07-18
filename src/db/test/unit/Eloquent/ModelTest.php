@@ -673,17 +673,17 @@ on A.id=B.id;', [$resCount - 20]);
         ]);
 
         User::updateAllCountersById((array)$id, ['age' => 1], ['user_desc' => $expectLabel]);
-
         $this->assertEquals($user->getAge() + 1, User::find($id)->getAge());
         $this->assertEquals($expectLabel, User::find($id)->getUserDesc());
 
         User::updateAllCounters(['user_desc' => $expectLabel], ['age' => -1]);
-
         $this->assertEquals($user->getAge(), User::find($id)->getAge());
 
         DB::table('user')->updateAllCounters(['user_desc' => $expectLabel], ['age' => -1]);
-
         $this->assertEquals($user->getAge() - 1, User::find($id)->getAge());
+
+        User::find($id)->updateCounters(['age' => -1]);
+        $this->assertEquals($user->getAge() - 2, User::find($id)->getAge());
     }
 
     public function testGetEmpty()
@@ -695,5 +695,42 @@ on A.id=B.id;', [$resCount - 20]);
             ->join('count', 'user.id', '=', 'count.user_id')
             ->get(['user.id']);
         $this->assertEquals([], $userCounts->toArray());
+    }
+
+    public function testUpdateJson()
+    {
+        $id   = 18038;
+        $user = User::updateOrCreate(['id' => $id], [
+            'test_json' => [
+//                'user_status' => 1,
+//                'balance'     => 0,
+//                'updated_at'  => null
+            ],
+            'user_desc' => 'HH',
+            'age'       => 1,
+        ]);
+
+        // Model
+        $row = $user->update(['test_json->user_status' => 2]);
+        $this->assertEquals(1, $row);
+        $this->assertEquals(2, User::find($id)->getTestJson()['user_status']);
+
+        // Db
+        $data = ['test_json->user_status' => 3];
+        DB::table('user')->where('id', $id)->update($data);
+
+        $this->assertEquals(3, User::where($data)->first()->getTestJson()['user_status']);
+
+        $this->assertEquals(3, User::whereJsonContains('test_json->user_status', 3)
+                                   ->first()
+                                   ->getTestJson()['user_status']);
+
+        $this->assertEquals(3, User::whereJsonLength('test_json->user_status', 1)
+                                   ->first()
+                                   ->getTestJson()['user_status']);
+
+        DB::update("update `user` set `test_json` = null where `id` = :id", [':id' => 18038]);
+
+
     }
 }

@@ -136,8 +136,6 @@ use Throwable;
  * @method int zInterStore(string $Output, array $ZSetKeys, array $Weights = null, string $aggregateFunction = 'SUM')
  * @method int zUnionStore(string $Output, array $ZSetKeys, array $Weights = null, string $aggregateFunction = 'SUM')
  * @method bool hMSet(string $key, array $keyValues)
- * @method string|null getLastError()
-
  */
 abstract class Connection extends AbstractConnection implements ConnectionInterface
 {
@@ -271,7 +269,6 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
         'punsubscribe',
         'subscribe',
         'unsubscribe',
-        'getlasterror',
     ];
 
     /**
@@ -357,7 +354,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     }
 
     /**
-     * Run a command against the Redis database.
+     * Run a command against the Redis database. Auto retry once
      *
      * @param string $method
      * @param array  $parameters
@@ -398,6 +395,44 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
             throw new RedisException(
                 sprintf('Redis command reconnect error(%s)', $e->getMessage())
             );
+        }
+
+        return $result;
+    }
+
+    /**
+     * Run a command callback against the Redis database. Auto retry once
+     *
+     * @param callable $callback
+     * @param bool     $reconnect
+     *
+     * @return mixed
+     * @throws ContainerException
+     * @throws Throwable
+     * @throws ReflectionException
+     *
+     * @example
+     *         Uses eval script
+     *         Redis::call(function(\Redis $redis) {
+     *              $redis->eval("return {1,2,3,redis.call('lrange','mylist',0,-1)}");*
+     *              return $redis->getLastError();
+     *         });
+     *
+     */
+    public function call(callable $callback, bool $reconnect = false)
+    {
+        try {
+            Log::profileStart('redis.%s', __FUNCTION__);
+            $result = $callback($this->client);
+            Log::profileEnd('redis.%s', __FUNCTION__);
+            // Release Connection
+            $this->release();
+        } catch (Throwable $e) {
+            if (!$reconnect && $this->reconnect()) {
+                return $this->call($callback, true);
+            }
+
+            throw $e;
         }
 
         return $result;
