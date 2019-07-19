@@ -1121,7 +1121,7 @@ class MySqlGrammar extends Grammar
      */
     protected function modifyDefault(Blueprint $blueprint, Fluent $column)
     {
-        if ($column['default']) {
+        if ($column->offsetExists('default')) {
             return ' default ' . $this->getDefaultValue($column['default']);
         }
         return null;
