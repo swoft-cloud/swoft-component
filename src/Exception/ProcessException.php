@@ -1,11 +1,15 @@
-<?php
+<?php declare(strict_types=1);
+
 
 namespace Swoft\Process\Exception;
 
-use Swoft\Exception\Exception;
+
+use Exception;
 
 /**
- * The process exceptioin
+ * Class ProcessException
+ *
+ * @since 2.0
  */
 class ProcessException extends Exception
 {
