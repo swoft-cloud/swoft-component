@@ -67,7 +67,7 @@ use Throwable;
  * @method string rPop(string $key)
  * @method int|bool rPush(string $key, string $value1, string $value2 = null, string $valueN = null)
  * @method int|bool rPushx(string $key, string $value)
- * @method mixed rawCommand(string|array $nodeParams, string $command, mixed $arguments)
+ * @method mixed rawCommand(...$args)
  * @method bool renameNx(string $srcKey, string $dstKey)
  * @method bool restore(string $key, int $ttl, string $value)
  * @method string rpoplpush(string $srcKey, string $dstKey)
@@ -136,6 +136,7 @@ use Throwable;
  * @method bool mset(array $keyValues, int $ttl = 0)
  * @method array pipeline(callable $callback)
  * @method array transaction(callable $callback)
+ * @method mixed call(callable $callback, bool $reconnect = false)
  */
 class Pool extends AbstractPool
 {
@@ -166,7 +167,7 @@ class Pool extends AbstractPool
      * @param string $name
      * @param array  $arguments
      *
-     * @return ConnectionInterface
+     * @return Connection
      * @throws RedisException
      */
     public function __call(string $name, array $arguments)
@@ -193,5 +194,13 @@ class Pool extends AbstractPool
         }
 
         return $connection->{$name}(...$arguments);
+    }
+
+    /**
+     * @return RedisDb
+     */
+    public function getRedisDb(): RedisDb
+    {
+        return $this->redisDb;
     }
 }

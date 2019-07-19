@@ -92,7 +92,7 @@ abstract class Grammar extends BaseGrammar
             $this->columnize((array)$command['references'])
         );
 
-        // Once we have the basic foreign key creation statement public constructed we can
+        // Once we have the basic foreign key creation statement constructed we can
         // build out the syntax for what should happen on an update or delete of
         // the affected columns, which will get something like "cascade", etc.
         if (!is_null($command['onDelete'])) {
@@ -281,7 +281,7 @@ abstract class Grammar extends BaseGrammar
     }
 
     /**
-     * Compile the command to enable foreign key public constraints.
+     * Compile the command to enable foreign key constraints.
      *
      * @return string
      */
@@ -291,7 +291,7 @@ abstract class Grammar extends BaseGrammar
     }
 
     /**
-     * Compile the command to disable foreign key public constraints.
+     * Compile the command to disable foreign key constraints.
      *
      * @return string
      */

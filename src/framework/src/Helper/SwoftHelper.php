@@ -38,14 +38,10 @@ class SwoftHelper
      * @param string $minPhp
      * @param string $minSwoole
      */
-    public static function checkRuntime(string $minPhp = '7.1', string $minSwoole = '4.3.0'): void
+    public static function checkRuntime(string $minPhp = '7.1', string $minSwoole = '4.4.1'): void
     {
-        // if (!EnvHelper::isCli()) {
-        //     throw new RuntimeException('Server must run in the CLI mode.');
-        // }
-
         if (version_compare(PHP_VERSION, $minPhp, '<')) {
-            throw new RuntimeException('Run the server requires PHP version > 7.1! current is ' . PHP_VERSION);
+            throw new RuntimeException('Run the server requires PHP version > ' . $minPhp . '! current is ' . PHP_VERSION);
         }
 
         if (!extension_loaded('swoole')) {
@@ -53,7 +49,7 @@ class SwoftHelper
         }
 
         if (version_compare(SWOOLE_VERSION, $minSwoole, '<')) {
-            throw new RuntimeException('Run the server requires swoole version > 4.3.0! current is ' . SWOOLE_VERSION);
+            throw new RuntimeException('Run the server requires swoole version > ' . $minSwoole . '! current is ' . SWOOLE_VERSION);
         }
 
         $conflicts = [
@@ -70,9 +66,5 @@ class SwoftHelper
                 throw new RuntimeException("The extension of '{$ext}' must be closed, otherwise swoft will be affected!");
             }
         }
-
-        // if (extension_loaded('uopz') && !ini_get('uopz.disable')) {
-        //     throw new RuntimeException("The extension of 'uopz' must be closed, otherwise swoft will be affected!");
-        // }
     }
 }

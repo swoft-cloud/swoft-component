@@ -9,6 +9,7 @@ use Swoft\Co;
 use Swoft\Exception\ContextException;
 use Swoft\Http\Server\HttpContext;
 use Swoft\WebSocket\Server\Context\WsMessageContext;
+use Swoft\Contract\ContextInterface;
 
 /**
  * Class Context - request context manager

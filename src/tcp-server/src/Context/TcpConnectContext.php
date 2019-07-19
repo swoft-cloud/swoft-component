@@ -6,7 +6,7 @@ use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Context\AbstractSimpleContext;
+use Swoft\Context\AbstractContext;
 
 /**
  * Class TcpConnectContext
@@ -14,7 +14,7 @@ use Swoft\Context\AbstractSimpleContext;
  * @since 2.0.3
  * @Bean(scope=Bean::PROTOTYPE)
  */
-class TcpConnectContext extends AbstractSimpleContext
+class TcpConnectContext extends AbstractContext
 {
     /**
      * @var int

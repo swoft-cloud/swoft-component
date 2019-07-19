@@ -6,6 +6,7 @@ namespace Swoft\Server\Listener;
 
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Co;
 use Swoft\Context\Context;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;

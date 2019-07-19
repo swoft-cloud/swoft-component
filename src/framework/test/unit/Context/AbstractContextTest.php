@@ -4,19 +4,19 @@ namespace SwoftTest\Unit\Context;
 
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
-use Swoft\Context\AbstractSimpleContext;
+use Swoft\Context\AbstractContext;
 
 /**
- * Class AbstractSimpleContextTest
+ * Class AbstractContextTest
  */
-class AbstractSimpleContextTest extends TestCase
+class AbstractContextTest extends TestCase
 {
     /**
      * @throws ReflectionException
      */
     public function testData(): void
     {
-        $stub = $this->getMockForAbstractClass(AbstractSimpleContext::class);
+        $stub = $this->getMockForAbstractClass(AbstractContext::class);
         $stub->set('key0', 'val0');
         $stub->setMulti(['key1' => 'val1']);
 
