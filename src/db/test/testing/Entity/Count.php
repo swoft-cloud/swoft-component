@@ -48,6 +48,14 @@ class Count extends Model
     /**
      *
      *
+     * @Column()
+     * @var string|null
+     */
+    private $attributes;
+
+    /**
+     *
+     *
      * @Column(name="update_time", prop="updateTime")
      * @var string|null
      */
