@@ -7,11 +7,11 @@ use Toolkit\Cli\App;
 use Toolkit\Cli\Color;
 
 /**
- * Class GitSubtreePush
+ * Class GitSubtreePull
  *
  * @package SwoftTool\Command
  */
-class GitSubtreePush extends BaseCommand
+class GitSubtreePull extends BaseCommand
 {
     public function getHelpConfig(): array
     {
@@ -22,6 +22,7 @@ Arguments:
 Options:
   --all         Apply for all components
   --debug       Open debug mode
+  --squash      Append the --squash option for pull
 
 Example:
   {{fullCmd}} --all
@@ -31,9 +32,9 @@ Example:
 STR;
 
         return [
-            'name'  => 'git:spush',
-            'desc'  => 'Push all update to remote sub-repo by git subtree push',
-            'usage' => 'git:spush [options] [arguments]',
+            'name'  => 'git:spull',
+            'desc'  => 'Pull all update from remote sub-repo by git subtree pull',
+            'usage' => 'git:spull [options] [arguments]',
             'help'  => $help,
         ];
     }
@@ -44,15 +45,20 @@ STR;
         $this->debug = $app->getBoolOpt('debug');
 
         $runner = Scheduler::new();
+        $squash = $app->getBoolOpt('squash');
 
-        // git subtree push --prefix=src/annotation git@github.com:swoft-cloud/swoft-annotation.git master --squash
-        // git subtree push --prefix=src/stdlib stdlib master
+        // git subtree pull --prefix=src/annotation git@github.com:swoft-cloud/swoft-annotation.git master --squash
+        // git subtree pull --prefix=src/stdlib stdlib master
         foreach ($this->findComponents($app) as $dir) {
             $name = basename($dir);
-            $cmd = "git subtree push --prefix=src/{$name} {$name} $targetBranch --squash";
+            $cmd  = "git subtree pull --prefix=src/{$name} {$name} {$targetBranch}";
+
+            if ($squash) {
+                $cmd .= ' --squash';
+            }
 
             $runner->add(function () use ($name, $cmd) {
-                Color::println("\n====== Push the component:【{$name}】");
+                Color::println("\n====== Pull the component:【{$name}】");
                 Color::println("> $cmd", 'yellow');
 
                 if ($this->debug) {
@@ -63,7 +69,7 @@ STR;
 
                 $ret = Coroutine::exec($cmd);
                 if ((int)$ret['code'] !== 0) {
-                    $msg = "Push to remote fail of the {$name}. Output: {$ret['output']}";
+                    $msg = "Pull from remote fail of the {$name}. Output: {$ret['output']}";
                     Color::println($msg, 'error');
                     return;
                 }

@@ -1,3 +1,7 @@
+# ref https://gist.github.com/inhere/c98df2b096ee3ccc3d36ec61923c9fc9
+.DEFAULT_GOAL := help
+.PHONY: all usage help clean
+
 ##There are some make command for the project
 ##
 
@@ -10,15 +14,19 @@ help:
 
   addrmt:	## Add the remote repository address of each component to the local remote
 addrmt:
-	bash ./script/add-remotes.sh all
+	php dtool.php git:addrmt --all
+
+  spull:	## Push all update to remote sub-repo by git subtree push
+spull:
+	php dtool.php git:spush --all
 
   spush:	## Push all update to remote sub-repo by git subtree push
 spush:
-	bash ./script/subtree-push.sh all
+	php dtool.php git:spush --all
 
   release:	## Release all sub-repo to new tag version and push to remote repo. eg: tag=v2.0.3
 release:
-	bash ./script/release-tag.sh -a -y -t $(TAG)
+	php dtool.php tag:release --all -y -t $(TAG)
 
   sami:		## Gen classes docs by sami.phar
 classdoc:
