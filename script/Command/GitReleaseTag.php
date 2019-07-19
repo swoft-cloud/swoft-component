@@ -117,7 +117,7 @@ STR;
         $remoteUrl = sprintf($remoteTpl, $name);
 
         // - clone remote repo
-        $cloneCmd = "cd {$tmpDir}; git clone {$remoteUrl} $name";
+        $cloneCmd = "cd {$tmpDir} && git clone {$remoteUrl} $name";
         Color::println("> $cloneCmd", 'yellow');
 
         if (!$this->debug) {
@@ -140,8 +140,8 @@ STR;
         }
 
         $runner->add(function () use ($name, $newTag, $repoDir) {
-            $pushTagCmd = "cd {$repoDir}; git push origin {$newTag}";
-            $addTagCmd  = "cd {$repoDir}; git tag -a {$newTag} -m \"Release {$newTag}\"";
+            $pushTagCmd = "cd {$repoDir} && git push origin {$newTag}";
+            $addTagCmd  = "cd {$repoDir} && git tag -a {$newTag} -m \"Release {$newTag}\"";
 
             Color::println("====== Release the component:【{$name}】");
             Color::println("> $addTagCmd", 'yellow');
