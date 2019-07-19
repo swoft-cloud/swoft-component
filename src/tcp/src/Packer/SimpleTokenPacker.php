@@ -62,15 +62,14 @@ class SimpleTokenPacker implements PackerInterface
      */
     public function decode(string $data): Package
     {
-        // Use default message command
-        $cmd  = '';
         $data = trim($data);
 
         if (strpos($data, ' ')) {
             [$cmd, $body] = explode(' ', $data, 2);
             $cmd = trim($cmd);
         } else {
-            $body = $data;
+            $body = '';
+            $cmd  = $data;
         }
 
         return Package::new($cmd, $body);

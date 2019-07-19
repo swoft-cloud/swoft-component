@@ -75,6 +75,7 @@ STR;
                 }
 
                 Color::println("- Complete for {$name}\n", 'cyan');
+                Coroutine::sleep(1);
             });
         }
 
