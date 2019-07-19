@@ -167,14 +167,14 @@ STR;
             Color::println("> $pushTagCmd", 'yellow');
 
             // - push new tag
-            $ret = Coroutine::exec($addTagCmd);
+            $ret = Coroutine::exec($pushTagCmd);
             if ((int)$ret['code'] !== 0) {
                 $msg = "Push tag fail of the {$name}. Output: {$ret['output']}";
                 Color::println($msg, 'error');
                 return;
             }
 
-            echo "Complete for {$name}. Output:", $ret['output'], "\n";
+            Color::println("- Complete for {$name}\n", 'cyan');
         });
     }
 }
