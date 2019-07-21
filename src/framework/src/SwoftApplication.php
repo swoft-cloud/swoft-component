@@ -89,11 +89,6 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     private $processor;
 
     /**
-     * @var bool
-     */
-    private $enableCoroutine = false;
-
-    /**
      * Can disable processor class before handle.
      * eg.
      * [
@@ -159,12 +154,6 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
             ObjectHelper::init($this, $config);
         }
 
-        // Enable swoole hook
-        if ($this->enableCoroutine) {
-            CLog::info('Swoole\Runtime::enableCoroutine');
-            Runtime::enableCoroutine();
-        }
-
         // Init application
         $this->init();
 
@@ -198,7 +187,8 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     {
         // If run in phar package
         if (IN_PHAR) {
-            $this->setRuntimePath(Str::rmPharPrefix($this->runtimePath));
+            $runtimePath = Swoft::getAlias($this->runtimePath);
+            $this->setRuntimePath(Str::rmPharPrefix($runtimePath));
         }
 
         // Do something ...
@@ -497,13 +487,5 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
         CLog::info('Set alias @app=%s', $appPath);
         CLog::info('Set alias @config=%s', $configPath);
         CLog::info('Set alias @runtime=%s', $runtimePath);
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEnableCoroutine(): bool
-    {
-        return $this->enableCoroutine;
     }
 }
