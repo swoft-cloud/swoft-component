@@ -73,7 +73,7 @@ STR;
                     return;
                 }
 
-                echo "Complete for {$name}. Output:", $ret['output'], "\n";
+                Color::println("- Complete for {$name}\n", 'cyan');
             });
         }
 

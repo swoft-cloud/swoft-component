@@ -1,6 +1,6 @@
 # ref https://gist.github.com/inhere/c98df2b096ee3ccc3d36ec61923c9fc9
 .DEFAULT_GOAL := help
-.PHONY: all usage help clean
+.PHONY: all update help addrmt fpush release
 
 ##There are some make command for the project
 ##
@@ -12,17 +12,17 @@ help:
 
 ##Available Commands:
 
+  update:	## Update current project code to latest by git pull
+update:
+	git checkout . && git pull
+
   addrmt:	## Add the remote repository address of each component to the local remote
 addrmt:
 	php dtool.php git:addrmt --all
 
-  spull:	## Push all update to remote sub-repo by git subtree push
-spull:
-	php dtool.php git:spush --all
-
-  spush:	## Push all update to remote sub-repo by git subtree push
-spush:
-	php dtool.php git:spush --all
+  fpush:	## Push all update to remote sub-repo by git push with '--force'
+fpush:
+	php dtool.php git:fpush --all
 
   release:	## Release all sub-repo to new tag version and push to remote repo. eg: tag=v2.0.3
 release:
@@ -35,6 +35,6 @@ classdoc:
 # gen docs
 	php sami.phar update ./script/sami.doc.inc
 
-  all:		## Run addrmt and spush and release
-all: addrmt spush release
+  all:		## Run update, addrmt, fpush and release
+all: update addrmt fpush release
 
