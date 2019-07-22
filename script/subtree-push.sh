@@ -40,7 +40,7 @@ for lbName in ${COMPONENTS} ; do
 #    yellow_text "> git subtree pull --prefix=src/${lbName} ${lbName} ${TARGET_BRANCH} --squash"
 #    git subtree pull --prefix=src/${lbName} ${lbName} ${TARGET_BRANCH} --squash
 
-    yellow_text "> git subtree push --prefix=src/${lbName} ${lbName} ${TARGET_BRANCH} --squash"
+    yellow_text "> git subtree push --prefix=src/${lbName} ${lbName} ${TARGET_BRANCH}"
     git subtree push --prefix=src/${lbName} ${lbName} ${TARGET_BRANCH} --squash
 done
 
