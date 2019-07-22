@@ -9,7 +9,6 @@ use Swoft\Log\Helper\CLog;
 use Swoft\Log\Helper\Log;
 use Throwable;
 use function get_class;
-use function printf;
 
 /**
  * Class DefaultExceptionHandler
