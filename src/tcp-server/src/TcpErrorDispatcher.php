@@ -8,7 +8,8 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Error\ErrorManager;
 use Swoft\Error\ErrorType;
-use Swoft\Log\Debug;
+use Swoft\Log\Helper\CLog;
+use Swoft\Log\Helper\Log;
 use Swoft\Tcp\Server\Contract\TcpConnectErrorHandlerInterface;
 use Swoft\Tcp\Server\Contract\TcpReceiveErrorHandlerInterface;
 use Throwable;
@@ -39,7 +40,7 @@ class TcpErrorDispatcher
             return;
         }
 
-        $this->debugLog('Connect', $e);
+        $this->logError('Connect', $e);
     }
 
     /**
@@ -60,7 +61,7 @@ class TcpErrorDispatcher
             return $handler->handle($e, $response);
         }
 
-        $this->debugLog('Receive', $e);
+        $this->logError('Receive', $e);
 
         $response->setCode($e->getCode());
         $response->setMsg($e->getMessage());
@@ -86,7 +87,7 @@ class TcpErrorDispatcher
             return;
         }
 
-        $this->debugLog('Close', $e);
+        $this->logError('Close', $e);
     }
 
     /**
@@ -96,9 +97,10 @@ class TcpErrorDispatcher
      * @throws ContainerException
      * @throws ReflectionException
      */
-    private function debugLog(string $typeName, Throwable $e): void
+    private function logError(string $typeName, Throwable $e): void
     {
-        Debug::log("Tcp %s Error(no handler, %s): %s\nAt File %s line %d\nTrace:\n%s",
+        Log::error($e->getMessage());
+        CLog::error("Tcp %s Error(no handler, %s): %s\nAt File %s line %d\nTrace:\n%s",
             $typeName,
             get_class($e),
             $e->getMessage(),
