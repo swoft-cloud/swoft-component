@@ -24,7 +24,7 @@ class DeleteRemoteTag extends BaseCommand
     {
         $help = <<<STR
 Arguments:
-  names   The component names
+  names   The component names. If name equals 'component', operate for the main project.
 
 Options:
   --all                 Apply for all components
@@ -48,14 +48,22 @@ STR;
 
     public function __invoke(App $app): void
     {
-        $tag = $app->getOpt('tag', $app->getOpt('t'));
+        $tag = $app->getStrOpt('tag', $app->getStrOpt('t'));
         if (!$tag) {
             Color::println('Please input an exist tag for delete', 'error');
             return;
         }
 
+        // operate the component project
+        $first = $app->getArg(0);
+        if ($first === self::MAIN) {
+            $this->deleteForMainProject($tag);
+            return;
+        }
+
         $this->debug = $app->getBoolOpt('debug');
 
+        // create runner
         $runner = Scheduler::new();
 
         foreach ($this->findComponents($app) as $dir) {
@@ -89,5 +97,20 @@ STR;
 
         Color::println("\nDelete Tag({$tag}) Complete", 'cyan');
         Show::aList($this->result);
+    }
+
+    private function deleteForMainProject(string $tag): void
+    {
+        $cmd = "git tag --delete $tag && git push origin :refs/tags/$tag";
+        Color::println("> $cmd", 'yellow');
+
+        $ret = Coroutine::exec($cmd);
+        if ((int)$ret['code'] !== 0) {
+            $msg = "Delete remote tag fail of the component. Output: {$ret['output']}";
+            Color::println($msg, 'error');
+            return;
+        }
+
+        Color::println("\nDelete Tag({$tag}) Complete", 'cyan');
     }
 }

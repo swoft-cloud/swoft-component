@@ -14,6 +14,8 @@ use Toolkit\Cli\Color;
  */
 abstract class BaseCommand
 {
+    public const MAIN = 'component';
+
     /**
      * @var string
      */
