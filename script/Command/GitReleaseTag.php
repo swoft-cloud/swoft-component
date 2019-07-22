@@ -3,6 +3,7 @@
 namespace SwoftTool\Command;
 
 use Swoft\Console\Helper\Interact;
+use Swoft\Console\Helper\Show;
 use Swoft\Stdlib\Helper\Sys;
 use Swoole\Coroutine;
 use Toolkit\Cli\App;
@@ -20,6 +21,11 @@ class GitReleaseTag extends BaseCommand
      * @var string
      */
     private $tmpDir;
+
+    /**
+     * @var array
+     */
+    private $result = [];
 
     public function getHelpConfig(): array
     {
@@ -87,7 +93,8 @@ STR;
         }
 
         $runner->start();
-        Color::println("\nComplete", 'cyan');
+        Color::println("\nForce Push Complete", 'cyan');
+        Show::aList($this->result);
     }
 
     /**
@@ -146,21 +153,12 @@ STR;
             Color::println("====== Release the component:【{$name}】");
             Color::println("> $addTagCmd", 'yellow');
 
-            if ($this->debug) {
-                Color::println('[DEBUG] use co::sleep(1) to mock remote operation');
-                Coroutine::sleep(1);
-
-                Color::println("> $pushTagCmd", 'yellow');
-                Color::println('[DEBUG] use co::sleep(2) to mock remote operation');
-                Coroutine::sleep(2);
-                return;
-            }
-
             // - add new tag
             $ret = Coroutine::exec($addTagCmd);
             if ((int)$ret['code'] !== 0) {
                 $msg = "Add tag fail of the {$name}. Output: {$ret['output']}";
                 Color::println($msg, 'error');
+                $this->result[$name] = 'Fail';
                 return;
             }
 
@@ -171,9 +169,11 @@ STR;
             if ((int)$ret['code'] !== 0) {
                 $msg = "Push tag fail of the {$name}. Output: {$ret['output']}";
                 Color::println($msg, 'error');
+                $this->result[$name] = 'Fail';
                 return;
             }
 
+            $this->result[$name] = 'OK';
             Color::println("- Complete for {$name}\n", 'cyan');
         });
     }

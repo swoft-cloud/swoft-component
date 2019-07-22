@@ -2,6 +2,7 @@
 
 namespace SwoftTool\Command;
 
+use Swoft\Console\Helper\Show;
 use Swoole\Coroutine;
 use Toolkit\Cli\App;
 use Toolkit\Cli\Color;
@@ -14,6 +15,11 @@ use function basename;
  */
 class DeleteRemoteTag extends BaseCommand
 {
+    /**
+     * @var array
+     */
+    private $result = [];
+
     public function getHelpConfig(): array
     {
         $help = <<<STR
@@ -70,15 +76,18 @@ STR;
                 if ((int)$ret['code'] !== 0) {
                     $msg = "Delete remote tag fail of the {$name}. Output: {$ret['output']}";
                     Color::println($msg, 'error');
+                    $this->result[$name] = 'Fail';
                     return;
                 }
 
+                $this->result[$name] = 'OK';
                 Color::println("- Complete for {$name}\n", 'cyan');
             });
         }
 
         $runner->start();
 
-        Color::println("\nComplete", 'cyan');
+        Color::println("\nDelete Tag({$tag}) Complete", 'cyan');
+        Show::aList($this->result);
     }
 }

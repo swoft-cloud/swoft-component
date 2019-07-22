@@ -41,6 +41,11 @@ STR;
 
     public function __invoke(App $app)
     {
+        if ($app->getCommand()) {
+            Color::println('Please use git:fpush instead of the command', 'error');
+            return;
+        }
+
         $targetBranch = 'master';
         $this->debug = $app->getBoolOpt('debug');
 
