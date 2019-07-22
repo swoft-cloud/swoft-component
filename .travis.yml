@@ -1,9 +1,10 @@
 language: php
 
 php:
-  - '7.1'
-  - '7.2'
-  - '7.3'
+  - 7.1
+  - 7.2
+  - 7.3
+  
 addons:
   apt:
     sources:
@@ -11,6 +12,7 @@ addons:
     packages:
       - mysql-server
       - mysql-client
+      
 services:
   - redis
 
