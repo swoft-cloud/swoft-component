@@ -51,8 +51,7 @@ STR;
         // git push tcp-server `git subtree split --prefix src/tcp-server master`:master --force
         foreach ($this->findComponents($app) as $dir) {
             $name = basename($dir);
-            // push 加 --squash 是没有意义的
-            // link https://stackoverflow.com/questions/20102594/git-subtree-push-squash-does-not-squash
+            // 先分割，在强推上去
             $cmd = "git push {$name} `git subtree split --prefix src/{$name} master`:{$targetBranch} --force";
 
             $runner->add(function () use ($name, $cmd, &$result) {

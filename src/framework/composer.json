@@ -7,7 +7,7 @@
     "swoole",
     "swoft"
   ],
-    "description": "swoft framework component",
+  "description": "swoft framework component",
   "license": "Apache-2.0",
   "require": {
     "php": ">=7.1",
@@ -27,8 +27,7 @@
       "src/Swoft.php"
     ],
     "psr-4": {
-      "Swoft\\": "src/",
-      "SwoftTest\\Testing\\": "test/testing/"
+      "Swoft\\": "src/"
     },
     "files": [
       "src/Helper/Functions.php"
@@ -36,7 +35,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "SwoftTest\\Unit\\": "test/unit/"
+      "SwoftTest\\Unit\\": "test/unit/",
+      "SwoftTest\\Testing\\": "test/testing/"
     }
   },
   "require-dev": {

@@ -31,9 +31,9 @@ class AppInitCompleteListener implements EventHandlerInterface
         $chain = BeanFactory::getSingleton(ErrorManager::class);
 
         // Register error handlers
-        $count = ErrorRegister::register($chain);
+        $count  = ErrorRegister::register($chain);
+        $msgTpl = 'Error manager init completed(%d type, %d handler, %d exception)';
 
-        CLog::info('Error manager init completed(%d type, %d handler, %d exception)', $chain->getTypeCount(), $count,
-            $chain->getCount());
+        CLog::info($msgTpl, $chain->getTypeCount(), $count, $chain->getCount());
     }
 }
