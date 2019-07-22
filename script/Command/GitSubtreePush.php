@@ -51,7 +51,9 @@ STR;
         // git subtree push --prefix=src/stdlib stdlib master
         foreach ($this->findComponents($app) as $dir) {
             $name = basename($dir);
-            $cmd = "git subtree push --prefix=src/{$name} {$name} $targetBranch --squash";
+            // push 加 --squash 是没有意义的
+            // link https://stackoverflow.com/questions/20102594/git-subtree-push-squash-does-not-squash
+            $cmd = "git subtree push --prefix=src/{$name} {$name} $targetBranch";
 
             $runner->add(function () use ($name, $cmd, &$result) {
                 Color::println("\n====== Push the component:【{$name}】");
