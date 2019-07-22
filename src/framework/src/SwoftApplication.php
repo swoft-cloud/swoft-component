@@ -25,7 +25,6 @@ use function define;
 use function defined;
 use function dirname;
 use const IN_PHAR;
-use Swoole\Runtime;
 
 /**
  * Swoft application
@@ -87,11 +86,6 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
      * @var ApplicationProcessor
      */
     private $processor;
-
-    /**
-     * @var bool
-     */
-    private $enableCoroutine = false;
 
     /**
      * Can disable processor class before handle.
@@ -159,12 +153,6 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
             ObjectHelper::init($this, $config);
         }
 
-        // Enable swoole hook
-        if ($this->enableCoroutine) {
-            CLog::info('Swoole\Runtime::enableCoroutine');
-            Runtime::enableCoroutine();
-        }
-
         // Init application
         $this->init();
 
@@ -198,7 +186,8 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     {
         // If run in phar package
         if (IN_PHAR) {
-            $this->setRuntimePath(Str::rmPharPrefix($this->runtimePath));
+            $runtimePath = Swoft::getAlias($this->runtimePath);
+            $this->setRuntimePath(Str::rmPharPrefix($runtimePath));
         }
 
         // Do something ...
@@ -231,7 +220,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     }
 
     /**
-     * @param string ...$classes
+     * @param string[] $classes
      */
     public function disableAutoLoader(string ...$classes)
     {
@@ -497,13 +486,5 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
         CLog::info('Set alias @app=%s', $appPath);
         CLog::info('Set alias @config=%s', $configPath);
         CLog::info('Set alias @runtime=%s', $runtimePath);
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEnableCoroutine(): bool
-    {
-        return $this->enableCoroutine;
     }
 }

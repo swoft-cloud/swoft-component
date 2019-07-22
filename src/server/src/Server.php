@@ -8,7 +8,6 @@ use Swoft\Co;
 use Swoft\Console\Console;
 use Swoft\Http\Server\HttpServer;
 use Swoft\Log\Helper\CLog;
-use Swoft\Process\Contract\UserProcessInterface;
 use Swoft\Server\Contract\ServerInterface;
 use Swoft\Server\Event\ServerStartEvent;
 use Swoft\Server\Event\WorkerEvent;
@@ -270,7 +269,7 @@ abstract class Server implements ServerInterface
         Sys::setProcessTitle($title);
 
         // Use `go` to open coroutine
-        go(function () use ($server) {
+        Coroutine::create(function () use ($server) {
             // Before
             Swoft::trigger(ServerEvent::BEFORE_START_EVENT, $this, $server);
 

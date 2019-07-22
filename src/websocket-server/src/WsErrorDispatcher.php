@@ -49,6 +49,12 @@ class WsErrorDispatcher
             return $handler->handle($e, $response);
         }
 
+        // No handler, use default error dispatcher
+
+        /** @var DefaultErrorDispatcher $defDispatcher */
+        $defDispatcher = Swoft::getSingleton(DefaultErrorDispatcher::class);
+        $defDispatcher->run($e);
+
         return $response->withStatus(500)->withContent($e->getMessage());
     }
 
@@ -98,7 +104,11 @@ class WsErrorDispatcher
             return;
         }
 
-        server()->push($frame->fd, $e->getMessage());
+        // No handler, use default error dispatcher
+
+        /** @var DefaultErrorDispatcher $defDispatcher */
+        $defDispatcher = Swoft::getSingleton(DefaultErrorDispatcher::class);
+        $defDispatcher->run($e);
     }
 
     /**
