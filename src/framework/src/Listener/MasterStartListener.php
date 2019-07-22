@@ -7,6 +7,7 @@ use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Server\Event\ServerStartEvent;
+use Swoft\Stdlib\Helper\Sys;
 use Swoole\Process;
 use Swoft\Server\SwooleEvent;
 
@@ -22,8 +23,14 @@ class MasterStartListener implements EventHandlerInterface
      */
     public function handle(EventInterface $event): void
     {
-        // Listen signal: Ctrl+C (SIGINT = 2)
+        // Dont handle on mac OS
+        if (Sys::isMac()) {
+            return;
+        }
+
         $server = $event->coServer;
+
+        // Listen signal: Ctrl+C (SIGINT = 2)
         Process::signal(2, function () use ($server) {
             Console::colored("\nStop server by CTRL+C");
             $server->shutdown();

@@ -25,7 +25,6 @@ use function define;
 use function defined;
 use function dirname;
 use const IN_PHAR;
-use Swoole\Runtime;
 
 /**
  * Swoft application
@@ -221,7 +220,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     }
 
     /**
-     * @param string ...$classes
+     * @param string[] $classes
      */
     public function disableAutoLoader(string ...$classes)
     {
