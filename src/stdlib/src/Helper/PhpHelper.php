@@ -4,6 +4,7 @@ namespace Swoft\Stdlib\Helper;
 
 use function explode;
 use function function_exists;
+use function get_class;
 use function is_array;
 use function is_object;
 use function is_string;
@@ -12,7 +13,9 @@ use function ob_get_clean;
 use function ob_start;
 use const PHP_EOL;
 use function preg_replace;
+use function sprintf;
 use function strpos;
+use Throwable;
 use function var_dump;
 use function var_export;
 
@@ -67,7 +70,6 @@ class PhpHelper
         return self::call($cb, ...$args);
     }
 
-
     /**
      * dump vars
      *
@@ -112,5 +114,49 @@ class PhpHelper
         $string = var_export($var, true);
 
         return preg_replace('/=>\s+\n\s+array \(/', '=> array (', $string);
+    }
+
+    /**
+     * @param Throwable $e
+     * @param bool      $debug
+     *
+     * @return string
+     */
+    public static function exceptionToString(Throwable $e, bool $debug = false): string
+    {
+        if (false === $debug) {
+            return sprintf('(code:%d)%s', $e->getCode(), $e->getMessage());
+        }
+
+        return sprintf('%s(%d): %s At %s line %d',
+            get_class($e),
+            $e->getCode(),
+            $e->getMessage(),
+            $e->getFile(),
+            $e->getLine()
+        );
+    }
+
+    /**
+     * @param Throwable $e
+     * @param bool      $debug
+     *
+     * @return array
+     */
+    public static function exceptionToArray(Throwable $e, bool $debug = false): array
+    {
+        if (false === $debug) {
+            return [
+                'code'  => $e->getCode(),
+                'error' => $e->getMessage(),
+            ];
+        }
+
+        return [
+            'code'  => $e->getCode(),
+            'error' => sprintf('(%s) %s', get_class($e), $e->getMessage()),
+            'file'  => sprintf('At %s line %d', $e->getFile(), $e->getLine()),
+            'trace' => $e->getTraceAsString(),
+        ];
     }
 }
