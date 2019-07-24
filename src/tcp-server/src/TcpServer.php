@@ -7,7 +7,6 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Server;
 use Swoole\Server as SwServer;
-use function array_merge;
 
 /**
  * Class TcpServer
@@ -53,16 +52,5 @@ class TcpServer extends Server
 
         // Start server
         $this->startSwoole();
-    }
-
-    /**
-     * @return array
-     */
-    public function defaultSetting(): array
-    {
-        return array_merge(parent::defaultSetting(), [
-            'open_eof_check' => true,
-            'package_eof'    => "\r\n\r\n",
-        ]);
     }
 }
