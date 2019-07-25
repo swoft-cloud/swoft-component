@@ -2,6 +2,7 @@
 
 namespace Swoft\Stdlib\Helper;
 
+use Throwable;
 use function explode;
 use function function_exists;
 use function get_class;
@@ -11,13 +12,12 @@ use function is_string;
 use function method_exists;
 use function ob_get_clean;
 use function ob_start;
-use const PHP_EOL;
 use function preg_replace;
 use function sprintf;
 use function strpos;
-use Throwable;
 use function var_dump;
 use function var_export;
+use const PHP_EOL;
 
 /**
  * Php helper
@@ -118,17 +118,19 @@ class PhpHelper
 
     /**
      * @param Throwable $e
+     * @param string    $title
      * @param bool      $debug
      *
      * @return string
      */
-    public static function exceptionToString(Throwable $e, bool $debug = false): string
+    public static function exceptionToString(Throwable $e, string $title = '', bool $debug = false): string
     {
         if (false === $debug) {
-            return sprintf('(code:%d)%s', $e->getCode(), $e->getMessage());
+            return sprintf('%s(code:%d)%s', $title, $e->getCode(), $e->getMessage());
         }
 
-        return sprintf('%s(%d): %s At %s line %d',
+        return sprintf('%s%s(code:%d): %s At %s line %d',
+            $title ? $title . ' - ' : '',
             get_class($e),
             $e->getCode(),
             $e->getMessage(),
