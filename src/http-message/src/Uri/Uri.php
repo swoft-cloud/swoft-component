@@ -319,14 +319,9 @@ class Uri implements UriInterface
             }
         }
 
-        if ($serverPort = $this->params['server_port'] ?? '') {
-            $this->port = $this->filterPort($serverPort);
+        if (!$this->port && !empty($this->params['server_port'])) {
+            $this->port = $this->filterPort($this->params['server_port']);
         }
-    }
-
-    private function onlyParsePort(): void
-    {
-
     }
 
     /**
