@@ -80,21 +80,13 @@ class HttpDispatcher extends AbstractDispatcher
 
             // Handle request error
             $response = $errDispatcher->run($e, $response);
-
-            // Format response
-            $response = $this->acceptFormatter->format($response);
         }
+
+        // Format response content type
+        $response = $this->acceptFormatter->format($response);
 
         // Trigger after request
         Swoft::trigger(HttpServerEvent::AFTER_REQUEST, null, $response);
-    }
-
-    /**
-     * @return array
-     */
-    public function preMiddleware(): array
-    {
-        return [];
     }
 
     /**

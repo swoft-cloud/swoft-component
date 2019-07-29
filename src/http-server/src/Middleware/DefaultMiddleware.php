@@ -2,14 +2,11 @@
 
 namespace Swoft\Http\Server\Middleware;
 
-use function context;
-use function explode;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use ReflectionException;
 use ReflectionNamedType;
-use function sprintf;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
@@ -25,6 +22,9 @@ use Swoft\Http\Server\Router\Route;
 use Swoft\Http\Server\Router\Router;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Stdlib\Helper\PhpHelper;
+use function context;
+use function explode;
+use function sprintf;
 
 /**
  * Class DefaultMiddleware
@@ -35,15 +35,7 @@ use Swoft\Stdlib\Helper\PhpHelper;
 class DefaultMiddleware implements MiddlewareInterface
 {
     /**
-     * Accept formatter
-     *
-     * @var AcceptResponseFormatter
-     * @Inject()
-     */
-    private $acceptFormatter;
-
-    /**
-     * @param ServerRequestInterface  $request
+     * @param ServerRequestInterface|Request  $request
      * @param RequestHandlerInterface $handler
      *
      * @return ResponseInterface
@@ -53,22 +45,6 @@ class DefaultMiddleware implements MiddlewareInterface
      * @throws ContainerException
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
-    {
-        $response = $this->handle($request);
-        $response = $this->acceptFormatter->format($response);
-        return $response;
-    }
-
-    /**
-     * @param ServerRequestInterface|Request $request
-     *
-     * @return Response
-     * @throws MethodNotAllowedException
-     * @throws NotFoundRouteException
-     * @throws ReflectionException
-     * @throws ContainerException
-     */
-    private function handle(ServerRequestInterface $request): Response
     {
         $method  = $request->getMethod();
         $uriPath = $request->getUriPath();
