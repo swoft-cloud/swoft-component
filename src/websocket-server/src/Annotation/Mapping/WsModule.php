@@ -7,6 +7,7 @@ use Doctrine\Common\Annotations\Annotation\Attributes;
 use Doctrine\Common\Annotations\Annotation\Required;
 use Doctrine\Common\Annotations\Annotation\Target;
 use Swoft\WebSocket\Server\MessageParser\RawTextParser;
+use const WEBSOCKET_OPCODE_TEXT;
 
 /**
  * Class WebSocket - mark an websocket module handler class
@@ -68,6 +69,13 @@ final class WsModule
     private $defaultCommand = 'home.index';
 
     /**
+     * Default message opcode for response.
+     *
+     * @var int
+     */
+    private $defaultOpcode = WEBSOCKET_OPCODE_TEXT;
+
+    /**
      * Class constructor.
      *
      * @param array $values
@@ -94,6 +102,10 @@ final class WsModule
 
         if (isset($values['messageParser'])) {
             $this->messageParser = $values['messageParser'];
+        }
+
+        if (isset($values['defaultOpcode'])) {
+            $this->defaultOpcode = (int)$values['defaultOpcode'];
         }
 
         if (isset($values['defaultCommand'])) {
@@ -147,5 +159,13 @@ final class WsModule
     public function getParams(): array
     {
         return $this->params;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDefaultOpcode(): int
+    {
+        return $this->defaultOpcode;
     }
 }

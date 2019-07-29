@@ -96,6 +96,7 @@ class WsMessageDispatcher
 
         server()->log("Message: conn#{$fd} call message command handler '{$ctlClass}::{$ctlMethod}'", $msg->toArray(), 'debug');
 
+        $opcode = $info['defaultOpcode'];
         $object = Swoft::getBean($ctlClass);
         $params = $this->getBindParams($ctlClass, $ctlMethod, $request, $data);
         $result = $object->$ctlMethod(...$params);
@@ -104,9 +105,9 @@ class WsMessageDispatcher
         if ($result instanceof Response) {
             $result->send();
         } elseif ($result instanceof Message) {
-            $server->push($fd, $parser->encode($result));
+            $server->push($fd, $parser->encode($result), $opcode);
         } elseif ($result !== null) {
-            $server->push($fd, $parser->encode(Message::new($cmdId, $result)));
+            $server->push($fd, $parser->encode(Message::new($cmdId, $result)), $opcode);
         }
     }
 

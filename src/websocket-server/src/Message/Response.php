@@ -41,6 +41,13 @@ class Response implements ResponseInterface
     private $fds = [];
 
     /**
+     * Exclude fd list
+     *
+     * @var array
+     */
+    private $noFds = [];
+
+    /**
      * Sender fd
      *
      * @var int
@@ -71,6 +78,11 @@ class Response implements ResponseInterface
      *          pong:   WEBSOCKET_OPCODE_PONG   = 10
      */
     private $opcode = WEBSOCKET_OPCODE_TEXT;
+
+    /**
+     * @var int
+     */
+    private $pageSize = 50;
 
     /**
      * @param int $sender
@@ -177,12 +189,12 @@ class Response implements ResponseInterface
 
         // To all
         if ($this->sendToAll) {
-            return $server->sendToAll($content, $this->sender);
+            return $server->sendToAll($content, $this->sender, $this->pageSize, $this->opcode);
         }
 
         // To some
         if ($this->fds) {
-            return $server->sendToSome($content, $this->fds, [], $this->sender);
+            return $server->sendToSome($content, $this->fds, [], $this->sender, $this->pageSize, $this->opcode);
         }
 
         // To one
@@ -259,7 +271,7 @@ class Response implements ResponseInterface
     /**
      * @param int $sender
      *
-     * @return Response
+     * @return Response|self
      */
     public function setSender(int $sender): ResponseInterface
     {
@@ -288,11 +300,49 @@ class Response implements ResponseInterface
     /**
      * @param mixed $data
      *
-     * @return ResponseInterface
+     * @return ResponseInterface|self
      */
     public function setData($data): ResponseInterface
     {
         $this->data = $data;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPageSize(): int
+    {
+        return $this->pageSize;
+    }
+
+    /**
+     * @param int $pageSize
+     *
+     * @return Response
+     */
+    public function setPageSize(int $pageSize): self
+    {
+        $this->pageSize = $pageSize;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getNoFds(): array
+    {
+        return $this->noFds;
+    }
+
+    /**
+     * @param array $noFds
+     *
+     * @return Response
+     */
+    public function setNoFds(array $noFds): self
+    {
+        $this->noFds = $noFds;
         return $this;
     }
 }

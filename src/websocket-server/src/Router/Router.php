@@ -42,6 +42,7 @@ class Router implements RouterInterface
      *      'name'   => module name,
      *      'params' => ['id' => '\d+'],
      *      'messageParser'  => message parser class,
+     *      'defaultOpcode'  => 1,
      *      'defaultCommand' => default command,
      *      'eventMethods'   => [
      *          'handshake' => method1, (on the moduleClass)
