@@ -169,8 +169,10 @@ class Response implements ResponseInterface
         // Content for response
         $content = $this->content;
         if ($content === '') {
-            $parser  = Context::mustGet()->getParser();
-            $content = $parser->encode(Message::new('', $this->data));
+            $context = Context::mustGet();
+            $parser  = $context->getParser();
+            $cmdId   = $context->getMessage()->getCmd();
+            $content = $parser->encode(Message::new($cmdId, $this->data, $this->ext));
         }
 
         // To all

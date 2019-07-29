@@ -47,15 +47,17 @@ class TokenTextParser implements MessageParserInterface
      */
     public function decode(string $data): Message
     {
+        $data = trim($data, ': ');
+
         // use default message command
         $cmd = '';
-        if (strpos($data, ':')) {
+        if (strpos($data, ':') > 0) {
             [$cmd, $body] = explode(':', $data, 2);
             $cmd = trim($cmd);
         } else {
             $body = $data;
         }
 
-        return Message::new($cmd, $body);
+        return Message::new($cmd, trim($body));
     }
 }

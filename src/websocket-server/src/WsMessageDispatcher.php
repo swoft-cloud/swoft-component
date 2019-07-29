@@ -145,6 +145,8 @@ class WsMessageDispatcher
                 $bindParams[] = $data;
             } elseif ($type === Frame::class) {
                 $bindParams[] = $request->getFrame();
+            } elseif ($type === Message::class) {
+                $bindParams[] = $request->getMessage();
             } elseif ($type === Request::class) {
                 $bindParams[] = $request;
             } else {
