@@ -7,7 +7,6 @@ use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\AbstractContext;
-use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 use Swoft\WebSocket\Server\Message\Message;
 use Swoft\WebSocket\Server\Message\Request;
 use Swoft\WebSocket\Server\Message\Response;
@@ -21,11 +20,6 @@ use Swoole\WebSocket\Frame;
  */
 class WsMessageContext extends AbstractContext
 {
-    /**
-     * @var MessageParserInterface
-     */
-    private $parser;
-
     /**
      * @var Request
      */
@@ -79,7 +73,6 @@ class WsMessageContext extends AbstractContext
     {
         parent::clear();
 
-        $this->parser   = null;
         $this->request  = null;
         $this->response = null;
     }
@@ -125,21 +118,5 @@ class WsMessageContext extends AbstractContext
     public function setResponse(Response $response): void
     {
         $this->response = $response;
-    }
-
-    /**
-     * @return MessageParserInterface
-     */
-    public function getParser(): MessageParserInterface
-    {
-        return $this->parser;
-    }
-
-    /**
-     * @param MessageParserInterface $parser
-     */
-    public function setParser(MessageParserInterface $parser): void
-    {
-        $this->parser = $parser;
     }
 }

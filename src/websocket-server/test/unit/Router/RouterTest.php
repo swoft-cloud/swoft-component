@@ -37,6 +37,10 @@ class RouterTest extends TestCase
         [$status, $info] = $router->matchCommand('/ws-test/chat', 'chat.send');
         $this->assertSame(Router::FOUND, $status);
         $this->assertNotEmpty($info);
+        $this->assertArrayHasKey('cmdId', $info);
+        $this->assertArrayHasKey('opcode', $info);
+        $this->assertArrayHasKey('handler', $info);
+        $this->assertSame('chat.send', $info['cmdId']);
     }
 
     /**

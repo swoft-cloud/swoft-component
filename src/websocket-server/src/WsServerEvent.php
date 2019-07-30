@@ -21,7 +21,7 @@ final class WsServerEvent
     // On before handle message
     public const MESSAGE_BEFORE    = 'swoft.ws.server.message.before';
 
-    // On before send message
+    // On message send
     public const MESSAGE_SEND    = 'swoft.ws.server.message.send';
 
     // On after handle message

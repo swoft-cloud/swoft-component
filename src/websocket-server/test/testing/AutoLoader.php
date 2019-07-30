@@ -30,7 +30,10 @@ class AutoLoader extends SwoftComponent
     {
         return [
             'wsServer' => [
-                'debug' => 0
+                'debug' => 0,
+                'setting' => [
+                    'log_file' => '',
+                ]
             ]
         ];
     }

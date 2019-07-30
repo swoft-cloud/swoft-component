@@ -75,15 +75,14 @@ final class RouteRegister
      * @param string $class
      * @param string $method
      * @param string $command
-     * @param bool   $isRoot
+     * @param array  $options
      */
-    public static function bindCommand(string $class, string $method, string $command, bool $isRoot): void
+    public static function bindCommand(string $class, string $method, string $command, array $options = []): void
     {
-        self::$commands[$class]['routes'][] = [
-            'isRoot'  => $isRoot,
-            'method'  => $method,
-            'command' => $command ?: $method,
-        ];
+        $options['method']  = $method;
+        $options['command'] = $command ?: $method;
+
+        self::$commands[$class]['routes'][] = $options;
     }
 
     /**
@@ -111,7 +110,9 @@ final class RouteRegister
                     $cmd   = $route['command'];
                     $cmdId = $route['isRoot'] ? $cmd : $prefix . '.' . $cmd;
 
-                    $router->addCommand($path, $cmdId, [$ctrlClass, $route['method']]);
+                    $router->addCommand($path, $cmdId, [$ctrlClass, $route['method']], [
+                        'opcode' => $route['opcode'] ?: $mdlInfo['defaultOpcode'],
+                    ]);
                 }
             }
         }

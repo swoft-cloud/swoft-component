@@ -2,11 +2,14 @@
 
 namespace Swoft\WebSocket\Server\Message;
 
+use function is_object;
 use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Session\Session;
 use Swoft\Context\Context;
 use Swoft\Server\Concern\CommonProtocolDataTrait;
+use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\Contract\ResponseInterface;
 use function bean;
 use const WEBSOCKET_OPCODE_TEXT;
@@ -41,6 +44,11 @@ class Response implements ResponseInterface
      * @var array
      */
     private $noFds = [];
+
+    /**
+     * @var bool
+     */
+    private $sent = false;
 
     /**
      * Sender fd
@@ -91,7 +99,7 @@ class Response implements ResponseInterface
         $self = bean(self::class);
 
         // Set properties
-        // $self->sent      = false;
+        $self->sent      = false;
         $self->sender    = $sender;
         $self->sendToAll = false;
 
@@ -161,37 +169,71 @@ class Response implements ResponseInterface
     }
 
     /**
+     * @param Connection $conn
+     *
      * @return int
      * @throws ContainerException
      * @throws ReflectionException
      */
-    public function send(): int
+    public function send(Connection $conn = null): int
     {
+        // Deny repeat send.
+        // But if you want send again, you can call `setSent(false)` before send.
+        if ($this->sent) {
+            return 0;
+        }
+
         $server = bean('wsServer');
 
-        // Content for response
-        $content = $this->content;
-        if ($content === '') {
-            $context = Context::mustGet();
-            $parser  = $context->getParser();
-            $cmdId   = $context->getMessage()->getCmd();
-            $content = $parser->encode(Message::new($cmdId, $this->data, $this->ext));
-        }
+        $pageSize = $this->pageSize;
+        $content  = $this->formatContent($conn);
 
-        // To all
+        // To all users
         if ($this->sendToAll) {
-            return $server->sendToAll($content, $this->sender, $this->pageSize, $this->opcode);
+            return $server->sendToAll($content, $this->sender, $pageSize, $this->opcode);
         }
 
-        // To some
+        // To some users
         if ($this->fds) {
-            return $server->sendToSome($content, $this->fds, [], $this->sender, $this->pageSize, $this->opcode);
+            return $server->sendToSome($content, $this->fds, $this->noFds, $this->sender, $pageSize, $this->opcode);
         }
 
-        // To one
+        // To one user
         $ok = $server->sendTo($this->fd, $content, $this->sender, $this->opcode, $this->finish);
 
         return $ok ? 1 : 0;
+    }
+
+    /**
+     * @param Connection|null $conn
+     *
+     * @return string
+     * @throws ContainerException
+     * @throws ReflectionException
+     */
+    protected function formatContent(Connection $conn = null): string
+    {
+        // Content for response
+        $content = $this->content;
+
+        if ($content === '') {
+            /** @noinspection CallableParameterUseCaseInTypeContextInspection */
+            $conn = $conn ?: Session::mustGet();
+
+            $context = Context::mustGet();
+            $parser  = $conn->getParser();
+
+            if (is_object($this->data) && $this->data instanceof Message) {
+                $message = $this->data;
+            } else {
+                $cmdId   = $context->getMessage()->getCmd();
+                $message = Message::new($cmdId, $this->data, $this->ext);
+            }
+
+            $content = $parser->encode($message);
+        }
+
+        return $content;
     }
 
     /**
@@ -228,7 +270,10 @@ class Response implements ResponseInterface
      */
     public function setOpcode(int $opcode): ResponseInterface
     {
-        $this->opcode = $opcode;
+        if ($opcode > 0 && $opcode < 11) {
+            $this->opcode = $opcode;
+        }
+
         return $this;
     }
 
@@ -334,6 +379,25 @@ class Response implements ResponseInterface
     public function setNoFds(array $noFds): self
     {
         $this->noFds = $noFds;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSent(): bool
+    {
+        return $this->sent;
+    }
+
+    /**
+     * @param bool $sent
+     *
+     * @return Response
+     */
+    public function setSent(bool $sent): self
+    {
+        $this->sent = $sent;
         return $this;
     }
 }

@@ -6,6 +6,7 @@ use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;
 use Doctrine\Common\Annotations\Annotation\Required;
 use Doctrine\Common\Annotations\Annotation\Target;
+use const WEBSOCKET_OPCODE_TEXT;
 
 /**
  * Class MessageMapping - Use for mark websocket message request command handler method
@@ -33,6 +34,13 @@ final class MessageMapping
     private $command = '';
 
     /**
+     * Default opcode of the command. please see WEBSOCKET_OPCODE_*
+     *
+     * @var int
+     */
+    private $opcode = 0;
+
+    /**
      * Class constructor.
      *
      * @param array $values
@@ -47,6 +55,10 @@ final class MessageMapping
 
         if (isset($values['root'])) {
             $this->root = (bool)$values['root'];
+        }
+
+        if (isset($values['opcode'])) {
+            $this->opcode = (int)$values['opcode'];
         }
     }
 
@@ -64,5 +76,13 @@ final class MessageMapping
     public function isRoot(): bool
     {
         return $this->root;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOpcode(): int
+    {
+        return $this->opcode;
     }
 }

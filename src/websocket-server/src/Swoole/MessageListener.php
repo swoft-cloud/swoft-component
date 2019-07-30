@@ -18,6 +18,7 @@ use Swoft\WebSocket\Server\WsServerEvent;
 use Swoole\Websocket\Frame;
 use Swoole\Websocket\Server;
 use Throwable;
+use function server;
 
 /**
  * Class MessageListener
@@ -39,10 +40,13 @@ class MessageListener implements MessageInterface
         $fd  = $frame->fd;
         $sid = (string)$fd;
 
-        $req = Request::new($frame);
-        $res = Response::new($fd);
+        server()->log("Message: conn#{$fd} received message: {$frame->data}", [], 'debug');
+
+        $request  = Request::new($frame);
+        $response = Response::new($fd);
+
         /** @var WsMessageContext $ctx */
-        $ctx = WsMessageContext::new($req, $res);
+        $ctx = WsMessageContext::new($request, $response);
 
         // Storage context
         Context::set($ctx);
@@ -53,26 +57,27 @@ class MessageListener implements MessageInterface
         $dispatcher = BeanFactory::getSingleton('wsMsgDispatcher');
 
         try {
-            \server()->log("Message: conn#{$fd} received message: {$frame->data}", [], 'debug');
+            // Trigger message before event
             Swoft::trigger(WsServerEvent::MESSAGE_BEFORE, $fd, $server, $frame);
 
             // Parse and dispatch message
-            $dispatcher->dispatch($server, $req, $res);
+            $dispatcher->dispatch($server, $request, $response);
 
+            // Trigger message after event
             Swoft::trigger(WsServerEvent::MESSAGE_AFTER, $fd, $server, $frame);
         } catch (Throwable $e) {
             Swoft::trigger(WsServerEvent::MESSAGE_ERROR, $e, $frame);
 
-            \server()->log("Message: conn#{$fd} error: " . $e->getMessage(), [], 'error');
+            server()->log("Message: conn#{$fd} error: " . $e->getMessage(), [], 'error');
 
             /** @var WsErrorDispatcher $errDispatcher */
             $errDispatcher = BeanFactory::getSingleton(WsErrorDispatcher::class);
             $errDispatcher->messageError($e, $frame);
         } finally {
-            // Defer
+            // Defer event
             Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
 
-            // Destroy
+            // Destroy event
             Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
 
             // Unbind cid => sid(fd)
