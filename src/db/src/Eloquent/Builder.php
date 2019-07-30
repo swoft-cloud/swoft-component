@@ -476,7 +476,7 @@ class Builder
      * @param array $attributes
      * @param array $values
      *
-     * @return null|object|Builder|Model
+     * @return object|Builder|Model
      * @throws ContainerException
      * @throws DbException
      * @throws ReflectionException
