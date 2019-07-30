@@ -39,7 +39,7 @@ class Title extends MessageFormatter
         $width  = $width > 10 ? $width : 80;
 
         [$sw,] = Sys::getScreenSize();
-        if ($width > $sw) {
+        if ($sw > $width) {
             $width = (int)$sw;
         }
 
