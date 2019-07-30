@@ -204,9 +204,9 @@ class Interact extends Show
      * @param string   $question question message
      * @param string   $default default value
      * @param Closure $validator The validate callback. It must return bool.
-     * @return string|null
+     * @return string
      */
-    public static function ask(string $question, string $default = '', Closure $validator = null): ?string
+    public static function ask(string $question, string $default = '', Closure $validator = null): string
     {
         return self::question($question, $default, $validator);
     }

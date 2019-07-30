@@ -55,7 +55,6 @@ class Title extends MessageFormatter
             $titleIndent = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         }
 
-
         if ($indent > 0) {
             $bdIndent = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         }
