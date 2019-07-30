@@ -40,19 +40,19 @@ class Request extends PsrRequest implements ServerRequestInterface
     public const ROUTER_ATTRIBUTE = 'swoftRouterHandler';
 
     /**
-     * Html
+     * @deprecated please use ContentType::XML instead
+     */
+    public const CONTENT_XML = 'text/xml';
+
+    /**
+     * @deprecated please use ContentType::HTML instead
      */
     public const CONTENT_HTML = 'text/html';
 
     /**
-     * Json
+     * @deprecated please use ContentType::JSON instead
      */
     public const CONTENT_JSON = 'application/json';
-
-    /**
-     * Xml
-     */
-    public const CONTENT_XML = 'application/xml';
 
     /**
      * Method key
@@ -155,7 +155,7 @@ class Request extends PsrRequest implements ServerRequestInterface
         $self->requestTarget = $serverParams['request_uri'];
 
         $parts = explode('?', $serverParams['request_uri'], 2);
-        // save
+        // Save
         $self->uriPath  = $parts[0];
         $self->uriQuery = $parts[1] ?? $serverParams['query_string'];
 
@@ -651,5 +651,22 @@ class Request extends PsrRequest implements ServerRequestInterface
         }
 
         return $content;
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return Request
+     */
+    public function setUriPath(string $path): Request
+    {
+        $this->uriPath = $path;
+
+        // Sync information
+        $this->serverParams['request_uri'] = $path . ($this->uriQuery ? '?' . $this->uriQuery : '');
+
+        $this->uri = $this->uri->withPath($path);
+
+        return $this;
     }
 }

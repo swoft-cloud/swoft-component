@@ -8,6 +8,7 @@ use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\AbstractContext;
 use Swoft\WebSocket\Server\Contract\MessageParserInterface;
+use Swoft\WebSocket\Server\Message\Message;
 use Swoft\WebSocket\Server\Message\Request;
 use Swoft\WebSocket\Server\Message\Response;
 use Swoole\WebSocket\Frame;
@@ -83,6 +84,17 @@ class WsMessageContext extends AbstractContext
         $this->parser   = null;
         $this->request  = null;
         $this->response = null;
+    }
+
+    /**
+     * Get message object.
+     * Notice: Available only during the messaging phase
+     *
+     * @return Message
+     */
+    public function getMessage(): Message
+    {
+        return $this->request->getMessage();
     }
 
     /**

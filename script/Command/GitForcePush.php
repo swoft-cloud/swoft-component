@@ -73,7 +73,7 @@ STR;
         }
 
         $runner->start();
-        Color::println("\nComplete", 'cyan');
+        Color::println("\nForce Push Complete", 'cyan');
         Show::aList($result);
     }
 }

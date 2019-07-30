@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Swoft;
+namespace Swoft\Concern;
 
-use function array_merge;
 use Swoft\Contract\DispatcherInterface;
+use function array_merge;
 
 /**
- * Class Dispatcher
+ * Class AbstractDispatcher
  * @since 2.0
  */
-abstract class Dispatcher implements DispatcherInterface
+abstract class AbstractDispatcher implements DispatcherInterface
 {
     /**
      * User defined middlewares
@@ -100,5 +100,21 @@ abstract class Dispatcher implements DispatcherInterface
     public function getMiddlewares(): array
     {
         return $this->middlewares;
+    }
+
+    /**
+     * @param array $preMiddlewares
+     */
+    public function setPreMiddlewares(array $preMiddlewares): void
+    {
+        $this->preMiddlewares = $preMiddlewares;
+    }
+
+    /**
+     * @param array $afterMiddlewares
+     */
+    public function setAfterMiddlewares(array $afterMiddlewares): void
+    {
+        $this->afterMiddlewares = $afterMiddlewares;
     }
 }

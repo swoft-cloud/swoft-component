@@ -3,6 +3,7 @@
 namespace SwoftTool\Command;
 
 use Swoft\Console\Helper\Interact;
+use Swoft\Console\Helper\Show;
 use Swoft\Stdlib\Helper\Sys;
 use Swoole\Coroutine;
 use Toolkit\Cli\App;
@@ -21,11 +22,16 @@ class GitReleaseTag extends BaseCommand
      */
     private $tmpDir;
 
+    /**
+     * @var array
+     */
+    private $result = [];
+
     public function getHelpConfig(): array
     {
         $help = <<<STR
 Arguments:
-  names   The component names
+  names   The component names. If name equals 'component', operate for the main project.
 
 Options:
   --all                 Apply for all components
@@ -54,6 +60,13 @@ STR;
         $newTag = $app->getStrOpt('tag', $app->getStrOpt('t'));
         if (!$newTag) {
             Color::println('Please input an new tag for release. eg: v2.0.4', 'error');
+            return;
+        }
+
+        // operate the component project
+        if ($app->getArg(0) === self::MAIN) {
+            self::doTagAndPush('component', $newTag, $this->baseDir);
+            Color::println("\nRelease Tag({$newTag}) Complete", 'cyan');
             return;
         }
 
@@ -87,7 +100,8 @@ STR;
         }
 
         $runner->start();
-        Color::println("\nComplete", 'cyan');
+        Color::println("\nRelease Tag({$newTag}) Complete", 'cyan');
+        Show::aList($this->result);
     }
 
     /**
@@ -96,7 +110,7 @@ STR;
      * @param string     $name
      * @param string     $newTag
      */
-    public function releaseTag(Scheduler $runner, GitFindTag $finder, string $name, string $newTag): void
+    private function releaseTag(Scheduler $runner, GitFindTag $finder, string $name, string $newTag): void
     {
         $tmpDir  = $this->tmpDir;
         $repoDir = $tmpDir . '/' . $name;
@@ -140,41 +154,47 @@ STR;
         }
 
         $runner->add(function () use ($name, $newTag, $repoDir) {
-            $pushTagCmd = "cd {$repoDir} && git push origin {$newTag}";
-            $addTagCmd  = "cd {$repoDir} && git tag -a {$newTag} -m \"Release {$newTag}\"";
+            $ok = self::doTagAndPush($name, $newTag, $repoDir);
 
-            Color::println("====== Release the component:【{$name}】");
-            Color::println("> $addTagCmd", 'yellow');
-
-            if ($this->debug) {
-                Color::println('[DEBUG] use co::sleep(1) to mock remote operation');
-                Coroutine::sleep(1);
-
-                Color::println("> $pushTagCmd", 'yellow');
-                Color::println('[DEBUG] use co::sleep(2) to mock remote operation');
-                Coroutine::sleep(2);
-                return;
-            }
-
-            // - add new tag
-            $ret = Coroutine::exec($addTagCmd);
-            if ((int)$ret['code'] !== 0) {
-                $msg = "Add tag fail of the {$name}. Output: {$ret['output']}";
-                Color::println($msg, 'error');
-                return;
-            }
-
-            Color::println("> $pushTagCmd", 'yellow');
-
-            // - push new tag
-            $ret = Coroutine::exec($pushTagCmd);
-            if ((int)$ret['code'] !== 0) {
-                $msg = "Push tag fail of the {$name}. Output: {$ret['output']}";
-                Color::println($msg, 'error');
-                return;
-            }
-
+            // Save result status
+            $this->result[$name] = $ok ? 'OK' : 'Fail';
             Color::println("- Complete for {$name}\n", 'cyan');
         });
+    }
+
+    /**
+     * @param string $name
+     * @param string $newTag
+     * @param string $repoDir
+     *
+     * @return bool
+     */
+    private static function doTagAndPush(string $name, string $newTag, string $repoDir): bool
+    {
+        $addTagCmd = "cd {$repoDir} && git tag -a {$newTag} -m \"Release {$newTag}\"";
+
+        Color::println("====== Release the component:【{$name}】");
+        Color::println("> $addTagCmd", 'yellow');
+
+        // - add new tag
+        $ret = Coroutine::exec($addTagCmd);
+        if ((int)$ret['code'] !== 0) {
+            $msg = "Add tag fail of the {$name}. Output: {$ret['output']}";
+            Color::println($msg, 'error');
+            return false;
+        }
+
+        $pushTagCmd = "cd {$repoDir} && git push origin {$newTag}";
+        Color::println("> $pushTagCmd", 'yellow');
+
+        // - push new tag
+        $ret = Coroutine::exec($pushTagCmd);
+        if ((int)$ret['code'] !== 0) {
+            $msg = "Push tag fail of the {$name}. Output: {$ret['output']}";
+            Color::println($msg, 'error');
+            return false;
+        }
+
+        return true;
     }
 }

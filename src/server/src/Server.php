@@ -21,6 +21,7 @@ use Swoole\Coroutine;
 use Swoole\Process;
 use Swoole\Runtime;
 use Swoole\Server as CoServer;
+use function swoole_cpu_num;
 use Throwable;
 use function alias;
 use function array_diff;
@@ -1201,7 +1202,7 @@ abstract class Server implements ServerInterface
     {
         return [
             'daemonize'       => 0,
-            'worker_num'      => 2,
+            'worker_num'      => swoole_cpu_num(),
 
             // If > 0, must listen event: task, finish
             'task_worker_num' => 0

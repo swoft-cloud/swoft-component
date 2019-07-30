@@ -59,26 +59,28 @@ final class RouteRegister
     }
 
     /**
-     * @param string $controllerClass
+     * @param string $class
      * @param string $prefix
      */
-    public static function bindController(string $controllerClass, string $prefix): void
+    public static function bindController(string $class, string $prefix): void
     {
-        self::$commands[$controllerClass] = [
-            'prefix' => $prefix ?: Str::getClassName($controllerClass, 'Controller'),
-            'class'  => $controllerClass,
+        self::$commands[$class] = [
+            'prefix' => $prefix ?: Str::getClassName($class, 'Controller'),
+            'class'  => $class,
             'routes' => [], // see bindCommand()
         ];
     }
 
     /**
-     * @param string $controllerClass
+     * @param string $class
      * @param string $method
      * @param string $command
+     * @param bool   $isRoot
      */
-    public static function bindCommand(string $controllerClass, string $method, string $command): void
+    public static function bindCommand(string $class, string $method, string $command, bool $isRoot): void
     {
-        self::$commands[$controllerClass]['routes'][] = [
+        self::$commands[$class]['routes'][] = [
+            'isRoot'  => $isRoot,
             'method'  => $method,
             'command' => $command ?: $method,
         ];
@@ -106,7 +108,9 @@ final class RouteRegister
                 $info['module'] = $mdlClass;
 
                 foreach ($info['routes'] as $route) {
-                    $cmdId = $prefix . '.' . $route['command'];
+                    $cmd   = $route['command'];
+                    $cmdId = $route['isRoot'] ? $cmd : $prefix . '.' . $cmd;
+
                     $router->addCommand($path, $cmdId, [$ctrlClass, $route['method']]);
                 }
             }

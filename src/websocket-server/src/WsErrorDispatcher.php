@@ -9,6 +9,7 @@ use Swoft\Error\ErrorManager;
 use Swoft\Error\ErrorType;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
+use Swoft\Log\Helper\CLog;
 use Swoft\WebSocket\Server\Contract\CloseErrorHandlerInterface;
 use Swoft\WebSocket\Server\Contract\HandshakeErrorHandlerInterface;
 use Swoft\WebSocket\Server\Contract\MessageErrorHandlerInterface;
@@ -36,6 +37,8 @@ class WsErrorDispatcher
      */
     public function handshakeError(Throwable $e, Response $response): Response
     {
+        CLog::error('Websocket error: ' . $e->getMessage());
+
         // TODO should handle it?
         if ($e instanceof WsModuleRouteException) {
             return $response->withStatus(404)->withAddedHeader('Failure-Reason', 'Route not found');
