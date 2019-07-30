@@ -215,4 +215,235 @@ class Co
 
         return $response;
     }
+
+    /**
+     * @param array $options
+     */
+    public static function set(array $options): void
+    {
+        Coroutine::set($options);
+    }
+
+    /**
+     * @return array
+     */
+    public static function stats(): array
+    {
+        return Coroutine::stats();
+    }
+
+    /**
+     * @param int $cid
+     *
+     * @return bool
+     */
+    public static function exists(int $cid): bool
+    {
+        return Coroutine::exists($cid);
+    }
+
+    /**
+     * @return int
+     */
+    public static function getPcid(): int
+    {
+        return Coroutine::getPcid();
+    }
+
+    /**
+     * @param int|null $cid
+     *
+     * @return Coroutine\Context
+     */
+    public static function getContext(int $cid = null): Coroutine\Context
+    {
+        return Coroutine::getContext($cid);
+    }
+
+    /**
+     * @param array|callable $callback
+     */
+    public static function defer($callback): void
+    {
+        return Coroutine::defer($callback);
+    }
+
+    /**
+     * @return Coroutine\Iterator
+     */
+    public static function list(): Coroutine\Iterator
+    {
+        return Coroutine::list();
+    }
+
+    /**
+     * @param int $cid
+     * @param int $options
+     * @param int $limit
+     *
+     * @return array
+     * @throws SwoftException
+     */
+    public static function getBackTrace(
+        int $cid = 0,
+        int $options = DEBUG_BACKTRACE_PROVIDE_OBJECT,
+        int $limit = 0
+    ): array {
+        $result = Coroutine::getBackTrace($cid, $options, $limit);
+        if ($result === false) {
+            throw new SwoftException('cid is not exist!');
+        }
+
+        return $result;
+    }
+
+    /**
+     * Yield
+     */
+    public static function yield(): void
+    {
+        Coroutine::yield();
+    }
+
+    /**
+     * @param int $cid
+     */
+    public static function resume(int $cid): void
+    {
+        Coroutine::resume($cid);
+    }
+
+    /**
+     * @param resource $handle
+     * @param int      $length
+     *
+     * @return string
+     * @throws SwoftException
+     */
+    public static function fread($handle, int $length = 0): string
+    {
+        $result = Coroutine::fread($handle, $length);
+        if ($result === false) {
+            throw new SwoftException('Fread file error!');
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param resource $handle
+     *
+     * @return string
+     * @throws SwoftException
+     */
+    public static function fgets($handle): string
+    {
+        $result = Coroutine::fgets($handle);
+        if ($result === false) {
+            throw new SwoftException('Fgets file error!');
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param resource $handle
+     * @param string   $data
+     * @param int      $length
+     *
+     * @return int
+     * @throws SwoftException
+     */
+    public static function fwrite($handle, string $data, int $length = 0): int
+    {
+        $result = Coroutine::fwrite($handle, $data, $length);
+        if ($result === false) {
+            throw new SwoftException('Fwrite file error! data=' . $data);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param float $seconds
+     */
+    public static function sleep(float $seconds): void
+    {
+        Coroutine::sleep($seconds);
+    }
+
+    /**
+     * @param string $domain
+     * @param float  $timeout
+     * @param int    $family
+     *
+     * @return string
+     * @throws SwoftException
+     */
+    public static function getHostByName(string $domain, float $timeout, int $family = 2): string
+    {
+        $result = Coroutine::gethostbyname($domain, $family, $timeout);
+        if ($result === false) {
+            throw new SwoftException('GetHostByName error! domain=' . $domain);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string      $domain
+     * @param int         $family
+     * @param int         $socktype
+     * @param int         $protocol
+     * @param string|null $service
+     *
+     * @return array
+     * @throws SwoftException
+     */
+    public static function getAddrInfo(
+        string $domain,
+        int $family = 2,
+        int $socktype = 1,
+        int $protocol = 6,
+        string $service = null
+    ): array {
+        $result = Coroutine::getaddrinfo($domain, $family, $socktype, $protocol, $service);
+        if ($result === false) {
+            throw new SwoftException('GetAddrInfo error! domain=' . $domain);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string $cmd
+     *
+     * @return array
+     * @throws SwoftException
+     */
+    public static function exec(string $cmd): array
+    {
+        $result = Coroutine::exec($cmd);
+        if ($result === false) {
+            throw new SwoftException('Exec error! command=' . $cmd);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return array
+     * @throws SwoftException
+     */
+    public static function statVfs(string $path): array
+    {
+        $result = Coroutine::statvfs($path);
+        if ($result === false) {
+            throw new SwoftException('StatVfs error! path=' . $path);
+        }
+
+        return $result;
+    }
 }
