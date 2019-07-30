@@ -2,13 +2,13 @@
 
 namespace Swoft\Http\Server\Formatter;
 
-use function context;
-use function current;
-use function strpos;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Message\ContentType;
 use Swoft\Http\Message\Contract\ResponseFormatterInterface;
 use Swoft\Http\Message\Response;
+use function context;
+use function current;
+use function strpos;
 
 /**
  * Class AcceptResponseFormatter
@@ -42,30 +42,26 @@ class AcceptResponseFormatter implements ResponseFormatterInterface
         $request = context()->getRequest();
         $accepts = $request->getHeader('accept');
 
-        $responeContentType = $response->getHeaderLine(ContentType::KEY);
+        $responseContentType = $response->getHeaderLine(ContentType::KEY);
 
         // Format by user response content type
-        if (!empty($responeContentType)) {
-            $format = $this->getResponseFormat($responeContentType);
-            if (!empty($format)) {
-                $response->setFormat($format);
-            } else {
-                $response->setFormat('');
-            }
+        if ($responseContentType) {
+            $format = $this->getResponseFormat($responseContentType);
 
+            $response->setFormat($format);
             return $response;
         }
 
         // Fix empty bug
-        if (empty($accepts)) {
+        if (!$accepts) {
             return $response;
         }
 
         // Accept type to format, default is json
         $acceptType = current($accepts);
-        $format = $this->getResponseFormat($acceptType);
 
-        if (!empty($format)) {
+        $format = $this->getResponseFormat($acceptType);
+        if ($format) {
             $response->setFormat($format);
         }
 

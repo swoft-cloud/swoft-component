@@ -4,7 +4,7 @@
 #
 
 # import common functions
-source "$(dirname $0)/script/common-func.sh"
+source "$(dirname $0)/script/shells/common-func.sh"
 
 binName="./$(basename $0)"
 

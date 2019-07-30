@@ -22,6 +22,11 @@ use Doctrine\Common\Annotations\Annotation\Target;
 final class MessageMapping
 {
     /**
+     * @var bool
+     */
+    private $root = false;
+
+    /**
      * @var string
      * @Required()
      */
@@ -39,6 +44,10 @@ final class MessageMapping
         } elseif (isset($values['command'])) {
             $this->command = (string)$values['command'];
         }
+
+        if (isset($values['root'])) {
+            $this->root = (bool)$values['root'];
+        }
     }
 
     /**
@@ -47,5 +56,13 @@ final class MessageMapping
     public function getCommand(): string
     {
         return $this->command;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRoot(): bool
+    {
+        return $this->root;
     }
 }

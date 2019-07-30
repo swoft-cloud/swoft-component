@@ -127,15 +127,23 @@ class WebSocketServer extends Server
     /**
      * Send message to client(s)
      *
-     * @param string    $data
+     * @param string|Frame $data
      * @param int|array $receivers
      * @param int|array $excluded
      * @param int       $sender
      * @param int       $pageSize
+     * @param int       $opcode
      *
      * @return int Return send count
      */
-    public function send(string $data, $receivers = 0, $excluded = 0, int $sender = 0, int $pageSize = 50): int
+    public function send(
+        $data,
+        $receivers = 0,
+        $excluded = 0,
+        int $sender = 0,
+        int $pageSize = 50,
+        int $opcode = WEBSOCKET_OPCODE_TEXT
+    ): int
     {
         if (!$data) {
             return 0;
@@ -146,38 +154,45 @@ class WebSocketServer extends Server
 
         // Only one receiver
         if (1 === count($receivers)) {
-            $ok = $this->sendTo((int)array_shift($receivers), $data, $sender);
+            $ok = $this->sendTo((int)array_shift($receivers), $data, $sender, $opcode);
             return $ok ? 1 : 0;
         }
 
         // To all
         if (!$excluded && !$receivers) {
-            return $this->sendToAll($data, $sender, $pageSize);
+            return $this->sendToAll($data, $sender, $pageSize, $opcode);
         }
 
         // To some
-        return $this->sendToSome($data, $receivers, $excluded, $sender, $pageSize);
+        return $this->sendToSome($data, $receivers, $excluded, $sender, $pageSize, $opcode);
     }
 
     /**
      * Broadcast message to all user, but will exclude sender
      *
      * @param string $data      Message data
-     * @param int    $sender    Sender FD
      * @param int[]  $receivers Designated receivers(FD list)
      * @param int[]  $excluded  The receivers to be excluded
+     * @param int    $sender    Sender FD
+     * @param int    $opcode
      *
      * @return int Return send count
      */
-    public function broadcast(string $data, array $receivers = [], array $excluded = [], int $sender = 0): int
+    public function broadcast(
+        string $data,
+        array $receivers = [],
+        array $excluded = [],
+        int $sender = 0,
+        int $opcode = WEBSOCKET_OPCODE_TEXT
+    ): int
     {
-        if (!$data) {
-            return 0;
-        }
+        // if (!$data) {
+        //     return 0;
+        // }
 
         // Only one receiver
         if (1 === count($receivers)) {
-            $ok = $this->sendTo((int)array_shift($receivers), $data, $sender);
+            $ok = $this->sendTo((int)array_shift($receivers), $data, $sender, $opcode);
             return $ok ? 1 : 0;
         }
 
@@ -188,43 +203,50 @@ class WebSocketServer extends Server
 
         // To all
         if (!$excluded && !$receivers) {
-            return $this->sendToAll($data, $sender);
+            return $this->sendToAll($data, $sender, 50, $opcode);
         }
 
         // To some
-        return $this->sendToSome($data, $receivers, $excluded, $sender);
+        return $this->sendToSome($data, $receivers, $excluded, $sender, 50, $opcode);
     }
 
     /**
      * Send message to all connections
      *
-     * @param string $data
-     * @param int    $sender
-     * @param int    $pageSize
+     * @param string|Frame $data
+     * @param int          $sender
+     * @param int          $pageSize
+     * @param int          $opcode
      *
      * @return int
      */
-    public function sendToAll(string $data, int $sender = 0, int $pageSize = 50): int
+    public function sendToAll($data, int $sender = 0, int $pageSize = 50, int $opcode = WEBSOCKET_OPCODE_TEXT): int
     {
         $fromUser = $sender < 1 ? 'SYSTEM' : $sender;
         $this->log("(broadcast)The #{$fromUser} send a message to all users. Data: {$data}");
 
-        return $this->pageEach(function (int $fd) use ($data) {
-            $this->swooleServer->push($fd, $data);
+        return $this->pageEach(function (int $fd) use ($data, $opcode) {
+            $this->swooleServer->push($fd, $data, $opcode);
         }, $pageSize);
     }
 
     /**
-     * @param string $data
+     * @param string|Frame $data
      * @param array  $receivers
      * @param array  $excluded
      * @param int    $sender
      * @param int    $pageSize
+     * @param int    $opcode
      *
      * @return int
      */
     public function sendToSome(
-        string $data, array $receivers = [], array $excluded = [], int $sender = 0, int $pageSize = 50
+        $data,
+        array $receivers = [],
+        array $excluded = [],
+        int $sender = 0,
+        int $pageSize = 50,
+        int $opcode = WEBSOCKET_OPCODE_TEXT
     ): int {
         $count    = 0;
         $fromUser = $sender < 1 ? 'SYSTEM' : $sender;
@@ -236,7 +258,7 @@ class WebSocketServer extends Server
             foreach ($receivers as $fd) {
                 if ($this->swooleServer->isEstablished($fd)) {
                     $count++;
-                    $this->swooleServer->push($fd, $data);
+                    $this->swooleServer->push($fd, $data, $opcode);
                 }
             }
 
@@ -248,12 +270,12 @@ class WebSocketServer extends Server
 
         $this->log("(broadcast)The #{$fromUser} send the message to everyone except some people. Data: {$data}");
 
-        return $this->pageEach(function (int $fd) use ($excluded, $data) {
+        return $this->pageEach(function (int $fd) use ($excluded, $data, $opcode) {
             if (isset($excluded[$fd])) {
                 return;
             }
 
-            $this->swooleServer->push($fd, $data);
+            $this->swooleServer->push($fd, $data, $opcode);
         }, $pageSize);
     }
 
