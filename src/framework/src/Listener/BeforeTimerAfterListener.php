@@ -1,29 +1,33 @@
 <?php declare(strict_types=1);
 
 
-namespace Swoft\Server\Listener;
+namespace Swoft\Listener;
 
 
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\Context;
+use Swoft\Context\TimerAfterContext;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Log\Helper\Log;
-use Swoft\Server\Context\ShutdownContext;
-use Swoft\Server\ServerEvent;
-use Swoft\Server\SwooleEvent;
+use Swoft\SwoftEvent;
 
 /**
- * Class BeforeShutdownEventListener
+ * Class BeforeTimerAfterListener
  *
  * @since 2.0
  *
- * @Listener(event=ServerEvent::BEFORE_SHUTDOWN_EVENT)
+ * @Listener(event=SwoftEvent::TIMER_AFTER_BEFORE)
  */
-class BeforeShutdownEventListener implements EventHandlerInterface
+class BeforeTimerAfterListener implements EventHandlerInterface
 {
+    /**
+     * Event name
+     */
+    public const EVENT_NAME = 'timerAfter';
+
     /**
      * @param EventInterface $event
      *
@@ -32,13 +36,12 @@ class BeforeShutdownEventListener implements EventHandlerInterface
      */
     public function handle(EventInterface $event): void
     {
-        [$server] = $event->getParams();
-        $context = ShutdownContext::new($server);
+        $context = TimerAfterContext::new(1, []);
 
         if (Log::getLogger()->isEnable()) {
             $data = [
-                'event'       => SwooleEvent::SHUTDOWN,
-                'uri'         => '',
+                'event'       => self::EVENT_NAME,
+                'uri'         => (string)1,
                 'requestTime' => microtime(true),
             ];
             $context->setMulti($data);

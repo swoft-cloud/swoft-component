@@ -6,7 +6,6 @@ namespace Swoft\Server\Listener;
 
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Co;
 use Swoft\Context\Context;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
@@ -14,6 +13,7 @@ use Swoft\Event\EventInterface;
 use Swoft\Log\Helper\Log;
 use Swoft\Server\Context\WorkerStartContext;
 use Swoft\Server\ServerEvent;
+use Swoft\Server\SwooleEvent;
 
 /**
  * Class BeforeWorkerStartListener
@@ -37,7 +37,7 @@ class BeforeWorkerStartListener implements EventHandlerInterface
 
         if (Log::getLogger()->isEnable()) {
             $data = [
-                'event'       => ServerEvent::BEFORE_WORKER_START_EVENT,
+                'event'       => SwooleEvent::WORKER_START,
                 'uri'         => (string)$workerId,
                 'requestTime' => microtime(true),
             ];

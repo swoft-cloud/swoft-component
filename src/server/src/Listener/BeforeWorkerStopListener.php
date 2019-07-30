@@ -14,6 +14,7 @@ use Swoft\Log\Helper\Log;
 use Swoft\Server\Context\WorkerStartContext;
 use Swoft\Server\Context\WorkerStopContext;
 use Swoft\Server\ServerEvent;
+use Swoft\Server\SwooleEvent;
 
 /**
  * Class BeforeWorkerStopListener
@@ -37,7 +38,7 @@ class BeforeWorkerStopListener implements EventHandlerInterface
 
         if (Log::getLogger()->isEnable()) {
             $data = [
-                'event'       => ServerEvent::BEFORE_WORKER_STOP_EVENT,
+                'event'       => SwooleEvent::WORKER_STOP,
                 'uri'         => (string)$workerId,
                 'requestTime' => microtime(true),
             ];

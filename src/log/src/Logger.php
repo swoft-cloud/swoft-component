@@ -632,6 +632,14 @@ class Logger extends \Monolog\Logger
     }
 
     /**
+     * @return array
+     */
+    public function getItems(): array
+    {
+        return $this->items;
+    }
+
+    /**
      * Request uri
      *
      * @return string

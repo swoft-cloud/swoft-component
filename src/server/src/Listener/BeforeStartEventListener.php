@@ -13,6 +13,7 @@ use Swoft\Event\EventInterface;
 use Swoft\Log\Helper\Log;
 use Swoft\Server\Context\StartContext;
 use Swoft\Server\ServerEvent;
+use Swoft\Server\SwooleEvent;
 
 /**
  * Class BeforeStartEventListener
@@ -36,7 +37,7 @@ class BeforeStartEventListener implements EventHandlerInterface
 
         if (Log::getLogger()->isEnable()) {
             $data = [
-                'event'       => ServerEvent::BEFORE_START_EVENT,
+                'event'       => SwooleEvent::START,
                 'uri'         => '',
                 'requestTime' => microtime(true),
             ];
