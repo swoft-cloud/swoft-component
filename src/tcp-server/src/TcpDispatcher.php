@@ -59,7 +59,7 @@ class TcpDispatcher
             throw new CommandNotFoundException($errMsg, ErrCode::ROUTE_NOT_FOUND);
         }
 
-        [$ctlClass, $ctlMethod] = $info;
+        [$ctlClass, $ctlMethod] = $info['handler'];
 
         server()->log("Tcp command: '{$cmd}', will call tcp request handler {$ctlClass}@{$ctlMethod}");
 

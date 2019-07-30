@@ -25,6 +25,11 @@ final class TcpServerEvent
     public const RECEIVE = 'swoft.tcp.server.receive';
 
     /**
+     * On package send
+     */
+    public const PACKAGE_SEND = 'swoft.tcp.server.package.send';
+
+    /**
      * On receive error
      */
     public const RECEIVE_ERROR = 'swoft.tcp.server.receive.error';

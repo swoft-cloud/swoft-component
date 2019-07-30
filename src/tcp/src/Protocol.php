@@ -50,7 +50,7 @@ class Protocol
      *
      * @var string
      */
-    private $type = JsonPacker::TYPE;
+    private $type = SimpleTokenPacker::TYPE;
 
     /**
      * The available data packers
@@ -386,6 +386,16 @@ class Protocol
     public function setPackers(array $packers): void
     {
         $this->packers = array_merge($this->packers, $packers);
+    }
+
+    /**
+     * @param string $type
+     *
+     * @return bool
+     */
+    public function isValidType(string $type): bool
+    {
+        return isset($this->packers[$type]);
     }
 
     /**

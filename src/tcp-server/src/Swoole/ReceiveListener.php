@@ -54,7 +54,7 @@ class ReceiveListener implements ReceiveInterface
         Session::bindCo($sid);
 
         try {
-            // Trigger event
+            // Trigger receive event
             Swoft::trigger(TcpServerEvent::RECEIVE, $fd, $server, $reactorId);
 
             /** @var TcpDispatcher $dispatcher */
@@ -62,6 +62,10 @@ class ReceiveListener implements ReceiveInterface
 
             // Dispatching
             $response = $dispatcher->dispatch($request, $response);
+
+            // Trigger package send event
+            Swoft::trigger(TcpServerEvent::PACKAGE_SEND, $response);
+
             $response->send($server);
         } catch (Throwable $e) {
             server()->log("Receive: conn#{$fd} error: " . $e->getMessage(), [], 'error');

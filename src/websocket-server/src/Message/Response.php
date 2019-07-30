@@ -29,11 +29,6 @@ class Response implements ResponseInterface
     private $fd = -1;
 
     /**
-     * @var string
-     */
-    private $content = '';
-
-    /**
      * Receiver fd list
      *
      * @var array
@@ -55,14 +50,14 @@ class Response implements ResponseInterface
     private $sender = -1;
 
     /**
-     * @var bool
+     * @var string
      */
-    private $sendToAll = false;
+    private $content = '';
 
     /**
      * @var bool
      */
-    private $sent = false;
+    private $sendToAll = false;
 
     /**
      * @var bool
@@ -96,7 +91,7 @@ class Response implements ResponseInterface
         $self = bean(self::class);
 
         // Set properties
-        $self->sent      = false;
+        // $self->sent      = false;
         $self->sender    = $sender;
         $self->sendToAll = false;
 
@@ -172,10 +167,6 @@ class Response implements ResponseInterface
      */
     public function send(): int
     {
-        if ($this->sent) {
-            return 0;
-        }
-
         $server = bean('wsServer');
 
         // Content for response

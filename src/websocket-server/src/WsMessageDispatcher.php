@@ -82,9 +82,8 @@ class WsMessageDispatcher
         Context::mustGet()->setParser($parser);
         $request->setMessage($msg);
 
-        $cmdId = $msg->getCmd() ?: $info['defaultCommand'];
-
         /** @var Router $router */
+        $cmdId  = $msg->getCmd() ?: $info['defaultCommand'];
         $router = Swoft::getBean('wsRouter');
 
         [$status, $handler] = $router->matchCommand($info['path'], $cmdId);
@@ -100,6 +99,9 @@ class WsMessageDispatcher
         $object = Swoft::getBean($ctlClass);
         $params = $this->getBindParams($ctlClass, $ctlMethod, $request, $response);
         $result = $object->$ctlMethod(...$params);
+
+        // Before send message
+        Swoft::trigger(WsServerEvent::MESSAGE_SEND, $result);
 
         // If result is not null, encode and replay
         if ($result instanceof Response) {
