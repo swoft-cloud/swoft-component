@@ -6,6 +6,7 @@ use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\Exception\AnnotationException;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Stdlib\Helper\Str;
 use Swoft\WebSocket\Server\Annotation\Mapping\WsModule;
 use Swoft\WebSocket\Server\MessageParser\RawTextParser;
 use Swoft\WebSocket\Server\Router\RouteRegister;
@@ -40,13 +41,14 @@ class WsModuleParser extends Parser
         $class = $this->className;
 
         RouteRegister::bindModule($class, [
-            'path'           => $ann->getPath(),
+            'path'           => $ann->getPath() ?: Str::getClassName($class, 'Module'),
             'name'           => $ann->getName(),
             'params'         => $ann->getParams(),
             'class'          => $class,
             'eventMethods'   => [],
             'controllers'    => $ann->getControllers(),
             'messageParser'  => $ann->getMessageParser() ?: RawTextParser::class,
+            'defaultOpcode' => $ann->getDefaultOpcode(),
             'defaultCommand' => $ann->getDefaultCommand(),
         ]);
 

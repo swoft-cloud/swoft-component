@@ -6,9 +6,8 @@ use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
-use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Dispatcher;
+use Swoft\Concern\AbstractDispatcher;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Formatter\AcceptResponseFormatter;
@@ -24,7 +23,7 @@ use Throwable;
  * @Bean("httpDispatcher")
  * @since 2.0
  */
-class HttpDispatcher extends Dispatcher
+class HttpDispatcher extends AbstractDispatcher
 {
     /**
      * Default middleware to handler request
@@ -65,7 +64,7 @@ class HttpDispatcher extends Dispatcher
         [$request, $response] = $params;
 
         /* @var RequestHandler $requestHandler */
-        $requestHandler = BeanFactory::getBean(RequestHandler::class);
+        $requestHandler = Swoft::getBean(RequestHandler::class);
         $requestHandler->initialize($this->requestMiddleware(), $this->defaultMiddleware);
 
         try {
@@ -77,25 +76,17 @@ class HttpDispatcher extends Dispatcher
             $response = $requestHandler->handle($request);
         } catch (Throwable $e) {
             /** @var HttpErrorDispatcher $errDispatcher */
-            $errDispatcher = BeanFactory::getSingleton(HttpErrorDispatcher::class);
+            $errDispatcher = Swoft::getSingleton(HttpErrorDispatcher::class);
 
             // Handle request error
             $response = $errDispatcher->run($e, $response);
-
-            // Format response
-            $response = $this->acceptFormatter->format($response);
         }
+
+        // Format response content type
+        $response = $this->acceptFormatter->format($response);
 
         // Trigger after request
         Swoft::trigger(HttpServerEvent::AFTER_REQUEST, null, $response);
-    }
-
-    /**
-     * @return array
-     */
-    public function preMiddleware(): array
-    {
-        return [];
     }
 
     /**
@@ -122,11 +113,11 @@ class HttpDispatcher extends Dispatcher
         $uriPath = $request->getUriPath();
 
         /** @var Router $router */
-        $router    = BeanFactory::getSingleton('httpRouter');
-        $routeData = $router->match($uriPath, $method);
+        $router = Swoft::getSingleton('httpRouter');
+        $result = $router->match($uriPath, $method);
 
         // Save matched route data to request
-        $request = $request->withAttribute(Request::ROUTER_ATTRIBUTE, $routeData);
+        $request = $request->withAttribute(Request::ROUTER_ATTRIBUTE, $result);
         context()->setRequest($request);
 
         return $request;

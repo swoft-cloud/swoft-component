@@ -10,9 +10,10 @@ use Swoft\Error\ErrorManager;
 use Swoft\Error\ErrorType;
 use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Contract\HttpErrorHandlerInterface;
+use Swoft\Log\Helper\CLog;
+use Swoft\Stdlib\Helper\PhpHelper;
 use Throwable;
-use function get_class;
-use function printf;
+use const APP_DEBUG;
 
 /**
  * Class HttpErrorHandler
@@ -41,14 +42,8 @@ class HttpErrorDispatcher
             return $handler->handle($e, $response);
         }
 
-        // TODO: debug
-        printf("Http Error(no handler, %s): %s\nAt File %s line %d\nTrace:\n%s",
-            get_class($e),
-            $e->getMessage(),
-            $e->getFile(),
-            $e->getLine(),
-            $e->getTraceAsString()
-        );
+        // Print log to console
+        CLog::error(PhpHelper::exceptionToString($e, 'Http Error', (bool)APP_DEBUG));
 
         return $response->withStatus(500)->withContent($e->getMessage());
     }

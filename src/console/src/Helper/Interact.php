@@ -135,24 +135,30 @@ class Interact extends Show
 
     /**
      * Send a message request confirmation
+     *
      * @param string $question The question message
-     * @param bool   $default Default value
+     * @param bool   $default  Default value
+     * @param bool   $nl
+     *
      * @return bool
      */
-    public static function confirm(string $question, bool $default = true): bool
+    public static function confirm(string $question, bool $default = true, bool $nl = true): bool
     {
-        return Confirm::ask($question, $default);
+        return Confirm::ask($question, $default, $nl);
     }
 
     /**
      * Send a message request confirmation
+     *
      * @param string $question The question message
      * @param bool   $default Default value
+     * @param bool   $nl
+     *
      * @return bool
      */
-    public static function unConfirm(string $question, bool $default = true): bool
+    public static function unConfirm(string $question, bool $default = true, bool $nl = true): bool
     {
-        return false === Confirm::ask($question, $default);
+        return Confirm::not($question, $default, $nl);
     }
 
     /**

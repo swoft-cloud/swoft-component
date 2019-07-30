@@ -93,7 +93,6 @@ class HandshakeListener implements HandshakeInterface
 
             // Config response
             $psr7Res = $psr7Res->withStatus(101)->withHeaders(WsHelper::handshakeHeaders($secKey));
-
             if ($wsProtocol = $request->header['sec-websocket-protocol'] ?? '') {
                 $psr7Res = $psr7Res->withHeader('Sec-WebSocket-Protocol', $wsProtocol);
             }

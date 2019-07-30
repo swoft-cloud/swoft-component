@@ -107,10 +107,9 @@ class Co
         return Coroutine::create(function () use ($callable, $tid, $wait) {
             // Current cid
             $id = Coroutine::getCid();
-            // Storage fd
-            self::$mapping[$id] = $tid;
-
             try {
+                // Storage fd
+                self::$mapping[$id] = $tid;
                 if ($wait) {
                     Context::getWaitGroup()->add();
                 }
@@ -136,7 +135,7 @@ class Co
                 Context::getWaitGroup()->done();
             }
 
-            // Clear
+            // Clean fd mapping
             unset(self::$mapping[$id]);
         });
     }

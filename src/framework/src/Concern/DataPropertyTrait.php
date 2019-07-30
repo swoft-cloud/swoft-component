@@ -2,7 +2,6 @@
 
 namespace Swoft\Concern;
 
-use Swoft\Stdlib\Helper\ArrayHelper;
 use function array_merge;
 
 /**

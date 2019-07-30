@@ -66,7 +66,7 @@ class CLog
      */
     public static function debug(string $message, ...$params): void
     {
-        if (!empty($params)) {
+        if ($params) {
             $message = sprintf($message, ...$params);
         }
 
@@ -83,7 +83,7 @@ class CLog
      */
     public static function info(string $message, ...$params): void
     {
-        if (!empty($params)) {
+        if ($params) {
             $message = sprintf($message, ...$params);
         }
 
@@ -98,7 +98,7 @@ class CLog
      */
     public static function warning(string $message, ...$params): void
     {
-        if (!empty($params)) {
+        if ($params) {
             $message = sprintf($message, ...$params);
         }
 
@@ -113,7 +113,7 @@ class CLog
      */
     public static function error(string $message, ...$params): void
     {
-        if (!empty($params)) {
+        if ($params) {
             $message = sprintf($message, ...$params);
         }
 
