@@ -62,6 +62,14 @@ class Request implements RequestInterface
     }
 
     /**
+     * @return mixed
+     */
+    public function getRawData()
+    {
+        return $this->frame->data;
+    }
+
+    /**
      * @return Frame
      */
     public function getFrame(): Frame

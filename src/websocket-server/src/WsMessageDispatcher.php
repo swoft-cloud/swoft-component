@@ -37,6 +37,7 @@ class WsMessageDispatcher
      *
      * @param Server  $server
      * @param Request $request
+     * @param Response $response
      *
      * @throws ReflectionException
      * @throws Swoft\Bean\Exception\ContainerException
@@ -44,7 +45,7 @@ class WsMessageDispatcher
      * @throws WsMessageParseException
      * @throws WsMessageRouteException
      */
-    public function dispatch(Server $server, Request $request): void
+    public function dispatch(Server $server, Request $request, Response $response): void
     {
         $fd = $request->getFd();
         /** @var Connection $conn */
@@ -81,7 +82,6 @@ class WsMessageDispatcher
         Context::mustGet()->setParser($parser);
         $request->setMessage($msg);
 
-        $data  = $msg->getData();
         $cmdId = $msg->getCmd() ?: $info['defaultCommand'];
 
         /** @var Router $router */
@@ -98,7 +98,7 @@ class WsMessageDispatcher
 
         $opcode = $info['defaultOpcode'];
         $object = Swoft::getBean($ctlClass);
-        $params = $this->getBindParams($ctlClass, $ctlMethod, $request, $data);
+        $params = $this->getBindParams($ctlClass, $ctlMethod, $request, $response);
         $result = $object->$ctlMethod(...$params);
 
         // If result is not null, encode and replay
@@ -117,12 +117,12 @@ class WsMessageDispatcher
      * @param string $class
      * @param string $method
      * @param Request $request
-     * @param mixed  $data
+     * @param Response $response
      *
      * @return array
      * @throws ReflectionException
      */
-    private function getBindParams(string $class, string $method, Request $request, $data): array
+    private function getBindParams(string $class, string $method, Request $request, Response $response): array
     {
         $classInfo = Swoft::getReflection($class);
         if (!isset($classInfo['methods'][$method])) {
@@ -143,13 +143,15 @@ class WsMessageDispatcher
             $type = $paramType ? $paramType->getName() : '';
 
             if ($type === '' && $name === 'data') {
-                $bindParams[] = $data;
+                $bindParams[] = $request->getRawData();
             } elseif ($type === Frame::class) {
                 $bindParams[] = $request->getFrame();
             } elseif ($type === Message::class) {
                 $bindParams[] = $request->getMessage();
             } elseif ($type === Request::class) {
                 $bindParams[] = $request;
+            } elseif ($type === Response::class) {
+                $bindParams[] = $response;
             } else {
                 $bindParams[] = null;
             }
