@@ -11,6 +11,7 @@ use PhpParser\NodeTraverser;
 use function sprintf;
 use Swoft\Aop\Concern\AopTrait;
 use Swoft\Proxy\Ast\Visitor\Visitor;
+use Swoft\Stdlib\Helper\Str;
 use function uniqid;
 
 /**
@@ -69,7 +70,7 @@ class ProxyVisitor extends Visitor
     public function __construct(string $proxyId = '', string $aopClassName = AopTrait::class)
     {
         $this->aopClassName = $aopClassName;
-        $this->proxyId      = $proxyId ?: uniqid();
+        $this->proxyId      = $proxyId ?: Str::getUniqid();
     }
 
     /**
