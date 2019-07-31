@@ -265,7 +265,7 @@ class Co
      */
     public static function defer($callback): void
     {
-        return Coroutine::defer($callback);
+        Coroutine::defer($callback);
     }
 
     /**
