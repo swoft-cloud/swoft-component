@@ -19,12 +19,21 @@ use function substr;
 use function unpack;
 
 /**
- * Class PackerFactory
+ * Class Protocol
  *
  * @since 2.0.3
  */
 class Protocol
 {
+    // Split package type
+    public const EOF_SPLIT = 'EOF';
+    public const LEN_SPLIT = 'LEN';
+
+    /**
+     * Default EOF chars
+     */
+    public const DEFAULT_EOF = "\r\n\r\n";
+
     /**
      * Use for pack data for length type
      */
@@ -92,7 +101,7 @@ class Protocol
     /**
      * @var string
      */
-    private $packageEof = "\r\n\r\n";
+    private $packageEof = self::DEFAULT_EOF;
 
     // -------------- use package length check --------------
 
@@ -118,6 +127,7 @@ class Protocol
 
     /**
      * @link https://wiki.swoole.com/wiki/page/463.html
+     * @link https://www.php.net/manual/en/function.pack.php
      * @var string
      */
     private $packageLengthType = 'N';
@@ -360,7 +370,7 @@ class Protocol
      */
     public function getSplitType(): string
     {
-        return $this->openEofCheck ? 'EOF' : 'LEN';
+        return $this->openEofCheck ? self::EOF_SPLIT : self::LEN_SPLIT;
     }
 
     /**
