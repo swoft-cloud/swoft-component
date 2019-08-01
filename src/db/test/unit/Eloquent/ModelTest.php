@@ -413,18 +413,25 @@ on A.id=B.id;', [$resCount - 20]);
     {
         $perPage = 2;
         $page    = 1;
-        $res     = User::paginate($page, $perPage, ['name', 'password', 'id']);
+        $res     = User::paginate($page, $perPage, ['id', 'name', 'password', 'user_desc']);
         $res1    = User::select('id')
             ->where('id', '>', 0)
-            ->addSelect(['name', 'password'])
+            ->addSelect(['name', 'password', 'user_desc'])
             ->paginate($page, $perPage);
+
 
         $afterResult = User::where('name', '!=', '')
             ->from('user as u')
             ->leftJoin('count as c', 'u.id', '=', 'c.user_id')
             ->paginateAfterId($perPage, 1, ['name', 'password'], 'u.id');
 
-        $this->assertEquals($res['perPage'], $afterResult);
+        $afterResult1 = User::where('name', '!=', '')
+            ->from('user as u')
+            ->paginateAfterId($perPage, 1, ['name', 'password', 'user_desc']);
+
+        $this->assertEquals($res['perPage'], $afterResult1['perPage']);
+        $this->assertEquals($res['perPage'], $afterResult['perPage']);
+
         $this->assertEquals($res, $res1);
         $this->assertIsArray($res);
         $this->assertArrayHasKey('list', $res);

@@ -154,4 +154,88 @@ trait BuildsQueries
 
         return $this;
     }
+
+
+    /**
+     * Paginate the given query into a simple paginator.
+     *
+     * @param int   $page
+     * @param int   $perPage
+     * @param array $columns
+     *
+     * @return array
+     */
+    public function paginate(int $page = 1, int $perPage = 15, array $columns = ['*']): array
+    {
+        $list = [];
+        // Run a pagination count query
+        if ($count = $this->getCountForPagination()) {
+            // Get paginate records
+            $list = $this->forPage($page, $perPage)->get($columns)->toArray();
+        }
+
+        return [
+            'count'     => $count,
+            'list'      => $list,
+            'page'      => $page,
+            'perPage'   => $perPage,
+            'pageCount' => (int)ceil($count / $perPage)
+        ];
+    }
+
+    /**
+     * Paginate the given query into a simple paginator.
+     *
+     * @param int    $perPage
+     * @param int    $lastId
+     * @param array  $columns
+     * @param string $primary
+     *
+     * @return array
+     */
+    public function paginateAfterId(
+        int $perPage = 15,
+        int $lastId = 0,
+        array $columns = ['*'],
+        string $primary = null
+    ): array {
+        $list       = [];
+        $thisLastId = 0;
+
+        if ($primary === null) {
+            if ($this instanceof Model) {
+                // If primary is null default user primary column name
+                $primary = is_null($primary) ? $this->getModel()->getKeyName() : $primary;
+            } else {
+                $primary = 'id';
+            }
+        }
+
+        // Run a pagination count query
+        if ($count = $this->getCountForPagination()) {
+            // Auto Join primary field
+            if ($columns !== ['*'] && in_array($primary, $columns, true) === false) {
+                $columns[] = $primary;
+            }
+
+            // Get paginate records
+            $list = $this->forPageAfterId($perPage, $lastId ?: null, $primary)->get($columns)->toArray();
+
+            // Alias parse
+            if (strpos($primary, '.') !== false) {
+                $primaryAlias = explode('.', $primary);
+                $primary      = end($primaryAlias);
+            }
+            $thisLastId = end($list)[$primary] ?? 0;
+        }
+
+        return [
+            'count'     => $count,
+            'list'      => $list,
+            'lastId'    => $thisLastId,
+            'perPage'   => $perPage,
+            'pageCount' => (int)ceil($count / $perPage)
+        ];
+    }
+
 }

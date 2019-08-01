@@ -115,7 +115,6 @@ use function is_null;
  * @method float|int average(string $column)
  * @method Connection getConnection()
  * @method string implode(string $column, string $glue = '')
- * @method array paginate(int $page = 1, int $perPage = 15, array $columns = ['*'])
  * @method Builder useWritePdo()
  *
  */
@@ -163,7 +162,6 @@ class Builder
         'implode',
         'pluck',
         'getConnection',
-        'paginate',
         'join',
         'joinSub',
         'joinWhere',
@@ -180,6 +178,7 @@ class Builder
         'fromSub',
         'selectRaw',
         'truncate',
+        'getCountForPagination',
     ];
 
     /**
@@ -747,27 +746,6 @@ class Builder
         $this->query->forPageAfterId($perPage, $lastId, $column);
 
         return $this;
-    }
-
-
-    /**
-     * Paginate the given query into a simple paginator.
-     *
-     * @param int         $perPage
-     * @param int         $lastId
-     * @param array       $columns
-     * @param string|null $primary
-     *
-     * @return array
-     * @throws ContainerException
-     * @throws DbException
-     * @throws ReflectionException
-     */
-    public function paginateAfterId(int $perPage = 15, int $lastId = 0, array $columns = ['*'], string $primary = null): array {
-        // If primary is null default user primary column name
-        $primary = is_null($primary) ? $this->getModel()->getKeyName() : $primary;
-
-        return $this->query->paginateAfterId($perPage, $lastId, $columns, $primary);
     }
 
     /**

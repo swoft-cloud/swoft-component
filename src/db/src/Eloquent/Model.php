@@ -165,6 +165,7 @@ use function bean;
  * @method static float|int average(string $column)
  * @method static void truncate()
  * @method static Builder useWritePdo()
+ * @method static int getCountForPagination(array $columns = ['*'])
  */
 abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
 {
