@@ -8,6 +8,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Concern\AbstractDispatcher;
+use Swoft\Exception\SwoftException;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Formatter\AcceptResponseFormatter;
@@ -95,8 +96,7 @@ class HttpDispatcher extends AbstractDispatcher
     public function afterMiddleware(): array
     {
         return [
-            UserMiddleware::class,
-            ValidatorMiddleware::class
+            UserMiddleware::class
         ];
     }
 
@@ -105,6 +105,7 @@ class HttpDispatcher extends AbstractDispatcher
      *
      * @return Request
      * @throws ContainerException
+     * @throws SwoftException
      */
     private function matchRouter(Request $request): Request
     {
