@@ -2412,10 +2412,60 @@ class Builder implements PrototypeInterface
             // Get paginate records
             $list = $this->forPage($page, $perPage)->get($columns)->toArray();
         }
+
         return [
             'count'     => $count,
             'list'      => $list,
             'page'      => $page,
+            'perPage'   => $perPage,
+            'pageCount' => ceil($count / $perPage)
+        ];
+    }
+
+    /**
+     * Paginate the given query into a simple paginator.
+     *
+     * @param int    $perPage
+     * @param int    $lastId
+     * @param array  $columns
+     * @param string $primary
+     *
+     * @return array
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function paginateAfterId(
+        int $perPage = 15,
+        int $lastId = 0,
+        array $columns = ['*'],
+        string $primary = 'id'
+    ): array {
+        $list       = [];
+        $thisLastId = 0;
+
+        // Run a pagination count query
+        if ($count = $this->getCountForPagination()) {
+            // Auto Join primary field
+            if ($columns !== ['*'] && in_array($primary, $columns, true) === false) {
+                $columns[] = $primary;
+            }
+
+            // Get paginate records
+            $list = $this->forPageAfterId($perPage, $lastId ?: null, $primary)->get($columns)->toArray();
+
+            // Alias parse
+            if (strpos($primary, '.') !== false) {
+                $primaryAlias = explode('.', $primary);
+                $primary      = end($primaryAlias);
+            }
+            $thisLastId = end($list)[$primary] ?? 0;
+        }
+
+        return [
+            'count'     => $count,
+            'list'      => $list,
+            'lastId'    => $thisLastId,
             'perPage'   => $perPage,
             'pageCount' => ceil($count / $perPage)
         ];

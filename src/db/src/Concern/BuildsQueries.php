@@ -98,7 +98,7 @@ trait BuildsQueries
      */
     public function first(array $columns = ['*'])
     {
-        /* @var \Swoft\Db\Eloquent\Builder|\Swoft\Db\Eloquent\Builder $builder */
+        /* @var \Swoft\Db\Eloquent\Builder $builder */
         $builder = $this->take(1);
         return $builder->get($columns)->first();
     }

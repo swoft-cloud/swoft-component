@@ -13,7 +13,6 @@ use Swoft\Db\Concern\BuildsQueries;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder as QueryBuilder;
-use Swoft\Db\Query\Expression;
 use Swoft\Stdlib\Contract\Arrayable;
 use Swoft\Stdlib\Helper\PhpHelper;
 use function is_null;
@@ -750,6 +749,27 @@ class Builder
         return $this;
     }
 
+
+    /**
+     * Paginate the given query into a simple paginator.
+     *
+     * @param int         $perPage
+     * @param int         $lastId
+     * @param array       $columns
+     * @param string|null $primary
+     *
+     * @return array
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function paginateAfterId(int $perPage = 15, int $lastId = 0, array $columns = ['*'], string $primary = null): array {
+        // If primary is null default user primary column name
+        $primary = is_null($primary) ? $this->getModel()->getKeyName() : $primary;
+
+        return $this->query->paginateAfterId($perPage, $lastId, $columns, $primary);
+    }
+
     /**
      * Save a new model and return the instance.
      *
@@ -801,7 +821,8 @@ class Builder
     {
         /* @var Model $model */
         $model = $this->where($attributes)->first();
-        if (empty($model)) {
+
+        if ($model === null) {
             return false;
         }
 
@@ -823,7 +844,8 @@ class Builder
     {
         /* @var Model $model */
         $model = $this->find($id);
-        if (empty($model)) {
+
+        if ($model === null) {
             return false;
         }
 
@@ -854,7 +876,7 @@ class Builder
         $key = $this->model->getKeyName();
         return $this->toBase()->updateAllCounters(
             [$key => $ids],
-            $this->model->getSafeAttributes($counters, true),
+            $this->model->getSafeAttributes($counters),
             $this->model->getSafeAttributes($extra, true)
         );
     }
@@ -875,7 +897,32 @@ class Builder
     {
         return $this->toBase()->updateAllCounters(
             $attributes,
-            $this->model->getSafeAttributes($counters, true),
+            $this->model->getSafeAttributes($counters),
+            $this->model->getSafeAttributes($extra, true)
+        );
+    }
+
+    /**
+     * Update counters by `$attributes`
+     *
+     * @param array $attributes
+     * @param array $counters
+     * @param array $extra
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function updateAllCountersAdoptPrimary(array $attributes, array $counters, array $extra = []): int
+    {
+        $key = $this->model->getKeyName();
+
+        $ids = $this->where($attributes)->get([$key])->pluck($key)->toArray();
+
+        return $this->toBase()->updateAllCounters(
+            [$key => $ids],
+            $this->model->getSafeAttributes($counters),
             $this->model->getSafeAttributes($extra, true)
         );
     }
@@ -895,7 +942,7 @@ class Builder
     public function increment(string $column, $amount = 1, array $extra = []): int
     {
         return $this->toBase()->increment(
-            $column, $amount, $this->addUpdatedAtColumn($this->model->getSafeAttributes($extra))
+            $column, $amount, $this->addUpdatedAtColumn($this->model->getSafeAttributes($extra, true))
         );
     }
 
@@ -914,7 +961,7 @@ class Builder
     public function decrement($column, $amount = 1, array $extra = []): int
     {
         return $this->toBase()->decrement(
-            $column, $amount, $this->addUpdatedAtColumn($this->model->getSafeAttributes($extra))
+            $column, $amount, $this->addUpdatedAtColumn($this->model->getSafeAttributes($extra, true))
         );
     }
 

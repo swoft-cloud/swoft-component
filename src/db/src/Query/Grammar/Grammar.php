@@ -939,7 +939,7 @@ class Grammar extends BaseGrammar
      *
      * @return string
      */
-    public function compileBatchUpdateByIds(Builder $query, array $values, $primary)
+    public function compileBatchUpdateByIds(Builder $query, array $values, string $primary)
     {
         $table = $this->wrapTable($query->from);
 

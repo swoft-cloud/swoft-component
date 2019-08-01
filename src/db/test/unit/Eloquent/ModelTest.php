@@ -418,6 +418,13 @@ on A.id=B.id;', [$resCount - 20]);
             ->where('id', '>', 0)
             ->addSelect(['name', 'password'])
             ->paginate($page, $perPage);
+
+        $afterResult = User::where('name', '!=', '')
+            ->from('user as u')
+            ->leftJoin('count as c', 'u.id', '=', 'c.user_id')
+            ->paginateAfterId($perPage, 1, ['name', 'password'], 'u.id');
+
+        $this->assertEquals($res['perPage'], $afterResult);
         $this->assertEquals($res, $res1);
         $this->assertIsArray($res);
         $this->assertArrayHasKey('list', $res);
@@ -703,8 +710,8 @@ on A.id=B.id;', [$resCount - 20]);
         $user = User::updateOrCreate(['id' => $id], [
             'test_json' => [
                 'user_status' => mt_rand(),
-//                'balance'     => 0,
-//                'updated_at'  => null
+                //                'balance'     => 0,
+                //                'updated_at'  => null
             ],
             'user_desc' => 'HH',
             'age'       => 1,
