@@ -339,8 +339,10 @@ class Container implements ContainerInterface
         // Class name
         $classNames = $this->classNames[$name] ?? [];
         if ($classNames) {
-            $name = end($classNames);
-            return $this->getRequest($name, $id);
+            $clasName = end($classNames);
+            if ($clasName != $name) {
+                return $this->getRequest($clasName, $id);
+            }
         }
 
         if (!isset($this->requestDefinitions[$name])) {
