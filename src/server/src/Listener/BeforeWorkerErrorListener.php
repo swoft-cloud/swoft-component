@@ -13,6 +13,7 @@ use Swoft\Event\EventInterface;
 use Swoft\Log\Helper\Log;
 use Swoft\Server\Context\WorkerErrorContext;
 use Swoft\Server\ServerEvent;
+use Swoft\Server\SwooleEvent;
 
 /**
  * Class BeforeWorkerErrorListener
@@ -36,7 +37,7 @@ class BeforeWorkerErrorListener implements EventHandlerInterface
         $context = WorkerErrorContext::new($server, $workerId, $workerPid, $exitCode, $signal);
         if (Log::getLogger()->isEnable()) {
             $data = [
-                'event'       => ServerEvent::BEFORE_WORKER_ERROR_EVENT,
+                'event'       => SwooleEvent::WORKER_ERROR,
                 'uri'         => (string)$workerId,
                 'requestTime' => microtime(true),
             ];

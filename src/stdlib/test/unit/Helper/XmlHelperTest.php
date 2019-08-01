@@ -1,4 +1,4 @@
-<?php declare (strict_types = 1);
+<?php declare (strict_types=1);
 
 namespace SwoftTest\Stdlib\Unit\Helper;
 
@@ -27,8 +27,15 @@ class XmlHelperTest extends TestCase
         $xml = "";
         $res = XmlHelper::xmlToArray($xml);
         $this->assertEquals(0, count($res));
-        
-        $arr = ["note" => ["to" => "Tove", "form" => "Jani", "heading" => "Reminder", "body" => "Don't forget me this weekend!"]];
+
+        $arr = [
+            "note" => [
+                "to"      => "Tove",
+                "form"    => "Jani",
+                "heading" => "Reminder",
+                "body"    => "Don't forget me this weekend!"
+            ]
+        ];
         $xml = "<xml><note><to>Tove</to><from>Jani</from><heading>Reminder</heading><body>Don't forget me this weekend!</body></note></xml>";
         $res = XmlHelper::xmlToArray($xml);
         $this->assertTrue(isset($res['note']));
@@ -36,4 +43,26 @@ class XmlHelperTest extends TestCase
         $this->assertSame("Tove", $res['note']['to']);
     }
 
+    public function testXmlExample2()
+    {
+        $xml = '<xml><ToUserName><![CDATA[gh_43428a37b583]]></ToUserName>
+<FromUserName><![CDATA[ou41P1fSXSdAkgzqgbfIITaTE9SY]]></FromUserName>
+<CreateTime>1564527768</CreateTime>
+<MsgType><![CDATA[event]]></MsgType>
+<Event><![CDATA[subscribe]]></Event>
+<EventKey><![CDATA[]]></EventKey>
+</xml>';
+
+        $res    = XmlHelper::xmlToArray($xml);
+        $expect = [
+            'ToUserName'   => 'gh_43428a37b583',
+            'FromUserName' => 'ou41P1fSXSdAkgzqgbfIITaTE9SY',
+            'CreateTime'   => '1564527768',
+            'MsgType'      => 'event',
+            'Event'        => 'subscribe',
+            'EventKey'     => [],
+        ];
+
+        $this->assertEquals($res, $expect);
+    }
 }

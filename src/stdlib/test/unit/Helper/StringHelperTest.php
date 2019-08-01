@@ -43,4 +43,12 @@ class StringHelperTest extends TestCase
         $path = Str::rmPharPrefix('/vendor/composer/.env');
         $this->assertSame('/vendor/composer/.env', $path);
     }
+
+    public function testGetUnique(): void
+    {
+        $uniqueId = Str::getUniqid();
+
+        $this->assertNotEmpty($uniqueId);
+        $this->assertIsString($uniqueId);
+    }
 }
