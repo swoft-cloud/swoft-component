@@ -743,7 +743,30 @@ class Builder
         // If column is null default user primary column name
         $column = is_null($column) ? $this->getModel()->getKeyName() : $column;
 
-        $this->query->forPageAfterId($perPage, $lastId, $column);
+        $this->query->forPageAfterId($perPage, $lastId , $column);
+
+        return $this;
+    }
+
+
+    /**
+     * Constrain the query to the next "page" of results before a given ID.
+     *
+     * @param int         $perPage
+     * @param int|null    $firstId
+     * @param string|null $column
+     *
+     * @return static
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function forPageBeforeId(int $perPage = 15, int $firstId = null, string $column = null): self
+    {
+        // If column is null default user primary column name
+        $column = is_null($column) ? $this->getModel()->getKeyName() : $column;
+
+        $this->query->forPageBeforeId($perPage, $firstId , $column);
 
         return $this;
     }

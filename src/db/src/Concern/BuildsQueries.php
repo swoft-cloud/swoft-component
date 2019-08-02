@@ -9,6 +9,7 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Eloquent\Model;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder;
+use Swoft\Db\Eloquent\Builder as EloquentBuilder;
 
 /**
  * Class BuildsQueries
@@ -128,7 +129,7 @@ trait BuildsQueries
      *
      * @param Closure $callback
      *
-     * @return Builder
+     * @return Builder|EloquentBuilder
      */
     public function tap($callback)
     {
@@ -186,29 +187,31 @@ trait BuildsQueries
     /**
      * Paginate the given query into a simple paginator.
      *
-     * @param int    $perPage
-     * @param int    $lastId
-     * @param array  $columns
-     * @param string $primary
+     * @param int         $perPage
+     * @param int         $lastId
+     * @param array       $columns
+     * @param bool        $useAfter true:"$primary" asc rank, false:"$primary" desc rank
+     * @param string|null $primary  default: "id"
      *
      * @return array
+     * @throws DbException
      */
-    public function paginateAfterId(
+    public function paginateById(
         int $perPage = 15,
         int $lastId = 0,
         array $columns = ['*'],
+        bool $useAfter = false,
         string $primary = null
     ): array {
         $list       = [];
         $thisLastId = 0;
 
+        if ($primary === null && $this instanceof EloquentBuilder) {
+            $primary = $this->getModel()->getKeyName();
+        }
+
         if ($primary === null) {
-            if ($this instanceof Model) {
-                // If primary is null default user primary column name
-                $primary = is_null($primary) ? $this->getModel()->getKeyName() : $primary;
-            } else {
-                $primary = 'id';
-            }
+            $primary = 'id';
         }
 
         // Run a pagination count query
@@ -217,9 +220,10 @@ trait BuildsQueries
             if ($columns !== ['*'] && in_array($primary, $columns, true) === false) {
                 $columns[] = $primary;
             }
+            $method = $useAfter ? 'forPageAfterId' : 'forPageBeforeId';
 
             // Get paginate records
-            $list = $this->forPageAfterId($perPage, $lastId ?: null, $primary)->get($columns)->toArray();
+            $list = $this->$method($perPage, $lastId ?: null, $primary)->get($columns)->toArray();
 
             // Alias parse
             if (strpos($primary, '.') !== false) {
@@ -237,5 +241,4 @@ trait BuildsQueries
             'pageCount' => (int)ceil($count / $perPage)
         ];
     }
-
 }

@@ -2226,8 +2226,30 @@ class Builder implements PrototypeInterface
             $this->where($column, '>', $lastId);
         }
 
-        return $this->orderBy($column, 'asc')
-            ->take($perPage);
+        return $this->orderBy($column, 'asc')->take($perPage);
+    }
+
+    /**
+     * Constrain the query to the next "page" of results before a given ID.
+     *
+     * @param int      $perPage
+     * @param int|null $firstId
+     * @param string   $column
+     *
+     * @return static
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function forPageBeforeId(int $perPage = 15, int $firstId = null, string $column = 'id'): self
+    {
+        $this->orders = $this->removeExistingOrdersFor($column);
+
+        if (!is_null($firstId)) {
+            $this->where($column, '<', $firstId);
+        }
+
+        return $this->orderBy($column, 'desc')->take($perPage);
     }
 
     /**

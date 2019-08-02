@@ -423,11 +423,11 @@ on A.id=B.id;', [$resCount - 20]);
         $afterResult = User::where('name', '!=', '')
             ->from('user as u')
             ->leftJoin('count as c', 'u.id', '=', 'c.user_id')
-            ->paginateAfterId($perPage, 1, ['name', 'password'], 'u.id');
+            ->paginateById($perPage, 1, ['name', 'password'], true, 'u.id');
 
         $afterResult1 = User::where('name', '!=', '')
             ->from('user as u')
-            ->paginateAfterId($perPage, 1, ['name', 'password', 'user_desc']);
+            ->paginateById($perPage, 1, ['name', 'password', 'user_desc']);
 
         $this->assertEquals($res['perPage'], $afterResult1['perPage']);
         $this->assertEquals($res['perPage'], $afterResult['perPage']);
