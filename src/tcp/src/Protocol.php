@@ -3,7 +3,6 @@
 namespace Swoft\Tcp;
 
 use Swoft;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Tcp\Contract\PackerInterface;
 use Swoft\Tcp\Exception\ProtocolException;
@@ -169,7 +168,6 @@ class Protocol
      * @param string $data
      *
      * @return Package
-     * @throws ContainerException
      */
     public function unpack(string $data): Package
     {
@@ -184,7 +182,6 @@ class Protocol
      * @param Response $response
      *
      * @return string
-     * @throws ContainerException
      */
     public function packResponse(Response $response): string
     {
@@ -203,7 +200,6 @@ class Protocol
      * @param string $data
      *
      * @return Response
-     * @throws ContainerException
      */
     public function unpackResponse(string $data): Response
     {
@@ -218,7 +214,6 @@ class Protocol
      * @param Package $package
      *
      * @return string
-     * @throws ContainerException
      */
     public function pack(Package $package): string
     {
@@ -290,7 +285,6 @@ class Protocol
      * @param string $type
      *
      * @return PackerInterface
-     * @throws ContainerException
      */
     public function getPacker(string $type = ''): PackerInterface
     {
@@ -298,7 +292,7 @@ class Protocol
         $packer = Swoft::getSingleton($class);
 
         if (!$packer instanceof PackerInterface) {
-            throw new ProtocolException("The data packer '{$class}' must be implements PackerInterface");
+            throw new ProtocolException("The data packer '{$class}' must be implements PackerInterface!");
         }
 
         return $packer;
@@ -314,7 +308,7 @@ class Protocol
         $type = $type ?: $this->type;
 
         if (!isset($this->packers[$type])) {
-            throw new ProtocolException("The data packer(type: $type) is not exist! ");
+            throw new ProtocolException("The data packer(type: $type) is not exist!");
         }
 
         return $this->packers[$type];

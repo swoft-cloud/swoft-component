@@ -2,10 +2,8 @@
 
 namespace Swoft\Tcp\Server;
 
-use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Log\Helper\CLog;
 use Swoft\Tcp\Protocol;
 use Swoft\Tcp\Server\Contract\ResponseInterface;
@@ -47,8 +45,6 @@ class Response extends TcpResponse implements ResponseInterface
      * @param int $fd
      *
      * @return self|TcpResponse
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function new(int $fd = -1): TcpResponse
     {
@@ -67,8 +63,6 @@ class Response extends TcpResponse implements ResponseInterface
      * @param Server|null $server
      *
      * @return int
-     * @throws ContainerException
-     * @throws ReflectionException
      * @throws TcpResponseException
      */
     public function send(Server $server = null): int

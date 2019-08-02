@@ -2,12 +2,15 @@
 
 namespace SwoftTest\Tcp\Unit;
 
+use function get_class;
 use PHPUnit\Framework\TestCase;
+use Swoft\Tcp\Exception\ProtocolException;
 use Swoft\Tcp\Packer\JsonPacker;
 use Swoft\Tcp\Packer\PhpPacker;
 use Swoft\Tcp\Packer\SimpleTokenPacker;
 use Swoft\Tcp\Protocol;
 use SwoftTest\Testing\Concern\CommonTestAssertTrait;
+use Throwable;
 
 /**
  * Class ProtocolTest
@@ -33,9 +36,6 @@ class ProtocolTest extends TestCase
         $this->assertArrayHasKey(JsonPacker::TYPE, $ps);
         $this->assertArrayHasKey(SimpleTokenPacker::TYPE, $ps);
 
-        $this->assertSame(SimpleTokenPacker::class, $p->getPackerClass());
-        $this->assertSame(JsonPacker::class, $p->getPackerClass(JsonPacker::TYPE));
-
         $this->assertTrue($p->isOpenEofCheck());
         $this->assertFalse($p->isOpenEofSplit());
         $this->assertFalse($p->isOpenLengthCheck());
@@ -57,5 +57,23 @@ class ProtocolTest extends TestCase
         $this->assertSame('N', $p->getPackageLengthType());
         $this->assertSame(8, $p->getPackageLengthOffset());
         $this->assertSame(16, $p->getPackageBodyOffset());
+    }
+
+    public function testGetPackerClass(): void
+    {
+        $p = new Protocol();
+
+        $this->assertSame(SimpleTokenPacker::class, $p->getPackerClass());
+        $this->assertSame(JsonPacker::class, $p->getPackerClass(JsonPacker::TYPE));
+
+        try {
+            $p->getPackerClass('not-exist');
+        } catch (Throwable $e) {
+            $this->assertSame(ProtocolException::class, get_class($e));
+            $this->assertSame('The data packer(type: not-exist) is not exist!', $e->getMessage());
+        }
+
+        $p->setPacker('new-packer', 'some class');
+        $this->assertSame('some class', $p->getPackerClass('new-packer'));
     }
 }

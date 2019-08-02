@@ -60,13 +60,15 @@ class ReceiveListener implements ReceiveInterface
             /** @var TcpDispatcher $dispatcher */
             $dispatcher = Swoft::getSingleton('tcpDispatcher');
 
-            // Dispatching
-            $response = $dispatcher->dispatch($request, $response);
+            // Dispatching. allow user disable dispatch.
+            if ($dispatcher->isEnable()) {
+                $response = $dispatcher->dispatch($request, $response);
 
-            // Trigger package send event
-            Swoft::trigger(TcpServerEvent::PACKAGE_SEND, $response);
+                // Trigger package send event
+                Swoft::trigger(TcpServerEvent::PACKAGE_SEND, $response);
 
-            $response->send($server);
+                $response->send($server);
+            }
         } catch (Throwable $e) {
             server()->log("Receive: conn#{$fd} error: " . $e->getMessage(), [], 'error');
             Swoft::trigger(TcpServerEvent::RECEIVE_ERROR, $e, $fd);

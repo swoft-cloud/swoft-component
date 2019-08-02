@@ -48,7 +48,7 @@ class ConnectListener implements ConnectInterface
         Context::set($ctx);
 
         try {
-            // Trigger event
+            // Trigger connect event
             Swoft::trigger(TcpServerEvent::CONNECT, $server, $fd, $reactorId);
 
             /** @var TcpDispatcher $dispatcher */
@@ -62,10 +62,10 @@ class ConnectListener implements ConnectInterface
             // Handle connect error
             $errDispatcher->connectError($e, $fd);
         } finally {
-            // Defer
+            // Trigger defer event
             Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
 
-            // Destroy
+            // Trigger coroutine destroy event
             Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
 
             // Unbind cid => sid(fd)

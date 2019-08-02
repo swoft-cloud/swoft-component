@@ -6,7 +6,6 @@ use ReflectionException;
 use ReflectionType;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Tcp\ErrCode;
 use Swoft\Tcp\Package;
 use Swoft\Tcp\Protocol;
@@ -26,12 +25,19 @@ use function sprintf;
 class TcpDispatcher
 {
     /**
+     * Enable internal route dispatching
+     *
+     * @see \Swoft\Tcp\Server\Swoole\ReceiveListener::onReceive()
+     * @var bool
+     */
+    private $enable = true;
+
+    /**
      * @param Request  $request
      * @param Response $response
      *
      * @return Response
      * @throws ReflectionException
-     * @throws ContainerException
      * @throws TcpUnpackingException
      * @throws CommandNotFoundException
      */
@@ -118,5 +124,21 @@ class TcpDispatcher
         }
 
         return $bindParams;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnable(): bool
+    {
+        return $this->enable;
+    }
+
+    /**
+     * @param bool $enable
+     */
+    public function setEnable($enable): void
+    {
+        $this->enable = (bool)$enable;
     }
 }
