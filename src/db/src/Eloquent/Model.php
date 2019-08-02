@@ -52,6 +52,7 @@ use function bean;
  * @method static bool updateOrInsert(array $attributes, array $values = [])
  * @method static int batchUpdateByIds(array $values)
  * @method static int updateAllCounters(array $attributes, array $counters, array $extra = [])
+ * @method static int updateAllCountersAdoptPrimary(array $attributes, array $counters, array $extra = [])
  * @method static int updateAllCountersById(array $ids, array $counters, array $extra = [])
  * @method static bool modifyById(int $id, array $values)
  * @method static bool modify(array $attributes, array $values)

@@ -743,7 +743,7 @@ class Builder
         // If column is null default user primary column name
         $column = is_null($column) ? $this->getModel()->getKeyName() : $column;
 
-        $this->query->forPageAfterId($perPage, $lastId , $column);
+        $this->query->forPageAfterId($perPage, $lastId, $column);
 
         return $this;
     }
@@ -766,7 +766,7 @@ class Builder
         // If column is null default user primary column name
         $column = is_null($column) ? $this->getModel()->getKeyName() : $column;
 
-        $this->query->forPageBeforeId($perPage, $lastId , $column);
+        $this->query->forPageBeforeId($perPage, $lastId, $column);
 
         return $this;
     }
@@ -867,18 +867,11 @@ class Builder
      */
     public function updateAllCountersById(array $ids, array $counters, array $extra = []): int
     {
-        if (empty($ids)) {
-            return 0;
-        }
-        if (count($ids) === 1) {
-            $ids = current($ids);
-        }
-
-        $key = $this->model->getKeyName();
-        return $this->toBase()->updateAllCounters(
-            [$key => $ids],
+        return $this->toBase()->updateAllCountersById(
+            $ids,
             $this->model->getSafeAttributes($counters),
-            $this->model->getSafeAttributes($extra, true)
+            $this->model->getSafeAttributes($extra, true),
+            $this->model->getKeyName()
         );
     }
 
@@ -904,7 +897,7 @@ class Builder
     }
 
     /**
-     * Update counters by `$attributes`
+     * Update counters by `$attributes` Adopt Primary
      *
      * @param array $attributes
      * @param array $counters
@@ -917,14 +910,11 @@ class Builder
      */
     public function updateAllCountersAdoptPrimary(array $attributes, array $counters, array $extra = []): int
     {
-        $key = $this->model->getKeyName();
-
-        $ids = $this->where($attributes)->get([$key])->pluck($key)->toArray();
-
-        return $this->toBase()->updateAllCounters(
-            [$key => $ids],
+        return $this->toBase()->updateAllCountersAdoptPrimary(
+            $attributes,
             $this->model->getSafeAttributes($counters),
-            $this->model->getSafeAttributes($extra, true)
+            $this->model->getSafeAttributes($extra, true),
+            $this->model->getKeyName()
         );
     }
 

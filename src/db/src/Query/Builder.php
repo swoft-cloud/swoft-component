@@ -3123,6 +3123,70 @@ class Builder implements PrototypeInterface
     }
 
     /**
+     * Update counters by primary key
+     *
+     * @param array  $ids
+     * @param array  $counters
+     * @param array  $extra
+     * @param string $primary
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function updateAllCountersById(
+        array $ids,
+        array $counters,
+        array $extra = [],
+        string $primary = 'id'
+    ): int {
+        if (empty($ids)) {
+            return 0;
+        }
+
+        if (count($ids) === 1) {
+            $ids = current($ids);
+        }
+
+        return $this->updateAllCounters(
+            [$primary => $ids],
+            $counters,
+            $extra
+        );
+    }
+
+    /**
+     * Update counters by `$attributes` Adopt Primary
+     *
+     * @param array  $attributes
+     * @param array  $counters
+     * @param array  $extra
+     * @param string $primary
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function updateAllCountersAdoptPrimary(
+        array $attributes,
+        array $counters,
+        array $extra = [],
+        string $primary = 'id'
+    ): int {
+
+        $ids = $this->where($attributes)->get([$primary])->pluck($primary)->toArray();
+
+        return $this->updateAllCountersById(
+            $ids,
+            $counters,
+            $extra,
+            $primary
+        );
+    }
+
+    /**
      * Delete a record from the database.
      *
      * @param mixed $id

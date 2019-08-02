@@ -693,6 +693,11 @@ on A.id=B.id;', [$resCount - 20]);
         User::updateAllCounters(['user_desc' => $expectLabel], ['age' => -1]);
         $this->assertEquals($user->getAge(), User::find($id)->getAge());
 
+        User::updateAllCountersAdoptPrimary(['user_desc' => $expectLabel], ['age' => 1]);
+        DB::table('user')->updateAllCountersAdoptPrimary(['user_desc' => $expectLabel], ['age' => -1]);
+        $this->assertEquals($user->getAge(), User::find($id)->getAge());
+
+
         DB::table('user')->updateAllCounters(['user_desc' => $expectLabel], ['age' => -1]);
         $this->assertEquals($user->getAge() - 1, User::find($id)->getAge());
 
