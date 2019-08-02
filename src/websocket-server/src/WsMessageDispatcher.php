@@ -27,7 +27,7 @@ use function server;
  *
  * @Bean("wsMsgDispatcher")
  */
-class WsMessageDispatcher
+class WsMessageDispatcher // extends \Swoft\Concern\AbstractDispatcher
 {
     /**
      * Dispatch ws message handle
