@@ -2233,7 +2233,7 @@ class Builder implements PrototypeInterface
      * Constrain the query to the next "page" of results before a given ID.
      *
      * @param int      $perPage
-     * @param int|null $firstId
+     * @param int|null $lastId
      * @param string   $column
      *
      * @return static
@@ -2241,12 +2241,12 @@ class Builder implements PrototypeInterface
      * @throws DbException
      * @throws ReflectionException
      */
-    public function forPageBeforeId(int $perPage = 15, int $firstId = null, string $column = 'id'): self
+    public function forPageBeforeId(int $perPage = 15, int $lastId = null, string $column = 'id'): self
     {
         $this->orders = $this->removeExistingOrdersFor($column);
 
-        if (!is_null($firstId)) {
-            $this->where($column, '<', $firstId);
+        if (!is_null($lastId)) {
+            $this->where($column, '<', $lastId);
         }
 
         return $this->orderBy($column, 'desc')->take($perPage);
