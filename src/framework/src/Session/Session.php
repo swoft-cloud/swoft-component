@@ -157,6 +157,14 @@ class Session
     }
 
     /**
+     * Clear all
+     */
+    public static function clear(): void
+    {
+        self::$idMap = self::$sessions = [];
+    }
+
+    /**
      * @return array
      */
     public static function getIdMap(): array

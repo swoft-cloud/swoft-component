@@ -2,16 +2,16 @@
 
 namespace Swoft\Bean\Definition\Parser;
 
-use function array_unique;
-use function in_array;
-use function is_array;
-use function is_string;
+use InvalidArgumentException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Definition\ArgsInjection;
 use Swoft\Bean\Definition\MethodInjection;
 use Swoft\Bean\Definition\ObjectDefinition;
 use Swoft\Bean\Definition\PropertyInjection;
-use Swoft\Bean\Exception\ContainerException;
+use function array_unique;
+use function in_array;
+use function is_array;
+use function is_string;
 
 /**
  * Class DefinitionParser
@@ -24,7 +24,6 @@ class DefinitionObjParser extends ObjectParser
      * Parse definitions
      *
      * @return array
-     * @throws ContainerException
      */
     public function parseDefinitions(): array
     {
@@ -47,8 +46,6 @@ class DefinitionObjParser extends ObjectParser
      * @param string           $beanName
      * @param ObjectDefinition $objDefinition
      * @param array            $definition
-     *
-     * @throws ContainerException
      */
     private function resetObjectDefinition(string $beanName, ObjectDefinition $objDefinition, array $definition): void
     {
@@ -57,7 +54,7 @@ class DefinitionObjParser extends ObjectParser
         $objClassName = $objDefinition->getClassName();
 
         if (!empty($className) && $className !== $objClassName) {
-            throw new ContainerException('Class for annotations and definitions must be the same Or not to define class');
+            throw new InvalidArgumentException('Class for annotations and definitions must be the same Or not to define class');
         }
 
         $objDefinition = $this->updateObjectDefinitionByDefinition($objDefinition, $definition);
@@ -70,14 +67,12 @@ class DefinitionObjParser extends ObjectParser
      *
      * @param string $beanName
      * @param array  $definition
-     *
-     * @throws ContainerException
      */
     private function createObjectDefinition(string $beanName, array $definition): void
     {
         $className = $definition['class'] ?? '';
         if (empty($className)) {
-            throw new ContainerException(sprintf('%s key for definition must be defined class', $beanName));
+            throw new InvalidArgumentException(sprintf('%s key for definition must be defined class', $beanName));
         }
 
         $objDefinition = new ObjectDefinition($beanName, $className);
@@ -96,7 +91,6 @@ class DefinitionObjParser extends ObjectParser
      * @param array $definition
      *
      * @return array
-     * @throws ContainerException
      */
     private function parseDefinition(array $definition): array
     {
@@ -106,7 +100,7 @@ class DefinitionObjParser extends ObjectParser
         // Parse construct
         $constructArgs = $definition[0] ?? [];
         if (!is_array($constructArgs)) {
-            throw new ContainerException('Construct args for definition must be array');
+            throw new InvalidArgumentException('Construct args for definition must be array');
         }
 
         // Parse construct args
@@ -129,7 +123,7 @@ class DefinitionObjParser extends ObjectParser
         // Parse definition option
         $option = $definition['__option'] ?? [];
         if (!is_array($option)) {
-            throw new ContainerException('__option for definition must be array');
+            throw new InvalidArgumentException('__option for definition must be array');
         }
 
         // Remove `__option`
@@ -139,7 +133,7 @@ class DefinitionObjParser extends ObjectParser
         $propertyInjects = [];
         foreach ($definition as $propertyName => $propertyValue) {
             if (!is_string($propertyName)) {
-                throw new ContainerException('Property key from definition must be string');
+                throw new InvalidArgumentException('Property key from definition must be string');
             }
 
             [$proValue, $proIsRef] = $this->getValueByRef($propertyValue);
@@ -164,7 +158,6 @@ class DefinitionObjParser extends ObjectParser
      * @param array            $definition
      *
      * @return ObjectDefinition
-     * @throws ContainerException
      */
     private function updateObjectDefinitionByDefinition(ObjectDefinition $objDfn, array $definition): ObjectDefinition
     {
@@ -190,7 +183,7 @@ class DefinitionObjParser extends ObjectParser
         $alias = $option['alias'] ?? '';
 
         if (!empty($scope) && !in_array($scope, $scopes, true)) {
-            throw new ContainerException('Scope for definition is not undefined');
+            throw new InvalidArgumentException('Scope for definition is not undefined');
         }
 
         // Update scope
