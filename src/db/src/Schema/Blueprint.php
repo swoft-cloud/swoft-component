@@ -13,6 +13,7 @@ use Swoft\Db\Exception\DbException;
 use Swoft\Db\Schema\Grammars\Grammar;
 use Swoft\Db\Eloquent\Collection;
 use Swoft\Stdlib\Fluent;
+use Swoft\Stdlib\Collection as BaseCollection;
 
 /**
  * Class Builder
@@ -277,12 +278,10 @@ class Blueprint
      * Determine if the blueprint has a create command.
      *
      * @return bool
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function creating()
     {
-        return Collection::new($this->commands)->contains(function (Fluent $command) {
+        return BaseCollection::make($this->commands)->contains(function (Fluent $command) {
             return $command['name'] === 'create';
         });
     }
