@@ -196,6 +196,7 @@ class Application implements ConsoleInterface
 
         // Parse default options and arguments
         $this->bindCommandFlags($info);
+        $this->input->setCommandId($info['cmdId']);
 
         Swoft::triggerByArray(ConsoleEvent::DISPATCH_BEFORE, $this, $info);
 
