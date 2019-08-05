@@ -364,7 +364,7 @@ class MySqlGrammar extends Grammar
 
         $field = $this->wrapSegments(explode('.', array_shift($path)));
 
-        return sprintf('%s' . $delimiter . '\'$.%s\'', $field, Collection::new($path)->map(function ($part) {
+        return sprintf('%s' . $delimiter . '\'$.%s\'', $field, Collection::make($path)->map(function ($part) {
             return '"' . $part . '"';
         })->implode('.'));
     }
