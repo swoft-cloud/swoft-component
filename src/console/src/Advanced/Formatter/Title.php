@@ -39,7 +39,7 @@ class Title extends MessageFormatter
         $width  = $width > 10 ? $width : 80;
 
         [$sw,] = Sys::getScreenSize();
-        if ($width > $sw) {
+        if ($sw > $width) {
             $width = (int)$sw;
         }
 
@@ -54,7 +54,6 @@ class Title extends MessageFormatter
         } elseif ($indent > 0){
             $titleIndent = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);
         }
-
 
         if ($indent > 0) {
             $bdIndent = Str::pad(self::CHAR_SPACE, $indent, self::CHAR_SPACE);

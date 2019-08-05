@@ -24,6 +24,14 @@ use const STDOUT;
 class Input extends AbstractInput
 {
     /**
+     * the real command ID(group:command)
+     * e.g `http:start`
+     *
+     * @var string
+     */
+    protected $commandId = '';
+
+    /**
      * @var resource
      */
     protected $inputStream = STDIN;
@@ -125,5 +133,27 @@ class Input extends AbstractInput
     public function getInputStream()
     {
         return $this->inputStream;
+    }
+
+    /**
+     * Get command ID e.g `http:start`
+     *
+     * @return  string
+     */
+    public function getCommandId(): string
+    {
+        return $this->commandId;
+    }
+
+    /**
+     * Set command ID e.g `http:start`
+     *
+     * @param  string  $commandId  e.g `http:start`
+     *
+     * @return  self
+     */
+    public function setCommandId(string $commandId): void
+    {
+        $this->commandId = $commandId;
     }
 }

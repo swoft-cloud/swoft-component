@@ -62,9 +62,10 @@ class Router implements RouterInterface
      *
      * [
      *  '/echo' => [
-     *      'prefix1.cmd1' => [controllerClass1, method1],
-     *      'prefix1.cmd2' => [controllerClass1, method2],
-     *      'prefix2.cmd1' => [controllerClass2, method1],
+     *      'prefix1.cmd1' => [
+     *          'opcode'  => 0,
+     *          'handler' => [controllerClass1, method1],
+     *      ],
      *  ],
      * ]
      *
@@ -132,8 +133,9 @@ class Router implements RouterInterface
      * @param string   $path
      * @param string   $cmdId
      * @param callable $handler
+     * @param array    $info
      */
-    public function addCommand(string $path, string $cmdId, $handler): void
+    public function addCommand(string $path, string $cmdId, $handler, array $info = []): void
     {
         $path = Str::formatPath($path);
 
@@ -142,8 +144,12 @@ class Router implements RouterInterface
             return;
         }
 
+        // Set handler
+        $info['cmdId']   = $cmdId;
+        $info['handler'] = $handler;
+
         $this->counter++;
-        $this->commands[$path][$cmdId] = $handler;
+        $this->commands[$path][$cmdId] = $info;
     }
 
     /**
@@ -188,12 +194,12 @@ class Router implements RouterInterface
 
     /**
      * @param string $path
-     * @param string $route like 'home.index'
+     * @param string $route The message route command ID. like 'home.index'
      *
-     * @return array
+     * @return array Return match result
      *                      [
      *                          status,
-     *                          [controllerClass, method]
+     *                          route info
      *                      ]
      */
     public function matchCommand(string $path, string $route): array

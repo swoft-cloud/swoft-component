@@ -58,6 +58,15 @@ if (!function_exists('printr')) {
      */
     function printr(...$vars)
     {
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+
+        $line = $trace[0]['line'];
+        $pos  = $trace[1]['class'] ?? $trace[0]['file'];
+
+        if ($pos) {
+            echo "CALL ON $pos($line):\n";
+        }
+
         foreach ($vars as $var) {
             /** @noinspection ForgottenDebugOutputInspection */
             print_r($var);
@@ -74,6 +83,15 @@ if (!function_exists('vdump')) {
      */
     function vdump(...$vars)
     {
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+
+        $line = $trace[0]['line'];
+        $pos  = $trace[1]['class'] ?? $trace[0]['file'];
+
+        if ($pos) {
+            echo "CALL ON $pos($line):\n";
+        }
+
         ob_start();
         /** @noinspection ForgottenDebugOutputInspection */
         var_dump(...$vars);

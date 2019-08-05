@@ -2,9 +2,7 @@
 
 namespace Swoft\Tcp\Server;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Tcp\Package;
 use Swoft\Tcp\Server\Contract\RequestInterface;
 
@@ -44,8 +42,6 @@ class Request implements RequestInterface
      * @param int    $reactorId
      *
      * @return self
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function new(int $fd, string $data, int $reactorId): self
     {

@@ -5,13 +5,13 @@ namespace Swoft\Bean\Definition\Parser;
 use function array_merge;
 use function count;
 use function get_class;
+use InvalidArgumentException;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\Annotation\Parser\ParserInterface;
 use Swoft\Annotation\Exception\AnnotationException;
 use Swoft\Bean\Definition\MethodInjection;
 use Swoft\Bean\Definition\ObjectDefinition;
 use Swoft\Bean\Definition\PropertyInjection;
-use Swoft\Bean\Exception\ContainerException;
 
 /**
  * Class AnnotationParser
@@ -81,7 +81,6 @@ class AnnotationObjParser extends ObjectParser
      *
      * @return array
      * @throws AnnotationException
-     * @throws ContainerException
      */
     public function parseAnnotations(array $annotations, array $parsers): array
     {
@@ -104,7 +103,6 @@ class AnnotationObjParser extends ObjectParser
      * @param array  $classOneAnnotations
      *
      * @throws AnnotationException
-     * @throws ContainerException
      */
     private function parseOneClassAnnotations(string $className, array $classOneAnnotations): void
     {
@@ -180,7 +178,6 @@ class AnnotationObjParser extends ObjectParser
      * @param array $classAry
      *
      * @return ObjectDefinition|null
-     * @throws ContainerException
      */
     private function parseClassAnnotations(array $classAry): ?ObjectDefinition
     {
@@ -202,14 +199,14 @@ class AnnotationObjParser extends ObjectParser
             }
 
             if (count($data) !== 4) {
-                throw new ContainerException(sprintf('%s annotation parse must be 4 size', $annotationClass));
+                throw new InvalidArgumentException(sprintf('%s annotation parse must be 4 size', $annotationClass));
             }
 
             [$name, $className, $scope, $alias] = $data;
             $name = empty($name) ? $className : $name;
 
             if (empty($className)) {
-                throw new ContainerException(sprintf('%s with class name can not be empty', $annotationClass));
+                throw new InvalidArgumentException(sprintf('%s with class name can not be empty', $annotationClass));
             }
 
             // Multiple coverage
@@ -225,7 +222,6 @@ class AnnotationObjParser extends ObjectParser
      * @param array  $propertyAnnotations
      *
      * @return PropertyInjection|null
-     * @throws ContainerException
      */
     private function parsePropertyAnnotations(
         array $classAry,
@@ -251,7 +247,7 @@ class AnnotationObjParser extends ObjectParser
             }
 
             if (count($data) !== 2) {
-                throw new ContainerException('Return array with property annotation parse must be 2 size');
+                throw new InvalidArgumentException('Return array with property annotation parse must be 2 size');
             }
 
             $definitions = $annotationParser->getDefinitions();

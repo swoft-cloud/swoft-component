@@ -3,7 +3,6 @@
 namespace Swoft\Tcp;
 
 use Swoft;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Tcp\Contract\PackerInterface;
 use Swoft\Tcp\Exception\ProtocolException;
@@ -19,12 +18,21 @@ use function substr;
 use function unpack;
 
 /**
- * Class PackerFactory
+ * Class Protocol
  *
  * @since 2.0.3
  */
 class Protocol
 {
+    // Split package type
+    public const EOF_SPLIT = 'EOF';
+    public const LEN_SPLIT = 'LEN';
+
+    /**
+     * Default EOF chars
+     */
+    public const DEFAULT_EOF = "\r\n\r\n";
+
     /**
      * Use for pack data for length type
      */
@@ -50,7 +58,7 @@ class Protocol
      *
      * @var string
      */
-    private $type = JsonPacker::TYPE;
+    private $type = SimpleTokenPacker::TYPE;
 
     /**
      * The available data packers
@@ -92,7 +100,7 @@ class Protocol
     /**
      * @var string
      */
-    private $packageEof = "\r\n\r\n";
+    private $packageEof = self::DEFAULT_EOF;
 
     // -------------- use package length check --------------
 
@@ -118,6 +126,7 @@ class Protocol
 
     /**
      * @link https://wiki.swoole.com/wiki/page/463.html
+     * @link https://www.php.net/manual/en/function.pack.php
      * @var string
      */
     private $packageLengthType = 'N';
@@ -159,7 +168,6 @@ class Protocol
      * @param string $data
      *
      * @return Package
-     * @throws ContainerException
      */
     public function unpack(string $data): Package
     {
@@ -174,7 +182,6 @@ class Protocol
      * @param Response $response
      *
      * @return string
-     * @throws ContainerException
      */
     public function packResponse(Response $response): string
     {
@@ -193,7 +200,6 @@ class Protocol
      * @param string $data
      *
      * @return Response
-     * @throws ContainerException
      */
     public function unpackResponse(string $data): Response
     {
@@ -208,7 +214,6 @@ class Protocol
      * @param Package $package
      *
      * @return string
-     * @throws ContainerException
      */
     public function pack(Package $package): string
     {
@@ -280,7 +285,6 @@ class Protocol
      * @param string $type
      *
      * @return PackerInterface
-     * @throws ContainerException
      */
     public function getPacker(string $type = ''): PackerInterface
     {
@@ -288,7 +292,7 @@ class Protocol
         $packer = Swoft::getSingleton($class);
 
         if (!$packer instanceof PackerInterface) {
-            throw new ProtocolException("The data packer '{$class}' must be implements PackerInterface");
+            throw new ProtocolException("The data packer '{$class}' must be implements PackerInterface!");
         }
 
         return $packer;
@@ -304,7 +308,7 @@ class Protocol
         $type = $type ?: $this->type;
 
         if (!isset($this->packers[$type])) {
-            throw new ProtocolException("The data packer(type: $type) is not exist! ");
+            throw new ProtocolException("The data packer(type: $type) is not exist!");
         }
 
         return $this->packers[$type];
@@ -360,7 +364,7 @@ class Protocol
      */
     public function getSplitType(): string
     {
-        return $this->openEofCheck ? 'EOF' : 'LEN';
+        return $this->openEofCheck ? self::EOF_SPLIT : self::LEN_SPLIT;
     }
 
     /**
@@ -386,6 +390,16 @@ class Protocol
     public function setPackers(array $packers): void
     {
         $this->packers = array_merge($this->packers, $packers);
+    }
+
+    /**
+     * @param string $type
+     *
+     * @return bool
+     */
+    public function isValidType(string $type): bool
+    {
+        return isset($this->packers[$type]);
     }
 
     /**

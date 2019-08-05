@@ -34,7 +34,10 @@ class MessageMappingParser extends Parser
             throw new AnnotationException('`@MessageMapping` must be defined on class method!');
         }
 
-        RouteRegister::bindCommand($this->className, $this->methodName, $ann->getCommand(), $ann->isRoot());
+        RouteRegister::bindCommand($this->className, $this->methodName, $ann->getCommand(), [
+            'isRoot' => $ann->isRoot(),
+            'opcode' => $ann->getOpcode(),
+        ]);
 
         return [];
     }

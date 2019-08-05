@@ -4,9 +4,8 @@ namespace Swoft\Tcp\Server\Router;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Contract\RouterInterface;
-use Swoft\Stdlib\Helper\Str;
-use function count;
 use Swoft\Tcp\Server\Exception\TcpServerRouteException;
+use function count;
 use function trim;
 
 /**
@@ -18,13 +17,18 @@ class Router implements RouterInterface
 {
     /**
      * [
-     *  'command' => [class, method]
+     *  'command name' => [
+     *      'command' => 'command name'
+     *      'handler' => [class, method]
+     *  ]
      * ]
      * @var array
      */
     private $routes = [];
 
     /**
+     * The route command delimiter.
+     *
      * @var string
      */
     private $delimiter = '.';
@@ -38,18 +42,24 @@ class Router implements RouterInterface
 
     /**
      * @param string $cmd
+     * @param array  $handler
      * @param array  $info
      *
      * @throws TcpServerRouteException
      */
-    public function add(string $cmd, array $info): void
+    public function add(string $cmd, $handler, array $info = []): void
     {
         if (!$cmd = trim($cmd)) {
             throw new TcpServerRouteException('The tcp server route command cannot be empty');
         }
 
-        // Re-set path
-        $info['path'] = $cmd;
+        if (!$handler) {
+            throw new TcpServerRouteException("The tcp server command($cmd) handler cannot be empty");
+        }
+
+        // Re-set path and save handler
+        $info['command'] = $cmd;
+        $info['handler'] = $handler;
 
         // Add module
         $this->routes[$cmd] = $info;
@@ -113,5 +123,13 @@ class Router implements RouterInterface
     public function setDefaultCommand(string $defaultCommand): void
     {
         $this->defaultCommand = $defaultCommand;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRoutes(): array
+    {
+        return $this->routes;
     }
 }

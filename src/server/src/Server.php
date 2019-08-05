@@ -446,7 +446,7 @@ abstract class Server implements ServerInterface
 
         $event = new WorkerEvent(SwooleEvent::WORKER_ERROR, $server, $workerId);
 
-        // is task process
+        // It's task process
         $event->taskProcess = $workerId >= $server->setting['worker_num'];
         $event->setParams([
             'signal'    => $signal,
@@ -1200,6 +1200,7 @@ abstract class Server implements ServerInterface
      */
     protected function defaultSetting(): array
     {
+        /** @noinspection PhpVoidFunctionResultUsedInspection */
         return [
             'daemonize'       => 0,
             'worker_num'      => swoole_cpu_num(),

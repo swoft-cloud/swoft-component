@@ -4,7 +4,6 @@ namespace Swoft\Event;
 
 use RuntimeException;
 use Swoft;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Event\Manager\EventManager;
 use function count;
 
@@ -47,7 +46,6 @@ final class ListenerRegister
      * @param EventManager $em
      *
      * @return array
-     * @throws ContainerException
      */
     public static function register(EventManager $em): array
     {

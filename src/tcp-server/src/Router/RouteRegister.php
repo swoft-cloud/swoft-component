@@ -17,8 +17,8 @@ final class RouteRegister
      * [
      *  controller class => [
      *      prefix => 'home',
-     *      path => '/chat/{id}',
-     *      params => ['id' => '\d+'],
+     *      route => 'index',
+     *      root  => false,
      *  ]
      * ]
      */
