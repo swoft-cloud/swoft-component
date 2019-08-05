@@ -5,6 +5,7 @@ namespace Swoft\WebSocket\Server\Listener;
 use Swoft\Event\Annotation\Mapping\Subscriber;
 use Swoft\Event\EventInterface;
 use Swoft\Event\EventSubscriberInterface;
+use Swoft\Log\Helper\CLog;
 use Swoft\Server\SwooleEvent;
 use Swoft\Session\Session;
 use Swoft\WebSocket\Server\WebSocketServer;
@@ -43,9 +44,17 @@ class WorkerEndSubscriber implements EventSubscriberInterface
 
         // Close all connection
         if ($server instanceof WebSocketServer) {
+            $count = 0;
+
             foreach (Session::getSessions() as $sid => $sess) {
-                $server->disconnect((int)$sid, 0, 'closed by server');
+                $ok = $server->disconnect((int)$sid, 0, 'closed by server');
+
+                if ($ok === true) {
+                    $count++;
+                }
             }
+
+            CLog::info('Close %d ws connection on worker stop', $count);
         }
 
         Session::clear();

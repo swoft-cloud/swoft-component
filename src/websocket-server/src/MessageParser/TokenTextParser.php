@@ -51,7 +51,9 @@ class TokenTextParser implements MessageParserInterface
         $cmd = '';
         if (strpos($data, ':') > 0) {
             [$cmd, $body] = explode(':', $data, 2);
-            $cmd = trim($cmd);
+
+            $cmd  = trim($cmd);
+            $body = trim($body);
 
             // only an command
         } elseif (strlen($data) < 16 && 1 === preg_match('/^[\w-]+$/', $data)) {
