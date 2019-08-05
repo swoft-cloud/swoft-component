@@ -11,9 +11,8 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Schema\Grammars\Grammar;
-use Swoft\Db\Eloquent\Collection;
 use Swoft\Stdlib\Fluent;
-use Swoft\Stdlib\Collection as BaseCollection;
+use Swoft\Stdlib\Collection;
 
 /**
  * Class Builder
@@ -161,12 +160,10 @@ class Blueprint
      * @param array $names
      *
      * @return Collection
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function commandsNamed(array $names)
     {
-        return Collection::new($this->commands)->filter(function ($command) use ($names) {
+        return Collection::make($this->commands)->filter(function ($command) use ($names) {
             return in_array($command->name, $names);
         });
     }
@@ -177,8 +174,6 @@ class Blueprint
      * @param Grammar $grammar
      *
      * @return void
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function addImpliedCommands(Grammar $grammar)
     {
@@ -281,7 +276,7 @@ class Blueprint
      */
     public function creating()
     {
-        return BaseCollection::make($this->commands)->contains(function (Fluent $command) {
+        return Collection::make($this->commands)->contains(function (Fluent $command) {
             return $command['name'] === 'create';
         });
     }

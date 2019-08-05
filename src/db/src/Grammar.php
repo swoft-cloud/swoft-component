@@ -3,7 +3,7 @@
 
 namespace Swoft\Db;
 
-use Swoft\Db\Eloquent\Collection;
+use Swoft\Stdlib\Collection;
 use Swoft\Db\Query\Expression;
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
@@ -110,12 +110,10 @@ abstract class Grammar
      * @param array $segments
      *
      * @return string
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     protected function wrapSegments($segments)
     {
-        return Collection::new($segments)->map(function ($segment, $key) use ($segments) {
+        return Collection::make($segments)->map(function ($segment, $key) use ($segments) {
             return $key == 0 && count($segments) > 1
                 ? $this->wrapTable($segment)
                 : $this->wrapValue($segment);

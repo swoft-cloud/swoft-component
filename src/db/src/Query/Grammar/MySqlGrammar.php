@@ -6,9 +6,9 @@ namespace Swoft\Db\Query\Grammar;
 use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Db\Eloquent\Collection;
 use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\JsonExpression;
+use Swoft\Stdlib\Collection;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\Str;
 
@@ -205,13 +205,10 @@ class MySqlGrammar extends Grammar
      * @param array $values
      *
      * @return string
-     *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function compileUpdateColumns($values)
     {
-        return Collection::new($values)->map(function ($value, $key) {
+        return Collection::make($values)->map(function ($value, $key) {
             if ($this->isJsonSelector($key)) {
                 return $this->compileJsonUpdateColumn($key, JsonExpression::new($value));
             }
@@ -246,12 +243,10 @@ class MySqlGrammar extends Grammar
      * @param array $values
      *
      * @return array
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function prepareBindingsForUpdate(array $bindings, array $values)
     {
-        $values = Collection::new($values)->reject(function ($value, $column) {
+        $values = Collection::make($values)->reject(function ($value, $column) {
             return $this->isJsonSelector($column) && is_bool($value);
         })->all();
 
@@ -329,8 +324,6 @@ class MySqlGrammar extends Grammar
      * @param string  $where
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function compileDeleteWithJoins($query, $table, $where)
     {
@@ -360,8 +353,6 @@ class MySqlGrammar extends Grammar
      * @param string $value
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function wrapJsonSelector($value)
     {

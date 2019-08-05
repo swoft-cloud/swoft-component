@@ -6,7 +6,7 @@ namespace Swoft\Db\Query\Grammar;
 use ReflectionException;
 use RuntimeException;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Db\Eloquent\Collection;
+use Swoft\Stdlib\Collection;
 use Swoft\Db\Grammar as BaseGrammar;
 use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\Expression;
@@ -177,12 +177,10 @@ class Grammar extends BaseGrammar
      * @param array   $joins
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function compileJoins(Builder $query, $joins)
     {
-        return Collection::new($joins)->map(function ($join) use ($query) {
+        return Collection::make($joins)->map(function ($join) use ($query) {
             $table = $this->wrapTable($join->table);
 
             $nestedJoins = is_null($join->joins) ? '' : ' ' . $this->compileJoins($query, $join->joins);
@@ -199,8 +197,6 @@ class Grammar extends BaseGrammar
      * @param Builder $query
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function compileWheres(Builder $query)
     {
@@ -227,12 +223,10 @@ class Grammar extends BaseGrammar
      * @param Builder $query
      *
      * @return array
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function compileWheresToArray($query)
     {
-        return Collection::new($query->wheres)->map(function ($where) use ($query) {
+        return Collection::make($query->wheres)->map(function ($where) use ($query) {
             return $where['boolean'] . ' ' . $this->{"where{$where['type']}"}($query, $where);
         })->all();
     }
@@ -558,8 +552,6 @@ class Grammar extends BaseGrammar
      * @param array   $where
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function whereNested(Builder $query, $where)
     {
@@ -977,7 +969,7 @@ class Grammar extends BaseGrammar
         // We need to build a list of parameter place-holders of values that are bound
         // to the query. Each insert should have the exact same amount of parameter
         // bindings so we will loop through the record and parameterize them all.
-        $parameters = Collection::new($values)->map(function ($record) {
+        $parameters = Collection::make($values)->map(function ($record) {
             return '(' . $this->parameterize($record) . ')';
         })->implode(', ');
 
@@ -1076,7 +1068,7 @@ class Grammar extends BaseGrammar
         // Each one of the columns in the update statements needs to be wrapped in the
         // keyword identifiers, also a place-holder needs to be created for each of
         // the values in the list of bindings so we can make the sets statements.
-        $columns = Collection::new($values)->map(function ($value, $key) {
+        $columns = Collection::make($values)->map(function ($value, $key) {
             return $this->wrap($key) . ' = ' . $this->parameter($value);
         })->implode(', ');
 
