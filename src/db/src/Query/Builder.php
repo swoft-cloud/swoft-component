@@ -2259,12 +2259,10 @@ class Builder implements PrototypeInterface
      * @param string $column
      *
      * @return array
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function removeExistingOrdersFor(string $column): array
     {
-        return Collection::new($this->orders)
+        return Collection::make($this->orders)
             ->reject(function ($order) use ($column) {
                 return isset($order['column'])
                     ? $order['column'] === $column : false;
@@ -2399,8 +2397,6 @@ class Builder implements PrototypeInterface
      * @param array $columns
      *
      * @return Collection
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function get(array $columns = ['*']): Collection
     {
@@ -2408,7 +2404,7 @@ class Builder implements PrototypeInterface
             return $this->processor->processSelect($this, $this->runSelect());
         });
 
-        return Collection::new($result);
+        return Collection::make($result);
     }
 
     /**
@@ -2430,8 +2426,6 @@ class Builder implements PrototypeInterface
      * @param array $columns
      *
      * @return int
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function getCountForPagination(array $columns = ['*']): int
     {
@@ -2457,8 +2451,6 @@ class Builder implements PrototypeInterface
      * @param array $columns
      *
      * @return array
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function runPaginationCountQuery(array $columns = ['*']): array
     {
@@ -2574,8 +2566,6 @@ class Builder implements PrototypeInterface
      * @param string|null $key
      *
      * @return Collection
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function pluck($column, $key = null): Collection
     {
@@ -2592,7 +2582,7 @@ class Builder implements PrototypeInterface
         );
 
         if (empty($queryResult)) {
-            return Collection::new();
+            return Collection::make();
         }
 
         // If the columns are qualified with a table or have an alias, we cannot use
@@ -2631,8 +2621,6 @@ class Builder implements PrototypeInterface
      * @param string $key
      *
      * @return Collection
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function pluckFromObjectColumn($queryResult, $column, $key): Collection
     {
@@ -2648,7 +2636,7 @@ class Builder implements PrototypeInterface
             }
         }
 
-        return Collection::new($results);
+        return Collection::make($results);
     }
 
     /**
@@ -2659,8 +2647,6 @@ class Builder implements PrototypeInterface
      * @param string $key
      *
      * @return Collection
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function pluckFromArrayColumn($queryResult, $column, $key): Collection
     {
@@ -2676,7 +2662,7 @@ class Builder implements PrototypeInterface
             }
         }
 
-        return Collection::new($results);
+        return Collection::make($results);
     }
 
     /**
@@ -2686,8 +2672,6 @@ class Builder implements PrototypeInterface
      * @param string $glue
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function implode(string $column, string $glue = ''): string
     {
@@ -2739,8 +2723,6 @@ class Builder implements PrototypeInterface
      * @param string $columns
      *
      * @return int
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function count(string $columns = '*'): int
     {
@@ -2753,8 +2735,6 @@ class Builder implements PrototypeInterface
      * @param string $column
      *
      * @return float|int
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function min(string $column)
     {
@@ -2767,8 +2747,6 @@ class Builder implements PrototypeInterface
      * @param string $column
      *
      * @return float|int
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function max(string $column)
     {
@@ -2781,8 +2759,6 @@ class Builder implements PrototypeInterface
      * @param string $column
      *
      * @return float|int
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function sum(string $column)
     {
@@ -2797,8 +2773,6 @@ class Builder implements PrototypeInterface
      * @param string $column
      *
      * @return float|int
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function avg($column)
     {
@@ -2811,8 +2785,6 @@ class Builder implements PrototypeInterface
      * @param string $column
      *
      * @return float|int
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function average(string $column)
     {
@@ -2826,8 +2798,6 @@ class Builder implements PrototypeInterface
      * @param array  $columns
      *
      * @return float|int
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function aggregate(string $function, array $columns = ['*'])
     {
@@ -2855,8 +2825,6 @@ class Builder implements PrototypeInterface
      * @param array  $columns
      *
      * @return float|int
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function numericAggregate(string $function, array $columns = ['*'])
     {
