@@ -13,7 +13,7 @@ use Swoft\Stdlib\Reflections;
  *
  * @since 2.0
  */
-final class BeanFactory
+class BeanFactory
 {
     /**
      * Init
@@ -119,6 +119,9 @@ final class BeanFactory
      * @param string $name
      * @param array  $definition
      *
+     * @return object
+     * @throws ContainerException
+     * @throws ReflectionException
      * @example
      *
      * $bean = BeanFactory::createBean('className');
@@ -128,9 +131,6 @@ final class BeanFactory
      *     ......
      * ]);
      *
-     * @return object
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function createBean(string $name, array $definition = [])
     {

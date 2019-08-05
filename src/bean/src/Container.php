@@ -339,8 +339,10 @@ class Container implements ContainerInterface
         // Class name
         $classNames = $this->classNames[$name] ?? [];
         if ($classNames) {
-            $name = end($classNames);
-            return $this->getRequest($name, $id);
+            $clasName = end($classNames);
+            if ($clasName != $name) {
+                return $this->getRequest($clasName, $id);
+            }
         }
 
         if (!isset($this->requestDefinitions[$name])) {
@@ -420,6 +422,12 @@ class Container implements ContainerInterface
             return $this->get($id);
         }
 
+        // Interface
+        if (interface_exists($id)) {
+            $id = InterfaceRegister::getInterfaceInjectBean($id);
+            return $this->get($id);
+        }
+
         // Not defined
         if (!isset($this->objectDefinitions[$id])) {
             throw new ContainerException(sprintf('The bean of %s is not defined', $id));
@@ -480,6 +488,12 @@ class Container implements ContainerInterface
         if ($classNames) {
             $name = end($classNames);
             return $this->singletonPool[$name];
+        }
+
+        // Interface
+        if (interface_exists($name)) {
+            $name = InterfaceRegister::getInterfaceInjectBean($name);
+            return $this->getSingleton($name);
         }
 
         throw new ContainerException(sprintf('The singleton bean "%s" is not defined', $name));
