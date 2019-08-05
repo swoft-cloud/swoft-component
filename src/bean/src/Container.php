@@ -2,7 +2,6 @@
 
 namespace Swoft\Bean;
 
-
 use InvalidArgumentException;
 use ReflectionClass;
 use ReflectionException;
@@ -19,6 +18,7 @@ use Swoft\Bean\Definition\PropertyInjection;
 use Swoft\Stdlib\Helper\ArrayHelper;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Stdlib\Reflections;
+use Throwable;
 use function array_keys;
 use function class_exists;
 use function count;
@@ -29,7 +29,6 @@ use function is_string;
 use function method_exists;
 use function sprintf;
 use function strpos;
-use Throwable;
 use function ucfirst;
 
 /**

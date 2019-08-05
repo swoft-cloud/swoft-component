@@ -1,13 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Processor;
 
-use function alias;
-use function file_exists;
-use function get_class;
 use InvalidArgumentException;
 use ReflectionException;
-use function sprintf;
 use Swoft\Annotation\AnnotationRegister;
 use Swoft\Annotation\Exception\AnnotationException;
 use Swoft\Bean\BeanFactory;
@@ -15,9 +11,13 @@ use Swoft\BeanHandler;
 use Swoft\Config\Config;
 use Swoft\Contract\ComponentInterface;
 use Swoft\Contract\DefinitionInterface;
-use Swoft\Log\Helper\CLog;
 use Swoft\Helper\SwoftHelper;
+use Swoft\Log\Helper\CLog;
 use Swoft\Stdlib\Helper\ArrayHelper;
+use function alias;
+use function file_exists;
+use function get_class;
+use function sprintf;
 
 /**
  * Bean processor

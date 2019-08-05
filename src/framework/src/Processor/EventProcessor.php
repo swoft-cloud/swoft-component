@@ -2,14 +2,12 @@
 
 namespace Swoft\Processor;
 
-use function bean;
-use ReflectionException;
 use Swoft;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Event\ListenerRegister;
 use Swoft\Event\Manager\EventManager;
 use Swoft\Log\Helper\CLog;
 use Swoft\SwoftEvent;
+use function bean;
 
 /**
  * Event processor
@@ -20,8 +18,6 @@ class EventProcessor extends Processor
     /**
      * Handle event register
      * @return bool
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function handle(): bool
     {
