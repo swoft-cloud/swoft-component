@@ -6,7 +6,6 @@ use ReflectionException;
 use ReflectionType;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\Exception\WsMessageParseException;
@@ -37,7 +36,7 @@ class WsMessageDispatcher // extends \Swoft\Concern\AbstractDispatcher
      * @param Response $response
      *
      * @throws ReflectionException
-     * @throws ContainerException
+     * @throws Swoft\Exception\SwoftException
      * @throws WsMessageParseException
      * @throws WsMessageRouteException
      */

@@ -3,13 +3,11 @@
 namespace Swoft\WebSocket\Server\Message;
 
 use InvalidArgumentException;
-use ReflectionException;
 use RuntimeException;
 use SplDoublyLinkedList;
 use SplStack;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\WebSocket\Server\Contract\MessageHandlerInterface;
 use Swoft\WebSocket\Server\Contract\MiddlewareInterface;
 use Swoft\WebSocket\Server\Contract\RequestInterface;
@@ -46,8 +44,6 @@ class MiddlewareChain implements MessageHandlerInterface
      * @param MiddlewareInterface $coreHandler
      *
      * @return MiddlewareChain
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(MiddlewareInterface $coreHandler): self
     {
@@ -119,8 +115,6 @@ class MiddlewareChain implements MessageHandlerInterface
      * @param RequestInterface $request
      *
      * @return ResponseInterface
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function run(RequestInterface $request): ResponseInterface
     {
@@ -147,8 +141,6 @@ class MiddlewareChain implements MessageHandlerInterface
      * @param RequestInterface $request
      *
      * @return ResponseInterface
-     * @throws ContainerException
-     * @throws ReflectionException
      * @internal
      */
     public function handle(RequestInterface $request): ResponseInterface

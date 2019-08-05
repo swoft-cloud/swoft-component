@@ -2,16 +2,16 @@
 
 namespace Swoft\WebSocket\Server\Message;
 
-use function is_object;
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
-use Swoft\Session\Session;
 use Swoft\Context\Context;
+use Swoft\Exception\SwoftException;
 use Swoft\Server\Concern\CommonProtocolDataTrait;
+use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Connection;
+use Swoft\WebSocket\Server\Context\WsMessageContext;
 use Swoft\WebSocket\Server\Contract\ResponseInterface;
 use function bean;
+use function is_object;
 use const WEBSOCKET_OPCODE_TEXT;
 
 /**
@@ -91,8 +91,6 @@ class Response implements ResponseInterface
      * @param int $sender
      *
      * @return Response
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(int $sender = -1): self
     {
@@ -172,8 +170,7 @@ class Response implements ResponseInterface
      * @param Connection $conn
      *
      * @return int
-     * @throws ContainerException
-     * @throws ReflectionException
+     * @throws SwoftException
      */
     public function send(Connection $conn = null): int
     {
@@ -208,8 +205,7 @@ class Response implements ResponseInterface
      * @param Connection|null $conn
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
+     * @throws SwoftException
      */
     protected function formatContent(Connection $conn = null): string
     {
@@ -220,7 +216,8 @@ class Response implements ResponseInterface
             /** @noinspection CallableParameterUseCaseInTypeContextInspection */
             $conn = $conn ?: Session::mustGet();
 
-            $context = Context::mustGet();
+            /** @var WsMessageContext $context */
+            $context = Context::get(true);
             $parser  = $conn->getParser();
 
             if (is_object($this->data) && $this->data instanceof Message) {

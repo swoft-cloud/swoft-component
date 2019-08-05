@@ -6,7 +6,6 @@ use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;
 use Doctrine\Common\Annotations\Annotation\Required;
 use Doctrine\Common\Annotations\Annotation\Target;
-use const WEBSOCKET_OPCODE_TEXT;
 
 /**
  * Class MessageMapping - Use for mark websocket message request command handler method

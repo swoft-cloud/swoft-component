@@ -2,8 +2,6 @@
 
 namespace Swoft\WebSocket\Server\Command;
 
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Annotation\Mapping\CommandMapping;
 use Swoft\Console\Annotation\Mapping\CommandOption;
@@ -34,8 +32,6 @@ class WsServerCommand extends BaseServerCommand
      * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
      * @CommandOption("daemon", short="d", desc="Run server on the background", default="false", type="bool")
      *
-     * @throws ContainerException
-     * @throws ReflectionException
      * @throws ServerException
      * @throws Throwable
      * @example
@@ -98,9 +94,6 @@ class WsServerCommand extends BaseServerCommand
      *
      * @CommandMapping(usage="{fullCommand} [-t]")
      * @CommandOption("t", desc="Only to reload task processes, default to reload worker and task")
-     *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function reload(): void
     {
@@ -131,9 +124,6 @@ class WsServerCommand extends BaseServerCommand
      * Stop the currently running server
      *
      * @CommandMapping()
-     *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function stop(): void
     {
@@ -155,8 +145,6 @@ class WsServerCommand extends BaseServerCommand
      * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
      * @CommandOption("daemon", short="d", desc="Run server on the background")
      *
-     * @throws ReflectionException
-     * @throws ContainerException
      * @example
      * {fullCommand}
      * {fullCommand} -d
@@ -181,8 +169,6 @@ class WsServerCommand extends BaseServerCommand
 
     /**
      * @return WebSocketServer
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     private function createServer(): WebSocketServer
     {

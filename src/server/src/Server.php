@@ -1006,7 +1006,7 @@ abstract class Server implements ServerInterface
     {
         // Send to all workers
         if (!$dstWIDs) {
-            $dstWIDs = range(0, $this->swooleServer->setting['worker_num']);
+            $dstWIDs = range(0, $this->swooleServer->setting['worker_num'] - 1);
         }
 
         if ($excludeWIDs) {
