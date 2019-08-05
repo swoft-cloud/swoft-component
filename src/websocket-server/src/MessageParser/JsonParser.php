@@ -2,9 +2,7 @@
 
 namespace Swoft\WebSocket\Server\MessageParser;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\JsonHelper;
 use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 use Swoft\WebSocket\Server\Message\Message;
@@ -33,8 +31,6 @@ class JsonParser implements MessageParserInterface
      * @param string $data Message data. It's {@see \Swoole\WebSocket\Frame::$data)
      *
      * @return Message
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function decode(string $data): Message
     {

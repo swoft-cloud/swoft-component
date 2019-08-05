@@ -3,10 +3,8 @@
 namespace Swoft\WebSocket\Server;
 
 use Psr\Http\Message\ServerRequestInterface;
-use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Concern\DataPropertyTrait;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
@@ -70,8 +68,6 @@ class Connection implements SessionInterface
      * @param Response $response
      *
      * @return Connection
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(int $fd, Request $request, Response $response): self
     {
@@ -189,7 +185,6 @@ class Connection implements SessionInterface
 
     /**
      * @return MessageParserInterface
-     * @throws ContainerException
      */
     public function getParser(): MessageParserInterface
     {

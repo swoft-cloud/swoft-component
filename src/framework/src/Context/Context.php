@@ -45,7 +45,7 @@ class Context
     {
         $tid     = Co::tid();
         $context = self::$context[$tid] ?? null;
-        if ($context != null) {
+        if ($context) {
             return $context;
         }
 

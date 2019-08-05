@@ -2,10 +2,8 @@
 
 namespace Swoft\WebSocket\Server\Context;
 
-use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\AbstractContext;
 use Swoft\WebSocket\Server\Message\Message;
 use Swoft\WebSocket\Server\Message\Request;
@@ -35,8 +33,6 @@ class WsMessageContext extends AbstractContext
      * @param Response $response
      *
      * @return WsMessageContext
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(Request $request, Response $response): self
     {

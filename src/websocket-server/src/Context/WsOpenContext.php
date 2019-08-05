@@ -2,10 +2,9 @@
 
 namespace Swoft\WebSocket\Server\Context;
 
-use ReflectionException;
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\AbstractContext;
 use Swoft\Http\Message\Request;
 
@@ -28,13 +27,11 @@ class WsOpenContext extends AbstractContext
      * @param Request $request
      *
      * @return WsOpenContext
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(Request $request): self
     {
         /** @var self $ctx */
-        $ctx = self::__instance();
+        $ctx = Swoft::getBean(self::class);
 
         // Initial properties
         $ctx->request = $request;
