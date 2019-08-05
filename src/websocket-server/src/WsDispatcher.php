@@ -5,7 +5,6 @@ namespace Swoft\WebSocket\Server;
 use InvalidArgumentException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\Session\Session;
@@ -71,8 +70,6 @@ class WsDispatcher
      *
      * @param Server $server
      * @param int    $fd
-     *
-     * @throws ContainerException
      */
     public function close(Server $server, int $fd): void
     {

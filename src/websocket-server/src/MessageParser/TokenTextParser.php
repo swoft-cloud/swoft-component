@@ -2,9 +2,9 @@
 
 namespace Swoft\WebSocket\Server\MessageParser;
 
-use ReflectionException;
+use function preg_match;
+use function strlen;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 use Swoft\WebSocket\Server\Message\Message;
 use function explode;
@@ -42,8 +42,6 @@ class TokenTextParser implements MessageParserInterface
      *  body: 'message body data'
      *
      * @return Message
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function decode(string $data): Message
     {
@@ -54,6 +52,11 @@ class TokenTextParser implements MessageParserInterface
         if (strpos($data, ':') > 0) {
             [$cmd, $body] = explode(':', $data, 2);
             $cmd = trim($cmd);
+
+            // only an command
+        } elseif (strlen($data) < 16 && 1 === preg_match('/^[\w-]+$/', $data)) {
+            $cmd  = $data;
+            $body = '';
         } else {
             $body = $data;
         }

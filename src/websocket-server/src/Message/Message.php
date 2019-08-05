@@ -3,10 +3,8 @@
 namespace Swoft\WebSocket\Server\Message;
 
 use JsonSerializable;
-use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Server\Concern\CommonProtocolDataTrait;
 use Swoft\Stdlib\Helper\JsonHelper;
 
@@ -34,8 +32,6 @@ class Message implements JsonSerializable
      * @param array  $ext
      *
      * @return Message
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function new(string $cmd, $data, array $ext = []): self
     {

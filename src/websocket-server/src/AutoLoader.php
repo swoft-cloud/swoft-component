@@ -2,8 +2,6 @@
 
 namespace Swoft\WebSocket\Server;
 
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Helper\ComposerJSON;
 use Swoft\Server\SwooleEvent;
 use Swoft\SwoftComponent;
@@ -59,8 +57,6 @@ class AutoLoader extends SwoftComponent
 
     /**
      * @return array
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function beans(): array
     {

@@ -13,7 +13,7 @@ use Swoft\WebSocket\Server\WebSocketServer;
  * Class WorkerEndSubscriber
  *
  * @since 2.0.5
- * TODO Subscriber()
+ * @Subscriber()
  */
 class WorkerEndSubscriber implements EventSubscriberInterface
 {
@@ -44,7 +44,7 @@ class WorkerEndSubscriber implements EventSubscriberInterface
         // Close all connection
         if ($server instanceof WebSocketServer) {
             foreach (Session::getSessions() as $sid => $sess) {
-                $server->getSwooleServer()->disconnect((int)$sid, 0, 'closed by server');
+                $server->disconnect((int)$sid, 0, 'closed by server');
             }
         }
 

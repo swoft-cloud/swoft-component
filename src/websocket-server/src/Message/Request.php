@@ -2,10 +2,8 @@
 
 namespace Swoft\WebSocket\Server\Message;
 
-use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\WebSocket\Server\Contract\RequestInterface;
 use Swoole\WebSocket\Frame;
 
@@ -31,8 +29,6 @@ class Request implements RequestInterface
      * @param Frame $frame
      *
      * @return Request
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(Frame $frame): self
     {
