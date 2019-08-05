@@ -3,7 +3,8 @@
 
 namespace Swoft\Db\Schema\Grammars;
 
-use Swoft\Db\Connection\Connection;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Grammar as BaseGrammar;
 use Swoft\Db\Query\Expression;
 use Swoft\Db\Schema\Blueprint;
@@ -72,6 +73,8 @@ abstract class Grammar extends BaseGrammar
      * @param Fluent    $command
      *
      * @return string
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function compileForeign(Blueprint $blueprint, Fluent $command)
     {
@@ -112,6 +115,8 @@ abstract class Grammar extends BaseGrammar
      * @param Blueprint $blueprint
      *
      * @return array
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     protected function getColumns(Blueprint $blueprint)
     {
@@ -217,6 +222,8 @@ abstract class Grammar extends BaseGrammar
      * @param mixed $table
      *
      * @return string
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function wrapTable($table)
     {
@@ -232,6 +239,8 @@ abstract class Grammar extends BaseGrammar
      * @param bool              $prefixAlias
      *
      * @return string
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function wrap($value, $prefixAlias = false)
     {

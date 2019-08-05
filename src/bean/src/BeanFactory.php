@@ -12,13 +12,14 @@ use Swoft\Stdlib\Reflections;
  *
  * @since 2.0
  */
-final class BeanFactory
+class BeanFactory
 {
     /**
      * Init
      *
      * @return void
      * @throws AnnotationException
+     * @throws ReflectionException
      */
     public static function init(): void
     {
@@ -111,6 +112,7 @@ final class BeanFactory
      * @param string $name
      * @param array  $definition
      *
+     * @return object
      * @example
      *
      * $bean = BeanFactory::createBean('className');

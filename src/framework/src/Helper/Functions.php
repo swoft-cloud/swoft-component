@@ -6,6 +6,7 @@ use Swoft\Config\Config;
 use Swoft\Context\Context;
 use Swoft\Contract\ContextInterface;
 use Swoft\Event\Manager\EventManager;
+use Swoft\Exception\SwoftException;
 use Swoft\Http\Server\HttpContext;
 use Swoft\Http\Server\HttpServer;
 use Swoft\Process\Context\ProcessContext;
@@ -143,10 +144,11 @@ if (!function_exists('context')) {
      * Get current context
      *
      * @return ContextInterface|HttpContext|ServiceContext|TaskContext|FinishContext|UserProcessContext|ProcessContext|StartContext|WorkerStartContext|WorkerStopContext|ShutdownContext
+     * @throws SwoftException
      */
     function context(): ContextInterface
     {
-        return Context::get();
+        return Context::get(true);
     }
 }
 

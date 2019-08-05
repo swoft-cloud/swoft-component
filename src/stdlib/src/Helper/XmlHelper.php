@@ -40,16 +40,14 @@ class XmlHelper
      */
     public static function xmlToArray(string $xml): array
     {
-        $res = [];
-        //如果为空,一般是xml有空格之类的,导致解析失败
-        $data = @(array)simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA | LIBXML_NOBLANKS);
-        if (isset($data[0]) && $data[0] === false) {
-            $data = null;
+        $string  = simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA | LIBXML_NOBLANKS);
+        $jsonStr = JsonHelper::encode($string);
+        $data    = JsonHelper::decode($jsonStr, true);
+        if ($data === false) {
+            return [];
         }
-        if ($data) {
-            $res = self::parseToArray($data);
-        }
-        return $res;
+
+        return $data;
     }
 
     /**

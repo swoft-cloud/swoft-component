@@ -11,7 +11,6 @@ use function sprintf;
 use Swoft\Annotation\AnnotationRegister;
 use Swoft\Annotation\Exception\AnnotationException;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\BeanHandler;
 use Swoft\Config\Config;
 use Swoft\Contract\ComponentInterface;
@@ -30,7 +29,6 @@ class BeanProcessor extends Processor
      * Handle bean
      *
      * @return bool
-     * @throws ContainerException
      * @throws ReflectionException
      * @throws AnnotationException
      */
