@@ -413,11 +413,25 @@ on A.id=B.id;', [$resCount - 20]);
     {
         $perPage = 2;
         $page    = 1;
-        $res     = User::paginate($page, $perPage, ['name', 'password', 'id']);
+        $res     = User::paginate($page, $perPage, ['id', 'name', 'password', 'user_desc']);
         $res1    = User::select('id')
             ->where('id', '>', 0)
-            ->addSelect(['name', 'password'])
+            ->addSelect(['name', 'password', 'user_desc'])
             ->paginate($page, $perPage);
+
+
+        $afterResult = User::where('name', '!=', '')
+            ->from('user as u')
+            ->leftJoin('count as c', 'u.id', '=', 'c.user_id')
+            ->paginateById($perPage, 1, ['name', 'password'], true, 'u.id');
+
+        $afterResult1 = User::where('name', '!=', '')
+            ->from('user as u')
+            ->paginateById($perPage, 1, ['name', 'password', 'user_desc']);
+
+        $this->assertEquals($res['perPage'], $afterResult1['perPage']);
+        $this->assertEquals($res['perPage'], $afterResult['perPage']);
+
         $this->assertEquals($res, $res1);
         $this->assertIsArray($res);
         $this->assertArrayHasKey('list', $res);
@@ -679,6 +693,11 @@ on A.id=B.id;', [$resCount - 20]);
         User::updateAllCounters(['user_desc' => $expectLabel], ['age' => -1]);
         $this->assertEquals($user->getAge(), User::find($id)->getAge());
 
+        User::updateAllCountersAdoptPrimary(['user_desc' => $expectLabel], ['age' => 1]);
+        DB::table('user')->updateAllCountersAdoptPrimary(['user_desc' => $expectLabel], ['age' => -1]);
+        $this->assertEquals($user->getAge(), User::find($id)->getAge());
+
+
         DB::table('user')->updateAllCounters(['user_desc' => $expectLabel], ['age' => -1]);
         $this->assertEquals($user->getAge() - 1, User::find($id)->getAge());
 
@@ -703,8 +722,8 @@ on A.id=B.id;', [$resCount - 20]);
         $user = User::updateOrCreate(['id' => $id], [
             'test_json' => [
                 'user_status' => mt_rand(),
-//                'balance'     => 0,
-//                'updated_at'  => null
+                //                'balance'     => 0,
+                //                'updated_at'  => null
             ],
             'user_desc' => 'HH',
             'age'       => 1,

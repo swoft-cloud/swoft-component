@@ -8,6 +8,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder as QueryBuilder;
+use Swoft\Stdlib\Helper\StringHelper;
 
 /**
  * Class Builder
@@ -161,11 +162,26 @@ class MySqlBuilder extends Builder
             ->addSelect($addSelect)
             ->get()
             ->toArray();
+
+        $removePrefix = '';
+        if ($likeTable) {
+            $removePrefixExplode = explode('_', $likeTable, 2);
+            $removePrefix        = current($removePrefixExplode);
+
+            if (count($removePrefixExplode) === 2) {
+                $removePrefix .= '_';
+            }
+        }
         foreach ($results as $key => $item) {
             $item = (array)$item;
             // Re builder result
-            $name           = $this->removeTablePrefix($item['name']);
-            $item['name']   = $name;
+            $name = $this->removeTablePrefix($item['name']);
+
+            $item['name'] = $name;
+
+            if ($removePrefix) {
+                $name = StringHelper::replaceFirst($removePrefix, '', $name);
+            }
             $results[$name] = $item;
             unset($results[$key]);
         }

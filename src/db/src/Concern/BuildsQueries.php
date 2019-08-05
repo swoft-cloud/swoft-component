@@ -9,6 +9,7 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Eloquent\Model;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder;
+use Swoft\Db\Eloquent\Builder as EloquentBuilder;
 
 /**
  * Class BuildsQueries
@@ -98,7 +99,7 @@ trait BuildsQueries
      */
     public function first(array $columns = ['*'])
     {
-        /* @var \Swoft\Db\Eloquent\Builder|\Swoft\Db\Eloquent\Builder $builder */
+        /* @var \Swoft\Db\Eloquent\Builder $builder */
         $builder = $this->take(1);
         return $builder->get($columns)->first();
     }
@@ -128,7 +129,7 @@ trait BuildsQueries
      *
      * @param Closure $callback
      *
-     * @return Builder
+     * @return Builder|EloquentBuilder
      */
     public function tap($callback)
     {
@@ -153,5 +154,91 @@ trait BuildsQueries
         }
 
         return $this;
+    }
+
+
+    /**
+     * Paginate the given query into a simple paginator.
+     *
+     * @param int   $page
+     * @param int   $perPage
+     * @param array $columns
+     *
+     * @return array
+     */
+    public function paginate(int $page = 1, int $perPage = 15, array $columns = ['*']): array
+    {
+        $list = [];
+        // Run a pagination count query
+        if ($count = $this->getCountForPagination()) {
+            // Get paginate records
+            $list = $this->forPage($page, $perPage)->get($columns)->toArray();
+        }
+
+        return [
+            'count'     => $count,
+            'list'      => $list,
+            'page'      => $page,
+            'perPage'   => $perPage,
+            'pageCount' => (int)ceil($count / $perPage)
+        ];
+    }
+
+    /**
+     * Paginate the given query into a simple paginator.
+     *
+     * @param int         $perPage
+     * @param int         $lastId
+     * @param array       $columns
+     * @param bool        $useAfter true:"$primary" asc rank, false:"$primary" desc rank
+     * @param string|null $primary  default: "id"
+     *
+     * @return array
+     * @throws DbException
+     */
+    public function paginateById(
+        int $perPage = 15,
+        int $lastId = 0,
+        array $columns = ['*'],
+        bool $useAfter = false,
+        string $primary = null
+    ): array {
+        $list       = [];
+        $thisLastId = 0;
+
+        if ($primary === null && $this instanceof EloquentBuilder) {
+            $primary = $this->getModel()->getKeyName();
+        }
+
+        if ($primary === null) {
+            $primary = 'id';
+        }
+
+        // Run a pagination count query
+        if ($count = $this->getCountForPagination()) {
+            // Auto Join primary field
+            if ($columns !== ['*'] && in_array($primary, $columns, true) === false) {
+                $columns[] = $primary;
+            }
+            $method = $useAfter ? 'forPageAfterId' : 'forPageBeforeId';
+
+            // Get paginate records
+            $list = $this->$method($perPage, $lastId ?: null, $primary)->get($columns)->toArray();
+
+            // Alias parse
+            if (strpos($primary, '.') !== false) {
+                $primaryAlias = explode('.', $primary);
+                $primary      = end($primaryAlias);
+            }
+            $thisLastId = end($list)[$primary] ?? 0;
+        }
+
+        return [
+            'count'     => $count,
+            'list'      => $list,
+            'lastId'    => $thisLastId,
+            'perPage'   => $perPage,
+            'pageCount' => (int)ceil($count / $perPage)
+        ];
     }
 }

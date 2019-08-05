@@ -53,6 +53,8 @@ class MySqlGrammar extends Grammar
      * @param Builder $query
      *
      * @return string
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function compileSelect(Builder $query)
     {
@@ -76,6 +78,8 @@ class MySqlGrammar extends Grammar
      * @param string $value
      *
      * @return string
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function compileJsonContains($column, $value)
     {
@@ -90,6 +94,8 @@ class MySqlGrammar extends Grammar
      * @param string $value
      *
      * @return string
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function compileJsonLength($column, $operator, $value)
     {
@@ -221,6 +227,8 @@ class MySqlGrammar extends Grammar
      * @param JsonExpression $value
      *
      * @return string
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function compileJsonUpdateColumn($key, JsonExpression $value)
     {

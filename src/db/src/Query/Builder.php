@@ -4,7 +4,6 @@
 namespace Swoft\Db\Query;
 
 use function is_array;
-use function ceil;
 use Closure;
 use DateTimeInterface;
 use Generator;
@@ -28,7 +27,7 @@ use Swoft\Db\Query\Grammar\Grammar;
 use Swoft\Db\Query\Grammar\MySqlGrammar;
 use Swoft\Db\Query\Processor\MySqlProcessor;
 use Swoft\Db\Query\Processor\Processor;
-use Swoft\Stdlib\Collection;
+use Swoft\Db\Eloquent\Collection;
 use Swoft\Stdlib\Contract\Arrayable;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\Str;
@@ -414,6 +413,8 @@ class Builder implements PrototypeInterface
      * @param mixed $query
      *
      * @return array
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function parseSub($query): array
     {
@@ -2226,8 +2227,30 @@ class Builder implements PrototypeInterface
             $this->where($column, '>', $lastId);
         }
 
-        return $this->orderBy($column, 'asc')
-            ->take($perPage);
+        return $this->orderBy($column, 'asc')->take($perPage);
+    }
+
+    /**
+     * Constrain the query to the next "page" of results before a given ID.
+     *
+     * @param int      $perPage
+     * @param int|null $lastId
+     * @param string   $column
+     *
+     * @return static
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function forPageBeforeId(int $perPage = 15, int $lastId = null, string $column = 'id'): self
+    {
+        $this->orders = $this->removeExistingOrdersFor($column);
+
+        if (!is_null($lastId)) {
+            $this->where($column, '<', $lastId);
+        }
+
+        return $this->orderBy($column, 'desc')->take($perPage);
     }
 
     /**
@@ -2236,10 +2259,12 @@ class Builder implements PrototypeInterface
      * @param string $column
      *
      * @return array
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function removeExistingOrdersFor(string $column): array
     {
-        return Collection::make($this->orders)
+        return Collection::new($this->orders)
             ->reject(function ($order) use ($column) {
                 return isset($order['column'])
                     ? $order['column'] === $column : false;
@@ -2327,6 +2352,8 @@ class Builder implements PrototypeInterface
      * Get the SQL representation of the query.
      *
      * @return string
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function toSql(): string
     {
@@ -2372,6 +2399,8 @@ class Builder implements PrototypeInterface
      * @param array $columns
      *
      * @return Collection
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function get(array $columns = ['*']): Collection
     {
@@ -2379,7 +2408,7 @@ class Builder implements PrototypeInterface
             return $this->processor->processSelect($this, $this->runSelect());
         });
 
-        return new Collection($result);
+        return Collection::new($result);
     }
 
     /**
@@ -2396,37 +2425,13 @@ class Builder implements PrototypeInterface
     }
 
     /**
-     * Paginate the given query into a simple paginator.
-     *
-     * @param int   $page
-     * @param int   $perPage
-     * @param array $columns
-     *
-     * @return array
-     */
-    public function paginate(int $page = 1, int $perPage = 15, array $columns = ['*']): array
-    {
-        $list = [];
-        // Run a pagination count query
-        if ($count = $this->getCountForPagination()) {
-            // Get paginate records
-            $list = $this->forPage($page, $perPage)->get($columns)->toArray();
-        }
-        return [
-            'count'     => $count,
-            'list'      => $list,
-            'page'      => $page,
-            'perPage'   => $perPage,
-            'pageCount' => ceil($count / $perPage)
-        ];
-    }
-
-    /**
      * Get the count of the total records for the paginator.
      *
      * @param array $columns
      *
      * @return int
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function getCountForPagination(array $columns = ['*']): int
     {
@@ -2452,6 +2457,8 @@ class Builder implements PrototypeInterface
      * @param array $columns
      *
      * @return array
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function runPaginationCountQuery(array $columns = ['*']): array
     {
@@ -2567,6 +2574,8 @@ class Builder implements PrototypeInterface
      * @param string|null $key
      *
      * @return Collection
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function pluck($column, $key = null): Collection
     {
@@ -2583,7 +2592,7 @@ class Builder implements PrototypeInterface
         );
 
         if (empty($queryResult)) {
-            return new Collection();
+            return Collection::new();
         }
 
         // If the columns are qualified with a table or have an alias, we cannot use
@@ -2622,6 +2631,8 @@ class Builder implements PrototypeInterface
      * @param string $key
      *
      * @return Collection
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function pluckFromObjectColumn($queryResult, $column, $key): Collection
     {
@@ -2637,7 +2648,7 @@ class Builder implements PrototypeInterface
             }
         }
 
-        return new Collection($results);
+        return Collection::new($results);
     }
 
     /**
@@ -2648,6 +2659,8 @@ class Builder implements PrototypeInterface
      * @param string $key
      *
      * @return Collection
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function pluckFromArrayColumn($queryResult, $column, $key): Collection
     {
@@ -2663,7 +2676,7 @@ class Builder implements PrototypeInterface
             }
         }
 
-        return new Collection($results);
+        return Collection::new($results);
     }
 
     /**
@@ -2673,6 +2686,8 @@ class Builder implements PrototypeInterface
      * @param string $glue
      *
      * @return string
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function implode(string $column, string $glue = ''): string
     {
@@ -2724,6 +2739,8 @@ class Builder implements PrototypeInterface
      * @param string $columns
      *
      * @return int
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function count(string $columns = '*'): int
     {
@@ -2736,6 +2753,8 @@ class Builder implements PrototypeInterface
      * @param string $column
      *
      * @return float|int
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function min(string $column)
     {
@@ -2748,6 +2767,8 @@ class Builder implements PrototypeInterface
      * @param string $column
      *
      * @return float|int
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function max(string $column)
     {
@@ -2760,6 +2781,8 @@ class Builder implements PrototypeInterface
      * @param string $column
      *
      * @return float|int
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function sum(string $column)
     {
@@ -2774,6 +2797,8 @@ class Builder implements PrototypeInterface
      * @param string $column
      *
      * @return float|int
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function avg($column)
     {
@@ -2786,6 +2811,8 @@ class Builder implements PrototypeInterface
      * @param string $column
      *
      * @return float|int
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function average(string $column)
     {
@@ -2799,6 +2826,8 @@ class Builder implements PrototypeInterface
      * @param array  $columns
      *
      * @return float|int
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function aggregate(string $function, array $columns = ['*'])
     {
@@ -2826,6 +2855,8 @@ class Builder implements PrototypeInterface
      * @param array  $columns
      *
      * @return float|int
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function numericAggregate(string $function, array $columns = ['*'])
     {
@@ -3124,6 +3155,70 @@ class Builder implements PrototypeInterface
         }
 
         return $this->update($counters + $extra);
+    }
+
+    /**
+     * Update counters by primary key
+     *
+     * @param array  $ids
+     * @param array  $counters
+     * @param array  $extra
+     * @param string $primary
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function updateAllCountersById(
+        array $ids,
+        array $counters,
+        array $extra = [],
+        string $primary = 'id'
+    ): int {
+        if (empty($ids)) {
+            return 0;
+        }
+
+        if (count($ids) === 1) {
+            $ids = current($ids);
+        }
+
+        return $this->updateAllCounters(
+            [$primary => $ids],
+            $counters,
+            $extra
+        );
+    }
+
+    /**
+     * Update counters by `$attributes` Adopt Primary
+     *
+     * @param array  $attributes
+     * @param array  $counters
+     * @param array  $extra
+     * @param string $primary
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function updateAllCountersAdoptPrimary(
+        array $attributes,
+        array $counters,
+        array $extra = [],
+        string $primary = 'id'
+    ): int {
+
+        $ids = $this->where($attributes)->get([$primary])->pluck($primary)->toArray();
+
+        return $this->updateAllCountersById(
+            $ids,
+            $counters,
+            $extra,
+            $primary
+        );
     }
 
     /**
