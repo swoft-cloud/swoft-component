@@ -36,6 +36,7 @@ class AcceptResponseFormatter implements ResponseFormatterInterface
      * @param Response $response
      *
      * @return Response
+     * @throws \Swoft\Exception\SwoftException
      */
     public function format(Response $response): Response
     {
