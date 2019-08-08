@@ -7,9 +7,7 @@ use function explode;
 use InvalidArgumentException;
 use function is_array;
 use Psr\Http\Message\UploadedFileInterface;
-use ReflectionException;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\Upload\UploadedFile;
 use Swoft\Http\Message\Uri\Uri;
 
@@ -112,8 +110,6 @@ class HttpHelper
      * @param array  $server
      *
      * @return Uri
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function newUriByCoRequest(string $path, string $query,  string $headerHost, array &$server): Uri
     {

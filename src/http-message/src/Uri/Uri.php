@@ -2,19 +2,18 @@
 
 namespace Swoft\Http\Message\Uri;
 
-use function explode;
 use InvalidArgumentException;
+use Psr\Http\Message\UriInterface;
+use Swoft;
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Concern\PrototypeTrait;
+use function explode;
 use function parse_url;
 use function preg_match;
 use function preg_replace_callback;
-use Psr\Http\Message\UriInterface;
 use function rawurlencode;
-use ReflectionException;
 use function strpos;
 use function strtolower;
-use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\ContainerException;
 
 /**
  * Class Uri
@@ -165,13 +164,11 @@ class Uri implements UriInterface
      * @param array  $params
      *
      * @return Uri
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(string $uri = '', array $params = []): self
     {
         /** @var Uri $instance */
-        $instance = self::__instance();
+        $instance = Swoft::getBean(self::class);
 
         // Save some params
         $instance->params = $params;

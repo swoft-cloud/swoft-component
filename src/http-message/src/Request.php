@@ -2,19 +2,10 @@
 
 namespace Swoft\Http\Message;
 
-use function array_merge;
-use function explode;
 use InvalidArgumentException;
-use function is_array;
-use function preg_replace;
 use Psr\Http\Message\StreamInterface;
-use ReflectionException;
-use function rtrim;
-use function strtoupper;
-use function substr;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\Concern\InteractsWithInput;
 use Swoft\Http\Message\Contract\RequestParserInterface;
 use Swoft\Http\Message\Contract\ServerRequestInterface;
@@ -23,6 +14,13 @@ use Swoft\Http\Message\Stream\Stream;
 use Swoft\Http\Message\Uri\Uri;
 use Swoft\Stdlib\Helper\Str;
 use Swoole\Http\Request as CoRequest;
+use function array_merge;
+use function explode;
+use function is_array;
+use function preg_replace;
+use function rtrim;
+use function strtoupper;
+use function substr;
 
 /**
  * Class Request - The PSR ServerRequestInterface implement
@@ -134,8 +132,6 @@ class Request extends PsrRequest implements ServerRequestInterface
      * @param CoRequest $coRequest
      *
      * @return Request
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(CoRequest $coRequest): self
     {
@@ -580,8 +576,6 @@ class Request extends PsrRequest implements ServerRequestInterface
 
     /**
      * @return StreamInterface
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function getBody(): StreamInterface
     {
