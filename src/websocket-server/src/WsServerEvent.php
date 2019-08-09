@@ -18,10 +18,19 @@ final class WsServerEvent
     public const OPEN_AFTER        = 'swoft.ws.server.open.after';
     public const OPEN_ERROR        = 'swoft.ws.server.open.error';
 
-    // On before handle message
-    public const MESSAGE_BEFORE    = 'swoft.ws.server.message.before';
+    /**
+     * @deprecated Please use MESSAGE_RECEIVE instead.
+     */
+    public const MESSAGE_BEFORE    = 'swoft.ws.server.message.receive';
 
-    // On message send
+    /**
+     * On message receive, before handle message
+     */
+    public const MESSAGE_RECEIVE    = 'swoft.ws.server.message.receive';
+
+    /**
+     * On before send message
+     */
     public const MESSAGE_SEND    = 'swoft.ws.server.message.send';
 
     // On after handle message

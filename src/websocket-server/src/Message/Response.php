@@ -5,6 +5,7 @@ namespace Swoft\WebSocket\Server\Message;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Context\Context;
 use Swoft\Exception\SwoftException;
+use Swoft\Log\Helper\CLog;
 use Swoft\Server\Concern\CommonProtocolDataTrait;
 use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Connection;
@@ -96,9 +97,11 @@ class Response implements ResponseInterface
     {
         $self = bean(self::class);
 
-        // Set properties
-        $self->sent      = false;
-        $self->sender    = $sender;
+        // Use sender as default receiver
+        $self->fd     = $sender;
+        $self->sent   = false;
+        $self->sender = $sender;
+
         $self->sendToAll = false;
 
         return $self;
@@ -190,9 +193,20 @@ class Response implements ResponseInterface
             return $server->sendToAll($content, $this->sender, $pageSize, $this->opcode);
         }
 
-        // To some users
+        // To special users
         if ($this->fds) {
             return $server->sendToSome($content, $this->fds, $this->noFds, $this->sender, $pageSize, $this->opcode);
+        }
+
+        // Except some users
+        if ($this->noFds) {
+            return $server->sendToSome($content, [], $this->noFds, $this->sender, $pageSize, $this->opcode);
+        }
+
+        // No receiver
+        if ($this->fd < 1) {
+            CLog::warning('no receiver for the response message');
+            return 0;
         }
 
         // To one user
@@ -246,7 +260,7 @@ class Response implements ResponseInterface
      *
      * @return self
      */
-    public function setFd(int $fd): ResponseInterface
+    public function setFd(int $fd): self
     {
         $this->fd = $fd;
         return $this;
@@ -265,7 +279,7 @@ class Response implements ResponseInterface
      *
      * @return self
      */
-    public function setOpcode(int $opcode): ResponseInterface
+    public function setOpcode(int $opcode): self
     {
         if ($opcode > 0 && $opcode < 11) {
             $this->opcode = $opcode;
@@ -287,7 +301,7 @@ class Response implements ResponseInterface
      *
      * @return self
      */
-    public function setFinish(bool $finish): ResponseInterface
+    public function setFinish(bool $finish): self
     {
         $this->finish = $finish;
         return $this;
@@ -313,6 +327,15 @@ class Response implements ResponseInterface
     }
 
     /**
+     * @return Response|self
+     */
+    public function noSender(): self
+    {
+        $this->sender = 0;
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getContent(): string
@@ -322,6 +345,7 @@ class Response implements ResponseInterface
 
     /**
      * @param string $content
+     *
      * @return Response|ResponseInterface
      */
     public function setContent(string $content): ResponseInterface

@@ -119,7 +119,7 @@ class WebSocketServer extends Server
         }
 
         $fromUser = $sender < 1 ? 'SYSTEM' : $sender;
-        $this->log("(private)The #{$fromUser} send message to the user #{$receiver}. Data: {$data}");
+        $this->log("(private)The #{$fromUser} send message to the user #{$receiver}. Opcode: $opcode Data: {$data}");
 
         return $this->swooleServer->push($receiver, $data, $opcode, $finish);
     }
@@ -223,7 +223,7 @@ class WebSocketServer extends Server
     public function sendToAll($data, int $sender = 0, int $pageSize = 50, int $opcode = WEBSOCKET_OPCODE_TEXT): int
     {
         $fromUser = $sender < 1 ? 'SYSTEM' : $sender;
-        $this->log("(broadcast)The #{$fromUser} send a message to all users. Data: {$data}");
+        $this->log("(broadcast)The #{$fromUser} send a message to all users. Opcode: $opcode Data: {$data}");
 
         return $this->pageEach(function (int $fd) use ($data, $opcode) {
             $this->swooleServer->push($fd, $data, $opcode);
@@ -253,7 +253,7 @@ class WebSocketServer extends Server
 
         // To receivers
         if ($receivers) {
-            $this->log("(broadcast)The #{$fromUser} gave some specified user sending a message. Data: {$data}");
+            $this->log("(broadcast)The #{$fromUser} gave some specified user sending a message. Opcode: $opcode Data: {$data}");
 
             foreach ($receivers as $fd) {
                 if ($this->swooleServer->isEstablished($fd)) {
@@ -268,7 +268,7 @@ class WebSocketServer extends Server
         // To special users
         $excluded = $excluded ? (array)array_flip($excluded) : [];
 
-        $this->log("(broadcast)The #{$fromUser} send the message to everyone except some people. Data: {$data}");
+        $this->log("(broadcast)The #{$fromUser} send the message to everyone except some people. Opcode: $opcode Data: {$data}");
 
         return $this->pageEach(function (int $fd) use ($excluded, $data, $opcode) {
             if (isset($excluded[$fd])) {

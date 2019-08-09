@@ -80,7 +80,7 @@ class MockHttpRequest extends Request
      *
      * @return self
      */
-    public static function new(array $server, array $headers, array $cookies, array $params): self
+    public static function new(array $server = [], array $headers = [], array $cookies = [], array $params = []): self
     {
         $instance = new self;
 

@@ -58,7 +58,7 @@ class MessageListener implements MessageInterface
 
         try {
             // Trigger message before event
-            Swoft::trigger(WsServerEvent::MESSAGE_BEFORE, $fd, $server, $frame);
+            Swoft::trigger(WsServerEvent::MESSAGE_RECEIVE, $fd, $server, $frame);
 
             // Parse and dispatch message
             $dispatcher->dispatch($server, $request, $response);

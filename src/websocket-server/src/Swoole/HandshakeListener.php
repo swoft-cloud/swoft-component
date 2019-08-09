@@ -2,11 +2,9 @@
 
 namespace Swoft\WebSocket\Server\Swoole;
 
-use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Co;
 use Swoft\Context\Context;
 use Swoft\Http\Message\Request as Psr7Request;
@@ -42,8 +40,6 @@ class HandshakeListener implements HandshakeInterface
      * @param Response $response
      *
      * @return bool
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws Throwable
      */
     public function onHandshake(Request $request, Response $response): bool

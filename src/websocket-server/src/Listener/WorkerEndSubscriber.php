@@ -2,6 +2,7 @@
 
 namespace Swoft\WebSocket\Server\Listener;
 
+use Swoft\Config\Annotation\Mapping\Config;
 use Swoft\Event\Annotation\Mapping\Subscriber;
 use Swoft\Event\EventInterface;
 use Swoft\Event\EventSubscriberInterface;
@@ -18,6 +19,12 @@ use Swoft\WebSocket\Server\WebSocketServer;
  */
 class WorkerEndSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @Config("websocket.autoCloseOnWorkerEnd")
+     * @var int
+     */
+    private $autoCloseConnection = 0;
+
     /**
      * Configure events and corresponding processing methods (you can configure the priority)
      *
@@ -39,6 +46,11 @@ class WorkerEndSubscriber implements EventSubscriberInterface
      */
     public function onWorkerStop(EventInterface $event): void
     {
+        // If not enable
+        if ($this->autoCloseConnection === 0) {
+            return;
+        }
+
         /** @var WebSocketServer $server */
         $server = $event->getTarget();
 
