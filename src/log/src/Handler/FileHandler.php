@@ -54,6 +54,7 @@ class FileHandler extends AbstractProcessingHandler
     public function init(): void
     {
         $this->logFile = alias($this->logFile);
+        $this->logFile = $this->formatFile($this->logFile);
         $this->createDir();
 
         if (is_array($this->levels)) {
@@ -190,5 +191,30 @@ class FileHandler extends AbstractProcessingHandler
         }
 
         return in_array($record['level'], $this->levelValues, true);
+    }
+
+    public function formatFile(string $logFile): string
+    {
+        $logPath  = dirname($logFile);
+        $fileName = basename($logFile);
+
+        $math = [];
+        if (!preg_match('/%(.*)\{(.*)\}/', $fileName, $math)) {
+            return $logFile;
+        }
+
+        $type  = $math[1];
+        $value = $math[2];
+
+        // Date format
+        $formatFile = $logFile;
+        switch ($type) {
+            case 'd':
+                $formatValue = date($value);
+                $formatFile  = str_replace("%{$type}{{$value}}", $formatValue, $logFile);
+                break;
+        }
+
+        return $formatFile;
     }
 }
