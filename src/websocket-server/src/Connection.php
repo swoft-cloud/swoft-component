@@ -42,6 +42,11 @@ class Connection implements SessionInterface
     // private $module;
 
     /**
+     * @var WebSocketServer
+     */
+    private $server;
+
+    /**
      * @var Request|ServerRequestInterface
      */
     private $request;
@@ -63,18 +68,19 @@ class Connection implements SessionInterface
     private $moduleInfo;
 
     /**
-     * @param int      $fd
-     * @param Request  $request
-     * @param Response $response
+     * @param WebSocketServer $server
+     * @param Request         $request
+     * @param Response        $response
      *
      * @return Connection
      */
-    public static function new(int $fd, Request $request, Response $response): self
+    public static function new(WebSocketServer $server, Request $request, Response $response): self
     {
         /** @var self $sess */
         $sess = Swoft::getBean(self::class);
 
-        $sess->fd = $fd;
+        $sess->fd     = $fd = $request->getFd();
+        $sess->server = $server;
 
         // Init meta info
         $sess->buildMetadata($fd, $request->getUriPath());
@@ -92,7 +98,7 @@ class Connection implements SessionInterface
      */
     private function buildMetadata(int $fd, string $path): void
     {
-        $info = server()->getClientInfo($fd);
+        $info = $this->server->getClientInfo($fd);
 
         server()->log("Handshake: conn#{$fd} send handshake request to {$path}, client info: ", $info, 'debug');
 
@@ -115,7 +121,7 @@ class Connection implements SessionInterface
      */
     public function push(string $data, int $opcode = WEBSOCKET_OPCODE_TEXT, bool $finish = true): bool
     {
-        return server()->push($this->fd, $data, $opcode, $finish);
+        return $this->server->push($this->fd, $data, $opcode, $finish);
     }
 
     /**
@@ -223,5 +229,13 @@ class Connection implements SessionInterface
     public function setModuleInfo(array $moduleInfo): void
     {
         $this->moduleInfo = $moduleInfo;
+    }
+
+    /**
+     * @return WebSocketServer
+     */
+    public function getServer(): WebSocketServer
+    {
+        return $this->server;
     }
 }

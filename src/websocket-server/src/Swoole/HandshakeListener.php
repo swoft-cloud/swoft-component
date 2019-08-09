@@ -59,12 +59,13 @@ class HandshakeListener implements HandshakeInterface
         }
 
         // Initialize psr7 Request and Response
-        $psr7Req = Psr7Request::new($request);
-        $psr7Res = Psr7Response::new($response);
+        $psr7Req  = Psr7Request::new($request);
+        $psr7Res  = Psr7Response::new($response);
+        $wsServer = Swoft::getBean('wsServer');
 
         // Initialize connection session and context
         $ctx  = WsHandshakeContext::new($psr7Req, $psr7Res);
-        $conn = Connection::new($fd, $psr7Req, $psr7Res);
+        $conn = Connection::new($wsServer, $psr7Req, $psr7Res);
 
         // Bind connection and bind cid => sid(fd)
         Session::set($sid, $conn);
@@ -80,7 +81,7 @@ class HandshakeListener implements HandshakeInterface
             /** @var Psr7Response $psr7Res */
             [$status, $psr7Res] = $dispatcher->handshake($psr7Req, $psr7Res);
             if (true !== $status) {
-                server()->log("Handshake: conn#$fd handshake check failed");
+                $wsServer->log("Handshake: conn#$fd handshake check failed");
                 $psr7Res->quickSend();
 
                 // NOTICE: Rejecting a handshake still triggers a close event.
@@ -96,9 +97,13 @@ class HandshakeListener implements HandshakeInterface
             // Response handshake successfully
             $meta = $conn->getMetadata();
             $conn->setHandshake(true);
+
+            // Swoft::trigger(WsServerEvent::HANDSHAKE_SUCCESS, $fd, $request, $response);
+
+            // Response handshake
             $psr7Res->quickSend();
 
-            server()->log("Handshake: conn#{$fd} handshake successful! meta:", $meta, 'debug');
+            $wsServer->log("Handshake: conn#{$fd} handshake successful! meta:", $meta, 'debug');
             Swoft::trigger(WsServerEvent::HANDSHAKE_SUCCESS, $fd, $request, $response);
 
             // Handshaking successful, Manually triggering the open event

@@ -2,6 +2,7 @@
 
 namespace Swoft\WebSocket\Server\Message;
 
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Context\Context;
 use Swoft\Exception\SwoftException;
@@ -13,6 +14,8 @@ use Swoft\WebSocket\Server\Context\WsMessageContext;
 use Swoft\WebSocket\Server\Contract\ResponseInterface;
 use function bean;
 use function is_object;
+use Swoft\WebSocket\Server\WsServerEvent;
+use Swoole\WebSocket\Frame;
 use const WEBSOCKET_OPCODE_TEXT;
 
 /**
@@ -177,16 +180,21 @@ class Response implements ResponseInterface
      */
     public function send(Connection $conn = null): int
     {
-        // Deny repeat send.
-        // But if you want send again, you can call `setSent(false)` before send.
+        // Deny repeat call send.
+        // But if you want send again, you can call `setSent(false)` before call it.
         if ($this->sent) {
             return 0;
         }
 
-        $server = bean('wsServer');
+        /** @noinspection CallableParameterUseCaseInTypeContextInspection */
+        $conn   = $conn ?: Session::mustGet();
+        $server = $conn->getServer();
 
         $pageSize = $this->pageSize;
         $content  = $this->formatContent($conn);
+
+        // Trigger event before push message content to client
+        Swoft::trigger(WsServerEvent::MESSAGE_PUSH, $server, $content, $this);
 
         // To all users
         if ($this->sendToAll) {
@@ -221,26 +229,38 @@ class Response implements ResponseInterface
      * @return string
      * @throws SwoftException
      */
-    protected function formatContent(Connection $conn = null): string
+    protected function formatContent(Connection $conn): string
     {
         // Content for response
         $content = $this->content;
 
-        if ($content === '') {
-            /** @noinspection CallableParameterUseCaseInTypeContextInspection */
-            $conn = $conn ?: Session::mustGet();
+        if ($content !== '') {
+            return $content;
+        }
 
-            /** @var WsMessageContext $context */
-            $context = Context::get(true);
-            $parser  = $conn->getParser();
+        /** @var WsMessageContext $context */
+        $context = Context::get(true);
+        $parser  = $conn->getParser();
+        $message = null;
 
-            if (is_object($this->data) && $this->data instanceof Message) {
+        $cmdId = $context->getMessage()->getCmd();
+        if (is_object($this->data)) {
+            if ($this->data instanceof Message) {
                 $message = $this->data;
+            } elseif ($this->data instanceof Frame) {
+                $this->setFd($this->data->fd);
+                $this->setFinish($this->data->finish);
+                $this->setOpcode($this->data->opcode);
+
+                $content = $this->data->data;
             } else {
-                $cmdId   = $context->getMessage()->getCmd();
                 $message = Message::new($cmdId, $this->data, $this->ext);
             }
+        } else {
+            $message = Message::new($cmdId, $this->data, $this->ext);
+        }
 
+        if ($message) {
             $content = $parser->encode($message);
         }
 
@@ -262,7 +282,10 @@ class Response implements ResponseInterface
      */
     public function setFd(int $fd): self
     {
-        $this->fd = $fd;
+        if ($fd > 0) {
+            $this->fd = $fd;
+        }
+
         return $this;
     }
 
