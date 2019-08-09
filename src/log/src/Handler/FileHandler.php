@@ -4,23 +4,21 @@
 namespace Swoft\Log\Handler;
 
 
+use DateTime;
+use InvalidArgumentException;
+use Monolog\Handler\AbstractProcessingHandler;
+use Swoft\Co;
+use Swoft\Log\Helper\Log;
+use Swoft\Log\Logger as SwoftLogger;
+use Swoft\Log\Logger;
+use Swoft\Stdlib\Helper\JsonHelper;
+use UnexpectedValueException;
 use function alias;
 use function array_column;
-use DateTime;
 use function dirname;
 use function implode;
 use function in_array;
-use InvalidArgumentException;
 use function is_dir;
-use Monolog\Handler\AbstractProcessingHandler;
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
-use Swoft\Co;
-use Swoft\Log\Helper\Log;
-use Swoft\Log\Logger;
-use Swoft\Log\Logger as SwoftLogger;
-use Swoft\Stdlib\Helper\JsonHelper;
-use UnexpectedValueException;
 
 /**
  * Class FileHandler
@@ -55,6 +53,7 @@ class FileHandler extends AbstractProcessingHandler
     {
         $this->logFile = alias($this->logFile);
         $this->logFile = $this->formatFile($this->logFile);
+
         $this->createDir();
 
         if (is_array($this->levels)) {
@@ -75,8 +74,6 @@ class FileHandler extends AbstractProcessingHandler
      * @param array $records
      *
      * @return void
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function handleBatch(array $records): void
     {
@@ -93,8 +90,6 @@ class FileHandler extends AbstractProcessingHandler
      *
      * @param array $records
      *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     protected function write(array $records): void
     {
@@ -152,7 +147,10 @@ class FileHandler extends AbstractProcessingHandler
      */
     public function formatJson(array $record): string
     {
-        unset($record['formatted'], $record['context'], $record['extra']);
+        unset($record['formatted'], $record['extra']);
+        if ($record['level'] == Logger::NOTICE) {
+            unset($record['context']);
+        }
 
         if ($record['datetime'] instanceof DateTime) {
             $record['datetime'] = $record['datetime']->format('Y-m-d H:i');
@@ -193,12 +191,15 @@ class FileHandler extends AbstractProcessingHandler
         return in_array($record['level'], $this->levelValues, true);
     }
 
+    /**
+     * @param string $logFile
+     *
+     * @return string
+     */
     public function formatFile(string $logFile): string
     {
-        $logPath  = dirname($logFile);
+        $math     = [];
         $fileName = basename($logFile);
-
-        $math = [];
         if (!preg_match('/%(.*)\{(.*)\}/', $fileName, $math)) {
             return $logFile;
         }
