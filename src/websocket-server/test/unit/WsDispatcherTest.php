@@ -2,21 +2,19 @@
 
 namespace SwoftTest\WebSocket\Server\Unit;
 
-use PHPUnit\Framework\TestCase;
-use SwoftTest\Testing\Concern\CommonTestAssertTrait;
+use function bean;
 
 /**
  * Class WsDispatcherTest
+ *
+ * @since 2.0
  */
-class WsDispatcherTest extends TestCase
+class WsDispatcherTest extends WsServerTestCase
 {
-    use CommonTestAssertTrait;
-
-    // ------------------------------- unit tests -------------------------------
-    public function test(): void
+    public function testHandshake(): void
     {
+        $dp = bean('wsDispatcher');
 
+        $this->assertNotEmpty($dp);
     }
-
-    // ------------------------------- func tests -------------------------------
 }

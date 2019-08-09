@@ -15,6 +15,7 @@ use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder as QueryBuilder;
 use Swoft\Stdlib\Contract\Arrayable;
 use Swoft\Stdlib\Helper\PhpHelper;
+use function is_null;
 
 /**
  * Class Builder
@@ -22,7 +23,7 @@ use Swoft\Stdlib\Helper\PhpHelper;
  * @since 2.0
  * @method Builder select(string ...$columns)
  * @method QueryBuilder selectSub(Closure|QueryBuilder|string $query, string $as)
- * @method Builder selectRaw(string $expression, array $bindings = [])
+ * @method QueryBuilder selectRaw(string $expression, array $bindings = [])
  * @method QueryBuilder fromSub(Closure|QueryBuilder|string $query, string $as)
  * @method Builder fromRaw(string $expression, array $bindings = [])
  * @method QueryBuilder createSub(Closure|QueryBuilder|string $query)
@@ -73,7 +74,7 @@ use Swoft\Stdlib\Helper\PhpHelper;
  * @method Builder whereNested(Closure $callback, string $boolean = 'and')
  * @method Builder forNestedWhere()
  * @method Builder addNestedWhereQuery(QueryBuilder $query, string $boolean = 'and')
- * @method QueryBuilder whereSub(string $column, string $operator, Closure $callback, string $boolean)
+ * @method Builder whereSub(string $column, string $operator, Closure $callback, string $boolean)
  * @method Builder whereExists(Closure $callback, string $boolean = 'and', bool $not = false)
  * @method Builder orWhereExists(Closure $callback, bool $not = false)
  * @method Builder whereNotExists(Closure $callback, string $boolean = 'and')
@@ -102,7 +103,6 @@ use Swoft\Stdlib\Helper\PhpHelper;
  * @method Builder take(int $value)
  * @method Builder limit(int $value)
  * @method Builder forPage(int $page, int $perPage = 15)
- * @method Builder forPageAfterId(int $perPage = 15, int $lastId = null, string $column = 'id')
  * @method array getBindings()
  * @method string toSql()
  * @method bool exists()
@@ -115,7 +115,7 @@ use Swoft\Stdlib\Helper\PhpHelper;
  * @method float|int average(string $column)
  * @method Connection getConnection()
  * @method string implode(string $column, string $glue = '')
- * @method array paginate(int $page = 1, int $perPage = 15, array $columns = ['*'])
+ * @method Builder useWritePdo()
  *
  */
 class Builder
@@ -162,7 +162,6 @@ class Builder
         'implode',
         'pluck',
         'getConnection',
-        'paginate',
         'join',
         'joinSub',
         'joinWhere',
@@ -178,6 +177,8 @@ class Builder
         'parseSub',
         'fromSub',
         'selectRaw',
+        'truncate',
+        'getCountForPagination',
     ];
 
     /**
@@ -295,12 +296,24 @@ class Builder
     /**
      * Add an "order by" clause for a timestamp to the query.
      *
-     * @param string $column
+     * @param string|null $column
      *
      * @return $this
+     * @throws DbException
      */
     public function latest(string $column = null)
     {
+        if (is_null($column)) {
+            $createAtColumn = $this->model->getCreatedAtColumn();
+
+            // If exist "createAtColumn" use it, otherwise use primary
+            if ($createAtColumn && $this->model->hasSetter($createAtColumn)) {
+                $column = $createAtColumn;
+            } else {
+                $column = $this->model->getKeyName();
+            }
+        }
+
         $this->query->latest($column);
 
         return $this;
@@ -309,12 +322,24 @@ class Builder
     /**
      * Add an "order by" clause for a timestamp to the query.
      *
-     * @param string $column
+     * @param string|null $column
      *
      * @return $this
+     * @throws DbException
      */
     public function oldest(string $column = null)
     {
+        if (is_null($column)) {
+            $createAtColumn = $this->model->getCreatedAtColumn();
+
+            // If exist "createAtColumn" use it, otherwise use primary
+            if ($createAtColumn && $this->model->hasSetter($createAtColumn)) {
+                $column = $createAtColumn;
+            } else {
+                $column = $this->model->getKeyName();
+            }
+        }
+
         $this->query->oldest($column);
 
         return $this;
@@ -449,7 +474,7 @@ class Builder
      * @param array $attributes
      * @param array $values
      *
-     * @return null|object|Builder|Model
+     * @return object|Builder|Model
      * @throws ContainerException
      * @throws DbException
      * @throws ReflectionException
@@ -517,9 +542,8 @@ class Builder
      */
     public function updateOrInsert(array $attributes, array $values = [])
     {
-        // Get safe values
-        $values = $this->model->getSafeAttributes($values);
-        return $this->toBase()->updateOrInsert($attributes, $values);
+        $instance = $this->firstOrNew($attributes);
+        return $instance->fill($values)->save();
     }
 
     /**
@@ -597,7 +621,7 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function get(array $columns = ['*'])
+    public function get(array $columns = ['*']): Collection
     {
         $builder = $this;
 
@@ -630,7 +654,7 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function cursor()
+    public function cursor(): Generator
     {
         foreach ($this->query->cursor() as $record) {
             yield $this->model->newFromBuilder($record);
@@ -695,11 +719,56 @@ class Builder
      * @return void
      * @throws DbException
      */
-    protected function enforceOrderBy()
+    protected function enforceOrderBy(): void
     {
         if (empty($this->query->orders) && empty($this->query->unionOrders)) {
             $this->orderBy($this->model->getQualifiedKeyName(), 'asc');
         }
+    }
+
+    /**
+     * Constrain the query to the next "page" of results after a given ID.
+     *
+     * @param int         $perPage
+     * @param int|null    $lastId
+     * @param string|null $column
+     *
+     * @return static
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function forPageAfterId(int $perPage = 15, int $lastId = null, string $column = null): self
+    {
+        // If column is null default user primary column name
+        $column = is_null($column) ? $this->getModel()->getKeyName() : $column;
+
+        $this->query->forPageAfterId($perPage, $lastId, $column);
+
+        return $this;
+    }
+
+
+    /**
+     * Constrain the query to the next "page" of results before a given ID.
+     *
+     * @param int         $perPage
+     * @param int|null    $lastId
+     * @param string|null $column
+     *
+     * @return static
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function forPageBeforeId(int $perPage = 15, int $lastId = null, string $column = null): self
+    {
+        // If column is null default user primary column name
+        $column = is_null($column) ? $this->getModel()->getKeyName() : $column;
+
+        $this->query->forPageBeforeId($perPage, $lastId, $column);
+
+        return $this;
     }
 
     /**
@@ -712,10 +781,11 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function create(array $attributes = [])
+    public function create(array $attributes = []): Model
     {
         $instance = $this->newModelInstance($attributes);
         $instance->save();
+
         return $instance;
     }
 
@@ -729,9 +799,123 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function update(array $values)
+    public function update(array $values): int
     {
+        $values = $this->model->getSafeAttributes($values, true);
+        // Update timestamp
+        $values = $this->addUpdatedAtColumn($values);
         return $this->toBase()->update($values);
+    }
+
+    /**
+     * If `$attributes` exist record on update
+     *
+     * @param array $attributes
+     * @param array $values
+     *
+     * @return bool
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function modify(array $attributes, array $values): bool
+    {
+        /* @var Model $model */
+        $model = $this->where($attributes)->first();
+
+        if ($model === null) {
+            return false;
+        }
+
+        return $model->update($values);
+    }
+
+    /**
+     * If `id` exist record on update
+     *
+     * @param int   $id
+     * @param array $values
+     *
+     * @return bool
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function modifyById(int $id, array $values): bool
+    {
+        /* @var Model $model */
+        $model = $this->find($id);
+
+        if ($model === null) {
+            return false;
+        }
+
+        return $model->update($values);
+    }
+
+    /**
+     * Update counters by primary key
+     *
+     * @param array $ids
+     * @param array $counters
+     * @param array $extra
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function updateAllCountersById(array $ids, array $counters, array $extra = []): int
+    {
+        return $this->toBase()->updateAllCountersById(
+            $ids,
+            $this->model->getSafeAttributes($counters),
+            $this->model->getSafeAttributes($extra, true),
+            $this->model->getKeyName()
+        );
+    }
+
+    /**
+     * Update counters by `$attributes`
+     *
+     * @param array $attributes
+     * @param array $counters
+     * @param array $extra
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function updateAllCounters(array $attributes, array $counters, array $extra = []): int
+    {
+        return $this->toBase()->updateAllCounters(
+            $attributes,
+            $this->model->getSafeAttributes($counters),
+            $this->model->getSafeAttributes($extra, true)
+        );
+    }
+
+    /**
+     * Update counters by `$attributes` Adopt Primary
+     *
+     * @param array $attributes
+     * @param array $counters
+     * @param array $extra
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function updateAllCountersAdoptPrimary(array $attributes, array $counters, array $extra = []): int
+    {
+        return $this->toBase()->updateAllCountersAdoptPrimary(
+            $attributes,
+            $this->model->getSafeAttributes($counters),
+            $this->model->getSafeAttributes($extra, true),
+            $this->model->getKeyName()
+        );
     }
 
     /**
@@ -746,10 +930,10 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function increment(string $column, $amount = 1, array $extra = [])
+    public function increment(string $column, $amount = 1, array $extra = []): int
     {
         return $this->toBase()->increment(
-            $column, $amount, $extra
+            $column, $amount, $this->addUpdatedAtColumn($this->model->getSafeAttributes($extra, true))
         );
     }
 
@@ -765,11 +949,62 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function decrement($column, $amount = 1, array $extra = [])
+    public function decrement($column, $amount = 1, array $extra = []): int
     {
         return $this->toBase()->decrement(
-            $column, $amount, $extra
+            $column, $amount, $this->addUpdatedAtColumn($this->model->getSafeAttributes($extra, true))
         );
+    }
+
+    /**
+     * Add the "updated at" column to an array of values.
+     *
+     * @param array $values
+     *
+     * @return array
+     * @throws DbException
+     */
+    protected function addUpdatedAtColumn(array $values): array
+    {
+        $updatedAtColumn = $this->model->getUpdatedAtColumn();
+
+        if (!$this->model->usesTimestamps() ||
+            !$this->model->hasSetter($updatedAtColumn) ||
+            $this->model->isDirty($updatedAtColumn) ||
+            is_null($updatedAtColumn)
+        ) {
+            return $values;
+        }
+
+        return $this->fillTimestampColumn($updatedAtColumn, $values);
+    }
+
+    /**
+     * Fill timestamp column
+     *
+     * @param string $column
+     * @param array  $values
+     *
+     * @return array
+     * @throws DbException
+     */
+    private function fillTimestampColumn(string $column, array $values): array
+    {
+        $values[$column] = $this->model->freshTimestamp($column);
+
+        // Update model field
+        $this->model->setModelAttribute($column, $values[$column]);
+
+        $segments = preg_split('/\s+as\s+/i', $this->query->from);
+
+        $qualifiedColumn = end($segments) . '.' . $column;
+
+        $values[$qualifiedColumn] = $values[$column];
+
+
+        unset($values[$column]);
+
+        return $values;
     }
 
     /**
@@ -799,7 +1034,7 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function forceDelete()
+    public function forceDelete(): int
     {
         return $this->query->delete();
     }
@@ -811,7 +1046,7 @@ class Builder
      *
      * @return void
      */
-    public function onDelete(Closure $callback)
+    public function onDelete(Closure $callback): void
     {
         $this->onDelete = $callback;
     }
@@ -824,7 +1059,7 @@ class Builder
      * @return Model
      * @throws DbException
      */
-    public function newModelInstance($attributes = [])
+    public function newModelInstance($attributes = []): Model
     {
         return $this->model->newInstance($attributes);
     }
@@ -834,7 +1069,7 @@ class Builder
      *
      * @return QueryBuilder
      */
-    public function getQuery()
+    public function getQuery(): QueryBuilder
     {
         return $this->query;
     }
@@ -846,7 +1081,7 @@ class Builder
      *
      * @return $this
      */
-    public function setQuery($query)
+    public function setQuery($query): self
     {
         $this->query = $query;
 
@@ -858,7 +1093,7 @@ class Builder
      *
      * @return QueryBuilder
      */
-    public function toBase()
+    public function toBase(): QueryBuilder
     {
         return $this->getQuery();
     }
@@ -868,7 +1103,7 @@ class Builder
      *
      * @return Model
      */
-    public function getModel()
+    public function getModel(): Model
     {
         return $this->model;
     }
@@ -881,7 +1116,7 @@ class Builder
      * @return $this
      * @throws DbException
      */
-    public function setModel(Model $model)
+    public function setModel(Model $model): self
     {
         $this->model = $model;
 
@@ -898,7 +1133,7 @@ class Builder
      * @return string
      * @throws DbException
      */
-    public function qualifyColumn($column)
+    public function qualifyColumn($column): string
     {
         return $this->model->qualifyColumn($column);
     }
@@ -916,10 +1151,12 @@ class Builder
      */
     public function insertGetId(array $values, string $sequence = null): string
     {
-        $values = $this->model->getSafeAttributes($values);
+        $values = $this->model->getSafeAttributes($values, true);
         if (empty($values)) {
             return '0';
         }
+        $values = array_merge($values, $this->model->updateTimestamps());
+
         return $this->toBase()->insertGetId($values, $sequence);
     }
 
@@ -942,13 +1179,56 @@ class Builder
             $values = [$values];
         }
         foreach ($values as &$item) {
-            $item = $this->model->getSafeAttributes($item);
+            $model = $this->model->setRawAttributes($item, true);
+
+            $item = array_merge($model->getModelAttributesValue(), $model->updateTimestamps());
         }
         unset($item);
         // Filter empty values
         $values = array_filter($values);
+
         return $this->toBase()->insert($values);
     }
+
+    /**
+     * Batch update by primary
+     *
+     * @param array $values
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function batchUpdateByIds(array $values): int
+    {
+        $primary = $this->model->getKeyName();
+        if (!is_array(reset($values))) {
+            $values = [$values];
+        }
+        $count = 0;
+        foreach ($values as &$item) {
+            $item = $this->model->getSafeAttributes($item, true);
+
+            // Check item
+            if (empty($item[$primary])) {
+                throw new DbException('batchUpdateByIds values must exists primary, please check values.');
+            }
+
+            if ($count === 0) {
+                $count = count($item);
+            } elseif ($count != count($item)) {
+                throw new DbException('batchUpdateByIds The parameter length must be consistent.');
+            }
+
+            $item = $this->addUpdatedAtColumn($item);
+        }
+        unset($item);
+        // Filter empty values
+        $values = array_filter($values);
+        return $this->toBase()->batchUpdateByIds($values, $primary);
+    }
+
 
     /**
      * Dynamically handle calls into the query instance.

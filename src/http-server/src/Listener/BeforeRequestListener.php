@@ -16,7 +16,7 @@ use Swoft\Http\Message\Response;
 use Swoft\Http\Server\HttpContext;
 use Swoft\Http\Server\HttpServerEvent;
 use Swoft\Log\Logger;
-use Swoft\Server\Swoole\SwooleEvent;
+use Swoft\Server\SwooleEvent;
 
 /**
  * Class BeforeRequestListener

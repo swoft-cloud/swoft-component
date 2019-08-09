@@ -5,7 +5,6 @@ namespace Swoft\Bean;
 use ReflectionException;
 use Swoft\Annotation\Exception\AnnotationException;
 use Swoft\Bean\Contract\HandlerInterface;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Reflections;
 
 /**
@@ -13,15 +12,14 @@ use Swoft\Stdlib\Reflections;
  *
  * @since 2.0
  */
-final class BeanFactory
+class BeanFactory
 {
     /**
      * Init
      *
      * @return void
-     * @throws ContainerException
-     * @throws ReflectionException
      * @throws AnnotationException
+     * @throws ReflectionException
      */
     public static function init(): void
     {
@@ -54,8 +52,6 @@ final class BeanFactory
      * @param string $name Bean name Or alias Or class name
      *
      * @return object|mixed
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function getBean(string $name)
     {
@@ -68,8 +64,6 @@ final class BeanFactory
      * @param string $className
      *
      * @return array
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function getBeans(string $className): array
     {
@@ -82,7 +76,6 @@ final class BeanFactory
      * @param string $name
      *
      * @return mixed
-     * @throws ContainerException
      */
     public static function getSingleton(string $name)
     {
@@ -119,6 +112,7 @@ final class BeanFactory
      * @param string $name
      * @param array  $definition
      *
+     * @return object
      * @example
      *
      * $bean = BeanFactory::createBean('className');
@@ -129,8 +123,6 @@ final class BeanFactory
      * ]);
      *
      * @return object
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function createBean(string $name, array $definition = [])
     {
@@ -147,9 +139,7 @@ final class BeanFactory
      * @param string $name
      * @param string $id
      *
-     * @return object
-     * @throws ContainerException
-     * @throws ReflectionException
+     * @return object|mixed
      */
     public static function getRequestBean(string $name, string $id)
     {
@@ -162,9 +152,7 @@ final class BeanFactory
      * @param string $name
      * @param string $sid
      *
-     * @return object
-     * @throws ContainerException
-     * @throws ReflectionException
+     * @return object|mixed
      */
     public static function getSessionBean(string $name, string $sid)
     {

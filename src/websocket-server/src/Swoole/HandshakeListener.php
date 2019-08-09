@@ -11,7 +11,7 @@ use Swoft\Co;
 use Swoft\Context\Context;
 use Swoft\Http\Message\Request as Psr7Request;
 use Swoft\Http\Message\Response as Psr7Response;
-use Swoft\Server\Swoole\HandshakeInterface;
+use Swoft\Server\Contract\HandshakeInterface;
 use Swoft\Session\Session;
 use Swoft\SwoftEvent;
 use Swoft\WebSocket\Server\Connection;
@@ -70,12 +70,10 @@ class HandshakeListener implements HandshakeInterface
         $ctx  = WsHandshakeContext::new($psr7Req, $psr7Res);
         $conn = Connection::new($fd, $psr7Req, $psr7Res);
 
-        // Bind connection
+        // Bind connection and bind cid => sid(fd)
         Session::set($sid, $conn);
         // Storage context
         Context::set($ctx);
-        // Bind cid => sid(fd)
-        Session::bindCo($sid);
 
         try {
             Swoft::trigger(WsServerEvent::HANDSHAKE_BEFORE, $fd, $request, $response);
@@ -95,7 +93,6 @@ class HandshakeListener implements HandshakeInterface
 
             // Config response
             $psr7Res = $psr7Res->withStatus(101)->withHeaders(WsHelper::handshakeHeaders($secKey));
-
             if ($wsProtocol = $request->header['sec-websocket-protocol'] ?? '') {
                 $psr7Res = $psr7Res->withHeader('Sec-WebSocket-Protocol', $wsProtocol);
             }

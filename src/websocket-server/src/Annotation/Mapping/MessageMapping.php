@@ -22,10 +22,22 @@ use Doctrine\Common\Annotations\Annotation\Target;
 final class MessageMapping
 {
     /**
+     * @var bool
+     */
+    private $root = false;
+
+    /**
      * @var string
      * @Required()
      */
     private $command = '';
+
+    /**
+     * Default opcode of the command. please see WEBSOCKET_OPCODE_*
+     *
+     * @var int
+     */
+    private $opcode = 0;
 
     /**
      * Class constructor.
@@ -39,6 +51,14 @@ final class MessageMapping
         } elseif (isset($values['command'])) {
             $this->command = (string)$values['command'];
         }
+
+        if (isset($values['root'])) {
+            $this->root = (bool)$values['root'];
+        }
+
+        if (isset($values['opcode'])) {
+            $this->opcode = (int)$values['opcode'];
+        }
     }
 
     /**
@@ -47,5 +67,21 @@ final class MessageMapping
     public function getCommand(): string
     {
         return $this->command;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRoot(): bool
+    {
+        return $this->root;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOpcode(): int
+    {
+        return $this->opcode;
     }
 }

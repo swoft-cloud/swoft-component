@@ -2,8 +2,11 @@
 
 namespace Swoft\Http\Message\Concern;
 
+use Swoft\Http\Message\Cookie;
 use function array_replace;
 use function is_array;
+use function is_object;
+use function is_string;
 
 /**
  * Trait CookiesTrait
@@ -17,14 +20,14 @@ trait CookiesTrait
      *
      * @var array
      */
-    private $cookieDefaults = [
+    private static $cookieDefaults = [
         'value'    => '',
-        'domain'   => null,
-        'hostOnly' => null,
-        'path'     => null,
-        'expires'  => null,
+        'domain'   => '',
+        'path'     => '',
+        'expires'  => 0,
         'secure'   => false,
-        'httpOnly' => false
+        'httpOnly' => false,
+        'hostOnly' => false,
     ];
 
     /**
@@ -37,20 +40,40 @@ trait CookiesTrait
     /**
      * Set cookie
      *
-     * @param string       $name  Cookie name
-     * @param string|array $value Cookie value, or cookie properties
+     * @param string              $name  Cookie name
+     * @param string|array|Cookie $value Cookie value, or cookie properties
      *
      * @return $this
      */
     public function setCookie(string $name, $value): self
     {
-        if (!is_array($value)) {
-            $value = ['value' => (string)$value];
+        if (is_string($value)) {
+            $cookieItem = Cookie::DEFAULTS;
+
+            // append value
+            $cookieItem['value']  = $value;
+            $this->cookies[$name] = $cookieItem;
+        } elseif (is_object($value) && $value instanceof Cookie) {
+            $this->cookies[$name] = $value->toArray();
+        } elseif (is_array($value)) {
+            $this->cookies[$name] = array_replace(Cookie::DEFAULTS, $value);
         }
 
-        $this->cookies[$name] = array_replace($this->cookieDefaults, $value);
-
         return $this;
+    }
+
+    /**
+     * @param string              $name
+     * @param string|array|Cookie $value
+     *
+     * @return CookiesTrait
+     */
+    public function withCookie(string $name, $value): self
+    {
+        $new = clone $this;
+        $new->setCookie($name, $value);
+
+        return $new;
     }
 
     /**
@@ -67,6 +90,19 @@ trait CookiesTrait
         }
 
         return $this;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return CookiesTrait
+     */
+    public function withoutCookie(string $name): self
+    {
+        $new = clone $this;
+        $new->delCookie($name);
+
+        return $new;
     }
 
     /**
@@ -98,4 +134,27 @@ trait CookiesTrait
         return $this;
     }
 
+    /**
+     * @param array $cookies
+     *
+     * @return $this
+     */
+    public function withCookies(array $cookies): self
+    {
+        $new = clone $this;
+        $new->setCookies($cookies);
+
+        return $new;
+    }
+
+    /**
+     * @return CookiesTrait
+     */
+    public function withoutCookies(): self
+    {
+        $new = clone $this;
+        $new->setCookies([]);
+
+        return $new;
+    }
 }

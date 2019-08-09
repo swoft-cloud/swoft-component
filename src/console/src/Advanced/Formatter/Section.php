@@ -2,18 +2,18 @@
 
 namespace Swoft\Console\Advanced\Formatter;
 
-use function array_merge;
-use function ceil;
-use function implode;
-use function is_array;
-use const PHP_EOL;
-use function str_pad;
 use Swoft\Console\Advanced\MessageFormatter;
 use Swoft\Console\Helper\FormatUtil;
 use Swoft\Console\Helper\Show;
 use Swoft\Stdlib\Helper\Str;
+use function array_merge;
+use function ceil;
+use function implode;
+use function is_array;
+use function str_pad;
 use function trim;
 use function ucwords;
+use const PHP_EOL;
 
 /**
  * Class Section

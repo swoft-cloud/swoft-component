@@ -104,6 +104,12 @@ class ObjectHelper
                 case 'double':
                     $value = (double)$value;
                     break;
+                case 'array':
+                    if (is_string($value)) {
+                        $value = json_decode($value, true) ?: [];
+                    }
+                    $value = (array)$value;
+                    break;
             }
         } catch (Throwable $e) {
             throw new InvalidArgumentException(

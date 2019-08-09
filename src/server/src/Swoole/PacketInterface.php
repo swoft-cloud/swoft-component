@@ -2,21 +2,12 @@
 
 namespace Swoft\Server\Swoole;
 
-use Swoole\Server;
-
 /**
  * Interface PacketInterface
  *
- * @since 2.0
+ * @since      2.0
+ * @deprecated  since Swoft 2.0.4, use '\Swoft\Server\Contract\PacketInterface' for instead.
  */
-interface PacketInterface
+interface PacketInterface extends \Swoft\Server\Contract\PacketInterface
 {
-    /**
-     * Packet event
-     *
-     * @param Server $server
-     * @param string $data
-     * @param array  $clientInfo
-     */
-    public function onPacket(Server $server, string $data, array $clientInfo): void;
 }

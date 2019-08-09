@@ -9,6 +9,7 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\DB;
 use Swoft\Db\Eloquent\Collection;
 use Swoft\Db\Exception\DbException;
+use Swoft\Db\Query\Expression;
 use SwoftTest\Db\Testing\Entity\Count;
 use SwoftTest\Db\Testing\Entity\User;
 use SwoftTest\Db\Unit\TestCase;
@@ -53,6 +54,8 @@ class ModelTest extends TestCase
             'age'       => mt_rand(1, 100),
             'user_desc' => 'u desc'
         ];
+        $result3    = User::new($attributes)->save();
+        $this->assertTrue($result3);
 
         $batch = User::insert([
             [
@@ -70,9 +73,22 @@ class ModelTest extends TestCase
                 'xxxx'      => '223asdf'
             ]
         ]);
+
+        Count::insert([
+            [
+                'user_id'     => 1,
+                'attributes'  => uniqid(),
+                'create_time' => 111,
+            ],
+            [
+                'user_id'     => 2,
+                'attributes'  => uniqid(),
+                'create_time' => 222,
+
+            ],
+        ]);
         $this->assertTrue($batch);
-        $result3 = User::new($attributes)->save();
-        $this->assertTrue($result3);
+
 
         $getId = User::insertGetId([
             'name'      => uniqid(),
@@ -397,11 +413,25 @@ on A.id=B.id;', [$resCount - 20]);
     {
         $perPage = 2;
         $page    = 1;
-        $res     = User::paginate($page, $perPage, ['name', 'password', 'id']);
+        $res     = User::paginate($page, $perPage, ['id', 'name', 'password', 'user_desc']);
         $res1    = User::select('id')
             ->where('id', '>', 0)
-            ->addSelect(['name', 'password'])
+            ->addSelect(['name', 'password', 'user_desc'])
             ->paginate($page, $perPage);
+
+
+        $afterResult = User::where('name', '!=', '')
+            ->from('user as u')
+            ->leftJoin('count as c', 'u.id', '=', 'c.user_id')
+            ->paginateById($perPage, 1, ['name', 'password'], true, 'u.id');
+
+        $afterResult1 = User::where('name', '!=', '')
+            ->from('user as u')
+            ->paginateById($perPage, 1, ['name', 'password', 'user_desc']);
+
+        $this->assertEquals($res['perPage'], $afterResult1['perPage']);
+        $this->assertEquals($res['perPage'], $afterResult['perPage']);
+
         $this->assertEquals($res, $res1);
         $this->assertIsArray($res);
         $this->assertArrayHasKey('list', $res);
@@ -485,5 +515,242 @@ on A.id=B.id;', [$resCount - 20]);
         $res = User::where('id', 1)->where('age', '>', 18)->toSql();
 
         $this->assertEquals($sql, $res);
+    }
+
+    public function testDistinct()
+    {
+        $expect = 'select distinct age from `user`';
+        $sql    = User::distinct()->selectRaw('age')->toSql();
+
+        $this->assertEquals($expect, $sql);
+    }
+
+    public function testWhereArray()
+    {
+        $ids = [1, 2];
+
+        $expectSql = 'select * from `user` where (`id` in (?, ?))';
+
+        $where = ['id' => $ids];
+        $sql   = User::where($where)->toSql();
+        $this->assertEquals($expectSql, $sql);
+
+        $expectSql1 = 'select * from `user` where `id` in (?, ?)';
+        $sql1       = User::where('id', '=', $ids)->toSql();
+        $this->assertEquals($expectSql1, $sql1);
+    }
+
+    public function testCollection()
+    {
+        $collection = \Swoft\Stdlib\Collection::make([1, 1, 2, 2, 3, 4, 2]);
+
+        $unq = $collection->unique();
+
+        $this->assertCount(4, $unq->all());
+    }
+
+    public function testBatchUpdate()
+    {
+        $json = ['aa' => "hahhh", "有点厉害鸭" . time()];
+        $age  = mt_rand();
+
+        $this->testAutoJson();
+        $id  = $this->addRecord();
+        $id2 = $this->addRecord();
+        $id3 = $this->addRecord();
+
+        $values = [
+            ['id' => $id3, 'test_json' => $json, 'age' => $age],
+            ['id' => $id2, 'age' => $age, 'test_json' => $json,],
+            ['id' => $id, 'age' => $age, 'test_json' => $json,],
+        ];
+        $count  = User::batchUpdateByIds($values);
+
+        $this->assertCount($count, $values);
+
+        $users = User::findMany([$id, $id2, $id3]);
+
+        $this->assertCount($count, $users);
+
+        /* @var $user User */
+        foreach ($users as $user) {
+            $this->assertEquals($age, $user->getAge());
+            $this->assertEquals($json, $user->getTestJson());
+        }
+    }
+
+    public function testAutoJson()
+    {
+        $id     = 18036;
+        $json   = ['aa' => "hahhh", "有点厉害鸭"];
+        $result = User::updateOrCreate(['id' => $id], [
+            'test_json' => null,
+            'user_desc' => 'xxxxxx',
+            'hahh'      => 0,
+            'age'       => Expression::new('`age` + 1'),
+        ]);
+        $this->assertEquals(0, $result->getHahh());
+
+        $id     = 18037;
+        $result = User::updateOrInsert(['id' => $id], [
+            'test_json' => $json,
+            'age'       => Expression::new('`age` + 1'),
+        ]);
+
+        $this->assertTrue($result);
+
+        $user = User::find($id);
+        $this->assertEquals($json, $user->getTestJson());
+    }
+
+    public function testAutoTimestamp()
+    {
+        // create time
+        $count = Count::new();
+        $count->setUserId($this->addRecord());
+        $count->save();
+        $this->assertGreaterThan(0, $count->getCreateTime());
+        $this->assertGreaterThan(0, strtotime($count->getUpdateTime()));
+
+
+        $newCount = Count::find($count->getId());
+        $divTime  = '2019-07-11 17:00:1';
+
+        $newCount->setUpdateTime($divTime);
+        // update time
+        $result = $newCount->update(['user_id' => 12233]);
+
+        $this->assertTrue($result);
+        $this->assertEquals($divTime, $newCount->getUpdateTime());
+        $this->assertGreaterThan(0, strtotime($newCount->getUpdateTime()));
+    }
+
+    public function testUpdateEntity()
+    {
+        $count = Count::new(['create_time' => 0]);
+        $count->setAttributes("swoft");
+
+        $this->assertTrue($count->save());
+        $this->assertEquals('swoft', $count->getAttributes());
+        $this->assertEquals(0, $count->getCreateTime());
+        $this->assertEquals(time(), strtotime($count->getUpdateTime()));
+
+
+        $time   = '2018-03-06 21:09:18';
+        $result = $count->fill([
+            'update_time' => $time,
+            'user_id'     => Expression::new('`create_time` + 1'),
+        ])->update();
+        $this->assertTrue($result);
+        $this->assertEquals($time, $count->getUpdateTime());
+        $this->assertEquals($time, Count::find($count->getId())->getUpdateTime());
+        $this->assertEquals(null, $count->getUserId());
+
+
+        $expect = 'swoft-framework';
+        $count1 = Count::find($count->getId());
+        $count1->setAttributes($expect);
+        $count1->save();
+
+        $this->assertEquals($expect, $count1->getAttributes());
+        $this->assertEquals($expect, Count::find($count->getId())->getAttributes());
+    }
+
+    public function testModify()
+    {
+        $id          = 18039;
+        $expectLabel = 'CCP';
+
+        User::updateOrCreate(['id' => $id], [
+            'test_json' => [],
+            'user_desc' => 'CP',
+            'age'       => 1,
+        ]);
+
+        $row = User::modify(['user_desc' => 'CP'], ['user_desc' => $expectLabel]);
+        $this->assertEquals(true, $row);
+        $this->assertEquals($expectLabel, User::find($id)->getUserDesc());
+
+        $row = User::modifyById($id, ['user_desc' => $expectLabel]);
+        $this->assertEquals(true, $row);
+    }
+
+    public function testUpdateAllCounters()
+    {
+        $id          = 18038;
+        $expectLabel = 'CCP';
+
+        $user = User::updateOrCreate(['id' => $id], [
+            'test_json' => [],
+            'user_desc' => 'HH',
+            'age'       => 1,
+        ]);
+
+        User::updateAllCountersById((array)$id, ['age' => 1], ['user_desc' => $expectLabel]);
+        $this->assertEquals($user->getAge() + 1, User::find($id)->getAge());
+        $this->assertEquals($expectLabel, User::find($id)->getUserDesc());
+
+        User::updateAllCounters(['user_desc' => $expectLabel], ['age' => -1]);
+        $this->assertEquals($user->getAge(), User::find($id)->getAge());
+
+        User::updateAllCountersAdoptPrimary(['user_desc' => $expectLabel], ['age' => 1]);
+        DB::table('user')->updateAllCountersAdoptPrimary(['user_desc' => $expectLabel], ['age' => -1]);
+        $this->assertEquals($user->getAge(), User::find($id)->getAge());
+
+
+        DB::table('user')->updateAllCounters(['user_desc' => $expectLabel], ['age' => -1]);
+        $this->assertEquals($user->getAge() - 1, User::find($id)->getAge());
+
+        User::find($id)->updateCounters(['age' => -1]);
+        $this->assertEquals($user->getAge() - 2, User::find($id)->getAge());
+    }
+
+    public function testGetEmpty()
+    {
+        $emptyCollection = User::where('id', '<', 0)->get(['age']);
+        $this->assertEquals([], $emptyCollection->toArray());
+
+        $userCounts = User::where('user.id', '<', 0)
+            ->join('count', 'user.id', '=', 'count.user_id')
+            ->get(['user.id']);
+        $this->assertEquals([], $userCounts->toArray());
+    }
+
+    public function testUpdateJson()
+    {
+        $id   = 18038;
+        $user = User::updateOrCreate(['id' => $id], [
+            'test_json' => [
+                'user_status' => mt_rand(),
+                //                'balance'     => 0,
+                //                'updated_at'  => null
+            ],
+            'user_desc' => 'HH',
+            'age'       => 1,
+        ]);
+
+        // Model
+        $row = $user->update(['test_json->user_status' => 2]);
+        $this->assertEquals(1, $row);
+        $this->assertEquals(2, User::find($id)->getTestJson()['user_status']);
+
+        // Db
+        $data = ['test_json->user_status' => 3];
+        DB::table('user')->where('id', $id)->update($data);
+
+        $this->assertEquals(3, User::where($data)->first()->getTestJson()['user_status']);
+
+        $this->assertEquals(3, User::whereJsonContains('test_json->user_status', 3)
+                                   ->first()
+                                   ->getTestJson()['user_status']);
+
+        $this->assertEquals(3, User::whereJsonLength('test_json->user_status', 1)
+                                   ->first()
+                                   ->getTestJson()['user_status']);
+
+        DB::update("update `user` set `test_json` = null where `id` = :id", [':id' => 18038]);
+
+        $name = User::tableName();
+        $this->assertEquals('user', $name);
     }
 }

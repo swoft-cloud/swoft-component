@@ -1,13 +1,14 @@
 {
     "name": "swoft/proxy",
     "type": "library",
+  "version": "v2.0.5",
     "keywords": [
         "php",
         "swoole",
         "swoft",
         "rpc"
     ],
-    "description": "microservice framework base on swoole",
+    "description": "swoft proxy component",
     "license": "Apache-2.0",
     "require": {
         "nikic/php-parser": "~4.2",

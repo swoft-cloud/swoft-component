@@ -20,6 +20,11 @@ class JoinPoint implements JoinPointInterface
     protected $args = [];
 
     /**
+     * @var array
+     */
+    protected $argsMap = [];
+
+    /**
      * @var object
      */
     protected $target;
@@ -45,17 +50,26 @@ class JoinPoint implements JoinPointInterface
     protected $handler;
 
     /**
+     * @var string
+     */
+    protected $className;
+
+    /**
      * JoinPoint constructor.
      *
+     * @param string $className
      * @param object $target the object of origin
      * @param string $method the method of origin
      * @param array  $args   the params of method
+     * @param array  $argsMap
      */
-    public function __construct($target, string $method, array $args)
+    public function __construct(string $className, $target, string $method, array $args, array $argsMap)
     {
-        $this->args   = $args;
-        $this->target = $target;
-        $this->method = $method;
+        $this->args      = $args;
+        $this->target    = $target;
+        $this->method    = $method;
+        $this->argsMap   = $argsMap;
+        $this->className = $className;
     }
 
     /**
@@ -120,5 +134,21 @@ class JoinPoint implements JoinPointInterface
     public function setHandler(AspectHandler $handler): void
     {
         $this->handler = $handler;
+    }
+
+    /**
+     * @return array
+     */
+    public function getArgsMap(): array
+    {
+        return $this->argsMap;
+    }
+
+    /**
+     * @return string
+     */
+    public function getClassName(): string
+    {
+        return $this->className;
     }
 }

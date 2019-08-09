@@ -1,6 +1,7 @@
 {
     "name": "swoft/task",
     "type": "library",
+  "version": "v2.0.5",
     "keywords": [
         "php",
         "swoole",
@@ -8,7 +9,7 @@
         "task",
         "routine"
     ],
-    "description": "microservice framework base on swoole",
+    "description": "swoft task component",
     "license": "Apache-2.0",
     "require": {
         "swoft/framework": "~2.0.0"

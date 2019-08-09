@@ -7,7 +7,7 @@ namespace Swoft\Console\Exception;
  *
  * @since 2.0
  */
-class CommandFlagException extends ConsoleException
+class CommandFlagException extends ConsoleErrorException
 {
 
 }

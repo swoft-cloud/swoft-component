@@ -3,14 +3,11 @@
 namespace Swoft\WebSocket\Server\Message;
 
 use InvalidArgumentException;
-use ReflectionException;
 use RuntimeException;
 use SplDoublyLinkedList;
 use SplStack;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\WebSocket\Server\Contract\MessageHandlerInterface;
 use Swoft\WebSocket\Server\Contract\MiddlewareInterface;
 use Swoft\WebSocket\Server\Contract\RequestInterface;
@@ -28,28 +25,30 @@ use function is_string;
  */
 class MiddlewareChain implements MessageHandlerInterface
 {
-    use PrototypeTrait;
-
-    /** @var SplStack */
+    /**
+     * @var SplStack
+     */
     private $stack;
 
-    /** @var bool */
+    /**
+     * @var bool
+     */
     private $locked = false;
 
-    /** @var MiddlewareInterface */
+    /**
+     * @var MiddlewareInterface
+     */
     private $coreHandler;
 
     /**
      * @param MiddlewareInterface $coreHandler
      *
      * @return MiddlewareChain
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(MiddlewareInterface $coreHandler): self
     {
         /** @var self $self */
-        $self = self::__instance();
+        $self = Swoft::getBean(self::class);
 
         $self->coreHandler = $coreHandler;
 
@@ -116,8 +115,6 @@ class MiddlewareChain implements MessageHandlerInterface
      * @param RequestInterface $request
      *
      * @return ResponseInterface
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function run(RequestInterface $request): ResponseInterface
     {
@@ -144,8 +141,6 @@ class MiddlewareChain implements MessageHandlerInterface
      * @param RequestInterface $request
      *
      * @return ResponseInterface
-     * @throws ContainerException
-     * @throws ReflectionException
      * @internal
      */
     public function handle(RequestInterface $request): ResponseInterface

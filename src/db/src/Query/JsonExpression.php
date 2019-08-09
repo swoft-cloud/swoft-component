@@ -30,7 +30,7 @@ class JsonExpression extends Expression
         list($value) = $params;
         $self = self::__instance();
 
-        $self->value = $value;
+        $self->value = $self->getJsonBindingParameter($value);
 
         return $self;
     }
@@ -38,7 +38,7 @@ class JsonExpression extends Expression
     /**
      * Translate the given value into the appropriate JSON binding parameter.
      *
-     * @param  mixed $value
+     * @param mixed $value
      *
      * @return string
      *

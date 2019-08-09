@@ -4,7 +4,6 @@
 namespace Swoft\Db\Query;
 
 use function is_array;
-use function ceil;
 use Closure;
 use DateTimeInterface;
 use Generator;
@@ -28,7 +27,7 @@ use Swoft\Db\Query\Grammar\Grammar;
 use Swoft\Db\Query\Grammar\MySqlGrammar;
 use Swoft\Db\Query\Processor\MySqlProcessor;
 use Swoft\Db\Query\Processor\Processor;
-use Swoft\Stdlib\Collection;
+use Swoft\Db\Eloquent\Collection;
 use Swoft\Stdlib\Contract\Arrayable;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\Str;
@@ -414,6 +413,8 @@ class Builder implements PrototypeInterface
      * @param mixed $query
      *
      * @return array
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     protected function parseSub($query): array
     {
@@ -769,10 +770,15 @@ class Builder implements PrototypeInterface
         }
 
         // If the value is "null", we will just assume the developer wants to add a
-        // where null clause to the query. So, we will allow a short-cut here to
+        // where null clause to the query. so, we will allow a short-cut here to
         // that method for convenience so the developer doesn't have to check.
         if (is_null($value)) {
             return $this->whereNull($column, $boolean, $operator !== '=');
+        }
+
+        // If the value is array, we will auto convert "wherein"
+        if (is_array($value)) {
+            return $this->whereIn($column, $value, $boolean, $operator !== '=');
         }
 
         // If the column is making a JSON reference we'll check to see if the value
@@ -2221,8 +2227,30 @@ class Builder implements PrototypeInterface
             $this->where($column, '>', $lastId);
         }
 
-        return $this->orderBy($column, 'asc')
-            ->take($perPage);
+        return $this->orderBy($column, 'asc')->take($perPage);
+    }
+
+    /**
+     * Constrain the query to the next "page" of results before a given ID.
+     *
+     * @param int      $perPage
+     * @param int|null $lastId
+     * @param string   $column
+     *
+     * @return static
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function forPageBeforeId(int $perPage = 15, int $lastId = null, string $column = 'id'): self
+    {
+        $this->orders = $this->removeExistingOrdersFor($column);
+
+        if (!is_null($lastId)) {
+            $this->where($column, '<', $lastId);
+        }
+
+        return $this->orderBy($column, 'desc')->take($perPage);
     }
 
     /**
@@ -2322,6 +2350,8 @@ class Builder implements PrototypeInterface
      * Get the SQL representation of the query.
      *
      * @return string
+     * @throws ContainerException
+     * @throws ReflectionException
      */
     public function toSql(): string
     {
@@ -2374,7 +2404,7 @@ class Builder implements PrototypeInterface
             return $this->processor->processSelect($this, $this->runSelect());
         });
 
-        return new Collection($result);
+        return Collection::make($result);
     }
 
     /**
@@ -2388,32 +2418,6 @@ class Builder implements PrototypeInterface
     protected function runSelect(): array
     {
         return $this->getConnection()->select($this->toSql(), $this->getBindings(), !$this->useWritePdo);
-    }
-
-    /**
-     * Paginate the given query into a simple paginator.
-     *
-     * @param int   $page
-     * @param int   $perPage
-     * @param array $columns
-     *
-     * @return array
-     */
-    public function paginate(int $page = 1, int $perPage = 15, array $columns = ['*']): array
-    {
-        $list = [];
-        // Run a pagination count query
-        if ($count = $this->getCountForPagination()) {
-            // Get paginate records
-            $list = $this->forPage($page, $perPage)->get($columns)->toArray();
-        }
-        return [
-            'count'     => $count,
-            'list'      => $list,
-            'page'      => $page,
-            'perPage'   => $perPage,
-            'pageCount' => ceil($count / $perPage)
-        ];
     }
 
     /**
@@ -2578,7 +2582,7 @@ class Builder implements PrototypeInterface
         );
 
         if (empty($queryResult)) {
-            return new Collection();
+            return Collection::make();
         }
 
         // If the columns are qualified with a table or have an alias, we cannot use
@@ -2632,7 +2636,7 @@ class Builder implements PrototypeInterface
             }
         }
 
-        return new Collection($results);
+        return Collection::make($results);
     }
 
     /**
@@ -2658,7 +2662,7 @@ class Builder implements PrototypeInterface
             }
         }
 
-        return new Collection($results);
+        return Collection::make($results);
     }
 
     /**
@@ -2934,6 +2938,27 @@ class Builder implements PrototypeInterface
     }
 
     /**
+     * Batch update records
+     *
+     * @param array  $values
+     * @param string $primary
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function batchUpdateByIds(array $values, string $primary = 'id')
+    {
+        $affectedRows = $this->getConnection()->update(
+            $this->grammar->compileBatchUpdateByIds($this, $values, $primary),
+            []
+        );
+
+        return $affectedRows;
+    }
+
+    /**
      * Insert a new record and get the value of the primary key.
      *
      * @param array       $values
@@ -3064,6 +3089,104 @@ class Builder implements PrototypeInterface
         $columns = array_merge([$column => $this->raw("$wrapped - $amount")], $extra);
 
         return $this->update($columns);
+    }
+
+    /**
+     * Updates the whole table using the provided counter changes and conditions.
+     *
+     * For example, to increment all customers' age by 1,
+     *
+     * ```php
+     * Customer::updateAllCounters([], ['age' => 1]);
+     * ```
+     *
+     * Note that this method will not trigger any events.
+     *
+     * @param array $where
+     * @param array $counters
+     * @param array $extra
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function updateAllCounters(array $where, array $counters, array $extra = []): int
+    {
+        // Convert counters to expression
+        foreach ($counters as $column => $value) {
+            $counters[$column] = Expression::new("$column + $value");
+        }
+
+        if (!empty($where)) {
+            $this->where($where);
+        }
+
+        return $this->update($counters + $extra);
+    }
+
+    /**
+     * Update counters by primary key
+     *
+     * @param array  $ids
+     * @param array  $counters
+     * @param array  $extra
+     * @param string $primary
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function updateAllCountersById(
+        array $ids,
+        array $counters,
+        array $extra = [],
+        string $primary = 'id'
+    ): int {
+        if (empty($ids)) {
+            return 0;
+        }
+
+        if (count($ids) === 1) {
+            $ids = current($ids);
+        }
+
+        return $this->updateAllCounters(
+            [$primary => $ids],
+            $counters,
+            $extra
+        );
+    }
+
+    /**
+     * Update counters by `$attributes` Adopt Primary
+     *
+     * @param array  $attributes
+     * @param array  $counters
+     * @param array  $extra
+     * @param string $primary
+     *
+     * @return int
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function updateAllCountersAdoptPrimary(
+        array $attributes,
+        array $counters,
+        array $extra = [],
+        string $primary = 'id'
+    ): int {
+
+        $ids = $this->where($attributes)->get([$primary])->pluck($primary)->toArray();
+
+        return $this->updateAllCountersById(
+            $ids,
+            $counters,
+            $extra,
+            $primary
+        );
     }
 
     /**
@@ -3250,7 +3373,7 @@ class Builder implements PrototypeInterface
         $connection = DB::connection($this->poolName);
 
         // Select db name
-        if(!empty($this->db)){
+        if (!empty($this->db)) {
             $connection->db($this->db);
         }
 

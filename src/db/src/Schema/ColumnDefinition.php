@@ -1,11 +1,11 @@
 <?php
 
-namespace Illuminate\Database\Schema;
+namespace Swoft\Db\Schema;
 
 use Swoft\Stdlib\Fluent;
 
 /**
- * @method ColumnDefinition after(string $column) Place the column "after" another column (MySQL)
+ * @method ColumnDefinition after(string $column) place the column "after" another column (MySQL)
  * @method ColumnDefinition always() Used as a modifier for generatedAs() (PostgreSQL)
  * @method ColumnDefinition autoIncrement() Set INTEGER columns as auto-increment (primary key)
  * @method ColumnDefinition charset(string $charset) Specify a character set for the column (MySQL)

@@ -4,7 +4,7 @@ namespace Swoft\Error\Listener;
 
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Error\ErrorHandlers;
+use Swoft\Error\ErrorManager;
 use Swoft\Error\ErrorRegister;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
@@ -27,13 +27,13 @@ class AppInitCompleteListener implements EventHandlerInterface
      */
     public function handle(EventInterface $event): void
     {
-        /** @var ErrorHandlers $chain */
-        $chain = BeanFactory::getSingleton(ErrorHandlers::class);
+        /** @var ErrorManager $chain */
+        $chain = BeanFactory::getSingleton(ErrorManager::class);
 
         // Register error handlers
-        $count = ErrorRegister::register($chain);
+        $count  = ErrorRegister::register($chain);
+        $msgTpl = 'Error manager init completed(%d type, %d handler, %d exception)';
 
-        CLog::info('Error manager init completed(%d type, %d handler, %d exception)', $chain->getTypeCount(), $count,
-            $chain->getCount());
+        CLog::info($msgTpl, $chain->getTypeCount(), $count, $chain->getCount());
     }
 }

@@ -15,10 +15,10 @@ final class ContentType
     public const KEY = 'content-type';
 
     // Commonly used content types
+    public const XML  = 'text/xml';
     public const HTML = 'text/html';
     public const TEXT = 'text/plain';
     public const JSON = 'application/json';
-    public const XML  = 'application/xml';
     public const FORM = 'application/x-www-form-urlencoded';
 
     // For upload file

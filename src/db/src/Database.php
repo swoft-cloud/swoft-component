@@ -13,7 +13,7 @@ use Swoft\Db\Contract\ConnectorInterface;
 use Swoft\Db\Contract\DbSelectorInterface;
 use Swoft\Db\Exception\DbException;
 use Swoft\Exception\SessionException;
-use Swoft\Server\Swoole\ConnectInterface;
+use Swoft\Server\Contract\ConnectInterface;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\ArrayHelper;
 

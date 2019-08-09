@@ -3,8 +3,10 @@
 
 namespace Swoft\Aop\Concern;
 
+use ReflectionException;
 use Swoft\Aop\Aop;
 use Swoft\Aop\AspectHandler;
+use Swoft\Stdlib\Reflections;
 use Throwable;
 
 /**
@@ -37,6 +39,10 @@ trait AopTrait
         $aspectHandler->setMethodName($methodName);
         $aspectHandler->setArgs($args);
         $aspectHandler->setAspects($mathAspects);
+        $aspectHandler->setClassName($className);
+
+        $argsMap = $this->getArgsMap($className, $methodName, $args);
+        $aspectHandler->setArgsMap($argsMap);
 
         return $aspectHandler->invokeAspect();
     }
@@ -52,5 +58,40 @@ trait AopTrait
     public function __invokeTarget(string $methodName, array $args)
     {
         return parent::{$methodName}(...$args);
+    }
+
+    /**
+     * @param string $className
+     * @param string $method
+     * @param array  $args
+     *
+     * @return array
+     * @throws ReflectionException
+     */
+    public function getArgsMap(string $className, string $method, array $args): array
+    {
+        $relections = Reflections::get($className);
+
+        $argsMap = [];
+        $params  = $relections['methods'][$method]['params'];
+
+        // Empty params
+        if (empty($params)) {
+            return [];
+        }
+
+        // Build arg map
+        foreach ($params as $index => $param) {
+            [$name, , $default] = $param;
+
+            if (isset($args[$index])) {
+                $argsMap[$name] = $args[$index];
+                continue;
+            }
+
+            $argsMap[$name] = $default;
+        }
+
+        return $argsMap;
     }
 }

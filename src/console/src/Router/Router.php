@@ -117,6 +117,11 @@ class Router implements RouterInterface
     private $commandAliases = [];
 
     /**
+     * @var array [real name => 1]
+     */
+    private $disabledGroups = [];
+
+    /**
      * @param string         $group
      * @param string         $command
      * @param mixed|callable $handler
@@ -124,6 +129,11 @@ class Router implements RouterInterface
      */
     public function map(string $group, string $command, $handler, array $config = []): void
     {
+        // Filter disabled groups
+        if (isset($this->disabledGroups[$group])) {
+            return;
+        }
+
         $cmdID = $this->buildCommandID($group, $command);
 
         if ($aliases = $config['aliases'] ?? []) {
@@ -340,6 +350,11 @@ class Router implements RouterInterface
     public function setGroupAlias(string $group, string $alias): void
     {
         if ($group && $alias) {
+            // Filter disabled groups
+            if (isset($this->disabledGroups[$group])) {
+                return;
+            }
+
             $this->groupAliases[$alias] = $group;
         }
     }
@@ -430,6 +445,11 @@ class Router implements RouterInterface
      */
     public function setGroupInfo(string $name, array $info): void
     {
+        // Filter disabled groups
+        if (isset($this->disabledGroups[$name])) {
+           return;
+        }
+
         $this->groups[$name] = $info;
     }
 
@@ -448,6 +468,13 @@ class Router implements RouterInterface
      */
     public function setGroups(array $groups): void
     {
+        // Filter disabled groups
+        foreach ($groups as $name => $info) {
+            if (isset($this->disabledGroups[$name])) {
+                unset($groups[$name]);
+            }
+        }
+
         $this->groups = $groups;
     }
 
@@ -517,5 +544,33 @@ class Router implements RouterInterface
     public function setDefaultCommands(array $defaultCommands): void
     {
         $this->defaultCommands = $defaultCommands;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDisabledGroups(): array
+    {
+        return $this->disabledGroups;
+    }
+
+    /**
+     * @param array $groupNames
+     */
+    public function setDisabledGroups(array $groupNames): void
+    {
+        foreach ($groupNames as $name) {
+            $this->disableGroup($name);
+        }
+    }
+
+    /**
+     * @param string $name
+     */
+    public function disableGroup(string $name): void
+    {
+        if ($name) {
+            $this->disabledGroups[$name] = 1;
+        }
     }
 }

@@ -1,11 +1,7 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Listener;
 
-
-use function bean;
-use function sgo;
 use Swoft;
 use Swoft\Bean\BeanEvent;
 use Swoft\Co;
@@ -15,6 +11,8 @@ use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Log\Logger;
 use Swoft\SwoftEvent;
+use function bean;
+use function sgo;
 
 /**
  * Class CoroutineCompleteListener

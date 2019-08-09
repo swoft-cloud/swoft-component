@@ -27,16 +27,16 @@ class Collection extends BaseCollection
     /**
      * Create a new collection.
      *
-     * @param array $items
+     * @param array|object $items
      *
      * @return static
      * @throws ContainerException
      * @throws ReflectionException
      */
-    public static function  new(array $items = []): self
+    public static function new($items = []): self
     {
         $self        = self::__instance();
-        $self->items = $items;
+        $self->items = $self->getArrayableItems($items);
 
         return $self;
     }
@@ -275,10 +275,6 @@ class Collection extends BaseCollection
 
         return $dictionary;
     }
-
-    /**
-     * The following methods are intercepted to always return base collections.
-     */
 
     /**
      * Get an array with the values of a given key.

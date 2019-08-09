@@ -33,9 +33,6 @@ use const IN_PHAR;
  */
 class SwoftApplication implements SwoftInterface, ApplicationInterface
 {
-    /**
-     * Swoft trait
-     */
     use SwoftTrait;
 
     /**
@@ -145,34 +142,23 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
         // Storage as global static property.
         Swoft::$app = $this;
 
-        // before init
+        // Before init
         $this->beforeInit();
 
         // Init console logger
         $this->initCLogger();
-
-        // Enable swoole hook
-        CLog::info('Swoole\Runtime::enableCoroutine');
 
         // Can setting properties by array
         if ($config) {
             ObjectHelper::init($this, $config);
         }
 
-        // Init system path aliases
-        $this->findBasePath();
-        $this->setSystemAlias();
-
-        $processors = $this->processors();
-
-        $this->processor = new ApplicationProcessor($this);
-        $this->processor->addFirstProcessor(...$processors);
-
+        // Init application
         $this->init();
 
         CLog::info('Project path is <info>%s</info>', $this->basePath);
 
-        // after init
+        // After init
         $this->afterInit();
     }
 
@@ -186,13 +172,22 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
     protected function init(): void
     {
+        // Init system path aliases
+        $this->findBasePath();
+        $this->setSystemAlias();
+
+        $processors = $this->processors();
+
+        $this->processor = new ApplicationProcessor($this);
+        $this->processor->addFirstProcessor(...$processors);
     }
 
     protected function afterInit(): void
     {
         // If run in phar package
         if (IN_PHAR) {
-            $this->setRuntimePath(Str::rmPharPrefix($this->runtimePath));
+            $runtimePath = Swoft::getAlias($this->runtimePath);
+            $this->setRuntimePath(Str::rmPharPrefix($runtimePath));
         }
 
         // Do something ...
@@ -225,7 +220,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     }
 
     /**
-     * @param string ...$classes
+     * @param string[] $classes
      */
     public function disableAutoLoader(string ...$classes)
     {
@@ -437,7 +432,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
             'name'    => 'swoft',
             'enable'  => true,
             'output'  => true,
-            'levels'  => [],
+            'levels'  => '',
             'logFile' => ''
         ];
     }

@@ -4,8 +4,8 @@ namespace Swoft\WebSocket\Server\Context;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\AbstractContext;
+use function bean;
 
 /**
  * Class WsCloseContext - on ws close event
@@ -32,13 +32,11 @@ class WsCloseContext extends AbstractContext
      * @param int $reactorId
      *
      * @return WsCloseContext
-     * @throws ContainerException
-     * @throws \ReflectionException
      */
     public static function new(int $fd, int $reactorId): self
     {
         /** @var self $ctx */
-        $ctx = self::__instance();
+        $ctx = bean(self::class);
 
         // Initial properties
         $ctx->fd        = $fd;

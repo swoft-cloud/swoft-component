@@ -68,6 +68,13 @@ final class WsModule
     private $defaultCommand = 'home.index';
 
     /**
+     * Default message opcode for response. please see WEBSOCKET_OPCODE_*
+     *
+     * @var int
+     */
+    private $defaultOpcode = 0;
+
+    /**
      * Class constructor.
      *
      * @param array $values
@@ -94,6 +101,10 @@ final class WsModule
 
         if (isset($values['messageParser'])) {
             $this->messageParser = $values['messageParser'];
+        }
+
+        if (isset($values['defaultOpcode'])) {
+            $this->defaultOpcode = (int)$values['defaultOpcode'];
         }
 
         if (isset($values['defaultCommand'])) {
@@ -147,5 +158,13 @@ final class WsModule
     public function getParams(): array
     {
         return $this->params;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDefaultOpcode(): int
+    {
+        return $this->defaultOpcode;
     }
 }

@@ -145,10 +145,11 @@ class JsonPacket extends AbstractPacket
      */
     public function decodeResponse(string $string): Response
     {
-        $data   = JsonHelper::decode($string, true);
-        $result = $data['result'] ?? null;
+        $data = JsonHelper::decode($string, true);
 
-        if ($result !== null) {
+        // Fixed result = null bug, must to use array_key_exists
+        if (array_key_exists('result', $data)) {
+            $result = $data['result'];
             return Response::new($result, null);
         }
 

@@ -1,14 +1,14 @@
 # Swoft Component
 
-This repository is used to manage all swoft components.
+This repository is used to manage all swoft core components.
 
-# IMPORTANT
+## IMPORTANT
 
 All components will **NOT** be modified in the original repository of component, **SHOULD ALWAYS** be modified in this repository, also commit and push to this repository, and then @swoft-bot would sync changes to the original repository of component by `git subtree push`, notice that this action needs triggered by the repositories owner.
 
 ## Usage
 
-### Add a Sub Repository
+### Add a sub repository
 
 ```bash
 git subtree add --prefix=src/[folder] [repository] [ref] --squash
@@ -73,8 +73,10 @@ Quick run tests for component:
 ```bash
 // For all components
 ./phpunit.sh all
+
 // For multi components
 ./phpunit.sh db event
+
 // For one component
 ./phpunit.sh event
 ```
@@ -91,13 +93,14 @@ php run.php -c src/event/phpunit.xml
 php run.php -c src/event/phpunit.xml --filter testAddModule
 ```
 
-Output coverage data(TODO):
+Output coverage data(**require swoole 4.4+**):
 
 ```bash
 // output coverage. require xdebug ext
 phpunit --coverage-text
 
 // output coverage without xdebug
+./coverage.sh event
 phpdbg -dauto_globals_jit=Off -qrr /usr/local/bin/phpunit --coverage-text
 phpdbg -dauto_globals_jit=Off -qrr run.php --coverage-text -c src/event/phpunit.xml
 ```

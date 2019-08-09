@@ -12,7 +12,7 @@ use function in_array;
 
 /**
  * @method static Builder create(string $table, \Closure $callback, bool $ifNotExist = false)
- * @method static Builder createIfNotExist(string $table, \Closure $callback)
+ * @method static Builder createIfNotExists(string $table, \Closure $callback)
  * @method static Builder drop(string $table)
  * @method static Builder dropIfExists(string $table)
  * @method static Builder table(string $table, \Closure $callback)
@@ -35,7 +35,7 @@ class Schema
      */
     private static $passthru = [
         'create',
-        'createIfNotExist',
+        'createIfNotExists',
         'drop',
         'dropIfExists',
         'table',
@@ -45,7 +45,7 @@ class Schema
     ];
 
     /**
-     * @param string $pool
+     * @param string  $pool
      * @param Grammar $grammar
      *
      * @return Builder
@@ -53,7 +53,7 @@ class Schema
      * @throws ReflectionException
      * @throws ContainerException
      */
-    public static function getSchemaConnection(string $pool = Pool::DEFAULT_POOL, Grammar $grammar = null)
+    public static function getSchemaBuilder(string $pool = Pool::DEFAULT_POOL, Grammar $grammar = null)
     {
         return Builder::new($pool, $grammar);
     }
@@ -75,7 +75,7 @@ class Schema
             throw new DbException(sprintf('Schema not support method(%s)!', $name));
         }
 
-        $schemaConnection = self::getSchemaConnection();
-        return $schemaConnection->$name(...$arguments);
+        $schema = self::getSchemaBuilder();
+        return $schema->$name(...$arguments);
     }
 }

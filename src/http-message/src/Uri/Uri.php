@@ -36,6 +36,17 @@ class Uri implements UriInterface
     public const HTTP_DEFAULT_HOST = 'localhost';
 
     /**
+     * Valid schemes
+     */
+    private const VALID_SCHEME = [
+        ''      => 1,
+        'https' => 1,
+        'http'  => 1,
+        'ws'    => 1,
+        'wss'   => 1,
+    ];
+
+    /**
      * Default ports
      *
      * @var array
@@ -52,6 +63,19 @@ class Uri implements UriInterface
         'imap'   => 143,
         'pop'    => 110,
         'ldap'   => 389,
+    ];
+
+    /**
+     * Default uri params
+     */
+    private const DEFAULT_PARAMS = [
+        'scheme'   => 'http',
+        'host'     => 'localhost', // 80
+        'user'     => '',
+        'pass'     => '',
+        'path'     => '/',
+        'query'    => '',
+        'fragment' => '',
     ];
 
     /**
@@ -138,7 +162,6 @@ class Uri implements UriInterface
      * Create Url replace for constructor
      *
      * @param string $uri
-     *
      * @param array  $params
      *
      * @return Uri
@@ -158,10 +181,16 @@ class Uri implements UriInterface
             return $instance;
         }
 
+        // If params is empty, padding defaults data
+        if (!$params) {
+            $instance->params = self::DEFAULT_PARAMS;
+        }
+
         $parts = parse_url($uri);
         if ($parts === false) {
             throw new InvalidArgumentException("Unable to parse URI: $uri");
         }
+
         $instance->applyParts($parts);
 
         return $instance;
@@ -175,9 +204,13 @@ class Uri implements UriInterface
      */
     public function getScheme(): string
     {
-        // Init on get
+        // Init on first get
         if (!$this->scheme) {
-            $this->scheme = $this->params['https'] !== 'off' ? 'https' : 'http';
+            if ($https = $this->params['https'] ?? '') {
+                $this->scheme = $https !== 'off' ? 'https' : 'http';
+            } else {
+                $this->scheme = 'http';
+            }
         }
 
         return $this->scheme;
@@ -256,10 +289,14 @@ class Uri implements UriInterface
     }
 
     /**
-     * parse host port from $params
+     * parse host port from $params. only use for swoft framework
      */
     private function parseHostPort(): void
     {
+        if (!isset($this->params['http_host'])) {
+            return;
+        }
+
         if ($host = $this->params['http_host']) {
             $hostParts  = explode(':', $host, 2);
             $this->host = strtolower($hostParts[0]);
@@ -268,9 +305,11 @@ class Uri implements UriInterface
                 $this->port = $this->filterPort($hostParts[1]);
                 return;
             }
-        } elseif ($host = $this->params['server_name'] ?: $this->params['server_addr']) {
+        } elseif ($host = $this->params['server_name'] ?? '') {
             $this->host = strtolower($host);
-        } elseif ($headerHost = $this->params['host']) {
+        } elseif ($host = $this->params['server_addr'] ?? '') {
+            $this->host = strtolower($host);
+        } elseif ($headerHost = $this->params['host'] ?? '') {
             $hostParts  = explode(':', $headerHost, 2);
             $this->host = strtolower($hostParts[0]);
 
@@ -280,8 +319,8 @@ class Uri implements UriInterface
             }
         }
 
-        if ($serverPort = $this->params['server_port']) {
-            $this->port = $this->filterPort($serverPort);
+        if (!$this->port && !empty($this->params['server_port'])) {
+            $this->port = $this->filterPort($this->params['server_port']);
         }
     }
 
@@ -606,7 +645,7 @@ class Uri implements UriInterface
      */
     private function filterScheme(string $scheme): string
     {
-        return strtolower($scheme);
+        return $scheme ? strtolower($scheme) : 'http';
     }
 
     /**
@@ -785,6 +824,14 @@ class Uri implements UriInterface
     }
 
     /**
+     * @return array
+     */
+    public function getParams(): array
+    {
+        return $this->params;
+    }
+
+    /**
      * @param array $match
      *
      * @return string
@@ -792,6 +839,16 @@ class Uri implements UriInterface
     private function rawurlencodeMatchZero(array $match): string
     {
         return rawurlencode($match[0]);
+    }
+
+    /**
+     * Does this Uri use a standard port?
+     *
+     * @return bool
+     */
+    protected function hasStandardPort(): bool
+    {
+        return ($this->scheme === 'http' && $this->port === 80) || ($this->scheme === 'https' && $this->port === 443);
     }
 
     /**
@@ -807,6 +864,7 @@ class Uri implements UriInterface
             if (0 === strpos($this->path, '//')) {
                 throw new InvalidArgumentException('The path of a URI without an authority must not start with two slashes "//"');
             }
+
             if ($this->scheme === '' && false !== strpos(explode('/', $this->path, 2)[0], ':')) {
                 throw new InvalidArgumentException('A relative URI must not have a path beginning with a segment containing a colon');
             }

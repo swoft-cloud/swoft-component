@@ -14,15 +14,15 @@ use Swoft;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\AbstractConnection;
+use Swoft\Db\Concern\HasEvent;
 use Swoft\Db\Contract\ConnectionInterface;
 use Swoft\Db\Database;
 use Swoft\Db\DbEvent;
+use Swoft\Db\Exception\DbException;
 use Swoft\Db\Pool;
 use Swoft\Db\Query\Expression;
 use Swoft\Db\Query\Grammar\Grammar;
 use Swoft\Db\Query\Processor\Processor;
-use Swoft\Db\Exception\DbException;
-use Swoft\Log\Debug;
 use Throwable;
 use function bean;
 
@@ -33,6 +33,8 @@ use function bean;
  */
 class Connection extends AbstractConnection implements ConnectionInterface
 {
+    use HasEvent;
+
     /**
      * Default fetch mode
      */
@@ -375,7 +377,13 @@ class Connection extends AbstractConnection implements ConnectionInterface
             $statement = $this->getPdoForSelect($useReadPdo)->prepare($query);
             $statement = $this->prepared($statement);
 
-            $this->bindValues($statement, $this->prepareBindings($bindings));
+            $prepareBindings = $this->prepareBindings($bindings);
+
+            $this->bindValues($statement, $prepareBindings);
+
+            if ($this->fireEvent(DbEvent::SELECTING, $statement, $prepareBindings) === false) {
+                return [];
+            }
 
             $statement->execute();
 
@@ -573,7 +581,13 @@ class Connection extends AbstractConnection implements ConnectionInterface
             // to execute the statement and then we'll use PDO to fetch the affected.
             $statement = $this->getPdo()->prepare($query);
 
-            $this->bindValues($statement, $this->prepareBindings($bindings));
+            $prepareBindings = $this->prepareBindings($bindings);
+
+            $this->bindValues($statement, $prepareBindings);
+
+            if ($this->fireEvent(DbEvent::AFFECTING_STATEMENTING, $statement, $prepareBindings) === false) {
+                return 0;
+            }
 
             $statement->execute();
             $count = $statement->rowCount();
@@ -646,10 +660,11 @@ class Connection extends AbstractConnection implements ConnectionInterface
         // caused by a connection that has been lost. If that is the cause, we'll try
         $result = $this->runQueryCallback($query, $bindings, $callback);
 
+        $this->fireEvent(DbEvent::SQL_RAN, $query, $bindings);
+
         // Once we have run the query we will calculate the time that it took to run and
         // then log the query, bindings, and execution time so we will report them on
         // the event that the developer needs them. We'll log time in milliseconds.
-
         return $result;
     }
 
@@ -755,11 +770,29 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param Closure $callback
      * @param int     $attempts
      *
-     * @return mixed|void
+     * @return mixed
+     * @throws ContainerException
+     * @throws Throwable
      */
     public function transaction(Closure $callback, $attempts = 1)
     {
+        for ($currentAttempt = 1; $currentAttempt <= $attempts; $currentAttempt++) {
+            $this->beginTransaction();
 
+            // We'll simply execute the given callback within a try / catch block and if we
+            // catch any exception we can rollback this transaction so that none of this
+            // gets actually persisted to a database or stored in a permanent fashion.
+            try {
+                return tap($callback($this), function () {
+                    $this->commit();
+                });
+            } catch (Throwable $e) {
+                $this->rollBack();
+
+                throw $e;
+            }
+        }
+        return false;
     }
 
     /**
@@ -1057,6 +1090,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
 
     /**
      * @param string $dns
+     *
+     * @throws DbException
      */
     private function parseDbName(string $dns): void
     {
@@ -1065,7 +1100,11 @@ class Connection extends AbstractConnection implements ConnectionInterface
 
         $params = [];
         foreach ($paramsAry as $param) {
-            [$key, $value] = explode('=', $param);
+            $explodeParams = explode('=', $param);
+            if (count($explodeParams) !== 2) {
+                throw new DbException(sprintf('Dsn(%s) format error, please check Dsn', $dns));
+            }
+            [$key, $value] = $explodeParams;
             $params[$key] = $value;
         }
 

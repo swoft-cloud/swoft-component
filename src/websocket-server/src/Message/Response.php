@@ -2,24 +2,27 @@
 
 namespace Swoft\WebSocket\Server\Message;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\ContainerException;
+use Swoft\Context\Context;
+use Swoft\Exception\SwoftException;
+use Swoft\Server\Concern\CommonProtocolDataTrait;
+use Swoft\Session\Session;
+use Swoft\WebSocket\Server\Connection;
+use Swoft\WebSocket\Server\Context\WsMessageContext;
 use Swoft\WebSocket\Server\Contract\ResponseInterface;
-use Swoft\WebSocket\Server\WebSocketServer;
+use function bean;
+use function is_object;
 use const WEBSOCKET_OPCODE_TEXT;
 
 /**
  * Class Response
  *
- * @since 2.0
- *
+ * @since 2.0.1
  * @Bean(scope=Bean::PROTOTYPE)
  */
 class Response implements ResponseInterface
 {
-    use PrototypeTrait;
+    use CommonProtocolDataTrait;
 
     /**
      * Receiver fd
@@ -29,16 +32,23 @@ class Response implements ResponseInterface
     private $fd = -1;
 
     /**
-     * @var mixed
-     */
-    private $data;
-
-    /**
      * Receiver fd list
      *
      * @var array
      */
     private $fds = [];
+
+    /**
+     * Exclude fd list
+     *
+     * @var array
+     */
+    private $noFds = [];
+
+    /**
+     * @var bool
+     */
+    private $sent = false;
 
     /**
      * Sender fd
@@ -48,14 +58,14 @@ class Response implements ResponseInterface
     private $sender = -1;
 
     /**
-     * @var bool
+     * @var string
      */
-    private $sendToAll = false;
+    private $content = '';
 
     /**
      * @var bool
      */
-    private $sent = false;
+    private $sendToAll = false;
 
     /**
      * @var bool
@@ -73,15 +83,18 @@ class Response implements ResponseInterface
     private $opcode = WEBSOCKET_OPCODE_TEXT;
 
     /**
+     * @var int
+     */
+    private $pageSize = 50;
+
+    /**
      * @param int $sender
      *
      * @return Response
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(int $sender = -1): self
     {
-        $self = self::__instance();
+        $self = bean(self::class);
 
         // Set properties
         $self->sent      = false;
@@ -154,30 +167,70 @@ class Response implements ResponseInterface
     }
 
     /**
+     * @param Connection $conn
+     *
      * @return int
+     * @throws SwoftException
      */
-    public function send(): int
+    public function send(Connection $conn = null): int
     {
+        // Deny repeat send.
+        // But if you want send again, you can call `setSent(false)` before send.
         if ($this->sent) {
             return 0;
         }
 
-        $server = $this->wsServer();
+        $server = bean('wsServer');
 
-        // To all
+        $pageSize = $this->pageSize;
+        $content  = $this->formatContent($conn);
+
+        // To all users
         if ($this->sendToAll) {
-            return $server->sendToAll($this->data, $this->sender);
+            return $server->sendToAll($content, $this->sender, $pageSize, $this->opcode);
         }
 
-        // To some
+        // To some users
         if ($this->fds) {
-            return $server->sendToSome($this->data, $this->fds, [], $this->sender);
+            return $server->sendToSome($content, $this->fds, $this->noFds, $this->sender, $pageSize, $this->opcode);
         }
 
-        // To one
-        $ok = $server->sendTo($this->fd, $this->data, $this->sender, $this->opcode, $this->finish);
+        // To one user
+        $ok = $server->sendTo($this->fd, $content, $this->sender, $this->opcode, $this->finish);
 
         return $ok ? 1 : 0;
+    }
+
+    /**
+     * @param Connection|null $conn
+     *
+     * @return string
+     * @throws SwoftException
+     */
+    protected function formatContent(Connection $conn = null): string
+    {
+        // Content for response
+        $content = $this->content;
+
+        if ($content === '') {
+            /** @noinspection CallableParameterUseCaseInTypeContextInspection */
+            $conn = $conn ?: Session::mustGet();
+
+            /** @var WsMessageContext $context */
+            $context = Context::get(true);
+            $parser  = $conn->getParser();
+
+            if (is_object($this->data) && $this->data instanceof Message) {
+                $message = $this->data;
+            } else {
+                $cmdId   = $context->getMessage()->getCmd();
+                $message = Message::new($cmdId, $this->data, $this->ext);
+            }
+
+            $content = $parser->encode($message);
+        }
+
+        return $content;
     }
 
     /**
@@ -214,7 +267,10 @@ class Response implements ResponseInterface
      */
     public function setOpcode(int $opcode): ResponseInterface
     {
-        $this->opcode = $opcode;
+        if ($opcode > 0 && $opcode < 11) {
+            $this->opcode = $opcode;
+        }
+
         return $this;
     }
 
@@ -248,7 +304,7 @@ class Response implements ResponseInterface
     /**
      * @param int $sender
      *
-     * @return Response
+     * @return Response|self
      */
     public function setSender(int $sender): ResponseInterface
     {
@@ -257,29 +313,88 @@ class Response implements ResponseInterface
     }
 
     /**
-     * @return WebSocketServer
+     * @return string
      */
-    public function wsServer(): WebSocketServer
+    public function getContent(): string
     {
-        return WebSocketServer::getServer();
+        return $this->content;
     }
 
     /**
-     * @return mixed
+     * @param string $content
+     * @return Response|ResponseInterface
      */
-    public function getData()
+    public function setContent(string $content): ResponseInterface
     {
-        return $this->data;
+        $this->content = $content;
+        return $this;
     }
 
     /**
      * @param mixed $data
      *
-     * @return Response|ResponseInterface
+     * @return ResponseInterface|self
      */
     public function setData($data): ResponseInterface
     {
         $this->data = $data;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPageSize(): int
+    {
+        return $this->pageSize;
+    }
+
+    /**
+     * @param int $pageSize
+     *
+     * @return Response
+     */
+    public function setPageSize(int $pageSize): self
+    {
+        $this->pageSize = $pageSize;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getNoFds(): array
+    {
+        return $this->noFds;
+    }
+
+    /**
+     * @param array $noFds
+     *
+     * @return Response
+     */
+    public function setNoFds(array $noFds): self
+    {
+        $this->noFds = $noFds;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSent(): bool
+    {
+        return $this->sent;
+    }
+
+    /**
+     * @param bool $sent
+     *
+     * @return Response
+     */
+    public function setSent(bool $sent): self
+    {
+        $this->sent = $sent;
         return $this;
     }
 }

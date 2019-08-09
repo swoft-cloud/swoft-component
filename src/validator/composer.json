@@ -1,15 +1,16 @@
 {
   "name": "swoft/validator",
   "type": "library",
+  "version": "v2.0.5",
   "keywords": [
     "php",
     "swoole",
     "swoft"
   ],
-  "description": "microservice framework base on swoole",
+  "description": "Validator component for swoft",
   "license": "Apache-2.0",
   "require": {
-    "php": ">=7.1",
+    "php": ">7.1",
     "swoft/framework": "~2.0.0"
   },
   "autoload": {

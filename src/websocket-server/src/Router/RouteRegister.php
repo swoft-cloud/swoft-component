@@ -59,29 +59,30 @@ final class RouteRegister
     }
 
     /**
-     * @param string $controllerClass
+     * @param string $class
      * @param string $prefix
      */
-    public static function bindController(string $controllerClass, string $prefix): void
+    public static function bindController(string $class, string $prefix): void
     {
-        self::$commands[$controllerClass] = [
-            'prefix' => $prefix ?: Str::getClassName($controllerClass, 'Controller'),
-            'class'  => $controllerClass,
+        self::$commands[$class] = [
+            'prefix' => $prefix ?: Str::getClassName($class, 'Controller'),
+            'class'  => $class,
             'routes' => [], // see bindCommand()
         ];
     }
 
     /**
-     * @param string $controllerClass
+     * @param string $class
      * @param string $method
      * @param string $command
+     * @param array  $options
      */
-    public static function bindCommand(string $controllerClass, string $method, string $command): void
+    public static function bindCommand(string $class, string $method, string $command, array $options = []): void
     {
-        self::$commands[$controllerClass]['routes'][] = [
-            'method'  => $method,
-            'command' => $command ?: $method,
-        ];
+        $options['method']  = $method;
+        $options['command'] = $command ?: $method;
+
+        self::$commands[$class]['routes'][] = $options;
     }
 
     /**
@@ -106,8 +107,12 @@ final class RouteRegister
                 $info['module'] = $mdlClass;
 
                 foreach ($info['routes'] as $route) {
-                    $cmdId = $prefix . '.' . $route['command'];
-                    $router->addCommand($path, $cmdId, [$ctrlClass, $route['method']]);
+                    $cmd   = $route['command'];
+                    $cmdId = $route['isRoot'] ? $cmd : $prefix . '.' . $cmd;
+
+                    $router->addCommand($path, $cmdId, [$ctrlClass, $route['method']], [
+                        'opcode' => $route['opcode'] ?: $mdlInfo['defaultOpcode'],
+                    ]);
                 }
             }
         }

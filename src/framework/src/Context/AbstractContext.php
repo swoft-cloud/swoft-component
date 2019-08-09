@@ -3,6 +3,7 @@
 namespace Swoft\Context;
 
 use Swoft\Concern\DataPropertyTrait;
+use Swoft\Contract\ContextInterface;
 
 /**
  * Class AbstractContext
@@ -14,7 +15,7 @@ abstract class AbstractContext implements ContextInterface
     use DataPropertyTrait;
 
     /**
-     * Clear
+     * Clear context data
      */
     public function clear(): void
     {

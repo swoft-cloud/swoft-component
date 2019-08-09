@@ -2,9 +2,7 @@
 
 namespace Swoft\WebSocket\Server\MessageParser;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 use Swoft\WebSocket\Server\Message\Message;
 
@@ -25,7 +23,7 @@ class RawTextParser implements MessageParserInterface
      */
     public function encode(Message $message): string
     {
-        return $message->toString();
+        return $message->getDataString();
     }
 
     /**
@@ -34,8 +32,6 @@ class RawTextParser implements MessageParserInterface
      * @param string $data
      *
      * @return Message
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function decode(string $data): Message
     {

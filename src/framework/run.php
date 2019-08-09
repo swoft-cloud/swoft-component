@@ -1,6 +1,7 @@
 <?php
 /** For Swoole coroutine tests */
 
+use PHPUnit\TextUI\Command;
 use Swoole\ExitException;
 
 Co::set([
@@ -72,7 +73,7 @@ if (!in_array('-c', $_SERVER['argv'])) {
 require PHPUNIT_COMPOSER_INSTALL;
 
 $status = 0;
-go(function (){
+srun(function (){
     // Status
     global $status;
 
@@ -84,7 +85,5 @@ go(function (){
     }
 });
 
-
-Swoole\Event::wait();
 
 exit($status);

@@ -2,20 +2,9 @@
 
 namespace Swoft\Console\Concern;
 
-use function implode;
-use function input;
-use function is_array;
-use function is_bool;
-use function is_scalar;
-use function ksort;
-use function ltrim;
-use const PHP_EOL;
-use const PHP_VERSION;
+use function array_shift;
+use function explode;
 use ReflectionException;
-use function sort;
-use function sprintf;
-use function strlen;
-use function strpos;
 use Swoft;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Console\Console;
@@ -25,8 +14,21 @@ use Swoft\Console\Output\Output;
 use Swoft\Console\Router\Router;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\Str;
-use const SWOOLE_VERSION;
+use function implode;
+use function input;
+use function is_array;
+use function is_bool;
+use function is_scalar;
+use function ksort;
+use function ltrim;
+use function sort;
+use function sprintf;
+use function strlen;
+use function strpos;
 use function trim;
+use const PHP_EOL;
+use const PHP_VERSION;
+use const SWOOLE_VERSION;
 
 /**
  * Trait RenderHelpInfoTrait
@@ -216,9 +218,10 @@ trait RenderHelpInfoTrait
             $keyWidth = Arr::getKeyMaxWidth($arguments);
             foreach ($arguments as $name => $meta) {
                 Console::writef(
-                    '  <info>%s</info> %s   %s',
+                    '  <info>%s</info> %s   %s%s',
                     Str::padRight($name, $keyWidth), $meta['type'],
-                    $meta['desc']
+                    $meta['desc'],
+                    $this->renderDefaultValue($meta['default'])
                 );
             }
 
@@ -227,54 +230,7 @@ trait RenderHelpInfoTrait
 
         // Command options
         if ($options = $info['options']) {
-            ksort($options);
-            Console::writeln('<comment>Options:</comment>');
-
-            $maxLen   = 0;
-            $newOpts  = [];
-            $hasShort = false;
-
-            foreach ($options as $name => $meta) {
-                if (($len = strlen($name)) === 0) {
-                    continue;
-                }
-
-                $typeName = $meta['type'] === 'BOOL' ? '' : $meta['type'];
-                if ($len === 1) {
-                    $key = sprintf('-<info>%s</info> %s', $name, $typeName);
-                } else {
-                    $shortMark = '';
-                    if ($meta['short']) {
-                        $hasShort  = true;
-                        $shortMark = '-' . $meta['short'] . ', ';
-                    }
-
-                    $key = sprintf('<info>%s--%s</info> %s', $shortMark, $name, $typeName);
-                }
-
-                $kenLen = strlen($key);
-                if ($kenLen > $maxLen) {
-                    $maxLen = $kenLen;
-                }
-
-                $newOpts[$key] = $meta;
-            }
-
-            $maxLen++;
-
-            // Render options
-            foreach ($newOpts as $key => $meta) {
-                if ($hasShort && false === strpos($key, ',')) { // has short and key is long
-                    $key = '    ' . $key;
-                }
-
-                Console::writef(
-                    '  %s    %s%s',
-                    Str::padRight($key, $maxLen),
-                    $meta['desc'],
-                    $this->renderDefaultValue($meta['default'])
-                );
-            }
+            $this->renderCommandOptions($options);
         }
 
         if ($example = trim($info['example'] ?? '', "* \n")) {
@@ -283,6 +239,76 @@ trait RenderHelpInfoTrait
         }
 
         Console::flushBuffer();
+    }
+
+    /**
+     * @param array $options
+     */
+    protected function renderCommandOptions(array $options): void
+    {
+        ksort($options);
+        Console::writeln('<comment>Options:</comment>');
+
+        $maxLen   = 0;
+        $newOpts  = [];
+        $hasShort = false;
+
+        foreach ($options as $name => $meta) {
+            if (($len = strlen($name)) === 0) {
+                continue;
+            }
+
+            $typeName = $meta['type'] === 'BOOL' ? '' : $meta['type'];
+            if ($len === 1) {
+                $key = sprintf('-<info>%s</info> %s', $name, $typeName);
+            } else {
+                $shortMark = '';
+                if ($meta['short']) {
+                    $hasShort  = true;
+                    $shortMark = '-' . $meta['short'] . ', ';
+                }
+
+                $key = sprintf('<info>%s--%s</info> %s', $shortMark, $name, $typeName);
+            }
+
+            $kenLen = strlen($key);
+            if ($kenLen > $maxLen) {
+                $maxLen = $kenLen;
+            }
+
+            $newOpts[$key] = $meta;
+        }
+
+        $maxLen++;
+
+        // Render options
+        foreach ($newOpts as $key => $meta) {
+            if ($hasShort && false === strpos($key, ',')) { // has short and key is long
+                $key = '    ' . $key;
+            }
+
+            $optDesc  = trim($meta['desc']) ?: 'No description';
+            $keyWords = sprintf('  %s    ', Str::padRight($key, $maxLen));
+            $defValue = $this->renderDefaultValue($meta['default']);
+
+            // Single line
+            if (false === strpos($optDesc, "\n")) {
+                Console::writef('%s%s%s', $keyWords, $meta['desc'], $defValue);
+                continue;
+            }
+
+            // Multi line
+            $lines = explode("\n", $optDesc);
+            $first = array_shift($lines);
+
+            // Notice: 13 = <info></info>
+            $width = strlen($keyWords) - 13;
+
+            Console::writef('%s%s%s', $keyWords, $first, $defValue);
+            foreach ($lines as $line) {
+                Console::writef("%s%s", Str::padRight(' ', $width), trim($line, '* '));
+            }
+        }
     }
 
     /**

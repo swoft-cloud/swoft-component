@@ -13,12 +13,14 @@ use function uniqid;
 
 /**
  * Class ConsoleContext
+ *
  * @since 2.0
  * @Bean(scope=Bean::PROTOTYPE)
  */
 class ConsoleContext extends AbstractContext
 {
     use PrototypeTrait;
+
     /**
      * @return ConsoleContext
      * @throws Throwable

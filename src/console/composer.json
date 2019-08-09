@@ -1,13 +1,14 @@
 {
   "name": "swoft/console",
   "type": "library",
+  "version": "v2.0.5",
   "keywords": [
     "php",
     "swoole",
     "swoft",
     "console"
   ],
-  "description": "micro-service framework base on swoole",
+  "description": "swoft connection pool component",
   "license": "Apache-2.0",
   "require": {
     "php": ">7.1.0",

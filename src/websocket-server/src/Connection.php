@@ -3,13 +3,15 @@
 namespace Swoft\WebSocket\Server;
 
 use Psr\Http\Message\ServerRequestInterface;
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Concern\DataPropertyTrait;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\Session\SessionInterface;
+use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
+use Swoft\WebSocket\Server\MessageParser\RawTextParser;
 use Swoft\WebSocket\Server\Router\Router;
 use function microtime;
 use function server;
@@ -23,7 +25,7 @@ use const WEBSOCKET_OPCODE_TEXT;
  */
 class Connection implements SessionInterface
 {
-    use DataPropertyTrait, PrototypeTrait;
+    use DataPropertyTrait;
 
     private const METADATA_KEY = 'metadata';
 
@@ -66,13 +68,11 @@ class Connection implements SessionInterface
      * @param Response $response
      *
      * @return Connection
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public static function new(int $fd, Request $request, Response $response): self
     {
         /** @var self $sess */
-        $sess = self::__instance();
+        $sess = Swoft::getBean(self::class);
 
         $sess->fd = $fd;
 
@@ -181,6 +181,24 @@ class Connection implements SessionInterface
     public function getFd(): int
     {
         return $this->fd;
+    }
+
+    /**
+     * @return MessageParserInterface
+     */
+    public function getParser(): MessageParserInterface
+    {
+        $parseClass = $this->getParserClass();
+
+        return Swoft::getSingleton($parseClass);
+    }
+
+    /**
+     * @return string
+     */
+    public function getParserClass(): string
+    {
+        return $this->moduleInfo['messageParser'] ?? RawTextParser::class;
     }
 
     /**

@@ -3,8 +3,10 @@
 
 namespace Swoft\Db;
 
-use Swoft\Db\Query\Expression;
 use Swoft\Stdlib\Collection;
+use Swoft\Db\Query\Expression;
+use ReflectionException;
+use Swoft\Bean\Exception\ContainerException;
 
 /**
  * Class Grammar
@@ -23,7 +25,7 @@ abstract class Grammar
     /**
      * Wrap an array of values.
      *
-     * @param  array $values
+     * @param array $values
      *
      * @return array
      */
@@ -35,9 +37,11 @@ abstract class Grammar
     /**
      * Wrap a table in keyword identifiers.
      *
-     * @param  Expression|string $table
+     * @param Expression|string $table
      *
      * @return string
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function wrapTable($table)
     {
@@ -51,10 +55,12 @@ abstract class Grammar
     /**
      * Wrap a value in keyword identifiers.
      *
-     * @param  Expression|string $value
-     * @param  bool              $prefixAlias
+     * @param Expression|string $value
+     * @param bool              $prefixAlias
      *
      * @return string
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     public function wrap($value, $prefixAlias = false)
     {
@@ -75,10 +81,12 @@ abstract class Grammar
     /**
      * Wrap a value that has an alias.
      *
-     * @param  string $value
-     * @param  bool   $prefixAlias
+     * @param string $value
+     * @param bool   $prefixAlias
      *
      * @return string
+     * @throws ReflectionException
+     * @throws ContainerException
      */
     protected function wrapAliasedValue($value, $prefixAlias = false)
     {
@@ -99,13 +107,13 @@ abstract class Grammar
     /**
      * Wrap the given value segments.
      *
-     * @param  array $segments
+     * @param array $segments
      *
      * @return string
      */
     protected function wrapSegments($segments)
     {
-        return (new Collection($segments))->map(function ($segment, $key) use ($segments) {
+        return Collection::make($segments)->map(function ($segment, $key) use ($segments) {
             return $key == 0 && count($segments) > 1
                 ? $this->wrapTable($segment)
                 : $this->wrapValue($segment);
@@ -115,7 +123,7 @@ abstract class Grammar
     /**
      * Wrap a single string in keyword identifiers.
      *
-     * @param  string $value
+     * @param string $value
      *
      * @return string
      */
@@ -131,7 +139,7 @@ abstract class Grammar
     /**
      * Convert an array of column names into a delimited string.
      *
-     * @param  array $columns
+     * @param array $columns
      *
      * @return string
      */
@@ -143,7 +151,7 @@ abstract class Grammar
     /**
      * Create query parameter place-holders for an array.
      *
-     * @param  array $values
+     * @param array $values
      *
      * @return string
      */
@@ -155,7 +163,7 @@ abstract class Grammar
     /**
      * Get the appropriate query parameter place-holder for a value.
      *
-     * @param  mixed $value
+     * @param mixed $value
      *
      * @return string
      */
@@ -167,7 +175,7 @@ abstract class Grammar
     /**
      * Quote the given string literal.
      *
-     * @param  string|array $value
+     * @param string|array $value
      *
      * @return string
      */
@@ -183,7 +191,7 @@ abstract class Grammar
     /**
      * Determine if the given value is a raw expression.
      *
-     * @param  mixed $value
+     * @param mixed $value
      *
      * @return bool
      */
@@ -195,7 +203,7 @@ abstract class Grammar
     /**
      * Get the value of a raw expression.
      *
-     * @param  Expression $expression
+     * @param Expression $expression
      *
      * @return string
      */
@@ -227,7 +235,7 @@ abstract class Grammar
     /**
      * Set the grammar's table prefix.
      *
-     * @param  string $prefix
+     * @param string $prefix
      *
      * @return $this
      */

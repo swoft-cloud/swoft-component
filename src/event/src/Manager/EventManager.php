@@ -3,7 +3,7 @@
  * This file is part of Swoft.
  *
  * @link     https://swoft.org
- * @document https://doc.swoft.org
+ * @document https://swoft.org/docs
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
@@ -290,16 +290,14 @@ class EventManager implements EventManagerInterface
             $shouldCall[$name] = '';
         }
 
-        // $list = \explode('.', $name);
         // Like 'app.db.query' => prefix: 'app.db'
         if ($pos = strrpos($name, '.')) {
             $prefix = substr($name, 0, $pos);
-            $method = substr($name, $pos + 1);
 
             // Have a wildcards listener. eg 'app.db.*'
             $wildcardEvent = $prefix . '.*';
             if (isset($this->listenedEvents[$wildcardEvent])) {
-                $shouldCall[$wildcardEvent] = $method;
+                $shouldCall[$wildcardEvent] = substr($name, $pos + 1);
             }
         }
 
@@ -480,8 +478,8 @@ class EventManager implements EventManagerInterface
      *
      * @param                            $listener
      * @param null|string|EventInterface $event
-     * 为空时，移除监听者队列中所有名为 $listener 的监听者
-     * 否则， 则移除对事件 $event 的监听者
+     * Remove all listeners named $listener in the listener queue when empty
+     * Otherwise, remove the listener for event $event
      *
      * @return bool
      */

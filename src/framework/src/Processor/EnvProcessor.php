@@ -1,13 +1,17 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Processor;
 
+use Dotenv\Environment\Adapter\EnvConstAdapter;
+use Dotenv\Environment\Adapter\PutenvAdapter;
+use Dotenv\Environment\Adapter\ServerConstAdapter;
+use Dotenv\Environment\DotenvFactory;
+use Dotenv\Dotenv;
+use Swoft\Log\Helper\CLog;
 use function alias;
 use function basename;
 use function dirname;
-use Dotenv\Dotenv;
 use function file_exists;
-use Swoft\Log\Helper\CLog;
 
 /**
  * Env processor
@@ -28,10 +32,9 @@ class EnvProcessor extends Processor
             return false;
         }
 
-        $envFile = $this->application->getEnvFile();
-        $envFile = alias($envFile);
+        $envFile = alias($this->application->getEnvFile());
         $path    = dirname($envFile);
-        $env     = basename($envFile);
+        $name    = basename($envFile);
 
         if (!file_exists($envFile)) {
             CLog::warning('Env file(%s) is not exist! skip load it', $envFile);
@@ -39,8 +42,12 @@ class EnvProcessor extends Processor
         }
 
         // Load env
-        $dotenv = new Dotenv($path, $env);
-        $dotenv->load();
+        $factory = new DotenvFactory([
+            new EnvConstAdapter,
+            new PutenvAdapter,
+            new ServerConstAdapter
+        ]);
+        Dotenv::create($path, $name, $factory)->load();
 
         CLog::info('Env file(%s) is loaded', $envFile);
 

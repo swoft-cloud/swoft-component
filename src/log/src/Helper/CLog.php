@@ -35,7 +35,7 @@ class CLog
         $name    = $config['name'] ?? '';
         $enable  = $config['enable'] ?? true;
         $output  = $config['output'] ?? true;
-        $levels  = $config['levels'] ?? [];
+        $levels  = $config['levels'] ?? '';
         $logFile = $config['logFile'] ?? '';
 
         $lineFormatter = new LineFormatter();
@@ -66,8 +66,12 @@ class CLog
      */
     public static function debug(string $message, ...$params): void
     {
-        if(SWOFT_DEBUG){
-            self::$cLogger->debug(sprintf($message, ...$params), []);
+        if ($params) {
+            $message = sprintf($message, ...$params);
+        }
+
+        if (SWOFT_DEBUG) {
+            self::$cLogger->debug($message, []);
         }
     }
 
@@ -79,7 +83,11 @@ class CLog
      */
     public static function info(string $message, ...$params): void
     {
-        self::$cLogger->info(sprintf($message, ...$params), []);
+        if ($params) {
+            $message = sprintf($message, ...$params);
+        }
+
+        self::$cLogger->info($message, []);
     }
 
     /**
@@ -90,7 +98,11 @@ class CLog
      */
     public static function warning(string $message, ...$params): void
     {
-        self::$cLogger->warning(sprintf($message, ...$params), []);
+        if ($params) {
+            $message = sprintf($message, ...$params);
+        }
+
+        self::$cLogger->warning($message, []);
     }
 
     /**
@@ -101,6 +113,10 @@ class CLog
      */
     public static function error(string $message, ...$params): void
     {
-        self::$cLogger->error(sprintf($message, ...$params), []);
+        if ($params) {
+            $message = sprintf($message, ...$params);
+        }
+
+        self::$cLogger->error($message, []);
     }
 }

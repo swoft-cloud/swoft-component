@@ -56,7 +56,7 @@ class StringHelper
     /**
      * Transliterate a UTF-8 value to ASCII.
      *
-     * @param  string $value
+     * @param string $value
      *
      * @return string
      */
@@ -72,8 +72,8 @@ class StringHelper
     /**
      * Convert a value to camel case.
      *
-     * @param  string $value
-     * @param bool    $lcfirst
+     * @param string $value
+     * @param bool   $lcfirst
      *
      * @return string
      */
@@ -113,8 +113,8 @@ class StringHelper
     /**
      * Determine if a given string contains a given substring.
      *
-     * @param  string       $haystack
-     * @param  string|array $needles
+     * @param string       $haystack
+     * @param string|array $needles
      *
      * @return bool
      */
@@ -132,8 +132,8 @@ class StringHelper
     /**
      * Determine if a given string ends with a given substring.
      *
-     * @param  string       $haystack
-     * @param  string|array $needles
+     * @param string       $haystack
+     * @param string|array $needles
      *
      * @return bool
      */
@@ -150,6 +150,7 @@ class StringHelper
 
     /**
      * @param string $str
+     *
      * @return string
      */
     public static function firstLine(string $str): string
@@ -168,8 +169,8 @@ class StringHelper
     /**
      * Cap a string with a single instance of a given value.
      *
-     * @param  string $value
-     * @param  string $cap
+     * @param string $value
+     * @param string $cap
      *
      * @return string
      */
@@ -183,8 +184,8 @@ class StringHelper
     /**
      * Determine if a given string matches a given pattern.
      *
-     * @param  string $pattern
-     * @param  string $value
+     * @param string $pattern
+     * @param string $value
      *
      * @return bool
      */
@@ -207,7 +208,7 @@ class StringHelper
     /**
      * Return the length of the given string.
      *
-     * @param  string $value
+     * @param string $value
      *
      * @return int
      */
@@ -226,6 +227,7 @@ class StringHelper
      * @param int    $padLen
      * @param string $padStr
      * @param int    $padType
+     *
      * @return string
      */
     public static function pad(string $string, int $padLen, string $padStr = ' ', int $padType = STR_PAD_RIGHT): string
@@ -246,9 +248,9 @@ class StringHelper
     /**
      * Limit the number of characters in a string.
      *
-     * @param  string $value
-     * @param  int    $limit
-     * @param  string $end
+     * @param string $value
+     * @param int    $limit
+     * @param string $end
      *
      * @return string
      */
@@ -264,7 +266,7 @@ class StringHelper
     /**
      * Convert the given string to lower-case.
      *
-     * @param  string $value
+     * @param string $value
      *
      * @return string
      */
@@ -276,9 +278,9 @@ class StringHelper
     /**
      * Limit the number of words in a string.
      *
-     * @param  string $value
-     * @param  int    $words
-     * @param  string $end
+     * @param string $value
+     * @param int    $words
+     * @param string $end
      *
      * @return string
      */
@@ -296,8 +298,8 @@ class StringHelper
     /**
      * Parse a `Class@method` style callback into class and method.
      *
-     * @param  string $callback
-     * @param  string $default
+     * @param string $callback
+     * @param string $default
      *
      * @return array
      */
@@ -324,7 +326,7 @@ class StringHelper
     /**
      * Generate a more truly "random" alpha-numeric string.
      *
-     * @param  int $length
+     * @param int $length
      *
      * @return string
      * @throws RuntimeException
@@ -335,7 +337,7 @@ class StringHelper
         $string = '';
 
         while (($len = strlen($string)) < $length) {
-            $size = $length - $len;
+            $size  = $length - $len;
             $bytes = random_bytes($size);
 
             $string .= substr(str_replace(['/', '+', '='], '', base64_encode($bytes)), 0, $size);
@@ -347,7 +349,7 @@ class StringHelper
     /**
      * Generate a more truly "random" bytes.
      *
-     * @param  int $length
+     * @param int $length
      *
      * @return string
      * @throws Exception
@@ -374,7 +376,7 @@ class StringHelper
      * Generate a "random" alpha-numeric string.
      * Should not be considered sufficient for cryptography, etc.
      *
-     * @param  int $length
+     * @param int $length
      *
      * @return string
      */
@@ -390,8 +392,8 @@ class StringHelper
      * Note: This method will leak length information.
      * Note: Adapted from Symfony\Component\Security\Core\Util\StringUtils.
      *
-     * @param  string $knownString
-     * @param  string $userInput
+     * @param string $knownString
+     * @param string $userInput
      *
      * @return bool
      * @deprecated since version 5.2. Use hash_equals instead.
@@ -404,9 +406,9 @@ class StringHelper
     /**
      * Replace the first occurrence of a given value in the string.
      *
-     * @param  string $search
-     * @param  string $replace
-     * @param  string $subject
+     * @param string $search
+     * @param string $replace
+     * @param string $subject
      *
      * @return string
      */
@@ -424,9 +426,9 @@ class StringHelper
     /**
      * Replace the last occurrence of a given value in the string.
      *
-     * @param  string $search
-     * @param  string $replace
-     * @param  string $subject
+     * @param string $search
+     * @param string $replace
+     * @param string $subject
      *
      * @return string
      */
@@ -444,7 +446,7 @@ class StringHelper
     /**
      * Convert the given string to upper-case.
      *
-     * @param  string $value
+     * @param string $value
      *
      * @return string
      */
@@ -456,7 +458,7 @@ class StringHelper
     /**
      * Convert the given string to title case.
      *
-     * @param  string $value
+     * @param string $value
      *
      * @return string
      */
@@ -468,8 +470,8 @@ class StringHelper
     /**
      * Generate a URL friendly "slug" from a given string.
      *
-     * @param  string $title
-     * @param  string $separator
+     * @param string $title
+     * @param string $separator
      *
      * @return string
      */
@@ -494,8 +496,8 @@ class StringHelper
     /**
      * Convert a string to snake case.
      *
-     * @param  string $value
-     * @param  string $delimiter
+     * @param string $value
+     * @param string $delimiter
      *
      * @return string
      */
@@ -519,8 +521,8 @@ class StringHelper
     /**
      * Determine if a given string starts with a given substring.
      *
-     * @param  string       $haystack
-     * @param  string|array $needles
+     * @param string       $haystack
+     * @param string|array $needles
      *
      * @return bool
      */
@@ -538,7 +540,7 @@ class StringHelper
     /**
      * Convert a value to studly caps case.
      *
-     * @param  string $value
+     * @param string $value
      *
      * @return string
      */
@@ -558,9 +560,9 @@ class StringHelper
     /**
      * Returns the portion of string specified by the start and length parameters.
      *
-     * @param  string   $string
-     * @param  int      $start
-     * @param  int|null $length
+     * @param string   $string
+     * @param int      $start
+     * @param int|null $length
      *
      * @return string
      */
@@ -572,7 +574,7 @@ class StringHelper
     /**
      * Make a string's first character uppercase.
      *
-     * @param  string $string
+     * @param string $string
      *
      * @return string
      */
@@ -624,8 +626,8 @@ class StringHelper
      *     // Output:
      *     XCDDVXV7FUSYAVXFFKSL
      *
-     * @param   string  $type A type of pool, or a string of characters to use as the pool
-     * @param   integer $length Length of string to return
+     * @param string  $type   A type of pool, or a string of characters to use as the pool
+     * @param integer $length Length of string to return
      *
      * @return  string
      * @throws Exception
@@ -726,6 +728,19 @@ class StringHelper
 
     /**
      * @param string $path
+     *
+     * @return string
+     */
+    public static function formatPath(string $path): string
+    {
+        $path = '/' . trim($path, '/ ');
+
+        return $path ?: '/';
+    }
+
+    /**
+     * @param string $path
+     *
      * @return string
      */
     public static function rmPharPrefix(string $path): string
@@ -735,5 +750,34 @@ class StringHelper
         }
 
         return $path;
+    }
+
+    /**
+     * @param string $prefix
+     * @param bool   $moreEntropy
+     *
+     * @return string
+     */
+    public static function getUniqid(string $prefix = "", bool $moreEntropy = false): string
+    {
+        $uniqid = uniqid($prefix, $moreEntropy);
+        $uniqid = str_replace('.', '', $uniqid);
+        return $uniqid;
+    }
+
+    /**
+     * @param array|string $queryData
+     *
+     * @return string
+     */
+    public static function buildQuery($queryData): string
+    {
+        // is string
+        if (is_string($queryData)) {
+            return $queryData;
+        }
+
+        // array: k-v map
+        return preg_replace('/%5B(?:\d|[1-9]\d+)%5D=/', '=', http_build_query($queryData));
     }
 }

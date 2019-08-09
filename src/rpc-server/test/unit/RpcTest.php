@@ -87,6 +87,17 @@ class RpcTest extends TestCase
      * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Rpc\Exception\RpcException
      */
+    public function testReturnNull()
+    {
+        $response = $this->mockRpcServer->call(DemoInterface::class, 'returnNull', []);
+        $response->assertEqualResult(null);
+    }
+
+    /**
+     * @throws \ReflectionException
+     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Rpc\Exception\RpcException
+     */
     public function testException(){
 
         $response = $this->mockRpcServer->call(DemoInterface::class, 'error', []);

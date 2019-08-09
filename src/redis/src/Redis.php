@@ -23,10 +23,10 @@ use Throwable;
  * @method static mixed eval(string $script, array $args = [], int $numKeys = 0)
  * @method static mixed evalSha(string $scriptSha, array $args = [], int $numKeys = 0)
  * @method static bool exists(string $key)
- * @method static int geoAdd(string $key, float $longitude, float $latitude, string $member)
+ * @method static int geoAdd(string $key, float $longitude, float $latitude, string $member, ...$args)
  * @method static float geoDist(string $key, string $member1, string $member2, string $unit = 'm')
- * @method static array geohash(string $key, string $member1, string $member2 = null, string $memberN = null)
- * @method static array geopos(string $key, string $member1, string $member2 = null, string $memberN = null)
+ * @method static array geohash(string $key, string ...$members)
+ * @method static array geopos(string $key, string ...$members)
  * @method static mixed|bool get(string $key)
  * @method static int getBit(string $key, int $offset)
  * @method static int getOption(string $name)
@@ -132,6 +132,7 @@ use Throwable;
  * @method static bool mset(array $keyValues, int $ttl = 0)
  * @method static array pipeline(callable $callback)
  * @method static array transaction(callable $callback)
+ * @method static mixed call(callable $callback, bool $reconnect = false)
  */
 class Redis
 {

@@ -3,10 +3,10 @@
 namespace Swoft\Console\Advanced\Interact;
 
 use Closure;
-use function sprintf;
 use Swoft\Console\Advanced\InteractMessage;
 use Swoft\Console\Console;
 use Swoft\Console\Helper\Show;
+use function sprintf;
 use function trim;
 use function ucfirst;
 

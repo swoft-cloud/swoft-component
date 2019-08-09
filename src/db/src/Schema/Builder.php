@@ -78,6 +78,19 @@ class Builder
     protected $resolver;
 
     /**
+     * @var string
+     */
+    protected $database;
+
+    /**
+     * @param string $database
+     */
+    public function setDatabase(string $database): void
+    {
+        $this->database = $database;
+    }
+
+    /**
      * Add custom builder
      *
      * @param string $driver
@@ -342,6 +355,16 @@ class Builder
     }
 
     /**
+     * Check database exists
+     *
+     * @return bool
+     */
+    public function checkDatabaseExists(): bool
+    {
+        return true;
+    }
+
+    /**
      * Modify a table on the schema.
      *
      * @param string  $table
@@ -361,16 +384,16 @@ class Builder
      *
      * @param string  $table
      * @param Closure $callback
-     * @param bool    $ifNotExist
+     * @param bool    $ifNotExists
      *
      * @throws ContainerException
      * @throws DbException
      * @throws ReflectionException
      */
-    public function create(string $table, Closure $callback, bool $ifNotExist = false)
+    public function create(string $table, Closure $callback, bool $ifNotExists = false)
     {
-        $this->build(tap($this->createBlueprint($table), function (Blueprint $blueprint) use ($callback, $ifNotExist) {
-            $blueprint->create($ifNotExist);
+        $this->build(tap($this->createBlueprint($table), function (Blueprint $blueprint) use ($callback, $ifNotExists) {
+            $blueprint->create($ifNotExists);
 
             $callback($blueprint);
         }));
@@ -386,7 +409,7 @@ class Builder
      * @throws DbException
      * @throws ReflectionException
      */
-    public function createIfNotExist(string $table, Closure $callback)
+    public function createIfNotExists(string $table, Closure $callback)
     {
         $this->build(tap($this->createBlueprint($table), function (Blueprint $blueprint) use ($callback) {
             $blueprint->create(true);
@@ -485,7 +508,7 @@ class Builder
      */
     protected function build(Blueprint $blueprint)
     {
-        $blueprint->build($this->getConnection(), $this->grammar);
+        $blueprint->build($this);
     }
 
     /**
@@ -530,6 +553,13 @@ class Builder
     public function getConnection()
     {
         $connection = DB::connection($this->poolName);
+
+        if (isset($this->database)) {
+            $connectionDatabase = $connection->getSelectDb() ?: $connection->getDb();
+            if ($this->database !== $connectionDatabase) {
+                $connection->db($this->database);
+            }
+        }
 
         return $connection;
     }
@@ -580,16 +610,14 @@ class Builder
      */
     public function getDatabaseName(): string
     {
+        if (isset($this->database)) {
+            return $this->database;
+        }
+
         $connection = $this->getConnection();
         $db         = $connection->getSelectDb() ?: $connection->getDb();
-
-        /* @var ConnectionManager $cm */
-        $cm = bean(ConnectionManager::class);
-        // not transaction status
-        if ($cm->isTransaction($this->poolName) === false) {
-            // release
-            $connection->release();
-        }
+        // release
+        $connection->release();
 
         return $db;
     }

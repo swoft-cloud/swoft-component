@@ -2,12 +2,12 @@
 
 namespace Swoft\Console\Advanced\Formatter;
 
-use function array_merge;
-use function str_pad;
 use Swoft\Console\Advanced\MessageFormatter;
 use Swoft\Console\Console;
 use Swoft\Stdlib\Helper\Arr;
 use Toolkit\Cli\ColorTag;
+use function array_merge;
+use function str_pad;
 use function trim;
 use function ucfirst;
 

@@ -1,18 +1,13 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Server;
 
-
 use ReflectionException;
-use function sprintf;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Dispatcher;
-use Swoft\Log\Debug;
-use Swoft\Rpc\Error;
+use Swoft\Concern\AbstractDispatcher;
 use Swoft\Rpc\Server\Middleware\DefaultMiddleware;
 use Swoft\Rpc\Server\Middleware\UserMiddleware;
 use Throwable;
@@ -24,7 +19,7 @@ use Throwable;
  *
  * @Bean(name="serviceDispatcher")
  */
-class ServiceDispatcher extends Dispatcher
+class ServiceDispatcher extends AbstractDispatcher
 {
     /**
      * @var string
@@ -43,7 +38,7 @@ class ServiceDispatcher extends Dispatcher
          * @var Request  $request
          * @var Response $response
          */
-        list($request, $response) = $params;
+        [$request, $response] = $params;
 
         try {
             Swoft::trigger(ServiceServerEvent::BEFORE_RECEIVE, null, $request, $response);
@@ -66,9 +61,7 @@ class ServiceDispatcher extends Dispatcher
      */
     public function preMiddleware(): array
     {
-        return [
-
-        ];
+        return [];
     }
 
     /**

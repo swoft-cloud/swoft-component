@@ -1,6 +1,7 @@
 {
   "name": "swoft/websocket-server",
   "type": "library",
+  "version": "v2.0.5",
   "keywords": [
     "php",
     "swoole",
@@ -8,7 +9,7 @@
     "websocket-server",
     "websocket"
   ],
-  "description": "websocket server for swoft",
+  "description": "swoft websocket server component",
   "license": "Apache-2.0",
   "require": {
     "swoft/framework": "~2.0.0"

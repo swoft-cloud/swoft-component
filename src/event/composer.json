@@ -1,13 +1,14 @@
 {
   "name": "swoft/event",
   "type": "library",
+  "version": "v2.0.5",
   "keywords": [
     "php",
     "swoole",
     "psr-14",
     "swoft"
   ],
-  "description": "event dispatcher and manager for swoft framework",
+  "description": "swoft event dispatcher component",
   "license": "Apache-2.0",
   "require": {
     "php": ">7.1.0",

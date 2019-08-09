@@ -2,7 +2,6 @@
 
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Container;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Concern\PathAliasTrait;
 use Swoft\Event\EventInterface;
 use Swoft\Event\Manager\EventManager;
@@ -26,7 +25,7 @@ class Swoft
     /**
      * Swoft version
      */
-    public const VERSION = '2.0.2-beta';
+    public const VERSION = '2.0.5-beta';
 
     /**
      * Swoft log
@@ -94,8 +93,6 @@ class Swoft
      * @param string $name Bean name Or alias Or class name
      *
      * @return object|mixed
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function getBean(string $name)
     {
@@ -108,7 +105,6 @@ class Swoft
      * @param string $name
      *
      * @return mixed
-     * @throws ContainerException
      */
     public static function getSingleton(string $name)
     {
@@ -140,7 +136,6 @@ class Swoft
      * @param array                 $params
      *
      * @return EventInterface
-     * @throws ContainerException
      */
     public static function trigger($event, $target = null, ...$params): EventInterface
     {
@@ -154,10 +149,8 @@ class Swoft
      * @param string $locale
      *
      * @return string
-     * @throws ReflectionException
-     * @throws ContainerException
      */
-    public static function t(string $key, array $params, string $locale = I18n::DEFAULT_LANG): string
+    public static function t(string $key, array $params, string $locale = ''): string
     {
         /* @var I18n $i18n */
         $i18n = BeanFactory::getBean('i18n');
@@ -173,7 +166,6 @@ class Swoft
      * @param array                 $params
      *
      * @return EventInterface
-     * @throws ContainerException
      */
     public static function triggerByArray($event, $target = null, array $params = []): EventInterface
     {

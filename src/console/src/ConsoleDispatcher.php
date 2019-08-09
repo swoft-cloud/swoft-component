@@ -2,12 +2,12 @@
 
 namespace Swoft\Console;
 
-use function get_class;
-use function get_parent_class;
 use ReflectionException;
 use ReflectionType;
+use function srun;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\BeanFactory;
 use Swoft\Co;
 use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
@@ -15,11 +15,14 @@ use Swoft\Context\Context;
 use Swoft\Contract\DispatcherInterface;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoft\SwoftEvent;
-use Swoole\Event;
+use Swoole\Runtime;
 use Throwable;
+use function get_class;
+use function get_parent_class;
 
 /**
  * Class ConsoleDispatcher
+ *
  * @since 2.0
  * @Bean("cliDispatcher")
  */
@@ -27,6 +30,7 @@ class ConsoleDispatcher implements DispatcherInterface
 {
     /**
      * @param array $params
+     *
      * @return void
      * @throws ReflectionException
      * @throws Throwable
@@ -38,29 +42,37 @@ class ConsoleDispatcher implements DispatcherInterface
         [$className, $method] = $route['handler'];
 
         // Bind method params
-        $bindParams = $this->getBindParams($className, $method);
-        $beanObject = Swoft::getSingleton($className);
+        $params = $this->getBindParams($className, $method);
+        $object = Swoft::getSingleton($className);
 
         // Blocking running
         if (!$route['coroutine']) {
-            $this->before(get_parent_class($beanObject), $method);
-            PhpHelper::call([$beanObject, $method], ...$bindParams);
+            $this->before(get_parent_class($object), $method);
+            PhpHelper::call([$object, $method], ...$params);
             $this->after($method);
             return;
         }
 
-        // Coroutine running
-        Co::create(function () use ($beanObject, $method, $bindParams) {
-            $this->executeByCo($beanObject, $method, $bindParams);
-        });
+        // Hook php io function
+        Runtime::enableCoroutine();
 
-        Event::wait();
+        // If in unit test env, has been in coroutine.
+        if (\defined('PHPUNIT_COMPOSER_INSTALL')) {
+            $this->executeByCo($object, $method, $params);
+            return;
+        }
+
+        // Coroutine running
+        srun(function () use ($object, $method, $params) {
+            $this->executeByCo($object, $method, $params);
+        });
     }
 
     /**
      * @param object $beanObject
      * @param string $method
      * @param array  $bindParams
+     *
      * @throws Throwable
      */
     public function executeByCo($beanObject, string $method, array $bindParams): void
@@ -74,13 +86,16 @@ class ConsoleDispatcher implements DispatcherInterface
 
             $this->after($method);
         } catch (Throwable $e) {
-            // TODO: throw error
-            throw $e;
+            /** @var ConsoleErrorDispatcher $errDispatcher */
+            $errDispatcher = BeanFactory::getSingleton(ConsoleErrorDispatcher::class);
+
+            // Handle request error
+            $errDispatcher->run($e);
         } finally {
             // Defer
             Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
 
-            // Destroy
+            // Complete
             Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
         }
     }
@@ -90,6 +105,7 @@ class ConsoleDispatcher implements DispatcherInterface
      *
      * @param string $class
      * @param string $method
+     *
      * @return array
      * @throws ReflectionException
      */
@@ -105,9 +121,9 @@ class ConsoleDispatcher implements DispatcherInterface
         $methodParams = $classInfo['methods'][$method]['params'];
 
         /**
-         * @var string          $name
+         * @var string         $name
          * @var ReflectionType $paramType
-         * @var mixed           $devVal
+         * @var mixed          $devVal
          */
         foreach ($methodParams as [, $paramType, $devVal]) {
             // Defined type of the param
@@ -149,6 +165,7 @@ class ConsoleDispatcher implements DispatcherInterface
      * Before dispatch
      *
      * @param array $params
+     *
      * @throws Throwable
      */
     public function before(...$params): void
@@ -162,6 +179,7 @@ class ConsoleDispatcher implements DispatcherInterface
      * After dispatch
      *
      * @param array $params
+     *
      * @throws Throwable
      */
     public function after(...$params): void

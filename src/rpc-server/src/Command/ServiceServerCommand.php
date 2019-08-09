@@ -24,7 +24,7 @@ use Swoft\Server\ServerInterface;
  *
  * @since 2.0
  *
- * @Command("rpc", coroutine=false)
+ * @Command("rpc", coroutine=false, desc="Provide some commands to manage swoft RPC server")
  *
  * @example
  *  {fullCmd}:start     Start the rpc server
@@ -175,11 +175,16 @@ class ServiceServerCommand extends BaseServerCommand
 
         // Check if it has started
         if ($server->isRunning()) {
-            $server->stop();
+            $success = $server->stop();
+
+            if (!$success) {
+                output()->error('Stop the old server failed!');
+                return;
+            }
         }
 
         output()->writef('<success>RPC server reload success !</success>');
-        $server->restart();
+        $server->startWithDaemonize();
     }
 
     /**
@@ -189,13 +194,13 @@ class ServiceServerCommand extends BaseServerCommand
      */
     private function createServer(): ServiceServer
     {
-        // check env
-        // EnvHelper::check();
         $script = input()->getScript();
+        $command = $this->getFullCommand();
 
         /** @var ServiceServer $server */
         $server = bean('rpcServer');
         $server->setScriptFile(Swoft::app()->getPath($script));
+        $server->setFullCommand($command);
 
         return $server;
     }

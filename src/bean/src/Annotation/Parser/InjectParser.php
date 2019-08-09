@@ -10,6 +10,7 @@ use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Bean\Exception\BeanException;
+use Swoft\Bean\InterfaceRegister;
 
 /**
  * Class InjectParser
@@ -46,7 +47,6 @@ class InjectParser extends Parser
         $phpReader       = new PhpDocReader();
         $reflectProperty = new ReflectionProperty($this->className, $this->propertyName);
         $docInject       = $phpReader->getPropertyClass($reflectProperty);
-
         if (empty($docInject)) {
             throw new BeanException('`@Inejct` must be define inejct value or `@var type` ');
         }

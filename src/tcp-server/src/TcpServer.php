@@ -6,17 +6,40 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Server;
-use function array_merge;
+use Swoole\Server as SwServer;
 
 /**
  * Class TcpServer
  *
- * @Bean("tcpServer")
- *
  * @since 2.0
+ * @Bean("tcpServer")
  */
 class TcpServer extends Server
 {
+    // protected static $serverType = 'TCP';
+
+    /**
+     * Default listen port
+     *
+     * @var int
+     */
+    protected $port = 18309;
+
+    /**
+     * @var string
+     */
+    protected $pidName = 'swoft-tcp';
+
+    /**
+     * @var string
+     */
+    protected $pidFile = '@runtime/swoft-tcp.pid';
+
+    /**
+     * @var string
+     */
+    protected $commandFile = '@runtime/swoft-tcp.command';
+
     /**
      * Start server
      *
@@ -25,19 +48,9 @@ class TcpServer extends Server
      */
     public function start(): void
     {
-        $this->swooleServer = new \Swoole\Server($this->host, $this->port, $this->mode, $this->type);
+        $this->swooleServer = new SwServer($this->host, $this->port, $this->mode, $this->type);
 
+        // Start server
         $this->startSwoole();
-    }
-
-    /**
-     * @return array
-     */
-    public function defaultSetting(): array
-    {
-        return array_merge(parent::defaultSetting(), [
-            'open_eof_check' => true,
-            'package_eof'    => "\r\n\r\n",
-        ]);
     }
 }

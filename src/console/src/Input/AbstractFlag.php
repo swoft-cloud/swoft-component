@@ -2,8 +2,8 @@
 
 namespace Swoft\Console\Input;
 
-use function strtoupper;
 use Swoft\Console\Annotation\Mapping\Command;
+use function strtoupper;
 use function trim;
 use function ucfirst;
 
@@ -48,6 +48,21 @@ abstract class AbstractFlag
      * @var mixed
      */
     private $default;
+
+    /**
+     * @var bool
+     */
+    private $array = false;
+
+    /**
+     * @var bool
+     */
+    private $optional = true;
+
+    /**
+     * @var bool
+     */
+    private $required = false;
 
     /**
      * Class constructor.
@@ -125,5 +140,29 @@ abstract class AbstractFlag
     public function getDefault()
     {
         return $this->default;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isArray(): bool
+    {
+        return $this->array;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOptional(): bool
+    {
+        return $this->optional;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRequired(): bool
+    {
+        return $this->required;
     }
 }

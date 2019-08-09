@@ -1,12 +1,13 @@
 {
   "name": "swoft/framework",
   "type": "library",
+  "version": "v2.0.5",
   "keywords": [
     "php",
     "swoole",
     "swoft"
   ],
-  "description": "micro-service framework base on swoole",
+  "description": "swoft framework component",
   "license": "Apache-2.0",
   "require": {
     "php": ">=7.1",
@@ -26,8 +27,7 @@
       "src/Swoft.php"
     ],
     "psr-4": {
-      "Swoft\\": "src/",
-      "SwoftTest\\Testing\\": "test/testing/"
+      "Swoft\\": "src/"
     },
     "files": [
       "src/Helper/Functions.php"
@@ -35,7 +35,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "SwoftTest\\Unit\\": "test/unit/"
+      "SwoftTest\\Unit\\": "test/unit/",
+      "SwoftTest\\Testing\\": "test/testing/"
     }
   },
   "require-dev": {

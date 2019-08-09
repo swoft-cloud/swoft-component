@@ -2,13 +2,11 @@
 
 namespace Swoft\WebSocket\Server\Context;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\AbstractContext;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
+use function bean;
 
 /**
  * Class WsRequestContext - on ws handshake event
@@ -18,8 +16,6 @@ use Swoft\Http\Message\Response;
  */
 class WsHandshakeContext extends AbstractContext
 {
-    use PrototypeTrait;
-
     /**
      * @var Request
      */
@@ -35,13 +31,11 @@ class WsHandshakeContext extends AbstractContext
      * @param Response $response
      *
      * @return WsHandshakeContext
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function new(Request $request, Response $response): self
     {
         /** @var self $ctx */
-        $ctx = self::__instance();
+        $ctx = bean(self::class);
 
         $ctx->request  = $request;
         $ctx->response = $response;

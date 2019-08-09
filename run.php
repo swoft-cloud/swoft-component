@@ -1,12 +1,15 @@
 <?php
 /** For Swoole coroutine tests */
 
+use PHPUnit\TextUI\Command;
+use Swoole\Coroutine;
 use Swoole\ExitException;
 
-Co::set([
+Coroutine::set([
     'log_level'   => SWOOLE_LOG_INFO,
     'trace_flags' => 0
 ]);
+
 /*
  * This file is part of PHPUnit.
  *
@@ -27,21 +30,24 @@ if (version_compare('7.1.0', PHP_VERSION, '>')) {
     );
     die(1);
 }
+
 if (!ini_get('date.timezone')) {
     ini_set('date.timezone', 'UTC');
 }
+
+// add loader file
 foreach ([
              __DIR__ . '/../../autoload.php',
              __DIR__ . '/../vendor/autoload.php',
              __DIR__ . '/vendor/autoload.php'
-         ] as $file
+         ] as $__loader_file
 ) {
-    if (file_exists($file)) {
-        define('PHPUNIT_COMPOSER_INSTALL', $file);
+    if (file_exists($__loader_file)) {
+        define('PHPUNIT_COMPOSER_INSTALL', $__loader_file);
         break;
     }
 }
-unset($file);
+
 if (!defined('PHPUNIT_COMPOSER_INSTALL')) {
     fwrite(
         STDERR,
@@ -50,41 +56,40 @@ if (!defined('PHPUNIT_COMPOSER_INSTALL')) {
         'You can learn all about Composer on https://getcomposer.org/.' . PHP_EOL
     );
     die(1);
-} else {
-    if (array_reverse(explode('/', __DIR__))[0] ?? '' === 'tests') {
-        $vendor_dir = dirname(PHPUNIT_COMPOSER_INSTALL);
-        $bin_unit   = "{$vendor_dir}/bin/phpunit";
-        $unit_uint  = "{$vendor_dir}/phpunit/phpunit/phpunit";
-        if (file_exists($bin_unit)) {
-            @unlink($bin_unit);
-            @symlink(__FILE__, $bin_unit);
-        }
-        if (file_exists($unit_uint)) {
-            @unlink($unit_uint);
-            @symlink(__FILE__, $unit_uint);
-        }
+}
+
+if (array_reverse(explode('/', __DIR__))[0] ?? '' === 'tests') {
+    $vendor_dir = dirname(PHPUNIT_COMPOSER_INSTALL);
+    $bin_unit   = "{$vendor_dir}/bin/phpunit";
+    $unit_uint  = "{$vendor_dir}/phpunit/phpunit/phpunit";
+    if (file_exists($bin_unit)) {
+        @unlink($bin_unit);
+        @symlink(__FILE__, $bin_unit);
+    }
+    if (file_exists($unit_uint)) {
+        @unlink($unit_uint);
+        @symlink(__FILE__, $unit_uint);
     }
 }
-if (!in_array('-c', $_SERVER['argv'])) {
+
+if (!in_array('-c', $_SERVER['argv'], true)) {
     $_SERVER['argv'][] = '-c';
     $_SERVER['argv'][] = __DIR__ . '/phpunit.xml';
 }
+
 require PHPUNIT_COMPOSER_INSTALL;
 
 $status = 0;
-go(function (){
+\Swoft\Co::run(function () {
     // Status
     global $status;
 
     try {
-        $status = PHPUnit\TextUI\Command::main(false);
+        $status = Command::main(false);
     } catch (ExitException $e) {
-        var_dump($e->getMessage());
         $status = $e->getCode();
+        echo 'ExitException: ' .$e->getMessage(), "\n";
     }
 });
-
-
-Swoole\Event::wait();
 
 exit($status);

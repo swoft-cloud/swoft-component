@@ -2,12 +2,12 @@
 
 namespace Swoft\Console\Advanced\Interact;
 
-use function array_key_exists;
-use function explode;
-use function is_array;
 use Swoft\Console\Advanced\InteractMessage;
 use Swoft\Console\Console;
 use Swoft\Console\Helper\Show;
+use function array_key_exists;
+use function explode;
+use function is_array;
 use function trim;
 
 /**

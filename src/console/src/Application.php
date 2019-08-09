@@ -5,12 +5,13 @@ namespace Swoft\Console;
 use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Concern\DataPropertyTrait;
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Concern\RenderHelpInfoTrait;
 use Swoft\Console\Contract\ConsoleInterface;
 use Swoft\Console\Exception\CommandFlagException;
-use Swoft\Console\Helper\Show;
 use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
 use Swoft\Console\Router\Router;
@@ -18,7 +19,6 @@ use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use Throwable;
 use function array_merge;
-use function get_class;
 use function implode;
 use function strpos;
 use function strtr;
@@ -33,7 +33,7 @@ use function ucfirst;
  */
 class Application implements ConsoleInterface
 {
-    use RenderHelpInfoTrait;
+    use RenderHelpInfoTrait, DataPropertyTrait;
 
     // {$%s} name -> {name}
     protected const HELP_VAR_LEFT  = '{';
@@ -122,6 +122,7 @@ class Application implements ConsoleInterface
 
     /**
      * @return void
+     * @throws ContainerException
      */
     public function run(): void
     {
@@ -142,7 +143,11 @@ class Application implements ConsoleInterface
 
             Swoft::trigger(ConsoleEvent::RUN_AFTER, $this, $inputCommand);
         } catch (Throwable $e) {
-            $this->handleException($e);
+            /** @var ConsoleErrorDispatcher $errDispatcher */
+            $errDispatcher = BeanFactory::getSingleton(ConsoleErrorDispatcher::class);
+
+            // Handle request error
+            $errDispatcher->run($e);
         }
     }
 
@@ -191,6 +196,7 @@ class Application implements ConsoleInterface
 
         // Parse default options and arguments
         $this->bindCommandFlags($info);
+        $this->input->setCommandId($info['cmdId']);
 
         Swoft::triggerByArray(ConsoleEvent::DISPATCH_BEFORE, $this, $info);
 
@@ -291,34 +297,6 @@ class Application implements ConsoleInterface
             }
 
             $this->input->setArgs($values, true);
-        }
-    }
-
-    /**
-     * @param Throwable $e
-     */
-    protected function handleException(Throwable $e): void
-    {
-        if ($e instanceof CommandFlagException) {
-            Show::error($e->getMessage());
-            return;
-        }
-
-        try {
-            $evt = Swoft::triggerByArray(ConsoleEvent::RUN_ERROR, $this, [
-                'exception' => $e,
-            ]);
-
-            // Don't want to continue processing
-            if (!$evt->isPropagationStopped()) {
-                // Ensure no buffer
-                \output()->clearBuffer();
-                \output()->flush();
-                \output()->writef("<error>(CONSOLE)%s: %s</error>\nAt %s line <cyan>%d</cyan>\n<comment>Code Trace:</comment>\n%s",
-                    get_class($e), $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString());
-            }
-        } catch (Throwable $e) {
-            // Do nothing
         }
     }
 

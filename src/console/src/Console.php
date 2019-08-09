@@ -2,30 +2,29 @@
 
 namespace Swoft\Console;
 
+use Swoft\Console\Style\Style;
+use Toolkit\Cli\ColorTag;
 use function array_merge;
 use function date;
 use function fflush;
 use function fgets;
-use function fgetss;
-use function file_get_contents;
 use function fwrite;
 use function implode;
 use function is_array;
 use function is_numeric;
 use function json_encode;
+use function sprintf;
+use function strip_tags;
+use function strpos;
+use function strtoupper;
+use function trim;
 use const JSON_PRETTY_PRINT;
 use const JSON_UNESCAPED_SLASHES;
 use const JSON_UNESCAPED_UNICODE;
 use const PHP_EOL;
-use function sprintf;
 use const STDERR;
 use const STDIN;
 use const STDOUT;
-use function strpos;
-use function strtoupper;
-use Swoft\Console\Style\Style;
-use Toolkit\Cli\ColorTag;
-use function trim;
 
 /**
  * Class Console
@@ -301,7 +300,7 @@ class Console
             'stream' => STDIN,
         ], $opts);
 
-        return file_get_contents($opts['stream'], $opts['length']);
+        return trim(fgets($opts['stream'], (int)$opts['length']));
     }
 
     /**
@@ -363,8 +362,9 @@ class Console
             'stream'    => STDIN,
             'allowTags' => null,
         ], $opts);
+        $input = trim(fgets($opts['stream'], (int)$opts['length']));
 
-        return trim(fgetss($opts['stream'], $opts['length'], $opts['allowTags']));
+        return strip_tags($input, $opts['allowTags']);
     }
 
     /**

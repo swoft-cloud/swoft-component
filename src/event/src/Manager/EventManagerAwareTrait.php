@@ -1,12 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * This file is part of Swoft.
- *
- * @link     https://swoft.org
- * @document https://doc.swoft.org
- * @contact  group@swoft.org
- * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
- */
 
 namespace Swoft\Event\Manager;
 
@@ -17,7 +9,6 @@ use function method_exists;
 /**
  * Trait EventAwareTrait
  *
- * @package Swoft\Event\Manager
  * @since   2.0
  */
 trait EventManagerAwareTrait
@@ -45,7 +36,7 @@ trait EventManagerAwareTrait
     /**
      * @param EventManager|EventManagerInterface $eventManager
      */
-    public function setEventManager(EventManagerInterface $eventManager)
+    public function setEventManager(EventManagerInterface $eventManager): void
     {
         $this->eventManager = $eventManager;
 

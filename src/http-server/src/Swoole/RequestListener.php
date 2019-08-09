@@ -9,7 +9,7 @@ use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\Request as ServerRequest;
 use Swoft\Http\Message\Response as ServerResponse;
 use Swoft\Http\Server\HttpDispatcher;
-use Swoft\Server\Swoole\RequestInterface;
+use Swoft\Server\Contract\RequestInterface;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 
