@@ -1,20 +1,41 @@
 <?php
-require_once dirname(__FILE__, 2) . '/vendor/autoload.php';
-require_once dirname(__FILE__, 2) . '/test/config/define.php';
+use Composer\Autoload\ClassLoader;
+use SwoftTest\Testing\TestApplication;
 
-// init
-\Swoft\App::$isInTest = true;
-\Swoft\Bean\BeanFactory::init();
+// current component dir
+$componentDir  = dirname(__DIR__, 3);
+$componentJson = $componentDir . '/composer.json';
 
-/* @var \Swoft\Bootstrap\Boots\Bootable $bootstrap*/
-$bootstrap = \Swoft\App::getBean(\Swoft\Bootstrap\Bootstrap::class);
-$bootstrap->bootstrap();
+// vendor at component dir
+if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
+    require dirname(__DIR__) . '/vendor/autoload.php';
+} elseif (file_exists(dirname(__DIR__, 3) . '/vendor/autoload.php')) {
+    /** @var ClassLoader $loader */
+    $loader = require dirname(__DIR__, 3) . '/vendor/autoload.php';
 
-\Swoft\Bean\BeanFactory::reload([
-    'application' => [
-        'class' => \Swoft\Testing\Application::class,
-        'inTest' => true
-    ],
+    // need load testing psr4 config map
+    $composerData  = json_decode(file_get_contents($componentJson), true);
+    foreach ($composerData['autoload-dev']['psr-4'] as $prefix => $dir) {
+        $loader->addPsr4($prefix, $componentDir . '/' . $dir);
+    }
+
+    // application's vendor
+} elseif (file_exists(dirname(__DIR__, 5) . '/autoload.php')) {
+    /** @var ClassLoader $loader */
+    $loader = require dirname(__DIR__, 5) . '/autoload.php';
+
+    // need load testing psr4 config map
+    $composerData  = json_decode(file_get_contents($componentJson), true);
+
+    foreach ($composerData['autoload-dev']['psr-4'] as $prefix => $dir) {
+        $loader->addPsr4($prefix, $componentDir . '/' . $dir);
+    }
+} else {
+    exit('Please run "composer install" to install the dependencies' . PHP_EOL);
+}
+
+$application = new TestApplication([
+    'basePath'        => __DIR__
 ]);
-$initApplicationContext = new \Swoft\Core\InitApplicationContext();
-$initApplicationContext->init();
+$application->setBeanFile(__DIR__ . '/testing/bean.php');
+$application->run();
