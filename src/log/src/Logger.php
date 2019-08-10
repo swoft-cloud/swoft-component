@@ -21,6 +21,7 @@ use function microtime;
 use function sprintf;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Co;
+use Swoft\Exception\SwoftException;
 use function urlencode;
 use function var_export;
 
@@ -207,6 +208,8 @@ class Logger extends \Monolog\Logger
      * @param array    $extra
      *
      * @return array
+     * @throws SwoftException
+     * @throws SwoftException
      */
     public function formatRecord(
         string $message,
@@ -489,6 +492,9 @@ class Logger extends \Monolog\Logger
      * Format notice message
      *
      * @return array
+     * @throws SwoftException
+     * @throws SwoftException
+     * @throws SwoftException
      */
     private function formatNoticeMessage(): array
     {
@@ -643,6 +649,7 @@ class Logger extends \Monolog\Logger
      * Request uri
      *
      * @return string
+     * @throws SwoftException
      */
     private function getUri(): string
     {
@@ -653,6 +660,7 @@ class Logger extends \Monolog\Logger
      * Request time
      *
      * @return float
+     * @throws SwoftException
      */
     private function getRequestTime(): float
     {

@@ -7,6 +7,7 @@ use Swoft;
 use Swoft\Context\Context;
 use Swoft\Exception\SwoftException;
 use Swoft\Log\Debug;
+use Swoft\Log\Error;
 use Swoft\Log\Helper\CLog;
 use Swoft\Server\Helper\ServerHelper;
 use Swoft\Stdlib\Helper\PhpHelper;
@@ -116,7 +117,7 @@ class Co
 
                 PhpHelper::call($callable);
             } catch (Throwable $e) {
-                Debug::log(
+                Error::log(
                     "Coroutine internal error: %s\nAt File %s line %d\nTrace:\n%s",
                     $e->getMessage(),
                     $e->getFile(),

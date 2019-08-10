@@ -25,6 +25,7 @@ class Timer
      *
      * @return int
      * @throws Bean\Exception\ContainerException
+     * @throws Exception\SwoftException
      * @throws ReflectionException
      */
     public static function tick(int $msec, $callback, ...$params): int
@@ -57,6 +58,7 @@ class Timer
      *
      * @return int
      * @throws Bean\Exception\ContainerException
+     * @throws Exception\SwoftException
      * @throws ReflectionException
      */
     public static function after(int $msec, $callback, ...$params): int
@@ -129,6 +131,7 @@ class Timer
     /**
      * @return array
      * @throws Bean\Exception\ContainerException
+     * @throws Exception\SwoftException
      * @throws ReflectionException
      */
     private static function getLogItems(): array
@@ -145,6 +148,8 @@ class Timer
 
     /**
      * @param array $items
+     *
+     * @throws Exception\SwoftException
      */
     private static function initItems(array $items): void
     {
