@@ -758,20 +758,35 @@ on A.id=B.id;', [$resCount - 20]);
     {
         $rand = mt_rand();
         $desc = 'swoft';
+        $pwd  = md5((string)$rand);
 
         $user = User::new([
             'testJson' => [
                 'user_status' => $rand,
             ],
-            'udesc'    => $desc
+            'udesc'    => $desc,
+            'pwd'      => $pwd
         ]);
 
         $this->assertEquals($rand, $user->getTestJson()['user_status']);
         $this->assertEquals($desc, $user->getUserDesc());
+        $this->assertEquals($pwd, $user->getPwd());
         $this->assertTrue($user->save());
 
         $user = User::find($user->getId());
         $this->assertEquals($rand, $user->getTestJson()['user_status']);
         $this->assertEquals($desc, $user->getUserDesc());
+        $this->assertEquals($pwd, $user->getPwd());
+
+        $expectSql = '`user_desc` = ?';
+        $sql       = User::whereProp('udesc', $desc)->toSql();
+        $this->assertContains($expectSql, $sql);
+
+        $expectSql1 = 'select * from `user` where (`user_desc` = ? and `test_json`->\'$."user_status"\' = ?)';
+        $sql1       = User::whereProp([
+            'udesc'                  => $desc,
+            'test_json->user_status' => $rand
+        ])->toSql();
+        $this->assertContains($expectSql1, $sql1);
     }
 }

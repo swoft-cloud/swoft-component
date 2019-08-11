@@ -37,6 +37,7 @@ use function bean;
  * @method static Builder whereKey($id)
  * @method static Builder whereKeyNot($id)
  * @method static Builder where($column, $operator = null, $value = null, string $boolean = 'and')
+ * @method static Builder whereProp($column, $operator = null, $value = null, string $boolean = 'and')
  * @method static Builder orWhere($column, $operator = null, $value = null)
  * @method static Builder latest(string $column = null)
  * @method static Builder oldest(string $column = null)
@@ -1051,7 +1052,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     /**
      * @return string
      */
-    protected function getClassName(): string
+    public function getClassName(): string
     {
         return Proxy::getClassName(static::class);
     }

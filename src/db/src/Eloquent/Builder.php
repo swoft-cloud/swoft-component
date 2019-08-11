@@ -11,6 +11,7 @@ use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Concern\BuildsQueries;
 use Swoft\Db\Connection\Connection;
+use Swoft\Db\EntityRegister;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder as QueryBuilder;
 use Swoft\Stdlib\Contract\Arrayable;
@@ -268,6 +269,40 @@ class Builder
         } else {
             $this->query->where(...func_get_args());
         }
+
+        return $this;
+    }
+
+    /**
+     * Convert where prop
+     *
+     * @param        $column
+     * @param null   $operator
+     * @param null   $value
+     * @param string $boolean
+     *
+     * @return Builder
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function whereProp($column, $operator = null, $value = null, string $boolean = 'and'): self
+    {
+        // Get `@Column` Prop Mapping
+        $props = EntityRegister::getProps($this->model->getClassName());
+
+        if (is_string($column)) {
+            $column = $props[$column] ?? $column;
+        } elseif (is_array($column)) {
+            $newColumns = [];
+            foreach ($column as $k => $v) {
+                $k              = $props[$k] ?? $k;
+                $newColumns[$k] = $v;
+            }
+            $column = $newColumns;
+        }
+
+        $this->where($column, $operator, $value, $boolean);
 
         return $this;
     }
