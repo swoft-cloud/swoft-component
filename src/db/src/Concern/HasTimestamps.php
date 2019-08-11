@@ -36,7 +36,7 @@ trait HasTimestamps
      */
     public function touch(): bool
     {
-        if (!$this->usesTimestamps()) {
+        if (!$this->modelTimestamps) {
             return false;
         }
 
@@ -54,7 +54,8 @@ trait HasTimestamps
     {
         $updated = [];
 
-        if (!is_null(static::UPDATED_AT) &&
+        if ($this->modelTimestamps &&
+            !is_null(static::UPDATED_AT) &&
             !$this->isDirty(static::UPDATED_AT) &&
             $this->hasSetter(static::UPDATED_AT)
         ) {
@@ -65,7 +66,8 @@ trait HasTimestamps
             $updated[static::UPDATED_AT] = $createTimestamp;
         }
 
-        if (!$this->swoftExists &&
+        if ($this->modelTimestamps &&
+            !$this->swoftExists &&
             !is_null(static::CREATED_AT) &&
             !$this->isDirty(static::CREATED_AT) &&
             $this->hasSetter(static::CREATED_AT)

@@ -753,4 +753,25 @@ on A.id=B.id;', [$resCount - 20]);
         $name = User::tableName();
         $this->assertEquals('user', $name);
     }
+
+    public function testProp()
+    {
+        $rand = mt_rand();
+        $desc = 'swoft';
+
+        $user = User::new([
+            'testJson' => [
+                'user_status' => $rand,
+            ],
+            'udesc'    => $desc
+        ]);
+
+        $this->assertEquals($rand, $user->getTestJson()['user_status']);
+        $this->assertEquals($desc, $user->getUserDesc());
+        $this->assertTrue($user->save());
+
+        $user = User::find($user->getId());
+        $this->assertEquals($rand, $user->getTestJson()['user_status']);
+        $this->assertEquals($desc, $user->getUserDesc());
+    }
 }

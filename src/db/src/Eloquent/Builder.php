@@ -801,7 +801,7 @@ class Builder
      */
     public function update(array $values): int
     {
-        $values = $this->model->getSafeAttributes($values, true);
+        $values = $this->model->getSafeAttributes($values);
         // Update timestamp
         $values = $this->addUpdatedAtColumn($values);
         return $this->toBase()->update($values);
@@ -870,7 +870,7 @@ class Builder
         return $this->toBase()->updateAllCountersById(
             $ids,
             $this->model->getSafeAttributes($counters),
-            $this->model->getSafeAttributes($extra, true),
+            $this->model->getSafeAttributes($extra),
             $this->model->getKeyName()
         );
     }
@@ -892,7 +892,7 @@ class Builder
         return $this->toBase()->updateAllCounters(
             $attributes,
             $this->model->getSafeAttributes($counters),
-            $this->model->getSafeAttributes($extra, true)
+            $this->model->getSafeAttributes($extra)
         );
     }
 
@@ -913,7 +913,7 @@ class Builder
         return $this->toBase()->updateAllCountersAdoptPrimary(
             $attributes,
             $this->model->getSafeAttributes($counters),
-            $this->model->getSafeAttributes($extra, true),
+            $this->model->getSafeAttributes($extra),
             $this->model->getKeyName()
         );
     }
@@ -933,7 +933,7 @@ class Builder
     public function increment(string $column, $amount = 1, array $extra = []): int
     {
         return $this->toBase()->increment(
-            $column, $amount, $this->addUpdatedAtColumn($this->model->getSafeAttributes($extra, true))
+            $column, $amount, $this->addUpdatedAtColumn($this->model->getSafeAttributes($extra))
         );
     }
 
@@ -952,7 +952,7 @@ class Builder
     public function decrement($column, $amount = 1, array $extra = []): int
     {
         return $this->toBase()->decrement(
-            $column, $amount, $this->addUpdatedAtColumn($this->model->getSafeAttributes($extra, true))
+            $column, $amount, $this->addUpdatedAtColumn($this->model->getSafeAttributes($extra))
         );
     }
 
@@ -1151,7 +1151,7 @@ class Builder
      */
     public function insertGetId(array $values, string $sequence = null): string
     {
-        $values = $this->model->getSafeAttributes($values, true);
+        $values = $this->model->getSafeAttributes($values);
         if (empty($values)) {
             return '0';
         }
@@ -1208,7 +1208,7 @@ class Builder
         }
         $count = 0;
         foreach ($values as &$item) {
-            $item = $this->model->getSafeAttributes($item, true);
+            $item = $this->model->getSafeAttributes($item);
 
             // Check item
             if (empty($item[$primary])) {

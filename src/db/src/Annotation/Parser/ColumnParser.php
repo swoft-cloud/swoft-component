@@ -32,14 +32,14 @@ class ColumnParser extends Parser
      */
     public function parse(int $type, $annotationObject): array
     {
-        $type   = $this->getPropertyType();
-        $name   = $annotationObject->getName();
-        $prop   = $annotationObject->getProp();
-        $hidden = $annotationObject->isHidden();
-        $name   = empty($name) ? $this->propertyName : $name;
-        $prop   = empty($prop) ? $this->propertyName : $prop;
+        $columnType = $this->getPropertyType();
+        $name       = $annotationObject->getName();
+        $prop       = $annotationObject->getProp();
+        $hidden     = $annotationObject->isHidden();
+        $name       = empty($name) ? $this->propertyName : $name;
+        $prop       = empty($prop) ? $this->propertyName : $prop;
 
-        EntityRegister::registerColumn($this->className, $this->propertyName, $name, $prop, $hidden, $type);
+        EntityRegister::registerColumn($this->className, $this->propertyName, $name, $prop, $hidden, $columnType);
         return [];
     }
 
