@@ -48,7 +48,7 @@ use function bean;
  * @method static Builder findOrFail($id, array $columns = ['*'])
  * @method static Builder findOrNew($id, array $columns = ['*'])
  * @method static Builder firstOrNew(array $attributes, array $values = [])
- * @method static Builder firstOrCreate(array $attributes, array $values = [])
+ * @method static static firstOrCreate(array $attributes, array $values = [])
  * @method static static updateOrCreate(array $attributes, array $values = [])
  * @method static bool updateOrInsert(array $attributes, array $values = [])
  * @method static int batchUpdateByIds(array $values)

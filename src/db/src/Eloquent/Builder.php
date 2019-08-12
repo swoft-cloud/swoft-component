@@ -296,7 +296,12 @@ class Builder
         } elseif (is_array($column)) {
             $newColumns = [];
             foreach ($column as $k => $v) {
-                $k              = $props[$k] ?? $k;
+                $k = $props[$k] ?? $k;
+
+                if (is_int($k) && is_array($v)) {
+                    $kv   = $v[0];
+                    $v[0] = $props[$kv] ?? $kv;
+                }
                 $newColumns[$k] = $v;
             }
             $column = $newColumns;
@@ -529,12 +534,12 @@ class Builder
      * @param array $attributes
      * @param array $values
      *
-     * @return null|object|Builder|Model
+     * @return Model
      * @throws ContainerException
      * @throws DbException
      * @throws ReflectionException
      */
-    public function firstOrCreate(array $attributes, array $values = [])
+    public function firstOrCreate(array $attributes, array $values = []): Model
     {
         if (!is_null($instance = $this->where($attributes)->first())) {
             return $instance;

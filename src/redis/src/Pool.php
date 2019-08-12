@@ -38,7 +38,7 @@ use Throwable;
  * @method string getSet(string $key, string $value)
  * @method string hDel(string $key, string $hashKey1, string $hashKey2 = null, string $hashKeyN = null)
  * @method bool hExists(string $key, string $hashKey)
- * @method array hGet(string $key, string $hashKey)
+ * @method mixed hGet(string $key, string $hashKey)
  * @method array hGetAll(string $key)
  * @method int hIncrBy(string $key, string $hashKey, int $value)
  * @method float hIncrByFloat(string $key, string $field, float $increment)

@@ -164,7 +164,13 @@ class ModelTest extends TestCase
         /* @var User $res1 */
         $res1 = User::updateOrCreate(['id' => 1], ['age' => 18]);
 
-        $res2 = User::updateOrCreate(['id' => 2], ['age' => 18]);
+        $desc = 'desc swoft__1';
+        $age  = 1;
+
+        $res2 = User::updateOrCreate(['age' => $age, 'user_desc' => $desc], ['pwd' => 18]);
+
+        $this->assertEquals($desc, $res2->getUserDesc());
+        $this->assertEquals($age, $res2->getAge());
 
         $result = User::whereIn('id', [$res1->getId(), $res2->getId()])->delete();
         $this->assertEquals(2, $result);
@@ -243,11 +249,12 @@ class ModelTest extends TestCase
     {
         $uUser = User::updateOrCreate(['id' => 22], ['name' => "sakura", 'age' => 18]);
 
-        $user = User::find(22);
+
+        $user = User::new(['pwd' => '']);
         $user->addHidden(['age']);
         $user->setModelVisible(['password']);
         $user->addHidden(['password']);
-        $user->addVisible(['age']);
+        $user->makeHidden(['age']);
         $user->addVisible(['pwd']);
 
         DB::transaction(function () {
@@ -788,5 +795,53 @@ on A.id=B.id;', [$resCount - 20]);
             'test_json->user_status' => $rand
         ])->toSql();
         $this->assertContains($expectSql1, $sql1);
+    }
+
+    public function testUpdateOrCreate()
+    {
+        $desc = 'desc swoft_a_)_1';
+        $age  = 1;
+        $pwd  = md5(uniqid());
+
+        $where = ['age' => $age, 'user_desc' => $desc];
+        $res2  = User::updateOrCreate($where, ['pwd' => $pwd]);
+
+        $this->assertEquals($desc, $res2->getUserDesc());
+        $this->assertEquals($age, $res2->getAge());
+        $this->assertEquals($pwd, $res2->getPwd());
+
+
+        $pwd = md5(uniqid());
+
+        $this->assertTrue(User::updateOrInsert($where, ['pwd' => $pwd]));
+
+        $res3 = User::where($where)->first();
+        $this->assertEquals($desc, $res3->getUserDesc());
+        $this->assertEquals($age, $res3->getAge());
+        $this->assertEquals($pwd, $res3->getPwd());
+    }
+
+    public function testWhereProp()
+    {
+        $where     = [
+            'pwd' => md5(uniqid()),
+        ];
+        $expectSql = 'select * from `user` where (`password` = ?)';
+        $resSql    = User::whereProp($where)->toSql();
+        $this->assertEquals($expectSql, $resSql);
+
+
+        $expectSql1 = 'select * from `user` where `password` = ?';
+        $resSql1    = User::whereProp('pwd', md5(uniqid()))->toSql();
+        $this->assertEquals($expectSql1, $resSql1);
+
+
+        $where      = [
+            'pwd' => md5(uniqid()),
+            ['udesc', 'like', 'swoft%']
+        ];
+        $expectSql2 = 'select * from `user` where (`password` = ? and `user_desc` like ?)';
+        $resSql2    = User::whereProp($where)->toSql();
+        $this->assertEquals($expectSql2, $resSql2);
     }
 }
