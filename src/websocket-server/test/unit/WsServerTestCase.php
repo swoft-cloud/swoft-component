@@ -7,6 +7,7 @@ use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Connection;
+use Swoft\WebSocket\Server\WebSocketServer;
 use SwoftTest\WebSocket\Server\Testing\MockHttpRequest;
 use SwoftTest\WebSocket\Server\Testing\MockHttpResponse;
 use SwoftTest\WebSocket\Server\Testing\MockWsServer;
@@ -23,21 +24,40 @@ abstract class WsServerTestCase extends TestCase
      */
     protected $wsServer;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->wsServer = new MockWsServer();
+
+        // set server
+        WebSocketServer::setServer($this->wsServer);
     }
 
-    public function addSession(int $fd): void
+    protected function tearDown(): void
     {
-        $req = MockHttpRequest::new();
+        // Session::clear();
+        WebSocketServer::delServer();
+    }
+
+    /**
+     * @param int    $fd
+     * @param string $path
+     *
+     * @return Connection
+     */
+    public function newConnection(int $fd, string $path = '/'): Connection
+    {
+        $req = MockHttpRequest::new([
+            'request_uri' => $path,
+        ]);
         $res = MockHttpResponse::new();
 
         $psrReq = Request::new($req);
         $psrRes = Response::new($res);
 
-        $conn = Connection::new($fd, $psrReq, $psrRes);
+        $conn = Connection::new($this->wsServer, $psrReq, $psrRes);
 
         Session::set((string)$fd, $conn);
+
+        return $conn;
     }
 }

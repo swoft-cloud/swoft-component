@@ -88,11 +88,11 @@ class MockHttpRequest extends Request
         $instance->header = Arr::merge(self::defaultHeaders(), $headers);
         $instance->server = Arr::merge(self::defaultServers(), $server);
 
-        if ($server['request_method'] === self::GET) {
-            $instance->get = $params;
-        }
+        $method = $instance->server['request_method'];
 
-        if ($server['request_method'] === self::POST) {
+        if ($method === self::GET) {
+            $instance->get = $params;
+        } elseif ($method === self::POST) {
             $instance->post = $params;
         }
 
@@ -102,7 +102,7 @@ class MockHttpRequest extends Request
     /**
      * @return string
      */
-    public function rawContent()
+    public function rawContent(): string
     {
         return $this->content;
     }
@@ -213,6 +213,9 @@ class MockHttpRequest extends Request
     public static function defaultServers(): array
     {
         return [
+            'request_method'     => 'GET',
+            'request_uri'        => '/',
+            'request_query'      => '',
             'request_time'       => time(),
             'request_time_float' => microtime(true),
             'server_port'        => 18306,

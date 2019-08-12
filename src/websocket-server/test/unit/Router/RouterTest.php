@@ -3,8 +3,6 @@
 namespace SwoftTest\WebSocket\Server\Unit\Router;
 
 use PHPUnit\Framework\TestCase;
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\WebSocket\Server\Router\Router;
 use SwoftTest\Testing\Concern\CommonTestAssertTrait;
 use function bean;
@@ -19,8 +17,6 @@ class RouterTest extends TestCase
     use CommonTestAssertTrait;
 
     /**
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function testRouter(): void
     {
@@ -43,10 +39,6 @@ class RouterTest extends TestCase
         $this->assertSame('chat.send', $info['cmdId']);
     }
 
-    /**
-     * @throws ReflectionException
-     * @throws ContainerException
-     */
     public function testAddModule(): void
     {
         /** @var Router $router */

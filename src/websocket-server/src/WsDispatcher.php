@@ -32,7 +32,6 @@ class WsDispatcher
      *
      * @return array eg. [status, response]
      * @throws WsModuleRouteException
-     * @throws InvalidArgumentException
      * @throws Throwable
      */
     public function handshake(Request $request, Response $response): array
