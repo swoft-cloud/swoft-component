@@ -48,7 +48,7 @@ class InjectParser extends Parser
         $reflectProperty = new ReflectionProperty($this->className, $this->propertyName);
         $docInject       = $phpReader->getPropertyClass($reflectProperty);
         if (empty($docInject)) {
-            throw new BeanException('`@Inejct` must be define inejct value or `@var type` ');
+            throw new BeanException('`@Inject` must be define inejct value or `@var type` ');
         }
 
         return [$docInject, true];

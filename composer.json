@@ -108,6 +108,7 @@
       "SwoftTest\\Stdlib\\Unit\\": "src/stdlib/test/unit/",
       "SwoftTest\\Stdlib\\Testing\\": "src/stdlib/test/testing/",
       "SwoftTest\\Log\\Unit\\": "src/log/test/unit/",
+      "SwoftTest\\Log\\Testing\\": "src/log/test/testing/",
       "SwoftTest\\Config\\Testing\\": "src/config/test/testing/",
       "SwoftTest\\Config\\Unit\\": "src/config/test/unit/",
       "SwoftTest\\Auth\\Unit\\": "src/auth/test/unit/",
