@@ -607,7 +607,7 @@ class Builder implements PrototypeInterface
      *
      * @param Closure|static|string $query
      * @param string                $as
-     * @param string                $first
+     * @param Closure|string        $first
      * @param string|null           $operator
      * @param string|null           $second
      *
@@ -616,7 +616,7 @@ class Builder implements PrototypeInterface
      * @throws DbException
      * @throws ReflectionException
      */
-    public function leftJoinSub($query, string $as, string $first, string $operator = null, string $second = null): self
+    public function leftJoinSub($query, string $as, $first, string $operator = null, string $second = null): self
     {
         return $this->joinSub($query, $as, $first, $operator, $second, 'left');
     }
@@ -660,7 +660,7 @@ class Builder implements PrototypeInterface
      *
      * @param Closure|static|string $query
      * @param string                $as
-     * @param string                $first
+     * @param Closure|string        $first
      * @param string|null           $operator
      * @param string|null           $second
      *
@@ -669,13 +669,8 @@ class Builder implements PrototypeInterface
      * @throws DbException
      * @throws ReflectionException
      */
-    public function rightJoinSub(
-        $query,
-        string $as,
-        string $first,
-        string $operator = null,
-        string $second = null
-    ): self {
+    public function rightJoinSub($query, string $as, $first, string $operator = null, string $second = null): self
+    {
         return $this->joinSub($query, $as, $first, $operator, $second, 'right');
     }
 
