@@ -2,7 +2,6 @@
 
 namespace Swoft\WebSocket\Server;
 
-use InvalidArgumentException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Message\Request;

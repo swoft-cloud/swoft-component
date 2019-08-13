@@ -45,6 +45,8 @@ class ChatModule implements WsModuleInterface
      */
     public function checkHandshake(Request $request, Response $response): array
     {
+        Session::mustGet()->set('handshake:' . $request->getUriPath(), __METHOD__);
+
         return [true, $response->withContent('in testing')];
     }
 
