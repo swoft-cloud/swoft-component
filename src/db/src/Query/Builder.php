@@ -811,12 +811,23 @@ class Builder implements PrototypeInterface
      * @throws DbException
      * @throws ReflectionException
      */
-    protected function addArrayOfWheres($column, $boolean, $method = 'where'): self
+    protected function addArrayOfWheres(array $column, string $boolean, string $method = 'where'): self
     {
         return $this->whereNested(function ($query) use ($column, $method, $boolean) {
             foreach ($column as $key => $value) {
                 if (is_numeric($key) && is_array($value)) {
-                    $query->{$method}(...array_values($value));
+                    $value = array_values($value);
+
+                    if (is_string($value[0]) && stripos($value[0], $method) !== false &&
+                        method_exists($this, $value[0])) {
+                        $thisMethod = array_shift($value);
+
+                        $query->{$thisMethod}(...$value);
+
+                        continue;
+                    }
+
+                    $query->{$method}(...$value);
                 } else {
                     $query->{$method}($key, '=', $value, $boolean);
                 }

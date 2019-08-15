@@ -298,10 +298,11 @@ class Builder
             foreach ($column as $k => $v) {
                 $k = $props[$k] ?? $k;
 
-                if (is_int($k) && is_array($v)) {
+                if (isset($v[0]) && is_scalar($v[0])) {
                     $kv   = $v[0];
                     $v[0] = $props[$kv] ?? $kv;
                 }
+
                 $newColumns[$k] = $v;
             }
             $column = $newColumns;

@@ -414,6 +414,8 @@ trait HasAttributes
         $props = EntityRegister::getProps($this->getClassName());
 
         foreach ($attributes as $key => $value) {
+            $key = (string)$key;
+
             // Check is json field
             if ($this->isJsonSelector($key)) {
                 $safeAttributes[$key] = $value;
