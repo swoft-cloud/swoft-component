@@ -3,6 +3,7 @@
 namespace SwoftTest\WebSocket\Server\Unit;
 
 use Swoft\Http\Message\Response;
+use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Exception\WsModuleRouteException;
 use Swoft\WebSocket\Server\WsDispatcher;
 use Throwable;
@@ -21,14 +22,15 @@ class WsDispatcherTest extends WsServerTestCase
      *
      * @throws Throwable
      */
-    public function testHandshake(): void
+    public function testHandshake(): string
     {
         /** @var WsDispatcher $dp */
+        $fd = 10;
         $dp = bean('wsDispatcher');
 
         $this->assertNotEmpty($dp);
 
-        $conn = $this->newConnection(10, '/ws-test/chat');
+        $conn = $this->newConnection($fd, '/ws-test/chat');
 
         /** @var Response $res */
         [$status, $res] = $dp->handshake($conn->getRequest(), $conn->getResponse());
@@ -47,5 +49,21 @@ class WsDispatcherTest extends WsServerTestCase
             $this->assertSame(WsModuleRouteException::class, get_class($e));
             $this->assertSame('The requested websocket route path "/not-exist-path" is not exist!', $e->getMessage());
         }
+
+        return (string)$fd;
+    }
+
+    /**
+     * @depends testHandshake
+     *
+     * @param string $sid
+     */
+    public function testModuleInfo(string $sid): void
+    {
+        $this->assertTrue(Session::has($sid));
+        $conn = Session::mustGet();
+        $this->assertSame($conn, Session::mustGet($sid));
+
+        $this->rmConnection($sid);
     }
 }

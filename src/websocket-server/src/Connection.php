@@ -27,7 +27,7 @@ class Connection implements SessionInterface
 {
     use DataPropertyTrait;
 
-    private const METADATA_KEY = 'metadata';
+    private const METADATA_KEY = '_metadata';
 
     /**
      * @var int

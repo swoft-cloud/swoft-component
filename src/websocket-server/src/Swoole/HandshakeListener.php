@@ -29,7 +29,6 @@ use function server;
  * Class HandshakeListener
  *
  * @since 2.0
- *
  * @Bean()
  */
 class HandshakeListener implements HandshakeInterface

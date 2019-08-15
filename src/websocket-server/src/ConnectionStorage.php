@@ -11,11 +11,11 @@ use function server;
 use function sprintf;
 
 /**
- * Class ConnectionKeepLive
+ * Class ConnectionStorage - use for restore connection data on worker reload
  *
  * @since 2.0.6
  */
-class ConnectionKeepLive
+class ConnectionStorage
 {
     /**
      * @var StorageInterface
@@ -33,8 +33,16 @@ class ConnectionKeepLive
         $key = self::genKey($request->fd);
 
         $this->storage->set($key, JsonHelper::encode([
-            'fd'           => $request->fd,
-            'serverParams' => $request->server,
+            // request
+            'fd'        => $request->fd,
+            'get'       => $request->get,
+            'post'      => $request->post,
+            'cookie'    => $request->cookie,
+            'header'    => $request->header,
+            'server'    => $request->server,
+            // response data
+            'resHeader' => $response->header,
+            'resCookie' => $response->cookie,
         ]));
     }
 
@@ -50,14 +58,27 @@ class ConnectionKeepLive
         $key = self::genKey($fd);
 
         // if not exist
-        if (!$str = $this->storage->get($key)) {
+        if (!$json = $this->storage->get($key)) {
             return null;
         }
 
-        $req = new Request();
+        $data = JsonHelper::decode($json);
 
-        // TODO
-        $data = JsonHelper::decode($str);
+        // New request and response
+        $req = new Request();
+        $res = new Response();
+
+        // Init request
+        $req->fd     = $fd;
+        $req->get    = $data['get'];
+        $req->post   = $data['post'];
+        $req->cookie = $data['cookie'];
+        $req->header = $data['header'];
+        $req->server = $data['server'];
+
+        // Init response
+        $res->cookie = $data['resCookie'];
+        $res->header = $data['resHeader'];
 
         return $req;
     }

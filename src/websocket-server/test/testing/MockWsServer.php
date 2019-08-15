@@ -22,9 +22,10 @@ class MockWsServer extends WebSocketServer
     public function getClientInfo(int $fd): array
     {
         return [
-          'remote_ip'   => '127.0.0.1',
-          'remote_port' => '1000',
-          'connect_time' => time(),
+            'in_testing'   => 'yes',
+            'remote_ip'    => '127.0.0.1',
+            'remote_port'  => '1000',
+            'connect_time' => time(),
         ];
     }
 }

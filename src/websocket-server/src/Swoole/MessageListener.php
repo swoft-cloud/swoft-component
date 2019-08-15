@@ -24,9 +24,8 @@ use function server;
 /**
  * Class MessageListener
  *
- * @Bean()
- *
  * @since 2.0
+ * @Bean()
  */
 class MessageListener implements MessageInterface
 {

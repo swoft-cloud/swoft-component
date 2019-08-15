@@ -42,22 +42,51 @@ abstract class WsServerTestCase extends TestCase
      * @param int    $fd
      * @param string $path
      *
-     * @return Connection
+     * @return Request
      */
-    public function newConnection(int $fd, string $path = '/'): Connection
+    protected function mockHttpRequest(int $fd = 1, string $path = '/'): Request
     {
-        $req = MockHttpRequest::new([
+        $req     = MockHttpRequest::new([
             'request_uri' => $path,
         ]);
+        $req->fd = $fd;
+
+        return Request::new($req);
+    }
+
+    /**
+     * @param int $fd
+     *
+     * @return Response
+     */
+    protected function mockHttpResponse(int $fd): Response
+    {
         $res = MockHttpResponse::new();
 
-        $psrReq = Request::new($req);
-        $psrRes = Response::new($res);
+        $res->fd = $fd;
+        return Response::new($res);
+    }
+
+    /**
+     * @param int    $fd
+     * @param string $path
+     *
+     * @return Connection
+     */
+    protected function newConnection(int $fd, string $path = '/'): Connection
+    {
+        $psrReq = $this->mockHttpRequest($fd, $path);
+        $psrRes = $this->mockHttpResponse($fd);
 
         $conn = Connection::new($this->wsServer, $psrReq, $psrRes);
 
         Session::set((string)$fd, $conn);
 
         return $conn;
+    }
+
+    protected function rmConnection(string $sid): void
+    {
+        Session::destroy($sid);
     }
 }
