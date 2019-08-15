@@ -4,6 +4,7 @@ namespace Swoft\WebSocket\Server\Swoole;
 
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Bean\BeanFactory;
 use Swoft\Co;
 use Swoft\Context\Context;
@@ -33,6 +34,12 @@ use function server;
  */
 class HandshakeListener implements HandshakeInterface
 {
+    /**
+     * @Inject("wsDispatcher")
+     * @var WsDispatcher
+     */
+    private $wsDispatcher;
+
     /**
      * Ws Handshake event
      *
@@ -75,11 +82,8 @@ class HandshakeListener implements HandshakeInterface
         try {
             Swoft::trigger(WsServerEvent::HANDSHAKE_BEFORE, $fd, $request, $response);
 
-            /** @var WsDispatcher $dispatcher */
-            $dispatcher = BeanFactory::getSingleton('wsDispatcher');
-
             /** @var Psr7Response $psr7Res */
-            [$status, $psr7Res] = $dispatcher->handshake($psr7Req, $psr7Res);
+            [$status, $psr7Res] = $this->wsDispatcher->handshake($psr7Req, $psr7Res);
             if (true !== $status) {
                 $wsServer->log("Handshake: conn#$fd handshake check failed");
                 $psr7Res->quickSend();

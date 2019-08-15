@@ -48,6 +48,14 @@ final class WsServerEvent
      */
     public const MESSAGE_AFTER = 'swoft.ws.server.message.after';
 
+    public const CLOSE_BEFORE = 'swoft.ws.server.close.before';
+
+    /**
+     * @deprecated Please use CLOSE_AFTER instead.
+     */
     public const AFTER_CLOSE = 'swoft.ws.server.close.after';
+
+    public const CLOSE_AFTER = 'swoft.ws.server.close.after';
+
     public const CLOSE_ERROR = 'swoft.ws.server.close.error';
 }
