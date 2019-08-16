@@ -11,8 +11,19 @@ final class WsServerEvent
 {
     public const REGISTER_ROUTE = 'swoft.ws.server.router.register';
 
+    /**
+     * On before handshake
+     */
     public const HANDSHAKE_BEFORE  = 'swoft.ws.server.handshake.before';
-    public const HANDSHAKE_SUCCESS = 'swoft.ws.server.handshake.ok';
+
+    /**
+     * On websocket handshake successful
+     */
+    public const HANDSHAKE_SUCCESS = 'swoft.ws.server.handshake.success';
+
+    /**
+     * On websocket handshake error
+     */
     public const HANDSHAKE_ERROR   = 'swoft.ws.server.handshake.error';
 
     public const OPEN_AFTER = 'swoft.ws.server.open.after';
@@ -57,5 +68,8 @@ final class WsServerEvent
 
     public const CLOSE_AFTER = 'swoft.ws.server.close.after';
 
+    /**
+     * On handle close error
+     */
     public const CLOSE_ERROR = 'swoft.ws.server.close.error';
 }
