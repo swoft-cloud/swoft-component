@@ -72,6 +72,9 @@ class CloseListener implements CloseInterface
             $conn  = Session::mustGet();
             $total = server()->count() - 1;
 
+            // Call on close callback
+            Swoft::trigger(WsServerEvent::CLOSE_BEFORE, $fd, $server);
+
             server()->log("Close: conn#{$fd} has been closed. server conn count $total", [], 'debug');
             if (!$meta = $conn->getMetadata()) {
                 server()->log("Close: conn#{$fd} connection meta info has been lost");
@@ -88,7 +91,7 @@ class CloseListener implements CloseInterface
             }
 
             // Call on close callback
-            Swoft::trigger(WsServerEvent::AFTER_CLOSE, $fd, $server);
+            Swoft::trigger(WsServerEvent::CLOSE_AFTER, $fd, $server);
         } catch (Throwable $e) {
             server()->log("Close: conn#{$fd} error on handle close, ERR: " . $e->getMessage(), [], 'error');
             Swoft::trigger(WsServerEvent::CLOSE_ERROR, $e, $fd);

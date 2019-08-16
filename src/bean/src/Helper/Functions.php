@@ -2,7 +2,6 @@
 
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Container;
-use Swoft\Bean\Exception\ContainerException;
 
 if (!function_exists('bean')) {
     /**

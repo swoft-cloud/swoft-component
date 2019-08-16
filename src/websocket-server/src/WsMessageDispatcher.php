@@ -99,7 +99,7 @@ class WsMessageDispatcher // extends \Swoft\Concern\AbstractDispatcher
             $response->setOpcode((int)$route['opcode']);
         }
 
-        // Before send message
+        // Before call $response send message
         Swoft::trigger(WsServerEvent::MESSAGE_SEND, $response);
 
         // Do send response

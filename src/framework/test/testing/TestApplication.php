@@ -16,6 +16,16 @@ use Swoft\SwoftApplication;
  */
 class TestApplication extends SwoftApplication
 {
+    public function getCLoggerConfig(): array
+    {
+        $config = parent::getCLoggerConfig();
+
+        // Dont print log to terminal
+        $config['enable'] = false;
+
+        return $config;
+    }
+
     /**
      * Rewrite processors
      *

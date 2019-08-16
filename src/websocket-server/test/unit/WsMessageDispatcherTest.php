@@ -3,6 +3,7 @@
 namespace SwoftTest\WebSocket\Server\Unit;
 
 use PHPUnit\Framework\TestCase;
+use Swoft\WebSocket\Server\WsMessageDispatcher;
 
 /**
  * Class WsMessageDispatcherTest
@@ -13,6 +14,7 @@ class WsMessageDispatcherTest extends TestCase
      */
     public function testBasic(): void
     {
+        /** @var WsMessageDispatcher $wmd */
         $wmd = bean('wsMsgDispatcher');
         $this->assertNotEmpty($wmd);
     }
