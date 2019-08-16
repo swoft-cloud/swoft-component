@@ -16,7 +16,7 @@ use Swoft\Server\Command\BaseServerCommand;
  *
  * @since 2.0
  *
- * @Command(name="process", coroutine=false)
+ * @Command(name="process", coroutine=false, desc="Provides some command for manage process pool")
  * @example
  *  {fullCmd}:start     Start the process pool
  *  {fullCmd}:stop      Stop the process pool
