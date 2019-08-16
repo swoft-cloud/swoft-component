@@ -103,6 +103,7 @@ class ConnectionStorage
 
         // Restore connection object
         $conn = Connection::new($wsServer, $psr7Req, $psr7Res);
+        $conn->setHandshake(true);
 
         // Bind connection and bind cid => sid(fd)
         Session::set((string)$fd, $conn);

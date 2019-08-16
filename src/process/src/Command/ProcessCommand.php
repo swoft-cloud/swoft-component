@@ -1,16 +1,13 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Process\Command;
 
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
+use Swoft;
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Annotation\Mapping\CommandMapping;
 use Swoft\Console\Annotation\Mapping\CommandOption;
 use Swoft\Console\Helper\Show;
 use Swoft\Process\Exception\ProcessException;
-use Swoft\Process\Process;
 use Swoft\Process\ProcessPool;
 use Swoft\Server\Command\BaseServerCommand;
 
@@ -27,11 +24,9 @@ use Swoft\Server\Command\BaseServerCommand;
 class ProcessCommand extends BaseServerCommand
 {
     /**
-     * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
+     * @CommandMapping(desc="start the process pool")
      * @CommandOption("daemon", short="d", desc="Run server on the background", type="bool", default="false")
      *
-     * @throws ContainerException
-     * @throws ReflectionException
      * @throws ProcessException
      * @example
      *   {fullCommand}
@@ -58,11 +53,9 @@ class ProcessCommand extends BaseServerCommand
     }
 
     /**
-     * @CommandMapping()
+     * @CommandMapping(desc="restart the process pool")
      *
-     * @throws ContainerException
      * @throws ProcessException
-     * @throws ReflectionException
      */
     public function restart(): void
     {
@@ -84,10 +77,7 @@ class ProcessCommand extends BaseServerCommand
     }
 
     /**
-     * @CommandMapping()
-     *
-     * @throws ContainerException
-     * @throws ReflectionException
+     * @CommandMapping(desc="reload the process pool's worker")
      */
     public function reload(): void
     {
@@ -111,10 +101,7 @@ class ProcessCommand extends BaseServerCommand
     }
 
     /**
-     * @CommandMapping()
-     *
-     * @throws ContainerException
-     * @throws ReflectionException
+     * @CommandMapping(desc="stop the process pool")
      */
     public function stop(): void
     {
@@ -132,8 +119,6 @@ class ProcessCommand extends BaseServerCommand
 
     /**
      * @return ProcessPool
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     private function createServer(): ProcessPool
     {
@@ -142,7 +127,7 @@ class ProcessCommand extends BaseServerCommand
 
         /** @var ProcessPool $processPool */
         $processPool = bean('processPool');
-        $processPool->setScriptFile(\Swoft::app()->getPath($script));
+        $processPool->setScriptFile(Swoft::app()->getPath($script));
         $processPool->setFullCommand($command);
 
         return $processPool;
