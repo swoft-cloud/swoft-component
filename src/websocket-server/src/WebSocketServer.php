@@ -256,7 +256,7 @@ class WebSocketServer extends Server
             $this->log("(broadcast)The #{$fromUser} gave some specified user sending a message. Opcode: $opcode Data: {$data}");
 
             foreach ($receivers as $fd) {
-                if ($this->swooleServer->isEstablished($fd)) {
+                if ($fd && $this->swooleServer->isEstablished((int)$fd)) {
                     $count++;
                     $this->swooleServer->push($fd, $data, $opcode);
                 }
@@ -294,7 +294,7 @@ class WebSocketServer extends Server
     {
         $count = 0;
         foreach ($this->swooleServer->connections as $fd) {
-            if ($this->swooleServer->isEstablished($fd)) {
+            if ($fd && $this->swooleServer->isEstablished($fd)) {
                 $count++;
                 $handler($fd);
             }
@@ -325,7 +325,7 @@ class WebSocketServer extends Server
 
             /** @var $fdList array */
             foreach ($fdList as $fd) {
-                if ($this->swooleServer->isEstablished($fd)) {
+                if ($fd && $this->swooleServer->isEstablished($fd)) {
                     $handler($fd);
                 }
             }
