@@ -3,6 +3,7 @@
 namespace Swoft\WebSocket\Server;
 
 use Swoft;
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Message\Request as Psr7Request;
 use Swoft\Http\Message\Response as Psr7Response;
 use Swoft\Session\Session;
@@ -21,6 +22,7 @@ use function sprintf;
  * Class ConnectionStorage - use for restore connection data on worker reload
  *
  * @since 2.0.6
+ * @Bean("wsConnStorage")
  */
 class ConnectionStorage
 {
