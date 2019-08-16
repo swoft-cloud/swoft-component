@@ -12,10 +12,9 @@ use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\Context\WsMessageContext;
 use Swoft\WebSocket\Server\Contract\ResponseInterface;
-use function bean;
-use function is_object;
 use Swoft\WebSocket\Server\WsServerEvent;
 use Swoole\WebSocket\Frame;
+use function is_object;
 use const WEBSOCKET_OPCODE_TEXT;
 
 /**
@@ -33,7 +32,7 @@ class Response implements ResponseInterface
      *
      * @var int
      */
-    private $fd = -1;
+    private $fd = 0;
 
     /**
      * Receiver fd list
@@ -92,20 +91,18 @@ class Response implements ResponseInterface
     private $pageSize = 50;
 
     /**
-     * @param int $sender
+     * @param int $fd
      *
      * @return Response
      */
-    public static function new(int $sender = -1): self
+    public static function new(int $fd = 0): self
     {
-        $self = bean(self::class);
+        $self = Swoft::getBean(self::class);
 
         // Use sender as default receiver
-        $self->fd     = $sender;
+        $self->fd     = $fd;
         $self->sent   = false;
-        $self->sender = $sender;
-
-        $self->sendToAll = false;
+        $self->sender = $fd;
 
         return $self;
     }
@@ -189,6 +186,7 @@ class Response implements ResponseInterface
         /** @noinspection CallableParameterUseCaseInTypeContextInspection */
         $conn   = $conn ?: Session::mustGet();
         $server = $conn->getServer();
+        $sender = $this->sender === $this->fd ? 0 : $this->sender;
 
         $pageSize = $this->pageSize;
         $content  = $this->formatContent($conn);
@@ -198,17 +196,17 @@ class Response implements ResponseInterface
 
         // To all users
         if ($this->sendToAll) {
-            return $server->sendToAll($content, $this->sender, $pageSize, $this->opcode);
+            return $server->sendToAll($content, $sender, $pageSize, $this->opcode);
         }
 
         // To special users
         if ($this->fds) {
-            return $server->sendToSome($content, $this->fds, $this->noFds, $this->sender, $pageSize, $this->opcode);
+            return $server->sendToSome($content, $this->fds, $this->noFds, $sender, $pageSize, $this->opcode);
         }
 
         // Except some users
         if ($this->noFds) {
-            return $server->sendToSome($content, [], $this->noFds, $this->sender, $pageSize, $this->opcode);
+            return $server->sendToSome($content, [], $this->noFds, $sender, $pageSize, $this->opcode);
         }
 
         // No receiver
@@ -218,7 +216,7 @@ class Response implements ResponseInterface
         }
 
         // To one user
-        $ok = $server->sendTo($this->fd, $content, $this->sender, $this->opcode, $this->finish);
+        $ok = $server->sendTo($this->fd, $content, $sender, $this->opcode, $this->finish);
 
         return $ok ? 1 : 0;
     }
@@ -233,7 +231,6 @@ class Response implements ResponseInterface
     {
         // Content for response
         $content = $this->content;
-
         if ($content !== '') {
             return $content;
         }
