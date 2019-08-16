@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Unit;
 
 use PHPUnit\Framework\TestCase;
@@ -23,7 +22,7 @@ class CoroutineTest extends TestCase
     /**
      * Base
      */
-    public function testBase()
+    public function testBase(): void
     {
         $id = Co::id();
         $this->assertIsInt($id);
@@ -59,12 +58,12 @@ class CoroutineTest extends TestCase
     /**
      * @throws SwoftException
      */
-    public function testFile()
+    public function testFile(): void
     {
         $data     = 'datas1tring';
-        $fileName = dirname(__FILE__) . '/t.txt';
+        $fileName = __DIR__ . '/t.txt';
 
-        Co::writeFile($fileName, $data, FILE_USE_INCLUDE_PATH);
+        Co::writeFile($fileName, $data);
 
         $result = Co::readFile($fileName);
         $this->assertEquals($result, $data);
@@ -75,10 +74,10 @@ class CoroutineTest extends TestCase
     /**
      * @throws SwoftException
      */
-    public function testGetHostByName()
+    public function testGetHostByName(): void
     {
         $ip     = '39.106.56.0';
-        $result = Co::getHostByName('www.swoft.org', 1);
+        $result = Co::getHostByName('www.swoft.org', 2);
         $this->assertEquals($result, $ip);
 
         $result = Co::getAddrInfo('www.swoft.org');
