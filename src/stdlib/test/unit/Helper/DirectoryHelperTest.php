@@ -18,12 +18,12 @@ class DirectoryHelperTest extends TestCase
      */
     public function testMake(): void
     {
-        $dir = '/tmp/test/directory_test/test_make_file';
-        Dir::make($dir, 777);
-        $this->assertSame(true, file_exists($dir) && is_dir($dir) && (@opendir($dir)));
+        $dir = __DIR__ . '/directory_test/test_make_dir';
+        Dir::make($dir);
+        $this->assertTrue(file_exists($dir) && is_dir($dir) && (@opendir($dir)));
 
-        $dir = '/tmp/test/directory_test/test_make_file_mode';
+        $dir = __DIR__ . '/directory_test/test_make_dir_mode';
         Dir::make($dir, 111);
-        $this->assertSame(true, file_exists($dir) && is_dir($dir) && (@opendir($dir) === false));
+        $this->assertTrue(file_exists($dir) && is_dir($dir) && (@opendir($dir) === false));
     }
 }
