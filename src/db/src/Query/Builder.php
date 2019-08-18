@@ -772,7 +772,7 @@ class Builder implements PrototypeInterface
         }
 
         // If the value is array, we will auto convert "wherein"
-        if (is_array($value)) {
+        if (is_array($value) && $boolean === 'and') {
             return $this->whereIn($column, $value, $boolean, $operator !== '=');
         }
 
