@@ -3,6 +3,7 @@
 namespace Swoft\WebSocket\Server;
 
 use Swoft;
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Message\Request as Psr7Request;
 use Swoft\Http\Message\Response as Psr7Response;
 use Swoft\Session\Session;
@@ -21,6 +22,7 @@ use function sprintf;
  * Class ConnectionStorage - use for restore connection data on worker reload
  *
  * @since 2.0.6
+ * @Bean("wsConnStorage")
  */
 class ConnectionStorage
 {
@@ -104,6 +106,7 @@ class ConnectionStorage
         // Restore connection object
         $conn = Connection::new($wsServer, $psr7Req, $psr7Res);
         $conn->setHandshake(true);
+        $conn->setModuleInfo($data['moduleInfo']);
 
         // Bind connection and bind cid => sid(fd)
         Session::set((string)$fd, $conn);

@@ -37,8 +37,22 @@ class WorkerEndSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
+            SwooleEvent::SHUTDOWN    => 'onShutdown',
             SwooleEvent::WORKER_STOP => 'onWorkerStop',
         ];
+    }
+
+    /**
+     * @param EventInterface $event
+     */
+    public function onShutdown(EventInterface $event): void
+    {
+        // If not enable
+        if ($this->autoCloseConnection === 0) {
+            return;
+        }
+
+        $this->clearConnections($event);
     }
 
     /**
@@ -51,6 +65,14 @@ class WorkerEndSubscriber implements EventSubscriberInterface
             return;
         }
 
+        $this->clearConnections($event);
+    }
+
+    /**
+     * @param EventInterface $event
+     */
+    private function clearConnections(EventInterface $event): void
+    {
         /** @var WebSocketServer $server */
         $server = $event->getTarget();
 
@@ -67,8 +89,7 @@ class WorkerEndSubscriber implements EventSubscriberInterface
             }
 
             CLog::info('Close %d ws connection on worker stop', $count);
+            Session::clear();
         }
-
-        Session::clear();
     }
 }

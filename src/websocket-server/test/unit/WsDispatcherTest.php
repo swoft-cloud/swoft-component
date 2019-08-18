@@ -5,7 +5,9 @@ namespace SwoftTest\WebSocket\Server\Unit;
 use Swoft\Http\Message\Response;
 use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Exception\WsModuleRouteException;
+use Swoft\WebSocket\Server\MessageParser\JsonParser;
 use Swoft\WebSocket\Server\WsDispatcher;
+use SwoftTest\WebSocket\Server\Testing\ChatModule;
 use Throwable;
 use function bean;
 use function get_class;
@@ -64,6 +66,23 @@ class WsDispatcherTest extends WsServerTestCase
         $conn = Session::mustGet();
         $this->assertSame($conn, Session::mustGet($sid));
 
+        $info = $conn->getModuleInfo();
+
+        $this->assertArrayHasKey('path', $info);
+        $this->assertSame('/ws-test/chat', $info['path']);
+
+        $this->assertArrayHasKey('class', $info);
+        $this->assertSame(ChatModule::class, $info['class']);
+
+        $this->assertArrayHasKey('messageParser', $info);
+        $this->assertSame(JsonParser::class, $info['messageParser']);
+        $this->assertSame(JsonParser::class, $conn->getParserClass());
+
+        $this->assertArrayHasKey('controllers', $info);
+        $this->assertNotEmpty($info['controllers']);
+
         $this->rmConnection($sid);
+
+        $this->assertEmpty($conn->getModuleInfo());
     }
 }
