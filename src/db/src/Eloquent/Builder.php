@@ -291,21 +291,23 @@ class Builder
         // Get `@Column` Prop Mapping
         $props = EntityRegister::getProps($this->model->getClassName());
 
-        if (is_string($column)) {
-            $column = $props[$column] ?? $column;
-        } elseif (is_array($column)) {
-            $newColumns = [];
-            foreach ($column as $k => $v) {
-                $k = $props[$k] ?? $k;
+        if ($props) {
+            if (is_string($column)) {
+                $column = $props[$column] ?? $column;
+            } elseif (is_array($column)) {
+                $newColumns = [];
+                foreach ($column as $k => $v) {
+                    $k = $props[$k] ?? $k;
 
-                if (isset($v[0]) && is_scalar($v[0])) {
-                    $kv   = $v[0];
-                    $v[0] = $props[$kv] ?? $kv;
+                    if (isset($v[0]) && is_scalar($v[0])) {
+                        $kv   = $v[0];
+                        $v[0] = $props[$kv] ?? $kv;
+                    }
+
+                    $newColumns[$k] = $v;
                 }
-
-                $newColumns[$k] = $v;
+                $column = $newColumns;
             }
-            $column = $newColumns;
         }
 
         $this->where($column, $operator, $value, $boolean);

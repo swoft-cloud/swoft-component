@@ -90,6 +90,30 @@ class User extends Model
     private $testJson;
 
     /**
+     *
+     *
+     * @Column()
+     * @var float|null
+     */
+    private $amount;
+
+    /**
+     * @return float|null
+     */
+    public function getAmount(): ?float
+    {
+        return $this->amount;
+    }
+
+    /**
+     * @param float|null $amount
+     */
+    public function setAmount(?float $amount): void
+    {
+        $this->amount = $amount;
+    }
+
+    /**
      * @return null|array
      */
     public function getTestJson(): ?array

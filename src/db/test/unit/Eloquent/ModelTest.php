@@ -7,6 +7,7 @@ namespace SwoftTest\Db\Unit\Eloquent;
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\DB;
+use Swoft\Db\Eloquent\Builder;
 use Swoft\Db\Eloquent\Collection;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Expression;
@@ -838,10 +839,30 @@ on A.id=B.id;', [$resCount - 20]);
 
         $where      = [
             'pwd' => md5(uniqid()),
-            ['udesc', 'like', 'swoft%']
+            ['udesc', 'like', 'swoft%'],
+            [
+                function (\Swoft\Db\Query\Builder $builder) {
+                    echo $builder->toSql();
+                }
+            ],
+            ['whereIn', 'id', [1]]
         ];
-        $expectSql2 = 'select * from `user` where (`password` = ? and `user_desc` like ?)';
+        $expectSql2 = 'select * from `user` where (`password` = ? and `user_desc` like ? and `id` in (?))';
         $resSql2    = User::whereProp($where)->toSql();
         $this->assertEquals($expectSql2, $resSql2);
+    }
+
+    public function testWhereCall()
+    {
+        $toSql = 'select * from `user` where (`id` in (?) or `id` = ? or `status` > ? and `age` between ? and ?)';
+        $where = [
+            ['whereIn', 'id', [1]],
+            ['orWhere', 'id', 2],
+            ['orWhere', 'status', '>', -1],
+            ['whereBetween', 'age', [18, 25]]
+        ];
+        $sql   = User::where($where)->toSql();
+
+        $this->assertEquals($sql, $toSql);
     }
 }

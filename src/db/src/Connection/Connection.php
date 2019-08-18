@@ -331,6 +331,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @return Expression
      * @throws ContainerException
      * @throws ReflectionException
+     *
+     * @deprecated This method unsafe, This connection unreleased
      */
     public function raw($value): Expression
     {
@@ -446,6 +448,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
             return $statement;
         });
 
+        /** @var PDOStatement $statement */
         while ($record = $statement->fetch()) {
             yield $record;
         }

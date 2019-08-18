@@ -3121,7 +3121,9 @@ class Builder implements PrototypeInterface
     {
         // Convert counters to expression
         foreach ($counters as $column => $value) {
-            $counters[$column] = Expression::new("$column + $value");
+            $wrapped = $this->grammar->wrap($column);
+
+            $counters[$column] = $this->raw("$wrapped + $value");
         }
 
         if (!empty($where)) {
@@ -3269,12 +3271,11 @@ class Builder implements PrototypeInterface
      *
      * @return Expression
      * @throws ContainerException
-     * @throws DbException
      * @throws ReflectionException
      */
-    public function raw($value)
+    public function raw($value): Expression
     {
-        return $this->getConnection()->raw($value);
+        return Expression::new($value);
     }
 
     /**

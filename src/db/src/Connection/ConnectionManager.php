@@ -215,6 +215,7 @@ class ConnectionManager
         $tsKey  = sprintf('%d.transaction.%d', Co::tid(), Co::id());
 
         $ordConnections = $this->get($ordKey, []);
+
         foreach ($ordConnections as $poolName => $ordPoolConnection) {
             foreach ($ordPoolConnection as $ordConId => $ordConnection) {
                 if (!$ordConnection instanceof Connection) {
