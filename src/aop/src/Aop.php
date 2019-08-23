@@ -52,7 +52,7 @@ class Aop
 
         // Sort aspect by order
         $temp = array_column($aspects, 'order');
-        array_multisort($temp, SORT_ASC, $aspects);
+        array_multisort($aspects, SORT_ASC, $temp);
 
         foreach ($aspects as $aspectClass => $aspect) {
             if (!isset($aspect['point'], $aspect['advice'])) {
