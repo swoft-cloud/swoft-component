@@ -767,12 +767,14 @@ class BuilderTest extends TestCase
 
     public function testWhereArray()
     {
-        $expectSql = 'select * from `user` where (`uid` = ? and `name` like ? or `phone` like ?)';
+        $expectSql = 'select * from `user` where (`uid` = ? and `name` like ? or `phone` like ? and `id` = ? and `age` in (?, ?))';
 
         $where = [
             'uid' => 1,
             ['name', 'like', '%xx%'],
-            ['phone', 'like', 'xx%', 'or']
+            ['phone', 'like', 'xx%', 'or',],
+            'id'  => [1],
+            'age' => [1, 2]
         ];
 
         $res = DB::table('user')->where($where)->toSql();

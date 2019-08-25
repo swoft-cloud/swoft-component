@@ -773,7 +773,11 @@ class Builder implements PrototypeInterface
 
         // If the value is array, we will auto convert "wherein"
         if (is_array($value) && $boolean === 'and') {
-            return $this->whereIn($column, $value, $boolean, $operator !== '=');
+            if (count($value) > 1) {
+                return $this->whereIn($column, $value, $boolean, $operator !== '=');
+            }
+            // If item only one, not convert "wherein"
+            $value = current($value);
         }
 
         // If the column is making a JSON reference we'll check to see if the value
