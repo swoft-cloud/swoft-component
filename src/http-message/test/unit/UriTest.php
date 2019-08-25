@@ -3,8 +3,6 @@
 namespace SwoftTest\Http\Message\Unit;
 
 use PHPUnit\Framework\TestCase;
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\Uri\Uri;
 
 /**
@@ -13,8 +11,6 @@ use Swoft\Http\Message\Uri\Uri;
 class UriTest extends TestCase
 {
     /**
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function testBasic(): void
     {
@@ -32,8 +28,6 @@ class UriTest extends TestCase
     }
 
     /**
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function testIssue792(): void
     {

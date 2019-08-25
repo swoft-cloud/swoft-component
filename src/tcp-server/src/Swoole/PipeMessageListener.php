@@ -3,7 +3,7 @@
 namespace Swoft\Tcp\Server\Swoole;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Server\Swoole\PipeMessageInterface;
+use Swoft\Server\Contract\PipeMessageInterface;
 use Swoft\Session\Session;
 use Swoole\Server;
 use function json_decode;

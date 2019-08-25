@@ -2,7 +2,6 @@
 
 namespace Swoft\WebSocket\Server;
 
-use InvalidArgumentException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Message\Request;
@@ -32,7 +31,6 @@ class WsDispatcher
      *
      * @return array eg. [status, response]
      * @throws WsModuleRouteException
-     * @throws InvalidArgumentException
      * @throws Throwable
      */
     public function handshake(Request $request, Response $response): array

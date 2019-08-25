@@ -2,18 +2,16 @@
 
 namespace Swoft\Http\Message\Concern;
 
+use InvalidArgumentException;
+use Psr\Http\Message\MessageInterface;
+use Psr\Http\Message\StreamInterface;
+use Swoft\Http\Message\Stream\Stream;
 use function array_map;
 use function array_merge;
 use function bean;
 use function implode;
-use InvalidArgumentException;
 use function is_array;
-use Psr\Http\Message\MessageInterface;
-use Psr\Http\Message\StreamInterface;
-use ReflectionException;
 use function strtolower;
-use Swoft\Bean\Exception\ContainerException;
-use Swoft\Http\Message\Stream\Stream;
 use function trim;
 
 /**
@@ -317,8 +315,6 @@ trait MessageTrait
      * Gets the body of the message.
      *
      * @return StreamInterface Returns the body as a stream.
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function getBody(): StreamInterface
     {

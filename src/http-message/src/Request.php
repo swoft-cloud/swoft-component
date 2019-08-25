@@ -4,10 +4,8 @@ namespace Swoft\Http\Message;
 
 use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\Concern\InteractsWithInput;
 use Swoft\Http\Message\Contract\RequestParserInterface;
 use Swoft\Http\Message\Contract\ServerRequestInterface;
@@ -133,8 +131,6 @@ class Request extends PsrRequest implements ServerRequestInterface
      * @param CoRequest $coRequest
      *
      * @return Request
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(CoRequest $coRequest): self
     {
@@ -587,8 +583,6 @@ class Request extends PsrRequest implements ServerRequestInterface
 
     /**
      * @return StreamInterface
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function getBody(): StreamInterface
     {

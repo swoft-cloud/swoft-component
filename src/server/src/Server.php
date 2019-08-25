@@ -480,7 +480,6 @@ abstract class Server implements ServerInterface
      * Bind swoole event and start swoole server
      *
      * @throws ServerException
-     * @throws Swoft\Bean\Exception\ContainerException
      */
     protected function startSwoole(): void
     {
@@ -541,7 +540,6 @@ abstract class Server implements ServerInterface
      * Add listener serve to the main server
      *
      * @throws ServerException
-     * @throws Swoft\Bean\Exception\ContainerException
      */
     protected function addListener(): void
     {
@@ -810,6 +808,14 @@ abstract class Server implements ServerInterface
     public static function setServer(Server $server): void
     {
         self::$server = $server;
+    }
+
+    /**
+     * Clear server instance
+     */
+    public static function delServer(): void
+    {
+        self::$server = null;
     }
 
     /**

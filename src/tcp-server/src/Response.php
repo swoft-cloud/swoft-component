@@ -10,7 +10,6 @@ use Swoft\Tcp\Server\Contract\ResponseInterface;
 use Swoft\Tcp\Server\Exception\TcpResponseException;
 use Swoft\Tcp\Response as TcpResponse;
 use Swoole\Server;
-use function bean;
 
 /**
  * Class Response
@@ -49,7 +48,7 @@ class Response extends TcpResponse implements ResponseInterface
     public static function new(int $fd = -1): TcpResponse
     {
         /** @var self $self */
-        $self = bean('tcpResponse');
+        $self = Swoft::getBean('tcpResponse');
 
         // Set properties
         $self->fd    = $fd;
@@ -67,12 +66,14 @@ class Response extends TcpResponse implements ResponseInterface
      */
     public function send(Server $server = null): int
     {
+        // Deny repeat call send.
+        // But if you want send again, you can call `setSent(false)` before call it.
         if ($this->sent) {
             return 0;
         }
 
         /** @var Protocol $protocol */
-        $protocol = bean('tcpServerProtocol');
+        $protocol = Swoft::getBean('tcpServerProtocol');
 
         // Content is empty, skip send
         if (!$content = $protocol->packResponse($this)) {
