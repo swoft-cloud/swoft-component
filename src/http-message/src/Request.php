@@ -143,12 +143,12 @@ class Request extends PsrRequest implements ServerRequestInterface
         // Set headers
         $self->initializeHeaders($headers = $coRequest->header ?: []);
 
-        $self->method        = $serverParams['request_method'];
+        $self->method        = $serverParams['request_method'] ?? '';
         $self->coRequest     = $coRequest;
         $self->queryParams   = $coRequest->get ?: [];
         $self->cookieParams  = $coRequest->cookie ?: [];
         $self->serverParams  = $serverParams;
-        $self->requestTarget = $serverParams['request_uri'];
+        $self->requestTarget = $serverParams['request_uri'] ?? '';
 
         // Save
         $self->uriPath  = $serverParams['request_uri'] ?? '';
@@ -625,7 +625,7 @@ class Request extends PsrRequest implements ServerRequestInterface
     {
         if (!$this->protocol) {
             // Protocol
-            $protocol = $this->serverParams['server_protocol'] ?? '';
+            $protocol = $this->serverParams['server_protocol'] ?? 'HTTP/1.1';
 
             // Parse
             $this->protocol = substr($protocol, 5);
