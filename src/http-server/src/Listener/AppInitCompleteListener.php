@@ -25,8 +25,6 @@ class AppInitCompleteListener implements EventHandlerInterface
     /**
      * @param EventInterface $event
      *
-     * @throws ContainerException
-     * @throws ReflectionException
      * @throws HttpServerException
      */
     public function handle(EventInterface $event): void

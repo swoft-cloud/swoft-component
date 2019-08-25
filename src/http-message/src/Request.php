@@ -142,8 +142,9 @@ class Request extends PsrRequest implements ServerRequestInterface
         /** @var Request $self */
         $self = BeanFactory::getBean('httpRequest');
 
-        $serverParams = array_merge(self::DEFAULT_SERVER, $coRequest->server);
+//        $serverParams = array_merge(self::DEFAULT_SERVER, $coRequest->server);
 
+        $serverParams = $coRequest->server;
         // Set headers
         $self->initializeHeaders($headers = $coRequest->header ?: []);
 
@@ -154,21 +155,20 @@ class Request extends PsrRequest implements ServerRequestInterface
         $self->serverParams  = $serverParams;
         $self->requestTarget = $serverParams['request_uri'];
 
-        $parts = explode('?', $serverParams['request_uri'], 2);
         // Save
-        $self->uriPath  = $parts[0];
-        $self->uriQuery = $parts[1] ?? $serverParams['query_string'];
+        $self->uriPath  = $serverParams['request_uri'] ?? '';
+        $self->uriQuery = $serverParams['query_string'] ?? '';
 
         /** @var Uri $uri */
         $self->uri = Uri::new('', [
             'host'        => $headers['host'] ?? '',
             'path'        => $self->uriPath,
             'query'       => $self->uriQuery,
-            'https'       => $serverParams['https'],
-            'http_host'   => $serverParams['http_host'],
-            'server_name' => $serverParams['server_name'],
-            'server_addr' => $serverParams['server_addr'],
-            'server_port' => $serverParams['server_port'],
+            'https'       => $serverParams['https'] ?? '',
+            'http_host'   => $serverParams['http_host'] ?? '',
+            'server_name' => $serverParams['server_name'] ?? '',
+            'server_addr' => $serverParams['server_addr'] ?? '',
+            'server_port' => $serverParams['server_port'] ?? '',
         ]);
 
         // Update host by Uri info

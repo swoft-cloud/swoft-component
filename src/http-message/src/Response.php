@@ -80,7 +80,8 @@ class Response implements ResponseInterface
      *
      * @var string
      */
-    protected $format = self::FORMAT_JSON;
+//    protected $format = self::FORMAT_JSON;
+    protected $format = '';
 
     /**
      * All formatters

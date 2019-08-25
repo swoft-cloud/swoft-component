@@ -3,6 +3,7 @@
 namespace Swoft\Http\Server\Formatter;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Exception\SwoftException;
 use Swoft\Http\Message\ContentType;
 use Swoft\Http\Message\Contract\ResponseFormatterInterface;
 use Swoft\Http\Message\Response;
@@ -33,13 +34,25 @@ class AcceptResponseFormatter implements ResponseFormatterInterface
     protected $formats = [];
 
     /**
+     * Whether to enable accept formatter
+     *
+     * @var bool
+     */
+    protected $enable = true;
+
+    /**
      * @param Response $response
      *
      * @return Response
-     * @throws \Swoft\Exception\SwoftException
+     * @throws SwoftException
      */
     public function format(Response $response): Response
     {
+        // Is not enable
+        if (!$this->enable) {
+            return $response;
+        }
+
         $request = context()->getRequest();
         $accepts = $request->getHeader('accept');
 
