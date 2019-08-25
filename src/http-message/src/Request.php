@@ -2,16 +2,9 @@
 
 namespace Swoft\Http\Message;
 
-use function array_merge;
-use function explode;
 use InvalidArgumentException;
-use function is_array;
-use function preg_replace;
 use Psr\Http\Message\StreamInterface;
 use ReflectionException;
-use function rtrim;
-use function strtoupper;
-use function substr;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
@@ -23,6 +16,12 @@ use Swoft\Http\Message\Stream\Stream;
 use Swoft\Http\Message\Uri\Uri;
 use Swoft\Stdlib\Helper\Str;
 use Swoole\Http\Request as CoRequest;
+use function explode;
+use function is_array;
+use function preg_replace;
+use function rtrim;
+use function strtoupper;
+use function substr;
 
 /**
  * Class Request - The PSR ServerRequestInterface implement
@@ -142,9 +141,9 @@ class Request extends PsrRequest implements ServerRequestInterface
         /** @var Request $self */
         $self = BeanFactory::getBean('httpRequest');
 
-//        $serverParams = array_merge(self::DEFAULT_SERVER, $coRequest->server);
-
+        // Server params
         $serverParams = $coRequest->server;
+
         // Set headers
         $self->initializeHeaders($headers = $coRequest->header ?: []);
 
@@ -158,6 +157,14 @@ class Request extends PsrRequest implements ServerRequestInterface
         // Save
         $self->uriPath  = $serverParams['request_uri'] ?? '';
         $self->uriQuery = $serverParams['query_string'] ?? '';
+
+        if (strpos($self->uriPath, '?') !== false) {
+            // Split
+            $parts = explode('?', $self->uriPath, 2);
+
+            $self->uriPath  = $parts[0];
+            $self->uriQuery = $parts[1] ?? $self->uriQuery;
+        }
 
         /** @var Uri $uri */
         $self->uri = Uri::new('', [
@@ -613,7 +620,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      */
     public function getRequestTime(): float
     {
-        return (float)$this->serverParams['request_time_float'];
+        return (float)($this->serverParams['request_time_float'] ?? 0);
     }
 
     /**
@@ -623,8 +630,11 @@ class Request extends PsrRequest implements ServerRequestInterface
     public function getProtocolVersion(): string
     {
         if (!$this->protocol) {
-            // $self->protocol = \str_replace('HTTP/', '', $serverParams['server_protocol']);
-            $this->protocol = substr($this->serverParams['server_protocol'], 5); // faster
+            // Protocol
+            $protocol = $this->serverParams['server_protocol'] ?? '';
+
+            // Parse
+            $this->protocol = substr($protocol, 5);
         }
 
         return $this->protocol;
