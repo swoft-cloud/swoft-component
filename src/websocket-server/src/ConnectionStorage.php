@@ -27,6 +27,11 @@ use function sprintf;
 class ConnectionStorage
 {
     /**
+     * @var bool
+     */
+    private $enable = false;
+
+    /**
      * @var StorageInterface
      */
     private $storage;
@@ -42,6 +47,10 @@ class ConnectionStorage
      */
     public function storage(Request $request, Response $response): void
     {
+        if (!$this->enable) {
+            return;
+        }
+
         $key  = self::genKey($fd = $request->fd);
         $conn = Session::mustGet($fd);
 
@@ -73,6 +82,10 @@ class ConnectionStorage
      */
     public function restore(int $fd): bool
     {
+        if (!$this->enable) {
+            return false;
+        }
+
         $key = self::genKey($fd);
 
         // if not exist
@@ -126,6 +139,10 @@ class ConnectionStorage
      */
     public function remove(int $fd): bool
     {
+        if (!$this->enable) {
+            return false;
+        }
+
         $key = self::genKey($fd);
 
         return $this->storage->del($key);
@@ -158,5 +175,21 @@ class ConnectionStorage
         $workerId = server()->getSwooleServer()->worker_id;
 
         return sprintf('ws%s:%d:%d', $hostname, $workerId, $fd);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnable(): bool
+    {
+        return $this->enable;
+    }
+
+    /**
+     * @param bool $enable
+     */
+    public function setEnable(bool $enable): void
+    {
+        $this->enable = $enable;
     }
 }

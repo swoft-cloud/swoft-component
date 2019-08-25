@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
+namespace SwoftTest\WebSocket\Server\Unit\Message;
+
 use PHPUnit\Framework\TestCase;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\WebSocket\Server\Message\MiddlewareChain;
 use Swoft\WebSocket\Server\Message\Request;
 use SwoftTest\WebSocket\Server\Testing\CoreMiddleware;
@@ -14,10 +15,6 @@ use Swoole\WebSocket\Frame;
  */
 class MiddlewareChainTest extends TestCase
 {
-    /**
-     * @throws ReflectionException
-     * @throws ContainerException
-     */
     public function testRun(): void
     {
         $coreMdl = new CoreMiddleware();

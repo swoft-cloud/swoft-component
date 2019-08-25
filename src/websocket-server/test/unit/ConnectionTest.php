@@ -2,7 +2,9 @@
 
 namespace SwoftTest\WebSocket\Server\Unit;
 
+use function get_class;
 use Swoft\Session\Session;
+use Swoft\WebSocket\Server\MessageParser\RawTextParser;
 
 /**
  * Class ConnectionTest
@@ -40,10 +42,15 @@ class ConnectionTest extends WsServerTestCase
         $res = $conn->getResponse();
         $this->assertSame($fd, $res->getCoResponse()->fd);
 
+        $parser = $conn->getParser();
+        $this->assertSame(RawTextParser::class, get_class($parser));
+
         $this->assertTrue(Session::has($sid));
         $conn1 = Session::mustGet();
         $this->assertSame($conn, $conn1);
 
         Session::destroy($sid);
+
+        $this->assertFalse(Session::has($sid));
     }
 }

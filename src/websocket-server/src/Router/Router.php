@@ -16,8 +16,7 @@ use function trim;
 /**
  * Class Router
  *
- * @package Swoft\WebSocket\Server\Router
- *
+ * @since 2.0
  * @Bean("wsRouter")
  */
 class Router implements RouterInterface
