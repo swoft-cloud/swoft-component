@@ -4,6 +4,7 @@ namespace Swoft\WebSocket\Server\Swoole;
 
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Bean\BeanFactory;
 use Swoft\Context\Context;
 use Swoft\Server\Contract\MessageInterface;
@@ -23,12 +24,17 @@ use function server;
 /**
  * Class MessageListener
  *
- * @Bean()
- *
  * @since 2.0
+ * @Bean()
  */
 class MessageListener implements MessageInterface
 {
+    /**
+     * @Inject("wsMsgDispatcher")
+     * @var WsMessageDispatcher
+     */
+    private $dispatcher;
+
     /**
      * @param Server $server
      * @param Frame  $frame
@@ -53,15 +59,12 @@ class MessageListener implements MessageInterface
         // Bind cid => sid(fd)
         Session::bindCo($sid);
 
-        /** @var WsMessageDispatcher $dispatcher */
-        $dispatcher = BeanFactory::getSingleton('wsMsgDispatcher');
-
         try {
             // Trigger message before event
-            Swoft::trigger(WsServerEvent::MESSAGE_BEFORE, $fd, $server, $frame);
+            Swoft::trigger(WsServerEvent::MESSAGE_RECEIVE, $fd, $server, $frame);
 
             // Parse and dispatch message
-            $dispatcher->dispatch($server, $request, $response);
+            $this->dispatcher->dispatch($server, $request, $response);
 
             // Trigger message after event
             Swoft::trigger(WsServerEvent::MESSAGE_AFTER, $fd, $server, $frame);

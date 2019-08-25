@@ -152,7 +152,7 @@ class Session
         if (isset(self::$sessions[$sid])) {
             // Clear self data.
             self::$sessions[$sid]->clear();
-            unset(self::$sessions[$sid], $conn);
+            unset(self::$sessions[$sid]);
         }
     }
 

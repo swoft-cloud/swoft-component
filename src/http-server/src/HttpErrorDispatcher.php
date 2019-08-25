@@ -2,10 +2,8 @@
 
 namespace Swoft\Http\Server;
 
-use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Error\ErrorManager;
 use Swoft\Error\ErrorType;
 use Swoft\Http\Message\Response;
@@ -29,8 +27,6 @@ class HttpErrorDispatcher
      * @param Response   $response
      *
      * @return Response
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function run(Throwable $e, Response $response): Response
     {
@@ -43,7 +39,7 @@ class HttpErrorDispatcher
         }
 
         // Print log to console
-        CLog::error(PhpHelper::exceptionToString($e, 'Http Error', (bool)APP_DEBUG));
+        CLog::error(PhpHelper::exceptionToString($e, 'Http Error', APP_DEBUG > 0));
 
         return $response->withStatus(500)->withContent($e->getMessage());
     }

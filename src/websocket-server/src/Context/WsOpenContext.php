@@ -4,7 +4,6 @@ namespace Swoft\WebSocket\Server\Context;
 
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Context\AbstractContext;
 use Swoft\Http\Message\Request;
 
@@ -16,8 +15,6 @@ use Swoft\Http\Message\Request;
  */
 class WsOpenContext extends AbstractContext
 {
-    use PrototypeTrait;
-
     /**
      * @var Request
      */

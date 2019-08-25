@@ -2,11 +2,10 @@
 
 namespace Swoft\WebSocket\Server\Swoole;
 
-use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Co;
 use Swoft\Context\Context;
 use Swoft\Http\Message\Request as Psr7Request;
@@ -30,11 +29,16 @@ use function server;
  * Class HandshakeListener
  *
  * @since 2.0
- *
  * @Bean()
  */
 class HandshakeListener implements HandshakeInterface
 {
+    /**
+     * @Inject("wsDispatcher")
+     * @var WsDispatcher
+     */
+    private $wsDispatcher;
+
     /**
      * Ws Handshake event
      *
@@ -42,8 +46,6 @@ class HandshakeListener implements HandshakeInterface
      * @param Response $response
      *
      * @return bool
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws Throwable
      */
     public function onHandshake(Request $request, Response $response): bool
@@ -63,12 +65,13 @@ class HandshakeListener implements HandshakeInterface
         }
 
         // Initialize psr7 Request and Response
-        $psr7Req = Psr7Request::new($request);
-        $psr7Res = Psr7Response::new($response);
+        $psr7Req  = Psr7Request::new($request);
+        $psr7Res  = Psr7Response::new($response);
+        $wsServer = Swoft::getBean('wsServer');
 
         // Initialize connection session and context
         $ctx  = WsHandshakeContext::new($psr7Req, $psr7Res);
-        $conn = Connection::new($fd, $psr7Req, $psr7Res);
+        $conn = Connection::new($wsServer, $psr7Req, $psr7Res);
 
         // Bind connection and bind cid => sid(fd)
         Session::set($sid, $conn);
@@ -78,13 +81,10 @@ class HandshakeListener implements HandshakeInterface
         try {
             Swoft::trigger(WsServerEvent::HANDSHAKE_BEFORE, $fd, $request, $response);
 
-            /** @var WsDispatcher $dispatcher */
-            $dispatcher = BeanFactory::getSingleton('wsDispatcher');
-
             /** @var Psr7Response $psr7Res */
-            [$status, $psr7Res] = $dispatcher->handshake($psr7Req, $psr7Res);
+            [$status, $psr7Res] = $this->wsDispatcher->handshake($psr7Req, $psr7Res);
             if (true !== $status) {
-                server()->log("Handshake: conn#$fd handshake check failed");
+                $wsServer->log("Handshake: conn#$fd handshake check failed");
                 $psr7Res->quickSend();
 
                 // NOTICE: Rejecting a handshake still triggers a close event.
@@ -100,9 +100,13 @@ class HandshakeListener implements HandshakeInterface
             // Response handshake successfully
             $meta = $conn->getMetadata();
             $conn->setHandshake(true);
+
+            // Swoft::trigger(WsServerEvent::HANDSHAKE_SUCCESS, $fd, $request, $response);
+
+            // Response handshake
             $psr7Res->quickSend();
 
-            server()->log("Handshake: conn#{$fd} handshake successful! meta:", $meta, 'debug');
+            $wsServer->log("Handshake: conn#{$fd} handshake successful! meta:", $meta, 'debug');
             Swoft::trigger(WsServerEvent::HANDSHAKE_SUCCESS, $fd, $request, $response);
 
             // Handshaking successful, Manually triggering the open event

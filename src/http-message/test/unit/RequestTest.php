@@ -3,8 +3,6 @@
 namespace SwoftTest\Http\Message\Unit;
 
 use PHPUnit\Framework\TestCase;
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\Request;
 
 /**
@@ -15,8 +13,6 @@ use Swoft\Http\Message\Request;
 class RequestTest extends TestCase
 {
     /**
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function testBasic(): void
     {

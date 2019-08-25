@@ -150,7 +150,7 @@ class Co
      *
      * @return int
      */
-    public static function writeFile(string $filename, string $data, int $flags = null): int
+    public static function writeFile(string $filename, string $data, int $flags = FILE_USE_INCLUDE_PATH): int
     {
         return Coroutine::writeFile($filename, $data, $flags);
     }
@@ -406,7 +406,7 @@ class Co
         int $family = 2,
         int $socktype = 1,
         int $protocol = 6,
-        string $service = null
+        string $service = 'http'
     ): array {
         $result = Coroutine::getaddrinfo($domain, $family, $socktype, $protocol, $service);
         if ($result === false) {

@@ -30,11 +30,10 @@ interface WsModuleInterface
     /**
      * On connection has open
      *
-     * @param Server  $server
      * @param Request $request
      * @param int     $fd
      */
-    public function onOpen(Server $server, Request $request, int $fd): void;
+    public function onOpen(Request $request, int $fd): void;
 
     /**
      * On connection closed

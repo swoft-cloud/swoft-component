@@ -3,7 +3,7 @@
         bootstrap="test/bootstrap.php"
         backupGlobals="false"
         backupStaticAttributes="false"
-        colors="false"
+        colors="true"
         convertErrorsToExceptions="true"
         convertNoticesToExceptions="true"
         convertWarningsToExceptions="true"
@@ -17,6 +17,9 @@
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">src</directory>
+            <exclude>
+                <directory suffix=".php">src/Annotation</directory>
+            </exclude>
         </whitelist>
     </filter>
 </phpunit>

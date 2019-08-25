@@ -2,15 +2,18 @@
 
 namespace Swoft\WebSocket\Server\Message;
 
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Context\Context;
 use Swoft\Exception\SwoftException;
+use Swoft\Log\Helper\CLog;
 use Swoft\Server\Concern\CommonProtocolDataTrait;
 use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\Context\WsMessageContext;
 use Swoft\WebSocket\Server\Contract\ResponseInterface;
-use function bean;
+use Swoft\WebSocket\Server\WsServerEvent;
+use Swoole\WebSocket\Frame;
 use function is_object;
 use const WEBSOCKET_OPCODE_TEXT;
 
@@ -29,7 +32,7 @@ class Response implements ResponseInterface
      *
      * @var int
      */
-    private $fd = -1;
+    private $fd = 0;
 
     /**
      * Receiver fd list
@@ -88,18 +91,18 @@ class Response implements ResponseInterface
     private $pageSize = 50;
 
     /**
-     * @param int $sender
+     * @param int $fd
      *
      * @return Response
      */
-    public static function new(int $sender = -1): self
+    public static function new(int $fd = 0): self
     {
-        $self = bean(self::class);
+        $self = Swoft::getBean(self::class);
 
-        // Set properties
-        $self->sent      = false;
-        $self->sender    = $sender;
-        $self->sendToAll = false;
+        // Use sender as default receiver
+        $self->fd     = $fd;
+        $self->sent   = false;
+        $self->sender = $fd;
 
         return $self;
     }
@@ -174,29 +177,46 @@ class Response implements ResponseInterface
      */
     public function send(Connection $conn = null): int
     {
-        // Deny repeat send.
-        // But if you want send again, you can call `setSent(false)` before send.
+        // Deny repeat call send.
+        // But if you want send again, you can call `setSent(false)` before call it.
         if ($this->sent) {
             return 0;
         }
 
-        $server = bean('wsServer');
+        /** @noinspection CallableParameterUseCaseInTypeContextInspection */
+        $conn   = $conn ?: Session::mustGet();
+        $server = $conn->getServer();
+        $sender = $this->sender === $this->fd ? 0 : $this->sender;
 
         $pageSize = $this->pageSize;
         $content  = $this->formatContent($conn);
 
+        // Trigger event before push message content to client
+        Swoft::trigger(WsServerEvent::MESSAGE_PUSH, $server, $content, $this);
+
         // To all users
         if ($this->sendToAll) {
-            return $server->sendToAll($content, $this->sender, $pageSize, $this->opcode);
+            return $server->sendToAll($content, $sender, $pageSize, $this->opcode);
         }
 
-        // To some users
+        // To special users
         if ($this->fds) {
-            return $server->sendToSome($content, $this->fds, $this->noFds, $this->sender, $pageSize, $this->opcode);
+            return $server->sendToSome($content, $this->fds, $this->noFds, $sender, $pageSize, $this->opcode);
+        }
+
+        // Except some users
+        if ($this->noFds) {
+            return $server->sendToSome($content, [], $this->noFds, $sender, $pageSize, $this->opcode);
+        }
+
+        // No receiver
+        if ($this->fd < 1) {
+            CLog::warning('no receiver for the response message');
+            return 0;
         }
 
         // To one user
-        $ok = $server->sendTo($this->fd, $content, $this->sender, $this->opcode, $this->finish);
+        $ok = $server->sendTo($this->fd, $content, $sender, $this->opcode, $this->finish);
 
         return $ok ? 1 : 0;
     }
@@ -207,26 +227,37 @@ class Response implements ResponseInterface
      * @return string
      * @throws SwoftException
      */
-    protected function formatContent(Connection $conn = null): string
+    protected function formatContent(Connection $conn): string
     {
         // Content for response
         $content = $this->content;
+        if ($content !== '') {
+            return $content;
+        }
 
-        if ($content === '') {
-            /** @noinspection CallableParameterUseCaseInTypeContextInspection */
-            $conn = $conn ?: Session::mustGet();
+        /** @var WsMessageContext $context */
+        $context = Context::get(true);
+        $parser  = $conn->getParser();
+        $message = null;
 
-            /** @var WsMessageContext $context */
-            $context = Context::get(true);
-            $parser  = $conn->getParser();
-
-            if (is_object($this->data) && $this->data instanceof Message) {
+        $cmdId = $context->getMessage()->getCmd();
+        if (is_object($this->data)) {
+            if ($this->data instanceof Message) {
                 $message = $this->data;
+            } elseif ($this->data instanceof Frame) {
+                $this->setFd($this->data->fd);
+                $this->setFinish($this->data->finish);
+                $this->setOpcode($this->data->opcode);
+
+                $content = $this->data->data;
             } else {
-                $cmdId   = $context->getMessage()->getCmd();
                 $message = Message::new($cmdId, $this->data, $this->ext);
             }
+        } else {
+            $message = Message::new($cmdId, $this->data, $this->ext);
+        }
 
+        if ($message) {
             $content = $parser->encode($message);
         }
 
@@ -246,9 +277,12 @@ class Response implements ResponseInterface
      *
      * @return self
      */
-    public function setFd(int $fd): ResponseInterface
+    public function setFd(int $fd): self
     {
-        $this->fd = $fd;
+        if ($fd > 0) {
+            $this->fd = $fd;
+        }
+
         return $this;
     }
 
@@ -265,7 +299,7 @@ class Response implements ResponseInterface
      *
      * @return self
      */
-    public function setOpcode(int $opcode): ResponseInterface
+    public function setOpcode(int $opcode): self
     {
         if ($opcode > 0 && $opcode < 11) {
             $this->opcode = $opcode;
@@ -287,7 +321,7 @@ class Response implements ResponseInterface
      *
      * @return self
      */
-    public function setFinish(bool $finish): ResponseInterface
+    public function setFinish(bool $finish): self
     {
         $this->finish = $finish;
         return $this;
@@ -313,6 +347,15 @@ class Response implements ResponseInterface
     }
 
     /**
+     * @return Response|self
+     */
+    public function noSender(): self
+    {
+        $this->sender = 0;
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getContent(): string
@@ -322,6 +365,7 @@ class Response implements ResponseInterface
 
     /**
      * @param string $content
+     *
      * @return Response|ResponseInterface
      */
     public function setContent(string $content): ResponseInterface
