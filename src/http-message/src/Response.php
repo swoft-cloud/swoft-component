@@ -3,10 +3,8 @@
 namespace Swoft\Http\Message;
 
 use InvalidArgumentException;
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\ContainerException;
+use Swoft\Bean\BeanFactory;
 use Swoft\Http\Message\Concern\CookiesTrait;
 use Swoft\Http\Message\Concern\MessageTrait;
 use Swoft\Http\Message\Contract\ResponseFormatterInterface;
@@ -25,7 +23,7 @@ use function in_array;
  */
 class Response implements ResponseInterface
 {
-    use CookiesTrait, MessageTrait, PrototypeTrait;
+    use CookiesTrait, MessageTrait;
 
     /**
      * Mark response has been sent. deny repeat send
@@ -111,13 +109,11 @@ class Response implements ResponseInterface
      * @param CoResponse $coResponse
      *
      * @return Response
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(CoResponse $coResponse): self
     {
         /** @var Response $self */
-        $self = self::__instance();
+        $self = BeanFactory::getBean('httpResponse');
 
         // $self = \bean('httpResponse');
         $self->sent       = false;
@@ -160,9 +156,6 @@ class Response implements ResponseInterface
 
     /**
      * Send response
-     *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function send(): void
     {
@@ -184,9 +177,6 @@ class Response implements ResponseInterface
      * Quick send response
      *
      * @param self|null $response
-     *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function quickSend(Response $response = null): void
     {
@@ -248,8 +238,6 @@ class Response implements ResponseInterface
      * @param $content
      *
      * @return static
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function withContent($content): Response
     {

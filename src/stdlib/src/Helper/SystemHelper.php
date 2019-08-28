@@ -12,7 +12,6 @@ use function getmyuid;
 use function implode;
 use function is_resource;
 use function ob_start;
-use function passthru;
 use function preg_match;
 use function preg_replace;
 use function proc_close;
@@ -96,10 +95,9 @@ class SystemHelper extends EnvHelper
     /**
      * Method to execute a command in the sys
      * Uses :
-     * 1. system
-     * 2. passthru
-     * 3. exec
-     * 4. shell_exec
+     * - system
+     * - exec
+     * - shell_exec
      *
      * @param string      $command
      * @param bool        $returnStatus
@@ -119,12 +117,6 @@ class SystemHelper extends EnvHelper
         if (function_exists('system')) {
             ob_start();
             system($command, $exitStatus);
-            $output = ob_get_clean();
-
-            // passthru
-        } elseif (function_exists('passthru')) {
-            ob_start();
-            passthru($command, $exitStatus);
             $output = ob_get_clean();
 
             //exec

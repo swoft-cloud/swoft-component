@@ -3,7 +3,6 @@
 namespace Swoft\Error\Listener;
 
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Error\ErrorManager;
 use Swoft\Error\ErrorRegister;
 use Swoft\Event\Annotation\Mapping\Listener;
@@ -22,8 +21,6 @@ class AppInitCompleteListener implements EventHandlerInterface
 {
     /**
      * @param EventInterface $event
-     *
-     * @throws ContainerException
      */
     public function handle(EventInterface $event): void
     {

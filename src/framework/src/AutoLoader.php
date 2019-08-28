@@ -53,7 +53,7 @@ class AutoLoader extends AnnotationAutoLoader implements DefinitionInterface
             ],
             'lineFormatter'      => [
                 'class'      => LineFormatter::class,
-                'format'     => '%datetime% [%level_name%] [%channel%] [%event%] [tid:%tid%] [cid:%cid%] [traceid:%traceid%] [spanid:%spanid%] [parentid:%parentid%] %messages%',
+                'format'     => '%datetime% [%level_name%] [%channel%] [%event%] [tid:%tid%] [cid:%cid%] [traceid:%traceid%] [spanid:%spanid%] [parentid:%parentid%] %context% %messages%',
                 'dateFormat' => 'Y-m-d H:i:s',
             ],
             'noticeHandler'      => [

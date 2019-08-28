@@ -4,6 +4,7 @@ namespace SwoftTest\WebSocket\Server\Testing;
 
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
+use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Annotation\Mapping\OnClose;
 use Swoft\WebSocket\Server\Annotation\Mapping\OnHandshake;
 use Swoft\WebSocket\Server\Annotation\Mapping\OnOpen;
@@ -29,22 +30,6 @@ use Swoole\WebSocket\Server;
 class ChatModule implements WsModuleInterface
 {
     /**
-     * @var array
-     */
-    protected $options = [];
-
-    /**
-     * @var string
-     */
-    protected $defaultCommand = 'default';
-
-    public function init(): void
-    {
-        $this->options = $this->configure();
-        // $this->dispatcher = new MessageDispatcher($this->registerCommands());
-    }
-
-    /**
      * 在这里你可以验证握手的请求信息
      * - 必须返回含有两个元素的array
      *  - 第一个元素的值来决定是否进行握手
@@ -60,19 +45,20 @@ class ChatModule implements WsModuleInterface
      */
     public function checkHandshake(Request $request, Response $response): array
     {
-        // TODO: Implement checkHandshake() method.
-        return [];
+        Session::mustGet()->set('handshake:' . $request->getUriPath(), __METHOD__);
+
+        return [true, $response->withContent('in testing')];
     }
 
     /**
      * @OnOpen()
-     * @param Server  $server
+     *
      * @param Request $request
      * @param int     $fd
      */
-    public function onOpen(Server $server, Request $request, int $fd): void
+    public function onOpen(Request $request, int $fd): void
     {
-        // TODO: Implement onOpen() method.
+        Session::mustGet()->set("open:$fd:" . $request->getUriPath(), __METHOD__);
     }
 
     /**
@@ -85,7 +71,7 @@ class ChatModule implements WsModuleInterface
      */
     public function onClose(Server $server, int $fd): void
     {
-        // TODO: Implement onClose() method.
+        Session::mustGet()->set("close:$fd", __METHOD__);
     }
 
     /**
@@ -100,31 +86,6 @@ class ChatModule implements WsModuleInterface
         ];
     }
 
-    // protected function registerOperators(): array
-    // protected function registerHandlers(): array
-    protected function registerCommands(): array
-    {
-        return [
-            // handler is a method name in the controller, or is a class implement CommandInterface
-            // command name => handler
-            'default' => 'defaultCommand',
-            // 'login' => 'LoginHandler',
-            // 'message' => 'MessageHandler',
-            // 'logout' => 'LogoutHandler',
-            // 'createRoom' => 'CreateRoomHandler',
-            // 'some command' => 'Some::class',
-        ];
-    }
-
-    /**
-     * @param Frame $frame
-     */
-    public function defaultCommand(Frame $frame): void
-    {
-        //\ws()->send("hello, we have received your message: $body", $frame->fd);
-        \server()->push($frame->fd, "hello, we have received your message: {$frame->data}");
-    }
-
     /**
      * @param Server $server
      * @param Frame  $frame
@@ -136,13 +97,5 @@ class ChatModule implements WsModuleInterface
      */
     public function onMessage(Server $server, Frame $frame): void
     {
-    }
-
-    /**
-     * @return array
-     */
-    public function getOptions(): array
-    {
-        return $this->options;
     }
 }

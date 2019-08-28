@@ -2,6 +2,7 @@
 
 namespace Swoft\WebSocket\Server\Listener;
 
+use Swoft\Config\Annotation\Mapping\Config;
 use Swoft\Event\Annotation\Mapping\Subscriber;
 use Swoft\Event\EventInterface;
 use Swoft\Event\EventSubscriberInterface;
@@ -19,6 +20,12 @@ use Swoft\WebSocket\Server\WebSocketServer;
 class WorkerEndSubscriber implements EventSubscriberInterface
 {
     /**
+     * @Config("websocket.autoCloseOnWorkerEnd")
+     * @var int
+     */
+    private $autoCloseConnection = 0;
+
+    /**
      * Configure events and corresponding processing methods (you can configure the priority)
      *
      * @return array
@@ -30,6 +37,7 @@ class WorkerEndSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
+            SwooleEvent::SHUTDOWN    => 'onShutdown',
             SwooleEvent::WORKER_STOP => 'onWorkerStop',
         ];
     }
@@ -37,7 +45,33 @@ class WorkerEndSubscriber implements EventSubscriberInterface
     /**
      * @param EventInterface $event
      */
+    public function onShutdown(EventInterface $event): void
+    {
+        // If not enable
+        if ($this->autoCloseConnection === 0) {
+            return;
+        }
+
+        $this->clearConnections($event);
+    }
+
+    /**
+     * @param EventInterface $event
+     */
     public function onWorkerStop(EventInterface $event): void
+    {
+        // If not enable
+        if ($this->autoCloseConnection === 0) {
+            return;
+        }
+
+        $this->clearConnections($event);
+    }
+
+    /**
+     * @param EventInterface $event
+     */
+    private function clearConnections(EventInterface $event): void
     {
         /** @var WebSocketServer $server */
         $server = $event->getTarget();
@@ -55,8 +89,7 @@ class WorkerEndSubscriber implements EventSubscriberInterface
             }
 
             CLog::info('Close %d ws connection on worker stop', $count);
+            Session::clear();
         }
-
-        Session::clear();
     }
 }

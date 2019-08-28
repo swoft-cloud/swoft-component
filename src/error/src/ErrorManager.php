@@ -4,7 +4,6 @@ namespace Swoft\Error;
 
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Throwable;
 use function count;
 use function get_class;
@@ -50,7 +49,6 @@ class ErrorManager
      * @param int       $type
      *
      * @return mixed|null
-     * @throws ContainerException
      */
     public function matchHandler(Throwable $e, int $type = ErrorType::DEF)
     {

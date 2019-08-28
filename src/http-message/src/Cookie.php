@@ -2,8 +2,6 @@
 
 namespace Swoft\Http\Message;
 
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use function bean;
 use function gmdate;
@@ -73,8 +71,6 @@ class Cookie
      * @param array $config
      *
      * @return self
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(array $config = []): self
     {

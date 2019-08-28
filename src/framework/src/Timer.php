@@ -1,9 +1,7 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft;
 
-use ReflectionException;
 use Swoft;
 use Swoft\Log\Error;
 use Swoft\Log\Helper\Log;
@@ -24,9 +22,7 @@ class Timer
      * @param array          ...$params
      *
      * @return int
-     * @throws Bean\Exception\ContainerException
      * @throws Exception\SwoftException
-     * @throws ReflectionException
      */
     public static function tick(int $msec, $callback, ...$params): int
     {
@@ -57,9 +53,7 @@ class Timer
      * @param array          ...$params
      *
      * @return int
-     * @throws Bean\Exception\ContainerException
      * @throws Exception\SwoftException
-     * @throws ReflectionException
      */
     public static function after(int $msec, $callback, ...$params): int
     {
@@ -130,9 +124,7 @@ class Timer
 
     /**
      * @return array
-     * @throws Bean\Exception\ContainerException
      * @throws Exception\SwoftException
-     * @throws ReflectionException
      */
     private static function getLogItems(): array
     {

@@ -4,9 +4,7 @@ namespace Swoft\Error;
 
 use ErrorException;
 use InvalidArgumentException;
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Error\Contract\DefaultErrorHandlerInterface;
 use Throwable;
 use function error_get_last;
@@ -85,9 +83,6 @@ class DefaultErrorDispatcher
      * Running exception handling
      *
      * @param Throwable $e
-     *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function handleException(Throwable $e): void
     {
@@ -96,9 +91,6 @@ class DefaultErrorDispatcher
 
     /**
      * @param Throwable $e
-     *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function run(Throwable $e): void
     {

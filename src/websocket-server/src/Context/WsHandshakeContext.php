@@ -2,11 +2,11 @@
 
 namespace Swoft\WebSocket\Server\Context;
 
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Context\AbstractContext;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
-use function bean;
 
 /**
  * Class WsRequestContext - on ws handshake event
@@ -35,7 +35,7 @@ class WsHandshakeContext extends AbstractContext
     public static function new(Request $request, Response $response): self
     {
         /** @var self $ctx */
-        $ctx = bean(self::class);
+        $ctx = Swoft::getBean(self::class);
 
         $ctx->request  = $request;
         $ctx->response = $response;
