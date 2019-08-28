@@ -17,9 +17,9 @@ use Throwable;
 class Timer
 {
     /**
-     * @param int            $msec
+     * @param int $msec
      * @param array|callable $callback
-     * @param array          ...$params
+     * @param array ...$params
      *
      * @return int
      * @throws Exception\SwoftException
@@ -48,9 +48,9 @@ class Timer
     }
 
     /**
-     * @param int            $msec
+     * @param int $msec
      * @param array|callable $callback
-     * @param array          ...$params
+     * @param array ...$params
      *
      * @return int
      * @throws Exception\SwoftException
@@ -58,7 +58,7 @@ class Timer
     public static function after(int $msec, $callback, ...$params): int
     {
         $items = self::getLogItems();
-        return SwooleTimer::after($msec, function () use ($callback, $items) {
+        return SwooleTimer::after($msec, function () use ($callback, $items, $params) {
 
             try {
                 // Before
@@ -68,7 +68,7 @@ class Timer
                 self::initItems($items);
 
                 // Callback
-                PhpHelper::call($callback, 1);
+                PhpHelper::call($callback, ...$params);
 
                 // After
                 Swoft::trigger(SwoftEvent::TIMER_AFTER_AFTER);
@@ -128,7 +128,7 @@ class Timer
      */
     private static function getLogItems(): array
     {
-        $data  = [];
+        $data = [];
         $items = Log::getLogger()->getItems();
 
         foreach ($items as $item) {
