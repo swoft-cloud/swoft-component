@@ -327,7 +327,7 @@ on A.id=B.id;', [$resCount - 20]);
 
         $result3 = User::query()->avg('age');
 
-        $this->assertTrue(is_float($result3) || is_int($result3));
+        $this->assertTrue(is_string($result3));
         $this->assertEquals($result3, DB::table('user')->avg('age'));
         $this->assertEquals($result2, $result3);
 

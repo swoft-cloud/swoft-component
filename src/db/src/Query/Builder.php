@@ -2819,9 +2819,6 @@ class Builder implements PrototypeInterface
         if (!$results->isEmpty()) {
             $aggregate = array_change_key_case((array)$results[0])['aggregate'];
 
-            if (is_string($aggregate)) {
-                $aggregate = (int)$aggregate;
-            }
             return $aggregate;
         }
 
