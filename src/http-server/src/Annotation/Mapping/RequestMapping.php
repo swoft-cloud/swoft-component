@@ -24,6 +24,13 @@ class RequestMapping
     private $route = '';
 
     /**
+     * Route name
+     *
+     * @var string
+     */
+    private $name = '';
+
+    /**
      * Routing supported HTTP method set
      *
      * @var array
@@ -48,6 +55,10 @@ class RequestMapping
             $this->route = (string)$values['value'];
         } elseif (isset($values['route'])) {
             $this->route = (string)$values['route'];
+        }
+
+        if (isset($values['name'])) {
+            $this->name = (string)$values['name'];
         }
 
         if (isset($values['method'])) {
@@ -81,5 +92,13 @@ class RequestMapping
     public function getParams(): array
     {
         return $this->params;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
     }
 }
