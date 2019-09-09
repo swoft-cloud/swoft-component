@@ -1052,8 +1052,6 @@ class Builder
         // Update model field
         $this->model->setModelAttribute($column, $values[$column]);
 
-        unset($values[$column]);
-
         return $values;
     }
 
