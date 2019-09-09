@@ -30,6 +30,7 @@ use Swoft\Db\Query\Processor\Processor;
 use Swoft\Db\Eloquent\Collection;
 use Swoft\Stdlib\Contract\Arrayable;
 use Swoft\Stdlib\Helper\Arr;
+use Swoft\Stdlib\Helper\ArrayHelper;
 use Swoft\Stdlib\Helper\Str;
 
 /**
@@ -822,8 +823,8 @@ class Builder implements PrototypeInterface
                 if (is_numeric($key) && is_array($value)) {
                     $value = array_values($value);
 
-                    if (is_string($value[0]) && stripos($value[0], $method) !== false &&
-                        method_exists($this, $value[0])) {
+                    if (is_string($value[0]) && stripos($value[0], $method) !== false
+                        && method_exists($this, $value[0])) {
                         $thisMethod = array_shift($value);
 
                         $query->{$thisMethod}(...$value);
@@ -2817,9 +2818,7 @@ class Builder implements PrototypeInterface
             ->get($columns);
 
         if (!$results->isEmpty()) {
-            $aggregate = array_change_key_case((array)$results[0])['aggregate'];
-
-            return $aggregate;
+            return array_change_key_case((array)$results[0])['aggregate'];
         }
 
         return 0;
@@ -2966,6 +2965,99 @@ class Builder implements PrototypeInterface
     }
 
     /**
+     * Batch Update Or Insert, UpdateOrInsert operating suggest add unique index
+     *
+     * @param array  $items      origin item
+     * @param array  $baseWhere  only support [key=>value] where
+     * @param array  $whereKeys  exists data where item
+     * @param array  $updateKeys update item key
+     * @param array  $incrKeys   increment item key
+     * @param string $primary    table primary
+     *
+     * @return bool
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function batchUpdateOrInsert(
+        array $items,
+        array $baseWhere,
+        array $whereKeys = [],
+        array $updateKeys = [],
+        array $incrKeys = [],
+        string $primary = 'id'
+    ): bool {
+        $wheres = [];
+        foreach ($items as $k => $v) {
+            foreach ($whereKeys as $whereKey) {
+                $value                     = $v[$whereKey];
+                $wheres[$whereKey][$value] = $value;
+            }
+
+            if ($baseWhere) {
+                $items[$k] = array_merge($baseWhere, $v);
+            }
+        }
+
+        $existMaps = [];
+
+        $searchWhere = $wheres;
+        if ($baseWhere) {
+            $searchWhere = array_merge($baseWhere, $wheres);
+        }
+
+        $exitsList = $this->select($primary, ...$whereKeys)->where($searchWhere)->get();
+
+        $uniqueKeys = array_keys($searchWhere);
+        foreach ($exitsList as $record) {
+            $mergeData = $record;
+            if ($baseWhere) {
+                $mergeData = array_merge($baseWhere, $record);
+            }
+
+            $uniqueId               = ArrayHelper::toString(
+                ArrayHelper::only($mergeData, $uniqueKeys)
+            );
+            $existMaps[$uniqueId][] = $record[$primary];
+        }
+
+        $addItems = $updateItems = [];
+        foreach ($items as $item) {
+            $uniqueId = ArrayHelper::toString(ArrayHelper::only($item, $uniqueKeys));
+
+            if (isset($existMaps[$uniqueId])) {
+                $updateItem = array_merge(
+                    ArrayHelper::only($item, $updateKeys),
+                    $this->warpCounters(ArrayHelper::only($item, $incrKeys))
+                );
+
+                // Sync update data
+                foreach ($existMaps[$uniqueId] as $id) {
+                    $updateItem[$primary] = $id;
+
+                    $updateItems[$id] = $updateItem;
+                }
+
+                continue;
+            }
+
+            $addItems[] = $item;
+        }
+
+        $updateRes = $addRes = true;
+
+        if ($updateItems) {
+            $updateRes = $this->batchUpdateByIds($updateItems);
+        }
+
+        if ($addItems) {
+            $addRes = $this->insert($addItems);
+        }
+
+        return $updateRes && $addRes;
+    }
+
+    /**
      * Insert a new record and get the value of the primary key.
      *
      * @param array       $values
@@ -3030,21 +3122,23 @@ class Builder implements PrototypeInterface
      *
      * @param array $attributes
      * @param array $values
+     * @param array $counters
      *
      * @return bool
      * @throws ContainerException
      * @throws DbException
      * @throws ReflectionException
      */
-    public function updateOrInsert(array $attributes, array $values = [])
+    public function updateOrInsert(array $attributes, array $values = [], array $counters = [])
     {
         if (!$this->where($attributes)->exists()) {
-            return $this->insert(array_merge($attributes, $values));
+            return $this->insert(array_merge($attributes, $values, $counters));
         }
 
         if (empty($values)) {
             return true;
         }
+        $values = array_merge($values, $this->warpCounters($counters));
         return (bool)$this->take(1)->update($values);
     }
 
@@ -3120,18 +3214,36 @@ class Builder implements PrototypeInterface
      */
     public function updateAllCounters(array $where, array $counters, array $extra = []): int
     {
-        // Convert counters to expression
-        foreach ($counters as $column => $value) {
-            $wrapped = $this->grammar->wrap($column);
-
-            $counters[$column] = $this->raw("$wrapped + $value");
-        }
+        $counters = $this->warpCounters($counters);
 
         if (!empty($where)) {
             $this->where($where);
         }
 
         return $this->update($counters + $extra);
+    }
+
+    /**
+     * Convert counters
+     *
+     * @param array $counters
+     *
+     * @return array
+     * @throws ContainerException
+     * @throws ReflectionException
+     */
+    public function warpCounters(array $counters): array
+    {
+        // Convert counters to expression
+        foreach ($counters as $column => $value) {
+            if (!$value instanceof Expression) {
+                $wrapped = $this->grammar->wrap($column);
+
+                $counters[$column] = $this->raw("$wrapped + $value");
+            }
+        }
+
+        return $counters;
     }
 
     /**

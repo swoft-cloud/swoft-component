@@ -21,6 +21,7 @@ use Swoft\Db\DbEvent;
 use Swoft\Db\EntityRegister;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder as QueryBuilder;
+use Swoft\Db\Query\Expression;
 use Swoft\Stdlib\Contract\Arrayable;
 use Swoft\Stdlib\Contract\Jsonable;
 use Swoft\Stdlib\Helper\JsonHelper;
@@ -50,7 +51,8 @@ use function bean;
  * @method static Builder firstOrNew(array $attributes, array $values = [])
  * @method static static firstOrCreate(array $attributes, array $values = [])
  * @method static static updateOrCreate(array $attributes, array $values = [])
- * @method static bool updateOrInsert(array $attributes, array $values = [])
+ * @method static bool updateOrInsert(array $attributes, array $values = [], array $counters = [])
+ * @method static bool batchUpdateOrInsert(array $items, array $baseWhere, array $whereKeys = [], array $updateKeys = [], array $incrKeys = []);
  * @method static int batchUpdateByIds(array $values)
  * @method static int updateAllCounters(array $attributes, array $counters, array $extra = [])
  * @method static int updateAllCountersAdoptPrimary(array $attributes, array $counters, array $extra = [])
@@ -440,9 +442,41 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         $key   = $this->getKeyName();
         $id    = $this->getAttributeValue($key);
 
-        return $query->updateAllCountersById((array)$id, $counters, $extra);
+        $result = $query->updateAllCountersById((array)$id, $counters, $extra);
+
+        if ($result > 0) {
+            $this->syncCounter($counters, $extra);
+        }
+
+        return $result;
     }
 
+    /**
+     * Sync model data
+     *
+     * @param array $counters
+     * @param array $extra
+     *
+     * @return Model
+     * @throws DbException
+     */
+    public function syncCounter(array $counters, array $extra = []): self
+    {
+        // Sync model data
+        foreach ($counters as $column => $value) {
+            if (!$value instanceof Expression) {
+                $this->setModelAttribute($column, $this->getAttributeValue($column) + $value);
+                $this->syncOriginalAttribute($column);
+            }
+        }
+
+        if ($extra) {
+            // Sync extra
+            $this->fill($extra);
+        }
+
+        return $this;
+    }
 
     /**
      * Save the model to the database.

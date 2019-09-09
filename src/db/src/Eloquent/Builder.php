@@ -559,16 +559,24 @@ class Builder
      *
      * @param array $attributes
      * @param array $values
+     * @param array $counters
      *
      * @return null|object|Builder|Model
      * @throws ContainerException
      * @throws DbException
      * @throws ReflectionException
      */
-    public function updateOrCreate(array $attributes, array $values = [])
+    public function updateOrCreate(array $attributes, array $values = [], array $counters = [])
     {
+        if ($counters) {
+            $values = array_merge($values, $this->getQuery()->warpCounters($counters));
+        }
+
         $instance = $this->firstOrNew($attributes);
         $instance->fill($values)->save();
+
+        $instance->syncCounter($counters);
+
         return $instance;
     }
 
@@ -577,15 +585,21 @@ class Builder
      *
      * @param array $attributes
      * @param array $values
+     * @param array $counters
      *
      * @return bool
      * @throws ContainerException
      * @throws DbException
      * @throws ReflectionException
      */
-    public function updateOrInsert(array $attributes, array $values = [])
+    public function updateOrInsert(array $attributes, array $values = [], array $counters = []): bool
     {
         $instance = $this->firstOrNew($attributes);
+
+        if ($counters) {
+            $values = array_merge($values, $this->getQuery()->warpCounters($counters));
+        }
+
         return $instance->fill($values)->save();
     }
 
@@ -1011,10 +1025,10 @@ class Builder
     {
         $updatedAtColumn = $this->model->getUpdatedAtColumn();
 
-        if (!$this->model->usesTimestamps() ||
-            !$this->model->hasSetter($updatedAtColumn) ||
-            $this->model->isDirty($updatedAtColumn) ||
-            is_null($updatedAtColumn)
+        if (!$this->model->usesTimestamps()
+            || !$this->model->hasSetter($updatedAtColumn)
+            || $this->model->isDirty($updatedAtColumn)
+            || is_null($updatedAtColumn)
         ) {
             return $values;
         }
@@ -1037,13 +1051,6 @@ class Builder
 
         // Update model field
         $this->model->setModelAttribute($column, $values[$column]);
-
-        $segments = preg_split('/\s+as\s+/i', $this->query->from);
-
-        $qualifiedColumn = end($segments) . '.' . $column;
-
-        $values[$qualifiedColumn] = $values[$column];
-
 
         unset($values[$column]);
 
@@ -1249,8 +1256,10 @@ class Builder
         if (!is_array(reset($values))) {
             $values = [$values];
         }
-        $count = 0;
-        foreach ($values as &$item) {
+        $count           = 0;
+        $updatedAtColumn = $this->addUpdatedAtColumn([]);
+
+        foreach ($values as $k => &$item) {
             $item = $this->model->getSafeAttributes($item);
 
             // Check item
@@ -1260,16 +1269,85 @@ class Builder
 
             if ($count === 0) {
                 $count = count($item);
-            } elseif ($count != count($item)) {
+            } elseif ($count !== count($item)) {
                 throw new DbException('batchUpdateByIds The parameter length must be consistent.');
             }
 
-            $item = $this->addUpdatedAtColumn($item);
+            if (empty($item)) {
+                continue;
+            }
+
+            if ($updatedAtColumn) {
+                $values[$k] = array_merge($updatedAtColumn, $item);
+            }
         }
         unset($item);
         // Filter empty values
         $values = array_filter($values);
+        if (empty($values)) {
+            return 0;
+        }
+
         return $this->toBase()->batchUpdateByIds($values, $primary);
+    }
+
+    /**
+     * Batch Update Or Insert, UpdateOrInsert operating suggest add unique index
+     *
+     * @param array $items      origin item
+     * @param array $baseWhere  only support [key=>value] where
+     * @param array $whereKeys  exists data where item
+     * @param array $updateKeys update item key
+     * @param array $incrKeys   increment item key
+     *
+     * @return bool
+     * @throws ContainerException
+     * @throws DbException
+     * @throws ReflectionException
+     */
+    public function batchUpdateOrInsert(
+        array $items,
+        array $baseWhere,
+        array $whereKeys = [],
+        array $updateKeys = [],
+        array $incrKeys = []
+    ): bool {
+        $primary = $this->model->getKeyName();
+
+        $count      = 0;
+        $timeColumn = $this->model->updateTimestamps();
+
+        foreach ($items as $k => &$item) {
+            $item = $this->model->getSafeAttributes($item);
+
+            if ($count === 0) {
+                $count = count($item);
+            } elseif ($count !== count($item)) {
+                throw new DbException('batchUpdateOrInsert The parameter length must be consistent.');
+            }
+
+            if (empty($item)) {
+                continue;
+            }
+
+            if ($timeColumn) {
+                $items[$k] = array_merge($timeColumn, $item);
+            }
+        }
+        unset($item);
+        // Filter empty values
+        $items = array_filter($items);
+        if (empty($items)) {
+            return false;
+        }
+
+        // Auto update "updateAt" column
+        $updateAtColumn = $this->model->getUpdatedAtColumn();
+        if (isset($timeColumn[$updateAtColumn])) {
+            $updateKeys[] = $updateAtColumn;
+        }
+
+        return $this->toBase()->batchUpdateOrInsert($items, $baseWhere, $whereKeys, $updateKeys, $incrKeys, $primary);
     }
 
 

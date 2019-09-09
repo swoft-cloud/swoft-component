@@ -458,8 +458,9 @@ class Blueprint
     /**
      * Add a "deleted at" timestamp for the table.
      *
-     * @param  string  $column
-     * @param  int  $precision
+     * @param string $column
+     * @param int    $precision
+     *
      * @return ColumnDefinition
      */
     public function softDeletes($column = 'deleted_at', $precision = 0)
@@ -470,8 +471,9 @@ class Blueprint
     /**
      * Add a "deleted at" timestampTz for the table.
      *
-     * @param  string  $column
-     * @param  int  $precision
+     * @param string $column
+     * @param int    $precision
+     *
      * @return ColumnDefinition
      */
     public function softDeletesTz($column = 'deleted_at', $precision = 0)
@@ -752,12 +754,13 @@ class Blueprint
      * @param string $column
      * @param bool   $autoIncrement
      * @param bool   $unsigned
+     * @param int    $length
      *
      * @return ColumnDefinition
      */
-    public function integer($column, $autoIncrement = false, $unsigned = false)
+    public function integer(string $column, bool $autoIncrement = false, bool $unsigned = false, int $length = null)
     {
-        return $this->addColumn('integer', $column, compact('autoIncrement', 'unsigned'));
+        return $this->addColumn('integer', $column, compact('autoIncrement', 'unsigned', 'length'));
     }
 
     /**
@@ -766,12 +769,13 @@ class Blueprint
      * @param string $column
      * @param bool   $autoIncrement
      * @param bool   $unsigned
+     * @param int    $length
      *
      * @return ColumnDefinition
      */
-    public function tinyInteger($column, $autoIncrement = false, $unsigned = false)
+    public function tinyInteger(string $column, bool $autoIncrement = false, bool $unsigned = false, int $length = null)
     {
-        return $this->addColumn('tinyInteger', $column, compact('autoIncrement', 'unsigned'));
+        return $this->addColumn('tinyInteger', $column, compact('autoIncrement', 'unsigned', 'length'));
     }
 
     /**
@@ -780,12 +784,13 @@ class Blueprint
      * @param string $column
      * @param bool   $autoIncrement
      * @param bool   $unsigned
+     * @param int    $length
      *
      * @return ColumnDefinition
      */
-    public function smallInteger($column, $autoIncrement = false, $unsigned = false)
+    public function smallInteger(string $column, bool $autoIncrement = false, bool $unsigned = false, int $length = null)
     {
-        return $this->addColumn('smallInteger', $column, compact('autoIncrement', 'unsigned'));
+        return $this->addColumn('smallInteger', $column, compact('autoIncrement', 'unsigned', 'length'));
     }
 
     /**
@@ -794,12 +799,13 @@ class Blueprint
      * @param string $column
      * @param bool   $autoIncrement
      * @param bool   $unsigned
+     * @param int    $length
      *
      * @return ColumnDefinition
      */
-    public function mediumInteger($column, $autoIncrement = false, $unsigned = false)
+    public function mediumInteger(string $column, bool $autoIncrement = false, bool $unsigned = false, int $length = null)
     {
-        return $this->addColumn('mediumInteger', $column, compact('autoIncrement', 'unsigned'));
+        return $this->addColumn('mediumInteger', $column, compact('autoIncrement', 'unsigned', 'length'));
     }
 
     /**
@@ -808,12 +814,13 @@ class Blueprint
      * @param string $column
      * @param bool   $autoIncrement
      * @param bool   $unsigned
+     * @param int    $length
      *
      * @return ColumnDefinition
      */
-    public function bigInteger($column, $autoIncrement = false, $unsigned = false)
+    public function bigInteger(string $column, bool $autoIncrement = false, bool $unsigned = false, int $length = null)
     {
-        return $this->addColumn('bigInteger', $column, compact('autoIncrement', 'unsigned'));
+        return $this->addColumn('bigInteger', $column, compact('autoIncrement', 'unsigned', 'length'));
     }
 
     /**

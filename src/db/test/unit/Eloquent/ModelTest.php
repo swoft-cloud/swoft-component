@@ -709,8 +709,10 @@ on A.id=B.id;', [$resCount - 20]);
         DB::table('user')->updateAllCounters(['user_desc' => $expectLabel], ['age' => -1]);
         $this->assertEquals($user->getAge() - 1, User::find($id)->getAge());
 
-        User::find($id)->updateCounters(['age' => -1]);
-        $this->assertEquals($user->getAge() - 2, User::find($id)->getAge());
+        $user = User::find($id);
+        $user->updateCounters(['age' => -1]);
+
+        $this->assertEquals($user->getAge(), User::find($id)->getAge());
     }
 
     public function testGetEmpty()
@@ -749,12 +751,12 @@ on A.id=B.id;', [$resCount - 20]);
         $this->assertEquals(3, User::where($data)->first()->getTestJson()['user_status']);
 
         $this->assertEquals(3, User::whereJsonContains('test_json->user_status', 3)
-                                   ->first()
-                                   ->getTestJson()['user_status']);
+            ->first()
+            ->getTestJson()['user_status']);
 
         $this->assertEquals(3, User::whereJsonLength('test_json->user_status', 1)
-                                   ->first()
-                                   ->getTestJson()['user_status']);
+            ->first()
+            ->getTestJson()['user_status']);
 
         DB::update("update `user` set `test_json` = null where `id` = :id", [':id' => 18038]);
 
@@ -865,4 +867,45 @@ on A.id=B.id;', [$resCount - 20]);
 
         $this->assertEquals($sql, $toSql);
     }
+
+    public function testModelBatchUpdateOrInsert()
+    {
+        $updateOrInsertItems = [
+            [
+                'age'       => 2,
+                'user_desc' => 'desc2',
+                'hahh'      => 2,
+            ],
+            [
+                'age'       => 3,
+                'user_desc' => 'desc2',
+                'hahh'      => 3,
+            ],
+            [
+                'age'       => 3,
+                'user_desc' => 'desc1',
+                'hahh'      => 3,
+            ],
+            [
+                'age'       => 3,
+                'user_desc' => 'desc41',
+                'hahh'      => 3,
+            ]
+        ];
+
+        $baseWhere = [
+            'name' => 'swoft'
+        ];
+
+        $result = User::batchUpdateOrInsert(
+            $updateOrInsertItems,
+            $baseWhere,
+            ['user_desc'],
+            ['age', 'user_desc'],
+            ['hahh']
+        );
+
+        $this->assertTrue($result);
+    }
+
 }

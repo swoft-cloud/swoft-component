@@ -23,6 +23,8 @@ use Swoft\Db\Pool;
 use Swoft\Db\Query\Expression;
 use Swoft\Db\Query\Grammar\Grammar;
 use Swoft\Db\Query\Processor\Processor;
+use Swoft\Stdlib\Helper\StringHelper;
+use Swoft\Log\Helper\CLog;
 use Throwable;
 use function bean;
 
@@ -712,13 +714,54 @@ class Connection extends AbstractConnection implements ConnectionInterface
                 $this->release();
             }
 
+            // Print Error Sql
+            $rawSql = $this->getRawSql($query, $bindings);
+            CLog::error('Fail sql = <error>%s</error>', $rawSql);
+
             // Throw exception
-            throw new DbException($e->getMessage());
+            throw new DbException($e->getMessage(), (int)$e->getCode());
         }
 
         $this->pdoType = self::TYPE_DEFAULT;
         return $result;
     }
+
+    /**
+     * Returns the raw SQL by inserting parameter values into the corresponding placeholders in [[sql]].
+     * Note that the return value of this method should mainly be used for logging purpose.
+     * It is likely that this method returns an invalid SQL due to improper replacement of parameter placeholders.
+     *
+     * @param string $sql
+     * @param array  $bindings
+     *
+     * @return string the raw SQL with parameter values inserted into the corresponding placeholders in [[sql]].
+     */
+    public function getRawSql(string $sql, array $bindings)
+    {
+        if (empty($bindings)) {
+            return $sql;
+        }
+        foreach ($bindings as $name => $value) {
+            if (is_int($name)) {
+                $name = '?';
+            }
+
+            if (is_string($value) || is_array($value)) {
+                $param = $this->getQueryGrammar()->quoteString($value);
+            } elseif (is_bool($value)) {
+                $param = ($value ? 'TRUE' : 'FALSE');
+            } elseif ($value === null) {
+                $param = 'NULL';
+            } else {
+                $param = (string)$value;
+            }
+
+            $sql = StringHelper::replaceFirst($name, $param, $sql);
+        }
+
+        return $sql;
+    }
+
 
     /**
      * Whether to reconnect

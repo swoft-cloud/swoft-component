@@ -94,13 +94,13 @@ trait HasAttributes
         [$pro, $hidden, $value] = $this->getHiddenAttribute($key);
 
         // hidden status
-        $hiddenStatus = $hidden ||
-            in_array($key, $this->getModelHidden(), true) ||
-            in_array($pro, $this->getModelHidden(), true);
+        $hiddenStatus = $hidden
+            || in_array($key, $this->getModelHidden(), true)
+            || in_array($pro, $this->getModelHidden(), true);
 
         // visible status
-        $visibleStatus = in_array($key, $this->getModelVisible(), true) ||
-            in_array($pro, $this->getModelVisible(), true);
+        $visibleStatus = in_array($key, $this->getModelVisible(), true)
+            || in_array($pro, $this->getModelVisible(), true);
 
         if ($hiddenStatus === true && $visibleStatus === false) {
             return [false, false];
@@ -209,6 +209,8 @@ trait HasAttributes
         $value = ObjectHelper::parseParamType($attType, $value);
         if (method_exists($this, $setter)) {
             $this->{$setter}($value);
+
+            $this->modelAttributes[$key] = $value;
         }
 
         return $this;

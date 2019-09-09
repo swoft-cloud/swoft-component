@@ -17,6 +17,7 @@ use Swoft\Db\Eloquent\Model;
  */
 class User extends Model
 {
+
     /**
      * @Id(incrementing=true)
      *
@@ -37,6 +38,7 @@ class User extends Model
      */
     private $hahh;
 
+
     /**
      * @return null|int
      */
@@ -52,6 +54,7 @@ class User extends Model
     {
         $this->hahh = $hahh;
     }
+
     /**
      * @Column(name="password", hidden=true)
      * @var string|null
