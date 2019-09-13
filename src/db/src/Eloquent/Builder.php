@@ -1203,7 +1203,7 @@ class Builder
         if (empty($values)) {
             return '0';
         }
-        $values = array_merge($values, $this->model->updateTimestamps());
+        $values = array_merge($this->model->updateTimestamps(), $values);
 
         return $this->toBase()->insertGetId($values, $sequence);
     }
@@ -1229,7 +1229,7 @@ class Builder
         foreach ($values as &$item) {
             $model = $this->model->setRawAttributes($item, true);
 
-            $item = array_merge($model->getModelAttributesValue(), $model->updateTimestamps());
+            $item = array_merge($model->updateTimestamps(), $model->getModelAttributesValue());
         }
         unset($item);
         // Filter empty values
