@@ -9,7 +9,6 @@ use Swoft\Aop\Concern\AopTrait;
 use Swoft\Aop\Point\JoinPoint;
 use Swoft\Aop\Point\ProceedingJoinPoint;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Reflections;
 use Throwable;
 use function array_shift;
@@ -77,7 +76,6 @@ class AspectHandler
      *
      * @return mixed
      * @throws ReflectionException
-     * @throws ContainerException
      * @throws Throwable
      */
     public function invokeAspect()
@@ -214,7 +212,6 @@ class AspectHandler
      *
      * @return mixed
      * @throws ReflectionException
-     * @throws ContainerException
      */
     private function invokeAdvice(array $aspectAry, Throwable $catch = null, $return = null)
     {
@@ -275,7 +272,8 @@ class AspectHandler
             $pgp->setCatch($catch);
         }
 
-        if ($return) {
+        // Must use all equal to fixed `0` bug
+        if ($return !== null) {
             $pgp->setReturn($return);
         }
 
@@ -297,7 +295,8 @@ class AspectHandler
             $joinPoint->setCatch($catch);
         }
 
-        if ($return) {
+        // Must use all equal to fixed `0` bug
+        if ($return !== null) {
             $joinPoint->setReturn($return);
         }
 
