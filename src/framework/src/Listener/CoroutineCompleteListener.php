@@ -2,8 +2,11 @@
 
 namespace Swoft\Listener;
 
+use Exception;
+use ReflectionException;
 use Swoft;
 use Swoft\Bean\BeanEvent;
+use Swoft\Bean\Exception\ContainerException;
 use Swoft\Co;
 use Swoft\Context\Context;
 use Swoft\Event\Annotation\Mapping\Listener;
@@ -25,29 +28,45 @@ class CoroutineCompleteListener implements EventHandlerInterface
 {
     /**
      * @param EventInterface $event
+     *
+     * @throws Exception
      */
     public function handle(EventInterface $event): void
     {
+        if (!Context::getWaitGroup()->isWait()) {
+            $this->coroutineComplelete();
+            return;
+        }
+
+        // Wait group
         sgo(function () {
-            // Wait
-            Context::getWaitGroup()->wait();
-
-            /* @var Logger $logger */
-            $logger = bean('logger');
-
-            // Add notice log
-            if ($logger->isEnable()) {
-                $logger->appendNoticeLog();
-            }
-
-            // Coroutine destroy
-            Swoft::trigger(SwoftEvent::COROUTINE_DESTROY);
-
-            // Destroy request bean
-            Swoft::trigger(BeanEvent::DESTROY_REQUEST, $this, Co::tid());
-
-            // Destroy context
-            Context::destroy();
+            $this->coroutineComplelete();
         }, false);
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function coroutineComplelete(): void
+    {
+        // Wait
+        Context::getWaitGroup()->wait();
+
+        /* @var Logger $logger */
+        $logger = bean('logger');
+
+        // Add notice log
+        if ($logger->isEnable()) {
+            $logger->appendNoticeLog();
+        }
+
+        // Coroutine destroy
+        Swoft::trigger(SwoftEvent::COROUTINE_DESTROY);
+
+        // Destroy request bean
+        Swoft::trigger(BeanEvent::DESTROY_REQUEST, $this, Co::tid());
+
+        // Destroy context
+        Context::destroy();
     }
 }

@@ -2,15 +2,13 @@
 
 namespace Swoft\Context;
 
-use ReflectionException;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Co;
+use Swoft\Contract\ContextInterface;
 use Swoft\Exception\ContextException;
 use Swoft\Exception\SwoftException;
 use Swoft\Http\Server\HttpContext;
 use Swoft\WebSocket\Server\Context\WsMessageContext;
-use Swoft\Contract\ContextInterface;
 
 /**
  * Class Context - request context manager
@@ -89,9 +87,6 @@ class Context
      * Get context wait group
      *
      * @return ContextWaitGroup
-     *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function getWaitGroup(): ContextWaitGroup
     {

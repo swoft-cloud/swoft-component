@@ -3,10 +3,8 @@
 
 namespace Swoft\Db\Connection;
 
-use ReflectionException;
 use RuntimeException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Co;
 use Swoft\Concern\ArrayPropertyTrait;
 use Swoft\Connection\Pool\Contract\ConnectionInterface as BaseConnection;
@@ -197,9 +195,6 @@ class ConnectionManager
      * release
      *
      * @param bool $final
-     *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function release(bool $final = false): void
     {

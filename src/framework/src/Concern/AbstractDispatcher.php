@@ -36,12 +36,18 @@ abstract class AbstractDispatcher implements DispatcherInterface
     protected $afterMiddlewares = [];
 
     /**
+     * @var array
+     */
+    protected $requestMiddlewares = [];
+
+    /**
      * Init
      */
     public function init(): void
     {
-        $this->preMiddlewares   = array_merge($this->preMiddleware(), $this->preMiddlewares);
-        $this->afterMiddlewares = array_merge($this->afterMiddleware(), $this->afterMiddlewares);
+        $this->preMiddlewares     = array_merge($this->preMiddleware(), $this->preMiddlewares);
+        $this->afterMiddlewares   = array_merge($this->afterMiddleware(), $this->afterMiddlewares);
+        $this->requestMiddlewares = array_merge($this->preMiddlewares, $this->middlewares, $this->afterMiddlewares);
     }
 
     /**

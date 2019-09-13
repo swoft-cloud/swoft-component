@@ -157,8 +157,7 @@ class JsonPacket extends AbstractPacket
         $message = $data['error']['message'] ?? '';
         $data    = $data['error']['data'] ?? null;
 
-        $error = Error::new($code, $message, $data);
-
+        $error = Error::new((int)$code, (string)$message, $data);
         return Response::new(null, $error);
     }
 }
