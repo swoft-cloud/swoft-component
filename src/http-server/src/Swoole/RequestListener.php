@@ -4,8 +4,10 @@ namespace Swoft\Http\Server\Swoole;
 
 use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
+use Swoft\Exception\SwoftException;
 use Swoft\Http\Message\Request as ServerRequest;
 use Swoft\Http\Message\Response as ServerResponse;
 use Swoft\Http\Server\HttpDispatcher;
@@ -23,8 +25,16 @@ use Swoole\Http\Response;
 class RequestListener implements RequestInterface
 {
     /**
+     * @Inject()
+     *
+     * @var HttpDispatcher
+     */
+    private $dispatcher;
+
+    /**
      * @param Request  $request
      * @param Response $response
+     *
      * @throws ContainerException
      * @throws ReflectionException
      */
@@ -33,8 +43,6 @@ class RequestListener implements RequestInterface
         $psrRequest  = ServerRequest::new($request);
         $psrResponse = ServerResponse::new($response);
 
-        /* @var HttpDispatcher $dispatcher */
-        $dispatcher = BeanFactory::getSingleton('httpDispatcher');
-        $dispatcher->dispatch($psrRequest, $psrResponse);
+        $this->dispatcher->dispatch($psrRequest, $psrResponse);
     }
 }

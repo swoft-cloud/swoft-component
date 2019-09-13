@@ -66,7 +66,7 @@ class TimerTest extends TestCase
     {
         $a = 1;
         Timer::after(500, function ($a) {
-            $this->after++;
+            $this->after = $a;
         }, $a);
 
         Co::sleep(1);

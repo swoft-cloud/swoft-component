@@ -8,14 +8,17 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Concern\AbstractDispatcher;
+use Swoft\Context\Context;
 use Swoft\Exception\SwoftException;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Formatter\AcceptResponseFormatter;
 use Swoft\Http\Server\Middleware\DefaultMiddleware;
 use Swoft\Http\Server\Middleware\UserMiddleware;
-use Swoft\Http\Server\Middleware\ValidatorMiddleware;
 use Swoft\Http\Server\Router\Router;
+use Swoft\Log\Logger;
+use Swoft\Server\SwooleEvent;
+use Swoft\SwoftEvent;
 use Throwable;
 
 /**
@@ -34,13 +37,6 @@ class HttpDispatcher extends AbstractDispatcher
     protected $defaultMiddleware = DefaultMiddleware::class;
 
     /**
-     * 1 pre-match before run middleware
-     * 2 normal match on UserMiddleware
-     * @var int
-     */
-    // private $routeMatchStrategy = 2;
-
-    /**
      * Accept formatter
      *
      * @var AcceptResponseFormatter
@@ -49,12 +45,20 @@ class HttpDispatcher extends AbstractDispatcher
     protected $acceptFormatter;
 
     /**
+     * @Inject("logger")
+     *
+     * @var Logger
+     */
+    protected $logger;
+
+    /**
      * Dispatch http request
      *
      * @param mixed ...$params
      *
-     * @throws ReflectionException
      * @throws ContainerException
+     * @throws ReflectionException
+     * @throws SwoftException
      */
     public function dispatch(...$params): void
     {
@@ -66,9 +70,12 @@ class HttpDispatcher extends AbstractDispatcher
 
         /* @var RequestHandler $requestHandler */
         $requestHandler = Swoft::getBean(RequestHandler::class);
-        $requestHandler->initialize($this->requestMiddleware(), $this->defaultMiddleware);
+        $requestHandler->initialize($this->requestMiddlewares, $this->defaultMiddleware);
 
         try {
+            // Before request
+            $this->beforeRequest($request, $response);
+
             // Trigger before handle event
             Swoft::trigger(HttpServerEvent::BEFORE_REQUEST, null, $request, $response);
 
@@ -88,6 +95,9 @@ class HttpDispatcher extends AbstractDispatcher
 
         // Trigger after request
         Swoft::trigger(HttpServerEvent::AFTER_REQUEST, null, $response);
+
+        // After request
+        $this->afterRequest($response);
     }
 
     /**
@@ -101,10 +111,51 @@ class HttpDispatcher extends AbstractDispatcher
     }
 
     /**
+     * @param Request  $request
+     * @param Response $response
+     *
+     * @throws ContainerException
+     * @throws ReflectionException
+     */
+    private function beforeRequest(Request $request, Response $response): void
+    {
+        $httpContext = HttpContext::new($request, $response);
+
+        // Add log data
+        if ($this->logger->isEnable()) {
+            $data = [
+                'event'       => SwooleEvent::REQUEST,
+                'uri'         => $request->getRequestTarget(),
+                'requestTime' => $request->getRequestTime(),
+            ];
+
+            $httpContext->setMulti($data);
+        }
+
+        Context::set($httpContext);
+    }
+
+    /**
+     * @param Response $response
+     *
+     * @throws ContainerException
+     * @throws ReflectionException
+     */
+    private function afterRequest(Response $response): void
+    {
+        $response->send();
+
+        // Defer
+        Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
+
+        // Destroy
+        Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
+    }
+
+    /**
      * @param Request $request
      *
      * @return Request
-     * @throws ContainerException
      * @throws SwoftException
      */
     private function matchRouter(Request $request): Request

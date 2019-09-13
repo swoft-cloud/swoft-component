@@ -14,7 +14,6 @@ use Swoft\Http\Message\Stream\Stream;
 use Swoft\Http\Message\Uri\Uri;
 use Swoft\Stdlib\Helper\Str;
 use Swoole\Http\Request as CoRequest;
-use function array_merge;
 use function explode;
 use function is_array;
 use function preg_replace;
@@ -138,33 +137,41 @@ class Request extends PsrRequest implements ServerRequestInterface
         /** @var Request $self */
         $self = BeanFactory::getBean('httpRequest');
 
-        $serverParams = array_merge(self::DEFAULT_SERVER, $coRequest->server);
+        // Server params
+        $serverParams = $coRequest->server;
 
         // Set headers
         $self->initializeHeaders($headers = $coRequest->header ?: []);
 
-        $self->method        = $serverParams['request_method'];
+        $self->method        = $serverParams['request_method'] ?? '';
         $self->coRequest     = $coRequest;
         $self->queryParams   = $coRequest->get ?: [];
         $self->cookieParams  = $coRequest->cookie ?: [];
         $self->serverParams  = $serverParams;
-        $self->requestTarget = $serverParams['request_uri'];
+        $self->requestTarget = $serverParams['request_uri'] ?? '';
 
-        $parts = explode('?', $serverParams['request_uri'], 2);
         // Save
-        $self->uriPath  = $parts[0];
-        $self->uriQuery = $parts[1] ?? $serverParams['query_string'];
+        $self->uriPath  = $serverParams['request_uri'] ?? '';
+        $self->uriQuery = $serverParams['query_string'] ?? '';
+
+        if (strpos($self->uriPath, '?') !== false) {
+            // Split
+            $parts = explode('?', $self->uriPath, 2);
+
+            $self->uriPath  = $parts[0];
+            $self->uriQuery = $parts[1] ?? $self->uriQuery;
+        }
 
         /** @var Uri $uri */
         $self->uri = Uri::new('', [
             'host'        => $headers['host'] ?? '',
             'path'        => $self->uriPath,
             'query'       => $self->uriQuery,
-            'https'       => $serverParams['https'],
-            'http_host'   => $serverParams['http_host'],
-            'server_name' => $serverParams['server_name'],
-            'server_addr' => $serverParams['server_addr'],
-            'server_port' => $serverParams['server_port'],
+            'https'       => $serverParams['https'] ?? '',
+            'http_host'   => $serverParams['http_host'] ?? '',
+            'server_name' => $serverParams['server_name'] ?? '',
+            'server_addr' => $serverParams['server_addr'] ?? '',
+            'server_port' => $serverParams['server_port'] ?? '',
         ]);
 
         // Update host by Uri info
@@ -607,7 +614,7 @@ class Request extends PsrRequest implements ServerRequestInterface
      */
     public function getRequestTime(): float
     {
-        return (float)$this->serverParams['request_time_float'];
+        return (float)($this->serverParams['request_time_float'] ?? 0);
     }
 
     /**
@@ -617,8 +624,11 @@ class Request extends PsrRequest implements ServerRequestInterface
     public function getProtocolVersion(): string
     {
         if (!$this->protocol) {
-            // $self->protocol = \str_replace('HTTP/', '', $serverParams['server_protocol']);
-            $this->protocol = substr($this->serverParams['server_protocol'], 5); // faster
+            // Protocol
+            $protocol = $this->serverParams['server_protocol'] ?? 'HTTP/1.1';
+
+            // Parse
+            $this->protocol = substr($protocol, 5);
         }
 
         return $this->protocol;
