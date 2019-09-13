@@ -108,7 +108,7 @@ class JsonPacket extends AbstractPacket
      */
     public function encodeResponse($result, int $code = null, string $message = '', $data = null): string
     {
-        //fix bug: when type of $data is string ,it will throw Exception
+        //Fix bug: when type of $data is string ,it will throw Exception
         $res['jsonrpc'] = self::VERSION;
 
         if ($code === null) {
