@@ -789,19 +789,16 @@ class BuilderTest extends TestCase
             [
                 'age'       => 2,
                 'user_desc' => 'desc',
-                'ctime'     => date('Y-m-d H:i:s'),
                 'hahh'      => 2,
             ],
             [
                 'age'       => 3,
                 'user_desc' => 'desc',
-                'ctime'     => date('Y-m-d H:i:s'),
                 'hahh'      => 3,
             ],
             [
                 'age'       => 3,
                 'user_desc' => 'desc1',
-                'ctime'     => date('Y-m-d H:i:s'),
                 'hahh'      => 3,
             ]
         ];

@@ -1203,7 +1203,7 @@ class Builder
         if (empty($values)) {
             return '0';
         }
-        $values = array_merge($this->model->updateTimestamps(), $values);
+        $values = array_merge($values, $this->model->updateTimestamps());
 
         return $this->toBase()->insertGetId($values, $sequence);
     }

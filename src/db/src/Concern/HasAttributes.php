@@ -176,7 +176,8 @@ trait HasAttributes
      */
     public function hasGetter(string $key): bool
     {
-        $getter = sprintf('get%s', ucfirst($key));
+        $mapping = EntityRegister::getReverseMappingByColumn($this->getClassName(), $key);
+        $getter  = sprintf('get%s', ucfirst($mapping['attr'] ?? $key));
 
         return method_exists($this, $getter);
     }
@@ -191,7 +192,9 @@ trait HasAttributes
      */
     protected function mutateAttribute(string $key, $value)
     {
-        $getter = sprintf('get%s', ucfirst($key));
+        $mapping = EntityRegister::getReverseMappingByColumn($this->getClassName(), $key);
+
+        $getter = sprintf('get%s', ucfirst($mapping['attr'] ?? $key));
 
         return $this->{$getter}($value);
     }
@@ -229,7 +232,8 @@ trait HasAttributes
      */
     public function hasSetter($key): bool
     {
-        $setter = sprintf('set%s', ucfirst($key));
+        $mapping = EntityRegister::getReverseMappingByColumn($this->getClassName(), $key);
+        $setter  = sprintf('set%s', ucfirst($mapping['attr'] ?? $key));
 
         return method_exists($this, $setter);
     }
@@ -244,7 +248,8 @@ trait HasAttributes
      */
     protected function setMutatedAttributeValue($key, $value)
     {
-        $setter = sprintf('set%s', ucfirst($key));
+        $mapping = EntityRegister::getReverseMappingByColumn($this->getClassName(), $key);
+        $setter  = sprintf('set%s', ucfirst($mapping['attr'] ?? $key));
 
         return $this->{$setter}($value);
     }

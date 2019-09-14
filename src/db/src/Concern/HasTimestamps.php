@@ -54,11 +54,11 @@ trait HasTimestamps
     {
         $updated = [];
 
-        if ($this->modelTimestamps
-            && !is_null(static::UPDATED_AT)
-            && !$this->isDirty(static::UPDATED_AT)
-            && $this->hasSetter(static::UPDATED_AT)
-        ) {
+        if ($this->modelTimestamps &&
+            !is_null(static::UPDATED_AT) &&
+            !$this->isDirty(static::UPDATED_AT) &&
+            $this->hasSetter(static::UPDATED_AT)
+        )  {
             $createTimestamp = $this->freshTimestamp(static::UPDATED_AT);
 
             $this->setModelAttribute(static::UPDATED_AT, $createTimestamp);
@@ -66,11 +66,11 @@ trait HasTimestamps
             $updated[static::UPDATED_AT] = $createTimestamp;
         }
 
-        if ($this->modelTimestamps
-            && !$this->swoftExists
-            && !is_null(static::CREATED_AT)
-            && !$this->isDirty(static::CREATED_AT)
-            && $this->hasSetter(static::CREATED_AT)
+        if ($this->modelTimestamps &&
+            !$this->swoftExists &&
+            !is_null(static::CREATED_AT) &&
+            !$this->isDirty(static::CREATED_AT) &&
+            $this->hasSetter(static::CREATED_AT)
         ) {
             $createTimestamp = $this->freshTimestamp(static::CREATED_AT);
 
