@@ -100,9 +100,9 @@ class Session
      * Get session by FD
      *
      * @param string $sid If not specified, return the current corresponding session
-     * @return SessionInterface|Connection
+     * @return SessionInterface|Connection|null
      */
-    public static function get(string $sid = ''): ?SessionInterface
+    public static function get(string $sid = '')
     {
         $sid = $sid ?: self::getBoundedSid();
 
@@ -115,7 +115,7 @@ class Session
      * @param string $sid
      * @return SessionInterface|Connection
      */
-    public static function mustGet(string $sid = ''): SessionInterface
+    public static function mustGet(string $sid = '')
     {
         $sid = $sid ?: self::getBoundedSid();
 
