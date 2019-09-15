@@ -113,8 +113,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param Pool     $pool
      * @param Database $database
      *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function initialize(Pool $pool, Database $database)
     {
@@ -146,8 +144,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * Set the query post processor to the default implementation.
      *
      * @return void
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function useDefaultPostProcessor()
     {
@@ -158,8 +154,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * Get the default post processor instance.
      *
      * @return Processor
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function getDefaultPostProcessor()
     {
@@ -233,9 +227,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
 
     /**
      * @param bool $force
-     *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function release(bool $force = false): void
     {
@@ -693,21 +684,25 @@ class Connection extends AbstractConnection implements ConnectionInterface
             // Release connection
             $this->release();
         } catch (Throwable $e) {
+            // Connection is in transaction not to reconnect
+            $cm = $this->getConMananger();
+            if ($cm->isTransaction($this->poolName)) {
+                // Whether to release Or remove connection
+                $this->releaseOrRemove();
+
+                // Throw exception
+                throw new DbException($e->getMessage());
+            }
+
             // If an exception occurs when attempting to run a query, we'll format the error
             // message to include the bindings with SQL, which will make this exception a
             // lot more helpful to the developer instead of just the database's errors.
-
             if (!$reconnect && $this->isReconnect() && $this->reconnect()) {
                 return $this->runQueryCallback($query, $bindings, $callback, true);
             }
 
-            // Reconnect fail to remove exception connection
-            if ($this->isReconnect()) {
-                $this->pool->remove();
-            } else {
-                // Other exception to release connection
-                $this->release();
-            }
+            // Whether to release Or remove connection
+            $this->releaseOrRemove();
 
             // Throw exception
             throw new DbException($e->getMessage());
@@ -771,7 +766,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param int     $attempts
      *
      * @return mixed
-     * @throws ContainerException
      * @throws Throwable
      */
     public function transaction(Closure $callback, $attempts = 1)
@@ -798,8 +792,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Start a new database transaction.
      *
-     * @throws ContainerException
-     * @throws Throwable
      */
     public function beginTransaction(): void
     {
@@ -815,8 +807,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
     }
 
     /**
-     * @throws ContainerException
-     * @throws Throwable
      */
     public function commit(): void
     {
@@ -848,8 +838,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * @param int|null $toLevel
      *
-     * @throws ContainerException
-     * @throws Throwable
      */
     public function rollBack(int $toLevel = null): void
     {
@@ -876,8 +864,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * @param int|null $toLevel
      *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function forceRollBack(int $toLevel = null): void
     {
@@ -900,8 +886,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param bool $useReadPdo
      *
      * @return PDO
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function getPdoForSelect($useReadPdo = true)
     {
@@ -923,8 +907,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * Get the current PDO connection used for reading.
      *
      * @return PDO
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function getReadPdo(): PDO
     {
@@ -989,8 +971,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param int $toLevel
      *
      * @return void
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function performRollBack(int $toLevel): void
     {
@@ -1045,8 +1025,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * @return ConnectionManager
      *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function getConMananger(): ConnectionManager
     {
@@ -1148,5 +1126,19 @@ class Connection extends AbstractConnection implements ConnectionInterface
         }
 
         $this->selectDb = '';
+    }
+
+    /**
+     * Release Or remove connection
+     */
+    private function releaseOrRemove(): void
+    {
+        // Reconnect fail to remove exception connection
+        if ($this->isReconnect()) {
+            $this->pool->remove();
+        } else {
+            // Other exception to release connection
+            $this->release();
+        }
     }
 }

@@ -9,15 +9,13 @@ use ReflectionException;
 use ReflectionNamedType;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Bean\Container;
-use Swoft\Bean\Exception\ContainerException;
+use Swoft\Exception\SwoftException;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Contract\MiddlewareInterface;
 use Swoft\Http\Server\Exception\MethodNotAllowedException;
 use Swoft\Http\Server\Exception\NotFoundRouteException;
-use Swoft\Http\Server\Formatter\AcceptResponseFormatter;
 use Swoft\Http\Server\Router\Route;
 use Swoft\Http\Server\Router\Router;
 use Swoft\Stdlib\Helper\ObjectHelper;
@@ -35,14 +33,14 @@ use function sprintf;
 class DefaultMiddleware implements MiddlewareInterface
 {
     /**
-     * @param ServerRequestInterface|Request  $request
-     * @param RequestHandlerInterface $handler
+     * @param ServerRequestInterface|Request $request
+     * @param RequestHandlerInterface        $handler
      *
      * @return ResponseInterface
      * @throws MethodNotAllowedException
      * @throws NotFoundRouteException
      * @throws ReflectionException
-     * @throws ContainerException
+     * @throws SwoftException
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -94,6 +92,7 @@ class DefaultMiddleware implements MiddlewareInterface
      *
      * @return array
      * @throws ReflectionException
+     * @throws SwoftException
      */
     private function bindParams(string $className, string $method, array $pathParams): array
     {

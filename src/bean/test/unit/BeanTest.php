@@ -5,10 +5,10 @@ namespace SwoftTest\Bean\Unit;
 
 
 use PHPUnit\Framework\TestCase;
-use ReflectionException;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
+use Swoft\Bean\BF;
 use SwoftTest\Bean\Testing\Definition\TypeBean;
+use SwoftTest\Bean\Testing\InjectBean;
 
 /**
  * Class BeanTest
@@ -17,10 +17,6 @@ use SwoftTest\Bean\Testing\Definition\TypeBean;
  */
 class BeanTest extends TestCase
 {
-    /**
-     * @throws ReflectionException
-     * @throws ContainerException
-     */
     public function testType()
     {
         /* @var TypeBean $typeBean */
@@ -40,5 +36,17 @@ class BeanTest extends TestCase
         $this->assertEquals($typeBean->getIntegerVar(), 2);
         $this->assertEquals($typeBean->getFloatVar(), 1.1);
         $this->assertEquals($typeBean->getDoubleVar(), 1.2);
+    }
+
+    public function testCreate(): void
+    {
+        $config = [
+            'class' => InjectBean::class
+        ];
+        $bean   = BF::createBean('createInejctBean', $config);
+        $this->assertInstanceOf(InjectBean::class, $bean);
+
+        $bean2 = BF::getBean('createInejctBean');
+        $this->assertInstanceOf(InjectBean::class, $bean2);
     }
 }
