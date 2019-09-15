@@ -2,9 +2,7 @@
 
 namespace Swoft\Tcp\Server;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Concern\DataPropertyTrait;
 use Swoft\Session\SessionInterface;
 use function bean;
@@ -32,8 +30,6 @@ class Connection implements SessionInterface
      * @param array $clientInfo
      *
      * @return Connection
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function new(int $fd, array $clientInfo): self
     {

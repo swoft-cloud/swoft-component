@@ -15,8 +15,6 @@ use const SWOOLE_SOCK_TCP;
 class TcpServerTest extends TcpServerTestCase
 {
     /**
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function testBasic(): void
     {

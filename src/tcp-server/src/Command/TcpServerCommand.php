@@ -34,7 +34,6 @@ class TcpServerCommand extends BaseServerCommand
      * @CommandOption("daemon", short="d", desc="Run server on the background", default="false", type="bool")
      *
      * @throws ContainerException
-     * @throws ReflectionException
      * @throws ServerException
      * @throws Throwable
      * @example
@@ -91,8 +90,6 @@ class TcpServerCommand extends BaseServerCommand
      * @CommandMapping(usage="{fullCommand} [-t]")
      * @CommandOption("t", desc="Only to reload task processes, default to reload worker and task")
      *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function reload(): void
     {
@@ -123,9 +120,6 @@ class TcpServerCommand extends BaseServerCommand
      * Stop the currently running server
      *
      * @CommandMapping()
-     *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function stop(): void
     {
@@ -147,8 +141,6 @@ class TcpServerCommand extends BaseServerCommand
      * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
      * @CommandOption("daemon", short="d", desc="Run server on the background")
      *
-     * @throws ReflectionException
-     * @throws ContainerException
      * @example
      * {fullCommand}
      * {fullCommand} -d
@@ -173,8 +165,6 @@ class TcpServerCommand extends BaseServerCommand
 
     /**
      * @return TcpServer
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     private function createServer(): TcpServer
     {
