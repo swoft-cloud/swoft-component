@@ -8,7 +8,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Concern\DataPropertyTrait;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
-use Swoft\Session\SessionInterface;
+use Swoft\Contract\SessionInterface;
 use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\MessageParser\RawTextParser;

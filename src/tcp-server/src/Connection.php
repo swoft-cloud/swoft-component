@@ -4,7 +4,7 @@ namespace Swoft\Tcp\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Concern\DataPropertyTrait;
-use Swoft\Session\SessionInterface;
+use Swoft\Contract\SessionInterface;
 use function bean;
 use function microtime;
 
