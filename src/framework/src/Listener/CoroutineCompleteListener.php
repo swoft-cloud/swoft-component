@@ -3,10 +3,8 @@
 namespace Swoft\Listener;
 
 use Exception;
-use ReflectionException;
 use Swoft;
 use Swoft\Bean\BeanEvent;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Co;
 use Swoft\Context\Context;
 use Swoft\Event\Annotation\Mapping\Listener;
@@ -40,14 +38,14 @@ class CoroutineCompleteListener implements EventHandlerInterface
 
         // Wait group
         sgo(function () {
-            $this->coroutineComplelete();
+            $this->coroutineComplete();
         }, false);
     }
 
     /**
      * @throws Exception
      */
-    private function coroutineComplelete(): void
+    private function coroutineComplete(): void
     {
         // Wait
         Context::getWaitGroup()->wait();

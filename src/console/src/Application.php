@@ -122,7 +122,6 @@ class Application implements ConsoleInterface
 
     /**
      * @return void
-     * @throws ContainerException
      */
     public function run(): void
     {

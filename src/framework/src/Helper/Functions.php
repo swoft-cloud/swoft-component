@@ -1,7 +1,6 @@
 <?php
 
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Config\Config;
 use Swoft\Context\Context;
 use Swoft\Contract\ContextInterface;
@@ -78,8 +77,6 @@ if (!function_exists('alias')) {
 if (!function_exists('event')) {
     /**
      * @return EventManager
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     function event(): EventManager
     {
@@ -95,8 +92,6 @@ if (!function_exists('config')) {
      * @param mixed  $default
      *
      * @return mixed
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     function config(string $key = null, $default = null)
     {
@@ -172,8 +167,6 @@ if (!function_exists('validate')) {
      * @param array  $userValidators
      *
      * @return array
-     * @throws ContainerException
-     * @throws ReflectionException
      * @throws ValidatorException
      */
     function validate(array $data, string $validatorName, array $fields = [], array $userValidators = []): array
