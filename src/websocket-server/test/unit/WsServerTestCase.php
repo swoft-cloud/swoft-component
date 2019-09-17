@@ -34,8 +34,12 @@ abstract class WsServerTestCase extends TestCase
 
     protected function tearDown(): void
     {
-        // Session::clear();
         WebSocketServer::delServer();
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        Session::clear();
     }
 
     /**

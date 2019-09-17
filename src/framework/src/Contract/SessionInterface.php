@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace Swoft\Session;
+namespace Swoft\Contract;
 
 /**
  * Class SessionInterface - use for TCP, WS connection or HTTP-Session session data manage

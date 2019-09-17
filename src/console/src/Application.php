@@ -2,11 +2,9 @@
 
 namespace Swoft\Console;
 
-use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Concern\DataPropertyTrait;
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Concern\RenderHelpInfoTrait;
@@ -122,7 +120,6 @@ class Application implements ConsoleInterface
 
     /**
      * @return void
-     * @throws ContainerException
      */
     public function run(): void
     {
@@ -155,8 +152,6 @@ class Application implements ConsoleInterface
      * @param string $inputCmd
      *
      * @return void
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws Throwable
      */
     protected function doRun(string $inputCmd): void
@@ -212,8 +207,6 @@ class Application implements ConsoleInterface
      * Filter special option. eg: -h, --help, --version
      *
      * @return void
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     private function filterSpecialOption(): void
     {

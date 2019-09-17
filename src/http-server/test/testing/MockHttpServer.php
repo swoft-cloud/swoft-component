@@ -1,13 +1,11 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Http\Server\Testing;
 
-use ReflectionException;
 use RuntimeException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
+use Swoft\Exception\SwoftException;
 use Swoft\Http\Message\Request as ServerRequest;
 use Swoft\Http\Message\Response as ServerResponse;
 use Swoft\Http\Server\HttpDispatcher;
@@ -32,8 +30,7 @@ class MockHttpServer
      * @param array  $ext
      *
      * @return MockResponse
-     * @throws ReflectionException
-     * @throws ContainerException
+     * @throws SwoftException
      */
     public function request(
         string $method,
@@ -64,8 +61,6 @@ class MockHttpServer
      * @param array  $ext
      *
      * @return Request
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function mockRequest(
         string $method,
@@ -94,8 +89,7 @@ class MockHttpServer
      * @param Response $response
      *
      * @return ServerResponse
-     * @throws ReflectionException
-     * @throws ContainerException
+     * @throws SwoftException
      */
     public function onRequest(Request $request, Response $response): ServerResponse
     {

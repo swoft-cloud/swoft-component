@@ -3,6 +3,7 @@
 namespace Swoft\WebSocket\Server\Listener;
 
 use Swoft;
+use Swoft\Event\Annotation\Mapping\Subscriber;
 use Swoft\Event\EventInterface;
 use Swoft\Event\EventSubscriberInterface;
 use Swoft\Session\Session;
@@ -13,6 +14,7 @@ use Swoft\WebSocket\Server\WsServerEvent;
  * Class ConnStorageSubscriber
  *
  * @since 2.0.6
+ * @Subscriber()
  */
 class ConnStorageSubscriber implements EventSubscriberInterface
 {

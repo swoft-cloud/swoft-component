@@ -1,12 +1,9 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Validator;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Validator\Annotation\Mapping\IsBool;
 use Swoft\Validator\Annotation\Mapping\IsFloat;
 use Swoft\Validator\Annotation\Mapping\IsInt;
@@ -35,8 +32,6 @@ class Validator
      * @param array  $unfields
      *
      * @return array
-     * @throws ContainerException
-     * @throws ReflectionException
      * @throws ValidatorException
      */
     public function validate(
@@ -92,8 +87,6 @@ class Validator
      * @param array $query
      *
      * @return array
-     * @throws ContainerException
-     * @throws ReflectionException
      * @throws ValidatorException
      */
     public function validateRequest(array $body, array $validates, array $query = []): array
@@ -137,8 +130,6 @@ class Validator
      * @param array  $unfields
      *
      * @return array
-     * @throws ContainerException
-     * @throws ReflectionException
      * @throws ValidatorException
      */
     protected function validateValidator(
@@ -166,8 +157,6 @@ class Validator
      * @param array $unfields
      *
      * @return array
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function validateDefaultValidator(array $data, array $validator, array $fields, array $unfields): array
     {
@@ -191,7 +180,7 @@ class Validator
             }
 
             $name     = $type->getName();
-            $propName = (empty($name)) ? $propName : $name;
+            $propName = empty($name) ? $propName : $name;
 
             // Default validate item(Type) and other item
             $data = $this->validateDefaultItem($data, $propName, $type, $default);
@@ -210,8 +199,6 @@ class Validator
      * @param mixed  $default
      *
      * @return array
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function validateDefaultItem(array $data, string $propName, $item, $default = null): array
     {
@@ -230,8 +217,6 @@ class Validator
      *
      * @return array
      * @throws ValidatorException
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     protected function validateUserValidator(string $validateName, array $data, array $params): array
     {

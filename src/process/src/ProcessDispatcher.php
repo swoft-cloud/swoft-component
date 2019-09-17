@@ -54,8 +54,6 @@ class ProcessDispatcher
      *
      * @return ProcessInterface
      * @throws ProcessException
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     private function getProcess(int $workerId): ProcessInterface
     {

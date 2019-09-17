@@ -2,8 +2,6 @@
 
 namespace SwoftTest\Tcp\Server\Testing;
 
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Tcp\Server\Exception\TcpResponseException;
 use Swoft\Tcp\Server\Swoole\ConnectListener;
 use Swoft\Tcp\Server\Swoole\ReceiveListener;
@@ -51,8 +49,6 @@ class MockTcpServer
     }
 
     /**
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function mockConnect(): void
     {
@@ -62,14 +58,12 @@ class MockTcpServer
         // Save fd
         $this->fds[$fd] = 1;
 
-        $cl->onConnect($this->swooleServer, $fd, $fd);
+        $cl->onConnect($this->swServer, $fd, $fd);
     }
 
     /**
      * @param string $data
      *
-     * @throws ContainerException
-     * @throws ReflectionException
      * @throws TcpResponseException
      */
     public function mockReceive(string $data): void
@@ -77,6 +71,6 @@ class MockTcpServer
         $fd = $this->counter;
         $rl = bean(ReceiveListener::class);
 
-        $rl->onReceive($this->swooleServer, $fd, $fd, $data);
+        $rl->onReceive($this->swServer, $fd, $fd, $data);
     }
 }

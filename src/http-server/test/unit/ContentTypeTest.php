@@ -1,11 +1,7 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Http\Server\Unit;
 
-
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\ContentType;
 
 /**
@@ -27,10 +23,6 @@ class ContentTypeTest extends TestCase
         $response->assertEqualContent('imag data content');
     }
 
-    /**
-     * @throws ContainerException
-     * @throws ReflectionException
-     */
     public function testUserCt2(): void
     {
         $headers = [
@@ -43,10 +35,6 @@ class ContentTypeTest extends TestCase
         $response->assertEqualContent('xml data content');
     }
 
-    /**
-     * @throws ContainerException
-     * @throws ReflectionException
-     */
     public function testUserCt3(): void
     {
         $headers = [
@@ -66,10 +54,6 @@ class ContentTypeTest extends TestCase
         $response->assertEqualJson(['key' => 'data']);
     }
 
-    /**
-     * @throws ReflectionException
-     * @throws ContainerException
-     */
     public function testCtm(): void
     {
         $headers = [

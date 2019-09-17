@@ -4,18 +4,12 @@ namespace SwoftTest\Console\Unit;
 
 use PHPUnit\Framework\TestCase;
 use function bean;
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 
 /**
  * Class RouterTest
  */
 class RouterTest extends TestCase
 {
-    /**
-     * @throws ReflectionException
-     * @throws ContainerException
-     */
     public function testBasic(): void
     {
         $router = bean('cliRouter');

@@ -2,8 +2,6 @@
 
 namespace Swoft\Tcp\Packer;
 
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Tcp\Contract\PackerInterface;
 use Swoft\Tcp\Package;
 use Swoft\Tcp\Response;
@@ -47,8 +45,6 @@ class PhpPacker implements PackerInterface
      * @param string $data package data
      *
      * @return Package
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function decode(string $data): Package
     {

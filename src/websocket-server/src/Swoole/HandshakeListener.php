@@ -6,7 +6,6 @@ use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Bean\BeanFactory;
-use Swoft\Co;
 use Swoft\Context\Context;
 use Swoft\Http\Message\Request as Psr7Request;
 use Swoft\Http\Message\Response as Psr7Response;
@@ -20,6 +19,7 @@ use Swoft\WebSocket\Server\Helper\WsHelper;
 use Swoft\WebSocket\Server\WsDispatcher;
 use Swoft\WebSocket\Server\WsErrorDispatcher;
 use Swoft\WebSocket\Server\WsServerEvent;
+use Swoole\Coroutine;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Throwable;
@@ -100,17 +100,16 @@ class HandshakeListener implements HandshakeInterface
             // Response handshake successfully
             $meta = $conn->getMetadata();
             $conn->setHandshake(true);
-
-            // Swoft::trigger(WsServerEvent::HANDSHAKE_SUCCESS, $fd, $request, $response);
-
-            // Response handshake
             $psr7Res->quickSend();
 
             $wsServer->log("Handshake: conn#{$fd} handshake successful! meta:", $meta, 'debug');
             Swoft::trigger(WsServerEvent::HANDSHAKE_SUCCESS, $fd, $request, $response);
 
             // Handshaking successful, Manually triggering the open event
-            Co::create(function () use ($psr7Req, $fd) {
+            // NOTICE:
+            //  Cannot use \Swoft\Co::create().
+            //  Because this will use the same top-level coroutine ID, if there is a first unbind, it may lead to session loss.
+            Coroutine::create(function () use ($psr7Req, $fd) {
                 $this->onOpen($psr7Req, $fd);
             });
         } catch (Throwable $e) {
@@ -119,7 +118,6 @@ class HandshakeListener implements HandshakeInterface
             /** @var WsErrorDispatcher $errDispatcher */
             $errDispatcher = BeanFactory::getSingleton(WsErrorDispatcher::class);
 
-            // Handle handshake error
             $psr7Res = $errDispatcher->handshakeError($e, $psr7Res);
             $psr7Res->quickSend();
         } finally {
@@ -151,6 +149,8 @@ class HandshakeListener implements HandshakeInterface
         server()->log("Open: conn#{$fd} has been opened", [], 'debug');
 
         try {
+            Swoft::trigger(WsServerEvent::OPEN_BEFORE, $fd, $server, $request);
+
             /** @var Connection $conn */
             $conn = Session::mustGet();
             $info = $conn->getModuleInfo();
@@ -173,6 +173,12 @@ class HandshakeListener implements HandshakeInterface
             $errDispatcher = BeanFactory::getSingleton(WsErrorDispatcher::class);
             $errDispatcher->openError($e, $request);
         } finally {
+            // Defer
+            Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
+
+            // Destroy
+            Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
+
             // Unbind cid => sid(fd)
             Session::unbindCo();
         }

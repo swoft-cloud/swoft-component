@@ -2,10 +2,8 @@
 
 namespace Swoft\Tcp\Server\Context;
 
-use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\AbstractContext;
 
 /**
@@ -31,8 +29,6 @@ class TcpCloseContext extends AbstractContext
      * @param int $reactorId
      *
      * @return self
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function new(int $fd, int $reactorId): self
     {

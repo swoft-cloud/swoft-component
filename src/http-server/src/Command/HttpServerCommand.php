@@ -2,9 +2,7 @@
 
 namespace Swoft\Http\Server\Command;
 
-use ReflectionException;
 use Swoft;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Annotation\Mapping\CommandMapping;
 use Swoft\Console\Annotation\Mapping\CommandOption;
@@ -34,8 +32,6 @@ class HttpServerCommand extends BaseServerCommand
      * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
      * @CommandOption("daemon", short="d", desc="Run server on the background", type="bool", default="false")
      *
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws ServerException
      * @example
      *   {fullCommand}
@@ -92,9 +88,6 @@ class HttpServerCommand extends BaseServerCommand
      *
      * @CommandMapping(usage="{fullCommand} [-t]")
      * @CommandOption("t", desc="Only to reload task processes, default to reload worker and task")
-     *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function reload(): void
     {
@@ -125,9 +118,6 @@ class HttpServerCommand extends BaseServerCommand
      * Stop the currently running server
      *
      * @CommandMapping()
-     *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function stop(): void
     {
@@ -149,8 +139,6 @@ class HttpServerCommand extends BaseServerCommand
      * @CommandMapping(usage="{fullCommand} [-d|--daemon]",)
      * @CommandOption("daemon", short="d", desc="Run server on the background")
      *
-     * @throws ReflectionException
-     * @throws ContainerException
      * @example
      *  {fullCommand}
      *  {fullCommand} -d
@@ -175,8 +163,6 @@ class HttpServerCommand extends BaseServerCommand
 
     /**
      * @return HttpServer
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     private function createServer(): HttpServer
     {

@@ -3,10 +3,8 @@
 
 namespace Swoft\Context;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\ContainerException;
 
 /**
  * Class TimerAfterContext
@@ -34,8 +32,6 @@ class TimerAfterContext extends AbstractContext
      * @param array $params
      *
      * @return TimerAfterContext
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(int $timerId, array $params): self
     {

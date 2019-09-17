@@ -3,7 +3,6 @@
 namespace Swoft\Tcp\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Server;
 use Swoole\Server as SwServer;
@@ -43,7 +42,6 @@ class TcpServer extends Server
     /**
      * Start server
      *
-     * @throws ContainerException
      * @throws ServerException
      */
     public function start(): void

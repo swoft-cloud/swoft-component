@@ -2,9 +2,7 @@
 
 namespace Swoft\Tcp\Packer;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Tcp\Contract\PackerInterface;
 use Swoft\Tcp\Package;
 use Swoft\Tcp\Response;
@@ -57,8 +55,6 @@ class SimpleTokenPacker implements PackerInterface
      * @param string $data Request package data, use first space to split cmd and data.
      *
      * @return Package
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function decode(string $data): Package
     {

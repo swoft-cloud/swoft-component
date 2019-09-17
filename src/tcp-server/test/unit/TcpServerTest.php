@@ -2,8 +2,6 @@
 
 namespace SwoftTest\Tcp\Server\Unit;
 
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Tcp\Server\TcpServer;
 use function bean;
 use const SWOOLE_PROCESS;
@@ -15,8 +13,6 @@ use const SWOOLE_SOCK_TCP;
 class TcpServerTest extends TcpServerTestCase
 {
     /**
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function testBasic(): void
     {

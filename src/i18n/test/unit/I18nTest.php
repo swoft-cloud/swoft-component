@@ -3,9 +3,7 @@
 namespace SwoftTest\I18n\Unit;
 
 use PHPUnit\Framework\TestCase;
-use ReflectionException;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\I18n\I18n;
 
 /**
@@ -17,8 +15,6 @@ class I18nTest extends TestCase
 {
     /**
      * Translate test
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function testCommon(): void
     {
@@ -32,8 +28,6 @@ class I18nTest extends TestCase
 
     /**
      * Translate test
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function testTranslate(): void
     {

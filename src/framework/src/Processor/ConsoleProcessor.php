@@ -3,7 +3,6 @@
 namespace Swoft\Processor;
 
 use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Console\CommandRegister;
 use Swoft\Console\Router\Router;
 use Swoft\Log\Helper\CLog;
@@ -16,10 +15,10 @@ use function bean;
 class ConsoleProcessor extends Processor
 {
     /**
-     * Handle console
+     * Handle console init
+     *
      * @return bool
      * @throws ReflectionException
-     * @throws ContainerException
      */
     public function handle(): bool
     {

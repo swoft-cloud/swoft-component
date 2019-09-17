@@ -150,7 +150,7 @@ class Swoft
      *
      * @return string
      */
-    public static function t(string $key, array $params, string $locale = ''): string
+    public static function t(string $key, array $params = [], string $locale = ''): string
     {
         /* @var I18n $i18n */
         $i18n = BeanFactory::getBean('i18n');

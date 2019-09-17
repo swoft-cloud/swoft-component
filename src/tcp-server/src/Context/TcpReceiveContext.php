@@ -2,10 +2,8 @@
 
 namespace Swoft\Tcp\Server\Context;
 
-use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\AbstractContext;
 use Swoft\Tcp\Server\Request;
 use Swoft\Tcp\Server\Response;
@@ -39,8 +37,6 @@ class TcpReceiveContext extends AbstractContext
      * @param Response $response
      *
      * @return self
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function new(int $fd, Request $request, Response $response): self
     {

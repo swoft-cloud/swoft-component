@@ -1,11 +1,7 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Listener;
 
-
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\Context;
 use Swoft\Context\TimerTickContext;
 use Swoft\Event\Annotation\Mapping\Listener;
@@ -30,9 +26,6 @@ class BeforeTimerTickListener implements EventHandlerInterface
 
     /**
      * @param EventInterface $event
-     *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function handle(EventInterface $event): void
     {

@@ -325,7 +325,7 @@ class WebSocketServer extends Server
 
             /** @var $fdList array */
             foreach ($fdList as $fd) {
-                if ($fd && $this->swooleServer->isEstablished($fd)) {
+                if ($fd > 0 && $this->swooleServer->isEstablished($fd)) {
                     $handler($fd);
                 }
             }

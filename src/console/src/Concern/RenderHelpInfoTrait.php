@@ -2,11 +2,7 @@
 
 namespace Swoft\Console\Concern;
 
-use function array_shift;
-use function explode;
-use ReflectionException;
 use Swoft;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Console\Console;
 use Swoft\Console\Helper\FormatUtil;
 use Swoft\Console\Helper\Show;
@@ -14,6 +10,8 @@ use Swoft\Console\Output\Output;
 use Swoft\Console\Router\Router;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\Str;
+use function array_shift;
+use function explode;
 use function implode;
 use function input;
 use function is_array;
@@ -68,8 +66,6 @@ trait RenderHelpInfoTrait
      * Display command list of the application
      *
      * @param bool $showLogo
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     protected function showApplicationHelp(bool $showLogo = true): void
     {
@@ -133,8 +129,6 @@ trait RenderHelpInfoTrait
      *
      * @param string $group Group name
      * @param array  $info Some base info of the group
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     protected function showGroupHelp(string $group, array $info = []): void
     {
@@ -306,7 +300,7 @@ trait RenderHelpInfoTrait
 
             Console::writef('%s%s%s', $keyWords, $first, $defValue);
             foreach ($lines as $line) {
-                Console::writef("%s%s", Str::padRight(' ', $width), trim($line, '* '));
+                Console::writef('%s%s', Str::padRight(' ', $width), trim($line, '* '));
             }
         }
     }

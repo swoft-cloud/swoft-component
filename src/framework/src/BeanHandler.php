@@ -12,7 +12,6 @@ use Swoft;
 use Swoft\Aop\Aop;
 use Swoft\Aop\Proxy;
 use Swoft\Bean\Definition\ObjectDefinition;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Bean\Handler;
 use Swoft\Proxy\Exception\ProxyException;
 
@@ -116,8 +115,6 @@ class BeanHandler extends Handler
      * @param $value
      *
      * @return mixed|string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function getReferenceValue($value)
     {

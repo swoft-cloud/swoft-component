@@ -2,10 +2,8 @@
 
 namespace Swoft\Tcp\Server\Swoole;
 
-use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\Context;
 use Swoft\Server\Contract\ConnectInterface;
 use Swoft\Session\Session;
@@ -30,9 +28,6 @@ class ConnectListener implements ConnectInterface
      * @param Server $server
      * @param int    $fd
      * @param int    $reactorId
-     *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function onConnect(Server $server, int $fd, int $reactorId): void
     {

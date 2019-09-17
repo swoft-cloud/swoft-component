@@ -3,10 +3,8 @@
 
 namespace Swoft\Process\Context;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\AbstractContext;
 use Swoole\Process\Pool;
 
@@ -36,8 +34,6 @@ class ProcessContext extends AbstractContext
      * @param int  $workerId
      *
      * @return ProcessContext
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function new(Pool $pool, int $workerId): self
     {

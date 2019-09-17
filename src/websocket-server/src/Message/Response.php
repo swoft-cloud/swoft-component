@@ -112,7 +112,7 @@ class Response implements ResponseInterface
      *
      * @return $this
      */
-    public function from(int $sender): ResponseInterface
+    public function from(int $sender): self
     {
         return $this->setSender($sender);
     }
@@ -122,7 +122,7 @@ class Response implements ResponseInterface
      *
      * @return Response
      */
-    public function to(int $fd): ResponseInterface
+    public function to(int $fd): self
     {
         return $this->setFd($fd);
     }
@@ -142,7 +142,7 @@ class Response implements ResponseInterface
      *
      * @return Response
      */
-    public function toMore(array $fd): ResponseInterface
+    public function toMore(array $fd): self
     {
         return $this->toSome($fd);
     }
@@ -152,7 +152,7 @@ class Response implements ResponseInterface
      *
      * @return Response
      */
-    public function toSome(array $fds): ResponseInterface
+    public function toSome(array $fds): self
     {
         $this->fds = $fds;
         return $this;
@@ -163,7 +163,7 @@ class Response implements ResponseInterface
      *
      * @return Response
      */
-    public function toAll(bool $yes = true): ResponseInterface
+    public function toAll(bool $yes = true): self
     {
         $this->sendToAll = $yes;
         return $this;
@@ -407,6 +407,25 @@ class Response implements ResponseInterface
     /**
      * @return array
      */
+    public function getFds(): array
+    {
+        return $this->fds;
+    }
+
+    /**
+     * @param array $fds
+     *
+     * @return Response
+     */
+    public function setFds(array $fds): self
+    {
+        $this->fds = $fds;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
     public function getNoFds(): array
     {
         return $this->noFds;
@@ -440,5 +459,13 @@ class Response implements ResponseInterface
     {
         $this->sent = $sent;
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSendToAll(): bool
+    {
+        return $this->sendToAll;
     }
 }

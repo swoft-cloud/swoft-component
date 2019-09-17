@@ -3,9 +3,6 @@
 namespace SwoftTest\Tcp\Server\Unit;
 
 use function bean;
-use ReflectionException;
-use Swoft\Tcp\Server\Exception\CommandNotFoundException;
-use Swoft\Tcp\Server\Exception\TcpUnpackingException;
 use Swoft\Tcp\Server\Request;
 use SwoftTest\Tcp\Server\Testing\MockTcpResponse;
 
@@ -15,9 +12,6 @@ use SwoftTest\Tcp\Server\Testing\MockTcpResponse;
 class TcpDispatcherTest extends TcpServerTestCase
 {
     /**
-     * @throws ReflectionException
-     * @throws CommandNotFoundException
-     * @throws TcpUnpackingException
      */
     public function testDispatch(): void
     {

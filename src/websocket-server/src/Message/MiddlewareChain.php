@@ -13,7 +13,6 @@ use Swoft\WebSocket\Server\Contract\MiddlewareInterface;
 use Swoft\WebSocket\Server\Contract\RequestInterface;
 use Swoft\WebSocket\Server\Contract\ResponseInterface;
 use UnexpectedValueException;
-use function class_exists;
 use function is_callable;
 use function is_string;
 
@@ -152,8 +151,8 @@ class MiddlewareChain implements MessageHandlerInterface
 
         $middleware = $this->stack->shift();
 
-        // if is a class name
-        if (is_string($middleware) && class_exists($middleware)) {
+        // if is a class name or bean name
+        if (is_string($middleware)) {
             // $middleware = new $middleware;
             $middleware = Swoft::getBean($middleware);
         }

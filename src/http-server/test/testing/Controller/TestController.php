@@ -2,8 +2,6 @@
 
 namespace SwoftTest\Http\Server\Testing\Controller;
 
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\ContentType;
 use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Annotation\Mapping\Controller;
@@ -31,8 +29,6 @@ class TestController
      * @param Response $response
      *
      * @return Response
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function cookie(Response $response): Response
     {
@@ -57,8 +53,6 @@ class TestController
      * @param Response $response
      *
      * @return Response
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function htmlContent(Response $response): Response
     {
