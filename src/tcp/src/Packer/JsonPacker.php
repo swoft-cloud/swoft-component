@@ -2,9 +2,7 @@
 
 namespace Swoft\Tcp\Packer;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\JsonHelper;
 use Swoft\Tcp\Contract\PackerInterface;
 use Swoft\Tcp\Package;
@@ -46,8 +44,6 @@ class JsonPacker implements PackerInterface
      * @param string $data package data
      *
      * @return Package
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function decode(string $data): Package
     {

@@ -2,11 +2,9 @@
 
 namespace Swoft\Tcp\Server\Swoole;
 
-use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\Context;
 use Swoft\Server\Contract\CloseInterface;
 use Swoft\Session\Session;
@@ -31,8 +29,6 @@ class CloseListener implements CloseInterface
      * @param int    $fd
      * @param int    $reactorId
      *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function onClose(Server $server, int $fd, int $reactorId): void
     {

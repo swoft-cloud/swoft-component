@@ -2,8 +2,6 @@
 
 namespace Swoft\Tcp\Server\Command;
 
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Annotation\Mapping\CommandMapping;
 use Swoft\Console\Annotation\Mapping\CommandOption;
@@ -33,7 +31,6 @@ class TcpServerCommand extends BaseServerCommand
      * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
      * @CommandOption("daemon", short="d", desc="Run server on the background", default="false", type="bool")
      *
-     * @throws ContainerException
      * @throws ServerException
      * @throws Throwable
      * @example

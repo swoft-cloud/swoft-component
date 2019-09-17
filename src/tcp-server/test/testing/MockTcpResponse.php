@@ -2,8 +2,6 @@
 
 namespace SwoftTest\Tcp\Server\Testing;
 
-use Swoft\Tcp\Server\Response;
-
 /**
  * Class MockTcpResponse
  */

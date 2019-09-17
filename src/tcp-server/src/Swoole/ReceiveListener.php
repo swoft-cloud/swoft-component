@@ -2,10 +2,8 @@
 
 namespace Swoft\Tcp\Server\Swoole;
 
-use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\Context;
 use Swoft\Server\Contract\ReceiveInterface;
 use Swoft\Session\Session;
@@ -34,8 +32,6 @@ class ReceiveListener implements ReceiveInterface
      * @param int    $reactorId
      * @param string $data
      *
-     * @throws ContainerException
-     * @throws ReflectionException
      * @throws TcpResponseException
      */
     public function onReceive(Server $server, int $fd, int $reactorId, string $data): void
