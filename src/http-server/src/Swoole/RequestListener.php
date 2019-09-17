@@ -2,11 +2,8 @@
 
 namespace Swoft\Http\Server\Swoole;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
-use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Exception\SwoftException;
 use Swoft\Http\Message\Request as ServerRequest;
 use Swoft\Http\Message\Response as ServerResponse;
@@ -35,8 +32,7 @@ class RequestListener implements RequestInterface
      * @param Request  $request
      * @param Response $response
      *
-     * @throws ContainerException
-     * @throws ReflectionException
+     * @throws SwoftException
      */
     public function onRequest(Request $request, Response $response): void
     {

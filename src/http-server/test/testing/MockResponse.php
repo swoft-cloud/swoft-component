@@ -2,9 +2,7 @@
 
 namespace SwoftTest\Http\Server\Testing;
 
-use ReflectionException;
 use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\ContainerException;
 use SwoftTest\Http\Server\Testing\Concern\HttpResponseAssertTrait;
 use Swoole\Http\Response;
 
@@ -39,8 +37,6 @@ class MockResponse extends Response
 
     /**
      * @return MockResponse
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function new(): self
     {

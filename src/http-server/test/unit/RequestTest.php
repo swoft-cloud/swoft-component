@@ -15,10 +15,6 @@ use SwoftTest\Http\Server\Testing\MockRequest;
  */
 class RequestTest extends TestCase
 {
-    /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     */
     public function testPost()
     {
         $headers = [
@@ -55,10 +51,6 @@ class RequestTest extends TestCase
         $this->assertEquals($request->get('name'), null);
     }
 
-    /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     */
     public function testPutContent()
     {
         $data = [
@@ -99,10 +91,6 @@ class RequestTest extends TestCase
         $this->assertEquals($request->get('name'), null);
     }
 
-    /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     */
     public function testGet()
     {
         $data = [

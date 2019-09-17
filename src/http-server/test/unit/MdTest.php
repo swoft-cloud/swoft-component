@@ -1,9 +1,7 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Http\Server\Unit;
 
-use Swoft\Bean\Exception\ContainerException;
 use SwoftTest\Http\Server\Testing\MockRequest;
 use Swoft\Http\Message\ContentType;
 
@@ -14,10 +12,6 @@ use Swoft\Http\Message\ContentType;
  */
 class MdTest extends TestCase
 {
-    /**
-     * @throws \ReflectionException
-     * @throws ContainerException
-     */
     public function testMethod()
     {
         $headers = [
@@ -36,10 +30,6 @@ class MdTest extends TestCase
         $response->assertEqualHeaders($headers);
     }
 
-    /**
-     * @throws \ReflectionException
-     * @throws ContainerException
-     */
     public function testMethod2()
     {
         $headers = [
@@ -56,10 +46,6 @@ class MdTest extends TestCase
         $response->assertEqualHeaders($headers);
     }
 
-    /**
-     * @throws \ReflectionException
-     * @throws ContainerException
-     */
     public function testMethod23()
     {
         $headers = [

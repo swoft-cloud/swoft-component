@@ -2,11 +2,9 @@
 
 namespace Swoft\Http\Server;
 
-use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Concern\AbstractDispatcher;
 use Swoft\Context\Context;
 use Swoft\Exception\SwoftException;
@@ -56,8 +54,6 @@ class HttpDispatcher extends AbstractDispatcher
      *
      * @param mixed ...$params
      *
-     * @throws ContainerException
-     * @throws ReflectionException
      * @throws SwoftException
      */
     public function dispatch(...$params): void
@@ -113,9 +109,6 @@ class HttpDispatcher extends AbstractDispatcher
     /**
      * @param Request  $request
      * @param Response $response
-     *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     private function beforeRequest(Request $request, Response $response): void
     {
@@ -137,9 +130,6 @@ class HttpDispatcher extends AbstractDispatcher
 
     /**
      * @param Response $response
-     *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     private function afterRequest(Response $response): void
     {

@@ -5,10 +5,8 @@ namespace Swoft\Http\Server\Middleware;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Server\Contract\MiddlewareInterface;
 use Swoft\Http\Server\Router\Route;
@@ -32,8 +30,6 @@ class ValidatorMiddleware implements MiddlewareInterface
      * @param RequestHandlerInterface $handler
      *
      * @return ResponseInterface
-     * @throws ContainerException
-     * @throws ReflectionException
      * @throws ValidatorException
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
