@@ -12,7 +12,6 @@ use Swoft\Process\Contract\WorkerStartInterface;
 use Swoft\Process\ProcessDispatcher;
 use Swoft\Process\ProcessEvent;
 use Swoft\Process\ProcessPool;
-use Swoole\Coroutine;
 use Swoole\Process\Pool;
 use Swoft\Bean\Annotation\Mapping\Inject;
 
