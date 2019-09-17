@@ -6,7 +6,6 @@ use InvalidArgumentException;
 use Psr\Http\Message\UriInterface;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Concern\PrototypeTrait;
 use function explode;
 use function parse_url;
 use function preg_match;
@@ -24,8 +23,6 @@ use function strtolower;
  */
 class Uri implements UriInterface
 {
-    use PrototypeTrait;
-
     /**
      * Absolute http and https URIs require a host per RFC 7230 Section 2.7
      * but in generic URIs the host can be empty. So for http(s) URIs

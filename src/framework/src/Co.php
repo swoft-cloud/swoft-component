@@ -2,7 +2,6 @@
 
 namespace Swoft;
 
-use ReflectionException;
 use Swoft;
 use Swoft\Context\Context;
 use Swoft\Exception\SwoftException;
@@ -180,8 +179,6 @@ class Co
      * @param float $timeout
      *
      * @return array
-     * @throws Bean\Exception\ContainerException
-     * @throws ReflectionException
      */
     public static function multi(array $requests, float $timeout = 0): array
     {
