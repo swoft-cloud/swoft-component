@@ -32,7 +32,7 @@ class CoroutineCompleteListener implements EventHandlerInterface
     public function handle(EventInterface $event): void
     {
         if (!Context::getWaitGroup()->isWait()) {
-            $this->coroutineComplelete();
+            $this->coroutineComplete();
             return;
         }
 

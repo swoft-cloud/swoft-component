@@ -1,13 +1,9 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Server\Context;
 
-
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\AbstractContext;
 use Swoole\Server as SwooleServer;
 
@@ -37,8 +33,6 @@ class WorkerStopContext extends AbstractContext
      * @param int          $workerId
      *
      * @return WorkerStopContext
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function new(SwooleServer $server, int $workerId): self
     {
