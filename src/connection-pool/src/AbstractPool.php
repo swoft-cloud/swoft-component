@@ -97,7 +97,7 @@ abstract class AbstractPool implements PoolInterface
     public function initPool(): void
     {
         if (!$this->init) {
-//            return;
+            return;
         }
 
         // Enable initialize pool
