@@ -1358,6 +1358,19 @@ class ArrayHelper
     }
 
     /**
+     * array to string
+     *
+     * @param array  $array
+     * @param string $glue
+     *
+     * @return string
+     */
+    public static function toString(array $array, string $glue = '_'): string
+    {
+        return implode($glue, $array);
+    }
+
+    /**
      * Shuffle the given array and return the result.
      *
      * @param array    $array

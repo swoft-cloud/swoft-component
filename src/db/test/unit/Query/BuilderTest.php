@@ -477,7 +477,7 @@ class BuilderTest extends TestCase
         $this->assertTrue(DB::table('user')->updateOrInsert(['id' => 1]));
         $this->assertTrue(DB::table('user')->updateOrInsert(['id' => 1]));
         $this->assertTrue(DB::table('user')->updateOrInsert(['id' => 2], ['age' => 96]));
-        $this->assertTrue(DB::table('user')->updateOrInsert(['id' => 2]));
+        $this->assertTrue(DB::table('user')->updateOrInsert(['id' => 2], [], ['age' => 1]));
 
         $id     = $this->getFirstId();
         $update = DB::table('user')->where('id', $id)->update(['age' => 18, 'name' => 'ovo' . mt_rand(22, 33)]);
@@ -767,16 +767,54 @@ class BuilderTest extends TestCase
 
     public function testWhereArray()
     {
-        $expectSql = 'select * from `user` where (`uid` = ? and `name` like ? or `phone` like ?)';
+        $expectSql =
+            'select * from `user` where (`uid` = ? and `name` like ? or `phone` like ? and `id` = ? and `age` in (?, ?))';
 
         $where = [
             'uid' => 1,
             ['name', 'like', '%xx%'],
-            ['phone', 'like', 'xx%', 'or']
+            ['phone', 'like', 'xx%', 'or',],
+            'id'  => [1],
+            'age' => [1, 2]
         ];
 
         $res = DB::table('user')->where($where)->toSql();
 
         $this->assertEquals($expectSql, $res);
+    }
+
+    public function testBatchUpdateOrInsert()
+    {
+        $updateOrInsertItems = [
+            [
+                'age'       => 2,
+                'user_desc' => 'desc',
+                'hahh'      => 2,
+            ],
+            [
+                'age'       => 3,
+                'user_desc' => 'desc',
+                'hahh'      => 3,
+            ],
+            [
+                'age'       => 3,
+                'user_desc' => 'desc1',
+                'hahh'      => 3,
+            ]
+        ];
+
+        $baseWhere = [
+            'name' => 'swoft'
+        ];
+
+        $result = DB::table('user')->batchUpdateOrInsert(
+            $updateOrInsertItems,
+            $baseWhere,
+            ['user_desc'],
+            ['age', 'user_desc'],
+            ['hahh']
+        );
+
+        $this->assertTrue($result);
     }
 }

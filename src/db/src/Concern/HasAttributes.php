@@ -48,7 +48,7 @@ trait HasAttributes
      * @return array
      * @throws DbException
      */
-    public function attributesToArray()
+    public function attributesToArray(): array
     {
         $attributes = [];
         foreach ($this->getArrayableAttributes() as $key => $value) {
@@ -76,7 +76,7 @@ trait HasAttributes
      *
      * @return array
      */
-    public function getArrayableAttributes()
+    public function getArrayableAttributes(): array
     {
         return array_merge($this->modelAttributes, $this->getModelAttributes());
     }
@@ -89,13 +89,18 @@ trait HasAttributes
      * @return array
      * @throws DbException
      */
-    protected function getArrayableItem(string $key)
+    protected function getArrayableItem(string $key): array
     {
         [$pro, $hidden, $value] = $this->getHiddenAttribute($key);
+
         // hidden status
-        $hiddenStatus = $hidden || in_array($key, $this->getModelHidden()) || in_array($pro, $this->getModelHidden());
+        $hiddenStatus = $hidden
+            || in_array($key, $this->getModelHidden(), true)
+            || in_array($pro, $this->getModelHidden(), true);
+
         // visible status
-        $visibleStatus = in_array($key, $this->getModelVisible()) || in_array($pro, $this->getModelVisible());
+        $visibleStatus = in_array($key, $this->getModelVisible(), true)
+            || in_array($pro, $this->getModelVisible(), true);
 
         if ($hiddenStatus === true && $visibleStatus === false) {
             return [false, false];
@@ -169,9 +174,12 @@ trait HasAttributes
      *
      * @return bool
      */
-    public function hasGetter($key)
+    public function hasGetter(string $key): bool
     {
-        return method_exists($this, 'get' . Str::studly($key));
+        $mapping = EntityRegister::getReverseMappingByColumn($this->getClassName(), $key);
+        $getter  = sprintf('get%s', ucfirst($mapping['attr'] ?? $key));
+
+        return method_exists($this, $getter);
     }
 
     /**
@@ -182,9 +190,13 @@ trait HasAttributes
      *
      * @return mixed
      */
-    protected function mutateAttribute($key, $value)
+    protected function mutateAttribute(string $key, $value)
     {
-        return $this->{'get' . Str::studly($key)}($value);
+        $mapping = EntityRegister::getReverseMappingByColumn($this->getClassName(), $key);
+
+        $getter = sprintf('get%s', ucfirst($mapping['attr'] ?? $key));
+
+        return $this->{$getter}($value);
     }
 
     /**
@@ -204,6 +216,8 @@ trait HasAttributes
         $value = ObjectHelper::parseParamType($attType, $value);
         if (method_exists($this, $setter)) {
             $this->{$setter}($value);
+
+            $this->modelAttributes[$key] = $value;
         }
 
         return $this;
@@ -216,9 +230,12 @@ trait HasAttributes
      *
      * @return bool
      */
-    public function hasSetter($key)
+    public function hasSetter($key): bool
     {
-        return method_exists($this, 'set' . Str::studly($key));
+        $mapping = EntityRegister::getReverseMappingByColumn($this->getClassName(), $key);
+        $setter  = sprintf('set%s', ucfirst($mapping['attr'] ?? $key));
+
+        return method_exists($this, $setter);
     }
 
     /**
@@ -231,7 +248,10 @@ trait HasAttributes
      */
     protected function setMutatedAttributeValue($key, $value)
     {
-        return $this->{'set' . Str::studly($key)}($value);
+        $mapping = EntityRegister::getReverseMappingByColumn($this->getClassName(), $key);
+        $setter  = sprintf('set%s', ucfirst($mapping['attr'] ?? $key));
+
+        return $this->{$setter}($value);
     }
 
     /**
@@ -242,7 +262,7 @@ trait HasAttributes
      *
      * @return $this
      */
-    public function fillJsonAttribute($key, $value)
+    public function fillJsonAttribute($key, $value): self
     {
         [$key, $path] = explode('->', $key, 2);
 
@@ -277,7 +297,7 @@ trait HasAttributes
      *
      * @return array
      */
-    protected function getArrayAttributeByKey($key)
+    protected function getArrayAttributeByKey(string $key): array
     {
         return isset($this->modelAttributes[$key]) ?
             $this->fromJson($this->modelAttributes[$key]) : [];
@@ -289,9 +309,9 @@ trait HasAttributes
      * @param     $value
      * @param int $option
      *
-     * @return false|string
+     * @return string
      */
-    protected function asJson($value, $option = JSON_UNESCAPED_UNICODE)
+    protected function asJson($value, int $option = JSON_UNESCAPED_UNICODE): string
     {
         // Compatible MySQL `json_set()` method
         return $value ? json_encode($value, $option) : '{}';
@@ -305,7 +325,7 @@ trait HasAttributes
      *
      * @return mixed
      */
-    public function fromJson($value, $asObject = false)
+    public function fromJson($value, bool $asObject = false)
     {
         return json_decode($value, !$asObject);
     }
@@ -336,7 +356,7 @@ trait HasAttributes
      *
      * @return array
      */
-    public function getModelAttributes()
+    public function getModelAttributes(): array
     {
         $attributes = [];
 
@@ -375,13 +395,15 @@ trait HasAttributes
      * @return $this
      * @throws DbException
      */
-    public function setRawAttributes(array $attributes, $sync = false)
+    public function setRawAttributes(array $attributes, bool $sync = false): self
     {
-        foreach ($this->getSafeAttributes($attributes) as $key => $value) {
-            if (!$value instanceof Expression && !$this->isJsonSelector($key)) {
-                $this->setModelAttribute($key, $value);
+        foreach ($this->getSafeAttributes($attributes, false) as $key => $value) {
+            if ($value instanceof Expression || $this->isJsonSelector($key)) {
+                $this->modelAttributes[$key] = $value;
+                continue;
             }
-            $this->modelAttributes[$key] = $value;
+
+            $this->setModelAttribute($key, $value);
         }
 
         if ($sync) {
@@ -399,26 +421,37 @@ trait HasAttributes
      *
      * @return array
      */
-    public function getSafeAttributes(array $attributes, bool $encode = false): array
+    public function getSafeAttributes(array $attributes, bool $encode = true): array
     {
         $safeAttributes = [];
+
+        // Get `@Column` Prop Mapping
+        $props = EntityRegister::getProps($this->getClassName());
+
         foreach ($attributes as $key => $value) {
+            $key = (string)$key;
+
             // Check is json field
             if ($this->isJsonSelector($key)) {
                 $safeAttributes[$key] = $value;
                 continue;
             }
+
+            $key = $props[$key] ?? $key;
+
             // Get `@Column` Mapping
             $mapping = EntityRegister::getReverseMappingByColumn($this->getClassName(), $key);
             // Not found this key mapping annotation
             if (empty($mapping)) {
                 continue;
             }
+
             // Not handler expression
             if (!$value instanceof Expression) {
                 $type  = $mapping['type'];
                 $value = ObjectHelper::parseParamType($type, $value);
-                if ($encode === true && $type === Grammar::ARRAY && !is_scalar($value)) {
+
+                if ($type === Grammar::ARRAY && $encode === true && !is_scalar($value)) {
                     // Array to string
                     $value = $this->asJson($value);
                 }
@@ -435,7 +468,7 @@ trait HasAttributes
      *
      * @return bool
      */
-    protected function isJsonSelector($value)
+    protected function isJsonSelector(string $value): bool
     {
         return Str::contains($value, '->');
     }
@@ -449,7 +482,7 @@ trait HasAttributes
      *
      * @return mixed|array
      */
-    public function getModelOriginal($key = null, $default = null)
+    public function getModelOriginal(string $key = null, $default = null)
     {
         return Arr::get($this->modelOriginal, $key, $default);
     }
@@ -462,7 +495,7 @@ trait HasAttributes
      * @return array
      * @throws DbException
      */
-    public function only(array $attributes)
+    public function only(array $attributes): array
     {
         $results = [];
 
@@ -478,7 +511,7 @@ trait HasAttributes
      *
      * @return $this
      */
-    public function syncOriginal()
+    public function syncOriginal(): self
     {
         $attributes = $this->getArrayableAttributes();
 
@@ -495,7 +528,7 @@ trait HasAttributes
      *
      * @return $this
      */
-    public function syncOriginalAttribute($attribute)
+    public function syncOriginalAttribute($attribute): self
     {
         return $this->syncOriginalAttributes($attribute);
     }
@@ -507,7 +540,7 @@ trait HasAttributes
      *
      * @return $this
      */
-    public function syncOriginalAttributes($attributes)
+    public function syncOriginalAttributes($attributes): self
     {
         $attributes = is_array($attributes) ? $attributes : func_get_args();
 
@@ -523,7 +556,7 @@ trait HasAttributes
      *
      * @return $this
      */
-    public function syncChanges()
+    public function syncChanges(): self
     {
         $this->modelChanges = $this->getDirty();
 
@@ -537,7 +570,7 @@ trait HasAttributes
      *
      * @return bool
      */
-    public function isDirty($attributes = null)
+    public function isDirty($attributes = null): bool
     {
         return $this->hasSwoftChanges(
             $this->getDirty(), is_array($attributes) ? $attributes : func_get_args()
@@ -551,7 +584,7 @@ trait HasAttributes
      *
      * @return bool
      */
-    public function isClean($attributes = null)
+    public function isClean($attributes = null): bool
     {
         return !$this->isDirty(...func_get_args());
     }
@@ -563,7 +596,7 @@ trait HasAttributes
      *
      * @return bool
      */
-    public function wasChanged($attributes = null)
+    public function wasChanged($attributes = null): bool
     {
         return $this->hasSwoftChanges(
             $this->getModelChanges(), is_array($attributes) ? $attributes : func_get_args()
@@ -578,7 +611,7 @@ trait HasAttributes
      *
      * @return bool
      */
-    protected function hasSwoftChanges($changes, $attributes = null)
+    protected function hasSwoftChanges(array $changes, $attributes = null): bool
     {
         // If no specific attributes were provided, we will just see if the dirty array
         // already contains any attributes. If it does we will just return that this
@@ -604,7 +637,7 @@ trait HasAttributes
      *
      * @return array
      */
-    public function getDirty()
+    public function getDirty(): array
     {
         $dirty = [];
 
@@ -631,7 +664,7 @@ trait HasAttributes
      *
      * @return bool
      */
-    protected function originalIsEquivalent($key, $current)
+    protected function originalIsEquivalent(string $key, $current): bool
     {
         if (!array_key_exists($key, $this->modelOriginal)) {
             return false;
@@ -654,7 +687,7 @@ trait HasAttributes
      *
      * @return array
      */
-    public function getModelChanges()
+    public function getModelChanges(): array
     {
         return $this->modelChanges;
     }

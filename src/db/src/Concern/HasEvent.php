@@ -21,7 +21,6 @@ trait HasEvent
      * @param mixed  ...$args
      *
      * @return bool
-     * @throws ContainerException
      */
     protected function fireEvent(string $event, ...$args): bool
     {

@@ -135,6 +135,10 @@ class EntityRegister
             'hidden' => $hidden,
             'type'   => $type,
         ];
+
+        if ($pro !== $column) {
+            self::$columns[$className]['props'][$pro] = $column;
+        }
     }
 
     /**
@@ -234,5 +238,17 @@ class EntityRegister
     public static function getReverseMappingByColumn(string $className, string $column): array
     {
         return self::$columns[$className]['reverse'][$column] ?? [];
+    }
+
+    /**
+     * Get column mapping
+     *
+     * @param string $className
+     *
+     * @return array
+     */
+    public static function getProps(string $className): array
+    {
+        return self::$columns[$className]['props'] ?? [];
     }
 }

@@ -79,6 +79,7 @@ class SchemaBuilderTest extends TestCase
             $blueprint->integer('create_time')->comment('create_time');
             $blueprint->index(['uid', 'id']);
             $blueprint->jsonb('test_json_1');
+            $blueprint->string('string', 1);
             $blueprint->unique(['uuid', 'id'], 'unq_uuid_id');
             $blueprint->softDeletes();
         });

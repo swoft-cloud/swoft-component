@@ -644,7 +644,7 @@ class MySqlGrammar extends Grammar
      */
     protected function typeBigInteger(Fluent $column)
     {
-        return 'bigint';
+        return "bigint{$this->warpLength($column)}";
     }
 
     /**
@@ -656,7 +656,7 @@ class MySqlGrammar extends Grammar
      */
     protected function typeInteger(Fluent $column)
     {
-        return 'int';
+        return "int{$this->warpLength($column)}";
     }
 
     /**
@@ -668,7 +668,7 @@ class MySqlGrammar extends Grammar
      */
     protected function typeMediumInteger(Fluent $column)
     {
-        return 'mediumint';
+        return "mediumint{$this->warpLength($column)}";
     }
 
     /**
@@ -680,7 +680,7 @@ class MySqlGrammar extends Grammar
      */
     protected function typeTinyInteger(Fluent $column)
     {
-        return 'tinyint';
+        return "tinyint{$this->warpLength($column)}";
     }
 
     /**
@@ -692,7 +692,20 @@ class MySqlGrammar extends Grammar
      */
     protected function typeSmallInteger(Fluent $column)
     {
-        return 'smallint';
+        return "smallint{$this->warpLength($column)}";
+    }
+
+    /**
+     * warp length
+     *
+     * @param Fluent $column
+     * @param string $key
+     *
+     * @return string
+     */
+    private function warpLength(Fluent $column, string $key = 'length'): string
+    {
+        return isset($column[$key]) ? sprintf('(%s)', $column[$key]) : '';
     }
 
     /**

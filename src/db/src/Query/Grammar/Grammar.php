@@ -1000,13 +1000,16 @@ class Grammar extends BaseGrammar
 
         $setStr = '';
         foreach ($columns as $column) {
-            if ($column == $primary) {
+            if ($column === $primary) {
                 continue;
             }
 
             $setStr .= " `$column` = case `$primary` ";
             foreach ($values as $row) {
-                $setStr .= " when '$row[$primary]' then '$row[$column]' ";
+                $value    = $row[$column];
+                $rowValue = is_string($value) ? "'$value'" : $value;
+
+                $setStr .= " when '$row[$primary]' then $rowValue ";
             }
             $setStr .= ' end,';
         }
