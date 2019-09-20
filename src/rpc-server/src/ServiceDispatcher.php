@@ -29,8 +29,6 @@ class ServiceDispatcher extends AbstractDispatcher
     /**
      * @param array $params
      *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function dispatch(...$params)
     {

@@ -5,7 +5,6 @@ namespace Swoft\Console\Advanced\Interact;
 use Swoft\Console\Advanced\InteractMessage;
 use Swoft\Console\Console;
 use Swoft\Console\Helper\Show;
-use Swoft\Console\Input\Input;
 use function sprintf;
 use function stripos;
 use function trim;

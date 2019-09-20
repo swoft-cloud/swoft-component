@@ -25,7 +25,6 @@ class ConnectListener implements ConnectInterface
      * @param int    $fd
      * @param int    $reactorId
      *
-     * @throws ContainerException
      */
     public function onConnect(Server $server, int $fd, int $reactorId): void
     {

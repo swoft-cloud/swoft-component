@@ -2,7 +2,6 @@
 
 namespace SwoftTest\Validator\Unit;
 
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Validator\Exception\ValidatorException;
 use Swoft\Validator\Validator;
 use SwoftTest\Validator\Testing\ValidatorRule;
@@ -13,9 +12,7 @@ class ValidatorRuleTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage dataAfterDate must be after 2019-07-08
      *
-     * @throws ContainerException
      * @throws ValidatorException
-     * @throws \ReflectionException
      */
     public function testAfterDateError()
     {
@@ -39,9 +36,7 @@ class ValidatorRuleTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage alpha message
      *
-     * @throws ContainerException
      * @throws ValidatorException
-     * @throws \ReflectionException
      */
     public function testAlphaError()
     {
@@ -65,9 +60,7 @@ class ValidatorRuleTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage alphadash message
      *
-     * @throws ContainerException
      * @throws ValidatorException
-     * @throws \ReflectionException
      */
     public function testAlphaDashError()
     {
@@ -91,9 +84,7 @@ class ValidatorRuleTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage alphanum message
      *
-     * @throws ContainerException
      * @throws ValidatorException
-     * @throws \ReflectionException
      */
     public function testAlphaNumError()
     {
@@ -117,9 +108,7 @@ class ValidatorRuleTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage before date message
      *
-     * @throws ContainerException
      * @throws ValidatorException
-     * @throws \ReflectionException
      */
     public function testBeforeDateError()
     {
@@ -143,9 +132,7 @@ class ValidatorRuleTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage chs message
      *
-     * @throws ContainerException
      * @throws ValidatorException
-     * @throws \ReflectionException
      */
     public function testChsError()
     {
@@ -169,9 +156,7 @@ class ValidatorRuleTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage chsalpha message
      *
-     * @throws ContainerException
      * @throws ValidatorException
-     * @throws \ReflectionException
      */
     public function testChsAlphaError()
     {
@@ -195,9 +180,7 @@ class ValidatorRuleTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage chsalphadash message
      *
-     * @throws ContainerException
      * @throws ValidatorException
-     * @throws \ReflectionException
      */
     public function testChsAlphaDashError()
     {
@@ -221,9 +204,7 @@ class ValidatorRuleTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage chsalphanum message
      *
-     * @throws ContainerException
      * @throws ValidatorException
-     * @throws \ReflectionException
      */
     public function testChsAlphaNumError()
     {
@@ -247,9 +228,7 @@ class ValidatorRuleTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage confirm message
      *
-     * @throws ContainerException
      * @throws ValidatorException
-     * @throws \ReflectionException
      */
     public function testConfirmError()
     {
@@ -275,9 +254,7 @@ class ValidatorRuleTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage different message
      *
-     * @throws ContainerException
      * @throws ValidatorException
-     * @throws \ReflectionException
      */
     public function testDifferentError()
     {
@@ -303,9 +280,7 @@ class ValidatorRuleTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage greaterthan message
      *
-     * @throws ContainerException
      * @throws ValidatorException
-     * @throws \ReflectionException
      */
     public function testGreaterThanError()
     {
@@ -331,9 +306,7 @@ class ValidatorRuleTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage lessthan message
      *
-     * @throws ContainerException
      * @throws ValidatorException
-     * @throws \ReflectionException
      */
     public function testLessThanError()
     {
@@ -359,9 +332,7 @@ class ValidatorRuleTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage date message
      *
-     * @throws ContainerException
      * @throws ValidatorException
-     * @throws \ReflectionException
      */
     public function testDateError()
     {
@@ -385,9 +356,7 @@ class ValidatorRuleTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage daterange message
      *
-     * @throws ContainerException
      * @throws ValidatorException
-     * @throws \ReflectionException
      */
     public function testDateRangeError()
     {
@@ -411,9 +380,7 @@ class ValidatorRuleTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage dns message
      *
-     * @throws ContainerException
      * @throws ValidatorException
-     * @throws \ReflectionException
      */
     public function testDnsError()
     {
@@ -466,9 +433,7 @@ class ValidatorRuleTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage low message
      *
-     * @throws ContainerException
      * @throws ValidatorException
-     * @throws \ReflectionException
      */
     public function testLowError()
     {
@@ -492,9 +457,7 @@ class ValidatorRuleTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage notinenum message
      *
-     * @throws ContainerException
      * @throws ValidatorException
-     * @throws \ReflectionException
      */
     public function testNotInEnumError()
     {
@@ -518,9 +481,7 @@ class ValidatorRuleTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage notinrange message
      *
-     * @throws ContainerException
      * @throws ValidatorException
-     * @throws \ReflectionException
      */
     public function testNotInRangeError()
     {
@@ -544,9 +505,7 @@ class ValidatorRuleTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage upper message
      *
-     * @throws ContainerException
      * @throws ValidatorException
-     * @throws \ReflectionException
      */
     public function testUpperError()
     {
@@ -570,9 +529,7 @@ class ValidatorRuleTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage url message
      *
-     * @throws ContainerException
      * @throws ValidatorException
-     * @throws \ReflectionException
      */
     public function testUrlError()
     {

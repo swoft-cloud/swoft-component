@@ -51,8 +51,6 @@ class ServiceServer extends Server
      * Start server
      *
      * @throws ServerException
-     * @throws ServerException
-     * @throws ContainerException
      */
     public function start(): void
     {

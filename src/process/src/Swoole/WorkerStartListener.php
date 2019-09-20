@@ -36,8 +36,6 @@ class WorkerStartListener implements WorkerStartInterface
      * @param Pool $pool
      * @param int  $workerId
      *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function onWorkerStart(Pool $pool, int $workerId): void
     {

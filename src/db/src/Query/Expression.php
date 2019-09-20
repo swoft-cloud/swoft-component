@@ -3,11 +3,9 @@
 
 namespace Swoft\Db\Query;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Contract\PrototypeInterface;
-use Swoft\Bean\Exception\ContainerException;
 
 /**
  * Class Expression
@@ -33,8 +31,6 @@ class Expression implements PrototypeInterface
      * @param mixed ...$params
      *
      * @return static
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function new(...$params)
     {

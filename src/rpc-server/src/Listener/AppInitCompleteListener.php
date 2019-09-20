@@ -27,8 +27,7 @@ class AppInitCompleteListener implements EventHandlerInterface
     /**
      * @param EventInterface $event
      *
-     * @throws ReflectionException
-     * @throws ContainerException
+     * @throws \Swoft\Rpc\Server\Exception\RpcServerException
      */
     public function handle(EventInterface $event): void
     {

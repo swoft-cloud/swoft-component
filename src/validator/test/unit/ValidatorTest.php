@@ -4,7 +4,6 @@
 namespace SwoftTest\Validator\Unit;
 
 
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Validator\Exception\ValidatorException;
 use Swoft\Validator\Validator;
 use SwoftTest\Validator\Testing\ValidateDemo2;
@@ -303,8 +302,6 @@ class ValidatorTest extends TestCase
      * @expectedExceptionMessage range message
      *
      * @throws ValidatorException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function testFailRange()
     {
@@ -319,8 +316,6 @@ class ValidatorTest extends TestCase
      * @expectedExceptionMessage range message
      *
      * @throws ValidatorException
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function testFailRange2()
     {

@@ -27,8 +27,6 @@ class AfterReceiveListener implements EventHandlerInterface
     /**
      * @param EventInterface $event
      *
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws RpcException
      */
     public function handle(EventInterface $event): void

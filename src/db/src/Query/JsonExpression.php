@@ -4,9 +4,7 @@
 namespace Swoft\Db\Query;
 
 use InvalidArgumentException;
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 
 /**
  * Class JsonExpression
@@ -22,8 +20,6 @@ class JsonExpression extends Expression
      * @param mixed ...$params
      *
      * @return static
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function new(...$params)
     {

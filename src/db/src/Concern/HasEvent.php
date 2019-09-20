@@ -5,7 +5,6 @@ namespace Swoft\Db\Concern;
 
 use Swoft;
 use Swoft\Db\Eloquent\Model;
-use Swoft\Bean\Exception\ContainerException;
 
 /**
  * Class HasEvent

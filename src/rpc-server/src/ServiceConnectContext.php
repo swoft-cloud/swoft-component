@@ -43,8 +43,6 @@ class ServiceConnectContext extends AbstractContext
      * @param int    $reactorId
      *
      * @return ServiceConnectContext
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(Server $server, int $fd, int $reactorId): self
     {

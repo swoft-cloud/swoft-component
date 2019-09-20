@@ -30,8 +30,6 @@ class ReceiveListener implements ReceiveInterface
      * @param int    $reactorId
      * @param string $data
      *
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws RpcException
      */
     public function onReceive(Server $server, int $fd, int $reactorId, string $data): void

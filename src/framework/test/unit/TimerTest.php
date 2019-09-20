@@ -31,8 +31,6 @@ class TimerTest extends TestCase
     private $after = 0;
 
     /**
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function setUp()
     {
@@ -40,8 +38,6 @@ class TimerTest extends TestCase
     }
 
     /**
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws SwoftException
      */
     public function testTick()
@@ -58,8 +54,6 @@ class TimerTest extends TestCase
     }
 
     /**
-     * @throws ContainerException
-     * @throws ReflectionException
      * @throws SwoftException
      */
     public function testAfter()
