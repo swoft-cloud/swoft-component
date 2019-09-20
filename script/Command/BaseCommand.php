@@ -117,7 +117,5 @@ abstract class BaseCommand
         if ((int)$ret['code'] === 0) {
             echo $ret['output'] . PHP_EOL;
         }
-
-        Color::println('- Commit Complete', 'cyan');
     }
 }
