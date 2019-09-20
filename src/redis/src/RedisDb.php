@@ -116,8 +116,6 @@ class RedisDb
      *
      * @return Connection
      * @throws RedisException
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function createConnection(Pool $pool): Connection
     {
@@ -131,8 +129,6 @@ class RedisDb
     /**
      * @return ConnectorInterface
      * @throws RedisException
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function getConnector(): ConnectorInterface
     {
@@ -149,8 +145,6 @@ class RedisDb
     /**
      * @return Connection
      * @throws RedisException
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function getConnection(): Connection
     {
@@ -166,8 +160,6 @@ class RedisDb
 
     /**
      * @return array
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function defaultConnectors(): array
     {
@@ -178,8 +170,6 @@ class RedisDb
 
     /**
      * @return array
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function defaultConnections(): array
     {

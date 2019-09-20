@@ -47,8 +47,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param Pool                     $pool
      *
      * @return Connection
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(RpcClient $client, Pool $pool): Connection
     {
@@ -96,8 +94,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * @return bool
      * @throws RpcClientException
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function reconnect(): bool
     {

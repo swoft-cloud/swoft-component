@@ -3,10 +3,8 @@
 
 namespace Swoft\Task;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Log\Helper\CLog;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoft\Task\Exception\TaskException;
@@ -54,8 +52,6 @@ class SyncTaskDispatcher
      * @param array  $params
      *
      * @return mixed
-     * @throws ContainerException
-     * @throws ReflectionException
      * @throws TaskException
      */
     private function handle(string $name, string $method, array $params)

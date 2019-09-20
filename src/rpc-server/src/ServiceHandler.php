@@ -50,8 +50,6 @@ class ServiceHandler implements RequestHandlerInterface
      *
      * @return self
      *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(array $middlewares, string $defaultMiddleware): self
     {
@@ -69,8 +67,6 @@ class ServiceHandler implements RequestHandlerInterface
      * @param RequestInterface $request
      *
      * @return ResponseInterface
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function handle(RequestInterface $request): ResponseInterface
     {

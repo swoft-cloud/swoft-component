@@ -36,8 +36,6 @@ class ServiceContext extends AbstractContext
      * @param Response $response
      *
      * @return ServiceContext
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(Request $request, Response $response): self
     {

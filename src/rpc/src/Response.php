@@ -34,8 +34,6 @@ class Response
      * @param $error
      *
      * @return Response
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new($result, $error): self
     {

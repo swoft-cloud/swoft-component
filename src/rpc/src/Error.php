@@ -41,8 +41,6 @@ class Error
      * @param mixed  $data
      *
      * @return Error
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(int $code, string $message, $data): self
     {

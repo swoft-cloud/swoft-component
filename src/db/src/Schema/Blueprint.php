@@ -92,8 +92,6 @@ class Blueprint
      * @param string       $prefix
      *
      * @return Blueprint
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function new($table, Closure $callback = null, $prefix = ''): self
     {
@@ -132,8 +130,6 @@ class Blueprint
      * @param Grammar    $grammar
      *
      * @return array
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function toSql(Connection $connection, Grammar $grammar)
     {

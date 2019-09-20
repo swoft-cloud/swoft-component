@@ -4,8 +4,6 @@
 namespace Swoft\Db;
 
 
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\AbstractPool;
 use Swoft\Connection\Pool\Contract\ConnectionInterface;
 use Swoft\Connection\Pool\Exception\ConnectionPoolException;
@@ -52,9 +50,7 @@ class Pool extends AbstractPool
      * Create connection
      *
      * @return ConnectionInterface
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function createConnection(): ConnectionInterface
     {

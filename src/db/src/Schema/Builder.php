@@ -10,7 +10,6 @@ use ReflectionException;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Connection\Connection;
-use Swoft\Db\Connection\ConnectionManager;
 use Swoft\Db\Database;
 use Swoft\Db\DB;
 use Swoft\Db\Exception\DbException;
@@ -97,8 +96,6 @@ class Builder
      * @param string $builderClass
      *
      * @return void
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function addBuilder(string $driver, string $builderClass): void
     {
@@ -110,8 +107,6 @@ class Builder
      * @param string $builderClass
      *
      * @return Builder
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected static function getBeanBuilder(string $builderClass): self
     {
@@ -131,9 +126,7 @@ class Builder
      * @param mixed ...$params
      *
      * @return Builder
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public static function new(...$params): Builder
     {
@@ -160,9 +153,7 @@ class Builder
      * @param string $poolName
      *
      * @return Builder
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected static function getBuilder(string $poolName): Builder
     {
@@ -184,9 +175,7 @@ class Builder
     /**
      * @param Grammar|null $grammar
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function setSchemaGrammar(Grammar $grammar = null): void
     {
@@ -518,8 +507,6 @@ class Builder
      * @param Closure|null $callback
      *
      * @return Blueprint
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function createBlueprint(string $table, Closure $callback = null)
     {
@@ -604,9 +591,7 @@ class Builder
      * Get connection database name
      *
      * @return string
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function getDatabaseName(): string
     {

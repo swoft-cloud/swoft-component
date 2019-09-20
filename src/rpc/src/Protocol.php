@@ -60,8 +60,6 @@ class Protocol
      * @param array  $ext
      *
      * @return Protocol
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(string $version, string $interface, string $method, array $params, array $ext)
     {
