@@ -4,11 +4,9 @@
 namespace Swoft\Task;
 
 
-use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoft\Task\Exception\TaskException;
 use Swoft\Task\Router\Router;
@@ -26,7 +24,6 @@ class TaskDispatcher
      * @param Request  $request
      * @param Response $response
      *
-     * @throws ContainerException
      */
     public function dispatch(Request $request, Response $response)
     {
@@ -49,8 +46,6 @@ class TaskDispatcher
      *
      * @return mixed
      * @throws TaskException
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     private function handle(Request $request)
     {

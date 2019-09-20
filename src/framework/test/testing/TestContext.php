@@ -23,8 +23,6 @@ class TestContext extends AbstractContext
 
     /**
      * @return TestContext
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(): self
     {

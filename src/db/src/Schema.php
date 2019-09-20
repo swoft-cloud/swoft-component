@@ -3,8 +3,6 @@
 
 namespace Swoft\Db;
 
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Schema\Builder;
 use Swoft\Db\Schema\Grammars\Grammar;
@@ -50,8 +48,6 @@ class Schema
      *
      * @return Builder
      * @throws DbException
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function getSchemaBuilder(string $pool = Pool::DEFAULT_POOL, Grammar $grammar = null)
     {
@@ -66,8 +62,6 @@ class Schema
      *
      * @return mixed
      * @throws DbException
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function __callStatic(string $name, array $arguments)
     {

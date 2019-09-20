@@ -2,9 +2,7 @@
 
 namespace SwoftTest\WebSocket\Server\Testing;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\WebSocket\Server\Contract\MessageHandlerInterface;
 use Swoft\WebSocket\Server\Contract\MiddlewareInterface;
 use Swoft\WebSocket\Server\Contract\RequestInterface;
@@ -23,8 +21,6 @@ class CoreMiddleware implements MiddlewareInterface
      * @param MessageHandlerInterface $handler
      *
      * @return ResponseInterface
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function process(RequestInterface $request, MessageHandlerInterface $handler): ResponseInterface
     {

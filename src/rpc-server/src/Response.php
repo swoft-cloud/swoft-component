@@ -61,8 +61,6 @@ class Response implements ResponseInterface
      * @param int    $reactorId
      *
      * @return Response
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(Server $server = null, int $fd = null, int $reactorId = null): self
     {
@@ -111,8 +109,6 @@ class Response implements ResponseInterface
 
     /**
      * @return bool
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws RpcException
      */
     public function send(): bool
@@ -154,8 +150,6 @@ class Response implements ResponseInterface
     }
 
     /**
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws RpcException
      */
     protected function prepare(): void

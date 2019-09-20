@@ -4,8 +4,6 @@
 namespace Swoft\Db\Concern;
 
 use Closure;
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Eloquent\Model;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder;
@@ -25,8 +23,6 @@ trait BuildsQueries
      * @param callable $callback
      *
      * @return bool
-     * @throws ContainerException
-     * @throws ReflectionException
      * @throws DbException
      */
     public function chunk($count, callable $callback)
@@ -70,8 +66,6 @@ trait BuildsQueries
      * @param int      $count
      *
      * @return bool
-     * @throws ContainerException
-     * @throws ReflectionException
      * @throws DbException
      */
     public function each(callable $callback, $count = 1000)
@@ -93,8 +87,6 @@ trait BuildsQueries
      * @param array $columns
      *
      * @return Model|object|static|null
-     * @throws ContainerException
-     * @throws ReflectionException
      * @throws DbException
      */
     public function first(array $columns = ['*'])

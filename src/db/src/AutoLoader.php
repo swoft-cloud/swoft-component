@@ -6,8 +6,6 @@ namespace Swoft\Db;
 
 use function bean;
 use PDO;
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\SwoftComponent;
 
 /**

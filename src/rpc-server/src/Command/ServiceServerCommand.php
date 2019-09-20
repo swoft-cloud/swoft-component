@@ -38,13 +38,11 @@ class ServiceServerCommand extends BaseServerCommand
      * @CommandMapping(usage="{fullCommand} [-d|--daemon]")
      * @CommandOption("daemon", short="d", desc="Run server on the background")
      *
+     * @throws ServerException
      * @example
      *  {fullCommand}
      *  {fullCommand} -d
      *
-     * @throws ReflectionException
-     * @throws ContainerException
-     * @throws ServerException
      */
     public function start(): void
     {
@@ -107,8 +105,6 @@ class ServiceServerCommand extends BaseServerCommand
      * @CommandMapping(usage="{fullCommand} [-t]")
      * @CommandOption("t", desc="Only to reload task processes, default to reload worker and task")
      *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function reload(): void
     {
@@ -140,8 +136,6 @@ class ServiceServerCommand extends BaseServerCommand
      *
      * @CommandMapping()
      *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function stop(): void
     {
@@ -166,8 +160,6 @@ class ServiceServerCommand extends BaseServerCommand
      * @example
      *  {fullCommand}
      *  {fullCommand} -d
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function restart(): void
     {
@@ -189,8 +181,6 @@ class ServiceServerCommand extends BaseServerCommand
 
     /**
      * @return ServiceServer
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     private function createServer(): ServiceServer
     {

@@ -4,7 +4,6 @@
 namespace Swoft\Db\Contract;
 
 use Swoft\Db\Connection\Connection;
-use Swoft\Db\Database;
 
 /**
  * Class DbSelectInterface

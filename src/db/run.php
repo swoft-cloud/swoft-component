@@ -1,7 +1,6 @@
 <?php
 /** For Swoole coroutine tests */
 
-use PHPUnit\TextUI\Command;
 use Swoole\ExitException;
 
 Co::set([

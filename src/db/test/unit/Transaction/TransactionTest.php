@@ -6,7 +6,6 @@ namespace SwoftTest\Db\Unit\Transaction;
 
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
-use Swoft\Db\Annotation\Mapping\Column;
 use Swoft\Db\DB;
 use Swoft\Db\Exception\DbException;
 use Swoft\Stdlib\Helper\Str;

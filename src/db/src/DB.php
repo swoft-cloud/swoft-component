@@ -6,9 +6,7 @@ namespace Swoft\Db;
 use function bean;
 use Closure;
 use Generator;
-use ReflectionException;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\Exception\ConnectionPoolException;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\Connection\ConnectionManager;
@@ -90,9 +88,7 @@ class DB
      * @param string $table
      *
      * @return Builder
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public static function table(string $table): Builder
     {
@@ -103,9 +99,7 @@ class DB
      * @param string $name
      *
      * @return Builder
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public static function query(string $name = Pool::DEFAULT_POOL): Builder
     {
@@ -137,8 +131,6 @@ class DB
      * @param $value
      *
      * @return Expression
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function raw($value): Expression
     {
@@ -151,9 +143,8 @@ class DB
      * @param string $name
      *
      * @return Connection
-     * @throws ContainerException
      * @throws ConnectionPoolException
-     * @throws Throwable
+     * @throws DbException
      */
     private static function getConnectionFromPool(string $name): Connection
     {

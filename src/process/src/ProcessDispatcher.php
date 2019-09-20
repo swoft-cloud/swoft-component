@@ -34,8 +34,6 @@ class ProcessDispatcher
      * @param Pool $pool
      * @param int  $workerId
      *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function dispatcher(Pool $pool, int $workerId): void
     {

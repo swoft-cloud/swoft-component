@@ -25,6 +25,7 @@ class SwoftPacketV1 extends AbstractPacket
      * @param Protocol $protocol
      *
      * @return string
+     * @throws \Swoft\Exception\SwoftException
      */
     public function encode(Protocol $protocol): string
     {
@@ -46,8 +47,6 @@ class SwoftPacketV1 extends AbstractPacket
      * @param string $string
      *
      * @return Protocol
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function decode(string $string): Protocol
     {
@@ -80,8 +79,6 @@ class SwoftPacketV1 extends AbstractPacket
      * @param string $string
      *
      * @return Response
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function decodeResponse(string $string): Response
     {

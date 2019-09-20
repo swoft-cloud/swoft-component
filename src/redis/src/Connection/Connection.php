@@ -296,8 +296,6 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
 
     /**
      * @throws RedisException
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function create(): void
     {
@@ -319,8 +317,6 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     }
 
     /**
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws RedisException
      */
     public function createClient(): void
@@ -341,8 +337,6 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     }
 
     /**
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws RedisException
      */
     public function createClusterClient(): void
@@ -441,8 +435,6 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     /**
      * @param bool $force
      *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function release(bool $force = false): void
     {
@@ -619,8 +611,6 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
 
     /**
      * @return bool
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function reconnect(): bool
     {

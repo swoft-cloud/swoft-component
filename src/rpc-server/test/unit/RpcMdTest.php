@@ -9,8 +9,6 @@ use SwoftTest\Rpc\Server\Testing\Lib\DemoInterface;
 class RpcMdTest extends TestCase
 {
     /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Rpc\Exception\RpcException
      */
     public function testAllMd()
@@ -30,8 +28,6 @@ class RpcMdTest extends TestCase
     }
 
     /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Rpc\Exception\RpcException
      */
     public function testOneMd()
@@ -49,8 +45,6 @@ class RpcMdTest extends TestCase
     }
 
     /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Rpc\Exception\RpcException
      */
     public function testNotClassMd()

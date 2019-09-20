@@ -16,7 +16,7 @@ use SwoftTest\Http\Server\Testing\MockRequest;
 class RestTest extends TestCase
 {
     /**
-     * @throws \ReflectionException
+     * @throws \Swoft\Exception\SwoftException
      */
     public function testList()
     {

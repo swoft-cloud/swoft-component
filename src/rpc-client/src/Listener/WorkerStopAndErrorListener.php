@@ -36,8 +36,6 @@ class WorkerStopAndErrorListener implements EventSubscriberInterface
     /**
      * @param EventInterface $event
      *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function handle(EventInterface $event): void
     {

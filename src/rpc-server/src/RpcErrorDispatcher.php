@@ -29,8 +29,6 @@ class RpcErrorDispatcher
      * @param Response  $response
      *
      * @return Response
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function run(Throwable $e, Response $response): Response
     {

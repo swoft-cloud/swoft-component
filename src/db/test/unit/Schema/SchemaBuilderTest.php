@@ -3,7 +3,6 @@
 
 namespace SwoftTest\Db\Unit\Schema;
 
-use ReflectionException;
 use Swoft\Db\Schema;
 use SwoftTest\Db\Unit\TestCase;
 use Swoft\Db\Schema\Builder;
@@ -21,8 +20,6 @@ class SchemaBuilderTest extends TestCase
      *
      *
      * @return Builder
-     * @throws ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      * @throws \Swoft\Db\Exception\DbException
      */
     public function getBuilder(): Builder

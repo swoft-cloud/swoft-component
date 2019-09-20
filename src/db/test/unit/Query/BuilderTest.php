@@ -566,9 +566,7 @@ class BuilderTest extends TestCase
     }
 
     /**
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function testEach()
     {
@@ -619,9 +617,7 @@ class BuilderTest extends TestCase
      * get first line `id`
      *
      * @return int
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function getFirstId(): int
     {

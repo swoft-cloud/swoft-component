@@ -2,13 +2,13 @@
 
 namespace Swoft\Console;
 
+use function defined;
 use ReflectionException;
 use ReflectionType;
 use function srun;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Co;
 use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
 use Swoft\Context\Context;
@@ -57,7 +57,7 @@ class ConsoleDispatcher implements DispatcherInterface
         Runtime::enableCoroutine();
 
         // If in unit test env, has been in coroutine.
-        if (\defined('PHPUNIT_COMPOSER_INSTALL')) {
+        if (defined('PHPUNIT_COMPOSER_INSTALL')) {
             $this->executeByCo($object, $method, $params);
             return;
         }
