@@ -778,39 +778,4 @@ class BuilderTest extends TestCase
 
         $this->assertEquals($expectSql, $res);
     }
-
-    public function testBatchUpdateOrInsert()
-    {
-        $updateOrInsertItems = [
-            [
-                'age'       => 2,
-                'user_desc' => 'desc',
-                'hahh'      => 2,
-            ],
-            [
-                'age'       => 3,
-                'user_desc' => 'desc',
-                'hahh'      => 3,
-            ],
-            [
-                'age'       => 3,
-                'user_desc' => 'desc1',
-                'hahh'      => 3,
-            ]
-        ];
-
-        $baseWhere = [
-            'name' => 'swoft'
-        ];
-
-        $result = DB::table('user')->batchUpdateOrInsert(
-            $updateOrInsertItems,
-            $baseWhere,
-            ['user_desc'],
-            ['age', 'user_desc'],
-            ['hahh']
-        );
-
-        $this->assertTrue($result);
-    }
 }

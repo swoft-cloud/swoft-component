@@ -1252,66 +1252,6 @@ class Builder
     }
 
     /**
-     * Batch Update Or Insert, UpdateOrInsert operating suggest add unique index
-     *
-     * @param array $items      origin item
-     * @param array $baseWhere  only support [key=>value] where
-     * @param array $whereKeys  exists data where item
-     * @param array $updateKeys update item key
-     * @param array $incrKeys   increment item key
-     *
-     * @return bool
-     * @throws ContainerException
-     * @throws DbException
-     * @throws ReflectionException
-     */
-    public function batchUpdateOrInsert(
-        array $items,
-        array $baseWhere,
-        array $whereKeys = [],
-        array $updateKeys = [],
-        array $incrKeys = []
-    ): bool {
-        $primary = $this->model->getKeyName();
-
-        $count      = 0;
-        $timeColumn = $this->model->updateTimestamps();
-
-        foreach ($items as $k => &$item) {
-            $item = $this->model->getSafeAttributes($item);
-
-            if ($count === 0) {
-                $count = count($item);
-            } elseif ($count !== count($item)) {
-                throw new DbException('batchUpdateOrInsert The parameter length must be consistent.');
-            }
-
-            if (empty($item)) {
-                continue;
-            }
-
-            if ($timeColumn) {
-                $items[$k] = array_merge($timeColumn, $item);
-            }
-        }
-        unset($item);
-        // Filter empty values
-        $items = array_filter($items);
-        if (empty($items)) {
-            return false;
-        }
-
-        // Auto update "updateAt" column
-        $updateAtColumn = $this->model->getUpdatedAtColumn();
-        if (isset($timeColumn[$updateAtColumn])) {
-            $updateKeys[] = $updateAtColumn;
-        }
-
-        return $this->toBase()->batchUpdateOrInsert($items, $baseWhere, $whereKeys, $updateKeys, $incrKeys, $primary);
-    }
-
-
-    /**
      * Dynamically handle calls into the query instance.
      *
      * @param string $method

@@ -867,44 +867,4 @@ on A.id=B.id;', [$resCount - 20]);
         $this->assertEquals($sql, $toSql);
     }
 
-    public function testModelBatchUpdateOrInsert()
-    {
-        $updateOrInsertItems = [
-            [
-                'age'       => 2,
-                'user_desc' => 'desc2',
-                'hahh'      => 2,
-            ],
-            [
-                'age'       => 3,
-                'user_desc' => 'desc2',
-                'hahh'      => 3,
-            ],
-            [
-                'age'       => 3,
-                'user_desc' => 'desc1',
-                'hahh'      => 3,
-            ],
-            [
-                'age'       => 3,
-                'user_desc' => 'desc41',
-                'hahh'      => 3,
-            ]
-        ];
-
-        $baseWhere = [
-            'name' => 'swoft'
-        ];
-
-        $result = User::batchUpdateOrInsert(
-            $updateOrInsertItems,
-            $baseWhere,
-            ['user_desc'],
-            ['age', 'user_desc'],
-            ['hahh']
-        );
-
-        $this->assertTrue($result);
-    }
-
 }
