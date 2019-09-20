@@ -4,8 +4,6 @@
 namespace Swoft\Process\Listener;
 
 
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\Context;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
@@ -26,12 +24,10 @@ class BeforeProcessListener implements EventHandlerInterface
     /**
      * @param EventInterface $event
      *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function handle(EventInterface $event): void
     {
-        var_dump('BeforeProcessListener');
+        // var_dump('BeforeProcessListener');
         [$pool, $workerId] = $event->getParams();
 
         $context = ProcessContext::new($pool, $workerId);

@@ -3,11 +3,9 @@
 namespace Swoft\I18n;
 
 use InvalidArgumentException;
-use ReflectionException;
 use SplFileInfo;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\I18n\Exception\I18nException;
 use Swoft\Log\Debug;
 use Swoft\Stdlib\Helper\ArrayHelper;
@@ -69,8 +67,6 @@ class I18n
 
     /**
      * @throws I18nException
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function init(): void
     {

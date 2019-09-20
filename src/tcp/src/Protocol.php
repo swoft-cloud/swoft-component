@@ -125,6 +125,20 @@ class Protocol
     private $openLengthCheck = false;
 
     /**
+     * Header pack format
+     *
+     * @var string
+     */
+    private $headerPackFormat = self::HEADER_PACK_FORMAT;
+
+    /**
+     * Header unpack format
+     *
+     * @var string
+     */
+    private $headerUnpackFormat = self::HEADER_UNPACK_FORMAT;
+
+    /**
      * @link https://wiki.swoole.com/wiki/page/463.html
      * @link https://www.php.net/manual/en/function.pack.php
      * @var string
@@ -239,7 +253,7 @@ class Protocol
         }
 
         // Use length check
-        $format = self::HEADER_PACK_FORMAT;
+        $format = $this->headerPackFormat;
 
         // TODO
         // Args sort please see self::HEADER_UNPACK_FORMAT
@@ -263,7 +277,7 @@ class Protocol
         }
 
         // Use length check
-        $format  = self::HEADER_UNPACK_FORMAT;
+        $format  = $this->headerUnpackFormat;
         $headLen = $this->packageBodyOffset;
 
         // Like: ['type' => 'json', 'len' => 254, ]
@@ -540,5 +554,37 @@ class Protocol
     public function setPackageMaxLength(int $packageMaxLength): void
     {
         $this->packageMaxLength = $packageMaxLength;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHeaderPackFormat(): string
+    {
+        return $this->headerPackFormat;
+    }
+
+    /**
+     * @param string $headerPackFormat
+     */
+    public function setHeaderPackFormat(string $headerPackFormat): void
+    {
+        $this->headerPackFormat = $headerPackFormat;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHeaderUnpackFormat(): string
+    {
+        return $this->headerUnpackFormat;
+    }
+
+    /**
+     * @param string $headerUnpackFormat
+     */
+    public function setHeaderUnpackFormat(string $headerUnpackFormat): void
+    {
+        $this->headerUnpackFormat = $headerUnpackFormat;
     }
 }

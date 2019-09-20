@@ -4,10 +4,8 @@
 namespace Swoft\Task\Swoole;
 
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Server\Contract\TaskInterface;
 use Swoft\Task\Exception\TaskException;
 use Swoft\Task\Request;
@@ -29,8 +27,6 @@ class TaskListener implements TaskInterface
      * @param Server     $server
      * @param SwooleTask $task
      *
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws TaskException
      */
     public function onTask(Server $server, SwooleTask $task): void

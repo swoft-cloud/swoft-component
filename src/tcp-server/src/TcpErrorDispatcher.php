@@ -2,10 +2,8 @@
 
 namespace Swoft\Tcp\Server;
 
-use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Error\ErrorManager;
 use Swoft\Error\ErrorType;
 use Swoft\Log\Helper\CLog;
@@ -25,9 +23,6 @@ class TcpErrorDispatcher
     /**
      * @param Throwable $e
      * @param int       $fd
-     *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function connectError(Throwable $e, int $fd): void
     {
@@ -48,8 +43,6 @@ class TcpErrorDispatcher
      * @param Response  $response
      *
      * @return Response
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function receiveError(Throwable $e, Response $response): Response
     {
@@ -72,9 +65,6 @@ class TcpErrorDispatcher
     /**
      * @param Throwable $e
      * @param int       $fd
-     *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function closeError(Throwable $e, int $fd): void
     {
@@ -94,8 +84,6 @@ class TcpErrorDispatcher
      * @param string    $typeName
      * @param Throwable $e
      *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     private function logError(string $typeName, Throwable $e): void
     {

@@ -26,7 +26,19 @@ final class WsServerEvent
      */
     public const HANDSHAKE_ERROR   = 'swoft.ws.server.handshake.error';
 
+    /**
+     * On websocket opened: before
+     */
+    public const OPEN_BEFORE = 'swoft.ws.server.open.after';
+
+    /**
+     * On websocket opened: after
+     */
     public const OPEN_AFTER = 'swoft.ws.server.open.after';
+
+    /**
+     * On websocket opened: error
+     */
     public const OPEN_ERROR = 'swoft.ws.server.open.error';
 
     /**

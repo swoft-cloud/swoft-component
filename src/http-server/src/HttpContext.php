@@ -2,10 +2,8 @@
 
 namespace Swoft\Http\Server;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\AbstractContext;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
@@ -38,8 +36,6 @@ class HttpContext extends AbstractContext
      * @param Response $response
      *
      * @return HttpContext
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(Request $request, Response $response): self
     {

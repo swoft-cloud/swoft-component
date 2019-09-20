@@ -31,8 +31,6 @@ class UserMiddleware implements MiddlewareInterface
      * @param RequestHandlerInterface $requestHandler
      *
      * @return ResponseInterface
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws RpcServerException
      */
     public function process(RequestInterface $request, RequestHandlerInterface $requestHandler): ResponseInterface

@@ -99,8 +99,6 @@ class Request implements RequestInterface
      * @param string $data
      *
      * @return Request
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws RpcException
      */
     public static function new(

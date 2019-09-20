@@ -60,9 +60,7 @@ class Client
      * @param Pool $pool
      *
      * @return Connection
-     * @throws Exception\RpcClientException
-     * @throws ReflectionException
-     * @throws ContainerException
+     * @throws RpcClientException
      */
     public function createConnection(Pool $pool): Connection
     {
@@ -112,8 +110,6 @@ class Client
 
     /**
      * @return ExtenderInterface
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function getExtender(): ExtenderInterface
     {

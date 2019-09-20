@@ -1,10 +1,8 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Http\Server\Unit;
 
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
+use Swoft\Exception\SwoftException;
 
 /**
  * Class HeaderTest
@@ -14,8 +12,7 @@ use Swoft\Bean\Exception\ContainerException;
 class HeaderTest extends TestCase
 {
     /**
-     * @throws ReflectionException
-     * @throws ContainerException
+     * @throws SwoftException
      */
     public function testHeaderLines(): void
     {

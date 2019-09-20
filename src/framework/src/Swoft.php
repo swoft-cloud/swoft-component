@@ -25,7 +25,7 @@ class Swoft
     /**
      * Swoft version
      */
-    public const VERSION = '2.0.5-beta';
+    public const VERSION = '2.0.6';
 
     /**
      * Swoft log
@@ -150,7 +150,7 @@ class Swoft
      *
      * @return string
      */
-    public static function t(string $key, array $params, string $locale = ''): string
+    public static function t(string $key, array $params = [], string $locale = ''): string
     {
         /* @var I18n $i18n */
         $i18n = BeanFactory::getBean('i18n');

@@ -310,9 +310,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param array $columns
      *
      * @return Collection
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public static function all(array $columns = ['*']): Collection
     {
@@ -327,9 +325,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param array     $extra
      *
      * @return mixed
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function increment(string $column, $amount = 1, array $extra = [])
     {
@@ -344,9 +340,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param array     $extra
      *
      * @return mixed
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function decrement(string $column, $amount = 1, array $extra = [])
     {
@@ -362,9 +356,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param string    $method
      *
      * @return mixed
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function incrementOrDecrement(string $column, $amount, array $extra, string $method)
     {
@@ -542,7 +534,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Perform any actions that are necessary after the model is saved.
      *
      * @return void
-     * @throws ContainerException
      */
     protected function finishSave()
     {
@@ -592,9 +583,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param Builder $query
      *
      * @return Builder
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function setKeysForSaveQuery(Builder $query)
     {
@@ -748,9 +737,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Begin querying the model.
      *
      * @return Builder
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public static function query()
     {
@@ -761,9 +748,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Get a new query builder for the model's table.
      *
      * @return Builder
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function newQuery()
     {
@@ -774,9 +759,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Get a new query builder that doesn't have any global scopes or eager loading.
      *
      * @return Builder
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function newModelQuery()
     {
@@ -799,9 +782,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Get a new query builder instance for the connection.
      *
      * @return QueryBuilder
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function newBaseQueryBuilder()
     {
@@ -815,8 +796,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param array $models
      *
      * @return Collection
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function newCollection(array $models = [])
     {
@@ -862,9 +841,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Reload a fresh model instance from the database.
      *
      * @return null|$this|object|Builder|Model
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function fresh()
     {
@@ -881,9 +858,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Reload the current model instance with fresh attributes from the database.
      *
      * @return $this
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function refresh()
     {
@@ -1111,9 +1086,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param array  $parameters
      *
      * @return mixed
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function __call($method, $parameters)
     {

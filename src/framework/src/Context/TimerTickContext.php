@@ -1,12 +1,9 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Context;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\ContainerException;
 
 /**
  * Class TimerTickContext
@@ -34,8 +31,6 @@ class TimerTickContext extends AbstractContext
      * @param array $params
      *
      * @return TimerTickContext
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(int $timerId, array $params): self
     {

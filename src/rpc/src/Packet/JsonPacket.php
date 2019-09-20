@@ -57,8 +57,6 @@ class JsonPacket extends AbstractPacket
      *
      * @return Protocol
      * @throws RpcException
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function decode(string $string): Protocol
     {
@@ -141,8 +139,6 @@ class JsonPacket extends AbstractPacket
      * @param string $string
      *
      * @return Response
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function decodeResponse(string $string): Response
     {

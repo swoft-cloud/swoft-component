@@ -5,12 +5,10 @@ namespace Swoft\Process;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Co;
-use Swoft\Console\Console;
 use Swoft\Exception\SwoftException;
 use Swoft\Log\Helper\CLog;
 use Swoft\Process\Exception\ProcessException;
 use Swoft\Server\Helper\ServerHelper;
-use Swoft\Server\Server;
 use Swoft\Stdlib\Helper\Dir;
 use Swoft\Stdlib\Helper\Sys;
 use Swoole\Coroutine;
@@ -283,7 +281,7 @@ class ProcessPool
     /**
      * Set process name
      */
-    private function setProcessName()
+    private function setProcessName(): void
     {
         Sys::setProcessTitle(sprintf('%s-%s', $this->pidName, 'master'));
     }

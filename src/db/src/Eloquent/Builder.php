@@ -213,9 +213,7 @@ class Builder
      * @param $id
      *
      * @return $this|Builder
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function whereKey($id)
     {
@@ -232,9 +230,7 @@ class Builder
      * @param $id
      *
      * @return $this|Builder
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function whereKeyNot($id)
     {
@@ -256,9 +252,7 @@ class Builder
      * @param string               $boolean
      *
      * @return $this
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function where($column, $operator = null, $value = null, string $boolean = 'and')
     {
@@ -282,9 +276,7 @@ class Builder
      * @param string $boolean
      *
      * @return Builder
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function whereProp($column, $operator = null, $value = null, string $boolean = 'and'): self
     {
@@ -323,9 +315,7 @@ class Builder
      * @param mixed                $value
      *
      * @return Builder
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function orWhere($column, $operator = null, $value = null)
     {
@@ -394,9 +384,7 @@ class Builder
      * @param array $items
      *
      * @return Collection
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function hydrate(array $items): Collection
     {
@@ -432,9 +420,7 @@ class Builder
      * @param array $columns
      *
      * @return null|object|Builder|Collection|Model
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function find($id, array $columns = ['*'])
     {
@@ -452,9 +438,7 @@ class Builder
      * @param array           $columns
      *
      * @return Collection
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function findMany(array $ids, array $columns = ['*'])
     {
@@ -472,9 +456,7 @@ class Builder
      * @param array $columns
      *
      * @return null|object|Builder|Collection|Model
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function findOrFail($id, array $columns = ['*'])
     {
@@ -498,9 +480,7 @@ class Builder
      * @param array $columns
      *
      * @return null|object|Builder|Collection|Model
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function findOrNew($id, array $columns = ['*'])
     {
@@ -518,9 +498,7 @@ class Builder
      * @param array $values
      *
      * @return object|Builder|Model
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function firstOrNew(array $attributes, array $values = [])
     {
@@ -610,9 +588,7 @@ class Builder
      *
      * @return Model|static
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function firstOrFail(array $columns = ['*'])
     {
@@ -630,9 +606,7 @@ class Builder
      * @param Closure|null  $callback
      *
      * @return Model|static|mixed
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function firstOr(array $columns = ['*'], Closure $callback = null)
     {
@@ -655,9 +629,7 @@ class Builder
      * @param string $column
      *
      * @return mixed
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function value(string $column)
     {
@@ -674,9 +646,7 @@ class Builder
      * @param array $columns
      *
      * @return Collection
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function get(array $columns = ['*']): Collection
     {
@@ -692,9 +662,7 @@ class Builder
      * @param array $columns
      *
      * @return Model[]|static[]
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function getModels(array $columns = ['*'])
     {
@@ -727,9 +695,7 @@ class Builder
      * @param string|null $alias
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function chunkById(int $count, callable $callback, string $column = null, string $alias = null): bool
     {
@@ -791,9 +757,7 @@ class Builder
      * @param string|null $column
      *
      * @return static
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function forPageAfterId(int $perPage = 15, int $lastId = null, string $column = null): self
     {
@@ -814,9 +778,7 @@ class Builder
      * @param string|null $column
      *
      * @return static
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function forPageBeforeId(int $perPage = 15, int $lastId = null, string $column = null): self
     {

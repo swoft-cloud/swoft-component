@@ -16,8 +16,7 @@ use SwoftTest\Http\Server\Testing\MockRequest;
 class RestTest extends TestCase
 {
     /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
+     * @throws \Swoft\Exception\SwoftException
      */
     public function testList()
     {
@@ -30,8 +29,6 @@ class RestTest extends TestCase
     }
 
     /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public function testCreate()
     {
@@ -51,10 +48,6 @@ class RestTest extends TestCase
         $response->assertEqualJson($data);
     }
 
-    /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     */
     public function testGetUser()
     {
         $headers = [
@@ -74,10 +67,6 @@ class RestTest extends TestCase
         $response->assertEqualJson(['getUser', 0]);
     }
 
-    /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     */
     public function testGetBookFromUser()
     {
         $headers = [
@@ -94,10 +83,6 @@ class RestTest extends TestCase
         $response->assertEqualJson($data);
     }
 
-    /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     */
     public function testDelete()
     {
         $headers = [
@@ -113,10 +98,6 @@ class RestTest extends TestCase
         $response->assertEqualJson($data);
     }
 
-    /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     */
     public function testUpdate()
     {
         $headers = [

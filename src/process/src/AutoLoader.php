@@ -4,8 +4,6 @@
 namespace Swoft\Process;
 
 
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Process\Swoole\WorkerStartListener;
 use Swoft\Process\Swoole\WorkerStopListener;
 use Swoft\SwoftComponent;
@@ -29,8 +27,6 @@ class AutoLoader extends SwoftComponent
 
     /**
      * @return array
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function beans(): array
     {

@@ -7,7 +7,6 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
 use SwoftTest\Bean\Testing\Contract\PrimaryInterface;
 use SwoftTest\Bean\Testing\Contract\TestInterface;
-use SwoftTest\Bean\Testing\Definition\PrimaryInterfaceThree;
 
 /**
  * Class InterfaceBean

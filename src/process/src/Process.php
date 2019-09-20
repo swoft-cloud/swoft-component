@@ -52,7 +52,7 @@ class Process
         bool $coroutine = true,
         SwooleProcess $process = null
     ) {
-        if (!empty($process)) {
+        if ($process) {
             $this->process = $process;
             return;
         }
@@ -251,7 +251,7 @@ class Process
     public static function wait(bool $blocking = true): array
     {
         $result = SwooleProcess::wait($blocking);
-        if ($result !== $result) {
+        if ($result !== false) {
             return (array)$result;
         }
 
@@ -275,7 +275,7 @@ class Process
      *
      * @return bool
      */
-    public static function signal(int $signo, callable $callback = null)
+    public static function signal(int $signo, callable $callback = null): bool
     {
         return (bool)SwooleProcess::signal($signo, $callback);
     }

@@ -4,12 +4,10 @@
 namespace Swoft\Server\Context;
 
 
-use ReflectionException;
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\AbstractContext;
 use Swoole\Server as SwooleServer;
-use Swoft\Bean\Annotation\Mapping\Bean;
 
 /**
  * Class StartContext
@@ -31,8 +29,6 @@ class StartContext extends AbstractContext
      * @param SwooleServer $server
      *
      * @return StartContext
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public static function new(SwooleServer $server): self
     {

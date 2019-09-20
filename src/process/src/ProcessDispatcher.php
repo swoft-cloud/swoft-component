@@ -34,8 +34,6 @@ class ProcessDispatcher
      * @param Pool $pool
      * @param int  $workerId
      *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function dispatcher(Pool $pool, int $workerId): void
     {
@@ -54,8 +52,6 @@ class ProcessDispatcher
      *
      * @return ProcessInterface
      * @throws ProcessException
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     private function getProcess(int $workerId): ProcessInterface
     {

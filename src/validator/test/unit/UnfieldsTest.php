@@ -3,8 +3,6 @@
 
 namespace SwoftTest\Validator\Unit;
 
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Validator\Exception\ValidatorException;
 use Swoft\Validator\Validator;
 use SwoftTest\Validator\Testing\ValidateDemo3;
@@ -38,8 +36,6 @@ class UnfieldsTest extends TestCase
     /**
      * @expectedException Swoft\Validator\Exception\ValidatorException
      *
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws ValidatorException
      */
     public function testUnfieldsException()
@@ -52,8 +48,6 @@ class UnfieldsTest extends TestCase
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage email must be a email
      *
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws ValidatorException
      */
     public function testUnfieldsException2()

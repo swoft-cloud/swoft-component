@@ -9,7 +9,6 @@ use Swoft\Db\Exception\DbException;
 use Swoft\Stdlib\Helper\Str;
 use SwoftTest\Db\Testing\Entity\Count;
 use SwoftTest\Db\Testing\Entity\User;
-use Swoole\Event;
 
 /**
  * Class TestCase

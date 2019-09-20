@@ -1,12 +1,8 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Http\Server\Formatter;
 
-
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Http\Message\ContentType;
 use Swoft\Http\Message\Contract\ResponseFormatterInterface;
 use Swoft\Http\Message\Contract\ResponseInterface;
@@ -26,8 +22,6 @@ class XmlResponseFormatter implements ResponseFormatterInterface
      * @param Response|ResponseInterface $response
      *
      * @return Response
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function format(Response $response): Response
     {

@@ -7,7 +7,6 @@ namespace SwoftTest\Db\Unit\Eloquent;
 use ReflectionException;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\DB;
-use Swoft\Db\Eloquent\Builder;
 use Swoft\Db\Eloquent\Collection;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Expression;

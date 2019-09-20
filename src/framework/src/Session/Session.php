@@ -3,11 +3,12 @@
 namespace Swoft\Session;
 
 use Swoft\Co;
+use Swoft\Contract\SessionInterface;
 use Swoft\Exception\SessionException;
 use Swoft\WebSocket\Server\Connection;
 
 /**
- * Class Session - Global session manage
+ * Class Session - Global long connection session manager(use for ws,tcp)
  *
  * @since 2.0
  */

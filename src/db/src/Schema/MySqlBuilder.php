@@ -67,9 +67,7 @@ class MySqlBuilder extends Builder
      * @param array  $addSelect
      *
      * @return array
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function getColumnsDetail(string $table, array $addSelect = []): array
     {
@@ -109,9 +107,7 @@ class MySqlBuilder extends Builder
      * @param string $likeTable
      *
      * @return array
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function getTableSchema(
         string $table,

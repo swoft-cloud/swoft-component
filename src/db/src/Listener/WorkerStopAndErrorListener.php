@@ -2,9 +2,7 @@
 
 namespace Swoft\Db\Listener;
 
-use ReflectionException;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Pool;
 use Swoft\Event\Annotation\Mapping\Subscriber;
 use Swoft\Event\EventInterface;
@@ -36,8 +34,6 @@ class WorkerStopAndErrorListener implements EventSubscriberInterface
     /**
      * @param EventInterface $event
      *
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function handle(EventInterface $event): void
     {

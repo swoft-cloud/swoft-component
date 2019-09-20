@@ -179,9 +179,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Create connection
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function create(): void
     {
@@ -322,9 +320,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param mixed $value
      *
      * @return Expression
-     * @throws ContainerException
-     * @throws ReflectionException
-     *
      * @deprecated This method unsafe, This connection unreleased
      */
     public function raw($value): Expression
@@ -1081,9 +1076,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Create pdo
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     private function createPdo()
     {
@@ -1099,9 +1092,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Create read pdo
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     private function createReadPdo()
     {

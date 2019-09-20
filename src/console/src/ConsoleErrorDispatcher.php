@@ -4,7 +4,6 @@ namespace Swoft\Console;
 
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Console\Contract\ConsoleErrorHandlerInterface;
 use Swoft\Console\Exception\ConsoleErrorException;
 use Swoft\Console\Helper\Show;
@@ -23,8 +22,6 @@ class ConsoleErrorDispatcher
 {
     /**
      * @param Throwable $e
-     *
-     * @throws ContainerException
      */
     public function run(Throwable $e): void
     {

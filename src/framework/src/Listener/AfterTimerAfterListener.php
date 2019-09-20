@@ -1,11 +1,8 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Listener;
 
-
 use Swoft;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\SwoftEvent;
@@ -22,8 +19,6 @@ class AfterTimerAfterListener implements EventHandlerInterface
 {
     /**
      * @param EventInterface $event
-     *
-     * @throws ContainerException
      */
     public function handle(EventInterface $event): void
     {

@@ -3,10 +3,8 @@
 
 namespace SwoftTest\Task\Testing;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Task\Exception\TaskException;
 use Swoft\Task\Packet;
 use Swoft\Task\Request;
@@ -33,9 +31,7 @@ class MockTaskServer
      * @param array  $ext
      *
      * @return string
-     * @throws ContainerException
      * @throws TaskException
-     * @throws ReflectionException
      */
     public function co(string $name, string $method, array $params = [], array $ext = [])
     {
@@ -67,9 +63,7 @@ class MockTaskServer
      * @param array  $ext
      *
      * @return int
-     * @throws ContainerException
      * @throws TaskException
-     * @throws ReflectionException
      */
     public function async(
         string $name,
@@ -93,8 +87,6 @@ class MockTaskServer
      * @param Request  $request
      * @param Response $response
      *
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     private function task(Request $request, Response $response)
     {

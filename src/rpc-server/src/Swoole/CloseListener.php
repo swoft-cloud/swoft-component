@@ -25,7 +25,6 @@ class CloseListener implements CloseInterface
      * @param int    $fd
      * @param int    $reactorId
      *
-     * @throws ContainerException*
      */
     public function onClose(Server $server, int $fd, int $reactorId): void
     {

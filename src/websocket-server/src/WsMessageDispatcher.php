@@ -137,7 +137,7 @@ class WsMessageDispatcher // extends \Swoft\Concern\AbstractDispatcher
             // Defined type of the param
             $type = $paramType ? $paramType->getName() : '';
 
-            if ($type === '' && $name === 'data') {
+            if ($type === 'string' && $name === 'data') {
                 $bindParams[] = $request->getRawData();
             } elseif ($type === Frame::class) {
                 $bindParams[] = $request->getFrame();

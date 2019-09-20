@@ -2,9 +2,7 @@
 
 namespace Swoft\Tcp;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Server\Concern\CommonProtocolDataTrait;
 use Swoft\Stdlib\Helper\JsonHelper;
 use function bean;
@@ -32,8 +30,6 @@ class Package
      * @param array  $ext
      *
      * @return Package
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public static function new(string $route, $data, array $ext = []): self
     {

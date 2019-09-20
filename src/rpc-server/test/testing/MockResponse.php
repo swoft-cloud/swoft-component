@@ -29,8 +29,6 @@ class MockResponse extends Response
 
     /**
      * @return bool
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws RpcException
      */
     public function send(): bool

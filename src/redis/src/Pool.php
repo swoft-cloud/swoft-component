@@ -152,9 +152,7 @@ class Pool extends AbstractPool
 
     /**
      * @return ConnectionInterface
-     * @throws Exception\RedisException
-     * @throws ReflectionException
-     * @throws ContainerException
+     * @throws RedisException
      */
     public function createConnection(): ConnectionInterface
     {

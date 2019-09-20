@@ -1,11 +1,8 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Process\Listener;
 
-
 use Swoft;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\SwoftEvent;
@@ -24,11 +21,10 @@ class AfterProcessListener implements EventHandlerInterface
     /**
      * @param EventInterface $event
      *
-     * @throws ContainerException
      */
     public function handle(EventInterface $event): void
     {
-        var_dump('AfterProcessListener');
+        // var_dump('AfterProcessListener');
 
         // Defer
         Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
