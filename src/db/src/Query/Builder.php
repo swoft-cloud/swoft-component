@@ -3006,7 +3006,7 @@ class Builder implements PrototypeInterface
             $searchWhere = array_merge($baseWhere, $wheres);
         }
 
-        $exitsList = $this->select($primary, ...$whereKeys)->where($searchWhere)->get();
+        $exitsList  = $this->select($primary, ...$whereKeys)->where($searchWhere)->get();
         $uniqueKeys = array_keys($searchWhere);
         foreach ($exitsList as $record) {
             $mergeData = $record;
