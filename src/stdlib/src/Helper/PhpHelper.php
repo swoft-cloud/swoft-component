@@ -125,13 +125,15 @@ class PhpHelper
      */
     public static function exceptionToString(Throwable $e, string $title = '', bool $debug = false): string
     {
+        $errClass = get_class($e);
+
         if (false === $debug) {
-            return sprintf('%s(code:%d)%s', $title, $e->getCode(), $e->getMessage());
+            return sprintf('%s %s(code:%d) %s', $title, $errClass, $e->getCode(), $e->getMessage());
         }
 
         return sprintf('%s%s(code:%d): %s At %s line %d',
             $title ? $title . ' - ' : '',
-            get_class($e),
+            $errClass,
             $e->getCode(),
             $e->getMessage(),
             $e->getFile(),
