@@ -123,7 +123,7 @@ class Table extends MessageFormatter
                         $hasHead = true;
                     }
 
-                    $info['columnMaxWidth'][$index] = mb_strlen($name, 'UTF-8');
+                    $info['columnMaxWidth'][$index] = mb_strlen((string)$name, 'UTF-8');
                 }
             }
 
@@ -139,7 +139,7 @@ class Table extends MessageFormatter
                         $info['columnMaxWidth'][$colIndex] = $colWidth;
                     }
                 } else {
-                    $info['columnMaxWidth'][$colIndex] = mb_strlen($value, 'UTF-8');
+                    $info['columnMaxWidth'][$colIndex] = mb_strlen((string)$value, 'UTF-8');
                 }
 
                 $colIndex++;

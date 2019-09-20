@@ -27,6 +27,11 @@ class GenVersion extends BaseCommand
      */
     private $version;
 
+    /**
+     * @var int
+     */
+    private $updated = 0;
+
     public function getHelpConfig(): array
     {
         $help = <<<STR
@@ -35,6 +40,7 @@ Arguments:
 
 Options:
   --all     Apply for all components
+  -c        Commit to git after update by `git commit`
   -v        The want added version. eg: v2.0.3
 
 Example:
@@ -67,6 +73,10 @@ STR;
             $this->addVersionToComposer($dir . 'composer.json', basename($dir));
         }
 
+        if ($this->updated > 0 && $app->getBoolOpt('c')) {
+            self::gitCommit('update: update the version to composer.json');
+        }
+
         echo Color::render("Complete\n", 'cyan');
     }
 
@@ -89,12 +99,16 @@ STR;
         if (1 !== $count) {
             $replace = self::ADD_POSITION . "\n  {$replace},";
             $text    = str_replace(self::ADD_POSITION, $replace, $text, $count);
+
+            $this->updated++;
         }
 
         if (0 === $count) {
             echo Color::render("Failed for add version for component: $name\n", 'error');
             return;
         }
+
+        $this->updated += $count;
 
         echo Color::render("Append version for the component: $name\n", 'info');
 
