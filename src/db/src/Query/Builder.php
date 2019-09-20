@@ -2944,10 +2944,10 @@ class Builder implements PrototypeInterface
                 $mergeData = array_merge($baseWhere, $record);
             }
 
-            $uniqueId               = ArrayHelper::toString(
+            $uniqueId             = ArrayHelper::toString(
                 ArrayHelper::only($mergeData, $uniqueKeys)
             );
-            $existMaps[$uniqueId][] = $record[$primary];
+            $existMaps[$uniqueId] = $record[$primary];
         }
 
         $addItems = $updateItems = [];
@@ -2955,17 +2955,11 @@ class Builder implements PrototypeInterface
             $uniqueId = ArrayHelper::toString(ArrayHelper::only($item, $uniqueKeys));
 
             if (isset($existMaps[$uniqueId])) {
-                $updateItem = array_merge(
+                $updateItem    = array_merge(
                     ArrayHelper::only($item, $updateKeys),
                     $this->warpCounters(ArrayHelper::only($item, $incrKeys))
                 );
-
-                // Sync update data
-                foreach ($existMaps[$uniqueId] as $id) {
-                    $updateItem[$primary] = $id;
-
-                    $updateItems[$id] = $updateItem;
-                }
+                $updateItems[] = $updateItem;
 
                 continue;
             }
