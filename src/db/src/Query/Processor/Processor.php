@@ -47,7 +47,7 @@ class Processor
     public function processInsertGetId(Builder $query, $sql, $values, string $sequence = null): string
     {
         $id = $query->getConnection()->insertGetId($sql, $values, $sequence);
-        return (string)$id;
+        return $id;
     }
 
     /**
