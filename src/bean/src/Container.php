@@ -1044,14 +1044,17 @@ class Container implements ContainerInterface
             // Inject interface
             if (is_string($propertyValue) && interface_exists($propertyValue)) {
                 $propertyValue = InterfaceRegister::getInterfaceInjectBean($propertyValue);
-            }
-
-            if (is_array($propertyValue)) {
+            } elseif (is_array($propertyValue)) {
                 $propertyValue = $this->newPropertyArray($propertyValue, $id);
             }
 
             if ($propertyInject->isRef()) {
                 $propertyValue = $this->getRefValue($propertyValue, $id);
+            }
+
+            // Optimize: Value not exists, skip call setter
+            if ($propertyValue === null) {
+                continue;
             }
 
             // Parser property type
@@ -1143,7 +1146,7 @@ class Container implements ContainerInterface
         // Remove `.`
         $value = substr($value, 1);
 
-        // Other reference
+        // Other: read config reference
         if ($this->handler !== null) {
             $value = $this->handler->getReferenceValue($value);
         }

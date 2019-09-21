@@ -2,10 +2,10 @@
 
 namespace Swoft\Config\Annotation\Parser;
 
-use function sprintf;
-use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
+use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Config\Annotation\Mapping\Config;
+use function sprintf;
 
 /**
  * Class ConfigParser
