@@ -691,7 +691,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
                 $this->releaseOrRemove();
 
                 // Throw exception
-                throw new DbException($e->getMessage());
+                throw new DbException($e->getMessage(), (int)$e->getCode());
             }
 
             // If an exception occurs when attempting to run a query, we'll format the error
