@@ -28,7 +28,7 @@ class PropertyInjection
      *
      * @var bool
      */
-    private $isRef = false;
+    private $isRef;
 
     /**
      * PropertyInjection constructor.

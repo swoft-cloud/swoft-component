@@ -14,6 +14,7 @@ use Swoft\Session\Session;
 use Swoft\SwoftEvent;
 use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\Context\WsHandshakeContext;
+use Swoft\WebSocket\Server\Context\WsOpenContext;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\Helper\WsHelper;
 use Swoft\WebSocket\Server\WsDispatcher;
@@ -142,6 +143,9 @@ class HandshakeListener implements HandshakeInterface
      */
     public function onOpen(Psr7Request $request, int $fd): void
     {
+        $ctx = WsOpenContext::new($request);
+        // Storage context
+        Context::set($ctx);
         // Bind cid => sid(fd)
         Session::bindCo((string)$fd);
 
@@ -176,7 +180,7 @@ class HandshakeListener implements HandshakeInterface
             // Defer
             Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
 
-            // Destroy
+            // Destroy Coroutine
             Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
 
             // Unbind cid => sid(fd)

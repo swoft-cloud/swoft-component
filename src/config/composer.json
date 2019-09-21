@@ -16,8 +16,6 @@
     "swoft/stdlib": "~2.0.0"
   },
   "autoload": {
-    "classmap": [
-    ],
     "psr-4": {
       "Swoft\\Config\\": "src/"
     }
