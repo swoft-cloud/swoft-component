@@ -12,6 +12,7 @@ use SwoftTool\Command\GitForcePush;
 use SwoftTool\Command\GitReleaseTag;
 use SwoftTool\Command\GitSubtreePush;
 use SwoftTool\Command\GitSubtreePull;
+use SwoftTool\Command\UpdateSwooleVer;
 use Toolkit\Cli\App;
 
 require __DIR__ . '/script/bootstrap.php';
@@ -27,7 +28,8 @@ $cli->addByConfig($gfp = new GitForcePush(), $gfp->getHelpConfig());
 $cli->addByConfig($gsp1 = new GitSubtreePush(), $gsp1->getHelpConfig());
 $cli->addByConfig($gsp2 = new GitSubtreePull(), $gsp2->getHelpConfig());
 
-$cli->addByConfig($gr = new GenReadme(), $gr->getHelpConfig());
-$cli->addByConfig($gv = new GenVersion(), $gv->getHelpConfig());
+$cli->addByConfig($cmd = new GenReadme(), $cmd->getHelpConfig());
+$cli->addByConfig($cmd = new GenVersion(), $cmd->getHelpConfig());
+$cli->addByConfig($cmd = new UpdateSwooleVer(), $cmd->getHelpConfig());
 
 $cli->run();

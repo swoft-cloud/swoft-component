@@ -162,6 +162,14 @@ class Router implements RouterInterface
         $inputCmd  = trim($params[0], "$delimiter ");
         $noSepChar = strpos($inputCmd, $delimiter) === false;
 
+        // If is full command ID
+        if (!$noSepChar && isset($this->routes[$inputCmd])) {
+            $info = $this->routes[$inputCmd];
+            // append some info
+            $info['cmdId'] = $inputCmd;
+            return [self::FOUND, $info];
+        }
+
         // If use command ID alias
         if ($noSepChar && isset($this->idAliases[$inputCmd])) {
             $inputCmd = $this->idAliases[$inputCmd];

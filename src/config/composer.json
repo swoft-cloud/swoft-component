@@ -1,7 +1,7 @@
 {
   "name": "swoft/config",
   "type": "library",
-  "version": "v2.0.5",
+  "version": "v2.0.6",
   "keywords": [
     "php",
     "swoole",
@@ -16,8 +16,6 @@
     "swoft/stdlib": "~2.0.0"
   },
   "autoload": {
-    "classmap": [
-    ],
     "psr-4": {
       "Swoft\\Config\\": "src/"
     }

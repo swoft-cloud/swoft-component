@@ -50,9 +50,8 @@ use function bean;
  * @method static Builder findOrNew($id, array $columns = ['*'])
  * @method static Builder firstOrNew(array $attributes, array $values = [])
  * @method static static firstOrCreate(array $attributes, array $values = [])
- * @method static static updateOrCreate(array $attributes, array $values = [])
+ * @method static static updateOrCreate(array $attributes, array $values = [], array $counters = [])
  * @method static bool updateOrInsert(array $attributes, array $values = [], array $counters = [])
- * @method static bool batchUpdateOrInsert(array $items, array $baseWhere, array $whereKeys = [], array $updateKeys = [], array $incrKeys = []);
  * @method static int batchUpdateByIds(array $values)
  * @method static int updateAllCounters(array $attributes, array $counters, array $extra = [])
  * @method static int updateAllCountersAdoptPrimary(array $attributes, array $counters, array $extra = [])
