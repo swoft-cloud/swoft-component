@@ -183,6 +183,11 @@ class Response implements ResponseInterface
             return 0;
         }
 
+        // Fix: No response data
+        if ($this->content === '' && $this->data === null) {
+            return 0;
+        }
+
         /** @noinspection CallableParameterUseCaseInTypeContextInspection */
         $conn   = $conn ?: Session::mustGet();
         $server = $conn->getServer();
