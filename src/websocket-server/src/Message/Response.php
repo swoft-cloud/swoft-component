@@ -184,7 +184,7 @@ class Response implements ResponseInterface
         }
 
         // Fix: No response data
-        if ($this->content === '' && $this->data === null) {
+        if ($this->isEmpty()) {
             return 0;
         }
 
@@ -267,6 +267,14 @@ class Response implements ResponseInterface
         }
 
         return $content;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return $this->content === '' && $this->data === null;
     }
 
     /**

@@ -5,6 +5,11 @@ namespace SwoftTest\WebSocket\Server\Unit\Message;
 use PHPUnit\Framework\TestCase;
 use Swoft\WebSocket\Server\Message\Response;
 
+/**
+ * Class ResponseTest
+ *
+ * @package SwoftTest\WebSocket\Server\Unit\Message
+ */
 class ResponseTest extends TestCase
 {
     public function testBasic(): void
@@ -38,5 +43,9 @@ class ResponseTest extends TestCase
         $this->assertEmpty($w->getFds());
         $w->toMore([33, 34]);
         $this->assertSame([33, 34], $w->getFds());
+
+        $this->assertTrue($w->isEmpty());
+        $w->setContent('hi');
+        $this->assertFalse($w->isEmpty());
     }
 }

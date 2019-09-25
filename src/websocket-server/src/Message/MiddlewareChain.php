@@ -71,16 +71,16 @@ class MiddlewareChain implements MessageHandlerInterface
      * Add middleware
      * This method prepends new middleware to the application middleware stack.
      *
-     * @param MiddlewareInterface[] ...$middlewareList Any callable that accepts two arguments:
-     *                                                 1. A Request object
-     *                                                 2. A Handler object
+     * @param MiddlewareInterface[] ...$middles Any callable that accepts two arguments:
+     *                                          1. A Request object
+     *                                          2. A Handler object
      *
      * @return $this
      * @throws RuntimeException
      */
-    public function add(...$middlewareList): self
+    public function add(...$middles): self
     {
-        foreach ($middlewareList as $middleware) {
+        foreach ($middles as $middleware) {
             $this->middle($middleware);
         }
 
