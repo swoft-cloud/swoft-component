@@ -1,8 +1,70 @@
 # Swoft Component
 
-这里是swoft基础和核心组件的开发仓库
+这里是swoft基础和核心组件的开发仓库，所有的核心组件都是由这里分发出去的。
 
 ## [English](README.md)
+
+## 如何使用
+
+Add require to `composer.json`
+
+```json
+"require": {
+    "swoft/component": "dev-master as 2.0"
+}
+```
+
+Install:
+
+```json
+composer update
+```
+
+### 单元测试
+
+Quick run tests for component:
+
+```bash
+// For all components
+./phpunit.sh all
+// For multi components
+./phpunit.sh db event
+// For one component
+./phpunit.sh event
+```
+
+Only tests an special component:
+
+```bash
+./phpunit.sh event
+// use run.php
+php run.php -c src/event/phpunit.xml
+// filter test method name
+php run.php -c src/event/phpunit.xml --filter testAddModule
+```
+
+Output coverage data:
+
+```bash
+// output coverage. require xdebug ext
+phpunit --coverage-text
+// output coverage without xdebug
+phpdbg -dauto_globals_jit=Off -qrr /usr/local/bin/phpunit --coverage-text
+phpdbg -dauto_globals_jit=Off -qrr run.php --coverage-text -c src/event/phpunit.xml
+```
+
+## 使用文档
+
+- [中文文档](https://www.swoft.org/docs)
+- [English](https://en.swoft.org/docs)
+
+## 参与讨论
+
+- Forum https://github.com/swoft-cloud/forum/issues
+- Gitter.im https://gitter.im/swoft-cloud/community
+- Reddit https://www.reddit.com/r/swoft/
+- QQ Group1: 548173319      
+- QQ Group2: 778656850
 
 ## 参与贡献
 
