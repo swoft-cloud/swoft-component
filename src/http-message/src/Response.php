@@ -163,6 +163,14 @@ class Response implements ResponseInterface
         if ($this->filePath) {
             $this->sent = true;
 
+            // Write Headers to co response
+            foreach ($this->getHeaders() as $key => $value) {
+                $headerLine = implode(';', $value);
+
+                if ($key !== ContentType::KEY) {
+                    $this->coResponse->header($key, $headerLine);
+                }
+            }
             // Do send file
             $this->coResponse->header(ContentType::KEY, $this->fileType);
             $this->coResponse->sendfile($this->filePath);
