@@ -171,6 +171,7 @@ class Response implements ResponseInterface
                     $this->coResponse->header($key, $headerLine);
                 }
             }
+
             // Do send file
             $this->coResponse->header(ContentType::KEY, $this->fileType);
             $this->coResponse->sendfile($this->filePath);
