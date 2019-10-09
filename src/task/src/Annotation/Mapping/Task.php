@@ -27,7 +27,7 @@ class Task
      *
      * @Required()
      */
-    private $name;
+    private $name = '';
 
     /**
      * Task constructor.
