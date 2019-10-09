@@ -57,7 +57,7 @@ class RouteRegister
     public static function registerRoutes(Router $router): void
     {
         foreach (self::$tasks as $className => $task) {
-            $name    = $task['name'] ?? '';
+            $name    = $task['name'] ? $task['name'] : $className;
             $mapping = $task['mapping'] ?? [];
 
             if (empty($name) || empty($mapping)) {
