@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Task\Router;
-
 
 class RouteRegister
 {
@@ -57,15 +55,15 @@ class RouteRegister
     public static function registerRoutes(Router $router): void
     {
         foreach (self::$tasks as $className => $task) {
-            $name    = $task['name'] ? $task['name'] : $className;
             $mapping = $task['mapping'] ?? [];
 
-            if (empty($name) || empty($mapping)) {
+            if (!$mapping) {
                 continue;
             }
 
+            $name = $task['name'] ?: $className;
+            
             foreach ($mapping as $methodName => $map) {
-
                 $mappingName = $map['name'] ?? '';
                 if (empty($mappingName)) {
                     continue;
