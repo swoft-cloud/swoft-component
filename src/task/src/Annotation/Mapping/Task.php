@@ -1,12 +1,9 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Task\Annotation\Mapping;
-
 
 use Doctrine\Common\Annotations\Annotation\Attribute;
 use Doctrine\Common\Annotations\Annotation\Attributes;
-use Doctrine\Common\Annotations\Annotation\Required;
 use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
@@ -23,9 +20,10 @@ use Doctrine\Common\Annotations\Annotation\Target;
 class Task
 {
     /**
-     * @var string
+     * The task name.
+     * If it is empty, it will be replaced with the class name.
      *
-     * @Required()
+     * @var string
      */
     private $name = '';
 
