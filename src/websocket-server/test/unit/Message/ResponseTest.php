@@ -7,8 +7,6 @@ use Swoft\WebSocket\Server\Message\Response;
 
 /**
  * Class ResponseTest
- *
- * @package SwoftTest\WebSocket\Server\Unit\Message
  */
 class ResponseTest extends TestCase
 {

@@ -20,7 +20,6 @@ class BeforeSettingListener implements EventHandlerInterface
 {
     /**
      * @param EventInterface $event
-     *
      */
     public function handle(EventInterface $event): void
     {
