@@ -483,13 +483,24 @@ class MySqlGrammar extends Grammar
      */
     public function compileRenameColumn(Blueprint $blueprint, Fluent $command): string
     {
-        return sprintf('alter table %s change %s %s %s(%d)',
+        $sql = sprintf('alter table %s change %s %s %s(%d) %s',
             $this->wrapTable($blueprint),
             $command['from'],
             $command['to'],
             $command['type'],
-            $command['length']
+            $command['length'],
+            $command['unsigned'],
         );
+
+        if ($command['default'] !== null) {
+            $sql .= sprintf(' default %s ', $command['default']);
+        }
+
+        if ($command['commit'] !== null) {
+            $sql .= sprintf(' commit %s ', $command['commit']);
+        }
+
+        return $sql;
     }
 
     /**

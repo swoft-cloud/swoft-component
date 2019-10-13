@@ -158,6 +158,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
         'geodist',
         'geohash',
         'geopos',
+        'georadius',
         'get',
         'getbit',
         'getoption',

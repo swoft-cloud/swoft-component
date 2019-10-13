@@ -353,9 +353,19 @@ class Blueprint
      *
      * @return Fluent
      */
-    public function renameColumn(string $from, string $to, string $type, int $length)
-    {
-        return $this->addCommand('renameColumn', compact('from', 'to', 'type', 'length'));
+    public function renameColumn(
+        string $from,
+        string $to,
+        string $type,
+        int $length,
+        string $default = null,
+        string $comment = null,
+        string $unsigned = null
+    ) {
+        return $this->addCommand(
+            'renameColumn',
+            compact('from', 'to', 'type', 'length', 'default', 'comment', 'unsigned')
+        );
     }
 
     /**
@@ -784,8 +794,12 @@ class Blueprint
      *
      * @return ColumnDefinition
      */
-    public function smallInteger(string $column, bool $autoIncrement = false, bool $unsigned = false, int $length = null)
-    {
+    public function smallInteger(
+        string $column,
+        bool $autoIncrement = false,
+        bool $unsigned = false,
+        int $length = null
+    ) {
         return $this->addColumn('smallInteger', $column, compact('autoIncrement', 'unsigned', 'length'));
     }
 
@@ -799,8 +813,12 @@ class Blueprint
      *
      * @return ColumnDefinition
      */
-    public function mediumInteger(string $column, bool $autoIncrement = false, bool $unsigned = false, int $length = null)
-    {
+    public function mediumInteger(
+        string $column,
+        bool $autoIncrement = false,
+        bool $unsigned = false,
+        int $length = null
+    ) {
         return $this->addColumn('mediumInteger', $column, compact('autoIncrement', 'unsigned', 'length'));
     }
 
