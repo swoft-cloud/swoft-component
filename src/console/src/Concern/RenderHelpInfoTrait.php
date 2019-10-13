@@ -53,7 +53,8 @@ trait RenderHelpInfoTrait
         $swooleVersion = SWOOLE_VERSION;
 
         // Display logo
-        $output->colored('  ' . ltrim(Swoft::FONT_LOGO));
+        $logoText = $this->logoText ?: Swoft::FONT_LOGO;
+        $output->colored(ltrim($logoText, "\n"));
 
         // Display some information
         $output->writef(
