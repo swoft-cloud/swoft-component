@@ -32,6 +32,7 @@ return [
         'option'   => [
             'timeout'    => 3,
             'persistent' => true,
+            'auth'       => 'passwordAuth-xxxx',
         ],
         'clusters' => [
             [

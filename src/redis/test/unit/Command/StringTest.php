@@ -57,7 +57,7 @@ class StringTest extends TestCase
     {
         $key = \uniqid();
 
-        $redis = Redis::connection('redis.inc.pool');
+        $redis         = Redis::connection('redis.inc.pool');
 
         $this->assertEquals(1, $redis->incrBy($key, 1));
         $redis->set($key, 2);

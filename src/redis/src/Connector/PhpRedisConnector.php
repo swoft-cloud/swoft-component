@@ -62,6 +62,8 @@ class PhpRedisConnector implements ConnectorInterface
      *
      * @return RedisCluster
      * @throws RedisClusterException
+     *
+     * @see https://raw.githubusercontent.com/zgb7mtr/phpredis_cluster_phpdoc/master/src/RedisCluster.php
      */
     public function connectToCluster(array $config, array $option): RedisCluster
     {
@@ -71,8 +73,9 @@ class PhpRedisConnector implements ConnectorInterface
         $timeout     = $option['timeout'] ?? 0;
         $persistent  = $option['persistent'] ?? false;
         $name        = $option['name'] ?? '';
+        $auth        = $option['auth'] ?? '';
 
-        $redisCluster = new RedisCluster($name, $servers, $timeout, $readTimeout, $persistent);
+        $redisCluster = new RedisCluster($name, $servers, $timeout, $readTimeout, $persistent, $auth);
         return $redisCluster;
     }
 
