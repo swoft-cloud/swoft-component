@@ -205,8 +205,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public function __construct(array $attributes = [])
     {
-        $this->syncOriginal();
-
         $this->fill($attributes);
     }
 
@@ -228,7 +226,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
             throw new DbException($e->getMessage());
         }
 
-        $self->syncOriginal();
         $self->fill($attributes);
         $self->swoftExists = false;
 
