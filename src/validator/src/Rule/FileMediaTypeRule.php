@@ -35,7 +35,10 @@ class FileMediaTypeRule implements RuleInterface
         $message = (empty($message)) ? sprintf('%s file media type must be  exists in media type',
             $propertyName) : $message;
         $files = Context::mustGet()->getRequest()->getUploadedFiles();
-        foreach ($files as $field) {
+        foreach ($files as $key => $field) {
+            if ($key !== $propertyName) {
+                continue;
+            }
             if (!is_array($field)) {
                 /* @var UploadedFile $field */
 

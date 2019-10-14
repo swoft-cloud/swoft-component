@@ -37,7 +37,10 @@ class FileSuffixRule implements RuleInterface
         $suffixName = function ($file) {
             return pathinfo($file, PATHINFO_EXTENSION);
         };
-        foreach ($files as $field) {
+        foreach ($files as $key => $field) {
+            if ($key !== $propertyName) {
+                continue;
+            }
             if (!is_array($field)) {
                 /* @var UploadedFile $field */
                 if (!in_array(strtolower($suffixName($field->getClientFilename())), $values)) {
