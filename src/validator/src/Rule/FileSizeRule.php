@@ -34,7 +34,10 @@ class FileSizeRule implements RuleInterface
         $message = $item->getMessage();
         $message = (empty($message)) ? sprintf('%s file oversize', $propertyName) : $message;
         $files = Context::mustGet()->getRequest()->getUploadedFiles();
-        foreach ($files as $field) {
+        foreach ($files as $key => $field) {
+            if ($key !== $propertyName) {
+                continue;
+            }
             if (!is_array($field)) {
                 /* @var UploadedFile $field */
                 if ($field->getSize() > $size) {

@@ -42,7 +42,10 @@ class FileRule implements RuleInterface
         if (isset($data[$propertyName])) {
             throw new ValidatorException($message);
         }
-        foreach ($filesFields as $field) {
+        foreach ($filesFields as $key => $field) {
+            if ($key !== $propertyName) {
+                continue;
+            }
             if (!is_array($field)) {
                 if (!$field instanceof UploadedFileInterface) {
                     throw new ValidatorException($message);
