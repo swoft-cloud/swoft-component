@@ -5,7 +5,6 @@ namespace Swoft\Tcp\Server\Command;
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Annotation\Mapping\CommandMapping;
 use Swoft\Console\Annotation\Mapping\CommandOption;
-use Swoft\Console\Helper\Show;
 use Swoft\Server\Command\BaseServerCommand;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Tcp\Server\TcpServer;
@@ -42,41 +41,7 @@ class TcpServerCommand extends BaseServerCommand
     {
         $server = $this->createServer();
 
-        // Check if it has started
-        if ($server->isRunning()) {
-            $masterPid = $server->getPid();
-            output()->writeln("<error>The server have been running!(PID: {$masterPid})</error>");
-            return;
-        }
-
-        // Startup settings
-        $this->configStartOption($server);
-
-        $settings = $server->getSetting();
-        // Setting
-        $workerNum = $settings['worker_num'];
-
-        // Server startup parameters
-        $mainHost = $server->getHost();
-        $mainPort = $server->getPort();
-
-        $server->getServerType();
-        // Main server
-        $panel = [
-            'TCP' => [
-                'listen' => $mainHost . ':' . $mainPort,
-                'type'   => $server->getTypeName(),
-                'mode'   => $server->getModeName(),
-                'worker' => $workerNum,
-            ],
-        ];
-
-        // Port Listeners
-        $panel = $this->appendPortsToPanel($server, $panel);
-
-        Show::panel($panel);
-
-        output()->writef('<success>Tcp server start success !</success>');
+        $this->showServerInfoPanel($server);
 
         // Start the server
         $server->start();
@@ -87,31 +52,13 @@ class TcpServerCommand extends BaseServerCommand
      *
      * @CommandMapping(usage="{fullCommand} [-t]")
      * @CommandOption("t", desc="Only to reload task processes, default to reload worker and task")
-     *
      */
     public function reload(): void
     {
         $server = $this->createServer();
-        $script = input()->getScriptFile();
 
-        // Check if it has started
-        if (!$server->isRunning()) {
-            output()->writeln('<error>The server is not running! cannot reload</error>');
-            return;
-        }
-
-        output()->writef('<info>Server %s is reloading</info>', $script);
-
-        if ($reloadTask = input()->hasOpt('t')) {
-            Show::notice('Will only reload task worker');
-        }
-
-        if (!$server->reload($reloadTask)) {
-            Show::error('The swoole server worker process reload fail!');
-            return;
-        }
-
-        output()->writef('<success>Tcp Server %s reload success</success>', $script);
+        // Reload server
+        $this->reloadServer($server);
     }
 
     /**
@@ -147,18 +94,8 @@ class TcpServerCommand extends BaseServerCommand
     {
         $server = $this->createServer();
 
-        // Check if it has started
-        if ($server->isRunning()) {
-            $success = $server->stop();
-
-            if (!$success) {
-                output()->error('Stop the old server failed!');
-                return;
-            }
-        }
-
         // Restart server
-        $server->startWithDaemonize();
+        $this->restartServer($server);
     }
 
     /**

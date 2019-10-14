@@ -5,9 +5,9 @@ namespace Swoft\WebSocket\Server\Command;
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Annotation\Mapping\CommandMapping;
 use Swoft\Console\Annotation\Mapping\CommandOption;
-use Swoft\Console\Helper\Show;
 use Swoft\Server\Command\BaseServerCommand;
 use Swoft\Server\Exception\ServerException;
+use Swoft\Server\Server;
 use Swoft\Server\SwooleEvent;
 use Swoft\WebSocket\Server\WebSocketServer;
 use Throwable;
@@ -43,50 +43,26 @@ class WsServerCommand extends BaseServerCommand
     {
         $server = $this->createServer();
 
-        // Check if it has started
-        if ($server->isRunning()) {
-            $masterPid = $server->getPid();
-            output()->writeln("<error>The server have been running!(PID: {$masterPid})</error>");
-            return;
-        }
-
-        // Startup settings
-        $this->configStartOption($server);
-
-        $settings = $server->getSetting();
-        // Setting
-        $workerNum = $settings['worker_num'];
-
-        // Server startup parameters
-        $mainHost = $server->getHost();
-        $mainPort = $server->getPort();
-
-        $allowHttp = $server->hasListener(SwooleEvent::REQUEST);
-        $httpText = $allowHttp ? 'enabled' : 'disabled';
-
-        // Main server
-        $panel = [
-            'WebSocket' => [
-                'listen' => $mainHost . ':' . $mainPort,
-                'type'   => $server->getTypeName(),
-                'mode'   => $server->getModeName(),
-                'worker' => $workerNum . " (HTTP:$httpText)",
-            ],
-            // 'ExtraInfo' => [
-            //     'HttpHandle' => $server->hasListener(SwooleEvent::REQUEST),
-            //     'pidFile'    => $server->getPidFile(),
-            // ],
-        ];
-
-        // Port Listeners
-        $panel = $this->appendPortsToPanel($server, $panel);
-
-        Show::panel($panel);
-
-        output()->writef('<success>WebSocket Server start success !</success>');
+        $this->showServerInfoPanel($server);
 
         // Start the server
         $server->start();
+    }
+
+    /**
+     * @param Server $server
+     *
+     * @return array
+     */
+    protected function buildMainServerInfo(Server $server): array
+    {
+        $info = parent::buildMainServerInfo($server);
+
+        $openHttp = $server->hasListener(SwooleEvent::REQUEST);
+        $httpText = $openHttp ? 'enabled' : 'disabled';
+
+        $info['worker'] .= " (HTTP:$httpText)";
+        return $info;
     }
 
     /**
@@ -98,26 +74,9 @@ class WsServerCommand extends BaseServerCommand
     public function reload(): void
     {
         $server = $this->createServer();
-        $script = input()->getScriptFile();
 
-        // Check if it has started
-        if (!$server->isRunning()) {
-            output()->writeln('<error>The server is not running! cannot reload</error>');
-            return;
-        }
-
-        output()->writef('<info>Server %s is reloading</info>', $script);
-
-        if ($reloadTask = input()->hasOpt('t')) {
-            Show::notice('Will only reload task worker');
-        }
-
-        if (!$server->reload($reloadTask)) {
-            Show::error('The swoole server worker process reload fail!');
-            return;
-        }
-
-        output()->writef('<success>Server %s reload success</success>', $script);
+        // Reload server
+        $this->reloadServer($server);
     }
 
     /**
@@ -153,18 +112,8 @@ class WsServerCommand extends BaseServerCommand
     {
         $server = $this->createServer();
 
-        // Check if it has started
-        if ($server->isRunning()) {
-            $success = $server->stop();
-
-            if (!$success) {
-                output()->error('Stop the old server failed!');
-                return;
-            }
-        }
-
         // Restart server
-        $server->startWithDaemonize();
+        $this->restartServer($server);
     }
 
     /**
