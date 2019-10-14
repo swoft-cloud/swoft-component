@@ -79,12 +79,12 @@ class ModelTest extends TestCase
                 'user_id'     => 1,
                 'attributes'  => uniqid(),
                 'create_time' => 111,
+                'update_time' => '2019-10-14 00:00:00'
             ],
             [
                 'user_id'     => 2,
                 'attributes'  => uniqid(),
                 'create_time' => 222,
-
             ],
         ]);
         $this->assertTrue($batch);
