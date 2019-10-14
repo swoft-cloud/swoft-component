@@ -60,6 +60,7 @@ class TcpServerCommand extends BaseServerCommand
         $mainHost = $server->getHost();
         $mainPort = $server->getPort();
 
+        $server->getServerType();
         // Main server
         $panel = [
             'TCP' => [
@@ -91,7 +92,7 @@ class TcpServerCommand extends BaseServerCommand
     public function reload(): void
     {
         $server = $this->createServer();
-        $script = input()->getScript();
+        $script = input()->getScriptFile();
 
         // Check if it has started
         if (!$server->isRunning()) {
@@ -165,7 +166,7 @@ class TcpServerCommand extends BaseServerCommand
      */
     private function createServer(): TcpServer
     {
-        $script  = input()->getScript();
+        $script  = input()->getScriptFile();
         $command = $this->getFullCommand();
 
         /* @var TcpServer $server */

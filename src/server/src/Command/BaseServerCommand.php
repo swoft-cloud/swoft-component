@@ -35,7 +35,7 @@ abstract class BaseServerCommand
     protected function getFullCommand(): string
     {
         // Script file
-        $script = input()->getScript();
+        $script = input()->getScriptFile();
 
         // Full command
         $command = input()->getFullScript();

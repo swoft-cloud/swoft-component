@@ -103,18 +103,19 @@ class Application implements ConsoleInterface
      */
     public function commentsVars(): array
     {
-        $script = input()->getScript();
+        $script = $this->input->getScriptFile();
+        $fullCmd = $this->input->getFullCommand();
 
         return [
             'name'        => $this->getName(),
             'description' => $this->getDescription(),
             // 'group' => self::getName(),
-            'workDir'     => input()->getPwd(),
+            'workDir'     => $this->input->getPwd(),
             'script'      => $script, // bin/app
             'binFile'     => $script,
-            'command'     => input()->getCommand(), // demo OR home:test
-            'fullCmd'     => input()->getFullCommand(),
-            'fullCommand' => input()->getFullCommand(),
+            'command'     => $this->input->getCommand(), // demo OR home:test
+            'fullCmd'     => $fullCmd,
+            'fullCommand' => $fullCmd,
         ];
     }
 

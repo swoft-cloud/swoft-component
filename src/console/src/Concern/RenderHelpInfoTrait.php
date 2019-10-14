@@ -4,6 +4,7 @@ namespace Swoft\Console\Concern;
 
 use Swoft;
 use Swoft\Console\Console;
+use Swoft\Console\ConsoleEvent;
 use Swoft\Console\Helper\FormatUtil;
 use Swoft\Console\Helper\Show;
 use Swoft\Console\Output\Output;
@@ -13,7 +14,6 @@ use Swoft\Stdlib\Helper\Str;
 use function array_shift;
 use function explode;
 use function implode;
-use function input;
 use function is_array;
 use function is_bool;
 use function is_scalar;
@@ -70,12 +70,17 @@ trait RenderHelpInfoTrait
      */
     protected function showApplicationHelp(bool $showLogo = true): void
     {
+        Swoft::trigger(ConsoleEvent::SHOW_HELP_BEFORE, 'app');
+
         // show logo
         if ($showLogo) {
-            Console::colored(Swoft::FONT_LOGO, 'cyan');
+            $logoText = $this->logoText ?: Swoft::FONT_LOGO;
+            Console::colored(ltrim($logoText, "\n"), 'cyan');
         }
 
-        $script = input()->getScriptName();
+        /** @var Swoft\Console\Input\Input $input */
+        $input  = $this->input;
+        $script = $input->getScriptFile();
         // Global options
         $globalOptions = self::$globalOptions;
         // Append expand option
@@ -96,7 +101,7 @@ trait RenderHelpInfoTrait
 
         /* @var Router $router */
         $router   = Swoft::getBean('cliRouter');
-        $expand   = input()->getBoolOpt('expand');
+        $expand   = $input->getBoolOpt('expand');
         $keyWidth = $router->getKeyWidth($expand ? 2 : -4);
 
         Console::writeln('<comment>Available Commands:</comment>');
@@ -135,17 +140,19 @@ trait RenderHelpInfoTrait
     {
         /* @var Router $router */
         $router = Swoft::getBean('cliRouter');
-        $script = input()->getScriptName();
+        $info   = $info ?: $router->getGroupInfo($group);
 
-        if (!$info) {
-            $info = $router->getGroupInfo($group);
-        }
+        Swoft::trigger(ConsoleEvent::SHOW_HELP_BEFORE, 'group', $info);
 
         // $class = $groupInfo['class'];
         $names = $info['names'];
         sort($names);
         $keyWidth  = $router->getKeyWidth(-4);
         $groupName = sprintf('%s%s', $group, $info['alias'] ? " (alias: <cyan>{$info['alias']}</cyan>)" : '');
+
+        /** @var Swoft\Console\Input\Input $input */
+        $input  = $this->input;
+        $script = $input->getScriptFile();
 
         Console::startBuffer();
         Console::writeln($info['desc'] . PHP_EOL);
@@ -187,7 +194,11 @@ trait RenderHelpInfoTrait
      */
     protected function showCommandHelp(array $info): void
     {
-        $script = input()->getScriptName();
+        Swoft::trigger(ConsoleEvent::SHOW_HELP_BEFORE, 'command', $info);
+
+        /** @var Swoft\Console\Input\Input $input */
+        $input  = $this->input;
+        $script = $input->getScriptFile();
         $usage  = sprintf('%s %s [arg ...] [--opt ...]', $script, $info['cmdId']);
 
         // If has been custom usage.

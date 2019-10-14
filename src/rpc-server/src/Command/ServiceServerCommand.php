@@ -109,7 +109,7 @@ class ServiceServerCommand extends BaseServerCommand
     public function reload(): void
     {
         $server = $this->createServer();
-        $script = input()->getScript();
+        $script = input()->getScriptFile();
 
         // Check if it has started
         if (!$server->isRunning()) {
@@ -184,7 +184,7 @@ class ServiceServerCommand extends BaseServerCommand
      */
     private function createServer(): ServiceServer
     {
-        $script = input()->getScript();
+        $script = input()->getScriptFile();
         $command = $this->getFullCommand();
 
         /** @var ServiceServer $server */
