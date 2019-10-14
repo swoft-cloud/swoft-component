@@ -1189,7 +1189,7 @@ class Builder
             $values = [$values];
         }
         foreach ($values as &$item) {
-            $model = $this->model->setRawAttributes($item,true);
+            $model = $this->model->setRawAttributes($item, true);
 
             $item = array_merge($model->updateTimestamps(), $model->getSafeAttributes($item));
         }
