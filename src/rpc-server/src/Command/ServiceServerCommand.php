@@ -53,7 +53,6 @@ class ServiceServerCommand extends BaseServerCommand
      *
      * @CommandMapping(usage="{fullCommand} [-t]")
      * @CommandOption("t", desc="Only to reload task processes, default to reload worker and task")
-     *
      */
     public function reload(): void
     {

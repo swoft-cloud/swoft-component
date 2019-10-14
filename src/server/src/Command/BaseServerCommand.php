@@ -49,7 +49,12 @@ abstract class BaseServerCommand
         // Show server info
         Show::panel($panel, 'Server Information');
 
-        output()->writef("<success>$sType server start success :)</success>");
+        $bgMsg = '!';
+        if ($server->isDaemonize()) {
+            $bgMsg = '(Run in background)!';
+        }
+
+        output()->writef("<success>$sType Server Start Success{$bgMsg}</success>");
     }
 
     /**
@@ -60,6 +65,7 @@ abstract class BaseServerCommand
     protected function configStartOption(Server $server): void
     {
         $asDaemon = input()->getSameOpt(['d', 'daemon'], false);
+
         if ($asDaemon) {
             $server->setDaemonize();
         }
@@ -157,7 +163,7 @@ abstract class BaseServerCommand
             }
         }
 
-        output()->writef('<success>Swoft server restart success!</success>');
+        output()->writef('<success>Swoft Server Restart Success!</success>');
 
         // Restart server
         $server->startWithDaemonize();
