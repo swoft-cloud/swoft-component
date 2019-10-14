@@ -624,8 +624,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
                 $bindings[$key] = $value->format($grammar->getDateFormat());
             } elseif (is_bool($value)) {
                 $bindings[$key] = (int)$value;
-            } elseif (is_array($value)) {
-                $bindings[$key] = json_encode($value, JSON_UNESCAPED_UNICODE);
             }
         }
 

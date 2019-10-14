@@ -1191,7 +1191,7 @@ class Builder
         foreach ($values as &$item) {
             $model = $this->model->setRawAttributes($item);
 
-            $item = array_merge($model->updateTimestamps(), $model->getModelAttributesValue());
+            $item = array_merge($model->updateTimestamps(), $model->getSafeAttributes($item));
         }
         unset($item);
         // Filter empty values
