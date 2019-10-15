@@ -44,7 +44,7 @@ class ConnectListener implements ConnectInterface
 
         try {
             // Trigger connect event
-            Swoft::trigger(TcpServerEvent::CONNECT, $server, $fd, $reactorId);
+            Swoft::trigger(TcpServerEvent::CONNECT, $fd, $server, $reactorId);
 
             /** @var TcpDispatcher $dispatcher */
             // $dispatcher = Swoft::getSingleton('tcpDispatcher');

@@ -381,7 +381,7 @@ abstract class Server implements ServerInterface
 
         Sys::setProcessTitle(sprintf('%s %s process', $this->pidName, $procRole));
 
-        // In coroutine, sync task is not in coroutine
+        // In coroutine, sync task is not in coroutine env.
         if (Co::id() > 0) {
             // Before
             Swoft::trigger(ServerEvent::BEFORE_WORKER_START_EVENT, $this, $server, $workerId);
@@ -392,7 +392,7 @@ abstract class Server implements ServerInterface
             // After event
             Swoft::trigger(ServerEvent::AFTER_EVENT, $this);
 
-            return ;
+            return;
         }
 
         // Trigger task event
