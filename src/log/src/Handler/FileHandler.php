@@ -8,6 +8,7 @@ use DateTime;
 use InvalidArgumentException;
 use Monolog\Handler\AbstractProcessingHandler;
 use Swoft\Co;
+use Swoft\Exception\SwoftException;
 use Swoft\Log\Helper\Log;
 use Swoft\Log\Logger as SwoftLogger;
 use Swoft\Log\Logger;
@@ -74,6 +75,7 @@ class FileHandler extends AbstractProcessingHandler
      * @param array $records
      *
      * @return void
+     * @throws SwoftException
      */
     public function handleBatch(array $records): void
     {
@@ -90,6 +92,7 @@ class FileHandler extends AbstractProcessingHandler
      *
      * @param array $records
      *
+     * @throws SwoftException
      */
     protected function write(array $records): void
     {
@@ -106,7 +109,6 @@ class FileHandler extends AbstractProcessingHandler
         }
 
         $res = Co::writeFile($this->logFile, $messageText, FILE_APPEND);
-
         if ($res === false) {
             throw new InvalidArgumentException(
                 sprintf('Unable to append to log file: %s', $this->logFile)
