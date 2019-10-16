@@ -53,8 +53,6 @@ class FileHandler extends AbstractProcessingHandler
     public function init(): void
     {
         $this->logFile = alias($this->logFile);
-        $this->logFile = $this->formatFile($this->logFile);
-
         $this->createDir();
 
         if (is_array($this->levels)) {
@@ -108,10 +106,11 @@ class FileHandler extends AbstractProcessingHandler
             throw new InvalidArgumentException('Write log file must be under Coroutine!');
         }
 
-        $res = Co::writeFile($this->logFile, $messageText, FILE_APPEND);
+        $logFile = $this->formatFile($this->logFile);
+        $res = Co::writeFile($logFile, $messageText, FILE_APPEND);
         if ($res === false) {
             throw new InvalidArgumentException(
-                sprintf('Unable to append to log file: %s', $this->logFile)
+                sprintf('Unable to append to log file: %s', $logFile)
             );
         }
     }
