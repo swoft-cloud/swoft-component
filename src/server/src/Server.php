@@ -359,14 +359,10 @@ abstract class Server implements ServerInterface
         $this->pidMap['workerPid'] = $server->worker_pid;
 
         $event = new WorkerEvent(SwooleEvent::WORKER_START, $server, $workerId);
+
         // Is task process
-        $isTaskProcess      = $workerId >= $server->setting['worker_num'];
-        $event->taskProcess = $isTaskProcess;
-
-        Swoft::trigger($event);
-
-        // Task process
-        if ($isTaskProcess) {
+        $event->taskProcess = $workerId >= $server->setting['worker_num'];
+        if ($event->taskProcess) {
             $procRole  = 'task';
             $eventName = ServerEvent::TASK_PROCESS_START;
             // Worker process
@@ -375,27 +371,29 @@ abstract class Server implements ServerInterface
             $eventName = ServerEvent::WORK_PROCESS_START;
         }
 
-        // For special role process
+        // Trigger worker start event
+        Swoft::trigger($event);
+
+        // For special role process: worker, task
         $newEvent = clone $event;
         $newEvent->setName($eventName);
 
         Sys::setProcessTitle(sprintf('%s %s process', $this->pidName, $procRole));
 
-        // In coroutine, sync task is not in coroutine
+        // In coroutine: `sync task` is not in coroutine env.
         if (Co::id() > 0) {
             // Before
             Swoft::trigger(ServerEvent::BEFORE_WORKER_START_EVENT, $this, $server, $workerId);
 
-            // Already in coroutine
+            // Trigger event
             Swoft::trigger($newEvent, $this);
 
             // After event
             Swoft::trigger(ServerEvent::AFTER_EVENT, $this);
-
-            return ;
+            return;
         }
 
-        // Trigger task event
+        // Trigger event
         Swoft::trigger($newEvent, $this);
     }
 

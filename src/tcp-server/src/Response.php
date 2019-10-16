@@ -72,6 +72,11 @@ class Response extends TcpResponse implements ResponseInterface
             return 0;
         }
 
+        // Fix: No response data
+        if ($this->isEmpty()) {
+            return 0;
+        }
+
         /** @var Protocol $protocol */
         $protocol = Swoft::getBean('tcpServerProtocol');
 

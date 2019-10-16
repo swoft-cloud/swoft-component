@@ -183,6 +183,11 @@ class Response implements ResponseInterface
             return 0;
         }
 
+        // Fix: No response data
+        if ($this->isEmpty()) {
+            return 0;
+        }
+
         /** @noinspection CallableParameterUseCaseInTypeContextInspection */
         $conn   = $conn ?: Session::mustGet();
         $server = $conn->getServer();
@@ -262,6 +267,14 @@ class Response implements ResponseInterface
         }
 
         return $content;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return $this->content === '' && $this->data === null;
     }
 
     /**

@@ -74,7 +74,7 @@ STR;
         }
 
         if ($this->updated > 0 && $app->getBoolOpt('c')) {
-            self::gitCommit('update: update the version to composer.json');
+            self::gitCommit("update: add {$this->version} for all component composer.json");
         }
 
         echo Color::render("Complete\n", 'cyan');
