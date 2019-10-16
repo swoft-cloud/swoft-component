@@ -2,10 +2,12 @@
 
 namespace Swoft\Server\Command;
 
+use Swoft\Console\Helper\Show;
 use Swoft\Server\Contract\ServerInterface;
 use Swoft\Server\Server;
 use Swoft\Stdlib\Helper\Sys;
 use function input;
+use function output;
 use function sprintf;
 use function strtoupper;
 use function trim;
@@ -17,6 +19,45 @@ use function trim;
 abstract class BaseServerCommand
 {
     /**
+     * Show server information panel in terminal
+     *
+     * @param Server $server
+     */
+    protected function showServerInfoPanel(Server $server): void
+    {
+        // Check if it has started
+        if ($server->isRunning()) {
+            $masterPid = $server->getPid();
+            output()->writeln("<error>The server have been running!(PID: {$masterPid})</error>");
+            return;
+        }
+
+        // Startup config
+        $this->configStartOption($server);
+
+        // Server startup parameters
+        $sType = $server->getServerType();
+
+        // Main server info
+        $panel = [
+            $sType => $this->buildMainServerInfo($server),
+        ];
+
+        // Port listeners
+        $panel = $this->appendPortsToPanel($server, $panel);
+
+        // Show server info
+        Show::panel($panel, 'Server Information');
+
+        $bgMsg = '!';
+        if ($server->isDaemonize()) {
+            $bgMsg = '(Run in background)!';
+        }
+
+        output()->writef("<success>$sType Server Start Success{$bgMsg}</success>");
+    }
+
+    /**
      * Set startup options to override configuration options
      *
      * @param Server $server
@@ -24,29 +65,32 @@ abstract class BaseServerCommand
     protected function configStartOption(Server $server): void
     {
         $asDaemon = input()->getSameOpt(['d', 'daemon'], false);
+
         if ($asDaemon) {
             $server->setDaemonize();
         }
     }
 
     /**
-     * @return string
+     * @param Server $server
+     *
+     * @return array
      */
-    protected function getFullCommand(): string
+    protected function buildMainServerInfo(Server $server): array
     {
-        // Script file
-        $script = input()->getScript();
+        // Server setting
+        $settings  = $server->getSetting();
+        $workerNum = $settings['worker_num'];
 
-        // Full command
-        $command = input()->getFullScript();
+        $mainHost = $server->getHost();
+        $mainPort = $server->getPort();
 
-        $phpBin = 'php';
-        [$ok, $ret,] = Sys::run('which php');
-        if ($ok === 0) {
-            $phpBin = trim($ret);
-        }
-
-        return sprintf('%s %s %s', $phpBin, $script, $command);
+        return [
+            'listen' => $mainHost . ':' . $mainPort,
+            'type'   => $server->getTypeName(),
+            'mode'   => $server->getModeName(),
+            'worker' => $workerNum,
+        ];
     }
 
     /**
@@ -67,11 +111,81 @@ abstract class BaseServerCommand
 
             $upperName = strtoupper($name);
             $panel[$upperName] = [
-                'listen' => sprintf('%s:%s', $listener->getHost(), $listener->getPort()),
+                'listen' => $listener->getHost() . ':' . $listener->getPort(),
                 'type'   => $listener->getTypeName()
             ];
         }
 
         return $panel;
+    }
+
+    /**
+     * Reload Server - reload worker processes
+     *
+     * @param Server $server
+     */
+    protected function reloadServer(Server $server): void
+    {
+        $script = input()->getScriptFile();
+
+        // Check if it has started
+        if (!$server->isRunning()) {
+            output()->writeln('<error>The server is not running! cannot reload</error>');
+            return;
+        }
+
+        output()->writef('<info>Server %s is reloading</info>', $script);
+
+        if ($reloadTask = input()->hasOpt('t')) {
+            Show::notice('Will only reload task worker');
+        }
+
+        if (!$server->reload($reloadTask)) {
+            Show::error('The swoole server worker process reload fail!');
+            return;
+        }
+
+        output()->writef('<success>Server %s reload success</success>', $script);
+    }
+
+    /**
+     * @param Server $server
+     */
+    protected function restartServer(Server $server): void
+    {
+        // If it's has started, stop old server.
+        if ($server->isRunning()) {
+            $success = $server->stop();
+
+            if (!$success) {
+                output()->error('Stop the old server failed!');
+                return;
+            }
+        }
+
+        output()->writef('<success>Swoft Server Restart Success!</success>');
+
+        // Restart server
+        $server->startWithDaemonize();
+    }
+
+    /**
+     * @return string
+     */
+    protected function getFullCommand(): string
+    {
+        // Script file
+        $script = input()->getScriptFile();
+
+        // Full command
+        $command = input()->getFullScript();
+
+        $phpBin = 'php';
+        [$ok, $ret,] = Sys::run('which php');
+        if ($ok === 0) {
+            $phpBin = trim($ret);
+        }
+
+        return sprintf('%s %s %s', $phpBin, $script, $command);
     }
 }

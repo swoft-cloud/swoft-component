@@ -23,7 +23,7 @@ interface InputInterface
      *
      * @return string
      */
-    public function getScript(): string;
+    public function getScriptFile(): string;
 
     /**
      * 获取执行的命令

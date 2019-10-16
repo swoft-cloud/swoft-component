@@ -6,6 +6,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Toolkit\Cli\Flags;
 use function array_map;
 use function array_shift;
+use function basename;
 use function fgets;
 use function fwrite;
 use function implode;
@@ -24,7 +25,7 @@ use const STDOUT;
 class Input extends AbstractInput
 {
     /**
-     * the real command ID(group:command)
+     * The real command ID(group:command)
      * e.g `http:start`
      *
      * @var string
@@ -50,7 +51,7 @@ class Input extends AbstractInput
 
         $this->pwd        = $this->getPwd();
         $this->tokens     = $args;
-        $this->script     = array_shift($args);
+        $this->scriptFile = array_shift($args);
         $this->fullScript = implode(' ', $args);
 
         if ($parsing) {
@@ -108,15 +109,15 @@ class Input extends AbstractInput
      */
     public function getFullCommand(): string
     {
-        return $this->script . ' ' . $this->command;
+        return $this->scriptFile . ' ' . $this->command;
     }
 
     /**
      * @return string
      */
-    public function getScriptName(): string
+    public function getBinFile(): string
     {
-        return $this->script;
+        return $this->scriptFile;
     }
 
     /**
@@ -124,7 +125,15 @@ class Input extends AbstractInput
      */
     public function getBinName(): string
     {
-        return $this->script;
+        return $this->getScriptName();
+    }
+
+    /**
+     * @return string
+     */
+    public function getScriptName(): string
+    {
+        return basename($this->scriptFile);
     }
 
     /**

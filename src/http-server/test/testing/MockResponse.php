@@ -72,16 +72,17 @@ class MockResponse extends Response
     }
 
     /**
-     * @param string $name
-     * @param string $value
-     * @param int|string $expires
+     * @param string      $name
+     * @param string      $value
+     * @param int|string  $expires
      * @param string|null $path
-     * @param string $domain
-     * @param bool   $secure
-     * @param bool   $httpOnly
+     * @param string      $domain
+     * @param bool        $secure
+     * @param bool        $httpOnly
+     * @param null        $samesite
      */
     public function cookie(
-        $name, $value = null, $expires = null, $path = null, $domain = null, $secure = null, $httpOnly = null
+        $name, $value = null, $expires = null, $path = null, $domain = null, $secure = null, $httpOnly = null, $samesite = null
     ) {
         $result = \urlencode($name) . '=' . \urlencode($value);
 

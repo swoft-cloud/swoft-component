@@ -4,8 +4,6 @@ namespace Swoft\WebSocket\Server\Storage;
 
 /**
  * Class AbstractStorage
- *
- * @package Swoft\WebSocket\Server\Storage
  */
 abstract class AbstractStorage
 {
@@ -24,7 +22,6 @@ abstract class AbstractStorage
     private $namespaces = [
         '/' => 'rooms'
     ];
-
 
     /*****************************************************************************
      * some methods for rooms(of an namespace)

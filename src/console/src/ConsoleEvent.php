@@ -7,11 +7,43 @@ namespace Swoft\Console;
  */
 final class ConsoleEvent
 {
-    public const RUN_BEFORE      = 'console.run.before';
+    /**
+     * On run before
+     */
+    public const RUN_BEFORE = 'console.run.before';
+
+    /**
+     * On show help before
+     */
+    public const SHOW_HELP_BEFORE = 'console.show.help.before';
+
+    /**
+     * On dispatch before
+     */
     public const DISPATCH_BEFORE = 'console.dispatch.before';
-    public const EXECUTE_BEFORE  = 'console.execute.before';
-    public const EXECUTE_AFTER   = 'console.execute.after';
-    public const DISPATCH_AFTER  = 'console.dispatch.after';
-    public const RUN_AFTER       = 'console.run.after';
-    public const RUN_ERROR       = 'console.run.error';
+
+    /**
+     * On execute before
+     */
+    public const EXECUTE_BEFORE = 'console.execute.before';
+
+    /**
+     * On execute after
+     */
+    public const EXECUTE_AFTER = 'console.execute.after';
+
+    /**
+     * On dispatch after
+     */
+    public const DISPATCH_AFTER = 'console.dispatch.after';
+
+    /**
+     * On run after
+     */
+    public const RUN_AFTER = 'console.run.after';
+
+    /**
+     * On run error
+     */
+    public const RUN_ERROR = 'console.run.error';
 }

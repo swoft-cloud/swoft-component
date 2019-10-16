@@ -1048,13 +1048,14 @@ class Container implements ContainerInterface
                 $propertyValue = $this->newPropertyArray($propertyValue, $id);
             }
 
+            // Refer config or bean
             if ($propertyInject->isRef()) {
                 $propertyValue = $this->getRefValue($propertyValue, $id);
-            }
 
-            // Optimize: Value not exists, skip call setter
-            if ($propertyValue === null) {
-                continue;
+                // Optimize: Value not exists, skip call setter
+                if ($propertyValue === null) {
+                    continue;
+                }
             }
 
             // Parser property type
