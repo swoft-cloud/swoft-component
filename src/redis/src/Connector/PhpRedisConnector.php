@@ -53,6 +53,10 @@ class PhpRedisConnector implements ConnectorInterface
             $client->setOption(Redis::OPT_SERIALIZER, (string)$option['serializer']);
         }
 
+        if (!empty($option['scan'])) {
+            $client->setOption(Redis::OPT_SCAN, (string)$option['scan']);
+        }
+
         return $client;
     }
 
@@ -75,8 +79,43 @@ class PhpRedisConnector implements ConnectorInterface
         $name        = $option['name'] ?? '';
         $auth        = $option['auth'] ?? '';
 
-        $redisCluster = new RedisCluster($name, $servers, $timeout, $readTimeout, $persistent, $auth);
+        $parameters = compact('name', 'servers', 'timeout', 'readTimeout', 'persistent');
+        $parameters = array_values($parameters);
+
+        if (version_compare(phpversion('redis'), '4.3.0', '>=')) {
+            $parameters[] = $option['auth'] ?? '';
+        }
+
+        $redisCluster = new RedisCluster(...$parameters);
+
+        $this->setRedisClusterOptions($redisCluster, $option);
+
         return $redisCluster;
+    }
+
+    /**
+     *  Set redis cluster option
+     *
+     * @param RedisCluster $redisCluster
+     * @param array        $option
+     */
+    protected function setRedisClusterOptions(RedisCluster $redisCluster, array $option): void
+    {
+        if (!empty($option['prefix'])) {
+            $redisCluster->setOption(RedisCluster::OPT_PREFIX, $option['prefix']);
+        }
+
+        if (!empty($option['serializer'])) {
+            $redisCluster->setOption(RedisCluster::OPT_SERIALIZER, (string)$option['serializer']);
+        }
+
+        if (!empty($option['scan'])) {
+            $redisCluster->setOption(RedisCluster::OPT_SCAN, (string)$option['scan']);
+        }
+
+        if (!empty($option['slave_failover'])) {
+            $redisCluster->setOption(RedisCluster::OPT_SLAVE_FAILOVER, (string)$option['slave_failover']);
+        }
     }
 
     /**
