@@ -2,81 +2,37 @@
 
 This repository is used to manage all swoft core components.
 
+## [中文说明](README.zh-CN.md)
+
 ## IMPORTANT
 
-All components will **NOT** be modified in the original repository of component, **SHOULD ALWAYS** be modified in this repository, also commit and push to this repository, and then @swoft-bot would sync changes to the original repository of component by `git subtree push`, notice that this action needs triggered by the repositories owner.
+All components will **NOT** be modified in the original repository of ext component, **SHOULD ALWAYS** be modified in this repository, also commit and push to this repository, and then @swoft-bot would sync changes to the original repository of component by `git subtree push`, notice that this action needs triggered by the repositories owner.
 
 ## Usage
 
-### Add a sub repository
+Add require to `composer.json`
 
-```bash
-git subtree add --prefix=src/[folder] [repository] [ref] --squash
+```json
+"require": {
+    "swoft/ext": "dev-master as 2.0"
+}
 ```
 
-> Note that `--squash` option is required.
+Install:
 
-e.g. Add [swoft/config](https://github.com/swoft-cloud/swoft-config) component as a Sub Repository,
-
-```php
-git subtree add --prefix=src/config git@github.com:swoft-cloud/swoft-config master --squash
+```json
+composer update
 ```
 
-### Commit changes
-
-Just use `git commit` as usual, and Push to this repository
-
-### Sync changes to the Original Repository of Component
-
-```bash
-git subtree push --prefix=src/[folder] [repository] [ref] --squash
-```
-
-> Note that `--squash` option is required.
-
-e.g. Add [swoft/config](https://github.com/swoft-cloud/swoft-config) component as a Sub Repository
-
-```bash
-git subtree push --prefix=src/config git@github.com:swoft-cloud/swoft-config master --squash
-```
-
-> Tips:
-> You could use `remote` to instead of `[repository]` property for easier to use.
-> e.g. Add `Remote` first, `git remote add -f config git@github.com:swoft-cloud/swoft-config.git`,
-> after this, you could use `config` instead of `[repository]`,
-> for example `git subtree push --prefix=src/config config master --squash`
-
-### Release a new version of component
-
-After `Sync changes to the Original Repository of Component`, you just need to Release a new version in the original repository of component.
-
-### Pull changes from the Original Repository of Component
-
-We do **NOT** suggest modifying code in the original repository, but if you do, you could use the command below to merge it.
-
-```bash
-git subtree pull --prefix=src/[folder] [repository] [ref] --squash
-```
-
-> Note that `--squash` option is required.
-
-e.g. Pull [swoft/config](https://github.com/swoft-cloud/swoft-config) repository into `src/config`
-
-```bash
-git subtree pull --prefix=src/config git@github.com:swoft-cloud/swoft-config master --squash
-```
-
-## Unit Tests
+### Unit Tests
 
 Quick run tests for component:
 
 ```bash
 // For all components
 ./phpunit.sh all
-
 // For multi components
 ./phpunit.sh db event
-
 // For one component
 ./phpunit.sh event
 ```
@@ -85,22 +41,60 @@ Only tests an special component:
 
 ```bash
 ./phpunit.sh event
-
 // use run.php
 php run.php -c src/event/phpunit.xml
-
 // filter test method name
 php run.php -c src/event/phpunit.xml --filter testAddModule
 ```
 
-Output coverage data(**require swoole 4.4+**):
+Output coverage data:
 
 ```bash
 // output coverage. require xdebug ext
 phpunit --coverage-text
-
 // output coverage without xdebug
-./coverage.sh event
 phpdbg -dauto_globals_jit=Off -qrr /usr/local/bin/phpunit --coverage-text
 phpdbg -dauto_globals_jit=Off -qrr run.php --coverage-text -c src/event/phpunit.xml
 ```
+
+## Document
+
+- [中文文档](https://www.swoft.org/docs)
+- [English](https://en.swoft.org/docs)
+
+## Discuss
+
+- Forum https://github.com/swoft-cloud/forum/issues
+- Gitter.im https://gitter.im/swoft-cloud/community
+- Reddit https://www.reddit.com/r/swoft/
+- QQ Group1: 548173319      
+- QQ Group2: 778656850
+
+## Contributing
+
+The development team welcomes you to submit PR (_Pull Request_) to us, but to ensure code quality and uniform style, go to the official main repository [swoft/swoft](https://github.com/swoft-cloud/swoft) and Development repository, Note the code and commit format when contributing code
+
+### Precautions when initiating PR
+
+- Please do not submit PR to each sub-repository, they are all read-only
+- The _development repository_ for the core components is **[swoft/swoft-component][core]**
+- The _development repository_ for extension components is **[swoft/swoft-ext][ext]**
+- Please `fork` the corresponding development warehouse. After modification, please submit your PR to the corresponding development warehouse.
+
+> Officially syncs code to individual sub-warehouses when new versions are released
+### Commit Message
+
+- the commit message can only be in English
+- Please try to ensure that the commit message is meaningful
+- it is best to start with the keyword `add:` `update:` `fix:`
+
+### Code Style
+
+- Submitted PHP code **Must** Follow PSR-2 code style
+- Reasonable and meaningful class, method, variable naming
+- Appropriate comments, reasonable use of blank lines to keep the code simple and easy to read
+- Don't include some meaningless information such as `@author`, etc. (_author is  that can be seen from the commit log_)
+
+
+[core]: https://github.com/swoft-cloud/swoft-component
+[ext]: https://github.com/swoft-cloud/swoft-ext
