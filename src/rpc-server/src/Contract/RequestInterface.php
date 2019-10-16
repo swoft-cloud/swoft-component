@@ -3,6 +3,7 @@
 
 namespace Swoft\Rpc\Server\Contract;
 
+use Swoft\Rpc\Server\Request;
 use Swoole\Server;
 
 /**
@@ -31,6 +32,18 @@ interface RequestInterface
      * @return array
      */
     public function getParams(): array;
+
+    /**
+     * @return array
+     */
+    public function getParamsMap(): array;
+
+    /**
+     * @param array $params
+     *
+     * @return self
+     */
+    public function withParams(array $params): self;
 
     /**
      * @return array
