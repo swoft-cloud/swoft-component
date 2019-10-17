@@ -51,22 +51,6 @@ class CloseListener implements CloseInterface
         }
 
         $sid = (string)$fd;
-
-        // Session data not exist the worker, notify other worker clear session.
-        if (!Session::has($sid)) {
-            $data = [
-                'from'  => 'wsServer',
-                'event' => 'wsClose',
-                'fd'    => $fd,
-                'sid'   => $sid,
-            ];
-
-            // $server->sendMessage($message, $dst_worker_id);
-            server()->log("Close: conn#{$fd} session not exist current worker, notify other worker handle");
-            server()->notifyWorkers(JsonHelper::encode($data), [], [$server->worker_id]);
-            return;
-        }
-
         $ctx = WsCloseContext::new($fd, $reactorId);
 
         // Storage context
@@ -75,12 +59,19 @@ class CloseListener implements CloseInterface
         Session::bindCo($sid);
 
         try {
+            // Call on close callback
+            Swoft::trigger(WsServerEvent::CLOSE_BEFORE, $fd, $server);
+
+            // Manually close non-current worker connections
+            // - Session not exist the worker, notify other worker clear session.
+            if (!Session::has($sid)) {
+                $this->notifyOtherWorkersClose($fd, $sid, $server->worker_id);
+                return;
+            }
+
             /** @var Connection $conn */
             $conn  = Session::mustGet();
             $total = server()->count() - 1;
-
-            // Call on close callback
-            Swoft::trigger(WsServerEvent::CLOSE_BEFORE, $fd, $server);
 
             server()->log("Close: conn#{$fd} has been closed. server conn count $total", [], 'debug');
             if (!$meta = $conn->getMetadata()) {
@@ -117,5 +108,24 @@ class CloseListener implements CloseInterface
             // Unbind cid => sid(fd)
             Session::unbindCo();
         }
+    }
+
+    /**
+     * @param int    $fd
+     * @param string $sid
+     * @param int    $workerId
+     */
+    private function notifyOtherWorkersClose(int $fd, string $sid, int $workerId): void
+    {
+        $data = [
+            'from'  => 'wsServer',
+            'event' => 'wsClose',
+            'fd'    => $fd,
+            'sid'   => $sid,
+        ];
+
+        // $server->sendMessage($message, $dst_worker_id);
+        server()->log("Close: conn#{$fd} session not exist current worker, notify other worker handle");
+        server()->notifyWorkers(JsonHelper::encode($data), [], [$workerId]);
     }
 }
