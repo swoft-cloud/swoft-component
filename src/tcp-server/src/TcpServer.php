@@ -5,6 +5,8 @@ namespace Swoft\Tcp\Server;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Server;
+use Swoft\Session\Session;
+use Swoft\Stdlib\Helper\JsonHelper;
 use Swoole\Server as SwServer;
 
 /**
@@ -50,5 +52,23 @@ class TcpServer extends Server
 
         // Start server
         $this->startSwoole();
+    }
+
+    /**
+     * Disconnect the client connection, will trigger onClose
+     *
+     * @param int  $fd
+     * @param bool $reset Whether force close connection
+     *
+     * @return bool
+     */
+    public function disconnect(int $fd, bool $reset = false): bool
+    {
+        // If it's invalid fd
+        if (!$this->swooleServer->exist($fd)) {
+            return false;
+        }
+
+        return $this->swooleServer->close($fd, $reset);
     }
 }

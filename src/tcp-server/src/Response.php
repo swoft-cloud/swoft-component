@@ -88,6 +88,10 @@ class Response extends TcpResponse implements ResponseInterface
         }
 
         $server = $server ?: Swoft::server()->getSwooleServer();
+
+        // Trigger event before push message content to client
+        Swoft::trigger(TcpServerEvent::CONTENT_SEND, $server, $content, $this);
+
         if ($server->send($this->fd, $content) === false) {
             $code = $server->getLastError();
             throw new TcpResponseException("Error on send data to client #{$this->fd}", $code);

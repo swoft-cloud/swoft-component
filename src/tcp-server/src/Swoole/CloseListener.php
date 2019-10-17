@@ -8,6 +8,7 @@ use Swoft\Bean\BeanFactory;
 use Swoft\Context\Context;
 use Swoft\Server\Contract\CloseInterface;
 use Swoft\Session\Session;
+use Swoft\Stdlib\Helper\JsonHelper;
 use Swoft\SwoftEvent;
 use Swoft\Tcp\Server\Connection;
 use Swoft\Tcp\Server\Context\TcpCloseContext;
@@ -33,7 +34,6 @@ class CloseListener implements CloseInterface
     public function onClose(Server $server, int $fd, int $reactorId): void
     {
         $sid = (string)$fd;
-        // TODO handle close other worker connection
         $ctx = TcpCloseContext::new($fd, $reactorId);
 
         // Storage context
@@ -42,20 +42,28 @@ class CloseListener implements CloseInterface
         Session::bindCo($sid);
 
         try {
-            /** @var Connection $conn */
-            $conn  = Session::mustGet();
+            // Trigger event
+            Swoft::trigger(TcpServerEvent::CLOSE, $fd, $server, $reactorId);
+
+            // Manually close non-current worker connections
+            // - Session not exist the worker, notify other worker clear session.
+            if (!Session::has($sid)) {
+                $this->notifyOtherWorkersClose($fd, $sid, $server->worker_id);
+                return;
+            }
+
             $total = server()->count() - 1;
 
             server()->log("Close: conn#{$fd} has been closed. server conn count $total", [], 'debug');
+
+            /** @var Connection $conn */
+            $conn = Session::mustGet();
             if (!$meta = $conn->getMetadata()) {
                 server()->log("Close: conn#{$fd} connection meta info has been lost");
                 return;
             }
 
             server()->log("Close: conn#{$fd} meta info:", $meta, 'debug');
-
-            // Trigger event
-            Swoft::trigger(TcpServerEvent::CLOSE, $fd, $server, $reactorId);
         } catch (Throwable $e) {
             server()->log("Close: conn#{$fd} error on handle close, ERR: " . $e->getMessage(), [], 'error');
             Swoft::trigger(TcpServerEvent::CLOSE_ERROR, $e, $fd);
@@ -76,5 +84,24 @@ class CloseListener implements CloseInterface
             // Unbind cid => sid(fd)
             Session::unbindCo();
         }
+    }
+
+    /**
+     * @param int    $fd
+     * @param string $sid
+     * @param int    $workerId
+     */
+    private function notifyOtherWorkersClose(int $fd, string $sid, int $workerId): void
+    {
+        $data = [
+            'from'  => 'tcpServer',
+            'event' => 'tcpClose',
+            'fd'    => $fd,
+            'sid'   => $sid,
+        ];
+
+        // $server->sendMessage($message, $dst_worker_id);
+        server()->log("Close: conn#{$fd} session not exist current worker, notify other worker handle");
+        server()->notifyWorkers(JsonHelper::encode($data), [], [$workerId]);
     }
 }

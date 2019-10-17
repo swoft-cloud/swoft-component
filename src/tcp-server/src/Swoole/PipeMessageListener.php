@@ -8,6 +8,7 @@ use Swoft\Session\Session;
 use Swoole\Server;
 use function json_decode;
 use function json_last_error;
+use const JSON_ERROR_NONE;
 
 /**
  * Class PipeMessageListener
@@ -38,7 +39,7 @@ class PipeMessageListener implements PipeMessageInterface
 
         server()->log("PipeMessage: received pipe-message fromWID=$srcWorkerId data=", $data);
 
-        // Ensure is websocket notify message
+        // Ensure is tcp notify message
         if (!isset($data['from']) || $data['from'] !== 'tcpServer') {
             return;
         }
@@ -59,6 +60,20 @@ class PipeMessageListener implements PipeMessageInterface
      * @param int   $srcWID
      */
     protected function handleClose(array $data, int $srcWID): void
+    {
+        $sid = $data['sid'];
+
+        if (Session::has($sid)) {
+            server()->log("PipeMessage: destroy tcp connection for fd=$sid fromWID=$srcWID");
+            Session::destroy($sid);
+        }
+    }
+
+    /**
+     * @param array $data
+     * @param int   $srcWID
+     */
+    protected function handleDelSession(array $data, int $srcWID): void
     {
         $sid = $data['sid'];
 
