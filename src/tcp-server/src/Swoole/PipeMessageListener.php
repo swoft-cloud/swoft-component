@@ -49,8 +49,8 @@ class PipeMessageListener implements PipeMessageInterface
             $event = (string)$data['event'];
 
             /** @see CloseListener::onClose() */
-            if ($event === 'tcpClose') {
-                $this->handleClose($data, $srcWorkerId);
+            if ($event === 'onClose') {
+                $this->handleOnClose($data, $srcWorkerId);
             }
         }
     }
@@ -59,21 +59,7 @@ class PipeMessageListener implements PipeMessageInterface
      * @param array $data
      * @param int   $srcWID
      */
-    protected function handleClose(array $data, int $srcWID): void
-    {
-        $sid = $data['sid'];
-
-        if (Session::has($sid)) {
-            server()->log("PipeMessage: destroy tcp connection for fd=$sid fromWID=$srcWID");
-            Session::destroy($sid);
-        }
-    }
-
-    /**
-     * @param array $data
-     * @param int   $srcWID
-     */
-    protected function handleDelSession(array $data, int $srcWID): void
+    protected function handleOnClose(array $data, int $srcWID): void
     {
         $sid = $data['sid'];
 

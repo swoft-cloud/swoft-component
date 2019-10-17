@@ -95,7 +95,7 @@ class CloseListener implements CloseInterface
     {
         $data = [
             'from'  => 'tcpServer',
-            'event' => 'tcpClose',
+            'event' => 'onClose',
             'fd'    => $fd,
             'sid'   => $sid,
         ];

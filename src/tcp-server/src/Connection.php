@@ -5,6 +5,7 @@ namespace Swoft\Tcp\Server;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Concern\DataPropertyTrait;
 use Swoft\Contract\SessionInterface;
+use Swoft\Stdlib\Helper\JsonHelper;
 use function bean;
 use function microtime;
 
@@ -41,6 +42,24 @@ class Connection implements SessionInterface
         $conn->initMetadata($fd, $clientInfo);
 
         // Init meta info
+        return $conn;
+    }
+
+    /**
+     * Create an connection from metadata array
+     *
+     * @param array $metadata
+     *
+     * @return Connection
+     */
+    public static function newFromArray(array $metadata): self
+    {
+        /** @var self $conn */
+        $conn = bean(self::class);
+
+        $conn->fd = $metadata['fd'];
+        $conn->set(self::METADATA_KEY, $metadata);
+
         return $conn;
     }
 
@@ -88,10 +107,23 @@ class Connection implements SessionInterface
      */
     public function clear(): void
     {
+        $this->fd   = 0;
         $this->data = [];
-        // Clear data
-        // $this->request    = null;
-        // $this->response   = null;
-        // $this->moduleInfo = [];
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return $this->getMetadata();
+    }
+
+    /**
+     * @return string
+     */
+    public function toString(): string
+    {
+        return JsonHelper::encode($this->getMetadata());
     }
 }
