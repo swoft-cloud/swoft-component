@@ -25,18 +25,18 @@ class ConsoleErrorDispatcher
      */
     public function run(Throwable $e): void
     {
-        // Console error
-        if ($e instanceof ConsoleErrorException) {
-            Show::error($e->getMessage());
-            return;
-        }
-
         /** @var ErrorManager $manager */
         $manager = Swoft::getSingleton(ErrorManager::class);
 
         /** @var ConsoleErrorHandlerInterface $handler */
         if ($handler = $manager->matchHandler($e, ErrorType::CLI)) {
             $handler->handle($e);
+            return;
+        }
+
+        // Console tips error
+        if ($e instanceof ConsoleErrorException) {
+            Show::error($e->getMessage());
             return;
         }
 
