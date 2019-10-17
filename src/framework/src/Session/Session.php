@@ -111,6 +111,21 @@ class Session
     }
 
     /**
+     * Get connection by current bounded FD. if not found will throw exception.
+     *
+     * @return SessionInterface|Connection
+     */
+    public static function current(): SessionInterface
+    {
+        $sid = self::getBoundedSid();
+        if (isset(self::$sessions[$sid])) {
+            return self::$sessions[$sid];
+        }
+
+        throw new SessionException('session information has been lost of the SID: ' . $sid);
+    }
+
+    /**
      * Get connection by FD. if not found will throw exception.
      *
      * @param string $sid
