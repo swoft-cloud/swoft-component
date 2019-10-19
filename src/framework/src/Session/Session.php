@@ -111,7 +111,7 @@ class Session
     }
 
     /**
-     * Get connection by current bounded FD. if not found will throw exception.
+     * Get current connection by bounded FD. if not found will throw exception.
      *
      * @return SessionInterface|Connection
      */
