@@ -2,7 +2,7 @@
 
 namespace Swoft\Error\Listener;
 
-use Swoft\Bean\BeanFactory;
+use Swoft;
 use Swoft\Error\ErrorManager;
 use Swoft\Error\ErrorRegister;
 use Swoft\Event\Annotation\Mapping\Listener;
@@ -25,7 +25,7 @@ class AppInitCompleteListener implements EventHandlerInterface
     public function handle(EventInterface $event): void
     {
         /** @var ErrorManager $chain */
-        $chain = BeanFactory::getSingleton(ErrorManager::class);
+        $chain = Swoft::getSingleton(ErrorManager::class);
 
         // Register error handlers
         $count  = ErrorRegister::register($chain);
