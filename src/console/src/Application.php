@@ -61,7 +61,7 @@ class Application implements ConsoleInterface
     /**
      * @var string
      */
-    private $name = 'Swoft Application';
+    private $name = 'Swoft 2.0';
 
     /**
      * @var string
@@ -71,10 +71,10 @@ class Application implements ConsoleInterface
     /**
      * @var string
      */
-    private $description = 'Swoft 2.0 console application';
+    private $description = 'Swoft - An PHP micro-service coroutine framework';
 
     /**
-     * Console font logo text
+     * Console application logo text
      *
      * @var string
      */
