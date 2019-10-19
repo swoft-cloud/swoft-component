@@ -7,8 +7,11 @@ use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Concern\DataPropertyTrait;
 use Swoft\Http\Message\Request;
+use Swoft\Http\Message\Request as Psr7Request;
 use Swoft\Http\Message\Response;
 use Swoft\Contract\SessionInterface;
+use Swoft\Http\Message\Response as Psr7Response;
+use Swoft\Stdlib\Helper\JsonHelper;
 use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\MessageParser\RawTextParser;
@@ -65,7 +68,7 @@ class Connection implements SessionInterface
      * @var array
      * @see Router::$modules for fileds information
      */
-    private $moduleInfo;
+    private $moduleInfo = [];
 
     /**
      * @param WebSocketServer $server
@@ -90,6 +93,42 @@ class Connection implements SessionInterface
         $sess->handshake = false;
 
         return $sess;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return static
+     */
+    public static function newFromArray(array $data): self
+    {
+        // New request and response
+        $req = new \Swoole\Http\Request();
+        $res = new \Swoole\Http\Response();
+
+        // Init swoole request
+        $req->fd     = $data['fd'];
+        $req->get    = $data['get'];
+        $req->post   = $data['post'];
+        $req->cookie = $data['cookie'];
+        $req->header = $data['header'];
+        $req->server = $data['server'];
+
+        // Init swoole response
+        $res->cookie = $data['resCookie'];
+        $res->header = $data['resHeader'];
+
+        // Initialize psr7 Request and Response
+        $psr7Req  = Psr7Request::new($req);
+        $psr7Res  = Psr7Response::new($res);
+        $wsServer = Swoft::getBean('wsServer');
+
+        // Restore connection object
+        $conn = self::new($wsServer, $psr7Req, $psr7Res);
+        $conn->setHandshake(true);
+        $conn->setModuleInfo($data['moduleInfo']);
+
+        return $conn;
     }
 
     /**
@@ -122,6 +161,38 @@ class Connection implements SessionInterface
     public function push(string $data, int $opcode = WEBSOCKET_OPCODE_TEXT, bool $finish = true): bool
     {
         return $this->server->push($this->fd, $data, $opcode, $finish);
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        $request = $this->request->getCoRequest();
+        $response = $this->response->getCoResponse();
+
+        return [
+            // request data
+            'fd'        => $this->fd,
+            'get'       => $request->get,
+            'post'      => $request->post,
+            'cookie'    => $request->cookie,
+            'header'    => $request->header,
+            'server'    => $request->server,
+            // response data
+            'resHeader' => $response->header,
+            'resCookie' => $response->cookie,
+            // module info
+            'moduleInfo' => $this->moduleInfo,
+        ];
+    }
+
+    /**
+     * @return string
+     */
+    public function toString(): string
+    {
+        return JsonHelper::encode($this->toArray());
     }
 
     /**

@@ -60,9 +60,9 @@ class ConnStorageSubscriber implements EventSubscriberInterface
             return;
         }
 
-        [$request, $response] = $event->getParams();
+        $request = $event->getParam(0);
 
-        $this->getStorage()->storage($request, $response);
+        $this->getStorage()->storage($request);
     }
 
     /**

@@ -4,10 +4,9 @@ namespace Swoft\WebSocket\Server\Message;
 
 use InvalidArgumentException;
 use RuntimeException;
-use SplDoublyLinkedList;
-use SplStack;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Concern\AbstractMiddlewareChain;
 use Swoft\WebSocket\Server\Contract\MessageHandlerInterface;
 use Swoft\WebSocket\Server\Contract\MiddlewareInterface;
 use Swoft\WebSocket\Server\Contract\RequestInterface;
@@ -22,18 +21,8 @@ use function is_string;
  * @since 2.0
  * @Bean(scope=Bean::PROTOTYPE)
  */
-class MiddlewareChain implements MessageHandlerInterface
+class MiddlewareChain extends AbstractMiddlewareChain implements MessageHandlerInterface
 {
-    /**
-     * @var SplStack
-     */
-    private $stack;
-
-    /**
-     * @var bool
-     */
-    private $locked = false;
-
     /**
      * @var MiddlewareInterface
      */
@@ -171,40 +160,5 @@ class MiddlewareChain implements MessageHandlerInterface
         }
 
         return $response;
-    }
-
-    /**
-     * @param callable|null $kernel
-     *
-     * @throws RuntimeException
-     */
-    protected function prepareStack(callable $kernel = null): void
-    {
-        if (null !== $this->stack) {
-            throw new RuntimeException('MiddlewareStack can only be seeded once.');
-        }
-
-        $this->stack = new SplStack;
-        $this->stack->setIteratorMode(SplDoublyLinkedList::IT_MODE_LIFO | SplDoublyLinkedList::IT_MODE_KEEP);
-
-        if ($kernel) {
-            $this->stack[] = $kernel;
-        }
-    }
-
-    /**
-     * @return bool
-     */
-    public function isLocked(): bool
-    {
-        return $this->locked;
-    }
-
-    /**
-     * @return SplStack
-     */
-    public function getStack(): SplStack
-    {
-        return $this->stack;
     }
 }
