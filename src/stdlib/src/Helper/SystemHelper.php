@@ -240,11 +240,19 @@ class SystemHelper extends EnvHelper
         if (self::shIsAvailable()) {
             // try stty if available
             $stty = [];
+            if (exec('stty -a 2>&1', $stty)) {
+                $sttyText = implode(' ', $stty);
+                // linux: speed 38400 baud; rows 97; columns 362; line = 0;
+                $pattern = '/rows\s+(\d+);\s*columns\s+(\d+);/mi';
 
-            if (exec('stty -a 2>&1', $stty)
-                && preg_match('/rows\s+(\d+);\s*columns\s+(\d+);/mi', implode(' ', $stty), $matches)
-            ) {
-                return ($size = [$matches[2], $matches[1]]);
+                // mac: speed 9600 baud; 97 rows; 362 columns;
+                if (self::isMac()) {
+                    $pattern  = '/(\d+)\s+rows;\s*(\d+)\s+columns;/mi';
+                }
+
+                if (preg_match($pattern, $sttyText, $matches)) {
+                    return ($size = [$matches[2], $matches[1]]);
+                }
             }
 
             // fallback to tput, which may not be updated on terminal resize
