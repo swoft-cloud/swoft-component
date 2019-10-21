@@ -136,6 +136,9 @@ use Throwable;
  * @method int zInterStore(string $Output, array $ZSetKeys, array $Weights = null, string $aggregateFunction = 'SUM')
  * @method int zUnionStore(string $Output, array $ZSetKeys, array $Weights = null, string $aggregateFunction = 'SUM')
  * @method bool hMSet(string $key, array $keyValues)
+ * @method void psubscribe(array $patterns, string|array $callback)
+ * @method void subscribe(array $channels, string|array $callback)
+ * @method array geoRadius(string $key, float $longitude, float $latitude, float $radius, string $radiusUnit, array $options)
  */
 abstract class Connection extends AbstractConnection implements ConnectionInterface
 {

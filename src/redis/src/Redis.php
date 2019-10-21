@@ -133,6 +133,9 @@ use Throwable;
  * @method static array pipeline(callable $callback)
  * @method static array transaction(callable $callback)
  * @method static mixed call(callable $callback, bool $reconnect = false)
+ * @method static void psubscribe(array $patterns, string|array $callback)
+ * @method static void subscribe(array $channels, string|array $callback)
+ * @method static array geoRadius(string $key, float $longitude, float $latitude, float $radius, string $radiusUnit, array $options)
  */
 class Redis
 {
