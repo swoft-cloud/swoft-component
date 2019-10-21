@@ -38,6 +38,7 @@ class MiddlewareChain extends AbstractMiddlewareChain implements MessageHandlerI
         /** @var self $self */
         $self = Swoft::getBean(self::class);
 
+        // Init properties
         $self->coreHandler = $coreHandler;
 
         return $self;

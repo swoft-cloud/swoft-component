@@ -66,24 +66,23 @@ class CloseListener implements CloseInterface
             // - Session not exist the worker, notify other worker clear session.
             if (!Session::has($sid)) {
                 $this->notifyOtherWorkersClose($fd, $sid, $server->worker_id);
-                return;
-            }
+            } else {
+                /** @var Connection $conn */
+                $conn  = Session::mustGet();
+                $total = server()->count() - 1;
 
-            /** @var Connection $conn */
-            $conn  = Session::mustGet();
-            $total = server()->count() - 1;
+                server()->log("Close: conn#{$fd} has been closed. connection count $total", [], 'debug');
+                if (!$meta = $conn->getMetadata()) {
+                    server()->log("Close: conn#{$fd} connection meta info has been lost");
+                    return;
+                }
 
-            server()->log("Close: conn#{$fd} has been closed. server conn count $total", [], 'debug');
-            if (!$meta = $conn->getMetadata()) {
-                server()->log("Close: conn#{$fd} connection meta info has been lost");
-                return;
-            }
+                server()->log("Close: conn#{$fd} meta info:", $meta, 'debug');
 
-            server()->log("Close: conn#{$fd} meta info:", $meta, 'debug');
-
-            // Handshake successful callback close handle
-            if ($conn->isHandshake()) {
-                $this->wsDispatcher->close($server, $fd);
+                // Handshake successful callback close handle
+                if ($conn->isHandshake()) {
+                    $this->wsDispatcher->close($server, $fd);
+                }
             }
 
             // Call on close callback
@@ -119,7 +118,7 @@ class CloseListener implements CloseInterface
     {
         $data = [
             'from'  => 'wsServer',
-            'event' => 'wsClose',
+            'event' => 'onClose',
             'fd'    => $fd,
             'sid'   => $sid,
         ];
