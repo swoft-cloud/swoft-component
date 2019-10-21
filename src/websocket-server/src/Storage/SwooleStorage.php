@@ -22,11 +22,6 @@ class SwooleStorage implements StorageInterface
      */
     private $size = 20480;
 
-    // public function __construct()
-    // {
-    //     $this->create();
-    // }
-
     public function create(): void
     {
         $this->db = new Table($this->size);

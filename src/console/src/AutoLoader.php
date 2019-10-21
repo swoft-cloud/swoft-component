@@ -2,6 +2,7 @@
 
 namespace Swoft\Console;
 
+use Swoft;
 use Swoft\Console\Router\Router;
 use Swoft\Helper\ComposerJSON;
 use Swoft\SwoftComponent;
@@ -13,13 +14,10 @@ use function dirname;
  */
 final class AutoLoader extends SwoftComponent
 {
-    /**
-     * @return bool
-     */
-    public function enable(): bool
-    {
-        return true;
-    }
+    // public function enable(): bool
+    // {
+    //     return true;
+    // }
 
     /**
      * Get namespace and dirs
@@ -53,7 +51,7 @@ final class AutoLoader extends SwoftComponent
         return [
             'cliApp'    => [
                 'class'   => Application::class,
-                'version' => '2.0.0'
+                'version' => Swoft::VERSION,
             ],
             'cliRouter' => [
                 'class' => Router::class,

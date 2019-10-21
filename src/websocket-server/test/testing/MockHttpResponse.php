@@ -74,6 +74,7 @@ class MockHttpResponse extends Response
      * @param string      $domain
      * @param bool        $secure
      * @param bool        $httpOnly
+     * @param null        $samesite
      */
     public function cookie(
         $name,
@@ -82,7 +83,8 @@ class MockHttpResponse extends Response
         $path = null,
         $domain = null,
         $secure = null,
-        $httpOnly = null
+        $httpOnly = null,
+        $samesite = null
     ) {
         $result = \urlencode($name) . '=' . \urlencode($value);
 

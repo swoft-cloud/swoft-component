@@ -159,7 +159,7 @@ EOF;
 
         // output panel top border
         if ($borderChar) {
-            $border = str_pad($borderChar, $panelWidth + (3 * 3), $borderChar);
+            $border = str_pad($borderChar, $panelWidth + (3 * 4), $borderChar);
             Console::write('  ' . $border);
         }
 

@@ -4,6 +4,7 @@ namespace Swoft\WebSocket\Server\Swoole;
 
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Context\Context;
 use Swoft\Server\Contract\CloseInterface;
 use Swoft\Session\Session;
@@ -27,6 +28,12 @@ use function server;
  */
 class CloseListener implements CloseInterface
 {
+    /**
+     * @Inject("wsDispatcher")
+     * @var WsDispatcher
+     */
+    private $wsDispatcher;
+
     /**
      * Close event
      *
@@ -85,9 +92,7 @@ class CloseListener implements CloseInterface
 
             // Handshake successful callback close handle
             if ($conn->isHandshake()) {
-                /** @var WsDispatcher $dispatcher */
-                $dispatcher = Swoft::getSingleton('wsDispatcher');
-                $dispatcher->close($server, $fd);
+                $this->wsDispatcher->close($server, $fd);
             }
 
             // Call on close callback
@@ -103,7 +108,7 @@ class CloseListener implements CloseInterface
             // Defer
             Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
 
-            // Destroy
+            // Destroy context
             Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
 
             // Remove connection

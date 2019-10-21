@@ -92,6 +92,14 @@ class Response implements ResponseInterface
     }
 
     /**
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return $this->content === '' && $this->data === null;
+    }
+
+    /**
      * @return int
      */
     public function getCode(): int

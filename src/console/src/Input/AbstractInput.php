@@ -23,15 +23,15 @@ abstract class AbstractInput implements InputInterface
     protected $pwd;
 
     /**
-     * the script name
+     * The script file
      * e.g `./bin/app` OR `bin/cli.php`
      *
      * @var string
      */
-    protected $script;
+    protected $scriptFile;
 
     /**
-     * the command name(Is first argument)
+     * The command name(Is first argument)
      * e.g `start` OR `start`
      *
      * @var string
@@ -691,17 +691,17 @@ abstract class AbstractInput implements InputInterface
     /**
      * @return string
      */
-    public function getScript(): string
+    public function getScriptFile(): string
     {
-        return $this->script;
+        return $this->scriptFile;
     }
 
     /**
-     * @param string $script
+     * @param string $scriptFile
      */
-    public function setScript(string $script): void
+    public function setScriptFile(string $scriptFile): void
     {
-        $this->script = $script;
+        $this->scriptFile = $scriptFile;
     }
 
     /**
