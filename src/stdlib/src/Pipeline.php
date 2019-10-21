@@ -1,14 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Stdlib;
 
-use function is_callable;
 use SplObjectStorage;
+use function is_callable;
 
 /**
  * Class Pipeline
+ *
  * @since 2.0
- * @see https://github.com/ztsu/pipe
+ * @see   https://github.com/ztsu/pipe
  */
 class Pipeline
 {
@@ -25,6 +26,7 @@ class Pipeline
 
     /**
      * @param mixed ...$handlers
+     *
      * @return $this
      */
     public function use(...$handlers): self
@@ -38,7 +40,9 @@ class Pipeline
 
     /**
      * Adds stage to the pipeline
+     *
      * @param callable $stage fun
+     *
      * @return Pipeline
      */
     public function add(callable $stage): self
@@ -55,7 +59,9 @@ class Pipeline
 
     /**
      * Runs pipeline with initial value
+     *
      * @param mixed $payload
+     *
      * @return mixed
      */
     public function run($payload)
@@ -75,6 +81,7 @@ class Pipeline
 
     /**
      * @param mixed $payload
+     *
      * @return mixed
      */
     protected function invokeStage($payload)

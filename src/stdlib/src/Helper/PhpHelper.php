@@ -131,14 +131,8 @@ class PhpHelper
             return sprintf('%s %s(code:%d) %s', $title, $errClass, $e->getCode(), $e->getMessage());
         }
 
-        return sprintf('%s%s(code:%d): %s At %s line %d',
-            $title ? $title . ' - ' : '',
-            $errClass,
-            $e->getCode(),
-            $e->getMessage(),
-            $e->getFile(),
-            $e->getLine()
-        );
+        return sprintf('%s%s(code:%d): %s At %s line %d', $title ? $title . ' - ' : '', $errClass, $e->getCode(),
+            $e->getMessage(), $e->getFile(), $e->getLine());
     }
 
     /**

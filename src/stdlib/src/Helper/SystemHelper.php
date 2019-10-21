@@ -247,7 +247,7 @@ class SystemHelper extends EnvHelper
 
                 // mac: speed 9600 baud; 97 rows; 362 columns;
                 if (self::isMac()) {
-                    $pattern  = '/(\d+)\s+rows;\s*(\d+)\s+columns;/mi';
+                    $pattern = '/(\d+)\s+rows;\s*(\d+)\s+columns;/mi';
                 }
 
                 if (preg_match($pattern, $sttyText, $matches)) {

@@ -13,11 +13,11 @@ class ArrayHelperTest extends TestCase
 
     public function testToArray(): void
     {
-        $obj = new \stdClass();
-        $objSub = new \stdClass();
-        $objSub->version = '2.0';
-        $objSub->url = 'https://www.swoft.org';
-        $obj->name = 'swoft';
+        $obj              = new \stdClass();
+        $objSub           = new \stdClass();
+        $objSub->version  = '2.0';
+        $objSub->url      = 'https://www.swoft.org';
+        $obj->name        = 'swoft';
         $obj->description = $objSub;
 
         //test base
@@ -38,12 +38,12 @@ class ArrayHelperTest extends TestCase
     {
         $arr1 = ['a' => 1];
         $arr2 = ['b' => 2];
-        $rs = ArrayHelper::merge($arr1, $arr2);
+        $rs   = ArrayHelper::merge($arr1, $arr2);
         $this->assertSame(['a' => 1, 'b' => 2], $rs);
 
         $arr3 = ['a' => 1, 'c' => [1, 2, 3], 'd' => 6];
         $arr4 = ['b' => 2, 'c' => 5];
-        $rs2 = ArrayHelper::merge($arr3, $arr4);
+        $rs2  = ArrayHelper::merge($arr3, $arr4);
         $this->assertSame(1, $rs2['a']);
         $this->assertSame(2, $rs2['b']);
         $this->assertSame(5, $rs2['c']);
@@ -54,7 +54,7 @@ class ArrayHelperTest extends TestCase
     {
         //test base
         $arr = ['a' => 1, 'b' => 2];
-        $rs = ArrayHelper::getValue($arr, 'b');
+        $rs  = ArrayHelper::getValue($arr, 'b');
         $this->assertSame(2, $rs);
 
         //test get not exist key
@@ -86,7 +86,7 @@ class ArrayHelperTest extends TestCase
     public function testExcept(): void
     {
         $arr = ['a' => 1, 'b' => 2, 'c' => ['d' => 1, 'e' => 2]];
-        $rs = ArrayHelper::except($arr, ['a']);
+        $rs  = ArrayHelper::except($arr, ['a']);
         $this->assertSame(['b' => 2, 'c' => ['d' => 1, 'e' => 2]], $rs);
 
         //test remove key using dot, like 'c.d'
@@ -108,7 +108,7 @@ class ArrayHelperTest extends TestCase
     public function testPull(): void
     {
         $arr = ['a' => 1, 'b' => 2, 'c' => ['d' => 1, 'e' => 2]];
-        $rs = ArrayHelper::pull($arr, 'b');
+        $rs  = ArrayHelper::pull($arr, 'b');
         $this->assertSame(['a' => 1, 'c' => ['d' => 1, 'e' => 2]], $arr);
         $this->assertSame(2, $rs);
 
@@ -163,7 +163,7 @@ class ArrayHelperTest extends TestCase
             ['id' => 1, 'data' => 'a'],
             ['id' => 2, 'data' => 'b'],
         ];
-        $rs = ArrayHelper::getColumn($arr, 'id');
+        $rs  = ArrayHelper::getColumn($arr, 'id');
         $this->assertSame([1, 2], $rs);
 
         //test callback
@@ -180,7 +180,7 @@ class ArrayHelperTest extends TestCase
             ['id' => 5, 'data' => 'b', 'group' => 'b'],
             ['id' => 3, 'data' => 'c', 'group' => 'a'],
         ];
-        $rs = ArrayHelper::map($arr, 'id', 'data');
+        $rs  = ArrayHelper::map($arr, 'id', 'data');
         $this->assertSame([
             1 => 'a',
             5 => 'b',
@@ -203,7 +203,7 @@ class ArrayHelperTest extends TestCase
     public function testKeyExists(): void
     {
         $arr = ['id' => 1, 'data' => 'a'];
-        $rs = ArrayHelper::keyExists('id', $arr);
+        $rs  = ArrayHelper::keyExists('id', $arr);
         $this->assertTrue($rs);
 
         $rs2 = ArrayHelper::keyExists('name', $arr);
@@ -229,11 +229,11 @@ class ArrayHelperTest extends TestCase
     public function testIsAssociative(): void
     {
         $arr = ['id' => 1, 'data' => 'a'];
-        $rs = ArrayHelper::isAssociative($arr);
+        $rs  = ArrayHelper::isAssociative($arr);
         $this->assertTrue($rs);
 
         $arr2 = [1 => 1, 'data' => 'a'];
-        $rs2 = ArrayHelper::isAssociative($arr2);
+        $rs2  = ArrayHelper::isAssociative($arr2);
         $this->assertFalse($rs2);
 
         $rs3 = ArrayHelper::isAssociative($arr2, false);
@@ -243,28 +243,28 @@ class ArrayHelperTest extends TestCase
     public function testIsIndexed(): void
     {
         $arr = ['a', 'b', 'c'];
-        $rs = ArrayHelper::isIndexed($arr);
+        $rs  = ArrayHelper::isIndexed($arr);
         $this->assertTrue($rs);
 
 
         $arr = ['a', 'b', 5 => 'c'];
-        $rs = ArrayHelper::isIndexed($arr);
+        $rs  = ArrayHelper::isIndexed($arr);
         $this->assertTrue($rs);
 
 
         $arr = ['a', 'b', 'key' => 'c'];
-        $rs = ArrayHelper::isIndexed($arr);
+        $rs  = ArrayHelper::isIndexed($arr);
         $this->assertFalse($rs);
 
         $arr = ['a', 'b', 5 => 'c'];
-        $rs = ArrayHelper::isIndexed($arr, true);
+        $rs  = ArrayHelper::isIndexed($arr, true);
         $this->assertFalse($rs);
     }
 
     public function testIsIn(): void
     {
         $arr = ['a', 'b', 'c'];
-        $rs = ArrayHelper::isIn('b', $arr);
+        $rs  = ArrayHelper::isIn('b', $arr);
         $this->assertTrue($rs);
 
         $rs = ArrayHelper::isIn('d', $arr);
@@ -274,37 +274,37 @@ class ArrayHelperTest extends TestCase
     public function testIsTraversable(): void
     {
         $arr = ['a'];
-        $rs = ArrayHelper::isTraversable($arr);
+        $rs  = ArrayHelper::isTraversable($arr);
         $this->assertTrue($rs);
 
         $arr = 'a';
-        $rs = ArrayHelper::isTraversable($arr);
+        $rs  = ArrayHelper::isTraversable($arr);
         $this->assertFalse($rs);
     }
 
     public function testIsSubset(): void
     {
         $arr = ['a', 'b', 'c'];
-        $rs = ArrayHelper::isSubset(['b', 'c'], $arr);
+        $rs  = ArrayHelper::isSubset(['b', 'c'], $arr);
         $this->assertTrue($rs);
 
         $arr = ['a', 'b', 'c'];
-        $rs = ArrayHelper::isSubset(['b', 'd'], $arr);
+        $rs  = ArrayHelper::isSubset(['b', 'd'], $arr);
         $this->assertFalse($rs);
     }
 
     public function testFilter(): void
     {
         $arr = [
-            'id' => 1,
+            'id'          => 1,
             'description' => [
-                'name' => 'swoft',
+                'name'    => 'swoft',
                 'version' => '2.0'
             ]
         ];
-        $rs = ArrayHelper::filter($arr, ['id', 'description.version']);
+        $rs  = ArrayHelper::filter($arr, ['id', 'description.version']);
         $this->assertSame([
-            'id' => 1,
+            'id'          => 1,
             'description' => [
                 'version' => '2.0'
             ]
@@ -314,18 +314,18 @@ class ArrayHelperTest extends TestCase
     public function testAccessible(): void
     {
         $arr = ['a'];
-        $rs = ArrayHelper::accessible($arr);
+        $rs  = ArrayHelper::accessible($arr);
         $this->assertTrue($rs);
 
         $arr = 'a';
-        $rs = ArrayHelper::accessible($arr);
+        $rs  = ArrayHelper::accessible($arr);
         $this->assertFalse($rs);
     }
 
     public function testExists(): void
     {
         $arr = ['id' => 1, 'name' => 'swoft'];
-        $rs = ArrayHelper::exists($arr, 'name');
+        $rs  = ArrayHelper::exists($arr, 'name');
         $this->assertTrue($rs);
         $rs2 = ArrayHelper::exists($arr, 'description');
         $this->assertFalse($rs2);
@@ -334,7 +334,7 @@ class ArrayHelperTest extends TestCase
     public function testGet(): void
     {
         $arr = ['id' => 1, 'name' => 'swoft'];
-        $rs = ArrayHelper::get($arr, 'name');
+        $rs  = ArrayHelper::get($arr, 'name');
         $this->assertSame('swoft', $rs);
 
         $rs2 = ArrayHelper::get($arr, 'description');
@@ -347,13 +347,13 @@ class ArrayHelperTest extends TestCase
     public function testHas(): void
     {
         $arr = [
-            'id' => 1,
+            'id'          => 1,
             'description' => [
-                'name' => 'swoft',
+                'name'    => 'swoft',
                 'version' => '2.0'
             ]
         ];
-        $rs = ArrayHelper::has($arr, 'id');
+        $rs  = ArrayHelper::has($arr, 'id');
         $this->assertTrue($rs);
 
         $rs2 = ArrayHelper::has($arr, 'name');
@@ -366,9 +366,9 @@ class ArrayHelperTest extends TestCase
     public function testSet(): void
     {
         $arr = ['id' => 1];
-        $rs = ArrayHelper::set($arr, 'name', 'swoft');
+        $rs  = ArrayHelper::set($arr, 'name', 'swoft');
         $this->assertSame([
-            'id' => 1,
+            'id'   => 1,
             'name' => 'swoft'
         ], $rs);
     }
@@ -394,24 +394,24 @@ class ArrayHelperTest extends TestCase
     public function testIsArrayable(): void
     {
         $arr = ['a'];
-        $rs = ArrayHelper::isArrayable($arr);
+        $rs  = ArrayHelper::isArrayable($arr);
         $this->assertTrue($rs);
 
         $arr = 'a';
-        $rs = ArrayHelper::isArrayable($arr);
+        $rs  = ArrayHelper::isArrayable($arr);
         $this->assertFalse($rs);
     }
 
     public function testFlatten(): void
     {
         $arr = [
-            'id' => 1,
+            'id'          => 1,
             'description' => [
-                'name' => 'swoft',
+                'name'    => 'swoft',
                 'version' => '2.0'
             ]
         ];
-        $rs = ArrayHelper::flatten($arr);
+        $rs  = ArrayHelper::flatten($arr);
         $this->assertSame([1, 'swoft', '2.0'], $rs);
     }
 
@@ -424,7 +424,7 @@ class ArrayHelperTest extends TestCase
             'thinkphp',
             'test-swoft-cloud'
         ];
-        $rs = ArrayHelper::findSimilar('swoft', $arr);
+        $rs  = ArrayHelper::findSimilar('swoft', $arr);
         $this->assertSame([
             'swoft',
             'swoft-2',
@@ -435,9 +435,9 @@ class ArrayHelperTest extends TestCase
     public function testGetKeyMaxWidth(): void
     {
         $arr = [
-            'id' => 1,
-            'name' => 'swoft',
-            'version' => '2.0',
+            'id'          => 1,
+            'name'        => 'swoft',
+            'version'     => '2.0',
             'description' => 'php framework'
         ];
 
@@ -448,7 +448,7 @@ class ArrayHelperTest extends TestCase
     public function testFirst(): void
     {
         $arr = ['a', 'b', 'c', 'd'];
-        $rs = ArrayHelper::first($arr, function ($value) {
+        $rs  = ArrayHelper::first($arr, function ($value) {
             return $value == 'c';
         });
         $this->assertSame('c', $rs);
@@ -457,7 +457,7 @@ class ArrayHelperTest extends TestCase
     public function testWhere(): void
     {
         $arr = ['a', 'b', 'c', 'd'];
-        $rs = ArrayHelper::where($arr, function ($value) {
+        $rs  = ArrayHelper::where($arr, function ($value) {
             return $value == 'c';
         });
         $this->assertSame([2 => 'c'], $rs);
@@ -466,27 +466,27 @@ class ArrayHelperTest extends TestCase
     public function testQuery(): void
     {
         $arr = [
-            'id' => 1,
+            'id'   => 1,
             'name' => 'swoft',
         ];
-        $rs = ArrayHelper::query($arr);
+        $rs  = ArrayHelper::query($arr);
         $this->assertSame('id=1&name=swoft', $rs);
     }
 
     public function testOnly(): void
     {
         $arr = [
-            'id' => 1,
+            'id'   => 1,
             'name' => 'swoft',
         ];
-        $rs = ArrayHelper::only($arr, ['name']);
+        $rs  = ArrayHelper::only($arr, ['name']);
         $this->assertSame(['name' => 'swoft'], $rs);
     }
 
     public function testLast(): void
     {
         $arr = ['a', 'b', 'c', 'd'];
-        $rs = ArrayHelper::last($arr, function ($value) {
+        $rs  = ArrayHelper::last($arr, function ($value) {
             return $value == 'c';
         });
         $this->assertSame('c', $rs);
@@ -498,9 +498,10 @@ class ArrayHelperTest extends TestCase
             ['id' => 1, 'name' => 'swoft'],
             ['id' => 2, 'name' => 'yii'],
         ];
-        $rs = ArrayHelper::pluck($arr, 'name');
+        $rs  = ArrayHelper::pluck($arr, 'name');
         $this->assertSame([
-            'swoft', 'yii'
+            'swoft',
+            'yii'
         ], $rs);
     }
 
@@ -510,45 +511,48 @@ class ArrayHelperTest extends TestCase
             ['id' => 1, 'name' => 'swoft', 'version' => '2.0'],
             ['id' => 2, 'name' => 'yii'],
         ];
-        $rs = ArrayHelper::collapse($arr);
+        $rs  = ArrayHelper::collapse($arr);
         $this->assertSame([
-            'id' => 2,
-            'name' => 'yii',
+            'id'      => 2,
+            'name'    => 'yii',
             'version' => '2.0'
         ], $rs);
     }
 
     public function testCrossJoin(): void
     {
-        $arr = ['a'];
+        $arr  = ['a'];
         $arr2 = ['b'];
 
         $rs = ArrayHelper::crossJoin($arr, $arr2);
         $this->assertSame([
-           ['a', 'b']
+            ['a', 'b']
         ], $rs);
     }
 
     public function testPrepend(): void
     {
         $arr = ['a', 'b', 'c'];
-        $rs = ArrayHelper::prepend($arr, 'd');
+        $rs  = ArrayHelper::prepend($arr, 'd');
         $this->assertSame([
-            'd', 'a', 'b', 'c'
+            'd',
+            'a',
+            'b',
+            'c'
         ], $rs);
     }
 
     public function testRandom(): void
     {
         $arr = ['a', 'b', 'c'];
-        $rs = ArrayHelper::random($arr);
+        $rs  = ArrayHelper::random($arr);
         $this->assertTrue(in_array($rs, $arr));
     }
 
     public function testShuffle(): void
     {
         $arr = ['a', 'b', 'c'];
-        $rs = ArrayHelper::shuffle($arr);
+        $rs  = ArrayHelper::shuffle($arr);
         $this->assertTrue(count($arr) === count($rs));
     }
 

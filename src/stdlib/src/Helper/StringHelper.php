@@ -3,6 +3,7 @@
 namespace Swoft\Stdlib\Helper;
 
 use Exception;
+use RuntimeException;
 use function explode;
 use function is_string;
 use function lcfirst;
@@ -12,10 +13,7 @@ use function mb_strtoupper;
 use function preg_match;
 use function preg_replace;
 use function random_bytes;
-use RuntimeException;
 use function str_pad;
-use const STR_PAD_LEFT;
-use const STR_PAD_RIGHT;
 use function str_replace;
 use function strlen;
 use function strpos;
@@ -24,6 +22,8 @@ use function substr;
 use function substr_replace;
 use function trim;
 use function uniqid;
+use const STR_PAD_LEFT;
+use const STR_PAD_RIGHT;
 
 /**
  * String helper
