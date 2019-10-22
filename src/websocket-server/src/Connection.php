@@ -5,12 +5,12 @@ namespace Swoft\WebSocket\Server;
 use Psr\Http\Message\ServerRequestInterface;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Concern\DataPropertyTrait;
+use Swoft\Contract\SessionInterface;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Request as Psr7Request;
 use Swoft\Http\Message\Response;
-use Swoft\Contract\SessionInterface;
 use Swoft\Http\Message\Response as Psr7Response;
+use Swoft\Stdlib\Concern\DataPropertyTrait;
 use Swoft\Stdlib\Helper\JsonHelper;
 use Swoft\WebSocket\Server\Contract\MessageParserInterface;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
@@ -168,20 +168,20 @@ class Connection implements SessionInterface
      */
     public function toArray(): array
     {
-        $request = $this->request->getCoRequest();
+        $request  = $this->request->getCoRequest();
         $response = $this->response->getCoResponse();
 
         return [
             // request data
-            'fd'        => $this->fd,
-            'get'       => $request->get,
-            'post'      => $request->post,
-            'cookie'    => $request->cookie,
-            'header'    => $request->header,
-            'server'    => $request->server,
+            'fd'         => $this->fd,
+            'get'        => $request->get,
+            'post'       => $request->post,
+            'cookie'     => $request->cookie,
+            'header'     => $request->header,
+            'server'     => $request->server,
             // response data
-            'resHeader' => $response->header,
-            'resCookie' => $response->cookie,
+            'resHeader'  => $response->header,
+            'resCookie'  => $response->cookie,
             // module info
             'moduleInfo' => $this->moduleInfo,
         ];

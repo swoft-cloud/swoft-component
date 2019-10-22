@@ -5,7 +5,6 @@ namespace Swoft\Console;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Concern\DataPropertyTrait;
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Concern\RenderHelpInfoTrait;
 use Swoft\Console\Contract\ConsoleInterface;
@@ -13,12 +12,13 @@ use Swoft\Console\Exception\CommandFlagException;
 use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
 use Swoft\Console\Router\Router;
+use Swoft\Stdlib\Concern\DataPropertyTrait;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use Throwable;
 use function array_merge;
-use function input;
 use function implode;
+use function input;
 use function output;
 use function strpos;
 use function strtr;
@@ -103,7 +103,7 @@ class Application implements ConsoleInterface
      */
     public function commentsVars(): array
     {
-        $script = $this->input->getScriptFile();
+        $script  = $this->input->getScriptFile();
         $fullCmd = $this->input->getFullCommand();
 
         return [
@@ -261,9 +261,7 @@ class Application implements ConsoleInterface
                     // Required check
                 } elseif ($opt['mode'] === Command::OPT_REQUIRED) {
                     $short = $opt['short'] ? "(short: {$opt['short']})" : '';
-                    throw new CommandFlagException(
-                        "The option '{$name}'{$short} is required"
-                    );
+                    throw new CommandFlagException("The option '{$name}'{$short} is required");
                 }
             }
 
@@ -289,9 +287,7 @@ class Application implements ConsoleInterface
 
                 // Check arg is required
                 if ($arg['mode'] === Command::ARG_REQUIRED && empty($values[$name])) {
-                    throw new CommandFlagException(
-                        "The argument '{$name}'(position: {$index}) is required"
-                    );
+                    throw new CommandFlagException("The argument '{$name}'(position: {$index}) is required");
                 }
 
                 $index++;
