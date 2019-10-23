@@ -2,6 +2,7 @@
 
 namespace Swoft\Concern;
 
+use Countable;
 use RuntimeException;
 use SplDoublyLinkedList;
 use SplStack;
@@ -11,7 +12,7 @@ use SplStack;
  *
  * @since 2.0.7
  */
-abstract class AbstractMiddlewareChain
+abstract class AbstractMiddlewareChain implements Countable
 {
     /**
      * @var SplStack
@@ -99,6 +100,14 @@ abstract class AbstractMiddlewareChain
         if ($kernel) {
             $this->stack[] = $kernel;
         }
+    }
+
+    /**
+     * @return int
+     */
+    public function count(): int
+    {
+        return $this->stack ? $this->stack->count() : 0;
     }
 
     /**
