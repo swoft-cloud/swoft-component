@@ -60,8 +60,8 @@ class ReceiveListener implements ReceiveInterface
             if ($dispatcher->isEnable()) {
                 $response = $dispatcher->dispatch($request, $response);
 
-                // Trigger package send event
-                Swoft::trigger(TcpServerEvent::PACKAGE_SEND, $response);
+                // Trigger package response event
+                Swoft::trigger(TcpServerEvent::PACKAGE_RESPONSE, $response);
 
                 $response->send($server);
             }

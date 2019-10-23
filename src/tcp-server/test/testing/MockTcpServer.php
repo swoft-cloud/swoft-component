@@ -37,6 +37,8 @@ class MockTcpServer
     public function start(): void
     {
         $this->tcpServer = new TcpServer();
+
+        TcpServer::setServer($this->tcpServer);
         // $this->swServer  = new Server($ts->getHost(), $ts->getPort(), $ts->getMode(), $ts->getType());
     }
 

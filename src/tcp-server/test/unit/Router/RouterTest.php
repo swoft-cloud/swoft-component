@@ -2,6 +2,9 @@
 
 namespace SwoftTest\Tcp\Server\Unit\Router;
 
+use SwoftTest\Tcp\Server\Testing\Middleware\User1Middleware;
+use SwoftTest\Tcp\Server\Testing\Middleware\User2Middleware;
+use function bean;
 use function get_class;
 use PHPUnit\Framework\TestCase;
 use Swoft\Tcp\Server\Exception\TcpServerRouteException;
@@ -66,5 +69,17 @@ class RouterTest extends TestCase
             $this->assertSame(TcpServerRouteException::class, get_class($e));
             $this->assertSame('The tcp server command(test) handler cannot be empty',  $e->getMessage());
         }
+    }
+
+    public function testMiddlewares():void
+    {
+        $router = bean('tcpRouter');
+
+        $this->assertNotEmpty($ms = $router->getMiddlewares());
+        $this->assertArrayHasKey('tcpTest.test', $ms);
+
+        $this->assertNotEmpty($ms = $router->getMiddlewaresByCmd('tcpTest.test'));
+        $this->assertSame(User1Middleware::class, $ms[0]);
+        $this->assertSame(User2Middleware::class, $ms[1]);
     }
 }

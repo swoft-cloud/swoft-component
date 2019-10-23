@@ -4,6 +4,7 @@ namespace Swoft\Tcp\Server\Router;
 
 use Swoft\Stdlib\Helper\Str;
 use Swoft\Tcp\Server\Exception\TcpServerRouteException;
+use function array_merge;
 
 /**
  * Class RouteRegister
@@ -13,40 +14,49 @@ use Swoft\Tcp\Server\Exception\TcpServerRouteException;
 final class RouteRegister
 {
     /**
-     * @var array
+     * Raw tcp controller, methods data
+     *
      * [
      *  controller class => [
      *      prefix => 'home',
-     *      route => 'index',
-     *      root  => false,
+     *      routes => [
+     *          root  => false,
+     *          route  => string,
+     *          method => 'index',
+     *          middles => [middleware1],
+     *      ],
+     *      middles => [middleware0],
      *  ]
      * ]
+     * @var array
      */
-    private static $routes = [];
+    private static $controllers = [];
 
     /**
-     * @param string $controllerClass
+     * @param string $class
      * @param string $prefix
+     * @param array  $middlewares
      */
-    public static function bindController(string $controllerClass, string $prefix): void
+    public static function bindController(string $class, string $prefix, array $middlewares): void
     {
-        self::$routes[$controllerClass] = [
-            'prefix' => $prefix ?: Str::getClassName($controllerClass, 'Controller'),
-            'class'  => $controllerClass,
-            'routes' => [], // see bindCommand()
+        self::$controllers[$class] = [
+            'prefix'  => $prefix ?: Str::getClassName($class, 'Controller'),
+            'class'   => $class,
+            'routes'  => [], // see bindCommand()
+            'middles' => $middlewares,
         ];
     }
 
     /**
-     * @param string $controllerClass
+     * @param string $class
      * @param string $method
-     * @param array  $info
+     * @param array  $info [route => string, root => bool, middles => array]
      */
-    public static function bindCommand(string $controllerClass, string $method, array $info): void
+    public static function bindCommand(string $class, string $method, array $info): void
     {
         $info['method'] = $method;
 
-        self::$routes[$controllerClass]['routes'][] = $info;
+        self::$controllers[$class]['routes'][] = $info;
     }
 
     /**
@@ -58,8 +68,9 @@ final class RouteRegister
     {
         $delimiter = $router->getDelimiter();
 
-        foreach (self::$routes as $ctrlClass => $group) {
-            $prefix = $group['prefix'];
+        foreach (self::$controllers as $ctrlClass => $group) {
+            $prefix  = $group['prefix'];
+            $middles = $group['middles'];
 
             // Register routes
             foreach ($group['routes'] as $route) {
@@ -70,11 +81,13 @@ final class RouteRegister
                     $path = $prefix . $delimiter . $path;
                 }
 
-                $router->add($path, [$ctrlClass, $route['method']]);
+                $router->add($path, [$ctrlClass, $route['method']], [
+                    'middles' => $route['middles'] ? array_merge($middles, $route['middles']) : $middles,
+                ]);
             }
         }
 
         // Clear data
-        self::$routes = [];
+        self::$controllers = [];
     }
 }

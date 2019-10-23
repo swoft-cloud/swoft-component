@@ -105,7 +105,7 @@ class TempArray
     /**
      * @return array
      */
-    public static function getAllAndClear(): array
+    public static function getAllAndClean(): array
     {
         $tempArray   = self::$array;
         self::$array = [];

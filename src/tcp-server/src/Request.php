@@ -2,7 +2,9 @@
 
 namespace Swoft\Tcp\Server;
 
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Stdlib\Concern\DataPropertyTrait;
 use Swoft\Tcp\Package;
 use Swoft\Tcp\Server\Contract\RequestInterface;
 
@@ -14,6 +16,14 @@ use Swoft\Tcp\Server\Contract\RequestInterface;
  */
 class Request implements RequestInterface
 {
+    use DataPropertyTrait;
+
+    /**
+     * The request data key for storage matched route info.
+     */
+    public const ROUTE_INFO = '__route';
+    public const COMMAND    = '__cmd';
+
     /**
      * Receiver fd
      *
@@ -46,11 +56,11 @@ class Request implements RequestInterface
     public static function new(int $fd, string $data, int $reactorId): self
     {
         /** @var self $self */
-        $self = bean('tcpRequest');
+        $self = Swoft::getBean('tcpRequest');
 
         // Set properties
-        $self->fd      = $fd;
-        $self->rawData = $data;
+        $self->fd        = $fd;
+        $self->rawData   = $data;
         $self->reactorId = $reactorId;
 
         return $self;

@@ -49,21 +49,20 @@ class CloseListener implements CloseInterface
             // - Session not exist the worker, notify other worker clear session.
             if (!Session::has($sid)) {
                 $this->notifyOtherWorkersClose($fd, $sid, $server->worker_id);
-                return;
+            } else {
+                $total = server()->count() - 1;
+
+                server()->log("Close: conn#{$fd} has been closed. server conn count $total", [], 'debug');
+
+                /** @var Connection $conn */
+                $conn = Session::mustGet();
+                if (!$meta = $conn->getMetadata()) {
+                    server()->log("Close: conn#{$fd} connection meta info has been lost");
+                    return;
+                }
+
+                server()->log("Close: conn#{$fd} meta info:", $meta, 'debug');
             }
-
-            $total = server()->count() - 1;
-
-            server()->log("Close: conn#{$fd} has been closed. server conn count $total", [], 'debug');
-
-            /** @var Connection $conn */
-            $conn = Session::mustGet();
-            if (!$meta = $conn->getMetadata()) {
-                server()->log("Close: conn#{$fd} connection meta info has been lost");
-                return;
-            }
-
-            server()->log("Close: conn#{$fd} meta info:", $meta, 'debug');
         } catch (Throwable $e) {
             server()->log("Close: conn#{$fd} error on handle close, ERR: " . $e->getMessage(), [], 'error');
             Swoft::trigger(TcpServerEvent::CLOSE_ERROR, $e, $fd);

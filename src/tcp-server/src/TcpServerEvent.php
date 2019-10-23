@@ -33,8 +33,15 @@ final class TcpServerEvent
     /**
      * On package send
      * - before call response->send()
+     * @deprecated please use PACKAGE_RESPONSE instead
      */
-    public const PACKAGE_SEND = 'swoft.tcp.server.package.send';
+    public const PACKAGE_SEND = 'swoft.tcp.server.package.response';
+
+    /**
+     * On package send
+     * - before call response->send()
+     */
+    public const PACKAGE_RESPONSE = 'swoft.tcp.server.package.response';
 
     /**
      * On content send

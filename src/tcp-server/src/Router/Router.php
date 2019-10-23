@@ -19,12 +19,20 @@ class Router implements RouterInterface
      * [
      *  'command name' => [
      *      'command' => 'command name'
-     *      'handler' => [class, method]
+     *      'handler' => [class, method],
      *  ]
      * ]
      * @var array
      */
     private $routes = [];
+
+    /**
+     * [
+     *  'command name' => [middle1, middle2],
+     * ]
+     * @var array
+     */
+    private $middlewares = [];
 
     /**
      * The route command delimiter.
@@ -42,7 +50,7 @@ class Router implements RouterInterface
 
     /**
      * @param string $cmd
-     * @param array  $handler
+     * @param array  $handler [class, method]
      * @param array  $info
      *
      * @throws TcpServerRouteException
@@ -61,7 +69,12 @@ class Router implements RouterInterface
         $info['command'] = $cmd;
         $info['handler'] = $handler;
 
-        // Add module
+        // Has middleware
+        if (!empty($info['middles'])) {
+            $this->addMiddlewares($cmd, $info['middles']);
+        }
+
+        unset($info['middles']);
         $this->routes[$cmd] = $info;
     }
 
@@ -83,6 +96,25 @@ class Router implements RouterInterface
         }
 
         return [self::NOT_FOUND, null];
+    }
+
+    /**
+     * @param string $cmd
+     * @param array  $middlewares
+     */
+    public function addMiddlewares(string $cmd, array $middlewares): void
+    {
+        $this->middlewares[$cmd] = $middlewares;
+    }
+
+    /**
+     * @param string $cmd
+     *
+     * @return array
+     */
+    public function getMiddlewaresByCmd(string $cmd): array
+    {
+        return $this->middlewares[$cmd] ?? [];
     }
 
     /**
@@ -131,5 +163,13 @@ class Router implements RouterInterface
     public function getRoutes(): array
     {
         return $this->routes;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMiddlewares(): array
+    {
+        return $this->middlewares;
     }
 }

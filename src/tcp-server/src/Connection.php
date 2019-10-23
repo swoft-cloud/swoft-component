@@ -3,8 +3,8 @@
 namespace Swoft\Tcp\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Concern\DataPropertyTrait;
 use Swoft\Contract\SessionInterface;
+use Swoft\Stdlib\Concern\DataPropertyTrait;
 use Swoft\Stdlib\Helper\JsonHelper;
 use function bean;
 use function microtime;
@@ -80,6 +80,14 @@ class Connection implements SessionInterface
             'connectTime'  => $info['connect_time'],
             'connectFtime' => microtime(true),
         ]);
+    }
+
+    /**
+     * @return int
+     */
+    public function getFd(): int
+    {
+        return $this->fd;
     }
 
     /**
