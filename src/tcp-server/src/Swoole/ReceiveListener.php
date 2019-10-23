@@ -74,9 +74,8 @@ class ReceiveListener implements ReceiveInterface
 
             /** @var TcpErrorDispatcher $errDispatcher */
             $errDispatcher = Swoft::getSingleton(TcpErrorDispatcher::class);
+            $errDispatcher->receiveError($e, $response);
 
-            // Dispatching error handle
-            $response = $errDispatcher->receiveError($e, $response);
             $response->send($server);
         } finally {
             // Defer

@@ -183,23 +183,28 @@ class Response implements ResponseInterface
             return 0;
         }
 
-        // Fix: No response data
+        // Mark has sent
+        $this->sent = true;
+
+        // Fix: empty response data
         if ($this->isEmpty()) {
+            CLog::warning('cannot send empty response to websocket client');
             return 0;
         }
 
         /** @noinspection CallableParameterUseCaseInTypeContextInspection */
-        $conn   = $conn ?: Session::mustGet();
-        $server = $conn->getServer();
-        $sender = $this->sender === $this->fd ? 0 : $this->sender;
+        $conn = $conn ?: Session::current();
 
-        $pageSize = $this->pageSize;
-        $content  = $this->formatContent($conn);
+        // Build response content
+        $content = $this->formatContent($conn);
+        $server  = $conn->getServer();
+        $sender  = $this->sender === $this->fd ? 0 : $this->sender;
 
         // Trigger event before push message content to client
         Swoft::trigger(WsServerEvent::MESSAGE_PUSH, $server, $content, $this);
 
         // To all users
+        $pageSize = $this->pageSize;
         if ($this->sendToAll) {
             return $server->sendToAll($content, $sender, $pageSize, $this->opcode);
         }
@@ -242,7 +247,6 @@ class Response implements ResponseInterface
 
         /** @var WsMessageContext $context */
         $context = Context::get(true);
-        $parser  = $conn->getParser();
         $message = null;
 
         $cmdId = $context->getMessage()->getCmd();
@@ -262,7 +266,9 @@ class Response implements ResponseInterface
             $message = Message::new($cmdId, $this->data, $this->ext);
         }
 
+        // Encode message
         if ($message) {
+            $parser  = $conn->getParser();
             $content = $parser->encode($message);
         }
 
@@ -274,7 +280,7 @@ class Response implements ResponseInterface
      */
     public function isEmpty(): bool
     {
-        return $this->content === '' && $this->data === null;
+        return $this->content === '' && $this->data === null && !$this->ext;
     }
 
     /**
@@ -296,6 +302,19 @@ class Response implements ResponseInterface
             $this->fd = $fd;
         }
 
+        return $this;
+    }
+
+    /**
+     * Set data. override raw method.
+     *
+     * @param mixed $data
+     *
+     * @return $this|ResponseInterface
+     */
+    public function setData($data): ResponseInterface
+    {
+        $this->data = $data;
         return $this;
     }
 
@@ -384,17 +403,6 @@ class Response implements ResponseInterface
     public function setContent(string $content): ResponseInterface
     {
         $this->content = $content;
-        return $this;
-    }
-
-    /**
-     * @param mixed $data
-     *
-     * @return ResponseInterface|self
-     */
-    public function setData($data): ResponseInterface
-    {
-        $this->data = $data;
         return $this;
     }
 

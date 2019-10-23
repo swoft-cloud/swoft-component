@@ -96,6 +96,11 @@ class Response implements ResponseInterface
      */
     public function isEmpty(): bool
     {
+        // Has code and error message
+        if ($this->isFail()) {
+            return false;
+        }
+
         return $this->content === '' && $this->data === null;
     }
 

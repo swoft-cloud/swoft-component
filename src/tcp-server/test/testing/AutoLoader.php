@@ -30,7 +30,7 @@ class AutoLoader extends SwoftComponent
     {
         return [
             'tcpServer' => [
-                'debug' => 0,
+                'debug'   => 0,
                 'setting' => [
                     'log_file' => '',
                 ]

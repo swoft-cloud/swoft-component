@@ -21,6 +21,7 @@ final class TcpServerEvent
 
     /**
      * On receive before
+     *
      * @deprecated please use RECEIVE_BEFORE
      */
     public const RECEIVE = 'swoft.tcp.server.receive';
@@ -33,6 +34,7 @@ final class TcpServerEvent
     /**
      * On package send
      * - before call response->send()
+     *
      * @deprecated please use PACKAGE_RESPONSE instead
      */
     public const PACKAGE_SEND = 'swoft.tcp.server.package.response';

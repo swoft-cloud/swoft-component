@@ -5,8 +5,6 @@ namespace Swoft\Tcp\Server;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Server;
-use Swoft\Session\Session;
-use Swoft\Stdlib\Helper\JsonHelper;
 use Swoole\Server as SwServer;
 
 /**

@@ -22,6 +22,7 @@ class Router implements RouterInterface
      *      'handler' => [class, method],
      *  ]
      * ]
+     *
      * @var array
      */
     private $routes = [];
@@ -30,6 +31,7 @@ class Router implements RouterInterface
      * [
      *  'command name' => [middle1, middle2],
      * ]
+     *
      * @var array
      */
     private $middlewares = [];
@@ -112,7 +114,7 @@ class Router implements RouterInterface
      *
      * @return array
      */
-    public function getMiddlewaresByCmd(string $cmd): array
+    public function getCmdMiddlewares(string $cmd): array
     {
         return $this->middlewares[$cmd] ?? [];
     }

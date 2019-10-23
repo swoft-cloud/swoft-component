@@ -41,6 +41,8 @@ class TcpDispatcher implements MiddlewareInterface
 
     /**
      * Pre-check whether the route matches successfully.
+     * True  - Check if the status matches successfully after matching.
+     * False - check the status after the middleware process
      *
      * @var bool
      */
@@ -51,21 +53,21 @@ class TcpDispatcher implements MiddlewareInterface
      *
      * @var array
      */
-    protected $middlewares = [];
+    private $middlewares = [];
 
     /**
      * User defined global pre-middlewares
      *
      * @var array
      */
-    protected $preMiddlewares = [];
+    private $preMiddlewares = [];
 
     /**
      * User defined global after-middlewares
      *
      * @var array
      */
-    protected $afterMiddlewares = [];
+    private $afterMiddlewares = [];
 
     /**
      * @param Request  $request
@@ -100,15 +102,17 @@ class TcpDispatcher implements MiddlewareInterface
         $status = $result[0];
 
         // Storage route info
-        $request->set(Request::COMMAND, $command);
         $request->set(Request::ROUTE_INFO, $result);
 
         // Found, get command middlewares
+        $middlewares = [];
         if ($status === Router::FOUND) {
-            $cmdMiddles = $router->getMiddlewaresByCmd($command);
+            $middlewares = $router->getCmdMiddlewares($command);
 
-            // append middlewares
-            $this->addMiddlewares($cmdMiddles);
+            // Append command middlewares
+            if ($middlewares) {
+                $middlewares = array_merge($this->middlewares, $middlewares);
+            }
 
             // If this->preCheckRoute is True, pre-check route match status
         } elseif ($this->preCheckRoute) {
@@ -117,9 +121,11 @@ class TcpDispatcher implements MiddlewareInterface
         }
 
         // Has middlewares
-        if ($middlewares = $this->mergeMiddlewares()) {
+        if ($middlewares = $this->mergeMiddlewares($middlewares)) {
             $chain = MiddlewareChain::new($this);
             $chain->addMiddles($middlewares);
+
+            server()->log('request will use middleware process, middleware count: ' . $chain->count(), [], 'debug');
 
             return $chain->run($request);
         }
@@ -238,11 +244,11 @@ class TcpDispatcher implements MiddlewareInterface
     }
 
     /**
-     * @param array $middlewares
+     * @param string $middleware
      */
-    public function setMiddlewares(array $middlewares): void
+    public function addMiddleware(string $middleware): void
     {
-        $this->middlewares = $middlewares;
+        $this->middlewares[] = $middleware;
     }
 
     /**
@@ -253,6 +259,14 @@ class TcpDispatcher implements MiddlewareInterface
         if ($middlewares) {
             $this->middlewares = array_merge($this->middlewares, $middlewares);
         }
+    }
+
+    /**
+     * @param array $middlewares
+     */
+    public function setMiddlewares(array $middlewares): void
+    {
+        $this->middlewares = $middlewares;
     }
 
     /**
@@ -290,12 +304,14 @@ class TcpDispatcher implements MiddlewareInterface
     /**
      * merge all middlewares
      *
+     * @param array $middlewares
+     *
      * @return array
      */
-    protected function mergeMiddlewares(): array
+    protected function mergeMiddlewares(array $middlewares): array
     {
-        if ($this->middlewares) {
-            return array_merge($this->preMiddlewares, $this->middlewares, $this->afterMiddlewares);
+        if ($middlewares) {
+            return array_merge($this->preMiddlewares, $middlewares, $this->afterMiddlewares);
         }
 
         return array_merge($this->preMiddlewares, $this->afterMiddlewares);

@@ -4,6 +4,7 @@ namespace Swoft\Tcp\Server;
 
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Error\ErrorManager;
 use Swoft\Error\ErrorType;
 use Swoft\Log\Helper\CLog;
@@ -21,17 +22,22 @@ use Throwable;
 class TcpErrorDispatcher
 {
     /**
+     * @Inject()
+     * @var ErrorManager
+     */
+    private $errorManager;
+
+    /**
      * @param Throwable $e
      * @param int       $fd
      */
     public function connectError(Throwable $e, int $fd): void
     {
-        /** @var ErrorManager $handlers */
-        $handlers = Swoft::getSingleton(ErrorManager::class);
+        /** @var TcpConnectErrorHandlerInterface $errorHandler */
+        $errorHandler = $this->errorManager->matchHandler($e, ErrorType::TCP_CNT);
 
-        /** @var TcpConnectErrorHandlerInterface $handler */
-        if ($handler = $handlers->matchHandler($e, ErrorType::TCP_CNT)) {
-            $handler->handle($e, $fd);
+        if ($errorHandler) {
+            $errorHandler->handle($e, $fd);
             return;
         }
 
@@ -46,12 +52,10 @@ class TcpErrorDispatcher
      */
     public function receiveError(Throwable $e, Response $response): Response
     {
-        /** @var ErrorManager $handlers */
-        $handlers = Swoft::getSingleton(ErrorManager::class);
-
-        /** @var TcpReceiveErrorHandlerInterface $handler */
-        if ($handler = $handlers->matchHandler($e, ErrorType::TCP_RCV)) {
-            return $handler->handle($e, $response);
+        /** @var TcpReceiveErrorHandlerInterface $errorHandler */
+        $errorHandler = $this->errorManager->matchHandler($e, ErrorType::TCP_RCV);
+        if ($errorHandler) {
+            return $errorHandler->handle($e, $response);
         }
 
         $this->logError('Receive', $e);
@@ -68,12 +72,10 @@ class TcpErrorDispatcher
      */
     public function closeError(Throwable $e, int $fd): void
     {
-        /** @var ErrorManager $handlers */
-        $handlers = Swoft::getSingleton(ErrorManager::class);
-
-        /** @var Swoft\Tcp\Server\Contract\TcpCloseErrorHandlerInterface $handler */
-        if ($handler = $handlers->matchHandler($e, ErrorType::TCP_CLS)) {
-            $handler->handle($e, $fd);
+        /** @var Swoft\Tcp\Server\Contract\TcpCloseErrorHandlerInterface $errorHandler */
+        $errorHandler = $this->errorManager->matchHandler($e, ErrorType::TCP_CLS);
+        if ($errorHandler) {
+            $errorHandler->handle($e, $fd);
             return;
         }
 
@@ -88,13 +90,7 @@ class TcpErrorDispatcher
     private function logError(string $typeName, Throwable $e): void
     {
         Log::error($e->getMessage());
-        CLog::error("Tcp %s Error(no handler, %s): %s\nAt File %s line %d\nTrace:\n%s",
-            $typeName,
-            get_class($e),
-            $e->getMessage(),
-            $e->getFile(),
-            $e->getLine(),
-            $e->getTraceAsString()
-        );
+        CLog::error("Tcp %s Error(no handler, %s): %s\nAt File %s line %d\nTrace:\n%s", $typeName, get_class($e),
+            $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString());
     }
 }

@@ -50,10 +50,13 @@ trait CommonProtocolDataTrait
 
     /**
      * @param array $ext
+     *
+     * @return $this
      */
-    public function setExt(array $ext): void
+    public function setExt(array $ext): self
     {
         $this->ext = $ext;
+        return $this;
     }
 
     /**

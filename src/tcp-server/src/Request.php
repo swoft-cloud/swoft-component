@@ -20,9 +20,16 @@ class Request implements RequestInterface
 
     /**
      * The request data key for storage matched route info.
+     * eg:
+     * [
+     *  status,
+     *  [
+     *      command => string,
+     *      handler => [class, method],
+     *  ]
+     * ]
      */
     public const ROUTE_INFO = '__route';
-    public const COMMAND    = '__cmd';
 
     /**
      * Receiver fd

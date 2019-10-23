@@ -2,14 +2,14 @@
 
 namespace SwoftTest\Tcp\Server\Unit\Router;
 
-use SwoftTest\Tcp\Server\Testing\Middleware\User1Middleware;
-use SwoftTest\Tcp\Server\Testing\Middleware\User2Middleware;
-use function bean;
-use function get_class;
 use PHPUnit\Framework\TestCase;
 use Swoft\Tcp\Server\Exception\TcpServerRouteException;
 use Swoft\Tcp\Server\Router\Router;
+use SwoftTest\Tcp\Server\Testing\Middleware\User1Middleware;
+use SwoftTest\Tcp\Server\Testing\Middleware\User2Middleware;
 use Throwable;
+use function bean;
+use function get_class;
 
 /**
  * Class RouterTest
@@ -67,18 +67,19 @@ class RouterTest extends TestCase
             $r->add('test', []);
         } catch (Throwable $e) {
             $this->assertSame(TcpServerRouteException::class, get_class($e));
-            $this->assertSame('The tcp server command(test) handler cannot be empty',  $e->getMessage());
+            $this->assertSame('The tcp server command(test) handler cannot be empty', $e->getMessage());
         }
     }
 
-    public function testMiddlewares():void
+    public function testMiddlewares(): void
     {
+        /** @var Router $router */
         $router = bean('tcpRouter');
 
         $this->assertNotEmpty($ms = $router->getMiddlewares());
         $this->assertArrayHasKey('tcpTest.test', $ms);
 
-        $this->assertNotEmpty($ms = $router->getMiddlewaresByCmd('tcpTest.test'));
+        $this->assertNotEmpty($ms = $router->getCmdMiddlewares('tcpTest.test'));
         $this->assertSame(User1Middleware::class, $ms[0]);
         $this->assertSame(User2Middleware::class, $ms[1]);
     }

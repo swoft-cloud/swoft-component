@@ -103,9 +103,7 @@ class MiddlewareChain extends AbstractMiddlewareChain implements RequestHandlerI
         }
 
         if (!$response instanceof ResponseInterface) {
-            throw new TcpMiddlewareException(
-                'Middleware must return object and instance of ' . ResponseInterface::class
-            );
+            throw new TcpMiddlewareException('Middleware must return object and instance of ' . ResponseInterface::class);
         }
 
         return $response;

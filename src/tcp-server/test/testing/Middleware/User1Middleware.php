@@ -3,8 +3,8 @@
 namespace SwoftTest\Tcp\Server\Testing\Middleware;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Tcp\Server\Contract\RequestHandlerInterface;
 use Swoft\Tcp\Server\Contract\MiddlewareInterface;
+use Swoft\Tcp\Server\Contract\RequestHandlerInterface;
 use Swoft\Tcp\Server\Contract\RequestInterface;
 use Swoft\Tcp\Server\Contract\ResponseInterface;
 
@@ -24,7 +24,7 @@ class User1Middleware implements MiddlewareInterface
     public function process(RequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $start = '>user1 ';
-        $resp = $handler->handle($request);
+        $resp  = $handler->handle($request);
 
         $resp->setData($start . $resp->getData() . ' user1>');
 

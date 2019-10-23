@@ -89,7 +89,7 @@ class SimpleTokenPacker implements PackerInterface
             return $content;
         }
 
-        // Error, output error message
+        // Has error, output error message
         if ($response->isFail()) {
             return $response->getMsg();
         }

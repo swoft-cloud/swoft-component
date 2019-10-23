@@ -3,8 +3,8 @@
 namespace SwoftTest\Tcp\Server\Testing\Middleware;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Tcp\Server\Contract\RequestHandlerInterface;
 use Swoft\Tcp\Server\Contract\MiddlewareInterface;
+use Swoft\Tcp\Server\Contract\RequestHandlerInterface;
 use Swoft\Tcp\Server\Contract\RequestInterface;
 use Swoft\Tcp\Server\Contract\ResponseInterface;
 use Swoft\Tcp\Server\Response;

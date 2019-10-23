@@ -13,8 +13,8 @@ use Swoft\Tcp\Server\Response;
 interface MiddlewareInterface
 {
     /**
-     * @param RequestInterface|Request        $request
-     * @param RequestHandlerInterface $handler
+     * @param RequestInterface|Request $request
+     * @param RequestHandlerInterface  $handler
      *
      * @return ResponseInterface|Response
      */

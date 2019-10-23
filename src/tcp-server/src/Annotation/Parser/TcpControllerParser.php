@@ -20,7 +20,7 @@ final class TcpControllerParser extends Parser
     /**
      * Parse object
      *
-     * @param int          $type       Class or Method or Property
+     * @param int           $type       Class or Method or Property
      * @param TcpController $annotation Annotation object
      *
      * @return array

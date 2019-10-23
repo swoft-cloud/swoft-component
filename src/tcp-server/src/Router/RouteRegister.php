@@ -28,6 +28,7 @@ final class RouteRegister
      *      middles => [middleware0],
      *  ]
      * ]
+     *
      * @var array
      */
     private static $controllers = [];

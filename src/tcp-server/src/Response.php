@@ -6,9 +6,9 @@ use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Log\Helper\CLog;
 use Swoft\Tcp\Protocol;
+use Swoft\Tcp\Response as TcpResponse;
 use Swoft\Tcp\Server\Contract\ResponseInterface;
 use Swoft\Tcp\Server\Exception\TcpResponseException;
-use Swoft\Tcp\Response as TcpResponse;
 use Swoole\Server;
 
 /**
@@ -72,17 +72,13 @@ class Response extends TcpResponse implements ResponseInterface
             return 0;
         }
 
-        // Fix: No response data
-        if ($this->isEmpty()) {
-            return 0;
-        }
-
         /** @var Protocol $protocol */
-        $protocol = Swoft::getBean('tcpServerProtocol');
+        $protocol   = Swoft::getBean('tcpServerProtocol');
+        $this->sent = true;
 
         // Content is empty, skip send
-        if (!$content = $protocol->packResponse($this)) {
-            $this->sent = true;
+        $content = $protocol->packResponse($this);
+        if ('' === $content) {
             CLog::warning('cannot send empty content to tcp client');
             return 0;
         }
@@ -92,12 +88,12 @@ class Response extends TcpResponse implements ResponseInterface
         // Trigger event before push message content to client
         Swoft::trigger(TcpServerEvent::CONTENT_SEND, $server, $content, $this);
 
+        // Do send content
         if ($server->send($this->fd, $content) === false) {
             $code = $server->getLastError();
             throw new TcpResponseException("Error on send data to client #{$this->fd}", $code);
         }
 
-        $this->sent = true;
         return 1;
     }
 
