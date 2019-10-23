@@ -36,6 +36,13 @@ interface ContextInterface
     public function setMulti(array $map): void;
 
     /**
+     * Unset key
+     *
+     * @param string $key
+     */
+    public function unset(string $key): void;
+
+    /**
      * Clear resource
      */
     public function clear(): void;

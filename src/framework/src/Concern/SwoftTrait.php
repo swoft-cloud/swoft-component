@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Concern;
 
@@ -35,10 +35,9 @@ trait SwoftTrait
     /**
      * After env
      *
+     * @return bool
      * Return `true` is to continue
      * Return `false` is to stop application
-     *
-     * @return bool
      */
     public function afterEnv(): bool
     {
@@ -48,10 +47,9 @@ trait SwoftTrait
     /**
      * Before env
      *
+     * @return bool
      * Return `true` is to continue
      * Return `false` is to stop application
-     *
-     * @return bool
      */
     public function beforeEnv(): bool
     {
