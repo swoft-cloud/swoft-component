@@ -24,7 +24,7 @@ use function srun;
  * @since 2.0
  * @Bean("cliDispatcher")
  */
-class ConsoleDispatcher // implements DispatcherInterface
+class ConsoleDispatcher
 {
     /**
      * @param array $route
@@ -44,7 +44,7 @@ class ConsoleDispatcher // implements DispatcherInterface
 
         // Blocking running
         if (!$route['coroutine']) {
-            $this->before(get_parent_class($object), $method);
+            $this->before($method, $className);
             PhpHelper::call([$object, $method], ...$params);
             $this->after($method);
             return;
@@ -127,9 +127,9 @@ class ConsoleDispatcher // implements DispatcherInterface
             $type = $paramType->getName();
 
             if ($type === Output::class) {
-                $bindParams[] = Swoft::getBean('input');
-            } elseif ($type === Input::class) {
                 $bindParams[] = Swoft::getBean('output');
+            } elseif ($type === Input::class) {
+                $bindParams[] = Swoft::getBean('input');
             } else {
                 $bindParams[] = null;
             }
