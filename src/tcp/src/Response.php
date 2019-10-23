@@ -101,7 +101,7 @@ class Response implements ResponseInterface
             return false;
         }
 
-        return $this->content === '' && $this->data === null;
+        return $this->content === '' && $this->data === null && !$this->ext;
     }
 
     /**

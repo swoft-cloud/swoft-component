@@ -72,16 +72,17 @@ class Response extends TcpResponse implements ResponseInterface
             return 0;
         }
 
-        /** @var Protocol $protocol */
-        $protocol   = Swoft::getBean('tcpServerProtocol');
         $this->sent = true;
 
         // Content is empty, skip send
-        $content = $protocol->packResponse($this);
-        if ('' === $content) {
+        if ($this->isEmpty()) {
             CLog::warning('cannot send empty content to tcp client');
             return 0;
         }
+
+        /** @var Protocol $protocol */
+        $protocol = Swoft::getBean('tcpServerProtocol');
+        $content  = $protocol->packResponse($this);
 
         $server = $server ?: Swoft::server()->getSwooleServer();
 

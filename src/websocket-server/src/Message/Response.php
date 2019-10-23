@@ -306,6 +306,19 @@ class Response implements ResponseInterface
     }
 
     /**
+     * Set ext data. override raw method.
+     *
+     * @param array $ext
+     *
+     * @return $this|ResponseInterface
+     */
+    public function setExt(array $ext): ResponseInterface
+    {
+        $this->ext = $ext;
+        return $this;
+    }
+
+    /**
      * Set data. override raw method.
      *
      * @param mixed $data
