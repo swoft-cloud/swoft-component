@@ -18,6 +18,8 @@ use Swoft\Tcp\Server\Exception\TcpMiddlewareException;
 use Swoft\Tcp\Server\Exception\TcpUnpackingException;
 use Swoft\Tcp\Server\Router\Router;
 use Throwable;
+use function array_merge;
+use function context;
 use function server;
 use function sprintf;
 
@@ -38,18 +40,29 @@ class TcpDispatcher implements MiddlewareInterface
     private $enable = true;
 
     /**
-     * User defined middlewares
+     * Pre-check whether the route matches successfully.
+     *
+     * @var bool
+     */
+    private $preCheckRoute = true;
+
+    /**
+     * User defined global middlewares
      *
      * @var array
      */
     protected $middlewares = [];
 
     /**
+     * User defined global pre-middlewares
+     *
      * @var array
      */
     protected $preMiddlewares = [];
 
     /**
+     * User defined global after-middlewares
+     *
      * @var array
      */
     protected $afterMiddlewares = [];
@@ -61,6 +74,8 @@ class TcpDispatcher implements MiddlewareInterface
      * @return Response|ResponseInterface
      * @throws TcpUnpackingException
      * @throws TcpMiddlewareException
+     * @throws CommandNotFoundException
+     * @throws ReflectionException
      */
     public function dispatch(Request $request, Response $response): ResponseInterface
     {
@@ -82,60 +97,86 @@ class TcpDispatcher implements MiddlewareInterface
 
         // Match command
         $result = $router->match($command);
+        $status = $result[0];
 
         // Storage route info
         $request->set(Request::COMMAND, $command);
         $request->set(Request::ROUTE_INFO, $result);
 
         // Found, get command middlewares
-        if ($result[0] === Router::FOUND) {
-            $middlewares = $router->getMiddlewaresByCmd($command);
+        if ($status === Router::FOUND) {
+            $cmdMiddles = $router->getMiddlewaresByCmd($command);
+
+            // append middlewares
+            $this->addMiddlewares($cmdMiddles);
+
+            // If this->preCheckRoute is True, pre-check route match status
+        } elseif ($this->preCheckRoute) {
+            $errMsg = sprintf("request command '%s' is not found of the tcp server", $command);
+            throw new CommandNotFoundException($errMsg, ErrCode::ROUTE_NOT_FOUND);
         }
 
-        $chain = MiddlewareChain::new($this);
-        $chain->use($middlewares);
+        // Has middlewares
+        if ($middlewares = $this->mergeMiddlewares()) {
+            $chain = MiddlewareChain::new($this);
+            $chain->addMiddles($middlewares);
 
-        return $chain->run($request);
+            return $chain->run($request);
+        }
+
+        // No middlewares, direct dispatching
+        return $this->dispatchRequest($request, $response);
     }
 
     /**
+     * For middleware dispatching
+     *
      * @param RequestInterface|Request $request
      * @param RequestHandlerInterface  $handler
      *
      * @return ResponseInterface|Response
      * @throws CommandNotFoundException
      * @throws ReflectionException
+     * @throws Swoft\Exception\SwoftException
      */
     public function process(RequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        return $this->dispatchRequest($request);
+        /** @var Response $response */
+        $response = context()->getResponse();
+
+        return $this->dispatchRequest($request, $response);
     }
 
     /**
-     * @param Request $request
+     * @param Request  $request
+     * @param Response $response
      *
      * @return ResponseInterface
      * @throws CommandNotFoundException
      * @throws ReflectionException
      */
-    protected function dispatchRequest(Request $request): ResponseInterface
+    protected function dispatchRequest(Request $request, Response $response): ResponseInterface
     {
         [$status, $info] = $request->get(Request::ROUTE_INFO);
 
+        // If this->preCheckRoute is False, check route match status.
         $cmd = $info['command'];
-        if ($status === Router::NOT_FOUND) {
+        if (!$this->preCheckRoute && $status === Router::NOT_FOUND) {
             $errMsg = sprintf("request command '%s' is not found of the tcp server", $cmd);
             throw new CommandNotFoundException($errMsg, ErrCode::ROUTE_NOT_FOUND);
         }
 
-        [$ctlClass, $ctlMethod] = $info['handler'];
+        // Extract handler info
+        [$class, $method] = $info['handler'];
 
-        server()->log("Tcp command: '{$cmd}', will call tcp request handler {$ctlClass}@{$ctlMethod}");
+        server()->log("Tcp command: '{$cmd}', will call tcp request handler {$class}@{$method}");
 
-        $object = Swoft::getBean($ctlClass);
-        $params = $this->getBindParams($ctlClass, $ctlMethod, $package, $request, $response);
-        $result = $object->$ctlMethod(...$params);
+        // Find class bean object
+        $object = Swoft::getBean($class);
+        $params = $this->getBindParams($class, $method, $request, $response);
+        $result = $object->$method(...$params);
 
+        // If result is not empty
         if ($result && !$result instanceof Response) {
             $response->setData($result);
         }
@@ -148,14 +189,13 @@ class TcpDispatcher implements MiddlewareInterface
      *
      * @param string   $class
      * @param string   $method
-     * @param Package  $package
      * @param Request  $r
      * @param Response $w
      *
      * @return array
      * @throws ReflectionException
      */
-    private function getBindParams(string $class, string $method, Package $package, Request $r, Response $w): array
+    private function getBindParams(string $class, string $method, Request $r, Response $w): array
     {
         $classInfo = Swoft::getReflection($class);
         if (!isset($classInfo['methods'][$method])) {
@@ -176,7 +216,7 @@ class TcpDispatcher implements MiddlewareInterface
             $type = $paramType ? $paramType->getName() : '';
 
             if ($type === Package::class) {
-                $bindParams[] = $package;
+                $bindParams[] = $r->getPackage();
             } elseif ($type === Request::class) {
                 $bindParams[] = $r;
             } elseif ($type === Response::class) {
@@ -190,14 +230,75 @@ class TcpDispatcher implements MiddlewareInterface
     }
 
     /**
-     * merge request middlewares
+     * @return array
+     */
+    public function getMiddlewares(): array
+    {
+        return $this->middlewares;
+    }
+
+    /**
+     * @param array $middlewares
+     */
+    public function setMiddlewares(array $middlewares): void
+    {
+        $this->middlewares = $middlewares;
+    }
+
+    /**
+     * @param array $middlewares
+     */
+    public function addMiddlewares(array $middlewares): void
+    {
+        if ($middlewares) {
+            $this->middlewares = array_merge($this->middlewares, $middlewares);
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function getPreMiddlewares(): array
+    {
+        return $this->preMiddlewares;
+    }
+
+    /**
+     * @param array $preMiddlewares
+     */
+    public function setPreMiddlewares(array $preMiddlewares): void
+    {
+        $this->preMiddlewares = $preMiddlewares;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAfterMiddlewares(): array
+    {
+        return $this->afterMiddlewares;
+    }
+
+    /**
+     * @param array $afterMiddlewares
+     */
+    public function setAfterMiddlewares(array $afterMiddlewares): void
+    {
+        $this->afterMiddlewares = $afterMiddlewares;
+    }
+
+    /**
+     * merge all middlewares
      *
      * @return array
      */
     protected function mergeMiddlewares(): array
     {
-        return $this->middlewares ? array_merge($this->preMiddlewares, $this->middlewares, $this->afterMiddlewares) :
-            array_merge($this->preMiddlewares, $this->afterMiddlewares);
+        if ($this->middlewares) {
+            return array_merge($this->preMiddlewares, $this->middlewares, $this->afterMiddlewares);
+        }
+
+        return array_merge($this->preMiddlewares, $this->afterMiddlewares);
     }
 
     /**
@@ -214,5 +315,21 @@ class TcpDispatcher implements MiddlewareInterface
     public function setEnable($enable): void
     {
         $this->enable = (bool)$enable;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPreCheckRoute(): bool
+    {
+        return $this->preCheckRoute;
+    }
+
+    /**
+     * @param bool $preCheckRoute
+     */
+    public function setPreCheckRoute(bool $preCheckRoute): void
+    {
+        $this->preCheckRoute = $preCheckRoute;
     }
 }

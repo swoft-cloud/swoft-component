@@ -24,6 +24,65 @@ abstract class AbstractMiddlewareChain
     protected $locked = false;
 
     /**
+     * Add middleware
+     *
+     * @param array ...$middles
+     *
+     * @throws RuntimeException
+     */
+    public function use(...$middles): void
+    {
+        $this->add(...$middles);
+    }
+
+    /**
+     * Add middleware
+     * This method prepends new middleware to the application middleware stack.
+     *
+     * @param array ...$middles Any callable that accepts two arguments:
+     *                                          1. A Request object
+     *                                          2. A Handler object
+     *
+     * @throws RuntimeException
+     */
+    public function add(...$middles): void
+    {
+        foreach ($middles as $middleware) {
+            $this->middle($middleware);
+        }
+    }
+
+    /**
+     * Add middlewares
+     *
+     * @param array $middles
+     */
+    public function addMiddles(array $middles): void
+    {
+        foreach ($middles as $middleware) {
+            $this->middle($middleware);
+        }
+    }
+
+    /**
+     * @param string $middleware
+     *
+     * @throws RuntimeException
+     */
+    public function middle($middleware): void
+    {
+        if ($this->locked) {
+            throw new RuntimeException('Middleware can’t be added once the stack is dequeuing');
+        }
+
+        if (null === $this->stack) {
+            $this->prepareStack();
+        }
+
+        $this->stack[] = $middleware;
+    }
+
+    /**
      * @param callable|null $kernel
      *
      * @throws RuntimeException

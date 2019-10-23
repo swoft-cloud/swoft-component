@@ -37,63 +37,10 @@ class MiddlewareChain extends AbstractMiddlewareChain implements RequestHandlerI
         /** @var self $self */
         $self = Swoft::getBean(self::class);
 
+        // Set properties
         $self->coreHandler = $coreHandler;
 
         return $self;
-    }
-
-    /**
-     * Add middleware
-     *
-     * @param MiddlewareInterface[] ...$middleware
-     *
-     * @return $this
-     * @throws RuntimeException
-     */
-    public function use(...$middleware): self
-    {
-        return $this->add(...$middleware);
-    }
-
-    /**
-     * Add middleware
-     * This method prepends new middleware to the application middleware stack.
-     *
-     * @param MiddlewareInterface[] ...$middles Any callable that accepts two arguments:
-     *                                          1. A Request object
-     *                                          2. A Handler object
-     *
-     * @return $this
-     * @throws RuntimeException
-     */
-    public function add(...$middles): self
-    {
-        foreach ($middles as $middleware) {
-            $this->middle($middleware);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param MiddlewareInterface $middleware
-     *
-     * @return self
-     * @throws RuntimeException
-     */
-    public function middle(MiddlewareInterface $middleware): self
-    {
-        if ($this->locked) {
-            throw new RuntimeException('Middleware can’t be added once the stack is dequeuing');
-        }
-
-        if (null === $this->stack) {
-            $this->prepareStack();
-        }
-
-        $this->stack[] = $middleware;
-
-        return $this;
     }
 
     /**
