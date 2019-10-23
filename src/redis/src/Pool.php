@@ -136,7 +136,11 @@ use Throwable;
  * @method bool mset(array $keyValues, int $ttl = 0)
  * @method array pipeline(callable $callback)
  * @method array transaction(callable $callback)
- * @method mixed call(callable $callback, bool $reconnect = false)
+ * @method mixed call(callable $callback)
+ * @method void psubscribe(array $patterns, string|array $callback)
+ * @method void subscribe(array $channels, string|array $callback)
+ * @method array geoRadius(string $key, float $longitude, float $latitude, float $radius, string $radiusUnit, array $options)
+ * @method bool expireAt(string $key, int $timestamp)
  */
 class Pool extends AbstractPool
 {
