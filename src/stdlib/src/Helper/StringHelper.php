@@ -691,6 +691,28 @@ class StringHelper
     }
 
     /**
+     * Create a simple random token-string
+     *
+     * @param integer $length Length of string
+     * @param string  $salt
+     *
+     * @return  string  Generated token
+     * @throws Exception
+     */
+    public static function randomToken(int $length = 24, string $salt = ''): string
+    {
+        $string = '';
+        $chars  = '0456789abc1def2ghi3jkl';
+        $maxVal = strlen($chars) - 1;
+
+        for ($i = 0; $i < $length; ++$i) {
+            $string .= $chars[random_int(0, $maxVal)];
+        }
+
+        return md5($string . $salt);
+    }
+
+    /**
      * @param string $str
      *
      * @return bool

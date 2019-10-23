@@ -903,7 +903,7 @@ class ArrayHelper
      * Get an item from an array using "dot" notation.
      *
      * @param ArrayAccess|array $array
-     * @param string            $key
+     * @param string|int        $key
      * @param mixed             $default
      *
      * @return mixed
@@ -920,6 +920,11 @@ class ArrayHelper
 
         if (isset($array[$key])) {
             return $array[$key];
+        }
+
+        // Fix: If is int, stop continue find.
+        if (!is_string($key)) {
+            return $default;
         }
 
         foreach (explode('.', $key) as $segment) {

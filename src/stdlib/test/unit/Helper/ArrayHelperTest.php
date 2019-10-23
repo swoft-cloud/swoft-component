@@ -342,6 +342,9 @@ class ArrayHelperTest extends TestCase
 
         $rs3 = ArrayHelper::get($arr, 'description', '2.0');
         $this->assertSame('2.0', $rs3);
+
+        $ret = ArrayHelper::get(['a', 'b'], 1, '2.0');
+        $this->assertSame('b', $ret);
     }
 
     public function testHas(): void
