@@ -9,9 +9,9 @@ use Swoft\Error\ErrorManager;
 use SwoftTest\Error\Testing\CustomErrorHandler;
 
 /**
- * Class ErrorHandlersTest
+ * Class ErrorManagerTest
  */
-class ErrorHandlersTest extends TestCase
+class ErrorManagerTest extends TestCase
 {
     public function testGeneric(): void
     {

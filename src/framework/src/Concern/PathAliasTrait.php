@@ -1,13 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Swoft\Concern;
 
-use function explode;
 use InvalidArgumentException;
+use function explode;
 use function str_replace;
 
 /**
  * Trait PathAliasTrait
+ *
  * @since 2.0
  */
 trait PathAliasTrait

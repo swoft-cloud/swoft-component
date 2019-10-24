@@ -67,6 +67,8 @@ class WsMessageDispatcher
             return;
         }
 
+        server()->log("Message: message data parser is {$conn->getParserClass()}");
+
         // Parse message data and dispatch route handle
         try {
             $parser  = $conn->getParser();
@@ -87,8 +89,9 @@ class WsMessageDispatcher
         }
 
         [$ctlClass, $ctlMethod] = $route['handler'];
-        server()->log("Message: conn#{$fd} call message command handler '{$ctlClass}::{$ctlMethod}'",
-            $message->toArray(), 'debug');
+
+        $logMsg = "Message: conn#{$fd} call message command handler '{$ctlClass}::{$ctlMethod}'";
+        server()->log($logMsg, $message->toArray(), 'debug');
 
         $object = Swoft::getBean($ctlClass);
         $params = $this->getBindParams($ctlClass, $ctlMethod, $request, $response);
@@ -103,7 +106,7 @@ class WsMessageDispatcher
         }
 
         // Before call $response send message
-        Swoft::trigger(WsServerEvent::MESSAGE_SEND, $response);
+        Swoft::trigger(WsServerEvent::MESSAGE_RESPONSE, $response);
 
         // Do send response
         $response->send();

@@ -2,7 +2,9 @@
 
 namespace Swoft\Tcp\Server;
 
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Stdlib\Concern\DataPropertyTrait;
 use Swoft\Tcp\Package;
 use Swoft\Tcp\Server\Contract\RequestInterface;
 
@@ -14,6 +16,21 @@ use Swoft\Tcp\Server\Contract\RequestInterface;
  */
 class Request implements RequestInterface
 {
+    use DataPropertyTrait;
+
+    /**
+     * The request data key for storage matched route info.
+     * eg:
+     * [
+     *  status,
+     *  [
+     *      command => string,
+     *      handler => [class, method],
+     *  ]
+     * ]
+     */
+    public const ROUTE_INFO = '__route';
+
     /**
      * Receiver fd
      *
@@ -22,6 +39,8 @@ class Request implements RequestInterface
     private $fd = -1;
 
     /**
+     * Received raw data
+     *
      * @var string
      */
     private $rawData = '';
@@ -32,6 +51,9 @@ class Request implements RequestInterface
     private $reactorId = -1;
 
     /**
+     * Request package instance.
+     * Notice: Available only on enable internal route dispatching
+     *
      * @var Package
      */
     private $package;
@@ -46,11 +68,11 @@ class Request implements RequestInterface
     public static function new(int $fd, string $data, int $reactorId): self
     {
         /** @var self $self */
-        $self = bean('tcpRequest');
+        $self = Swoft::getBean('tcpRequest');
 
         // Set properties
-        $self->fd      = $fd;
-        $self->rawData = $data;
+        $self->fd        = $fd;
+        $self->rawData   = $data;
         $self->reactorId = $reactorId;
 
         return $self;
@@ -65,14 +87,16 @@ class Request implements RequestInterface
     }
 
     /**
-     * @param int $fd
+     * @return int
      */
-    public function setFd(int $fd): void
+    public function getReactorId(): int
     {
-        $this->fd = $fd;
+        return $this->reactorId;
     }
 
     /**
+     * Get received raw data
+     *
      * @return string
      */
     public function getRawData(): string
@@ -81,6 +105,9 @@ class Request implements RequestInterface
     }
 
     /**
+     * Get request package instance.
+     * Notice: Available only on enable internal route dispatching
+     *
      * @return Package
      */
     public function getPackage(): Package

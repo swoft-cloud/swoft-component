@@ -3,12 +3,12 @@
 namespace Swoft\Stdlib\Helper;
 
 use InvalidArgumentException;
+use ReflectionProperty;
 use Throwable;
 use function is_numeric;
 use function json_encode;
 use function method_exists;
 use function property_exists;
-use ReflectionProperty;
 use function spl_object_hash;
 use function ucfirst;
 
@@ -112,9 +112,7 @@ class ObjectHelper
                     break;
             }
         } catch (Throwable $e) {
-            throw new InvalidArgumentException(
-                sprintf('Error on convert value(%s) to %s', json_encode($value), $type)
-            );
+            throw new InvalidArgumentException(sprintf('Error on convert value(%s) to %s', json_encode($value), $type));
         }
 
         return $value;

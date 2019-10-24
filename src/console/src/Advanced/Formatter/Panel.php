@@ -92,7 +92,10 @@ EOF;
 
         $opts = array_merge([
             'borderChar' => '*',
+            'sepChar'    => ' | ',
             'ucFirst'    => true,
+            'titleStyle' => 'bold',
+            'leftIndent' => '  ',
         ], $opts);
 
         $data  = is_array($data) ? array_filter($data) : [trim($data)];
@@ -100,6 +103,7 @@ EOF;
 
         $panelData  = []; // [ 'label' => 'value' ]
         $borderChar = $opts['borderChar'];
+        $leftIndent = $opts['leftIndent'];
 
         $labelMaxWidth = 0; // if label exists, label max width
         $valueMaxWidth = 0; // value max width
@@ -145,38 +149,38 @@ EOF;
 
         $border     = null;
         $panelWidth = $labelMaxWidth + $valueMaxWidth;
+
+        $opts['leftChar'] = $leftIndent . $borderChar . ' ';
+        $opts['keyMaxWidth'] = $labelMaxWidth;
+
         Console::startBuffer();
 
         // output title
         if ($title) {
             $title       = ucwords($title);
+            $titleStyle  = $opts['titleStyle'] ?: 'bold';
             $titleLength = mb_strlen($title, 'UTF-8');
             $panelWidth  = $panelWidth > $titleLength ? $panelWidth : $titleLength;
             $lenValue    = (int)(ceil($panelWidth / 2) - ceil($titleLength / 2));
             $indentSpace = str_pad(' ', $lenValue + 2 * 2, ' ');
-            Console::write("  {$indentSpace}<bold>{$title}</bold>");
+            Console::write("$leftIndent{$indentSpace}<{$titleStyle}>{$title}</{$titleStyle}>");
         }
 
         // output panel top border
         if ($borderChar) {
             $border = str_pad($borderChar, $panelWidth + (3 * 4), $borderChar);
-            Console::write('  ' . $border);
+            Console::write($leftIndent . $border);
         }
 
         // output panel body
-        $panelStr = FormatUtil::spliceKeyValue($panelData, [
-            'leftChar'    => "  $borderChar ",
-            'sepChar'     => ' | ',
-            'keyMaxWidth' => $labelMaxWidth,
-            'ucFirst'     => $opts['ucFirst'],
-        ]);
+        $panelContent = FormatUtil::spliceKeyValue($panelData, $opts);
 
         // already exists "\n"
-        Console::write($panelStr, false);
+        Console::write($panelContent, false);
 
         // output panel bottom border
         if ($border) {
-            Console::write("  $border\n");
+            Console::write("{$leftIndent}{$border}\n");
         }
 
         Console::flushBuffer();

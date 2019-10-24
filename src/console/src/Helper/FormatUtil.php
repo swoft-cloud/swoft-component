@@ -63,12 +63,12 @@ final class FormatUtil
             return $string;
         }
 
-        $new       = '';
-        $list      = explode("\n", $string);
-        $indentStr = str_repeat($indentChar ?: ' ', $indent);
+        $new  = '';
+        $list = explode("\n", $string);
 
+        $indentStr = str_repeat($indentChar ?: ' ', $indent);
         foreach ($list as $value) {
-            $new .= $indentStr . trim($value) . "\n";
+            $new .= $indentStr . $value . "\n";
         }
 
         return $new;

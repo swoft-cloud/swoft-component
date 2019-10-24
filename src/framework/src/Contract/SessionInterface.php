@@ -2,11 +2,14 @@
 
 namespace Swoft\Contract;
 
+use Swoft\Stdlib\Contract\Arrayable;
+
 /**
  * Class SessionInterface - use for TCP, WS connection or HTTP-Session session data manage
+ *
  * @since 2.0
  */
-interface SessionInterface
+interface SessionInterface extends Arrayable
 {
     /**
      * Get value from context
@@ -38,4 +41,9 @@ interface SessionInterface
      * Clear resource
      */
     public function clear(): void;
+
+    /**
+     * @return string
+     */
+    public function toString(): string;
 }

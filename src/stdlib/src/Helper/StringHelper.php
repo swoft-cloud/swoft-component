@@ -3,6 +3,7 @@
 namespace Swoft\Stdlib\Helper;
 
 use Exception;
+use RuntimeException;
 use function explode;
 use function is_string;
 use function lcfirst;
@@ -12,10 +13,7 @@ use function mb_strtoupper;
 use function preg_match;
 use function preg_replace;
 use function random_bytes;
-use RuntimeException;
 use function str_pad;
-use const STR_PAD_LEFT;
-use const STR_PAD_RIGHT;
 use function str_replace;
 use function strlen;
 use function strpos;
@@ -24,6 +22,8 @@ use function substr;
 use function substr_replace;
 use function trim;
 use function uniqid;
+use const STR_PAD_LEFT;
+use const STR_PAD_RIGHT;
 
 /**
  * String helper
@@ -688,6 +688,28 @@ class StringHelper
         }
 
         return $str;
+    }
+
+    /**
+     * Create a simple random token-string
+     *
+     * @param integer $length Length of string
+     * @param string  $salt
+     *
+     * @return  string  Generated token
+     * @throws Exception
+     */
+    public static function randomToken(int $length = 24, string $salt = ''): string
+    {
+        $string = '';
+        $chars  = '0456789abc1def2ghi3jkl';
+        $maxVal = strlen($chars) - 1;
+
+        for ($i = 0; $i < $length; ++$i) {
+            $string .= $chars[random_int(0, $maxVal)];
+        }
+
+        return md5($string . $salt);
     }
 
     /**

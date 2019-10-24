@@ -6,19 +6,19 @@ use ArrayAccess;
 use ArrayIterator;
 use CachingIterator;
 use Closure;
-use function count;
 use Countable;
-use function func_get_args;
-use function func_num_args;
 use InvalidArgumentException;
 use IteratorAggregate;
-use function json_decode;
 use JsonSerializable;
 use stdClass;
 use Swoft\Stdlib\Contract\Arrayable;
 use Swoft\Stdlib\Contract\Jsonable;
 use Swoft\Stdlib\Helper\Arr;
 use Traversable;
+use function count;
+use function func_get_args;
+use function func_num_args;
+use function json_decode;
 use function value;
 
 /**
@@ -68,9 +68,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      */
     public static function wrap($value)
     {
-        return $value instanceof self
-            ? new static($value)
-            : new static(Arr::wrap($value));
+        return $value instanceof self ? new static($value) : new static(Arr::wrap($value));
     }
 
     /**
@@ -160,8 +158,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      */
     public function median($key = null)
     {
-        $values = (isset($key) ? $this->pluck($key) : $this)
-            ->filter(function ($item) {
+        $values = (isset($key) ? $this->pluck($key) : $this)->filter(function ($item) {
                 return $item !== null;
             })->sort()->values();
 
@@ -293,9 +290,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      */
     public function crossJoin(...$lists)
     {
-        return new static(Arr::crossJoin(
-            $this->items, ...array_map([$this, 'getArrayableItems'], $lists)
-        ));
+        return new static(Arr::crossJoin($this->items, ...array_map([$this, 'getArrayableItems'], $lists)));
     }
 
     /**
@@ -315,9 +310,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      */
     public function dump(): self
     {
-        (new static(func_get_args()))
-            ->push($this)
-            ->each(function ($item) {
+        (new static(func_get_args()))->push($this)->each(function ($item) {
                 var_dump($item);
             });
 
@@ -957,9 +950,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      */
     public function intersectByKeys($items)
     {
-        return new static(array_intersect_key(
-            $this->items, $this->getArrayableItems($items)
-        ));
+        return new static(array_intersect_key($this->items, $this->getArrayableItems($items)));
     }
 
     /**
@@ -1309,9 +1300,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
     {
         $partitions = [new static, new static];
 
-        $callback = func_num_args() === 1
-            ? $this->valueRetriever($key)
-            : $this->operatorForWhere(...func_get_args());
+        $callback = func_num_args() === 1 ? $this->valueRetriever($key) : $this->operatorForWhere(...func_get_args());
 
         foreach ($this->items as $key => $item) {
             $partitions[(int)!$callback($item, $key)][$key] = $item;
@@ -1607,9 +1596,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
     {
         $items = $this->items;
 
-        $callback
-            ? uasort($items, $callback)
-            : asort($items);
+        $callback ? uasort($items, $callback) : asort($items);
 
         return new static($items);
     }
@@ -1636,8 +1623,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
             $results[$key] = $callback($value, $key);
         }
 
-        $descending ? arsort($results, $options)
-            : asort($results, $options);
+        $descending ? arsort($results, $options) : asort($results, $options);
 
         // Once we have sorted all of the keys in the array, we will loop through them
         // and grab the corresponding model so we can set the underlying items list
