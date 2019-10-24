@@ -39,6 +39,8 @@ class Request implements RequestInterface
     private $fd = -1;
 
     /**
+     * Received raw data
+     *
      * @var string
      */
     private $rawData = '';
@@ -49,6 +51,9 @@ class Request implements RequestInterface
     private $reactorId = -1;
 
     /**
+     * Request package instance.
+     * Notice: Available only on enable internal route dispatching
+     *
      * @var Package
      */
     private $package;
@@ -82,14 +87,16 @@ class Request implements RequestInterface
     }
 
     /**
-     * @param int $fd
+     * @return int
      */
-    public function setFd(int $fd): void
+    public function getReactorId(): int
     {
-        $this->fd = $fd;
+        return $this->reactorId;
     }
 
     /**
+     * Get received raw data
+     *
      * @return string
      */
     public function getRawData(): string
@@ -98,6 +105,9 @@ class Request implements RequestInterface
     }
 
     /**
+     * Get request package instance.
+     * Notice: Available only on enable internal route dispatching
+     *
      * @return Package
      */
     public function getPackage(): Package

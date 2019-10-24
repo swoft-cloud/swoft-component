@@ -6,6 +6,7 @@ use ReflectionException;
 use ReflectionType;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Log\Helper\CLog;
 use Swoft\Tcp\ErrCode;
 use Swoft\Tcp\Package;
 use Swoft\Tcp\Protocol;
@@ -83,7 +84,7 @@ class TcpDispatcher implements MiddlewareInterface
     {
         /** @var Protocol $protocol */
         $protocol = Swoft::getBean('tcpServerProtocol');
-        server()->log("Tcp protocol data packer is {$protocol->getPackerClass()}");
+        CLog::info('Tcp protocol data packer is %s', $protocol->getPackerClass());
 
         try {
             $package = $protocol->unpack($request->getRawData());
@@ -122,10 +123,10 @@ class TcpDispatcher implements MiddlewareInterface
 
         // Has middlewares
         if ($middlewares = $this->mergeMiddlewares($middlewares)) {
-            $chain = MiddlewareChain::new($this);
+            $chain = RequestHandler::new($this);
             $chain->addMiddles($middlewares);
 
-            server()->log('request will use middleware process, middleware count: ' . $chain->count(), [], 'debug');
+            CLog::debug('request will use middleware process, middleware count: %d', $chain->count());
 
             return $chain->run($request);
         }

@@ -3,22 +3,26 @@
 namespace SwoftTest\Tcp\Server\Unit;
 
 use PHPUnit\Framework\TestCase;
-use Swoft\Tcp\Server\MiddlewareChain;
+use Swoft\Tcp\Server\Exception\TcpMiddlewareException;
+use Swoft\Tcp\Server\RequestHandler;
 use Swoft\Tcp\Server\Request;
 use SwoftTest\Tcp\Server\Testing\Middleware\CoreMiddleware;
 use SwoftTest\Tcp\Server\Testing\Middleware\User1Middleware;
 use SwoftTest\Tcp\Server\Testing\Middleware\User2Middleware;
 
 /**
- * Class MiddlewareChainTest
+ * Class RequestHandlerTest
  */
-class MiddlewareChainTest extends TestCase
+class RequestHandlerTest extends TestCase
 {
+    /**
+     * @throws TcpMiddlewareException
+     */
     public function testRun(): void
     {
         $coreMdl = new CoreMiddleware();
 
-        $mc = MiddlewareChain::new($coreMdl);
+        $mc = RequestHandler::new($coreMdl);
         $mc->middle(new User1Middleware());
         $mc->add(new User2Middleware());
 

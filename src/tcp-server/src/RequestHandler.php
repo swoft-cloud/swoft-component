@@ -15,12 +15,12 @@ use function is_callable;
 use function is_string;
 
 /**
- * Class MiddlewareChain
+ * Class RequestHandler or MiddlewareChain
  *
  * @since 2.0.7
  * @Bean(scope=Bean::PROTOTYPE)
  */
-class MiddlewareChain extends AbstractMiddlewareChain implements RequestHandlerInterface
+class RequestHandler extends AbstractMiddlewareChain implements RequestHandlerInterface
 {
     /**
      * @var MiddlewareInterface
@@ -30,7 +30,7 @@ class MiddlewareChain extends AbstractMiddlewareChain implements RequestHandlerI
     /**
      * @param MiddlewareInterface $coreHandler
      *
-     * @return MiddlewareChain
+     * @return RequestHandler
      */
     public static function new(MiddlewareInterface $coreHandler): self
     {
