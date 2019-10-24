@@ -3,7 +3,8 @@
 namespace SwoftTest\WebSocket\Server\Unit\Message;
 
 use PHPUnit\Framework\TestCase;
-use Swoft\WebSocket\Server\Message\MiddlewareChain;
+use Swoft\WebSocket\Server\Exception\WsMiddlewareException;
+use Swoft\WebSocket\Server\Message\MessageHandler;
 use Swoft\WebSocket\Server\Message\Request;
 use SwoftTest\WebSocket\Server\Testing\CoreMiddleware;
 use SwoftTest\WebSocket\Server\Testing\User1Middleware;
@@ -11,15 +12,18 @@ use SwoftTest\WebSocket\Server\Testing\User2Middleware;
 use Swoole\WebSocket\Frame;
 
 /**
- * Class MiddlewareChainTest
+ * Class MessageHandlerTest
  */
-class MiddlewareChainTest extends TestCase
+class MessageHandlerTest extends TestCase
 {
+    /**
+     * @throws WsMiddlewareException
+     */
     public function testRun(): void
     {
         $coreMdl = new CoreMiddleware();
 
-        $mc = MiddlewareChain::new($coreMdl);
+        $mc = MessageHandler::new($coreMdl);
         $mc->middle(new User1Middleware());
         $mc->add(new User2Middleware());
 

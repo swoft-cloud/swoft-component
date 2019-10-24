@@ -7,10 +7,13 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Bean\BeanFactory;
 use Swoft\Context\Context;
+use Swoft\Log\Helper\CLog;
 use Swoft\Server\Contract\MessageInterface;
 use Swoft\Session\Session;
 use Swoft\SwoftEvent;
+use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\Context\WsMessageContext;
+use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\Message\Request;
 use Swoft\WebSocket\Server\Message\Response;
 use Swoft\WebSocket\Server\WsErrorDispatcher;
@@ -46,7 +49,7 @@ class MessageListener implements MessageInterface
         $fd  = $frame->fd;
         $sid = (string)$fd;
 
-        server()->log("Message: conn#{$fd} received message: {$frame->data}", [], 'debug');
+        server()->log("Message: conn#{$fd} received message data", [], 'debug');
 
         $request  = Request::new($frame);
         $response = Response::new($fd);
@@ -63,15 +66,34 @@ class MessageListener implements MessageInterface
             // Trigger message before event
             Swoft::trigger(WsServerEvent::MESSAGE_RECEIVE, $fd, $server, $frame);
 
-            // Parse and dispatch message
-            $this->dispatcher->dispatch($server, $request, $response);
+            /** @var Connection $conn */
+            $conn = Session::current();
+            $info = $conn->getModuleInfo();
+
+            // Want custom message handle, will don't trigger message parse and dispatch.
+            if ($method = $info['eventMethods']['message'] ?? '') {
+                $class = $info['class'];
+                server()->log("Message: conn#{$fd} call custom message handler '{$class}::{$method}'", [], 'debug');
+
+                /** @var WsModuleInterface $module */
+                $module = Swoft::getSingleton($class);
+                $module->$method($server, $frame);
+            } else {
+                // Parse and dispatch message
+                $response = $this->dispatcher->dispatch($info, $request, $response);
+
+                // Before call $response->send()
+                Swoft::trigger(WsServerEvent::MESSAGE_RESPONSE, $response);
+
+                // Do send response
+                $response->send();
+            }
 
             // Trigger message after event
             Swoft::trigger(WsServerEvent::MESSAGE_AFTER, $fd, $server, $frame);
         } catch (Throwable $e) {
+            CLog::error("Message: conn#{$fd} dispatch error: " . $e->getMessage());
             Swoft::trigger(WsServerEvent::MESSAGE_ERROR, $e, $frame);
-
-            server()->log("Message: conn#{$fd} error: " . $e->getMessage(), [], 'error');
 
             /** @var WsErrorDispatcher $errDispatcher */
             $errDispatcher = BeanFactory::getSingleton(WsErrorDispatcher::class);

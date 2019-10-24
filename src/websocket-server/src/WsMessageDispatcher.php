@@ -7,8 +7,12 @@ use ReflectionType;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
+use Swoft\Log\Helper\CLog;
 use Swoft\Session\Session;
-use Swoft\WebSocket\Server\Contract\WsModuleInterface;
+use Swoft\WebSocket\Server\Contract\MessageHandlerInterface;
+use Swoft\WebSocket\Server\Contract\MiddlewareInterface;
+use Swoft\WebSocket\Server\Contract\RequestInterface;
+use Swoft\WebSocket\Server\Contract\ResponseInterface;
 use Swoft\WebSocket\Server\Exception\WsMessageParseException;
 use Swoft\WebSocket\Server\Exception\WsMessageRouteException;
 use Swoft\WebSocket\Server\Message\Message;
@@ -16,7 +20,6 @@ use Swoft\WebSocket\Server\Message\Request;
 use Swoft\WebSocket\Server\Message\Response;
 use Swoft\WebSocket\Server\Router\Router;
 use Swoole\WebSocket\Frame;
-use Swoole\WebSocket\Server;
 use Throwable;
 use function server;
 
@@ -27,7 +30,7 @@ use function server;
  *
  * @Bean("wsMsgDispatcher")
  */
-class WsMessageDispatcher
+class WsMessageDispatcher implements MiddlewareInterface
 {
     /**
      * @Inject("wsRouter")
@@ -38,62 +41,49 @@ class WsMessageDispatcher
     /**
      * Dispatch ws message handle
      *
-     * @param Server   $server
+     * @param array    $module
      * @param Request  $request
      * @param Response $response
      *
+     * @return Response
      * @throws ReflectionException
-     * @throws Swoft\Exception\SwoftException
      * @throws WsMessageParseException
      * @throws WsMessageRouteException
      */
-    public function dispatch(Server $server, Request $request, Response $response): void
+    public function dispatch(array $module, Request $request, Response $response): Response
     {
-        $fd = $request->getFd();
-
         /** @var Connection $conn */
-        $conn  = Session::mustGet();
-        $info  = $conn->getModuleInfo();
+        $conn  = Session::current();
         $frame = $request->getFrame();
 
-        // Want custom message handle, will don't trigger message parse and dispatch.
-        if ($method = $info['eventMethods']['message'] ?? '') {
-            $class = $info['class'];
-            server()->log("Message: conn#{$fd} call custom message handler '{$class}::{$method}'", [], 'debug');
-
-            /** @var WsModuleInterface $module */
-            $module = Swoft::getSingleton($class);
-            $module->$method($server, $frame);
-            return;
-        }
-
-        server()->log("Message: message data parser is {$conn->getParserClass()}");
+        CLog::info('Message: message data parser is %s', $conn->getParserClass());
 
         // Parse message data and dispatch route handle
         try {
             $parser  = $conn->getParser();
             $message = $parser->decode($frame->data);
+
+            // Set Message to request
+            $request->setMessage($message);
         } catch (Throwable $e) {
             throw new WsMessageParseException("parse message error '{$e->getMessage()}", 500, $e);
         }
 
-        // Set Message to request
-        $request->setMessage($message);
-
         /** @var Router $router */
-        $cmdId = $message->getCmd() ?: $info['defaultCommand'];
+        $path  = $module['path'];
+        $cmdId = $message->getCmd() ?: $module['defaultCommand'];
 
-        [$status, $route] = $this->router->matchCommand($info['path'], $cmdId);
+        [$status, $route] = $this->router->matchCommand($path, $cmdId);
         if ($status === Router::NOT_FOUND) {
-            throw new WsMessageRouteException("message command '$cmdId' is not found, in module {$info['path']}");
+            throw new WsMessageRouteException("message command '$cmdId' is not found, in module {$path}");
         }
 
         [$ctlClass, $ctlMethod] = $route['handler'];
 
-        $logMsg = "Message: conn#{$fd} call message command handler '{$ctlClass}::{$ctlMethod}'";
+        $logMsg = "Message: conn#{$frame->fd} call message command handler '{$ctlClass}::{$ctlMethod}'";
         server()->log($logMsg, $message->toArray(), 'debug');
 
-        $object = Swoft::getBean($ctlClass);
+        $object = Swoft::getSingleton($ctlClass);
         $params = $this->getBindParams($ctlClass, $ctlMethod, $request, $response);
         $result = $object->$ctlMethod(...$params);
 
@@ -105,11 +95,29 @@ class WsMessageDispatcher
             $response->setOpcode((int)$route['opcode']);
         }
 
-        // Before call $response send message
-        Swoft::trigger(WsServerEvent::MESSAGE_RESPONSE, $response);
+        return $response;
+    }
 
-        // Do send response
-        $response->send();
+    protected function dispatchMessage(Request $request, Response $response): ResponseInterface
+    {
+
+        return $response;
+    }
+
+    /**
+     * @param RequestInterface|Request $request
+     * @param MessageHandlerInterface  $handler
+     *
+     * @return ResponseInterface
+     * @throws Swoft\Exception\SwoftException
+     * @internal for middleware dispatching
+     */
+    public function process(RequestInterface $request, MessageHandlerInterface $handler): ResponseInterface
+    {
+        /** @var Response $response */
+        $response = context()->getResponse();
+
+        return $this->dispatchMessage($request, $response);
     }
 
     /**

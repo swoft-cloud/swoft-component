@@ -4,6 +4,7 @@ namespace Swoft\WebSocket\Server\Message;
 
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Stdlib\Concern\DataPropertyTrait;
 use Swoft\WebSocket\Server\Contract\RequestInterface;
 use Swoole\WebSocket\Frame;
 
@@ -15,6 +16,14 @@ use Swoole\WebSocket\Frame;
  */
 class Request implements RequestInterface
 {
+    use DataPropertyTrait;
+
+    /**
+     * The request data key for storage matched route info.
+     *
+     */
+    public const ROUTE_INFO = '__route';
+
     /**
      * @var Frame
      */
