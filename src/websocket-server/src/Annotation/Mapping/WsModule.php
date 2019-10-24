@@ -54,6 +54,13 @@ final class WsModule
     private $controllers = [];
 
     /**
+     * Middlewares for the module. It's classname or bean-name
+     *
+     * @var string[]
+     */
+    private $middlewares = [];
+
+    /**
      * Message parser class for the module
      *
      * @var string
@@ -97,6 +104,10 @@ final class WsModule
 
         if (isset($values['controllers'])) {
             $this->controllers = (array)$values['controllers'];
+        }
+
+        if (isset($values['middlewares'])) {
+            $this->middlewares = (array)$values['middlewares'];
         }
 
         if (isset($values['messageParser'])) {
@@ -166,5 +177,13 @@ final class WsModule
     public function getDefaultOpcode(): int
     {
         return $this->defaultOpcode;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getMiddlewares(): array
+    {
+        return $this->middlewares;
     }
 }

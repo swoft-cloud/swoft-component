@@ -6,9 +6,9 @@ use PHPUnit\Framework\TestCase;
 use Swoft\WebSocket\Server\Exception\WsMiddlewareException;
 use Swoft\WebSocket\Server\Message\MessageHandler;
 use Swoft\WebSocket\Server\Message\Request;
-use SwoftTest\WebSocket\Server\Testing\CoreMiddleware;
-use SwoftTest\WebSocket\Server\Testing\User1Middleware;
-use SwoftTest\WebSocket\Server\Testing\User2Middleware;
+use SwoftTest\WebSocket\Server\Testing\Middleware\CoreMiddleware;
+use SwoftTest\WebSocket\Server\Testing\Middleware\User1Middleware;
+use SwoftTest\WebSocket\Server\Testing\Middleware\User2Middleware;
 use Swoole\WebSocket\Frame;
 
 /**

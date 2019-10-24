@@ -47,8 +47,9 @@ class WsModuleParser extends Parser
             'class'          => $class,
             'eventMethods'   => [],
             'controllers'    => $ann->getControllers(),
+            'middlewares'    => $ann->getMiddlewares(),
             'messageParser'  => $ann->getMessageParser() ?: RawTextParser::class,
-            'defaultOpcode' => $ann->getDefaultOpcode(),
+            'defaultOpcode'  => $ann->getDefaultOpcode(),
             'defaultCommand' => $ann->getDefaultCommand(),
         ]);
 

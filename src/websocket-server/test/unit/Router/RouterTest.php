@@ -5,6 +5,8 @@ namespace SwoftTest\WebSocket\Server\Unit\Router;
 use PHPUnit\Framework\TestCase;
 use Swoft\WebSocket\Server\Router\Router;
 use SwoftTest\Testing\Concern\CommonTestAssertTrait;
+use SwoftTest\WebSocket\Server\Testing\Middleware\User1Middleware;
+use SwoftTest\WebSocket\Server\Testing\Middleware\User2Middleware;
 use function bean;
 
 /**
@@ -102,5 +104,23 @@ class RouterTest extends TestCase
 
         $info = $router->match('/chat');
         $this->assertEmpty($info);
+    }
+
+    public function testMiddlewares(): void
+    {
+        /** @var Router $router */
+        $router = bean('wsRouter');
+        $fullId = '/ws-test/chat:chat.send';
+        $fullId1 = '/ws-test/chat:chat.notify';
+
+        $this->assertNotEmpty($ms = $router->getMiddlewares());
+        $this->assertArrayHasKey($fullId, $ms);
+        $this->assertArrayHasKey($fullId1, $ms);
+
+        $this->assertEmpty($router->getCmdMiddlewares('not-exist'));
+
+        $this->assertNotEmpty($ms = $router->getCmdMiddlewares($fullId));
+        $this->assertSame(User1Middleware::class, $ms[0]);
+        $this->assertSame(User2Middleware::class, $ms[1]);
     }
 }

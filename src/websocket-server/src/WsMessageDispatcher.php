@@ -39,6 +39,36 @@ class WsMessageDispatcher implements MiddlewareInterface
     private $router;
 
     /**
+     * Pre-check whether the route matches successfully.
+     * True  - Check if the status matches successfully after matching.
+     * False - check the status after the middleware process
+     *
+     * @var bool
+     */
+    private $preCheckRoute = true;
+
+    /**
+     * User defined global middlewares
+     *
+     * @var array
+     */
+    private $middlewares = [];
+
+    /**
+     * User defined global pre-middlewares
+     *
+     * @var array
+     */
+    private $preMiddlewares = [];
+
+    /**
+     * User defined global after-middlewares
+     *
+     * @var array
+     */
+    private $afterMiddlewares = [];
+
+    /**
      * Dispatch ws message handle
      *
      * @param array    $module
@@ -63,7 +93,7 @@ class WsMessageDispatcher implements MiddlewareInterface
             $parser  = $conn->getParser();
             $message = $parser->decode($frame->data);
 
-            // Set Message to request
+            // Save Message to request
             $request->setMessage($message);
         } catch (Throwable $e) {
             throw new WsMessageParseException("parse message error '{$e->getMessage()}", 500, $e);
@@ -73,8 +103,24 @@ class WsMessageDispatcher implements MiddlewareInterface
         $path  = $module['path'];
         $cmdId = $message->getCmd() ?: $module['defaultCommand'];
 
-        [$status, $route] = $this->router->matchCommand($path, $cmdId);
-        if ($status === Router::NOT_FOUND) {
+        $result = $this->router->matchCommand($path, $cmdId);
+        $status = $result[0];
+
+        // Storage route info
+        $request->set(Request::ROUTE_INFO, $result);
+
+        // Found, get command middlewares
+        $middlewares = [];
+        if ($status === Router::FOUND) {
+            $middlewares = $router->getCmdMiddlewares($command);
+
+            // Append command middlewares
+            if ($middlewares) {
+                $middlewares = array_merge($this->middlewares, $middlewares);
+            }
+
+            // If this->preCheckRoute is True, pre-check route match status
+        } elseif ($this->preCheckRoute) {
             throw new WsMessageRouteException("message command '$cmdId' is not found, in module {$path}");
         }
 
@@ -167,5 +213,103 @@ class WsMessageDispatcher implements MiddlewareInterface
         }
 
         return $bindParams;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPreCheckRoute(): bool
+    {
+        return $this->preCheckRoute;
+    }
+
+    /**
+     * @param bool $preCheckRoute
+     */
+    public function setPreCheckRoute(bool $preCheckRoute): void
+    {
+        $this->preCheckRoute = $preCheckRoute;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMiddlewares(): array
+    {
+        return $this->middlewares;
+    }
+
+    /**
+     * @param string $middleware
+     */
+    public function addMiddleware(string $middleware): void
+    {
+        $this->middlewares[] = $middleware;
+    }
+
+    /**
+     * @param array $middlewares
+     */
+    public function addMiddlewares(array $middlewares): void
+    {
+        if ($middlewares) {
+            $this->middlewares = array_merge($this->middlewares, $middlewares);
+        }
+    }
+
+    /**
+     * @param array $middlewares
+     */
+    public function setMiddlewares(array $middlewares): void
+    {
+        $this->middlewares = $middlewares;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPreMiddlewares(): array
+    {
+        return $this->preMiddlewares;
+    }
+
+    /**
+     * @param array $preMiddlewares
+     */
+    public function setPreMiddlewares(array $preMiddlewares): void
+    {
+        $this->preMiddlewares = $preMiddlewares;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAfterMiddlewares(): array
+    {
+        return $this->afterMiddlewares;
+    }
+
+    /**
+     * @param array $afterMiddlewares
+     */
+    public function setAfterMiddlewares(array $afterMiddlewares): void
+    {
+        $this->afterMiddlewares = $afterMiddlewares;
+    }
+
+    /**
+     * merge all middlewares
+     *
+     * @param array $middlewares
+     *
+     * @return array
+     */
+    protected function mergeMiddlewares(array $middlewares): array
+    {
+        if ($middlewares) {
+            return array_merge($this->preMiddlewares, $middlewares, $this->afterMiddlewares);
+        }
+
+        return array_merge($this->preMiddlewares, $this->afterMiddlewares);
     }
 }

@@ -73,6 +73,15 @@ class Router implements RouterInterface
     private $commands = [];
 
     /**
+     * [
+     *  '/ws-test:chat.send' => [middle1, middle2],
+     * ]
+     *
+     * @var array
+     */
+    private $middlewares = [];
+
+    /**
      * Want disabled modules
      *
      * [
@@ -129,17 +138,17 @@ class Router implements RouterInterface
     }
 
     /**
-     * @param string   $path
+     * @param string   $modPath
      * @param string   $cmdId
      * @param callable $handler
      * @param array    $info
      */
-    public function addCommand(string $path, string $cmdId, $handler, array $info = []): void
+    public function addCommand(string $modPath, string $cmdId, $handler, array $info = []): void
     {
-        $path = Str::formatPath($path);
+        $modPath = Str::formatPath($modPath);
 
         // It's an disabled module
-        if (isset($this->disabledModules[$path])) {
+        if (isset($this->disabledModules[$modPath])) {
             return;
         }
 
@@ -147,8 +156,15 @@ class Router implements RouterInterface
         $info['cmdId']   = $cmdId;
         $info['handler'] = $handler;
 
+        // Has middleware
+        if (!empty($info['middles'])) {
+            $fullId = $this->getFullCmdID($modPath, $cmdId);
+
+            $this->addMiddlewares($fullId, $info['middles']);
+        }
+
         $this->counter++;
-        $this->commands[$path][$cmdId] = $info;
+        $this->commands[$modPath][$cmdId] = $info;
     }
 
     /**
@@ -192,29 +208,59 @@ class Router implements RouterInterface
     }
 
     /**
-     * @param string $path
+     * @param string $modPath
      * @param string $route The message route command ID. like 'home.index'
      *
      * @return array Return match result
-     *                      [
-     *                          status,
-     *                          route info
-     *                      ]
+     * [
+     *    status,
+     *    route info
+     * ]
      */
-    public function matchCommand(string $path, string $route): array
+    public function matchCommand(string $modPath, string $route): array
     {
-        $path = Str::formatPath($path);
-        if (!isset($this->commands[$path])) {
+        $modPath = Str::formatPath($modPath);
+        if (!isset($this->commands[$modPath])) {
             return [self::NOT_FOUND, null];
         }
 
-        $route = trim($route) ?: $this->modules[$path]['defaultCommand'];
+        $route = trim($route) ?: $this->modules[$modPath]['defaultCommand'];
 
-        if (isset($this->commands[$path][$route])) {
-            return [self::FOUND, $this->commands[$path][$route]];
+        if (isset($this->commands[$modPath][$route])) {
+            return [self::FOUND, $this->commands[$modPath][$route]];
         }
 
         return [self::NOT_FOUND, null];
+    }
+
+    /**
+     * @param string $modPath
+     * @param string $cmdId
+     *
+     * @return string
+     */
+    public function getFullCmdID(string $modPath, string $cmdId): string
+    {
+        return $modPath . ':' . $cmdId;
+    }
+
+    /**
+     * @param string $fullCmdID Full command ID: modPath + ':' + cmdId eg: '/ws-test:chat.send'
+     * @param array  $middlewares
+     */
+    public function addMiddlewares(string $fullCmdID, array $middlewares): void
+    {
+        $this->middlewares[$fullCmdID] = $middlewares;
+    }
+
+    /**
+     * @param string $fullCmdID
+     *
+     * @return array
+     */
+    public function getCmdMiddlewares(string $fullCmdID): array
+    {
+        return $this->middlewares[$fullCmdID] ?? [];
     }
 
     /**
@@ -275,5 +321,21 @@ class Router implements RouterInterface
         foreach ($paths as $path) {
             $this->disabledModules[$path] = 1;
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getMiddlewares(): array
+    {
+        return $this->middlewares;
+    }
+
+    /**
+     * @param array $middlewares
+     */
+    public function setMiddlewares(array $middlewares): void
+    {
+        $this->middlewares = $middlewares;
     }
 }

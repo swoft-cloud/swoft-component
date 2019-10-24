@@ -237,6 +237,22 @@ class TcpDispatcher implements MiddlewareInterface
     }
 
     /**
+     * @return bool
+     */
+    public function isPreCheckRoute(): bool
+    {
+        return $this->preCheckRoute;
+    }
+
+    /**
+     * @param bool $preCheckRoute
+     */
+    public function setPreCheckRoute(bool $preCheckRoute): void
+    {
+        $this->preCheckRoute = $preCheckRoute;
+    }
+
+    /**
      * @return array
      */
     public function getMiddlewares(): array
@@ -332,21 +348,5 @@ class TcpDispatcher implements MiddlewareInterface
     public function setEnable($enable): void
     {
         $this->enable = (bool)$enable;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isPreCheckRoute(): bool
-    {
-        return $this->preCheckRoute;
-    }
-
-    /**
-     * @param bool $preCheckRoute
-     */
-    public function setPreCheckRoute(bool $preCheckRoute): void
-    {
-        $this->preCheckRoute = $preCheckRoute;
     }
 }
