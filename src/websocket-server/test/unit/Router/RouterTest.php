@@ -117,10 +117,14 @@ class RouterTest extends TestCase
         $this->assertArrayHasKey($fullId, $ms);
         $this->assertArrayHasKey($fullId1, $ms);
 
-        $this->assertEmpty($router->getCmdMiddlewares('not-exist'));
+        $this->assertEmpty($router->getMiddlewaresByID('not-exist'));
 
-        $this->assertNotEmpty($ms = $router->getCmdMiddlewares($fullId));
+        $this->assertNotEmpty($ms = $router->getCmdMiddlewares('/ws-test/chat', 'chat.send'));
         $this->assertSame(User1Middleware::class, $ms[0]);
         $this->assertSame(User2Middleware::class, $ms[1]);
+
+        $this->assertNotEmpty($ms = $router->getMiddlewaresByID($fullId1));
+        $this->assertArrayContainValue($ms, User1Middleware::class);
+        $this->assertArrayNotContainValue($ms, User2Middleware::class);
     }
 }

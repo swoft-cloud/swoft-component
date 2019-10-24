@@ -155,6 +155,7 @@ class Router implements RouterInterface
         // Set handler
         $info['cmdId']   = $cmdId;
         $info['handler'] = $handler;
+        $info['modPath'] = $modPath;
 
         // Has middleware
         if (!empty($info['middles'])) {
@@ -163,6 +164,7 @@ class Router implements RouterInterface
             $this->addMiddlewares($fullId, $info['middles']);
         }
 
+        unset($info['middles']);
         $this->counter++;
         $this->commands[$modPath][$cmdId] = $info;
     }
@@ -258,8 +260,21 @@ class Router implements RouterInterface
      *
      * @return array
      */
-    public function getCmdMiddlewares(string $fullCmdID): array
+    public function getMiddlewaresByID(string $fullCmdID): array
     {
+        return $this->middlewares[$fullCmdID] ?? [];
+    }
+
+    /**
+     * @param string $modPath
+     * @param string $cmdId
+     *
+     * @return array
+     */
+    public function getCmdMiddlewares(string $modPath, string $cmdId): array
+    {
+        $fullCmdID = $this->getFullCmdID($modPath, $cmdId);
+
         return $this->middlewares[$fullCmdID] ?? [];
     }
 

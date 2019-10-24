@@ -16,6 +16,7 @@ use Swoft\WebSocket\Server\Contract\ResponseInterface;
 use Swoft\WebSocket\Server\Exception\WsMessageParseException;
 use Swoft\WebSocket\Server\Exception\WsMessageRouteException;
 use Swoft\WebSocket\Server\Message\Message;
+use Swoft\WebSocket\Server\Message\MessageHandler;
 use Swoft\WebSocket\Server\Message\Request;
 use Swoft\WebSocket\Server\Message\Response;
 use Swoft\WebSocket\Server\Router\Router;
@@ -75,12 +76,13 @@ class WsMessageDispatcher implements MiddlewareInterface
      * @param Request  $request
      * @param Response $response
      *
-     * @return Response
+     * @return Response|ResponseInterface
      * @throws ReflectionException
      * @throws WsMessageParseException
      * @throws WsMessageRouteException
+     * @throws Exception\WsMiddlewareException
      */
-    public function dispatch(array $module, Request $request, Response $response): Response
+    public function dispatch(array $module, Request $request, Response $response): ResponseInterface
     {
         /** @var Connection $conn */
         $conn  = Session::current();
@@ -92,27 +94,25 @@ class WsMessageDispatcher implements MiddlewareInterface
         try {
             $parser  = $conn->getParser();
             $message = $parser->decode($frame->data);
-
-            // Save Message to request
-            $request->setMessage($message);
         } catch (Throwable $e) {
             throw new WsMessageParseException("parse message error '{$e->getMessage()}", 500, $e);
         }
 
-        /** @var Router $router */
-        $path  = $module['path'];
-        $cmdId = $message->getCmd() ?: $module['defaultCommand'];
+        $modPath = $module['path'];
+        $cmdId   = $message->getCmd() ?: $module['defaultCommand'];
 
-        $result = $this->router->matchCommand($path, $cmdId);
+        $result = $this->router->matchCommand($modPath, $cmdId);
         $status = $result[0];
 
+        // Save Message to request
+        $request->setMessage($message);
         // Storage route info
         $request->set(Request::ROUTE_INFO, $result);
 
         // Found, get command middlewares
         $middlewares = [];
         if ($status === Router::FOUND) {
-            $middlewares = $router->getCmdMiddlewares($command);
+            $middlewares = $this->router->getCmdMiddlewares($modPath, $cmdId);
 
             // Append command middlewares
             if ($middlewares) {
@@ -121,10 +121,64 @@ class WsMessageDispatcher implements MiddlewareInterface
 
             // If this->preCheckRoute is True, pre-check route match status
         } elseif ($this->preCheckRoute) {
-            throw new WsMessageRouteException("message command '$cmdId' is not found, in module {$path}");
+            throw new WsMessageRouteException("message command '$cmdId' is not found, module path: {$modPath}");
+        }
+
+        // Has middlewares
+        if ($middlewares = $this->mergeMiddlewares($middlewares)) {
+            $chain = MessageHandler::new($this);
+            $chain->addMiddles($middlewares);
+
+            CLog::debug('message will use middleware process, middleware count: %d', $chain->count());
+
+            return $chain->run($request);
+        }
+
+        // No middlewares, direct dispatching
+        return $this->dispatchMessage($request, $response);
+    }
+
+    /**
+     * @param RequestInterface|Request $request
+     * @param MessageHandlerInterface  $handler
+     *
+     * @return ResponseInterface
+     * @throws ReflectionException
+     * @throws Swoft\Exception\SwoftException
+     * @throws WsMessageRouteException
+     * @internal for middleware dispatching
+     */
+    public function process(RequestInterface $request, MessageHandlerInterface $handler): ResponseInterface
+    {
+        /** @var Response $response */
+        $response = context()->getResponse();
+
+        return $this->dispatchMessage($request, $response);
+    }
+
+    /**
+     * @param Request  $request
+     * @param Response $response
+     *
+     * @return ResponseInterface|Response
+     * @throws ReflectionException
+     * @throws WsMessageRouteException
+     */
+    protected function dispatchMessage(Request $request, Response $response): ResponseInterface
+    {
+        [$status, $route] = $request->get(Request::ROUTE_INFO);
+
+        // If this->preCheckRoute is False, check route match status.
+        if (!$this->preCheckRoute && $status === Router::NOT_FOUND) {
+            $command = $route['cmdId'];
+            $modPath = $route['modPath'];
+            throw new WsMessageRouteException("message command '{$command}' is not found, module path: {$modPath}");
         }
 
         [$ctlClass, $ctlMethod] = $route['handler'];
+
+        $frame   = $request->getFrame();
+        $message = $request->getMessage();
 
         $logMsg = "Message: conn#{$frame->fd} call message command handler '{$ctlClass}::{$ctlMethod}'";
         server()->log($logMsg, $message->toArray(), 'debug');
@@ -142,28 +196,6 @@ class WsMessageDispatcher implements MiddlewareInterface
         }
 
         return $response;
-    }
-
-    protected function dispatchMessage(Request $request, Response $response): ResponseInterface
-    {
-
-        return $response;
-    }
-
-    /**
-     * @param RequestInterface|Request $request
-     * @param MessageHandlerInterface  $handler
-     *
-     * @return ResponseInterface
-     * @throws Swoft\Exception\SwoftException
-     * @internal for middleware dispatching
-     */
-    public function process(RequestInterface $request, MessageHandlerInterface $handler): ResponseInterface
-    {
-        /** @var Response $response */
-        $response = context()->getResponse();
-
-        return $this->dispatchMessage($request, $response);
     }
 
     /**
