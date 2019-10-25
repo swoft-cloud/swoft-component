@@ -39,7 +39,10 @@ class DefaultErrorDispatcher
     {
         // Add default handler
         $this->defaultHandler = new DefaultExceptionHandler();
+    }
 
+    public function init(): void
+    {
         // Register system error handle
         $this->registerErrorHandle();
     }

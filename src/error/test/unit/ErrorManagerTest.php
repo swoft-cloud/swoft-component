@@ -5,7 +5,9 @@ namespace SwoftTest\Error\Unit;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use Swoft\Error\DefaultExceptionHandler;
 use Swoft\Error\ErrorManager;
+use Swoft\Error\ErrorType;
 use SwoftTest\Error\Testing\CustomErrorHandler;
 
 /**
@@ -19,7 +21,7 @@ class ErrorManagerTest extends TestCase
         $eh = new ErrorManager();
 
         // null
-        $ret = $eh->matchHandler($e);
+        $ret = $eh->match($e);
         $this->assertNull($ret);
 
         $eh->addHandler(RuntimeException::class, CustomErrorHandler::class);
@@ -27,15 +29,23 @@ class ErrorManagerTest extends TestCase
         $this->assertTrue($eh->getCount() > 0);
         $this->assertTrue($eh->getTypeCount() > 0);
 
-        $ret = $eh->matchHandler($e);
+        $ret = $eh->match($e);
         $this->assertNotEmpty($ret);
 
         $e1  = new LogicException('logic error');
-        $ret = $eh->matchHandler($e1);
+        $ret = $eh->match($e1);
         $this->assertNull($ret);
 
         $eh->clear();
 
         $this->assertSame(0, $eh->getCount());
+    }
+
+    public function testDefHandler(): void
+    {
+        $deh = new DefaultExceptionHandler();
+
+        $this->assertSame(ErrorType::DEF, $deh->getType());
+        $this->assertSame(ErrorType::DEFAULT, $deh->getType());
     }
 }
