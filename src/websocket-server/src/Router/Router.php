@@ -211,7 +211,7 @@ class Router implements RouterInterface
 
     /**
      * @param string $modPath
-     * @param string $route The message route command ID. like 'home.index'
+     * @param string $cmdId The message route command ID. like 'home.index'
      *
      * @return array Return match result
      * [
@@ -219,20 +219,21 @@ class Router implements RouterInterface
      *    route info
      * ]
      */
-    public function matchCommand(string $modPath, string $route): array
+    public function matchCommand(string $modPath, string $cmdId): array
     {
-        $modPath = Str::formatPath($modPath);
+        $command  = trim($cmdId);
+        $modPath  = Str::formatPath($modPath);
+        $baseInfo = ['cmdId' => $command, 'modPath' => $modPath];
+
         if (!isset($this->commands[$modPath])) {
-            return [self::NOT_FOUND, null];
+            return [self::NOT_FOUND, $baseInfo];
         }
 
-        $route = trim($route) ?: $this->modules[$modPath]['defaultCommand'];
-
-        if (isset($this->commands[$modPath][$route])) {
-            return [self::FOUND, $this->commands[$modPath][$route]];
+        if (isset($this->commands[$modPath][$command])) {
+            return [self::FOUND, $this->commands[$modPath][$command]];
         }
 
-        return [self::NOT_FOUND, null];
+        return [self::NOT_FOUND, $baseInfo];
     }
 
     /**

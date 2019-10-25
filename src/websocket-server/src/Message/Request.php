@@ -20,9 +20,8 @@ class Request implements RequestInterface
 
     /**
      * The request data key for storage matched route info.
-     *
      */
-    public const ROUTE_INFO = '__route';
+    public const ROUTE_INFO   = '__route_info';
 
     /**
      * @var Frame

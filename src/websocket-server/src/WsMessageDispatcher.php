@@ -100,18 +100,16 @@ class WsMessageDispatcher implements MiddlewareInterface
 
         $modPath = $module['path'];
         $cmdId   = $message->getCmd() ?: $module['defaultCommand'];
+        $result  = $this->router->matchCommand($modPath, $cmdId);
 
-        $result = $this->router->matchCommand($modPath, $cmdId);
-        $status = $result[0];
-
-        // Save Message to request
+        // Save message to request
         $request->setMessage($message);
         // Storage route info
         $request->set(Request::ROUTE_INFO, $result);
 
-        // Found, get command middlewares
+        // If found, get command middlewares
         $middlewares = [];
-        if ($status === Router::FOUND) {
+        if ($result[0] === Router::FOUND) {
             $middlewares = $this->router->getCmdMiddlewares($modPath, $cmdId);
 
             // Append command middlewares

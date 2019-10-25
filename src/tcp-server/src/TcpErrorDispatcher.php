@@ -25,7 +25,7 @@ class TcpErrorDispatcher
      * @Inject()
      * @var ErrorManager
      */
-    private $errorManager;
+    private $errManager;
 
     /**
      * @param Throwable $e
@@ -33,15 +33,13 @@ class TcpErrorDispatcher
      */
     public function connectError(Throwable $e, int $fd): void
     {
-        /** @var TcpConnectErrorHandlerInterface $errorHandler */
-        $errorHandler = $this->errorManager->matchHandler($e, ErrorType::TCP_CNT);
-
-        if ($errorHandler) {
-            $errorHandler->handle($e, $fd);
+        /** @var TcpConnectErrorHandlerInterface $errHandler */
+        if ($errHandler = $this->errManager->match($e, ErrorType::TCP_CNT)) {
+            $errHandler->handle($e, $fd);
             return;
         }
 
-        $this->logError('Connect', $e);
+        $this->defaultHandle('Connect', $e);
     }
 
     /**
@@ -52,14 +50,14 @@ class TcpErrorDispatcher
      */
     public function receiveError(Throwable $e, Response $response): Response
     {
-        /** @var TcpReceiveErrorHandlerInterface $errorHandler */
-        $errorHandler = $this->errorManager->matchHandler($e, ErrorType::TCP_RCV);
-        if ($errorHandler) {
-            return $errorHandler->handle($e, $response);
+        /** @var TcpReceiveErrorHandlerInterface $errHandler */
+        if ($errHandler = $this->errManager->match($e, ErrorType::TCP_RCV)) {
+            return $errHandler->handle($e, $response);
         }
 
-        $this->logError('Receive', $e);
+        $this->defaultHandle('Receive', $e);
 
+        // Set response code and message
         $response->setCode($e->getCode());
         $response->setMsg($e->getMessage());
 
@@ -72,22 +70,21 @@ class TcpErrorDispatcher
      */
     public function closeError(Throwable $e, int $fd): void
     {
-        /** @var Swoft\Tcp\Server\Contract\TcpCloseErrorHandlerInterface $errorHandler */
-        $errorHandler = $this->errorManager->matchHandler($e, ErrorType::TCP_CLS);
-        if ($errorHandler) {
-            $errorHandler->handle($e, $fd);
+        /** @var Swoft\Tcp\Server\Contract\TcpCloseErrorHandlerInterface $errHandler */
+        if ($errHandler = $this->errManager->match($e, ErrorType::TCP_CLS)) {
+            $errHandler->handle($e, $fd);
             return;
         }
 
-        $this->logError('Close', $e);
+        $this->defaultHandle('Close', $e);
     }
 
     /**
      * @param string    $typeName
      * @param Throwable $e
-     *
+     * TODO use default error handler
      */
-    private function logError(string $typeName, Throwable $e): void
+    private function defaultHandle(string $typeName, Throwable $e): void
     {
         Log::error($e->getMessage());
         CLog::error("Tcp %s Error(no handler, %s): %s\nAt File %s line %d\nTrace:\n%s", $typeName, get_class($e),

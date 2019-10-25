@@ -97,7 +97,11 @@ class MessageListener implements MessageInterface
 
             /** @var WsErrorDispatcher $errDispatcher */
             $errDispatcher = BeanFactory::getSingleton(WsErrorDispatcher::class);
-            $errDispatcher->messageError($e, $frame);
+
+            // Do error dispatching
+            $response = $errDispatcher->messageError($e, $frame, $response);
+            // Do send response
+            $response->send();
         } finally {
             // Defer event
             Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
