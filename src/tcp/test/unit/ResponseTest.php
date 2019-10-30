@@ -40,4 +40,27 @@ class ResponseTest extends TestCase
         $this->assertSame(['array data'], $resp->getData());
         $this->assertSame('["array data"]', $resp->getDataString());
     }
+
+    public function testEmpty(): void
+    {
+        $w = new Response();
+
+        $this->assertTrue($w->isEmpty());
+
+        $w->setContent('hi');
+        $this->assertFalse($w->isEmpty());
+        $w->setCode(23);
+        $w->setContent('');
+        $this->assertFalse($w->isEmpty());
+        $w->setCode(0);
+        $w->setExt(['a']);
+        $w->setContent('');
+        $this->assertFalse($w->isEmpty());
+
+        $w->setCode(0);
+        $w->setExt([]);
+        $w->setData(['a']);
+        $w->setContent('');
+        $this->assertFalse($w->isEmpty());
+    }
 }

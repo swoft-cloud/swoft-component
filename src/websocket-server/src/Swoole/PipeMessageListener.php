@@ -48,7 +48,7 @@ class PipeMessageListener implements PipeMessageInterface
             $event = (string)$data['event'];
 
             /** @see CloseListener::onClose() */
-            if ($event === 'wsClose') {
+            if ($event === 'onClose') {
                 $this->handleClose($data, $srcWorkerId);
             }
         }

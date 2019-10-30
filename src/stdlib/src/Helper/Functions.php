@@ -22,10 +22,7 @@ if (!function_exists('fnmatch')) {
      */
     function fnmatch(string $pattern, string $string): bool
     {
-        return 1 === preg_match(
-                '#^' . strtr(preg_quote($pattern, '#'), ['\*' => '.*', '\?' => '.']) . '$#i',
-                $string
-            );
+        return 1 === preg_match('#^' . strtr(preg_quote($pattern, '#'), ['\*' => '.*', '\?' => '.']) . '$#i', $string);
     }
 }
 
@@ -98,10 +95,6 @@ if (!function_exists('vdump')) {
 
         $string = ob_get_clean();
 
-        echo preg_replace(
-            ["/Array[\s]*\(/", "/=>[\s]+/i"],
-            ['Array (', '=> '],
-            $string
-        );
+        echo preg_replace(["/Array[\s]*\(/", "/=>[\s]+/i"], ['Array (', '=> '], $string);
     }
 }

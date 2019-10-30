@@ -903,7 +903,7 @@ class ArrayHelper
      * Get an item from an array using "dot" notation.
      *
      * @param ArrayAccess|array $array
-     * @param string            $key
+     * @param string|int        $key
      * @param mixed             $default
      *
      * @return mixed
@@ -920,6 +920,11 @@ class ArrayHelper
 
         if (isset($array[$key])) {
             return $array[$key];
+        }
+
+        // Fix: If is int, stop continue find.
+        if (!is_string($key)) {
+            return $default;
         }
 
         foreach (explode('.', $key) as $segment) {
@@ -952,10 +957,9 @@ class ArrayHelper
         }
 
         foreach (explode('.', $key) as $segment) {
-            if ((is_array($array)
-                    && array_key_exists($segment,
-                        $array))
-                || ($array instanceof ArrayAccess && $array->offsetExists($segment))) {
+            if ((is_array($array) && array_key_exists($segment,
+                        $array)) || ($array instanceof ArrayAccess && $array->offsetExists($segment))
+            ) {
                 $array = $array[$segment];
             } else {
                 return false;
@@ -1333,9 +1337,7 @@ class ArrayHelper
         $count = count($array);
 
         if ($requested > $count) {
-            throw new InvalidArgumentException(
-                "You requested {$requested} items, but there are only {$count} items available."
-            );
+            throw new InvalidArgumentException("You requested {$requested} items, but there are only {$count} items available.");
         }
 
         if (is_null($number)) {

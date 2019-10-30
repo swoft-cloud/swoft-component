@@ -30,10 +30,18 @@ final class TcpMapping
 
     /**
      * Mark current route is root command.
+     * If True, will dont prepend prefix for the command.
      *
      * @var bool
      */
     private $root = false;
+
+    /**
+     * Middleware for the method
+     *
+     * @var array
+     */
+    private $middlewares = [];
 
     /**
      * Class constructor.
@@ -51,6 +59,18 @@ final class TcpMapping
         if (isset($values['root'])) {
             $this->root = (bool)$values['root'];
         }
+
+        if (isset($values['middlewares'])) {
+            $this->middlewares = (array)$values['middlewares'];
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRoot(): bool
+    {
+        return $this->root;
     }
 
     /**
@@ -62,10 +82,11 @@ final class TcpMapping
     }
 
     /**
-     * @return bool
+     * @return array
      */
-    public function isRoot(): bool
+    public function getMiddlewares(): array
     {
-        return $this->root;
+        return $this->middlewares;
     }
+
 }

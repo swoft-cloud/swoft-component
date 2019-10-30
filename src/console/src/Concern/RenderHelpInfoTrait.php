@@ -53,14 +53,19 @@ trait RenderHelpInfoTrait
         $swooleVersion = SWOOLE_VERSION;
 
         // Display logo
-        $logoText = $this->logoText ?: Swoft::FONT_LOGO;
-        $output->colored(ltrim($logoText, "\n"));
+        $this->renderBannerLogo();
 
         // Display some information
         $output->writef(
             'PHP: <info>%s</info>, Swoft: <info>%s</info>, Swoole: <info>%s</info>',
             $phpVersion, $swoftVersion, $swooleVersion
         );
+    }
+
+    protected function renderBannerLogo(): void
+    {
+        $logoText = $this->logoText ?: Swoft::FONT_LOGO;
+        Console::colored(ltrim($logoText, "\n"), 'cyan');
     }
 
     /**
@@ -74,8 +79,7 @@ trait RenderHelpInfoTrait
 
         // show logo
         if ($showLogo) {
-            $logoText = $this->logoText ?: Swoft::FONT_LOGO;
-            Console::colored(ltrim($logoText, "\n"), 'cyan');
+            $this->renderBannerLogo();
         }
 
         /** @var Swoft\Console\Input\Input $input */

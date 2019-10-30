@@ -14,10 +14,10 @@ class ObjectHelperTest extends TestCase
     public function test(): void
     {
         $samples = [
-            'int' => 0,
+            'int'    => 0,
             'string' => '',
-            'float' => 0,
-            'bool' => false,
+            'float'  => 0,
+            'bool'   => false,
         ];
 
         foreach ($samples as $sample => $want) {

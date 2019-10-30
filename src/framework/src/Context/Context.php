@@ -106,4 +106,14 @@ class Context
             unset(self::$context[$tid]);
         }
     }
+
+    /**
+     * @param int $tid
+     *
+     * @return bool
+     */
+    public static function has(int $tid): bool
+    {
+        return isset(self::$context[$tid]);
+    }
 }

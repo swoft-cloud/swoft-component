@@ -56,7 +56,7 @@ class TcpReceiveContext extends AbstractContext
     {
         parent::clear();
 
-        $this->request = null;
+        $this->request  = null;
         $this->response = null;
     }
 

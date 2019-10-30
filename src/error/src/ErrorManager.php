@@ -48,7 +48,7 @@ class ErrorManager
      * @param Throwable $e
      * @param int       $type
      *
-     * @return mixed|null
+     * @return mixed|null If match ok, will return handler object.
      */
     public function matchHandler(Throwable $e, int $type = ErrorType::DEF)
     {

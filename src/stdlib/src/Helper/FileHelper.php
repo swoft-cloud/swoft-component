@@ -2,14 +2,14 @@
 
 namespace Swoft\Stdlib\Helper;
 
-use const FILEINFO_MIME_TYPE;
 use function finfo_file;
 use function finfo_open;
 use function function_exists;
 use function ltrim;
 use function pathinfo;
-use const PATHINFO_EXTENSION;
 use function strrchr;
+use const FILEINFO_MIME_TYPE;
+use const PATHINFO_EXTENSION;
 
 /**
  * Class FileHelper
@@ -18,8 +18,10 @@ class FileHelper extends FSHelper
 {
     /**
      * Get file extension, suffix name
+     *
      * @param string $filename
-     * @param bool $clearPoint
+     * @param bool   $clearPoint
+     *
      * @return string
      */
     public static function getSuffix(string $filename, bool $clearPoint = false): string
@@ -46,7 +48,8 @@ class FileHelper extends FSHelper
      * Get file extension, suffix name
      *
      * @param string $path
-     * @param bool $clearPoint
+     * @param bool   $clearPoint
+     *
      * @return string
      */
     public static function getExtension(string $path, bool $clearPoint = false): string
@@ -60,6 +63,7 @@ class FileHelper extends FSHelper
 
     /**
      * @param string $file
+     *
      * @return string eg: image/gif
      */
     public static function mimeType(string $file): string

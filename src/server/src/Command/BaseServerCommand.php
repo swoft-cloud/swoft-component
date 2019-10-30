@@ -2,6 +2,9 @@
 
 namespace Swoft\Server\Command;
 
+use Swoft;
+use Swoft\Console\Console;
+use Swoft\Console\Helper\FormatUtil;
 use Swoft\Console\Helper\Show;
 use Swoft\Server\Contract\ServerInterface;
 use Swoft\Server\Server;
@@ -25,6 +28,8 @@ abstract class BaseServerCommand
      */
     protected function showServerInfoPanel(Server $server): void
     {
+        $this->showSwoftBanner();
+
         // Check if it has started
         if ($server->isRunning()) {
             $masterPid = $server->getPid();
@@ -47,7 +52,9 @@ abstract class BaseServerCommand
         $panel = $this->appendPortsToPanel($server, $panel);
 
         // Show server info
-        Show::panel($panel, 'Server Information');
+        Show::panel($panel, 'Server Information', [
+            'titleStyle' => 'cyan',
+        ]);
 
         $bgMsg = '!';
         if ($server->isDaemonize()) {
@@ -55,6 +62,18 @@ abstract class BaseServerCommand
         }
 
         output()->writef("<success>$sType Server Start Success{$bgMsg}</success>");
+    }
+
+    /**
+     * Show swoft logo banner
+     */
+    protected function showSwoftBanner(): void
+    {
+        [$width,] = Sys::getScreenSize();
+        $logoText = $width > 90 ? Swoft::BANNER_LOGO_FULL : Swoft::BANNER_LOGO_SMALL;
+        $logoText = ltrim($logoText, "\n");
+
+        Console::colored(FormatUtil::applyIndent($logoText), 'cyan');
     }
 
     /**

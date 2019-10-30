@@ -53,8 +53,14 @@ final class WsServerEvent
 
     /**
      * On before call response->send()
+     * @deprecated please use MESSAGE_RESPONSE instead
      */
-    public const MESSAGE_SEND = 'swoft.ws.server.message.send';
+    public const MESSAGE_SEND = 'swoft.ws.server.message.response';
+
+    /**
+     * On before call response->send()
+     */
+    public const MESSAGE_RESPONSE = 'swoft.ws.server.message.response';
 
     /**
      * On before push message content to client

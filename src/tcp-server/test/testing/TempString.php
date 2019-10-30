@@ -67,7 +67,7 @@ class TempString
      *
      * @return string
      */
-    public static function getAndClear(): string
+    public static function getAndClean(): string
     {
         $tempString   = self::$string;
         self::$string = '';
