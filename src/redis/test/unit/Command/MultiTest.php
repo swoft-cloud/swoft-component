@@ -16,18 +16,22 @@ class MultiTest extends TestCase
 {
     public function testPipeline()
     {
-        $count  = 10;
-        $result = Redis::pipeline(function (\Redis $redis) use ($count) {
-            for ($i = 0; $i < $count; $i++) {
-                $redis->set("key:$i", $i);
+        $count = 100;
+
+        for ($i = 0; $i < $count; $i++) {
+            $result = Redis::pipeline(function (\Redis $redis) use ($count) {
+                for ($i = 0; $i < $count; $i++) {
+                    $redis->set("key:$i", $i);
+                }
+            });
+
+            $this->assertEquals(\count($result), $count);
+
+            foreach ($result as $index => $value) {
+                $this->assertTrue($value);
             }
-        });
-
-        $this->assertEquals(\count($result), $count);
-
-        foreach ($result as $index => $value) {
-            $this->assertTrue($value);
         }
+
     }
 
     public function testTransaction()
@@ -42,17 +46,16 @@ class MultiTest extends TestCase
         });
 
         /**
-        array(4) {
-        [0]=>
-        bool(true)
-        [1]=>
-        int(0)
-        [2]=>
-        bool(true)
-        [3]=>
-        int(1)
-        }
-
+         * array(4) {
+         * [0]=>
+         * bool(true)
+         * [1]=>
+         * int(0)
+         * [2]=>
+         * bool(true)
+         * [3]=>
+         * int(1)
+         * }
          */
 
         $this->assertEquals(\count($result), $count * 2);

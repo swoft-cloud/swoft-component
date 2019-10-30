@@ -426,6 +426,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
             $result = $callback($this->client);
             Log::profileEnd('redis.%s', __FUNCTION__);
             // Release Connection
+
             $this->release();
         } catch (Throwable $e) {
             if (!$reconnect && $this->reconnect()) {
@@ -689,6 +690,9 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
             $result = $pipeline->exec();
 
             Log::profileEnd($proKey);
+
+            // Release Connection
+            $this->release();
         } catch (Throwable $e) {
             if (!$reconnect && $this->reconnect()) {
                 return $this->multi($mode, $callback, true);

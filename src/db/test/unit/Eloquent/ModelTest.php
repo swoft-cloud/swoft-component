@@ -867,4 +867,14 @@ on A.id=B.id;', [$resCount - 20]);
         $this->assertEquals($sql, $toSql);
     }
 
+    public function testFindOrFail()
+    {
+        User::updateOrCreate(['id' => 1], ['age' => 1]);
+
+        $user = User::findOrFail(1, ['age']);
+
+        // got id fail
+        $this->expectException(DbException::class);
+        $user->update(['age' => 2]);
+    }
 }
