@@ -2,6 +2,7 @@
 
 namespace Swoft\Tcp\Packer;
 
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Tcp\Contract\PackerInterface;
 use Swoft\Tcp\Package;
 use Swoft\Tcp\Response;
@@ -12,6 +13,7 @@ use function unserialize;
  * Class PhpPacker
  *
  * @since 2.0.4
+ * @Bean()
  */
 class PhpPacker implements PackerInterface
 {

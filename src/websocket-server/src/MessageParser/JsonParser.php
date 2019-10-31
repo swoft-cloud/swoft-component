@@ -34,23 +34,8 @@ class JsonParser implements MessageParserInterface
      */
     public function decode(string $data): Message
     {
-        $cmd = '';
-        $ext = [];
         $map = JsonHelper::decode($data, true);
 
-        // Find message route command
-        if (isset($map['cmd'])) {
-            $cmd = (string)$map['cmd'];
-            unset($map['cmd']);
-        }
-
-        if (isset($map['data'])) {
-            $data = $map['data'];
-            $ext  = $map['ext'] ?? [];
-        } else {
-            $data = $map;
-        }
-
-        return Message::new($cmd, $data, $ext);
+        return Message::newFromArray($map);
     }
 }

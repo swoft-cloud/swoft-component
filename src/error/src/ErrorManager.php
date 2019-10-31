@@ -47,6 +47,8 @@ class ErrorManager
     /**
      * Match error handler by type and exception object.
      *
+     * TODO add third arg, for check handler implemented interface class is right? eg: MessageErrorHandlerInterface
+     *
      * @param Throwable $e
      * @param int       $type
      *
