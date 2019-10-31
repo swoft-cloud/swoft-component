@@ -45,6 +45,38 @@ class Package
     }
 
     /**
+     * Quick create new package from an map array
+     *
+     * @param array $map
+     *
+     * @return static
+     */
+    public static function newFromArray(array $map): self
+    {
+        $cmd = '';
+        $ext = [];
+
+        // Find tcp message route
+        if (isset($map['cmd'])) {
+            $cmd = (string)$map['cmd'];
+            unset($map['cmd']);
+        }
+
+        if (isset($map['data'])) {
+            $body = $map['data'];
+
+            // Has ext data for package
+            if (isset($map['ext'])) {
+                $ext = (array)$map['ext'];
+            }
+        } else {
+            $body = $map;
+        }
+
+        return self::new($cmd, $body, $ext);
+    }
+
+    /**
      * @return array
      */
     public function toArray(): array
