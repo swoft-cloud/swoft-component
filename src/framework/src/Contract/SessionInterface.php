@@ -12,6 +12,15 @@ use Swoft\Stdlib\Contract\Arrayable;
 interface SessionInterface extends Arrayable
 {
     /**
+     * Check if an item exists in an array using "dot" notation.
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function has(string $key): bool;
+
+    /**
      * Get value from context
      *
      * @param string $key

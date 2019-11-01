@@ -10,6 +10,15 @@ namespace Swoft\Contract;
 interface ContextInterface
 {
     /**
+     * Check if an item exists in an array
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function has(string $key): bool;
+
+    /**
      * Get value from context
      *
      * @param string $key
