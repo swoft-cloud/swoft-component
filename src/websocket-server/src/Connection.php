@@ -196,6 +196,14 @@ class Connection implements SessionInterface
     }
 
     /**
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
+    }
+
+    /**
      * Clear resource
      */
     public function clear(): void

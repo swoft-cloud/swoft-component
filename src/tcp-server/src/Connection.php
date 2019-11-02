@@ -134,4 +134,12 @@ class Connection implements SessionInterface
     {
         return JsonHelper::encode($this->getMetadata());
     }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
+    }
 }
