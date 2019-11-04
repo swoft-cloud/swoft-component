@@ -19,12 +19,12 @@ use function env;
  *
  * @since 2.0
  */
-class AutoLoader extends SwoftComponent
+final class AutoLoader extends SwoftComponent
 {
     /**
      * @return bool
      */
-    public function enable(): bool
+    public function isEnable(): bool
     {
         return (bool)env('ENABLE_WS_SERVER', true);
     }

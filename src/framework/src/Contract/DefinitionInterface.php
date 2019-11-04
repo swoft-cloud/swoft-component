@@ -9,7 +9,7 @@ namespace Swoft\Contract;
 interface DefinitionInterface
 {
     /**
-     * Core bean definition
+     * Bean definitions
      *
      * @return array
      *

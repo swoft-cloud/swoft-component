@@ -12,6 +12,17 @@ use Swoft\Annotation\Contract\LoaderInterface;
 class AutoLoader implements LoaderInterface
 {
     /**
+     * Disable or enable this component.
+     *
+     * @return bool
+     * @since 2.0.7
+     */
+    public function isEnable(): bool
+    {
+        return true;
+    }
+
+    /**
      * Get namespace and dirs
      *
      * @return array
@@ -21,16 +32,5 @@ class AutoLoader implements LoaderInterface
         return [
             __NAMESPACE__ => __DIR__,
         ];
-    }
-
-    /**
-     * Disable or enable this component.
-     *
-     * @return bool
-     * @since 2.0.7
-     */
-    public function isEnable(): bool
-    {
-        return true;
     }
 }

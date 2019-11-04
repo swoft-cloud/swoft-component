@@ -125,8 +125,8 @@ class AnnotationResource extends Resource
         ObjectHelper::init($this, $config);
 
         $this->registerLoader();
-        $this->classLoader = ComposerHelper::getClassLoader();
 
+        $this->classLoader   = ComposerHelper::getClassLoader();
         $this->includedFiles = get_included_files();
     }
 
@@ -149,7 +149,7 @@ class AnnotationResource extends Resource
 
             // It is excluded psr4 prefix
             if ($this->isExcludedPsr4Prefix($ns)) {
-                AnnotationRegister::registerExcludeNs($ns);
+                AnnotationRegister::addExcludeNamespace($ns);
                 $this->notify('excludeNs', $ns);
                 continue;
             }
@@ -168,7 +168,9 @@ class AnnotationResource extends Resource
                     continue;
                 }
 
+                $isEnabled  = true;
                 $autoLoader = new $loaderClass();
+
                 if (!$autoLoader instanceof LoaderInterface) {
                     $this->notify('invalidLoader', $loaderFile);
                     continue;
@@ -178,6 +180,8 @@ class AnnotationResource extends Resource
 
                 // If is disable, will skip scan annotation classes
                 if (isset($this->disabledAutoLoaders[$loaderClass]) || !$autoLoader->isEnable()) {
+                    $isEnabled = false;
+
                     $this->notify('disabledLoader', $loaderFile);
                 } else {
                     AnnotationRegister::addAutoLoaderFile($loaderFile);
@@ -187,8 +191,8 @@ class AnnotationResource extends Resource
                     $this->loadAnnotation($autoLoader);
                 }
 
-                // Storage auto loader to register
-                AnnotationRegister::addAutoLoader($ns, $autoLoader);
+                // Storage autoLoader instance to register
+                AnnotationRegister::addAutoLoader($ns, $autoLoader, $isEnabled);
             }
         }
     }
@@ -423,6 +427,7 @@ class AnnotationResource extends Resource
      */
     private function registerLoader(): void
     {
+        /** @noinspection PhpDeprecationInspection */
         AnnotationRegistry::registerLoader(function (string $class) {
             if (class_exists($class)) {
                 return true;

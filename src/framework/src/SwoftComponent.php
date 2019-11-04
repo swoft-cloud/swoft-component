@@ -13,26 +13,29 @@ use function array_merge;
 abstract class SwoftComponent implements ComponentInterface
 {
     /**
-     * @var bool Enable the component
-     */
-    private $enable;
-
-    /**
      * @var array
      */
     private $metadata;
 
     /**
-     * Class constructor.
+     * Class constructor
      */
     public function __construct()
     {
-        $this->enable   = $this->enable();
         $this->metadata = array_merge(self::DEFAULT_META, $this->metadata());
     }
 
     /**
      * @return bool
+     */
+    public function isEnable(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @return bool
+     * @deprecated will deleted since 2.0.8
      */
     public function enable(): bool
     {
@@ -40,6 +43,8 @@ abstract class SwoftComponent implements ComponentInterface
     }
 
     /**
+     * Bean definitions of the component
+     *
      * @return array
      */
     public function beans(): array
@@ -61,7 +66,7 @@ abstract class SwoftComponent implements ComponentInterface
      * @return array
      * @see ComponentInterface::getMetadata()
      */
-    abstract public function metadata(): array;
+    abstract protected function metadata(): array;
 
     /**
      * @return array
@@ -69,21 +74,5 @@ abstract class SwoftComponent implements ComponentInterface
     public function getMetadata(): array
     {
         return $this->metadata;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEnable(): bool
-    {
-        return $this->enable;
-    }
-
-    /**
-     * @param bool $enable
-     */
-    public function setEnable(bool $enable): void
-    {
-        $this->enable = $enable;
     }
 }

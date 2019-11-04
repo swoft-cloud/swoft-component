@@ -9,7 +9,6 @@ use Swoft\Annotation\Exception\AnnotationException;
 use Swoft\Bean\BeanFactory;
 use Swoft\BeanHandler;
 use Swoft\Config\Config;
-use Swoft\Contract\ComponentInterface;
 use Swoft\Contract\DefinitionInterface;
 use Swoft\Helper\SwoftHelper;
 use Swoft\Log\Helper\CLog;
@@ -20,7 +19,8 @@ use function get_class;
 use function sprintf;
 
 /**
- * Bean processor
+ * Class BeanProcessor
+ *
  * @since 2.0
  */
 class BeanProcessor extends Processor
@@ -49,15 +49,18 @@ class BeanProcessor extends Processor
         BeanFactory::setHandler($handler);
         BeanFactory::init();
 
-        /* @var Config $config*/
-        $config = BeanFactory::getBean('config');
-
-        CLog::info('config path=%s', $config->getPath());
-        CLog::info('config env=%s', $config->getEnv());
-
         $stats = BeanFactory::getStats();
-
         CLog::info('Bean is initialized(%s)', SwoftHelper::formatStats($stats));
+
+        /* @var Config $config */
+        $config = BeanFactory::getBean('config');
+        CLog::info('Config path is %s', $config->getPath());
+
+        if ($configEnv = $config->getEnv()) {
+            CLog::info('Config env=%s', $configEnv);
+        } else {
+            CLog::info('Config env is not setting');
+        }
 
         return $this->application->afterBean();
     }
@@ -102,9 +105,7 @@ class BeanProcessor extends Processor
         $beanFile = alias($this->application->getBeanFile());
 
         if (!file_exists($beanFile)) {
-            throw new InvalidArgumentException(
-                sprintf('The bean config file of %s is not exist!', $beanFile)
-            );
+            throw new InvalidArgumentException(sprintf('The bean config file of %s is not exist!', $beanFile));
         }
 
         /** @noinspection PhpIncludeInspection */

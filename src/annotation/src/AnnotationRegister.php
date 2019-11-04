@@ -4,13 +4,15 @@ namespace Swoft\Annotation;
 
 use Doctrine\Common\Annotations\AnnotationException;
 use ReflectionException;
-use Swoft\Annotation\Resource\AnnotationResource;
 use Swoft\Annotation\Contract\LoaderInterface;
+use Swoft\Annotation\Resource\AnnotationResource;
 
 /**
- * Annotation register
+ * Class AnnotationRegister
+ *
+ * @since 2.0.0
  */
-class AnnotationRegister
+final class AnnotationRegister
 {
     /**
      * @var array
@@ -64,7 +66,7 @@ class AnnotationRegister
     private static $parsers = [];
 
     /**
-     * All auto loaders
+     * All activity autoLoaders
      *
      * @var LoaderInterface[]
      *
@@ -76,6 +78,20 @@ class AnnotationRegister
      * ]
      */
     private static $autoLoaders = [];
+
+    /**
+     * All disabled autoLoaders
+     *
+     * @var LoaderInterface[]
+     *
+     * @example
+     * [
+     *     'namespace' => new AutoLoader(),
+     *     'namespace' => new AutoLoader(),
+     *     'namespace' => new AutoLoader(),
+     * ]
+     */
+    private static $disabledLoaders = [];
 
     /**
      * @var array
@@ -111,12 +127,15 @@ class AnnotationRegister
     private static $excludeFilenames = [];
 
     /**
+     * Annotation scan stats
+     *
      * @var array
      */
     private static $classStats = [
-        'parser'     => 0,
-        'annotation' => 0,
-        'autoloader' => 0,
+        'parser'         => 0,
+        'annotation'     => 0,
+        'autoloader'     => 0,
+        'disabledLoader' => 0,
     ];
 
     /**
@@ -155,30 +174,6 @@ class AnnotationRegister
     }
 
     /**
-     * @param string $ns
-     */
-    public static function registerExcludeNs(string $ns): void
-    {
-        self::$excludeNamespaces[] = $ns;
-    }
-
-    /**
-     * @param string $file
-     */
-    public static function addAutoLoaderFile(string $file): void
-    {
-        self::$autoLoaderFiles[] = $file;
-    }
-
-    /**
-     * @param string $filename
-     */
-    public static function addExcludeFilename(string $filename): void
-    {
-        self::$excludeFilenames[] = $filename;
-    }
-
-    /**
      * @return array
      */
     public static function getAnnotations(): array
@@ -195,35 +190,19 @@ class AnnotationRegister
     }
 
     /**
-     * @return LoaderInterface[]
+     * @param string $ns
      */
-    public static function getAutoLoaders(): array
+    public static function addExcludeNamespace(string $ns): void
     {
-        return self::$autoLoaders;
+        self::$excludeNamespaces[] = $ns;
     }
 
     /**
-     * Add autoloader
-     *
-     * @param string          $namespace
-     * @param LoaderInterface $autoLoader
-     *
-     * @return void
+     * @param string $filename
      */
-    public static function addAutoLoader(string $namespace, LoaderInterface $autoLoader): void
+    public static function addExcludeFilename(string $filename): void
     {
-        self::$classStats['autoloader']++;
-        self::$autoLoaders[$namespace] = $autoLoader;
-    }
-
-    /**
-     * @param string $namespace
-     *
-     * @return LoaderInterface|null
-     */
-    public static function getAutoLoader(string $namespace): ?LoaderInterface
-    {
-        return self::$autoLoaders[$namespace] ?? null;
+        self::$excludeFilenames[] = $filename;
     }
 
     /**
@@ -245,16 +224,76 @@ class AnnotationRegister
     /**
      * @return array
      */
-    public static function getAutoLoaderFiles(): array
+    public static function getExcludeFilenames(): array
     {
-        return self::$autoLoaderFiles;
+        return self::$excludeFilenames;
+    }
+
+    /**********************************************************************
+     * AutoLoader manage
+     *********************************************************************/
+
+    /**
+     * Add autoloader
+     *
+     * @param string          $namespace
+     * @param LoaderInterface $loader
+     * @param bool            $enable
+     *
+     * @return void
+     */
+    public static function addAutoLoader(string $namespace, LoaderInterface $loader, bool $enable): void
+    {
+        // Is an enabled
+        if ($enable) {
+            self::$classStats['autoloader']++;
+            self::$autoLoaders[$namespace] = $loader;
+            return;
+        }
+
+        self::$classStats['disabledLoader']++;
+        self::$disabledLoaders[$namespace] = $loader;
+    }
+
+    /**
+     * @return LoaderInterface[]
+     */
+    public static function getAutoLoaders(): array
+    {
+        return self::$autoLoaders;
+    }
+
+    /**
+     * @return LoaderInterface[]
+     */
+    public static function getDisabledLoaders(): array
+    {
+        return self::$disabledLoaders;
+    }
+
+    /**
+     * @param string $namespace
+     *
+     * @return LoaderInterface|null
+     */
+    public static function getAutoLoader(string $namespace): ?LoaderInterface
+    {
+        return self::$autoLoaders[$namespace] ?? null;
+    }
+
+    /**
+     * @param string $file
+     */
+    public static function addAutoLoaderFile(string $file): void
+    {
+        self::$autoLoaderFiles[] = $file;
     }
 
     /**
      * @return array
      */
-    public static function getExcludeFilenames(): array
+    public static function getAutoLoaderFiles(): array
     {
-        return self::$excludeFilenames;
+        return self::$autoLoaderFiles;
     }
 }

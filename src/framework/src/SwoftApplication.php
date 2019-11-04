@@ -159,8 +159,6 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
         // Init application
         $this->init();
 
-        CLog::info('Project path is <info>%s</info>', $this->basePath);
-
         // After init
         $this->afterInit();
     }
@@ -229,6 +227,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     }
 
     /**
+     * @noinspection PhpDocSignatureInspection
      * @param string[] ...$classes
      */
     public function disableAutoLoader(string ...$classes)
@@ -239,6 +238,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     }
 
     /**
+     * @noinspection PhpDocSignatureInspection
      * @param string ...$classes
      */
     public function disableProcessor(string ...$classes)
@@ -491,7 +491,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
         Swoft::setAlias('@runtime', $runtimePath);
         Swoft::setAlias('@resource', $resourcePath);
 
-        CLog::info('Set alias @base=%s', $basePath);
+        CLog::info('Project path: @base=%s', $basePath);
         CLog::info('Set alias @app=%s', $appPath);
         CLog::info('Set alias @config=%s', $configPath);
         CLog::info('Set alias @runtime=%s', $runtimePath);
