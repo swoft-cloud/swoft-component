@@ -5,6 +5,7 @@ namespace Swoft\Processor;
 use Exception;
 use Swoft\Annotation\AnnotationRegister;
 use Swoft\Log\Helper\CLog;
+use const IN_PHAR;
 
 /**
  * Annotation processor
@@ -29,9 +30,9 @@ class AnnotationProcessor extends Processor
 
         // Find AutoLoader classes. Parse and collect annotations.
         AnnotationRegister::load([
-            'inPhar'               => \IN_PHAR,
+            'inPhar'               => IN_PHAR,
             'basePath'             => $app->getBasePath(),
-            'notifyHandler'        => [$this, 'notifyHandler'],
+            'notifyHandler'        => [$this, 'notifyHandle'],
             'disabledAutoLoaders'  => $app->getDisabledAutoLoaders(),
             'disabledPsr4Prefixes' => $app->getDisabledPsr4Prefixes(),
         ]);
@@ -53,7 +54,7 @@ class AnnotationProcessor extends Processor
      * @param string $target
      * @see \Swoft\Annotation\Resource\AnnotationResource::load()
      */
-    public function notifyHandler(string $type, $target): void
+    public function notifyHandle(string $type, $target): void
     {
         switch ($type) {
             case 'excludeNs':
@@ -67,6 +68,9 @@ class AnnotationProcessor extends Processor
                 break;
             case 'findLoaderClass':
                 CLog::debug('Find autoloader %s', $target);
+                break;
+            case 'disabledLoader':
+                CLog::debug('Disable autoloader %s', $target);
                 break;
             case 'addLoaderClass':
                 CLog::debug('Parse autoloader %s', $target);

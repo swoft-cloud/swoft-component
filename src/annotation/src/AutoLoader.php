@@ -22,4 +22,15 @@ class AutoLoader implements LoaderInterface
             __NAMESPACE__ => __DIR__,
         ];
     }
+
+    /**
+     * Disable or enable this component.
+     *
+     * @return bool
+     * @since 2.0.7
+     */
+    public function isEnable(): bool
+    {
+        return true;
+    }
 }

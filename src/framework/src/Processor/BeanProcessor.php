@@ -83,23 +83,23 @@ class BeanProcessor extends Processor
 
             $loaderClass = get_class($autoLoader);
 
-            // If the component is disabled by user.
+            // If the component is disabled by app.
             if (isset($disabledLoaders[$loaderClass])) {
-                CLog::info('Auto loader(%s) is <cyan>disabled</cyan>, skip handle it', $loaderClass);
+                CLog::info('Auto loader(%s) is <cyan>DISABLED</cyan>, skip handle it', $loaderClass);
                 continue;
             }
 
-            // If the component is not enabled.
-            if ($autoLoader instanceof ComponentInterface && !$autoLoader->isEnable()) {
+            // If the component is disabled by self.
+            if (!$autoLoader->isEnable()) {
+                CLog::info('Auto loader(%s) is <cyan>DISABLED</cyan>, skip handle it', $loaderClass);
                 continue;
             }
 
             $definitions = ArrayHelper::merge($definitions, $autoLoader->beans());
         }
 
-        // Bean definitions
-        $beanFile = $this->application->getBeanFile();
-        $beanFile = alias($beanFile);
+        // Application bean definitions
+        $beanFile = alias($this->application->getBeanFile());
 
         if (!file_exists($beanFile)) {
             throw new InvalidArgumentException(
@@ -107,9 +107,9 @@ class BeanProcessor extends Processor
             );
         }
 
+        /** @noinspection PhpIncludeInspection */
         $beanDefinitions = require $beanFile;
-        $definitions     = ArrayHelper::merge($definitions, $beanDefinitions);
 
-        return $definitions;
+        return ArrayHelper::merge($definitions, $beanDefinitions);
     }
 }

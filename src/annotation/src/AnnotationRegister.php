@@ -165,7 +165,7 @@ class AnnotationRegister
     /**
      * @param string $file
      */
-    public static function registerAutoLoaderFile(string $file): void
+    public static function addAutoLoaderFile(string $file): void
     {
         self::$autoLoaderFiles[] = $file;
     }
@@ -173,7 +173,7 @@ class AnnotationRegister
     /**
      * @param string $filename
      */
-    public static function registerExcludeFilename(string $filename): void
+    public static function addExcludeFilename(string $filename): void
     {
         self::$excludeFilenames[] = $filename;
     }

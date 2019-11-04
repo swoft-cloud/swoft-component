@@ -20,13 +20,6 @@ interface ComponentInterface extends DefinitionInterface, LoaderInterface
     ];
 
     /**
-     * Disable or enable this component.
-     *
-     * @return bool
-     */
-    public function isEnable(): bool;
-
-    /**
      * Metadata information for the component
      *
      * @return array

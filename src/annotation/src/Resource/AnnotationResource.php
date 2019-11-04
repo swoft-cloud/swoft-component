@@ -168,8 +168,8 @@ class AnnotationResource extends Resource
                     continue;
                 }
 
-                $loaderObject = new $loaderClass();
-                if (!$loaderObject instanceof LoaderInterface) {
+                $autoLoader = new $loaderClass();
+                if (!$autoLoader instanceof LoaderInterface) {
                     $this->notify('invalidLoader', $loaderFile);
                     continue;
                 }
@@ -177,14 +177,18 @@ class AnnotationResource extends Resource
                 $this->notify('findLoaderClass', $this->clearBasePath($loaderFile));
 
                 // If is disable, will skip scan annotation classes
-                if (!isset($this->disabledAutoLoaders[$loaderClass])) {
-                    AnnotationRegister::registerAutoLoaderFile($loaderFile);
+                if (isset($this->disabledAutoLoaders[$loaderClass]) || !$autoLoader->isEnable()) {
+                    $this->notify('disabledLoader', $loaderFile);
+                } else {
+                    AnnotationRegister::addAutoLoaderFile($loaderFile);
                     $this->notify('addLoaderClass', $loaderClass);
-                    $this->loadAnnotation($loaderObject);
+
+                    // Scan and collect class bean s
+                    $this->loadAnnotation($autoLoader);
                 }
 
                 // Storage auto loader to register
-                AnnotationRegister::addAutoLoader($ns, $loaderObject);
+                AnnotationRegister::addAutoLoader($ns, $autoLoader);
             }
         }
     }
@@ -253,7 +257,7 @@ class AnnotationResource extends Resource
 
                 // It is exclude filename
                 if (isset($this->excludedFilenames[$fileName])) {
-                    AnnotationRegister::registerExcludeFilename($fileName);
+                    AnnotationRegister::addExcludeFilename($fileName);
                     continue;
                 }
 
