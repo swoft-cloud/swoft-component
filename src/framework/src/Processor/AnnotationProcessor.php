@@ -33,6 +33,7 @@ class AnnotationProcessor extends Processor
             'inPhar'               => IN_PHAR,
             'basePath'             => $app->getBasePath(),
             'notifyHandler'        => [$this, 'notifyHandle'],
+            // TODO force load framework components: bean, error, event, aop
             'disabledAutoLoaders'  => $app->getDisabledAutoLoaders(),
             'disabledPsr4Prefixes' => $app->getDisabledPsr4Prefixes(),
         ]);

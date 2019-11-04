@@ -282,6 +282,16 @@ final class AnnotationRegister
     }
 
     /**
+     * @param string $namespace
+     *
+     * @return LoaderInterface|null
+     */
+    public static function getDisabledLoader(string $namespace): ?LoaderInterface
+    {
+        return self::$disabledLoaders[$namespace] ?? null;
+    }
+
+    /**
      * @param string $file
      */
     public static function addAutoLoaderFile(string $file): void

@@ -14,10 +14,30 @@ interface ComponentInterface extends DefinitionInterface, LoaderInterface
     public const DEFAULT_META = [
         'name'        => '',
         'title'       => '',
-        'version'     => '1.0.0',
+        'version'     => '',
         'homepage'    => '',
         'description' => '',
     ];
+
+    /**
+     * @return string
+     */
+    public function getClass(): string;
+
+    /**
+     * @return string
+     */
+    public function getName(): string;
+
+    /**
+     * @return string
+     */
+    public function getVersion(): string;
+
+    /**
+     * @return string
+     */
+    public function getDescription(): string;
 
     /**
      * Metadata information for the component

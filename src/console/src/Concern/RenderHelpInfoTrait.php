@@ -88,7 +88,7 @@ trait RenderHelpInfoTrait
         // Global options
         $globalOptions = self::$globalOptions;
         // Append expand option
-        $globalOptions['--expand'] = 'Expand sub-commands for all command groups';
+        $globalOptions['--expand-cmd'] = 'Expand sub-commands for all command groups';
 
         $appVer  = $this->getVersion();
         $appDesc = $this->getDescription();
@@ -105,7 +105,7 @@ trait RenderHelpInfoTrait
 
         /* @var Router $router */
         $router   = Swoft::getBean('cliRouter');
-        $expand   = $input->getBoolOpt('expand');
+        $expand   = $input->getBoolOpt('expand-cmd');
         $keyWidth = $router->getKeyWidth($expand ? 2 : -4);
 
         Console::writeln('<comment>Available Commands:</comment>');

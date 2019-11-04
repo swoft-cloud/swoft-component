@@ -13,6 +13,25 @@ use function array_merge;
 abstract class SwoftComponent implements ComponentInterface
 {
     /**
+     * Metadata information for the component.
+     *
+     * e.g:
+     * [
+     *  'name'        => 'user/package', // same composer.json -> name
+     *  'title'       => 'my component',
+     *  'version'     => '1.0.0',
+     *  'authors'     => [
+     *      [
+     *          'name' => 'tom',
+     *          'homepage' => 'https://github.com/tom'
+     *      ]
+     *  ],
+     *  'keywords'    => ['one', 'two'],
+     *  'createAt'    => '2019.02.12',
+     *  'updateAt'    => '2019.04.12',
+     *  'description' => 'description for the component',
+     *  'homepage'    => 'https://github.com/inhere/some-component',
+     * ]
      * @var array
      */
     private $metadata;
@@ -67,6 +86,49 @@ abstract class SwoftComponent implements ComponentInterface
      * @see ComponentInterface::getMetadata()
      */
     abstract protected function metadata(): array;
+
+    /**
+     * @return string
+     */
+    public function getClass(): string
+    {
+        return static::class;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->metadata['name'] ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersion(): string
+    {
+        return $this->metadata['version'] ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->metadata['description'] ?? '';
+    }
+
+    /**
+     * @param string $key
+     * @param mixed  $default
+     *
+     * @return mixed
+     */
+    public function getMetaValue(string $key, $default = null)
+    {
+        return $this->metadata[$key] ?? $default;
+    }
 
     /**
      * @return array
