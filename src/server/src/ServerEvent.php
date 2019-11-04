@@ -70,9 +70,9 @@ final class ServerEvent
     public const USER_PROCESS_START = 'swoft.process.user.start';
 
     /**
-     * Pipe-message. please {@see \Swoft\Server\Swoole\PipeMessageListener}
+     * Server pipe-message. please {@see \Swoft\Server\Swoole\PipeMessageListener}
      */
-    public const PIPE_MESSAGE = 'pipeMessage';
+    public const PIPE_MESSAGE = 'swoft.server.pipe.message';
 
     /**
      * Before after event

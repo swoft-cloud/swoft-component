@@ -18,7 +18,7 @@ use Swoole\Server;
 class PipeMessageListener implements PipeMessageInterface
 {
     /**
-     * Pipe message event
+     * Pipe message event handle
      *
      * @param Server $server
      * @param int    $srcWorkerId
@@ -28,6 +28,6 @@ class PipeMessageListener implements PipeMessageInterface
     {
         CLog::debug("PipeMessage: received pipe-message fromWID=$srcWorkerId message=$message");
 
-        Swoft::trigger(ServerEvent::PIPE_MESSAGE, $message, $srcWorkerId);
+        Swoft::trigger(ServerEvent::PIPE_MESSAGE, $message, $srcWorkerId, $server);
     }
 }
