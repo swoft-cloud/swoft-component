@@ -780,11 +780,17 @@ class StringHelper
      *
      * @return string
      */
-    public static function getUniqid(string $prefix = "", bool $moreEntropy = false): string
+    public static function getUniqid(string $prefix = '', bool $moreEntropy = false): string
     {
-        $uniqid = uniqid($prefix, $moreEntropy);
-        $uniqid = str_replace('.', '', $uniqid);
-        return $uniqid;
+        // If on Cygwin, $moreEntropy must be TRUE.
+        if (EnvHelper::isCygwin()) {
+            $moreEntropy = true;
+        }
+
+        $uniqId = uniqid($prefix, $moreEntropy);
+        $uniqId = str_replace('.', '', $uniqId);
+
+        return $uniqId;
     }
 
     /**

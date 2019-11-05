@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Client;
-
 
 use Swoft\Proxy\Exception\ProxyException;
 use Swoft\Proxy\Proxy as BaseProxy;
@@ -10,6 +8,11 @@ use Swoft\Rpc\Client\Exception\RpcClientException;
 use Swoft\Rpc\Client\Proxy\Ast\ProxyVisitor;
 use Swoft\Stdlib\Helper\Str;
 
+/**
+ * Class Proxy
+ *
+ * @since 2.0
+ */
 class Proxy
 {
     /**
