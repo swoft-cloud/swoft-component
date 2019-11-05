@@ -91,11 +91,12 @@ trait CookiesTrait
     public function delCookie(string $name): self
     {
         // Delete cookie from browser
-        if (isset($this->cookies[$name])) {
-            $this->cookies[$name]['value']   = '';
-            $this->cookies[$name]['expires'] = -60;
+        if (!isset($this->cookies[$name])) {
+            $this->cookies[$name] = Cookie::DEFAULTS;
         }
 
+        $this->cookies[$name]['value']   = '';
+        $this->cookies[$name]['expires'] = -60;
         return $this;
     }
 

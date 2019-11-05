@@ -15,7 +15,7 @@ use Swoft\Stdlib\Reflections;
 class BeanFactory
 {
     /**
-     * Init
+     * Init bean container
      *
      * @return void
      * @throws AnnotationException

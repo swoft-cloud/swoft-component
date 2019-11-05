@@ -139,7 +139,6 @@ if (!function_exists('context')) {
      * Get current context
      *
      * @return ContextInterface|HttpContext|ServiceContext|TaskContext|FinishContext|UserProcessContext|ProcessContext|StartContext|WorkerStartContext|WorkerStopContext|ShutdownContext
-     * @throws SwoftException
      */
     function context(): ContextInterface
     {
