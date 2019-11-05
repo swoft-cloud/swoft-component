@@ -16,22 +16,7 @@ use function is_string;
 trait CookiesTrait
 {
     /**
-     * Default cookie properties
-     *
-     * @var array
-     */
-    private static $cookieDefaults = [
-        'value'    => '',
-        'domain'   => '',
-        'path'     => '',
-        'expires'  => 0,
-        'secure'   => false,
-        'httpOnly' => false,
-        'hostOnly' => false,
-    ];
-
-    /**
-     * Cookie
+     * Cookies
      *
      * @var array[]
      */
@@ -63,6 +48,26 @@ trait CookiesTrait
     }
 
     /**
+     * @param string $name
+     *
+     * @return array
+     */
+    public function getCookie(string $name): array
+    {
+        return $this->cookies[$name] ?? [];
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function hasCookie(string $name): bool
+    {
+        return isset($this->cookies[$name]);
+    }
+
+    /**
      * @param string              $name
      * @param string|array|Cookie $value
      *
@@ -85,8 +90,10 @@ trait CookiesTrait
      */
     public function delCookie(string $name): self
     {
+        // Delete cookie from browser
         if (isset($this->cookies[$name])) {
-            unset($this->cookies[$name]);
+            $this->cookies[$name]['value']   = '';
+            $this->cookies[$name]['expires'] = -60;
         }
 
         return $this;
@@ -148,12 +155,23 @@ trait CookiesTrait
     }
 
     /**
-     * @return CookiesTrait
+     * Remove all cookies
+     *
+     * @return $this
      */
     public function withoutCookies(): self
     {
+        $cookies = [];
+        foreach ($this->cookies as $name => $item) {
+            $item['value']   = '';
+            $item['expires'] = -60;
+            $cookies[$name]  = $item;
+        }
+
         $new = clone $this;
-        $new->setCookies([]);
+
+        // Override old
+        $new->cookies = $cookies;
 
         return $new;
     }
