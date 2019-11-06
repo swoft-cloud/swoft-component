@@ -11,6 +11,7 @@ use ReflectionException;
 use SplFileInfo;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\AnnotationRegister;
+use Swoft\Annotation\Concern\AbstractResource;
 use Swoft\Annotation\Contract\LoaderInterface;
 use Swoft\Stdlib\Helper\ComposerHelper;
 use Swoft\Stdlib\Helper\DirectoryHelper;
@@ -30,7 +31,7 @@ use function strpos;
  *
  * @since 2.0
  */
-class AnnotationResource extends Resource
+class AnnotationResource extends AbstractResource
 {
     /**
      * Default excluded psr4 prefixes
@@ -156,6 +157,7 @@ class AnnotationResource extends Resource
 
             // Find package/component loader class
             foreach ($paths as $path) {
+                \vdump($path);
                 $loaderFile = $this->getAnnotationClassLoaderFile($path);
                 if (!file_exists($loaderFile)) {
                     $this->notify('noLoaderFile', $this->clearBasePath($path), $loaderFile);

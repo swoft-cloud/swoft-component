@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Annotation\Resource;
+namespace Swoft\Annotation\Concern;
 
 use Swoft\Annotation\Contract\ResourceInterface;
 
@@ -8,9 +8,8 @@ use Swoft\Annotation\Contract\ResourceInterface;
  * Class Resource
  *
  * @since 2.0
- * @deprecated
  */
-abstract class Resource implements ResourceInterface
+abstract class AbstractResource implements ResourceInterface
 {
 
 }
