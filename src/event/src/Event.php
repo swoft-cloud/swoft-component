@@ -77,6 +77,19 @@ class Event implements EventInterface, ArrayAccess, Serializable
     }
 
     /**
+     * Destroy event data
+     *
+     * @return $this
+     */
+    public function destroy(): self
+    {
+        $this->params = [];
+        $this->target = [];
+
+        return $this;
+    }
+
+    /**
      * @param string $name
      *
      * @return string
