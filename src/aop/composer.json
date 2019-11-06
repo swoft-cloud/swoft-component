@@ -8,7 +8,8 @@
     "swoft",
     "aop"
   ],
-    "description": "swoft aop component",
+  "description": "swoft aop component",
+  "homepage": "https://github.com/swoft-cloud/swoft-aop",
   "license": "Apache-2.0",
   "require": {
     "php": ">=7.1",
@@ -16,8 +17,6 @@
     "swoft/stdlib": "~2.0.0"
   },
   "autoload": {
-    "classmap": [
-    ],
     "psr-4": {
       "Swoft\\Aop\\": "src/"
     }

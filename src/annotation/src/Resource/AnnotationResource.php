@@ -157,7 +157,6 @@ class AnnotationResource extends AbstractResource
 
             // Find package/component loader class
             foreach ($paths as $path) {
-                \vdump($path);
                 $loaderFile = $this->getAnnotationClassLoaderFile($path);
                 if (!file_exists($loaderFile)) {
                     $this->notify('noLoaderFile', $this->clearBasePath($path), $loaderFile);

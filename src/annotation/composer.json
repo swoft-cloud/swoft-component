@@ -5,9 +5,11 @@
   "keywords": [
     "php",
     "swoole",
-    "swoft"
+    "swoft",
+    "annotation"
   ],
-    "description": "swoft annotation component",
+  "description": "swoft annotation component",
+  "homepage": "https://github.com/swoft-cloud/swoft-annotation",
   "license": "Apache-2.0",
   "require": {
     "php": ">7.1",

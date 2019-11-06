@@ -10,6 +10,7 @@
     "protocol"
   ],
   "description": "Swoft tcp protocol component",
+  "homepage": "https://github.com/swoft-cloud/swoft-tcp",
   "license": "Apache-2.0",
   "require": {
     "php": ">7.1",

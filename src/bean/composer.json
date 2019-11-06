@@ -5,9 +5,13 @@
   "keywords": [
     "php",
     "swoole",
-    "swoft"
+    "swoft",
+    "bean",
+    "container",
+    "swoft-bean"
   ],
   "description": "micro-service framework base on swoole",
+  "homepage": "https://github.com/swoft-cloud/swoft-bean",
   "license": "Apache-2.0",
   "require": {
     "php": ">7.1.0",
@@ -17,8 +21,6 @@
     "swoft/stdlib": "~2.0.0"
   },
   "autoload": {
-    "classmap": [
-    ],
     "psr-4": {
       "Swoft\\Bean\\": "src/"
     },
@@ -34,8 +36,6 @@
       "SwoftTest\\Bean\\Unit\\": "test/unit/",
       "SwoftTest\\Bean\\Testing\\": "test/testing/"
     }
-  },
-  "repositories": {
   },
   "scripts": {
     "test": "./vendor/bin/phpunit -c phpunit.xml"
