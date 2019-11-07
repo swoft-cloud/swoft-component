@@ -646,19 +646,28 @@ class Connection extends AbstractConnection implements ConnectionInterface
     protected function run(string $query, array $bindings, Closure $callback)
     {
         $this->reconnectIfMissingConnection();
-
+        $start = microtime(true);
         // Here we will run this query. If an exception occurs we'll determine if it was
         // caused by a connection that has been lost. If that is the cause, we'll try
         $result = $this->runQueryCallback($query, $bindings, $callback);
-
-        $this->fireEvent(DbEvent::SQL_RAN, $query, $bindings);
+        $time = $this->getElapsedTime($start);
+        $this->fireEvent(DbEvent::SQL_RAN, $query, $bindings, $time);
 
         // Once we have run the query we will calculate the time that it took to run and
         // then log the query, bindings, and execution time so we will report them on
         // the event that the developer needs them. We'll log time in milliseconds.
         return $result;
     }
-
+    /**
+     * Get the elapsed time since a given starting point.
+     *
+     * @param  int    $start
+     * @return float
+     */
+    protected function getElapsedTime($start)
+    {
+        return round((microtime(true) - $start) * 1000, 2);
+    }
     /**
      * Run a SQL statement.
      *
