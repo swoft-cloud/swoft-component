@@ -4,6 +4,7 @@ namespace Swoft\Contract;
 
 /**
  * Interface DefinitionInterface
+ *
  * @since 2.0
  */
 interface DefinitionInterface

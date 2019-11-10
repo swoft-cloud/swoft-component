@@ -26,7 +26,7 @@ final class AutoLoader extends SwoftComponent
      */
     public function isEnable(): bool
     {
-        return (bool)env('ENABLE_WS_SERVER', true);
+        return (bool)env('ENABLE_WS_SERVER', 1);
     }
 
     /**

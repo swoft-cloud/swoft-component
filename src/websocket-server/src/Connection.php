@@ -125,6 +125,8 @@ class Connection implements SessionInterface
 
         // Restore connection object
         $conn = self::new($wsServer, $psr7Req, $psr7Res);
+        // Session data
+        $conn->data = $data['sessionData'];
         $conn->setHandshake(true);
         $conn->setModuleInfo($data['moduleInfo']);
 
@@ -184,6 +186,8 @@ class Connection implements SessionInterface
             'resCookie'  => $response->cookie,
             // module info
             'moduleInfo' => $this->moduleInfo,
+            // session data
+            'sessionData' => $this->data,
         ];
     }
 
