@@ -1,23 +1,17 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Server\Command;
 
-
-use function bean;
-use function input;
-use function output;
-use ReflectionException;
 use Swoft;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Annotation\Mapping\CommandMapping;
 use Swoft\Console\Annotation\Mapping\CommandOption;
-use Swoft\Console\Helper\Show;
 use Swoft\Rpc\Server\ServiceServer;
 use Swoft\Server\Command\BaseServerCommand;
 use Swoft\Server\Exception\ServerException;
-use Swoft\Server\ServerInterface;
+use function bean;
+use function input;
+use function output;
 
 /**
  * Class ServiceServerCommand
@@ -48,52 +42,7 @@ class ServiceServerCommand extends BaseServerCommand
     {
         $server = $this->createServer();
 
-        // Check if it has started
-        if ($server->isRunning()) {
-            $masterPid = $server->getPid();
-            output()->writeln("<error>The RPC server have been running!(PID: {$masterPid})</error>");
-            return;
-        }
-
-        // Startup settings
-        $this->configStartOption($server);
-
-        $settings = $server->getSetting();
-
-        // Setting
-        $workerNum = $settings['worker_num'];
-
-        // Server startup parameters
-        $mainHost = $server->getHost();
-        $mainPort = $server->getPort();
-        $modeName = $server->getModeName();
-        $typeName = $server->getTypeName();
-
-        // RPC
-        $panel = [
-            'RPC' => [
-                'listen' => $mainHost . ':' . $mainPort,
-                'type'   => $typeName,
-                'mode'   => $modeName,
-                'worker' => $workerNum,
-            ],
-        ];
-
-        // Listener
-        $listeners = $server->getListener();
-        foreach ($listeners as $name => $listener) {
-            if (!$listener instanceof ServerInterface) {
-                continue;
-            }
-            $panel[$name] = [
-                'listen' => sprintf('%s:%s', $listener->getHost(), $listener->getPort()),
-                'type'   => $listener->getTypeName()
-            ];
-        }
-
-        Show::panel($panel);
-
-        output()->writef('<success>RPC server start success !</success>');
+        $this->showServerInfoPanel($server);
 
         // Start the server
         $server->start();
@@ -104,31 +53,13 @@ class ServiceServerCommand extends BaseServerCommand
      *
      * @CommandMapping(usage="{fullCommand} [-t]")
      * @CommandOption("t", desc="Only to reload task processes, default to reload worker and task")
-     *
      */
     public function reload(): void
     {
         $server = $this->createServer();
-        $script = input()->getScript();
 
-        // Check if it has started
-        if (!$server->isRunning()) {
-            output()->writeln('<error>The RPC server is not running! cannot reload</error>');
-            return;
-        }
-
-        output()->writef('<info>RPC server %s is reloading</info>', $script);
-
-        if ($reloadTask = input()->hasOpt('t')) {
-            Show::notice('Will only reload task worker');
-        }
-
-        if (!$server->reload($reloadTask)) {
-            Show::error('The swoole server worker process reload fail!');
-            return;
-        }
-
-        output()->writef('<success>RPC server %s reload success</success>', $script);
+        // Reload server
+        $this->reloadServer($server);
     }
 
     /**
@@ -165,18 +96,8 @@ class ServiceServerCommand extends BaseServerCommand
     {
         $server = $this->createServer();
 
-        // Check if it has started
-        if ($server->isRunning()) {
-            $success = $server->stop();
-
-            if (!$success) {
-                output()->error('Stop the old server failed!');
-                return;
-            }
-        }
-
-        output()->writef('<success>RPC server reload success !</success>');
-        $server->startWithDaemonize();
+        // Restart server
+        $this->restartServer($server);
     }
 
     /**
@@ -184,7 +105,7 @@ class ServiceServerCommand extends BaseServerCommand
      */
     private function createServer(): ServiceServer
     {
-        $script = input()->getScript();
+        $script  = input()->getScriptFile();
         $command = $this->getFullCommand();
 
         /** @var ServiceServer $server */

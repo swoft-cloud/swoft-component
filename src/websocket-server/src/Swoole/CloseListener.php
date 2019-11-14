@@ -4,6 +4,7 @@ namespace Swoft\WebSocket\Server\Swoole;
 
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Context\Context;
 use Swoft\Server\Contract\CloseInterface;
 use Swoft\Session\Session;
@@ -28,6 +29,12 @@ use function server;
 class CloseListener implements CloseInterface
 {
     /**
+     * @Inject("wsDispatcher")
+     * @var WsDispatcher
+     */
+    private $wsDispatcher;
+
+    /**
      * Close event
      *
      * @param Server|\Swoole\WebSocket\Server $server
@@ -44,22 +51,6 @@ class CloseListener implements CloseInterface
         }
 
         $sid = (string)$fd;
-
-        // Session data not exist the worker, notify other worker clear session.
-        if (!Session::has($sid)) {
-            $data = [
-                'from'  => 'wsServer',
-                'event' => 'wsClose',
-                'fd'    => $fd,
-                'sid'   => $sid,
-            ];
-
-            // $server->sendMessage($message, $dst_worker_id);
-            server()->log("Close: conn#{$fd} session not exist current worker, notify other worker handle");
-            server()->notifyWorkers(JsonHelper::encode($data), [], [$server->worker_id]);
-            return;
-        }
-
         $ctx = WsCloseContext::new($fd, $reactorId);
 
         // Storage context
@@ -68,26 +59,30 @@ class CloseListener implements CloseInterface
         Session::bindCo($sid);
 
         try {
-            /** @var Connection $conn */
-            $conn  = Session::mustGet();
-            $total = server()->count() - 1;
-
             // Call on close callback
             Swoft::trigger(WsServerEvent::CLOSE_BEFORE, $fd, $server);
 
-            server()->log("Close: conn#{$fd} has been closed. server conn count $total", [], 'debug');
-            if (!$meta = $conn->getMetadata()) {
-                server()->log("Close: conn#{$fd} connection meta info has been lost");
-                return;
-            }
+            // Manually close non-current worker connections
+            // - Session not exist the worker, notify other worker clear session.
+            if (!Session::has($sid)) {
+                $this->notifyOtherWorkersClose($fd, $sid, $server->worker_id);
+            } else {
+                /** @var Connection $conn */
+                $conn  = Session::mustGet();
+                $total = server()->count() - 1;
 
-            server()->log("Close: conn#{$fd} meta info:", $meta, 'debug');
+                server()->log("Close: conn#{$fd} has been closed. connection count $total", [], 'debug');
+                if (!$meta = $conn->getMetadata()) {
+                    server()->log("Close: conn#{$fd} connection meta info has been lost");
+                    return;
+                }
 
-            // Handshake successful callback close handle
-            if ($conn->isHandshake()) {
-                /** @var WsDispatcher $dispatcher */
-                $dispatcher = Swoft::getSingleton('wsDispatcher');
-                $dispatcher->close($server, $fd);
+                server()->log("Close: conn#{$fd} meta info:", $meta, 'debug');
+
+                // Handshake successful callback close handle
+                if ($conn->isHandshake()) {
+                    $this->wsDispatcher->close($server, $fd);
+                }
             }
 
             // Call on close callback
@@ -103,7 +98,7 @@ class CloseListener implements CloseInterface
             // Defer
             Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
 
-            // Destroy
+            // Destroy context
             Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
 
             // Remove connection
@@ -112,5 +107,24 @@ class CloseListener implements CloseInterface
             // Unbind cid => sid(fd)
             Session::unbindCo();
         }
+    }
+
+    /**
+     * @param int    $fd
+     * @param string $sid
+     * @param int    $workerId
+     */
+    private function notifyOtherWorkersClose(int $fd, string $sid, int $workerId): void
+    {
+        $data = [
+            'from'  => 'wsServer',
+            'event' => 'onClose',
+            'fd'    => $fd,
+            'sid'   => $sid,
+        ];
+
+        // $server->sendMessage($message, $dst_worker_id);
+        server()->log("Close: conn#{$fd} session not exist current worker, notify other worker handle");
+        server()->notifyWorkers(JsonHelper::encode($data), [], [$workerId]);
     }
 }

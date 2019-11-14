@@ -6,7 +6,6 @@ use Swoft;
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Annotation\Mapping\CommandMapping;
 use Swoft\Console\Annotation\Mapping\CommandOption;
-use Swoft\Console\Helper\Show;
 use Swoft\Http\Server\HttpServer;
 use Swoft\Server\Command\BaseServerCommand;
 use Swoft\Server\Exception\ServerException;
@@ -42,42 +41,7 @@ class HttpServerCommand extends BaseServerCommand
     {
         $server = $this->createServer();
 
-        // Check if it has started
-        if ($server->isRunning()) {
-            $masterPid = $server->getPid();
-            output()->writeln("<error>The HTTP server have been running!(PID: {$masterPid})</error>");
-            return;
-        }
-
-        // Startup settings
-        $this->configStartOption($server);
-
-        $settings = $server->getSetting();
-        // Setting
-        $workerNum = $settings['worker_num'];
-
-        // Server startup parameters
-        $mainHost = $server->getHost();
-        $mainPort = $server->getPort();
-        $modeName = $server->getModeName();
-        $typeName = $server->getTypeName();
-
-        // Http
-        $panel = [
-            'HTTP' => [
-                'listen' => $mainHost . ':' . $mainPort,
-                'type'   => $typeName,
-                'mode'   => $modeName,
-                'worker' => $workerNum,
-            ],
-        ];
-
-        // Port Listeners
-        $panel = $this->appendPortsToPanel($server, $panel);
-
-        Show::panel($panel);
-
-        output()->writeln('<success>HTTP server start success !</success>');
+        $this->showServerInfoPanel($server);
 
         // Start the server
         $server->start();
@@ -92,26 +56,9 @@ class HttpServerCommand extends BaseServerCommand
     public function reload(): void
     {
         $server = $this->createServer();
-        $script = input()->getScript();
 
-        // Check if it has started
-        if (!$server->isRunning()) {
-            output()->writeln('<error>The HTTP server is not running! cannot reload</error>');
-            return;
-        }
-
-        output()->writef('<info>Server %s is reloading</info>', $script);
-
-        if ($reloadTask = input()->hasOpt('t')) {
-            Show::notice('Will only reload task worker');
-        }
-
-        if (!$server->reload($reloadTask)) {
-            Show::error('The swoole server worker process reload fail!');
-            return;
-        }
-
-        output()->writef('<success>HTTP server %s reload success</success>', $script);
+        // Reload server
+        $this->reloadServer($server);
     }
 
     /**
@@ -147,18 +94,8 @@ class HttpServerCommand extends BaseServerCommand
     {
         $server = $this->createServer();
 
-        // Check if it has started
-        if ($server->isRunning()) {
-            $success = $server->stop();
-
-            if (!$success) {
-                output()->error('Stop the old server failed!');
-                return;
-            }
-        }
-
-        output()->writef('<success>Server HTTP restart success !</success>');
-        $server->startWithDaemonize();
+        // Restart server
+        $this->restartServer($server);
     }
 
     /**
@@ -166,7 +103,7 @@ class HttpServerCommand extends BaseServerCommand
      */
     private function createServer(): HttpServer
     {
-        $script  = input()->getScript();
+        $script  = input()->getScriptFile();
         $command = $this->getFullCommand();
 
         /** @var HttpServer $server */

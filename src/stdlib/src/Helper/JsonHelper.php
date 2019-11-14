@@ -1,12 +1,13 @@
 <?php declare(strict_types=1);
+
 namespace Swoft\Stdlib\Helper;
 
 use InvalidArgumentException;
 use function json_decode;
 use function json_encode;
-use const JSON_ERROR_NONE;
 use function json_last_error;
 use function json_last_error_msg;
+use const JSON_ERROR_NONE;
 
 /**
  * Json helper
@@ -44,6 +45,7 @@ class JsonHelper
      * @param mixed $value   The value being encoded
      * @param int   $options JSON encode option bitmask
      * @param int   $depth   Set the maximum depth. Must be greater than zero.
+     *
      * @return string
      * @throws InvalidArgumentException if the JSON cannot be encoded.
      * @link http://www.php.net/manual/en/function.json-encode.php

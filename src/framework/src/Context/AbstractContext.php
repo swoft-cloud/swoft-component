@@ -2,7 +2,7 @@
 
 namespace Swoft\Context;
 
-use Swoft\Concern\DataPropertyTrait;
+use Swoft\Stdlib\Concern\DataPropertyTrait;
 use Swoft\Contract\ContextInterface;
 
 /**

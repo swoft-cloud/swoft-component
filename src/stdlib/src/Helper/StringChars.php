@@ -4,6 +4,7 @@ namespace Swoft\Stdlib\Helper;
 
 /**
  * Class StringChars
+ *
  * @package Swoft\Stdlib\Helper
  */
 final class StringChars

@@ -9,6 +9,7 @@ use Swoft\Event\EventSubscriberInterface;
 use Swoft\Session\Session;
 use Swoft\WebSocket\Server\ConnectionStorage;
 use Swoft\WebSocket\Server\WsServerEvent;
+use Swoft\Config\Annotation\Mapping\Config;
 
 /**
  * Class ConnStorageSubscriber
@@ -18,6 +19,12 @@ use Swoft\WebSocket\Server\WsServerEvent;
  */
 class ConnStorageSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @Config("websocket.autoRestoreConn")
+     * @var bool
+     */
+    private $autoRestoreConn = false;
+
     /**
      * Configure events and corresponding processing methods (you can configure the priority)
      *
@@ -32,7 +39,7 @@ class ConnStorageSubscriber implements EventSubscriberInterface
         return [
             WsServerEvent::HANDSHAKE_SUCCESS => 'handshakeOk',
             WsServerEvent::MESSAGE_RECEIVE   => 'messageReceive',
-            WsServerEvent::CLOSE_BEFORE      => 'messageReceive',
+            WsServerEvent::CLOSE_BEFORE      => 'connClose',
         ];
     }
 
@@ -49,9 +56,13 @@ class ConnStorageSubscriber implements EventSubscriberInterface
      */
     public function handshakeOk(EventInterface $event): void
     {
-        [$request, $response] = $event->getParams();
+        if (!$this->autoRestoreConn) {
+            return;
+        }
 
-        $this->getStorage()->storage($request, $response);
+        $request = $event->getParam(0);
+
+        $this->getStorage()->storage($request);
     }
 
     /**
@@ -59,6 +70,10 @@ class ConnStorageSubscriber implements EventSubscriberInterface
      */
     public function messageReceive(EventInterface $event): void
     {
+        if (!$this->autoRestoreConn) {
+            return;
+        }
+
         $fd = (int)$event->getTarget();
 
         if (!Session::has((string)$fd)) {
@@ -71,6 +86,10 @@ class ConnStorageSubscriber implements EventSubscriberInterface
      */
     public function connClose(EventInterface $event): void
     {
+        if (!$this->autoRestoreConn) {
+            return;
+        }
+
         $fd = (int)$event->getTarget();
 
         $this->getStorage()->remove($fd);

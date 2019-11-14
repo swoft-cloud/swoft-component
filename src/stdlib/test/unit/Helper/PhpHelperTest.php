@@ -9,19 +9,22 @@ class PhpHelperTest extends TestCase
 {
     public function testCall()
     {
-        $callable = function ($a){
+        $callable = function ($a) {
             return $a;
         };
 
         $res = PhpHelper::call($callable, "hello");
         $this->assertSame("hello", $res);
 
-        $obj = new class {
-            public function say($a){
+        $obj = new class
+        {
+            public function say($a)
+            {
                 return $a;
             }
 
-            public function foo(...$args){
+            public function foo(...$args)
+            {
                 return implode('.', $args);
             }
         };
@@ -29,7 +32,7 @@ class PhpHelperTest extends TestCase
         $res = PhpHelper::call([$obj, 'say'], "hello");
         $this->assertSame("hello", $res);
 
-        $res = PhpHelper::call([$obj, 'foo'], "pig", "dog", "bird","cat");
-        $this->assertSame("pig.dog.bird.cat",$res);
+        $res = PhpHelper::call([$obj, 'foo'], "pig", "dog", "bird", "cat");
+        $this->assertSame("pig.dog.bird.cat", $res);
     }
 }

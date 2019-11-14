@@ -20,7 +20,7 @@ final class TcpControllerParser extends Parser
     /**
      * Parse object
      *
-     * @param int          $type       Class or Method or Property
+     * @param int           $type       Class or Method or Property
      * @param TcpController $annotation Annotation object
      *
      * @return array
@@ -35,9 +35,10 @@ final class TcpControllerParser extends Parser
             throw new AnnotationException('`@TcpController` must be defined on class!');
         }
 
-        $class = $this->className;
+        $class  = $this->className;
+        $prefix = $annotation->getPrefix();
 
-        RouteRegister::bindController($class, $annotation->getPrefix());
+        RouteRegister::bindController($class, $prefix, $annotation->getMiddlewares());
 
         return [$class, $class, Bean::SINGLETON, ''];
     }

@@ -25,8 +25,8 @@ class TcpConnectContext extends AbstractContext
     protected $reactorId;
 
     /**
-     * @param int    $fd
-     * @param int    $reactorId
+     * @param int $fd
+     * @param int $reactorId
      *
      * @return self
      */

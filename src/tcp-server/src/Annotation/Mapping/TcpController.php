@@ -27,6 +27,13 @@ final class TcpController
     private $prefix = '';
 
     /**
+     * Middlewares for the tcp controller. It's classname or bean-name
+     *
+     * @var array
+     */
+    private $middlewares = [];
+
+    /**
      * Class constructor.
      *
      * @param array $values
@@ -38,6 +45,10 @@ final class TcpController
         } elseif (isset($values['prefix'])) {
             $this->prefix = (string)$values['prefix'];
         }
+
+        if (isset($values['middlewares'])) {
+            $this->middlewares = (array)$values['middlewares'];
+        }
     }
 
     /**
@@ -46,5 +57,13 @@ final class TcpController
     public function getPrefix(): string
     {
         return $this->prefix;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMiddlewares(): array
+    {
+        return $this->middlewares;
     }
 }

@@ -132,7 +132,7 @@ class Table extends MessageFormatter
             foreach ((array)$row as $value) {
                 // collection column max width
                 if (isset($info['columnMaxWidth'][$colIndex])) {
-                    $colWidth = mb_strlen($value, 'UTF-8');
+                    $colWidth = mb_strlen((string)$value, 'UTF-8');
 
                     // If current column width gt old column width. override old width.
                     if ($colWidth > $info['columnMaxWidth'][$colIndex]) {
@@ -202,7 +202,7 @@ class Table extends MessageFormatter
             foreach ((array)$row as $value) {
                 $colMaxWidth = $info['columnMaxWidth'][$colIndex];
                 // format
-                $value  = str_pad($value, $colMaxWidth, ' ');
+                $value  = str_pad((string)$value, $colMaxWidth, ' ');
                 $value  = ColorTag::wrap($value, $opts['bodyStyle']);
                 $rowStr .= " {$value} {$colBorderChar}";
                 $colIndex++;

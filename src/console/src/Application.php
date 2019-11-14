@@ -5,7 +5,6 @@ namespace Swoft\Console;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Concern\DataPropertyTrait;
 use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Concern\RenderHelpInfoTrait;
 use Swoft\Console\Contract\ConsoleInterface;
@@ -13,11 +12,14 @@ use Swoft\Console\Exception\CommandFlagException;
 use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
 use Swoft\Console\Router\Router;
+use Swoft\Stdlib\Concern\DataPropertyTrait;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use Throwable;
 use function array_merge;
 use function implode;
+use function input;
+use function output;
 use function strpos;
 use function strtr;
 use function trim;
@@ -59,7 +61,7 @@ class Application implements ConsoleInterface
     /**
      * @var string
      */
-    private $name = 'My Application';
+    private $name = 'Swoft 2.0';
 
     /**
      * @var string
@@ -69,7 +71,14 @@ class Application implements ConsoleInterface
     /**
      * @var string
      */
-    private $description = 'Console application description';
+    private $description = 'Swoft - An PHP micro-service coroutine framework';
+
+    /**
+     * Console application logo text
+     *
+     * @var string
+     */
+    private $logoText = '';
 
     /**
      * @var array
@@ -94,25 +103,26 @@ class Application implements ConsoleInterface
      */
     public function commentsVars(): array
     {
-        $script = input()->getScript();
+        $script  = $this->input->getScriptFile();
+        $fullCmd = $this->input->getFullCommand();
 
         return [
             'name'        => $this->getName(),
             'description' => $this->getDescription(),
             // 'group' => self::getName(),
-            'workDir'     => \input()->getPwd(),
+            'workDir'     => $this->input->getPwd(),
             'script'      => $script, // bin/app
             'binFile'     => $script,
-            'command'     => \input()->getCommand(), // demo OR home:test
-            'fullCmd'     => \input()->getFullCommand(),
-            'fullCommand' => \input()->getFullCommand(),
+            'command'     => $this->input->getCommand(), // demo OR home:test
+            'fullCmd'     => $fullCmd,
+            'fullCommand' => $fullCmd,
         ];
     }
 
     protected function prepare(): void
     {
-        $this->input  = \input();
-        $this->output = \output();
+        $this->input  = input();
+        $this->output = output();
 
         // load builtin comments vars
         $this->setCommentsVars($this->commentsVars());
@@ -124,15 +134,13 @@ class Application implements ConsoleInterface
     public function run(): void
     {
         try {
-            Swoft::trigger(ConsoleEvent::RUN_BEFORE, $this);
-
-            // Prepare
+            // Prepare for run
             $this->prepare();
 
-            // Get input command
-            $inputCommand = $this->input->getCommand();
+            Swoft::trigger(ConsoleEvent::RUN_BEFORE, $this);
 
-            if (!$inputCommand) {
+            // Get input command
+            if (!$inputCommand = $this->input->getCommand()) {
                 $this->filterSpecialOption();
             } else {
                 $this->doRun($inputCommand);
@@ -253,9 +261,7 @@ class Application implements ConsoleInterface
                     // Required check
                 } elseif ($opt['mode'] === Command::OPT_REQUIRED) {
                     $short = $opt['short'] ? "(short: {$opt['short']})" : '';
-                    throw new CommandFlagException(
-                        "The option '{$name}'{$short} is required"
-                    );
+                    throw new CommandFlagException("The option '{$name}'{$short} is required");
                 }
             }
 
@@ -281,9 +287,7 @@ class Application implements ConsoleInterface
 
                 // Check arg is required
                 if ($arg['mode'] === Command::ARG_REQUIRED && empty($values[$name])) {
-                    throw new CommandFlagException(
-                        "The argument '{$name}'(position: {$index}) is required"
-                    );
+                    throw new CommandFlagException("The argument '{$name}'(position: {$index}) is required");
                 }
 
                 $index++;
@@ -382,5 +386,21 @@ class Application implements ConsoleInterface
     public function setDescription(string $description): void
     {
         $this->description = trim($description);
+    }
+
+    /**
+     * @return string
+     */
+    public function getLogoText(): string
+    {
+        return $this->logoText;
+    }
+
+    /**
+     * @param string $logoText
+     */
+    public function setLogoText(string $logoText): void
+    {
+        $this->logoText = $logoText;
     }
 }

@@ -6,6 +6,7 @@ use ReflectionException;
 use ReflectionType;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\Exception\WsMessageParseException;
@@ -26,8 +27,14 @@ use function server;
  *
  * @Bean("wsMsgDispatcher")
  */
-class WsMessageDispatcher // extends \Swoft\Concern\AbstractDispatcher
+class WsMessageDispatcher
 {
+    /**
+     * @Inject("wsRouter")
+     * @var Router
+     */
+    private $router;
+
     /**
      * Dispatch ws message handle
      *
@@ -60,6 +67,8 @@ class WsMessageDispatcher // extends \Swoft\Concern\AbstractDispatcher
             return;
         }
 
+        server()->log("Message: message data parser is {$conn->getParserClass()}");
+
         // Parse message data and dispatch route handle
         try {
             $parser  = $conn->getParser();
@@ -72,20 +81,17 @@ class WsMessageDispatcher // extends \Swoft\Concern\AbstractDispatcher
         $request->setMessage($message);
 
         /** @var Router $router */
-        $cmdId  = $message->getCmd() ?: $info['defaultCommand'];
-        $router = Swoft::getSingleton('wsRouter');
+        $cmdId = $message->getCmd() ?: $info['defaultCommand'];
 
-        [$status, $route] = $router->matchCommand($info['path'], $cmdId);
+        [$status, $route] = $this->router->matchCommand($info['path'], $cmdId);
         if ($status === Router::NOT_FOUND) {
             throw new WsMessageRouteException("message command '$cmdId' is not found, in module {$info['path']}");
         }
 
         [$ctlClass, $ctlMethod] = $route['handler'];
-        server()->log(
-            "Message: conn#{$fd} call message command handler '{$ctlClass}::{$ctlMethod}'",
-            $message->toArray(),
-            'debug'
-        );
+
+        $logMsg = "Message: conn#{$fd} call message command handler '{$ctlClass}::{$ctlMethod}'";
+        server()->log($logMsg, $message->toArray(), 'debug');
 
         $object = Swoft::getBean($ctlClass);
         $params = $this->getBindParams($ctlClass, $ctlMethod, $request, $response);
@@ -100,7 +106,7 @@ class WsMessageDispatcher // extends \Swoft\Concern\AbstractDispatcher
         }
 
         // Before call $response send message
-        Swoft::trigger(WsServerEvent::MESSAGE_SEND, $response);
+        Swoft::trigger(WsServerEvent::MESSAGE_RESPONSE, $response);
 
         // Do send response
         $response->send();

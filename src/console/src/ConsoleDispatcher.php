@@ -2,23 +2,19 @@
 
 namespace Swoft\Console;
 
-use function defined;
 use ReflectionException;
 use ReflectionType;
-use function srun;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\BeanFactory;
 use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
 use Swoft\Context\Context;
-use Swoft\Contract\DispatcherInterface;
-use Swoft\Stdlib\Helper\PhpHelper;
 use Swoft\SwoftEvent;
 use Swoole\Runtime;
 use Throwable;
+use function defined;
 use function get_class;
-use function get_parent_class;
+use function srun;
 
 /**
  * Class ConsoleDispatcher
@@ -26,18 +22,17 @@ use function get_parent_class;
  * @since 2.0
  * @Bean("cliDispatcher")
  */
-class ConsoleDispatcher implements DispatcherInterface
+class ConsoleDispatcher
 {
     /**
-     * @param array $params
+     * @param array $route
      *
      * @return void
      * @throws ReflectionException
      * @throws Throwable
      */
-    public function dispatch(...$params): void
+    public function dispatch(array $route): void
     {
-        $route = $params[0];
         // Handler info
         [$className, $method] = $route['handler'];
 
@@ -47,8 +42,8 @@ class ConsoleDispatcher implements DispatcherInterface
 
         // Blocking running
         if (!$route['coroutine']) {
-            $this->before(get_parent_class($object), $method);
-            PhpHelper::call([$object, $method], ...$params);
+            $this->before($method, $className);
+            $object->$method(...$params);
             $this->after($method);
             return;
         }
@@ -69,25 +64,25 @@ class ConsoleDispatcher implements DispatcherInterface
     }
 
     /**
-     * @param object $beanObject
+     * @param object $object
      * @param string $method
      * @param array  $bindParams
      *
      * @throws Throwable
      */
-    public function executeByCo($beanObject, string $method, array $bindParams): void
+    public function executeByCo($object, string $method, array $bindParams): void
     {
         try {
             Context::set($ctx = ConsoleContext::new());
 
-            $this->before($method, get_class($beanObject));
+            $this->before($method, get_class($object));
 
-            PhpHelper::call([$beanObject, $method], ...$bindParams);
+            $object->$method(...$bindParams);
 
             $this->after($method);
         } catch (Throwable $e) {
             /** @var ConsoleErrorDispatcher $errDispatcher */
-            $errDispatcher = BeanFactory::getSingleton(ConsoleErrorDispatcher::class);
+            $errDispatcher = Swoft::getSingleton(ConsoleErrorDispatcher::class);
 
             // Handle request error
             $errDispatcher->run($e);
@@ -130,9 +125,9 @@ class ConsoleDispatcher implements DispatcherInterface
             $type = $paramType->getName();
 
             if ($type === Output::class) {
-                $bindParams[] = \output();
+                $bindParams[] = Swoft::getBean('output');
             } elseif ($type === Input::class) {
-                $bindParams[] = \input();
+                $bindParams[] = Swoft::getBean('input');
             } else {
                 $bindParams[] = null;
             }

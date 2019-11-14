@@ -2,7 +2,7 @@
 
 namespace Swoft\Error;
 
-use Swoft\Bean\BeanFactory;
+use Swoft;
 use Swoft\Error\Contract\ErrorHandlerInterface;
 use function count;
 
@@ -31,19 +31,19 @@ final class ErrorRegister
     }
 
     /**
-     * @param ErrorManager $chain
+     * @param ErrorManager $manager
      *
      * @return int
      */
-    public static function register(ErrorManager $chain): int
+    public static function register(ErrorManager $manager): int
     {
         foreach (self::$handlers as $handlerClass => $exceptions) {
             /** @var ErrorHandlerInterface $handler */
-            $handler = BeanFactory::getSingleton($handlerClass);
-            $type    = $handler->getType();
+            $handler = Swoft::getSingleton($handlerClass);
+            $typeVal = $handler->getType();
 
             foreach ($exceptions as $exceptionClass) {
-                $chain->addHandler($exceptionClass, $handlerClass, $type);
+                $manager->addHandler($exceptionClass, $handlerClass, $typeVal);
             }
         }
 

@@ -4,7 +4,6 @@ namespace Swoft\Stdlib;
 
 /**
  * Class StrBuffer
- * @package Swoft\Stdlib
  */
 final class StrBuffer
 {
@@ -13,6 +12,21 @@ final class StrBuffer
      */
     private $body;
 
+    /**
+     * @param string $content
+     *
+     * @return static
+     */
+    public static function create(string $content = ''): self
+    {
+        return new self($content);
+    }
+
+    /**
+     * Class constructor.
+     *
+     * @param string $content
+     */
     public function __construct(string $content = '')
     {
         $this->body = $content;

@@ -6,6 +6,8 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Server;
 use Swoft\Server\SwooleEvent;
+use Swoft\Session\Session;
+use Swoft\Stdlib\Helper\JsonHelper;
 use Swoole\Websocket\Frame;
 use Throwable;
 use function array_flip;
@@ -216,7 +218,7 @@ class WebSocketServer extends Server
      * @param string|Frame $data
      * @param int          $sender
      * @param int          $pageSize
-     * @param int          $opcode
+     * @param int          $opcode see WEBSOCKET_OPCODE_*
      *
      * @return int
      */
@@ -236,7 +238,7 @@ class WebSocketServer extends Server
      * @param array  $excluded
      * @param int    $sender
      * @param int    $pageSize
-     * @param int    $opcode
+     * @param int    $opcode see WEBSOCKET_OPCODE_*
      *
      * @return int
      */
@@ -353,11 +355,12 @@ class WebSocketServer extends Server
      */
     public function disconnect(int $fd, int $code = 0, string $reason = ''): bool
     {
-        if ($this->swooleServer->isEstablished($fd)) {
-            return $this->swooleServer->disconnect($fd, $code, $reason);
+        // If it's invalid fd
+        if (!$this->swooleServer->isEstablished($fd)) {
+            return false;
         }
 
-        return true;
+        return $this->swooleServer->disconnect($fd, $code, $reason);
     }
 
     /**
