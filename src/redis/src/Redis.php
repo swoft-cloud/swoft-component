@@ -63,7 +63,7 @@ use Throwable;
  * @method static string rPop(string $key)
  * @method static int|bool rPush(string $key, string $value1, string $value2 = null, string $valueN = null)
  * @method static int|bool rPushx(string $key, string $value)
- * @method static mixed rawCommand(string|array $nodeParams, string $command, mixed $arguments)
+ * @method static mixed rawCommand(...$args)
  * @method static bool renameNx(string $srcKey, string $dstKey)
  * @method static bool restore(string $key, int $ttl, string $value)
  * @method static string rpoplpush(string $srcKey, string $dstKey)
@@ -132,7 +132,11 @@ use Throwable;
  * @method static bool mset(array $keyValues, int $ttl = 0)
  * @method static array pipeline(callable $callback)
  * @method static array transaction(callable $callback)
- * @method static mixed call(callable $callback, bool $reconnect = false)
+ * @method static mixed call(callable $callback)
+ * @method static void psubscribe(array $patterns, string|array $callback)
+ * @method static void subscribe(array $channels, string|array $callback)
+ * @method static array geoRadius(string $key, float $longitude, float $latitude, float $radius, string $radiusUnit, array $options)
+ * @method static bool expireAt(string $key, int $timestamp)
  */
 class Redis
 {

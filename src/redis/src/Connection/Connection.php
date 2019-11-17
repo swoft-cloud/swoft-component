@@ -74,7 +74,7 @@ use Throwable;
  * @method string rPop(string $key)
  * @method int|bool rPush(string $key, string $value1, string $value2 = null, string $valueN = null)
  * @method int|bool rPushx(string $key, string $value)
- * @method mixed rawCommand(string|array $nodeParams, string $command, mixed $arguments)
+ * @method mixed rawCommand(...$args)
  * @method bool renameNx(string $srcKey, string $dstKey)
  * @method bool restore(string $key, int $ttl, string $value)
  * @method string rpoplpush(string $srcKey, string $dstKey)
@@ -136,6 +136,10 @@ use Throwable;
  * @method int zInterStore(string $Output, array $ZSetKeys, array $Weights = null, string $aggregateFunction = 'SUM')
  * @method int zUnionStore(string $Output, array $ZSetKeys, array $Weights = null, string $aggregateFunction = 'SUM')
  * @method bool hMSet(string $key, array $keyValues)
+ * @method void psubscribe(array $patterns, string|array $callback)
+ * @method void subscribe(array $channels, string|array $callback)
+ * @method array geoRadius(string $key, float $longitude, float $latitude, float $radius, string $radiusUnit, array $options)
+ * @method bool expireAt(string $key, int $timestamp)
  */
 abstract class Connection extends AbstractConnection implements ConnectionInterface
 {
@@ -158,6 +162,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
         'geodist',
         'geohash',
         'geopos',
+        'georadius',
         'get',
         'getbit',
         'getoption',
@@ -269,6 +274,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
         'punsubscribe',
         'subscribe',
         'unsubscribe',
+        'expireat'
     ];
 
     /**
@@ -420,6 +426,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
             $result = $callback($this->client);
             Log::profileEnd('redis.%s', __FUNCTION__);
             // Release Connection
+
             $this->release();
         } catch (Throwable $e) {
             if (!$reconnect && $this->reconnect()) {
@@ -683,6 +690,9 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
             $result = $pipeline->exec();
 
             Log::profileEnd($proKey);
+
+            // Release Connection
+            $this->release();
         } catch (Throwable $e) {
             if (!$reconnect && $this->reconnect()) {
                 return $this->multi($mode, $callback, true);

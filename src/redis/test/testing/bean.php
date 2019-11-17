@@ -30,17 +30,25 @@ return [
     'redis-clusters'      => [
         'class'    => \Swoft\Redis\RedisDb::class,
         'option'   => [
-            'timeout'    => 3,
-            'persistent' => true,
+            'timeout'      => 1.2,
+            'persistent'   => false,
+            'auth'         => '',
+            'read_timeout' => 1.1,
+            'prefix'       => 'swoft:',
+            'serializer'   => RedisCluster::SERIALIZER_PHP,
         ],
         'clusters' => [
             [
-                'host'         => '127.0.0.1',
-                'prefix'       => 'swoft-t',
-                'read_timeout' => 1,
-                'port'         => 6379,
+                'host' => '10.0.0.2',
+                'port' => 7000,
+            ],
+            [
+                'host'         => '10.0.0.4',
+                'port'         => 7002,
                 'database'     => 1,
-                'password'     => 123445,
+                'prefix'       => 'swoft:s4:',
+                'read_timeout' => 1,
+                'password'     => ''
             ],
         ]
     ],

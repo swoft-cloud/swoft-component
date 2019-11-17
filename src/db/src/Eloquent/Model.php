@@ -46,9 +46,9 @@ use function bean;
  * @method static Collection fromQuery(string $query, array $bindings = [])
  * @method static static find($id, array $columns = ['*'])
  * @method static Collection findMany(array $ids, array $columns = ['*'])
- * @method static null|object|Builder|Collection|Model findOrFail($id, array $columns = ['*'])
- * @method static null|object|Builder|Collection|Model findOrNew($id, array $columns = ['*'])
- * @method static object|Builder|Model firstOrNew(array $attributes, array $values = [])
+ * @method static static findOrFail($id, array $columns = ['*'])
+ * @method static static findOrNew($id, array $columns = ['*'])
+ * @method static static firstOrNew(array $attributes, array $values = [])
  * @method static static firstOrCreate(array $attributes, array $values = [])
  * @method static static updateOrCreate(array $attributes, array $values = [], array $counters = [])
  * @method static bool updateOrInsert(array $attributes, array $values = [], array $counters = [])
@@ -169,7 +169,6 @@ use function bean;
  * @method static float|int average(string $column)
  * @method static void truncate()
  * @method static Builder useWritePdo()
- * @method static int getCountForPagination(array $columns = ['*'])
  */
 abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
 {
@@ -205,8 +204,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public function __construct(array $attributes = [])
     {
-        $this->syncOriginal();
-
         $this->fill($attributes);
     }
 
@@ -228,7 +225,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
             throw new DbException($e->getMessage());
         }
 
-        $self->syncOriginal();
         $self->fill($attributes);
         $self->swoftExists = false;
 
@@ -477,7 +473,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @throws DbException
      * @throws ReflectionException
      */
-    public function save()
+    public function save(): bool
     {
         $query = $this->newModelQuery();
 
@@ -551,7 +547,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @throws DbException
      * @throws ReflectionException
      */
-    protected function performUpdate(Builder $query)
+    protected function performUpdate(Builder $query): bool
     {
         // If the updating event returns false, we will cancel the update operation so
         // developers can hook Validation systems into their models and cancel this
@@ -566,11 +562,13 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         $dirty = $this->getDirty();
 
         if (count($dirty) > 0) {
-            $this->setKeysForSaveQuery($query)->update($dirty);
+            $result = (bool)$this->setKeysForSaveQuery($query)->update($dirty);
 
             $this->syncChanges();
 
             $this->fireEvent(DbEvent::MODEL_UPDATED);
+
+            return $result;
         }
 
         return true;
@@ -586,7 +584,14 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     protected function setKeysForSaveQuery(Builder $query)
     {
-        $query->where($this->getKeyName(), '=', $this->getKeyForSaveQuery());
+        $id      = $this->getKeyForSaveQuery();
+        $keyName = $this->getKeyName();
+
+        if ($id === null) {
+            throw new DbException(sprintf('Save record %s value must not null', $keyName));
+        }
+
+        $query->where($keyName, '=', $id);
 
         return $query;
     }
@@ -613,7 +618,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @throws DbException
      * @throws ReflectionException
      */
-    protected function performInsert(Builder $query)
+    protected function performInsert(Builder $query): bool
     {
         if ($this->fireEvent(DbEvent::MODEL_CREATING) === false) {
             return false;
