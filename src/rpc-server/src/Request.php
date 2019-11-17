@@ -6,6 +6,7 @@ namespace Swoft\Rpc\Server;
 
 use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Exception\ContainerException;
 use Swoft\Rpc\Exception\RpcException;
@@ -125,6 +126,41 @@ class Request implements RequestInterface
         $instance->requestTime = microtime(true);
 
         return $instance;
+    }
+
+    /**
+     * @return array
+     * @throws ReflectionException
+     */
+    public function getParamsMap(): array
+    {
+        $rc       = BeanFactory::getReflection($this->interface);
+        $rxParams = $rc['methods'][$this->method]['params'];
+
+        $index     = 0;
+        $paramsMap = [];
+        foreach ($rxParams as $methodParams) {
+            if (!isset($this->params[$index])) {
+                break;
+            }
+
+            [$name] = $methodParams;
+            $paramsMap[$name] = $this->params[$index];
+        }
+        return $paramsMap;
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return RequestInterface
+     */
+    public function withParams(array $params): RequestInterface
+    {
+        $clone = clone $this;
+
+        $clone->params = $params;
+        return $clone;
     }
 
     /**

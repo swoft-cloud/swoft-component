@@ -144,15 +144,21 @@ class Co
     /**
      * Write file
      *
-     * @param string   $filename
-     * @param string   $data
-     * @param int|null $flags
+     * @param string $filename
+     * @param string $data
+     * @param int    $flags
      *
      * @return int
+     * @throws SwoftException
      */
     public static function writeFile(string $filename, string $data, int $flags = FILE_USE_INCLUDE_PATH): int
     {
-        return Coroutine::writeFile($filename, $data, $flags);
+        $result = Coroutine::writeFile($filename, $data, $flags);
+        if ($result === false) {
+            throw new SwoftException(sprintf('Write(%s) file error!', $filename));
+        }
+
+        return $result;
     }
 
     /**

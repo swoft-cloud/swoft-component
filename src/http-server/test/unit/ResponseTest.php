@@ -39,6 +39,7 @@ class ResponseTest extends TestCase
         $this->assertNotEmpty($hs = $response->getHeaders());
         $this->assertArrayHasKey(ContentType::KEY, $hs);
         $this->assertSame('text/html; charset=utf-8', $hs[ContentType::KEY]);
+        $this->assertSame('text/html; charset=utf-8', $response->getHeader(ContentType::KEY));
         $this->assertSame('<h1>hello</h1>', $c);
 
         /** @see TestController */
