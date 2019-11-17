@@ -489,7 +489,7 @@ class MySqlGrammar extends Grammar
             $command['to'],
             $command['type'],
             $command['length'],
-            $command['unsigned'],
+            $command['unsigned']
         );
 
         if ($command['default'] !== null) {
