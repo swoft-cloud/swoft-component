@@ -3,13 +3,13 @@
 namespace Swoft\WebSocket\Server;
 
 use Swoft\Helper\ComposerJSON;
+use Swoft\Server\Swoole\PipeMessageListener;
 use Swoft\Server\SwooleEvent;
 use Swoft\SwoftComponent;
 use Swoft\WebSocket\Server\Router\Router;
 use Swoft\WebSocket\Server\Swoole\CloseListener;
 use Swoft\WebSocket\Server\Swoole\HandshakeListener;
 use Swoft\WebSocket\Server\Swoole\MessageListener;
-use Swoft\WebSocket\Server\Swoole\PipeMessageListener;
 use function bean;
 use function dirname;
 use function env;
@@ -19,14 +19,14 @@ use function env;
  *
  * @since 2.0
  */
-class AutoLoader extends SwoftComponent
+final class AutoLoader extends SwoftComponent
 {
     /**
      * @return bool
      */
-    public function enable(): bool
+    public function isEnable(): bool
     {
-        return (bool)env('ENABLE_WS_SERVER', true);
+        return (bool)env('ENABLE_WS_SERVER', 1);
     }
 
     /**

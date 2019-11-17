@@ -2,6 +2,7 @@
 
 namespace Swoft\Http\Message;
 
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use function bean;
 use function gmdate;
@@ -11,6 +12,7 @@ use function urlencode;
  * Class Cookie
  *
  * @since 2.0
+ * @Bean(scope=Bean::PROTOTYPE)
  */
 class Cookie
 {
@@ -104,6 +106,10 @@ class Cookie
      */
     public function toString(): string
     {
+        if (!$this->name) {
+            return '';
+        }
+
         $result = urlencode($this->name) . '=' . urlencode($this->value);
 
         if ($this->domain) {
@@ -139,6 +145,15 @@ class Cookie
     public function __toString(): string
     {
         return $this->toString();
+    }
+
+    /**
+     * Delete
+     */
+    public function delete(): void
+    {
+        $this->value   = '';
+        $this->expires = -60;
     }
 
     /**

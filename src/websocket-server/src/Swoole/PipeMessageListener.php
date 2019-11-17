@@ -13,6 +13,7 @@ use function json_last_error;
  * Class PipeMessageListener
  *
  * @Bean()
+ * @deprecated will use Listener/PipeMessageListener instead.
  */
 class PipeMessageListener implements PipeMessageInterface
 {

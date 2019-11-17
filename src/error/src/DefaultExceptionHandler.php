@@ -21,7 +21,7 @@ class DefaultExceptionHandler implements DefaultErrorHandlerInterface
      */
     public function handle(Throwable $e): void
     {
-        // Log::error($e->getMessage());
+        // Log::error($e->getMessage()); // maybe not in co env.
         $error = PhpHelper::exceptionToString($e, 'DEFAULT HANDLER', true);
 
         CLog::error($error);

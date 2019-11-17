@@ -2,7 +2,6 @@
 
 namespace Swoft\WebSocket\Server\Message;
 
-use InvalidArgumentException;
 use RuntimeException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
@@ -11,17 +10,17 @@ use Swoft\WebSocket\Server\Contract\MessageHandlerInterface;
 use Swoft\WebSocket\Server\Contract\MiddlewareInterface;
 use Swoft\WebSocket\Server\Contract\RequestInterface;
 use Swoft\WebSocket\Server\Contract\ResponseInterface;
-use UnexpectedValueException;
+use Swoft\WebSocket\Server\Exception\WsMiddlewareException;
 use function is_callable;
 use function is_string;
 
 /**
- * Class MiddlewareChain
+ * Class MessageHandler
  *
  * @since 2.0
  * @Bean(scope=Bean::PROTOTYPE)
  */
-class MiddlewareChain extends AbstractMiddlewareChain implements MessageHandlerInterface
+class MessageHandler extends AbstractMiddlewareChain implements MessageHandlerInterface
 {
     /**
      * @var MiddlewareInterface
@@ -31,7 +30,7 @@ class MiddlewareChain extends AbstractMiddlewareChain implements MessageHandlerI
     /**
      * @param MiddlewareInterface $coreHandler
      *
-     * @return MiddlewareChain
+     * @return self
      */
     public static function new(MiddlewareInterface $coreHandler): self
     {
@@ -50,6 +49,7 @@ class MiddlewareChain extends AbstractMiddlewareChain implements MessageHandlerI
      * @param RequestInterface $request
      *
      * @return ResponseInterface
+     * @throws WsMiddlewareException
      */
     public function run(RequestInterface $request): ResponseInterface
     {
@@ -76,7 +76,8 @@ class MiddlewareChain extends AbstractMiddlewareChain implements MessageHandlerI
      * @param RequestInterface $request
      *
      * @return ResponseInterface
-     * @internal
+     * @throws WsMiddlewareException
+     * @internal for middleware dispatching
      */
     public function handle(RequestInterface $request): ResponseInterface
     {
@@ -99,11 +100,11 @@ class MiddlewareChain extends AbstractMiddlewareChain implements MessageHandlerI
         } elseif (is_callable($middleware)) {
             $response = $middleware($request, $this);
         } else {
-            throw new InvalidArgumentException('The middleware is not a callable.');
+            throw new WsMiddlewareException('The middleware is not a callable.');
         }
 
         if (!$response instanceof ResponseInterface) {
-            throw new UnexpectedValueException('Middleware must return object and instance of \Psr\Http\Message\ResponseInterface');
+            throw new WsMiddlewareException('Middleware must return object and instance of \Psr\Http\Message\ResponseInterface');
         }
 
         return $response;

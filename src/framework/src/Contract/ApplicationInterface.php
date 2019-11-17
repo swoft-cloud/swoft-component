@@ -4,6 +4,7 @@ namespace Swoft\Contract;
 
 /**
  * Application interface
+ *
  * @since 2.0
  */
 interface ApplicationInterface

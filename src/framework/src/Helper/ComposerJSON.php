@@ -51,7 +51,7 @@ class ComposerJSON
     {
         return [
             'name'        => $this->data['name'] ?? 'Unknown',
-            'title'       => $this->data['name'] ?? 'Unknown',
+            // 'title'       => $this->data['name'] ?? 'Unknown',
             'authors'     => $this->data['authors'] ?? [],
             'license'     => $this->data['license'] ?? 'Unknown',
             'version'     => $this->data['version'] ?? '1.0.0',

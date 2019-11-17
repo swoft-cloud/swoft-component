@@ -6,9 +6,12 @@
     "php",
     "swoole",
     "swoft",
-    "redis"
+    "redis",
+    "redis-pool",
+    "redis-cluster"
   ],
   "description": "swoft redis component",
+  "homepage": "https://github.com/swoft-cloud/swoft-redis",
   "license": "Apache-2.0",
   "require": {
     "swoft/framework": "~2.0.0",

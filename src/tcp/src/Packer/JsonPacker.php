@@ -47,24 +47,9 @@ class JsonPacker implements PackerInterface
      */
     public function decode(string $data): Package
     {
-        $cmd = '';
-        $ext = [];
         $map = JsonHelper::decode($data, true);
 
-        // Find message route
-        if (isset($map['cmd'])) {
-            $cmd = (string)$map['cmd'];
-            unset($map['cmd']);
-        }
-
-        if (isset($map['data'])) {
-            $body = $map['data'];
-            $ext  = $map['ext'] ?? [];
-        } else {
-            $body = $map;
-        }
-
-        return Package::new($cmd, $body, $ext);
+        return Package::newFromArray($map);
     }
 
     /**
@@ -97,22 +82,7 @@ class JsonPacker implements PackerInterface
         $map  = JsonHelper::decode($data, true);
 
         $resp->setContent($data);
-
-        if (isset($map['code'])) {
-            $resp->setCode((int)$map['code']);
-        }
-
-        if (isset($map['msg'])) {
-            $resp->setMsg($map['msg']);
-        }
-
-        if (isset($map['data'])) {
-            $resp->setData($map['data']);
-        }
-
-        if (isset($map['data'])) {
-            $resp->setData($map['data']);
-        }
+        $resp->initFromArray($map);
 
         return $resp;
     }

@@ -82,7 +82,14 @@ class MockResponse extends Response
      * @param null        $samesite
      */
     public function cookie(
-        $name, $value = null, $expires = null, $path = null, $domain = null, $secure = null, $httpOnly = null, $samesite = null
+        $name,
+        $value = null,
+        $expires = null,
+        $path = null,
+        $domain = null,
+        $secure = null,
+        $httpOnly = null,
+        $samesite = null
     ) {
         $result = \urlencode($name) . '=' . \urlencode($value);
 
@@ -180,11 +187,14 @@ class MockResponse extends Response
     }
 
     /**
+     * @param string $key
+     * @param mixed  $default
+     *
      * @return mixed
      */
-    public function getHeader()
+    public function getHeader(string $key, $default = null)
     {
-        return $this->header;
+        return $this->header[$key] ?? $default;
     }
 
     /**

@@ -251,4 +251,12 @@ class EntityRegister
     {
         return self::$columns[$className]['props'] ?? [];
     }
+
+    /**
+     * @return array
+     */
+    public static function getColumns(): array
+    {
+        return self::$columns;
+    }
 }

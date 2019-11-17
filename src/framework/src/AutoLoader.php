@@ -2,23 +2,22 @@
 
 namespace Swoft;
 
-use function alias;
-use function bean;
 use Monolog\Formatter\LineFormatter;
 use Swoft\Config\Config;
-use Swoft\Annotation\AutoLoader as AnnotationAutoLoader;
-use Swoft\Contract\DefinitionInterface;
-use Swoft\Event\Manager\EventManager;
+use Swoft\Helper\ComposerJSON;
 use Swoft\Log\Handler\FileHandler;
 use Swoft\Log\Logger;
 use Throwable;
+use function alias;
+use function bean;
+use function dirname;
 
 /**
  * Class AutoLoader
  *
  * @since 2.0
  */
-class AutoLoader extends AnnotationAutoLoader implements DefinitionInterface
+class AutoLoader extends SwoftComponent
 {
     /**
      * Get namespace and dirs
@@ -48,9 +47,6 @@ class AutoLoader extends AnnotationAutoLoader implements DefinitionInterface
                     Config::TYPE_PHP => '${phpParser}'
                 ]
             ],
-            'eventManager'       => [
-                'class' => EventManager::class,
-            ],
             'lineFormatter'      => [
                 'class'      => LineFormatter::class,
                 'format'     => '%datetime% [%level_name%] [%channel%] [%event%] [tid:%tid%] [cid:%cid%] [traceid:%traceid%] [spanid:%spanid%] [parentid:%parentid%] %context% %messages%',
@@ -78,5 +74,18 @@ class AutoLoader extends AnnotationAutoLoader implements DefinitionInterface
                 ],
             ]
         ];
+    }
+
+    /**
+     * Metadata information for the component.
+     *
+     * @return array
+     * @see ComponentInterface::getMetadata()
+     */
+    public function metadata(): array
+    {
+        $jsonFile = dirname(__DIR__) . '/composer.json';
+
+        return ComposerJSON::open($jsonFile)->getMetadata();
     }
 }

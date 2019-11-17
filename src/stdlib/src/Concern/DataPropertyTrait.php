@@ -53,7 +53,7 @@ trait DataPropertyTrait
     }
 
     /**
-     * Check if an item exists in an array using "dot" notation.
+     * Check if an item exists in an array
      *
      * @param string $key
      *

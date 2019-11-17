@@ -11,7 +11,6 @@ use Swoft\WebSocket\Server\Swoole\CloseListener;
 use Swoft\WebSocket\Server\Swoole\HandshakeListener;
 use Swoft\WebSocket\Server\Swoole\MessageListener;
 use Swoole\Http\Request;
-use Swoole\Http\Response;
 use function gethostname;
 use function server;
 use function sprintf;

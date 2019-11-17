@@ -11,6 +11,14 @@ namespace Swoft\Annotation\Contract;
 interface LoaderInterface
 {
     /**
+     * Disable or enable this component.
+     *
+     * @return bool
+     * @since 2.0.7
+     */
+    public function isEnable(): bool;
+
+    /**
      * Get namespace and dir
      *
      * @return array

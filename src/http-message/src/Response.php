@@ -354,9 +354,8 @@ class Response implements ResponseInterface
      *
      * @return static|self
      * @see getAttributes()
-     *
      */
-    public function withAttribute($name, $value)
+    public function withAttribute($name, $value): self
     {
         $clone = clone $this;
 
@@ -373,7 +372,7 @@ class Response implements ResponseInterface
      *
      * @return static
      */
-    public function withData($data)
+    public function withData($data): self
     {
         $clone = clone $this;
 
@@ -405,7 +404,7 @@ class Response implements ResponseInterface
      * @return static|self
      * @throws InvalidArgumentException For invalid status code arguments.
      */
-    public function withStatus($code, $reasonPhrase = '')
+    public function withStatus($code, $reasonPhrase = ''): self
     {
         $new = clone $this;
         // Set new value

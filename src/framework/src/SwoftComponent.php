@@ -13,26 +13,48 @@ use function array_merge;
 abstract class SwoftComponent implements ComponentInterface
 {
     /**
-     * @var bool Enable the component
-     */
-    private $enable;
-
-    /**
+     * Metadata information for the component.
+     *
+     * e.g:
+     * [
+     *  'name'        => 'user/package', // same composer.json -> name
+     *  'title'       => 'my component',
+     *  'version'     => '1.0.0',
+     *  'authors'     => [
+     *      [
+     *          'name' => 'tom',
+     *          'homepage' => 'https://github.com/tom'
+     *      ]
+     *  ],
+     *  'keywords'    => ['one', 'two'],
+     *  'createAt'    => '2019.02.12',
+     *  'updateAt'    => '2019.04.12',
+     *  'description' => 'description for the component',
+     *  'homepage'    => 'https://github.com/inhere/some-component',
+     * ]
      * @var array
      */
     private $metadata;
 
     /**
-     * Class constructor.
+     * Class constructor
      */
     public function __construct()
     {
-        $this->enable   = $this->enable();
         $this->metadata = array_merge(self::DEFAULT_META, $this->metadata());
     }
 
     /**
      * @return bool
+     */
+    public function isEnable(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @return bool
+     * @deprecated will deleted since 2.0.8
      */
     public function enable(): bool
     {
@@ -40,6 +62,8 @@ abstract class SwoftComponent implements ComponentInterface
     }
 
     /**
+     * Bean definitions of the component
+     *
      * @return array
      */
     public function beans(): array
@@ -61,7 +85,50 @@ abstract class SwoftComponent implements ComponentInterface
      * @return array
      * @see ComponentInterface::getMetadata()
      */
-    abstract public function metadata(): array;
+    abstract protected function metadata(): array;
+
+    /**
+     * @return string
+     */
+    public function getClass(): string
+    {
+        return static::class;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->metadata['name'] ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersion(): string
+    {
+        return $this->metadata['version'] ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->metadata['description'] ?? '';
+    }
+
+    /**
+     * @param string $key
+     * @param mixed  $default
+     *
+     * @return mixed
+     */
+    public function getMetaValue(string $key, $default = null)
+    {
+        return $this->metadata[$key] ?? $default;
+    }
 
     /**
      * @return array
@@ -69,21 +136,5 @@ abstract class SwoftComponent implements ComponentInterface
     public function getMetadata(): array
     {
         return $this->metadata;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEnable(): bool
-    {
-        return $this->enable;
-    }
-
-    /**
-     * @param bool $enable
-     */
-    public function setEnable(bool $enable): void
-    {
-        $this->enable = $enable;
     }
 }

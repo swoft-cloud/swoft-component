@@ -2,6 +2,9 @@
 
 namespace Swoft\WebSocket\Server\Contract;
 
+use Swoft\WebSocket\Server\Message\Request;
+use Swoft\WebSocket\Server\Message\Response;
+
 /**
  * Interface MiddlewareInterface
  *
@@ -10,10 +13,10 @@ namespace Swoft\WebSocket\Server\Contract;
 interface MiddlewareInterface
 {
     /**
-     * @param RequestInterface        $request
+     * @param RequestInterface|Request        $request
      * @param MessageHandlerInterface $handler
      *
-     * @return ResponseInterface
+     * @return ResponseInterface|Response
      */
     public function process(RequestInterface $request, MessageHandlerInterface $handler): ResponseInterface;
 }

@@ -36,6 +36,11 @@ class MockRequest extends Request
     public const DELETE = 'DELETE';
 
     /**
+     * PATCH
+     */
+    public const PATCH = 'PATCH';
+
+    /**
      * @var int
      */
     public $fd = 1;
@@ -91,15 +96,22 @@ class MockRequest extends Request
     public $content = '';
 
     /**
-     * @param array $server
-     * @param array $headers
-     * @param array $cookies
-     * @param array $params
+     * @param array  $server
+     * @param array  $headers
+     * @param array  $cookies
+     * @param array  $params
+     *
+     * @param string $content
      *
      * @return self
      */
-    public static function new(array $server, array $headers, array $cookies, array $params): self
-    {
+    public static function new(
+        array $server,
+        array $headers,
+        array $cookies,
+        array $params = [],
+        string $content = ''
+    ): self {
         // $instance = self::__instance();
         $instance = new self();
 
@@ -107,12 +119,23 @@ class MockRequest extends Request
         $instance->header = Arr::merge(self::defaultHeaders(), $headers);
         $instance->server = Arr::merge(self::defaultServers(), $server);
 
-        if ($server['request_method'] === self::GET) {
+        $method = strtoupper($server['request_method']);
+        if ($method === self::GET) {
             $instance->get = $params;
         }
 
-        if ($server['request_method'] === self::POST) {
-            $instance->post = $params;
+        if ($method === self::POST) {
+            $instance->post    = $params;
+            $instance->content = $content;
+        }
+
+        // Patch and Put
+        $methods = [
+            self::PUT,
+            self::PATCH,
+        ];
+        if (in_array($method, $methods)) {
+            $instance->content = $content;
         }
 
         return $instance;

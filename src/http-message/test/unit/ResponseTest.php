@@ -13,6 +13,17 @@ use Swoft\Http\Message\Response;
  */
 class ResponseTest extends TestCase
 {
+    public function testBasic(): void
+    {
+        $w = new Response();
+        $this->assertSame(200, $w->getStatusCode());
+        $this->assertSame('', $w->getReasonPhrase());
+
+        $w = $w->withStatus(302);
+        $this->assertSame(302, $w->getStatusCode());
+        $this->assertSame('Found', $w->getReasonPhrase());
+    }
+
     public function testCookies(): void
     {
         $w = new Response();
@@ -32,6 +43,13 @@ class ResponseTest extends TestCase
 
         $w->setCookies($cookies);
 
+        $this->assertTrue($w->hasCookie('key1'));
+        $this->assertFalse($w->hasCookie('not-exist'));
+
+        $this->assertNotEmpty($ck1 = $w->getCookie('key1'));
+        $this->assertSame('value1', $ck1['value']);
+        $this->assertSame(0, $ck1['expires']);
+
         $this->assertNotEmpty($cks = $w->getCookies());
         $this->assertCount(3, $cks);
 
@@ -42,7 +60,10 @@ class ResponseTest extends TestCase
         $this->assertSame('value2', $cks['key2']['value']);
 
         $w->delCookie('key1');
-        $this->assertCount(2, $w->getCookies());
+        $this->assertCount(3, $w->getCookies());
+        $this->assertNotEmpty($ck1 = $w->getCookie('key1'));
+        $this->assertSame(-60, $ck1['expires']);
+        $this->assertSame('', $ck1['value']);
 
         $w->setCookies([]);
         $this->assertEmpty($w->getCookies());
@@ -64,13 +85,20 @@ class ResponseTest extends TestCase
         $this->assertSame('abc.com', $c->getDomain());
 
         $w->setCookie('test', $c);
+        $w->setCookie('test2', 'value2');
 
         $this->assertNotEmpty($cks = $w->getCookies());
         $this->assertArrayHasKey('test', $cks);
         $this->assertIsArray($cks['test']);
         $this->assertSame('value1', $cks['test']['value']);
+        $this->assertSame('value2', $cks['test2']['value']);
 
         $w = $w->withoutCookies();
-        $this->assertEmpty($w->getCookies());
+        $this->assertNotEmpty($cks = $w->getCookies());
+
+        foreach ($cks as $item) {
+            $this->assertSame('', $item['value']);
+            $this->assertSame(-60, $item['expires']);
+        }
     }
 }

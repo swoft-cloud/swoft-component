@@ -38,7 +38,7 @@ class SystemHelper extends EnvHelper
      */
     public static function setProcessTitle(string $title): bool
     {
-        if (EnvHelper::isMac()) {
+        if (self::isMac() || self::isCygwin()) {
             return false;
         }
 

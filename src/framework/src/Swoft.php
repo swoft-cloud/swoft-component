@@ -149,21 +149,6 @@ final class Swoft
     }
 
     /**
-     * Trigger an swoft application event
-     *
-     * @param string|EventInterface $event eg: 'app.start' 'app.stop'
-     * @param null|mixed            $target
-     * @param array                 $params
-     *
-     * @return EventInterface
-     */
-    public static function trigger($event, $target = null, ...$params): EventInterface
-    {
-        /** @see EventManager::trigger() */
-        return BeanFactory::getSingleton('eventManager')->trigger($event, $target, $params);
-    }
-
-    /**
      * @param string $key
      * @param array  $params
      * @param string $locale
@@ -176,6 +161,21 @@ final class Swoft
         $i18n = BeanFactory::getBean('i18n');
 
         return $i18n->translate($key, $params, $locale);
+    }
+
+    /**
+     * Trigger an swoft application event
+     *
+     * @param string|EventInterface $event eg: 'app.start' 'app.stop'
+     * @param null|mixed            $target
+     * @param array                 $params
+     *
+     * @return EventInterface
+     */
+    public static function trigger($event, $target = null, ...$params): EventInterface
+    {
+        /** @see EventManager::trigger() */
+        return BeanFactory::getSingleton('eventManager')->trigger($event, $target, $params);
     }
 
     /**

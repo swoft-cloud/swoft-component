@@ -8,19 +8,16 @@
     "swoft"
   ],
   "description": "Validator component for swoft",
+  "homepage": "https://github.com/swoft-cloud/swoft-validator",
   "license": "Apache-2.0",
   "require": {
     "php": ">7.1",
     "swoft/framework": "~2.0.0"
   },
   "autoload": {
-    "classmap": [
-    ],
     "psr-4": {
       "Swoft\\Validator\\": "src/"
-    },
-    "files": [
-    ]
+    }
   },
   "require-dev": {
     "phpunit/phpunit": "^7.5"

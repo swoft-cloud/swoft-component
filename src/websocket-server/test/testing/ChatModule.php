@@ -85,17 +85,4 @@ class ChatModule implements WsModuleInterface
             'pingTimeout'  => 5000, // ms
         ];
     }
-
-    /**
-     * @param Server $server
-     * @param Frame  $frame
-     *  data structure:
-     *  [
-     *  'cmd' => 'name', // command name
-     *  'body' => ...    // body data
-     *  ]
-     */
-    public function onMessage(Server $server, Frame $frame): void
-    {
-    }
 }

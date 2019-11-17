@@ -8,6 +8,7 @@
     "swoft"
   ],
   "description": "swoft connection pool component",
+  "homepage": "https://github.com/swoft-cloud/swoft-connection-pool",
   "license": "Apache-2.0",
   "require": {
     "swoft/stdlib": "~2.0.0"
@@ -15,17 +16,13 @@
   "autoload": {
     "psr-4": {
       "Swoft\\Connection\\Pool\\": "src/"
-    },
-    "files": [
-    ]
+    }
   },
   "autoload-dev": {
     "psr-4": {
       "SwoftTest\\Connection\\Pool\\Unit\\": "test/unit/",
       "SwoftTest\\Connection\\Pool\\Testing\\": "test/testing/"
     }
-  },
-  "repositories": {
   },
   "require-dev": {
     "phpunit/phpunit": "^7.5"

@@ -1,9 +1,8 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Process;
 
-
+use Swoft\Helper\ComposerJSON;
 use Swoft\Process\Swoole\WorkerStartListener;
 use Swoft\Process\Swoole\WorkerStopListener;
 use Swoft\SwoftComponent;
@@ -46,6 +45,8 @@ class AutoLoader extends SwoftComponent
      */
     public function metadata(): array
     {
-        return [];
+        $jsonFile = dirname(__DIR__) . '/composer.json';
+
+        return ComposerJSON::open($jsonFile)->getMetadata();
     }
 }

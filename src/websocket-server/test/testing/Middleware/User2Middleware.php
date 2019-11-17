@@ -1,20 +1,19 @@
 <?php declare(strict_types=1);
 
-namespace SwoftTest\WebSocket\Server\Testing;
+namespace SwoftTest\WebSocket\Server\Testing\Middleware;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\WebSocket\Server\Contract\MessageHandlerInterface;
 use Swoft\WebSocket\Server\Contract\MiddlewareInterface;
 use Swoft\WebSocket\Server\Contract\RequestInterface;
 use Swoft\WebSocket\Server\Contract\ResponseInterface;
-use Swoft\WebSocket\Server\Message\Response;
 
 /**
- * Class CoreMiddleware
+ * Class User2Middleware
  *
  * @Bean()
  */
-class CoreMiddleware implements MiddlewareInterface
+class User2Middleware implements MiddlewareInterface
 {
     /**
      * @param RequestInterface        $request
@@ -24,8 +23,10 @@ class CoreMiddleware implements MiddlewareInterface
      */
     public function process(RequestInterface $request, MessageHandlerInterface $handler): ResponseInterface
     {
-        $resp = Response::new(100);
+        $start = '>user2 ';
 
-        return $resp->setData('[CORE]');
+        $resp = $handler->handle($request);
+
+        return $resp->setData($start . $resp->getData() . ' user2>');
     }
 }

@@ -69,7 +69,7 @@ trait HttpResponseAssertTrait
      */
     public function assertEqualHeaders(array $headers): self
     {
-        Assert::assertEquals($this->getHeader(), $headers);
+        Assert::assertEquals($this->getHeaders(), $headers);
 
         return $this;
     }
