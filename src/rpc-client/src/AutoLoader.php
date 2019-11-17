@@ -1,11 +1,8 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Client;
 
-
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
+use Swoft\Helper\ComposerJSON;
 use Swoft\Rpc\Packet;
 use Swoft\Rpc\Packet\SwoftPacketV1;
 use Swoft\SwoftComponent;
@@ -32,7 +29,9 @@ class AutoLoader extends SwoftComponent
      */
     public function metadata(): array
     {
-        return [];
+        $jsonFile = dirname(__DIR__) . '/composer.json';
+
+        return ComposerJSON::open($jsonFile)->getMetadata();
     }
 
     /**
@@ -45,11 +44,11 @@ class AutoLoader extends SwoftComponent
                 'class' => Packet::class
             ],
             'rpcClientSwoftPacketV1' => [
-                'class'   => Packet::class,
-                'packets' => [
+                'class'      => Packet::class,
+                'packets'    => [
                     'swoftV1' => bean(SwoftPacketV1::class)
                 ],
-                'type'    => 'swoftV1',
+                'type'       => 'swoftV1',
                 'packageEof' => "\r\n",
             ]
         ];

@@ -20,7 +20,6 @@ use Swoft\Stdlib\Helper\ArrayHelper;
  */
 class Config extends Collection
 {
-
     /**
      * Php formatter
      */

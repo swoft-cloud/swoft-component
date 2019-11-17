@@ -34,6 +34,16 @@ class EnvHelper
     }
 
     /**
+     * Is windows Cygwin env
+     *
+     * @return bool
+     */
+    public static function isCygwin(): bool
+    {
+        return stripos(PHP_OS, 'CYGWIN') === 0;
+    }
+
+    /**
      * is windows OS
      *
      * @return bool

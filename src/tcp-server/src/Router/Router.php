@@ -174,4 +174,12 @@ class Router implements RouterInterface
     {
         return $this->middlewares;
     }
+
+    /**
+     * @param array $middlewares
+     */
+    public function setMiddlewares(array $middlewares): void
+    {
+        $this->middlewares = $middlewares;
+    }
 }

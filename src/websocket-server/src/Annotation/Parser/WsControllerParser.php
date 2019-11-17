@@ -21,8 +21,8 @@ class WsControllerParser extends Parser
     /**
      * Parse object
      *
-     * @param int          $type       Class or Method or Property
-     * @param WsController $annotation Annotation object
+     * @param int          $type Class or Method or Property
+     * @param WsController $ann  Annotation object
      *
      * @return array
      * Return empty array is nothing to do!
@@ -30,7 +30,7 @@ class WsControllerParser extends Parser
      * When property type return [$propertyValue, $isRef] is to reference value
      * @throws AnnotationException
      */
-    public function parse(int $type, $annotation): array
+    public function parse(int $type, $ann): array
     {
         if ($type !== self::TYPE_CLASS) {
             throw new AnnotationException('`@WsController` must be defined on class!');
@@ -38,7 +38,7 @@ class WsControllerParser extends Parser
 
         $class = $this->className;
 
-        RouteRegister::bindController($class, $annotation->getPrefix());
+        RouteRegister::bindController($class, $ann->getPrefix(), $ann->getMiddlewares());
 
         return [$class, $class, Bean::SINGLETON, ''];
     }

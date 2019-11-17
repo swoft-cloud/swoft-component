@@ -1,34 +1,35 @@
 {
-    "name": "swoft/process",
-    "type": "library",
+  "name": "swoft/process",
+  "type": "library",
   "version": "v2.0.6",
-    "keywords": [
-        "php",
-        "swoole",
-        "swoft",
-        "process"
-    ],
-    "description": "Process Component for Swoft",
-    "license": "Apache-2.0",
-    "require": {
-        "swoft/framework": "~2.0.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "Swoft\\Process\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "SwoftTest\\Process\\Unit\\": "test/unit/",
-            "SwoftTest\\Process\\Testing\\": "test/testing/"
-        }
-    },
-    "require-dev": {
-        "swoft/swoole-ide-helper": "dev-master",
-        "phpunit/phpunit": "^7.5"
-    },
-    "scripts": {
-        "test": "./vendor/bin/phpunit -c phpunit.xml"
+  "keywords": [
+    "php",
+    "swoole",
+    "swoft",
+    "process"
+  ],
+  "description": "Process Component for Swoft",
+  "homepage": "https://github.com/swoft-cloud/swoft-process",
+  "license": "Apache-2.0",
+  "require": {
+    "swoft/framework": "~2.0.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Swoft\\Process\\": "src/"
     }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "SwoftTest\\Process\\Unit\\": "test/unit/",
+      "SwoftTest\\Process\\Testing\\": "test/testing/"
+    }
+  },
+  "require-dev": {
+    "swoft/swoole-ide-helper": "dev-master",
+    "phpunit/phpunit": "^7.5"
+  },
+  "scripts": {
+    "test": "./vendor/bin/phpunit -c phpunit.xml"
+  }
 }

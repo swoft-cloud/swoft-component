@@ -10,7 +10,8 @@
         "translation"
     ],
     "description": "swoft i18n component",
-    "license": "Apache-2.0",
+  "homepage": "https://github.com/swoft-cloud/swoft-i18n",
+  "license": "Apache-2.0",
     "require": {
         "php": ">=7.1",
         "swoft/framework": "~2.0.0"

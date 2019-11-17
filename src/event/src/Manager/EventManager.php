@@ -46,11 +46,6 @@ class EventManager implements EventManagerInterface
     // protected $parent;
 
     /**
-     * @var EventInterface
-     */
-    protected $basicEvent;
-
-    /**
      * Predefined event store
      *
      * @var EventInterface[]
@@ -58,14 +53,14 @@ class EventManager implements EventManagerInterface
      *     'event name' => (object)EventInterface -- event description
      * ]
      */
-    protected $events = [];
+    private $events = [];
 
     /**
      * Listener storage
      *
      * @var ListenerQueue[]
      */
-    protected $listeners = [];
+    private $listeners = [];
 
     /**
      * All listened event name map
@@ -73,6 +68,18 @@ class EventManager implements EventManagerInterface
      * @var array [name => 1]
      */
     private $listenedEvents = [];
+
+    /**
+     * @var EventInterface
+     */
+    private $basicEvent;
+
+    /**
+     * Destroy event data after trigger event.
+     *
+     * @var bool
+     */
+    private $destroyAfterFire = false;
 
     /**
      * EventManager constructor.
@@ -159,22 +166,23 @@ class EventManager implements EventManagerInterface
     /**
      * Add a listener and associate it to one (multiple) event
      *
+     * $definition Allowed:
+     *  $definition = [
+     *      'event name' => priority(int),
+     *      'event name1' => priority(int),
+     *  ]
+     * OR
+     *  $definition = [
+     *      'event name','event name1',
+     *  ]
+     * OR
+     *  $definition = 'event name'
+     * OR
+     * // The priority of the listener
+     * $definition = 1
+     *
      * @param Closure|callback|mixed $listener   listener
      * @param array|string|int       $definition Event name, priority setting
-     *                                           Allowed:
-     *                                           $definition = [
-     *                                           'event name' => priority(int),
-     *                                           'event name1' => priority(int),
-     *                                           ]
-     *                                           OR
-     *                                           $definition = [
-     *                                           'event name','event name1',
-     *                                           ]
-     *                                           OR
-     *                                           $definition = 'event name'
-     *                                           OR
-     *                                           // The priority of the listener
-     *                                           $definition = 1
      *
      * @return bool
      */
@@ -237,8 +245,9 @@ class EventManager implements EventManagerInterface
     }
 
     /**
-     * {@inheritDoc}
-     * @throws InvalidArgumentException
+     * @param EventInterface $event
+     *
+     * @return EventInterface
      */
     public function triggerEvent(EventInterface $event): EventInterface
     {
@@ -322,7 +331,7 @@ class EventManager implements EventManagerInterface
             $this->triggerListeners($this->listeners[$name], $event, $method);
 
             if ($event->isPropagationStopped()) {
-                return $event;
+                return $this->destroyAfterFire ? $event->destroy() : $event;
             }
         }
 
@@ -331,7 +340,7 @@ class EventManager implements EventManagerInterface
             $this->triggerListeners($this->listeners['*'], $event);
         }
 
-        return $event;
+        return $this->destroyAfterFire ? $event->destroy() : $event;
     }
 
     /**
@@ -736,5 +745,21 @@ class EventManager implements EventManagerInterface
                 $listener($event);
             }
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDestroyAfterFire(): bool
+    {
+        return $this->destroyAfterFire;
+    }
+
+    /**
+     * @param bool $destroyAfterFire
+     */
+    public function setDestroyAfterFire(bool $destroyAfterFire): void
+    {
+        $this->destroyAfterFire = $destroyAfterFire;
     }
 }

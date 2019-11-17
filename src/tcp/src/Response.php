@@ -55,6 +55,30 @@ class Response implements ResponseInterface
     }
 
     /**
+     * Init from an array map
+     *
+     * @param array $map
+     */
+    public function initFromArray(array $map): void
+    {
+        if (isset($map['code'])) {
+            $this->setCode((int)$map['code']);
+        }
+
+        if (isset($map['msg'])) {
+            $this->setMsg($map['msg']);
+        }
+
+        if (isset($map['data'])) {
+            $this->setData($map['data']);
+        }
+
+        if (isset($map['data'])) {
+            $this->setData($map['data']);
+        }
+    }
+
+    /**
      * @return array
      */
     public function toArray(): array

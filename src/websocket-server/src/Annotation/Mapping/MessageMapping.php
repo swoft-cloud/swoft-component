@@ -40,6 +40,13 @@ final class MessageMapping
     private $opcode = 0;
 
     /**
+     * Middleware for the method
+     *
+     * @var array
+     */
+    private $middlewares = [];
+
+    /**
      * Class constructor.
      *
      * @param array $values
@@ -58,6 +65,10 @@ final class MessageMapping
 
         if (isset($values['opcode'])) {
             $this->opcode = (int)$values['opcode'];
+        }
+
+        if (isset($values['middlewares'])) {
+            $this->middlewares = (array)$values['middlewares'];
         }
     }
 
@@ -83,5 +94,13 @@ final class MessageMapping
     public function getOpcode(): int
     {
         return $this->opcode;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMiddlewares(): array
+    {
+        return $this->middlewares;
     }
 }

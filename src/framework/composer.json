@@ -5,9 +5,11 @@
   "keywords": [
     "php",
     "swoole",
-    "swoft"
+    "swoft",
+    "swoft-framework"
   ],
   "description": "swoft framework component",
+  "homepage": "https://github.com/swoft-cloud/swoft-framework",
   "license": "Apache-2.0",
   "require": {
     "php": ">=7.1",

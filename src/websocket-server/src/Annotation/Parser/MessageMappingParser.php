@@ -35,8 +35,9 @@ class MessageMappingParser extends Parser
         }
 
         RouteRegister::bindCommand($this->className, $this->methodName, $ann->getCommand(), [
-            'isRoot' => $ann->isRoot(),
-            'opcode' => $ann->getOpcode(),
+            'isRoot'  => $ann->isRoot(),
+            'opcode'  => $ann->getOpcode(),
+            'middles' => $ann->getMiddlewares(),
         ]);
 
         return [];

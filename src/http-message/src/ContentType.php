@@ -9,9 +9,7 @@ namespace Swoft\Http\Message;
  */
 final class ContentType
 {
-    /**
-     * Content key
-     */
+    // Content type key on http headers
     public const KEY = 'content-type';
 
     // Commonly used content types

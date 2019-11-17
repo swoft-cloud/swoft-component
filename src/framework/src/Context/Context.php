@@ -2,11 +2,11 @@
 
 namespace Swoft\Context;
 
+use RuntimeException;
 use Swoft\Bean\BeanFactory;
 use Swoft\Co;
 use Swoft\Contract\ContextInterface;
 use Swoft\Exception\ContextException;
-use Swoft\Exception\SwoftException;
 use Swoft\Http\Server\HttpContext;
 use Swoft\WebSocket\Server\Context\WsMessageContext;
 
@@ -37,7 +37,6 @@ class Context
      * @param bool $throwable
      *
      * @return ContextInterface|HttpContext|WsMessageContext
-     * @throws SwoftException
      */
     public static function get(bool $throwable = false): ?ContextInterface
     {
@@ -48,7 +47,7 @@ class Context
         }
 
         if ($throwable) {
-            throw new SwoftException('context information has been lost of the coID: ' . $tid);
+            throw new RuntimeException('context information has been lost of the coID: ' . $tid);
         }
 
         return $context;

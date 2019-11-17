@@ -4,21 +4,21 @@ namespace Swoft\WebSocket\Server;
 
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Error\DefaultErrorDispatcher;
 use Swoft\Error\ErrorManager;
 use Swoft\Error\ErrorType;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
-use Swoft\Log\Helper\CLog;
 use Swoft\WebSocket\Server\Contract\CloseErrorHandlerInterface;
 use Swoft\WebSocket\Server\Contract\HandshakeErrorHandlerInterface;
 use Swoft\WebSocket\Server\Contract\MessageErrorHandlerInterface;
 use Swoft\WebSocket\Server\Contract\OpenErrorHandlerInterface;
 use Swoft\WebSocket\Server\Exception\WsMessageRouteException;
 use Swoft\WebSocket\Server\Exception\WsModuleRouteException;
+use Swoft\WebSocket\Server\Message\Response as MsgResponse;
 use Swoole\WebSocket\Frame;
 use Throwable;
-use function server;
 
 /**
  * Class WsErrorDispatcher
@@ -29,6 +29,12 @@ use function server;
 class WsErrorDispatcher
 {
     /**
+     * @Inject()
+     * @var ErrorManager
+     */
+    private $errorManager;
+
+    /**
      * @param Throwable $e
      * @param Response  $response
      *
@@ -37,26 +43,18 @@ class WsErrorDispatcher
      */
     public function handshakeError(Throwable $e, Response $response): Response
     {
-        CLog::error('Websocket error: ' . $e->getMessage());
+        /** @var HandshakeErrorHandlerInterface $errHandler */
+        if ($errHandler = $this->errorManager->match($e, ErrorType::WS_HS)) {
+            return $errHandler->handle($e, $response);
+        }
 
         // TODO should handle it?
         if ($e instanceof WsModuleRouteException) {
             return $response->withStatus(404)->withAddedHeader('Failure-Reason', 'Route not found');
         }
 
-        /** @var ErrorManager $handlers */
-        $handlers = Swoft::getSingleton(ErrorManager::class);
-
-        /** @var HandshakeErrorHandlerInterface $handler */
-        if ($handler = $handlers->matchHandler($e, ErrorType::WS_HS)) {
-            return $handler->handle($e, $response);
-        }
-
         // No handler, use default error dispatcher
-
-        /** @var DefaultErrorDispatcher $defDispatcher */
-        $defDispatcher = Swoft::getSingleton(DefaultErrorDispatcher::class);
-        $defDispatcher->run($e);
+        $this->defaultHandle($e);
 
         return $response->withStatus(500)->withContent($e->getMessage());
     }
@@ -69,49 +67,37 @@ class WsErrorDispatcher
      */
     public function openError(Throwable $e, Request $request): void
     {
-        /** @var ErrorManager $handlers */
-        $handlers = Swoft::getSingleton(ErrorManager::class);
-
-        /** @var OpenErrorHandlerInterface $handler */
-        if ($handler = $handlers->matchHandler($e, ErrorType::WS_OPN)) {
-            $handler->handle($e, $request);
+        /** @var OpenErrorHandlerInterface $errHandler */
+        if ($errHandler = $this->errorManager->match($e, ErrorType::WS_OPN)) {
+            $errHandler->handle($e, $request);
             return;
         }
 
         // No handler, use default error dispatcher
-
-        /** @var DefaultErrorDispatcher $defDispatcher */
-        $defDispatcher = Swoft::getSingleton(DefaultErrorDispatcher::class);
-        $defDispatcher->run($e);
+        $this->defaultHandle($e);
     }
 
     /**
-     * @param Throwable $e
-     * @param Frame     $frame
+     * @param Throwable   $e
+     * @param Frame       $frame
+     * @param MsgResponse $response
      *
-     * @throws Throwable
+     * @return MsgResponse
      */
-    public function messageError(Throwable $e, Frame $frame): void
+    public function messageError(Throwable $e, Frame $frame, MsgResponse $response): MsgResponse
     {
-        if ($e instanceof WsMessageRouteException) {
-            server()->push($frame->fd, $e->getMessage());
-            return;
+        /** @var MessageErrorHandlerInterface $errHandler */
+        if ($errHandler = $this->errorManager->match($e, ErrorType::WS_MSG)) {
+            $errHandler->handle($e, $frame);
+        } elseif ($e instanceof WsMessageRouteException) {
+            // Message command not found
+            $response->setFd($frame->fd)->setContent($e->getMessage());
+        } else {
+            // No handler, use default error dispatcher
+            $this->defaultHandle($e);
         }
 
-        /** @var ErrorManager $handlers */
-        $handlers = Swoft::getSingleton(ErrorManager::class);
-
-        /** @var MessageErrorHandlerInterface $handler */
-        if ($handler = $handlers->matchHandler($e, ErrorType::WS_MSG)) {
-            $handler->handle($e, $frame);
-            return;
-        }
-
-        // No handler, use default error dispatcher
-
-        /** @var DefaultErrorDispatcher $defDispatcher */
-        $defDispatcher = Swoft::getSingleton(DefaultErrorDispatcher::class);
-        $defDispatcher->run($e);
+        return $response;
     }
 
     /**
@@ -122,17 +108,21 @@ class WsErrorDispatcher
      */
     public function closeError(Throwable $e, int $fd): void
     {
-        /** @var ErrorManager $handlers */
-        $handlers = Swoft::getSingleton(ErrorManager::class);
-
-        /** @var CloseErrorHandlerInterface $handler */
-        if ($handler = $handlers->matchHandler($e, ErrorType::WS_CLS)) {
-            $handler->handle($e, $fd);
+        /** @var CloseErrorHandlerInterface $errHandler */
+        if ($errHandler = $this->errorManager->match($e, ErrorType::WS_CLS)) {
+            $errHandler->handle($e, $fd);
             return;
         }
 
         // No handler, use default error dispatcher
+        $this->defaultHandle($e);
+    }
 
+    /**
+     * @param Throwable $e
+     */
+    protected function defaultHandle(Throwable $e): void
+    {
         /** @var DefaultErrorDispatcher $defDispatcher */
         $defDispatcher = Swoft::getSingleton(DefaultErrorDispatcher::class);
         $defDispatcher->run($e);

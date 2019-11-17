@@ -23,7 +23,6 @@ use function server;
  * Class CloseListener
  *
  * @since 2.0
- *
  * @Bean()
  */
 class CloseListener implements CloseInterface

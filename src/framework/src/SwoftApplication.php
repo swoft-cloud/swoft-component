@@ -4,6 +4,7 @@ namespace Swoft;
 
 use Swoft;
 use Swoft\Concern\SwoftTrait;
+use Swoft\Console\Console;
 use Swoft\Contract\ApplicationInterface;
 use Swoft\Contract\SwoftInterface;
 use Swoft\Helper\SwoftHelper;
@@ -21,9 +22,11 @@ use Swoft\Stdlib\Helper\FSHelper;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use Swoft\Stdlib\Helper\Str;
 use Swoft\Log\Helper\CLog;
+use Throwable;
 use function define;
 use function defined;
 use function dirname;
+use function get_class;
 use const IN_PHAR;
 
 /**
@@ -156,8 +159,6 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
         // Init application
         $this->init();
 
-        CLog::info('Project path is <info>%s</info>', $this->basePath);
-
         // After init
         $this->afterInit();
     }
@@ -212,14 +213,21 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
      */
     public function run(): void
     {
-        if (!$this->beforeRun()) {
-            return;
-        }
+        try {
+            if (!$this->beforeRun()) {
+                return;
+            }
 
-        $this->processor->handle();
+            $this->processor->handle();
+        } catch (Throwable $e) {
+            CLog::error('%s(code:%d) %s', get_class($e), $e->getCode(), $e->getMessage());
+            Console::colored('Code Trace:', 'comment');
+            echo $e->getTraceAsString(), "\n";
+        }
     }
 
     /**
+     * @noinspection PhpDocSignatureInspection
      * @param string[] ...$classes
      */
     public function disableAutoLoader(string ...$classes)
@@ -230,6 +238,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     }
 
     /**
+     * @noinspection PhpDocSignatureInspection
      * @param string ...$classes
      */
     public function disableProcessor(string ...$classes)
@@ -482,7 +491,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
         Swoft::setAlias('@runtime', $runtimePath);
         Swoft::setAlias('@resource', $resourcePath);
 
-        CLog::info('Set alias @base=%s', $basePath);
+        CLog::info('Project path: @base=%s', $basePath);
         CLog::info('Set alias @app=%s', $appPath);
         CLog::info('Set alias @config=%s', $configPath);
         CLog::info('Set alias @runtime=%s', $runtimePath);

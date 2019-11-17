@@ -9,7 +9,8 @@
     "psr7",
     "http-message"
   ],
-    "description": "swoft http message component",
+  "description": "swoft http message component",
+  "homepage": "https://github.com/swoft-cloud/swoft-http-message",
   "license": "Apache-2.0",
   "require": {
     "php": ">7.1.0",

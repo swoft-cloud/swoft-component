@@ -7,7 +7,8 @@
     "swoole",
     "swoft"
   ],
-    "description": "swoft http server component",
+  "description": "swoft http server component",
+  "homepage": "https://github.com/swoft-cloud/swoft-http-server",
   "license": "Apache-2.0",
   "require": {
     "swoft/framework": "~2.0.0",

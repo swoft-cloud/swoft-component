@@ -11,6 +11,7 @@ use ReflectionException;
 use SplFileInfo;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\AnnotationRegister;
+use Swoft\Annotation\Concern\AbstractResource;
 use Swoft\Annotation\Contract\LoaderInterface;
 use Swoft\Stdlib\Helper\ComposerHelper;
 use Swoft\Stdlib\Helper\DirectoryHelper;
@@ -30,7 +31,7 @@ use function strpos;
  *
  * @since 2.0
  */
-class AnnotationResource extends Resource
+class AnnotationResource extends AbstractResource
 {
     /**
      * Default excluded psr4 prefixes
@@ -125,8 +126,8 @@ class AnnotationResource extends Resource
         ObjectHelper::init($this, $config);
 
         $this->registerLoader();
-        $this->classLoader = ComposerHelper::getClassLoader();
 
+        $this->classLoader   = ComposerHelper::getClassLoader();
         $this->includedFiles = get_included_files();
     }
 
@@ -149,7 +150,7 @@ class AnnotationResource extends Resource
 
             // It is excluded psr4 prefix
             if ($this->isExcludedPsr4Prefix($ns)) {
-                AnnotationRegister::registerExcludeNs($ns);
+                AnnotationRegister::addExcludeNamespace($ns);
                 $this->notify('excludeNs', $ns);
                 continue;
             }
@@ -168,8 +169,10 @@ class AnnotationResource extends Resource
                     continue;
                 }
 
-                $loaderObject = new $loaderClass();
-                if (!$loaderObject instanceof LoaderInterface) {
+                $isEnabled  = true;
+                $autoLoader = new $loaderClass();
+
+                if (!$autoLoader instanceof LoaderInterface) {
                     $this->notify('invalidLoader', $loaderFile);
                     continue;
                 }
@@ -177,14 +180,20 @@ class AnnotationResource extends Resource
                 $this->notify('findLoaderClass', $this->clearBasePath($loaderFile));
 
                 // If is disable, will skip scan annotation classes
-                if (!isset($this->disabledAutoLoaders[$loaderClass])) {
-                    AnnotationRegister::registerAutoLoaderFile($loaderFile);
+                if (isset($this->disabledAutoLoaders[$loaderClass]) || !$autoLoader->isEnable()) {
+                    $isEnabled = false;
+
+                    $this->notify('disabledLoader', $loaderFile);
+                } else {
+                    AnnotationRegister::addAutoLoaderFile($loaderFile);
                     $this->notify('addLoaderClass', $loaderClass);
-                    $this->loadAnnotation($loaderObject);
+
+                    // Scan and collect class bean s
+                    $this->loadAnnotation($autoLoader);
                 }
 
-                // Storage auto loader to register
-                AnnotationRegister::addAutoLoader($ns, $loaderObject);
+                // Storage autoLoader instance to register
+                AnnotationRegister::addAutoLoader($ns, $autoLoader, $isEnabled);
             }
         }
     }
@@ -253,7 +262,7 @@ class AnnotationResource extends Resource
 
                 // It is exclude filename
                 if (isset($this->excludedFilenames[$fileName])) {
-                    AnnotationRegister::registerExcludeFilename($fileName);
+                    AnnotationRegister::addExcludeFilename($fileName);
                     continue;
                 }
 
@@ -419,6 +428,7 @@ class AnnotationResource extends Resource
      */
     private function registerLoader(): void
     {
+        /** @noinspection PhpDeprecationInspection */
         AnnotationRegistry::registerLoader(function (string $class) {
             if (class_exists($class)) {
                 return true;

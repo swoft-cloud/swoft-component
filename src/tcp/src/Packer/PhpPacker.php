@@ -2,6 +2,7 @@
 
 namespace Swoft\Tcp\Packer;
 
+use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Tcp\Contract\PackerInterface;
 use Swoft\Tcp\Package;
 use Swoft\Tcp\Response;
@@ -12,6 +13,7 @@ use function unserialize;
  * Class PhpPacker
  *
  * @since 2.0.4
+ * @Bean()
  */
 class PhpPacker implements PackerInterface
 {
@@ -48,24 +50,9 @@ class PhpPacker implements PackerInterface
      */
     public function decode(string $data): Package
     {
-        $cmd = '';
-        $ext = [];
         $map = (array)unserialize($data, ['allowed_classes' => false]);
 
-        // Find message route
-        if (isset($map['cmd'])) {
-            $cmd = (string)$map['cmd'];
-            unset($map['cmd']);
-        }
-
-        if (isset($map['data'])) {
-            $body = $map['data'];
-            $ext  = $map['ext'] ?? [];
-        } else {
-            $body = $map;
-        }
-
-        return Package::new($cmd, $body, $ext);
+        return Package::newFromArray($map);
     }
 
     /**
@@ -98,22 +85,7 @@ class PhpPacker implements PackerInterface
         $map  = (array)unserialize($data, ['allowed_classes' => false]);
 
         $resp->setContent($data);
-
-        if (isset($map['code'])) {
-            $resp->setCode((int)$map['code']);
-        }
-
-        if (isset($map['msg'])) {
-            $resp->setMsg($map['msg']);
-        }
-
-        if (isset($map['data'])) {
-            $resp->setData($map['data']);
-        }
-
-        if (isset($map['data'])) {
-            $resp->setData($map['data']);
-        }
+        $resp->initFromArray($map);
 
         return $resp;
     }

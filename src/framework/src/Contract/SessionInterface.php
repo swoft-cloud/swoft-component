@@ -2,6 +2,7 @@
 
 namespace Swoft\Contract;
 
+use JsonSerializable;
 use Swoft\Stdlib\Contract\Arrayable;
 
 /**
@@ -9,8 +10,17 @@ use Swoft\Stdlib\Contract\Arrayable;
  *
  * @since 2.0
  */
-interface SessionInterface extends Arrayable
+interface SessionInterface extends Arrayable, JsonSerializable
 {
+    /**
+     * Check if an item exists in an array using "dot" notation.
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function has(string $key): bool;
+
     /**
      * Get value from context
      *

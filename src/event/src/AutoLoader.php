@@ -2,6 +2,7 @@
 
 namespace Swoft\Event;
 
+use Swoft\Event\Manager\EventManager;
 use Swoft\Helper\ComposerJSON;
 use Swoft\SwoftComponent;
 use function dirname;
@@ -9,7 +10,7 @@ use function dirname;
 /**
  * Class AutoLoader
  *
- * @package Swoft\Event
+ * @since 2.0.0
  */
 class AutoLoader extends SwoftComponent
 {
@@ -37,6 +38,18 @@ class AutoLoader extends SwoftComponent
     {
         return [
             __NAMESPACE__ => __DIR__,
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function beans(): array
+    {
+        return [
+            'eventManager' => [
+                'class' => EventManager::class,
+            ],
         ];
     }
 }
