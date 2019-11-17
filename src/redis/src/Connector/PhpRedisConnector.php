@@ -72,12 +72,12 @@ class PhpRedisConnector implements ConnectorInterface
     public function connectToCluster(array $config, array $option): RedisCluster
     {
         $servers     = array_map([$this, 'buildClusterConnectionString'], $config);
-        $servers     = array_values($servers);
+        $servers     = array_values($servers);         // Create a cluster setting two nodes as seeds
         $readTimeout = $option['read_timeout'] ?? 0;
         $timeout     = $option['timeout'] ?? 0;
-        $persistent  = $option['persistent'] ?? false;
-        $name        = $option['name'] ?? '';
-        $auth        = $option['auth'] ?? '';
+        $persistent  = $option['persistent'] ?? false; // persistent connections to each node
+        $name        = $option['name'] ?? null;
+        $auth        = $option['auth'] ?? '';          // Connect with cluster using password.
 
         $parameters = compact('name', 'servers', 'timeout', 'readTimeout', 'persistent');
         $parameters = array_values($parameters);
@@ -134,9 +134,14 @@ class PhpRedisConnector implements ConnectorInterface
             'read_timeout',
         ];
 
+        $base = $server['host'] . ':' . $server['port'];
+
         $params = Arr::only($server, $allowParams);
-        $query  = Arr::query($params);
-        return $server['host'] . ':' . $server['port'] . '?' . $query;
+        if ($query = Arr::query($params)) {
+            $base .= '?' . $query;
+        }
+
+        return $base;
     }
 
     /**

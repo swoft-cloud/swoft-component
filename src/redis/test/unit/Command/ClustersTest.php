@@ -5,20 +5,21 @@ namespace SwoftTest\Redis\Unit\Command;
 
 
 use Swoft\Bean\BeanFactory;
-use Swoft\Limiter\Rate\RedisClusterRateLimiter;
-use Swoft\Redis\Redis;
+use Swoft\Limiter\Rate\RedisRateLimiter;
 use SwoftTest\Redis\Unit\TestCase;
 
 class ClustersTest extends TestCase
 {
 
-    public function testClusters()
+    public function testClusters(): void
     {
-        /** @var $clusterLimiter RedisClusterRateLimiter */
-        $clusterLimiter = BeanFactory::getBean(RedisClusterRateLimiter::class);
-        $res            = $clusterLimiter->getTicket(
+        /** @var $clusterLimiter RedisRateLimiter */
+        $clusterLimiter = BeanFactory::getBean(RedisRateLimiter::class);
+
+        // Use hash tag compatible redis cluster
+        $res = $clusterLimiter->getTicket(
             [
-                'key'     => 'swoft',
+                'key'     => '{tag}swoft',
                 'name'    => "limt",
                 'rate'    => '20',
                 'max'     => 30,
@@ -26,8 +27,7 @@ class ClustersTest extends TestCase
             ]
         );
 
-        var_dump($res);
-
+        $this->assertTrue($res);
     }
 
 }

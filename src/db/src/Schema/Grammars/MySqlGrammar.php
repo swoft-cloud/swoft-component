@@ -483,6 +483,10 @@ class MySqlGrammar extends Grammar
      */
     public function compileRenameColumn(Blueprint $blueprint, Fluent $command): string
     {
+        if ($command['unsigned'] === true) {
+            $command['unsigned'] = 'unsigned';
+        }
+
         $sql = sprintf('alter table %s change %s %s %s(%d) %s',
             $this->wrapTable($blueprint),
             $command['from'],

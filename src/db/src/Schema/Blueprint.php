@@ -346,10 +346,13 @@ class Blueprint
     /**
      * Indicate that the given columns should be renamed.
      *
-     * @param string $from
-     * @param string $to
-     * @param string $type
-     * @param int    $length
+     * @param string      $from
+     * @param string      $to
+     * @param string      $type
+     * @param int         $length
+     * @param string|null $default
+     * @param string|null $comment
+     * @param bool|string $unsigned
      *
      * @return Fluent
      */
@@ -360,7 +363,7 @@ class Blueprint
         int $length,
         string $default = null,
         string $comment = null,
-        string $unsigned = null
+        $unsigned = false
     ) {
         return $this->addCommand(
             'renameColumn',

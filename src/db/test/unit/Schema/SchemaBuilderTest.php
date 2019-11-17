@@ -102,7 +102,7 @@ class SchemaBuilderTest extends TestCase
         // Bind db pool
         Schema::table($table, function (Blueprint $blueprint) {
             // Rename column
-            $blueprint->renameColumn('id', 'user_id', 'bigint', 20);
+            $blueprint->renameColumn('id', 'user_id', 'bigint', 20, '0', 'user table id', true);
 
         });
         Schema::enableForeignKeyConstraints();

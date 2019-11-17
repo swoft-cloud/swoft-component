@@ -20,7 +20,7 @@ return [
     ],
     'redis.pool'          => [
         'class'       => \Swoft\Redis\Pool::class,
-        'redisDb'     => \bean('redis'),
+        'redisDb'     => \bean('redis-clusters'),
         'minActive'   => 10,
         'maxActive'   => 20,
         'maxWait'     => 0,
@@ -30,19 +30,25 @@ return [
     'redis-clusters'      => [
         'class'    => \Swoft\Redis\RedisDb::class,
         'option'   => [
-            'timeout'      => 3,
-            'persistent'   => true,
-            'auth'         => 'passwordAuth-xxxx',
-            'read_timeout' => 1,
-            'prefix'       => 'swoft-t',
-            'serializer'   => 1,
+            'timeout'      => 1.2,
+            'persistent'   => false,
+            'auth'         => '',
+            'read_timeout' => 1.1,
+            'prefix'       => 'swoft:',
+            'serializer'   => RedisCluster::SERIALIZER_PHP,
         ],
         'clusters' => [
             [
-                'host'     => '127.0.0.1',
-                'port'     => 6379,
-                'database' => 1,
-                'password' => 123445,
+                'host' => '10.0.0.2',
+                'port' => 7000,
+            ],
+            [
+                'host'         => '10.0.0.4',
+                'port'         => 7002,
+                'database'     => 1,
+                'prefix'       => 'swoft:s4:',
+                'read_timeout' => 1,
+                'password'     => ''
             ],
         ]
     ],
