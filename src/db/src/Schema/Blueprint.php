@@ -363,7 +363,7 @@ class Blueprint
         int $length,
         string $default = null,
         string $comment = null,
-        $unsigned = false
+        $unsigned = ''
     ) {
         return $this->addCommand(
             'renameColumn',
