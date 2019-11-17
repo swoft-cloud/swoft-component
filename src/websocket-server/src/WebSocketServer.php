@@ -6,8 +6,6 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Server;
 use Swoft\Server\SwooleEvent;
-use Swoft\Session\Session;
-use Swoft\Stdlib\Helper\JsonHelper;
 use Swoole\Websocket\Frame;
 use Throwable;
 use function array_flip;
@@ -93,11 +91,11 @@ class WebSocketServer extends Server
      *                       close:  WEBSOCKET_OPCODE_CLOSE  = 8
      *                       ping:   WEBSOCKET_OPCODE_PING   = 9
      *                       pong:   WEBSOCKET_OPCODE_PONG   = 10
-     * @param bool   $finish
+     * @param int|bool $finish
      *
      * @return bool
      */
-    public function push(int $fd, string $data, int $opcode = WEBSOCKET_OPCODE_TEXT, bool $finish = true): bool
+    public function push(int $fd, string $data, int $opcode = WEBSOCKET_OPCODE_TEXT, $finish = 1): bool
     {
         return $this->sendTo($fd, $data, 0, $opcode, $finish);
     }
@@ -109,12 +107,16 @@ class WebSocketServer extends Server
      * @param string $data
      * @param int    $sender   The sender fd
      * @param int    $opcode
-     * @param bool   $finish
+     * @param bool|int   $finish
      *
      * @return bool
      */
     public function sendTo(
-        int $receiver, string $data, int $sender = 0, int $opcode = WEBSOCKET_OPCODE_TEXT, bool $finish = true
+        int $receiver,
+        string $data,
+        int $sender = 0,
+        int $opcode = WEBSOCKET_OPCODE_TEXT,
+        $finish = 1
     ): bool {
         if (!$this->swooleServer->isEstablished($receiver)) {
             return false;
@@ -130,11 +132,11 @@ class WebSocketServer extends Server
      * Send message to client(s)
      *
      * @param string|Frame $data
-     * @param int|array $receivers
-     * @param int|array $excluded
-     * @param int       $sender
-     * @param int       $pageSize
-     * @param int       $opcode
+     * @param int|array    $receivers
+     * @param int|array    $excluded
+     * @param int          $sender
+     * @param int          $pageSize
+     * @param int          $opcode
      *
      * @return int Return send count
      */
@@ -145,8 +147,7 @@ class WebSocketServer extends Server
         int $sender = 0,
         int $pageSize = 50,
         int $opcode = WEBSOCKET_OPCODE_TEXT
-    ): int
-    {
+    ): int {
         if (!$data) {
             return 0;
         }
@@ -186,8 +187,7 @@ class WebSocketServer extends Server
         array $excluded = [],
         int $sender = 0,
         int $opcode = WEBSOCKET_OPCODE_TEXT
-    ): int
-    {
+    ): int {
         // if (!$data) {
         //     return 0;
         // }
@@ -234,11 +234,11 @@ class WebSocketServer extends Server
 
     /**
      * @param string|Frame $data
-     * @param array  $receivers
-     * @param array  $excluded
-     * @param int    $sender
-     * @param int    $pageSize
-     * @param int    $opcode see WEBSOCKET_OPCODE_*
+     * @param array        $receivers
+     * @param array        $excluded
+     * @param int          $sender
+     * @param int          $pageSize
+     * @param int          $opcode see WEBSOCKET_OPCODE_*
      *
      * @return int
      */

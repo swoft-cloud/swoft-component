@@ -154,13 +154,13 @@ class Connection implements SessionInterface
     }
 
     /**
-     * @param string $data
-     * @param int    $opcode
-     * @param bool   $finish
+     * @param string   $data
+     * @param int      $opcode
+     * @param bool|int $finish
      *
      * @return bool
      */
-    public function push(string $data, int $opcode = WEBSOCKET_OPCODE_TEXT, bool $finish = true): bool
+    public function push(string $data, int $opcode = WEBSOCKET_OPCODE_TEXT, $finish = 1): bool
     {
         return $this->server->push($this->fd, $data, $opcode, $finish);
     }
@@ -175,17 +175,17 @@ class Connection implements SessionInterface
 
         return [
             // request data
-            'fd'         => $this->fd,
-            'get'        => $request->get,
-            'post'       => $request->post,
-            'cookie'     => $request->cookie,
-            'header'     => $request->header,
-            'server'     => $request->server,
+            'fd'          => $this->fd,
+            'get'         => $request->get,
+            'post'        => $request->post,
+            'cookie'      => $request->cookie,
+            'header'      => $request->header,
+            'server'      => $request->server,
             // response data
-            'resHeader'  => $response->header,
-            'resCookie'  => $response->cookie,
+            'resHeader'   => $response->header,
+            'resCookie'   => $response->cookie,
             // module info
-            'moduleInfo' => $this->moduleInfo,
+            'moduleInfo'  => $this->moduleInfo,
             // session data
             'sessionData' => $this->data,
         ];
