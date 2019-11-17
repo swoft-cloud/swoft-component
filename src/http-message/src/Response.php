@@ -33,6 +33,13 @@ class Response implements ResponseInterface
     private $sent = false;
 
     /**
+     * For swoole.http-server.response->header() 3th argument.
+     *
+     * @var bool|null
+     */
+    private $headerUcWords;
+
+    /**
      * @var string
      */
     protected $reasonPhrase = '';
@@ -199,9 +206,9 @@ class Response implements ResponseInterface
 
             if ($key === ContentType::KEY) {
                 $headerLine .= '; charset=' . $response->getCharset();
-                $coResponse->header($key, $headerLine);
+                $coResponse->header($key, $headerLine, $this->headerUcWords);
             } else {
-                $coResponse->header($key, $headerLine);
+                $coResponse->header($key, $headerLine, $this->headerUcWords);
             }
         }
 
@@ -592,5 +599,29 @@ class Response implements ResponseInterface
     public function isSent(): bool
     {
         return $this->sent;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHeaderUcWords(): ?bool
+    {
+        return $this->headerUcWords;
+    }
+
+    /**
+     * @param bool|null $headerUcWords
+     *
+     * @return Response
+     */
+    public function setHeaderUcWords($headerUcWords): self
+    {
+        if ($headerUcWords === null) {
+            $this->headerUcWords = null;
+        } else {
+            $this->headerUcWords = (bool)$headerUcWords;
+        }
+
+        return $this;
     }
 }
