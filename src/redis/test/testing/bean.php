@@ -20,7 +20,7 @@ return [
     ],
     'redis.pool'          => [
         'class'       => \Swoft\Redis\Pool::class,
-        'redisDb'     => \bean('redis-clusters'),
+        'redisDb'     => \bean('redis'),
         'minActive'   => 10,
         'maxActive'   => 20,
         'maxWait'     => 0,
