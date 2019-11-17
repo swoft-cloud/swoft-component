@@ -512,7 +512,7 @@ class Logger extends \Monolog\Logger
 
         if ($this->json) {
             $messageAry = [
-                'cost(ms'  => (float)$timeUsed,
+                'cost(ms)'  => (float)$timeUsed,
                 'mem(MB)'  => (float)$memUsed,
                 'uri'      => $this->getUri(),
                 'pushLog'  => implode(' ', $pushLogs),

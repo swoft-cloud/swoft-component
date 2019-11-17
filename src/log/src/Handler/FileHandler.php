@@ -154,7 +154,7 @@ class FileHandler extends AbstractProcessingHandler
         }
 
         if ($record['datetime'] instanceof DateTime) {
-            $record['datetime'] = $record['datetime']->format('Y-m-d H:i');
+            $record['datetime'] = $record['datetime']->format('Y-m-d H:i:s');
         }
         return JsonHelper::encode($record, JSON_UNESCAPED_UNICODE);
     }

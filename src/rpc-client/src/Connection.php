@@ -6,11 +6,9 @@ namespace Swoft\Rpc\Client;
 
 use function count;
 use function explode;
-use ReflectionException;
 use function sprintf;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\AbstractConnection;
 use Swoft\Log\Debug;
 use Swoft\Rpc\Client\Contract\ConnectionInterface;
@@ -145,11 +143,11 @@ class Connection extends AbstractConnection implements ConnectionInterface
     private function getHostPort(): array
     {
         $provider = $this->client->getProvider();
-        if (empty($provider) || !$provider instanceof ProviderInterface || empty($provider->getList($this->client))) {
+        $list     = $provider->getList($this->client);
+        if (empty($provider) || !$provider instanceof ProviderInterface || empty($list)) {
             return [$this->client->getHost(), $this->client->getPort()];
         }
 
-        $list = $provider->getList($this->client);
         if (!is_array($list)) {
             throw new RpcClientException(
                 sprintf('Provider(%s) return format is error!', JsonHelper::encode($list))
