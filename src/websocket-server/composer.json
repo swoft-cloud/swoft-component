@@ -10,6 +10,7 @@
     "websocket"
   ],
   "description": "swoft websocket server component",
+  "homepage": "https://github.com/swoft-cloud/swoft-websocket-server",
   "license": "Apache-2.0",
   "require": {
     "swoft/framework": "~2.0.0"

@@ -3,17 +3,17 @@
 namespace Swoft\Stdlib\Helper;
 
 use DirectoryIterator;
-use function file_exists;
 use FilesystemIterator;
 use InvalidArgumentException;
-use function is_dir;
 use IteratorIterator;
-use function mkdir;
 use RecursiveCallbackFilterIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
 use SplFileInfo;
+use function file_exists;
+use function is_dir;
+use function mkdir;
 use function sprintf;
 use function strpos;
 use function substr;

@@ -9,7 +9,9 @@ namespace Swoft\Error;
  */
 final class ErrorType
 {
+    // Console application
     public const CLI  = 2;
+
     public const RPC  = 3;
     public const UDP  = 4;
     public const SOCK = 7;
@@ -33,7 +35,7 @@ final class ErrorType
 
     public const SYS = 85;
 
-    // default
+    // Default error type
     public const DEF     = 90;
     public const DEFAULT = 90;
 }

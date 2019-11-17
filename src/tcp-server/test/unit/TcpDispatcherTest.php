@@ -2,9 +2,15 @@
 
 namespace SwoftTest\Tcp\Server\Unit;
 
-use function bean;
+use ReflectionException;
+use Swoft\Tcp\Server\Exception\CommandNotFoundException;
+use Swoft\Tcp\Server\Exception\TcpMiddlewareException;
+use Swoft\Tcp\Server\Exception\TcpUnpackingException;
 use Swoft\Tcp\Server\Request;
 use SwoftTest\Tcp\Server\Testing\MockTcpResponse;
+use Throwable;
+use function bean;
+use function get_class;
 
 /**
  * Class TcpDispatcherTest
@@ -12,15 +18,23 @@ use SwoftTest\Tcp\Server\Testing\MockTcpResponse;
 class TcpDispatcherTest extends TcpServerTestCase
 {
     /**
+     * @throws ReflectionException
+     * @throws CommandNotFoundException
+     * @throws TcpMiddlewareException
+     * @throws TcpUnpackingException
      */
     public function testDispatch(): void
     {
         $td = bean('tcpDispatcher');
 
-        $req = Request::new(1, 'data', 2);
-        $res = new MockTcpResponse();
+        try {
+            $req = Request::new(1, 'not-exist', 2);
+            $res = new MockTcpResponse();
 
-        $this->assertNotEmpty($td);
-        // $td->dispatch($req, $res);
+            $td->dispatch($req, $res);
+        } catch (Throwable $e) {
+            $this->assertSame(CommandNotFoundException::class, get_class($e));
+            $this->assertSame("request command 'not-exist' is not found of the tcp server", $e->getMessage());
+        }
     }
 }

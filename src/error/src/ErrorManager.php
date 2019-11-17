@@ -45,12 +45,16 @@ class ErrorManager
     }
 
     /**
+     * Match error handler by type and exception object.
+     *
+     * TODO add third arg, for check handler implemented interface class is right? eg: MessageErrorHandlerInterface
+     *
      * @param Throwable $e
      * @param int       $type
      *
-     * @return mixed|null
+     * @return mixed|null If match ok, will return handler object.
      */
-    public function matchHandler(Throwable $e, int $type = ErrorType::DEF)
+    public function match(Throwable $e, int $type = ErrorType::DEF)
     {
         // No handlers found
         if (!isset($this->handlers[$type]) || $this->getCount() === 0) {
@@ -65,7 +69,6 @@ class ErrorManager
         }
 
         $handler = null;
-
         foreach ($handlers as $exceptionClass => $handlerClass) {
             if ($e instanceof $exceptionClass) {
                 $handler = Swoft::getSingleton($handlerClass);
@@ -74,6 +77,18 @@ class ErrorManager
         }
 
         return $handler;
+    }
+
+    /**
+     * @param Throwable $e
+     * @param int       $type
+     *
+     * @return mixed|null If match ok, will return handler object.
+     * @deprecated please use match() instead.
+     */
+    public function matchHandler(Throwable $e, int $type = ErrorType::DEF)
+    {
+        return $this->match($e, $type);
     }
 
     /**

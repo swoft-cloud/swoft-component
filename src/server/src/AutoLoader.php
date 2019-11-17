@@ -4,6 +4,7 @@
 namespace Swoft\Server;
 
 
+use Swoft\Helper\ComposerJSON;
 use Swoft\SwoftComponent;
 
 /**
@@ -28,6 +29,8 @@ class AutoLoader extends SwoftComponent
      */
     public function metadata(): array
     {
-        return [];
+        $jsonFile = dirname(__DIR__) . '/composer.json';
+
+        return ComposerJSON::open($jsonFile)->getMetadata();
     }
 }

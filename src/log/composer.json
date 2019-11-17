@@ -5,9 +5,13 @@
   "keywords": [
     "php",
     "swoole",
-    "swoft"
+    "swoft",
+    "log",
+    "swoft-log",
+    "monolog"
   ],
-    "description": "swoft log component",
+  "description": "swoft log component",
+  "homepage": "https://github.com/swoft-cloud/swoft-log",
   "license": "Apache-2.0",
   "require": {
     "php": ">=7.1",

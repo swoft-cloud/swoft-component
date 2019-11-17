@@ -13,6 +13,7 @@ use function json_last_error;
  * Class PipeMessageListener
  *
  * @Bean()
+ * @deprecated will use Listener/PipeMessageListener instead.
  */
 class PipeMessageListener implements PipeMessageInterface
 {
@@ -48,7 +49,7 @@ class PipeMessageListener implements PipeMessageInterface
             $event = (string)$data['event'];
 
             /** @see CloseListener::onClose() */
-            if ($event === 'wsClose') {
+            if ($event === 'onClose') {
                 $this->handleClose($data, $srcWorkerId);
             }
         }

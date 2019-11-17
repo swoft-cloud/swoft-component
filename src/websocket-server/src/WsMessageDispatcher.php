@@ -7,16 +7,20 @@ use ReflectionType;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
+use Swoft\Log\Helper\CLog;
 use Swoft\Session\Session;
-use Swoft\WebSocket\Server\Contract\WsModuleInterface;
+use Swoft\WebSocket\Server\Contract\MessageHandlerInterface;
+use Swoft\WebSocket\Server\Contract\MiddlewareInterface;
+use Swoft\WebSocket\Server\Contract\RequestInterface;
+use Swoft\WebSocket\Server\Contract\ResponseInterface;
 use Swoft\WebSocket\Server\Exception\WsMessageParseException;
 use Swoft\WebSocket\Server\Exception\WsMessageRouteException;
 use Swoft\WebSocket\Server\Message\Message;
+use Swoft\WebSocket\Server\Message\MessageHandler;
 use Swoft\WebSocket\Server\Message\Request;
 use Swoft\WebSocket\Server\Message\Response;
 use Swoft\WebSocket\Server\Router\Router;
 use Swoole\WebSocket\Frame;
-use Swoole\WebSocket\Server;
 use Throwable;
 use function server;
 
@@ -27,7 +31,7 @@ use function server;
  *
  * @Bean("wsMsgDispatcher")
  */
-class WsMessageDispatcher
+class WsMessageDispatcher implements MiddlewareInterface
 {
     /**
      * @Inject("wsRouter")
@@ -36,36 +40,55 @@ class WsMessageDispatcher
     private $router;
 
     /**
+     * Pre-check whether the route matches successfully.
+     * True  - Check if the status matches successfully after matching.
+     * False - check the status after the middleware process
+     *
+     * @var bool
+     */
+    private $preCheckRoute = true;
+
+    /**
+     * User defined global middlewares
+     *
+     * @var array
+     */
+    private $middlewares = [];
+
+    /**
+     * User defined global pre-middlewares
+     *
+     * @var array
+     */
+    private $preMiddlewares = [];
+
+    /**
+     * User defined global after-middlewares
+     *
+     * @var array
+     */
+    private $afterMiddlewares = [];
+
+    /**
      * Dispatch ws message handle
      *
-     * @param Server   $server
+     * @param array    $module
      * @param Request  $request
      * @param Response $response
      *
+     * @return Response|ResponseInterface
      * @throws ReflectionException
-     * @throws Swoft\Exception\SwoftException
      * @throws WsMessageParseException
      * @throws WsMessageRouteException
+     * @throws Exception\WsMiddlewareException
      */
-    public function dispatch(Server $server, Request $request, Response $response): void
+    public function dispatch(array $module, Request $request, Response $response): ResponseInterface
     {
-        $fd = $request->getFd();
-
         /** @var Connection $conn */
-        $conn  = Session::mustGet();
-        $info  = $conn->getModuleInfo();
+        $conn  = Session::current();
         $frame = $request->getFrame();
 
-        // Want custom message handle, will don't trigger message parse and dispatch.
-        if ($method = $info['eventMethods']['message'] ?? '') {
-            $class = $info['class'];
-            server()->log("Message: conn#{$fd} call custom message handler '{$class}::{$method}'", [], 'debug');
-
-            /** @var WsModuleInterface $module */
-            $module = Swoft::getSingleton($class);
-            $module->$method($server, $frame);
-            return;
-        }
+        CLog::info('Message: message data parser is %s', $conn->getParserClass());
 
         // Parse message data and dispatch route handle
         try {
@@ -75,22 +98,90 @@ class WsMessageDispatcher
             throw new WsMessageParseException("parse message error '{$e->getMessage()}", 500, $e);
         }
 
-        // Set Message to request
+        $modPath = $module['path'];
+        $cmdId   = $message->getCmd() ?: $module['defaultCommand'];
+        $result  = $this->router->matchCommand($modPath, $cmdId);
+
+        // Save message to request
         $request->setMessage($message);
+        // Storage route info
+        $request->set(Request::ROUTE_INFO, $result);
 
-        /** @var Router $router */
-        $cmdId = $message->getCmd() ?: $info['defaultCommand'];
+        // If found, get command middlewares
+        $middlewares = [];
+        if ($result[0] === Router::FOUND) {
+            $middlewares = $this->router->getCmdMiddlewares($modPath, $cmdId);
 
-        [$status, $route] = $this->router->matchCommand($info['path'], $cmdId);
-        if ($status === Router::NOT_FOUND) {
-            throw new WsMessageRouteException("message command '$cmdId' is not found, in module {$info['path']}");
+            // Append command middlewares
+            if ($middlewares) {
+                $middlewares = array_merge($this->middlewares, $middlewares);
+            }
+
+            // If this->preCheckRoute is True, pre-check route match status
+        } elseif ($this->preCheckRoute) {
+            throw new WsMessageRouteException("message command '$cmdId' is not found, module path: {$modPath}");
+        }
+
+        // Has middlewares
+        if ($middlewares = $this->mergeMiddlewares($middlewares)) {
+            $chain = MessageHandler::new($this);
+            $chain->addMiddles($middlewares);
+
+            CLog::debug('message will use middleware process, middleware count: %d', $chain->count());
+
+            return $chain->run($request);
+        }
+
+        // No middlewares, direct dispatching
+        return $this->dispatchMessage($request, $response);
+    }
+
+    /**
+     * @param RequestInterface|Request $request
+     * @param MessageHandlerInterface  $handler
+     *
+     * @return ResponseInterface
+     * @throws ReflectionException
+     * @throws Swoft\Exception\SwoftException
+     * @throws WsMessageRouteException
+     * @internal for middleware dispatching
+     */
+    public function process(RequestInterface $request, MessageHandlerInterface $handler): ResponseInterface
+    {
+        /** @var Response $response */
+        $response = context()->getResponse();
+
+        return $this->dispatchMessage($request, $response);
+    }
+
+    /**
+     * @param Request  $request
+     * @param Response $response
+     *
+     * @return ResponseInterface|Response
+     * @throws ReflectionException
+     * @throws WsMessageRouteException
+     */
+    protected function dispatchMessage(Request $request, Response $response): ResponseInterface
+    {
+        [$status, $route] = $request->get(Request::ROUTE_INFO);
+
+        // If this->preCheckRoute is False, check route match status.
+        if (!$this->preCheckRoute && $status === Router::NOT_FOUND) {
+            $command = $route['cmdId'];
+            $modPath = $route['modPath'];
+            throw new WsMessageRouteException("message command '{$command}' is not found, module path: {$modPath}");
         }
 
         [$ctlClass, $ctlMethod] = $route['handler'];
-        server()->log("Message: conn#{$fd} call message command handler '{$ctlClass}::{$ctlMethod}'",
-            $message->toArray(), 'debug');
 
-        $object = Swoft::getBean($ctlClass);
+        $frame   = $request->getFrame();
+        $message = $request->getMessage();
+
+        $logMsg = "Message: conn#{$frame->fd} call message command handler '{$ctlClass}::{$ctlMethod}'";
+        server()->log($logMsg, $message->toArray(), 'debug');
+
+        $object = Swoft::getSingleton($ctlClass);
         $params = $this->getBindParams($ctlClass, $ctlMethod, $request, $response);
         $result = $object->$ctlMethod(...$params);
 
@@ -102,11 +193,7 @@ class WsMessageDispatcher
             $response->setOpcode((int)$route['opcode']);
         }
 
-        // Before call $response send message
-        Swoft::trigger(WsServerEvent::MESSAGE_SEND, $response);
-
-        // Do send response
-        $response->send();
+        return $response;
     }
 
     /**
@@ -156,5 +243,103 @@ class WsMessageDispatcher
         }
 
         return $bindParams;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPreCheckRoute(): bool
+    {
+        return $this->preCheckRoute;
+    }
+
+    /**
+     * @param bool $preCheckRoute
+     */
+    public function setPreCheckRoute(bool $preCheckRoute): void
+    {
+        $this->preCheckRoute = $preCheckRoute;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMiddlewares(): array
+    {
+        return $this->middlewares;
+    }
+
+    /**
+     * @param string $middleware
+     */
+    public function addMiddleware(string $middleware): void
+    {
+        $this->middlewares[] = $middleware;
+    }
+
+    /**
+     * @param array $middlewares
+     */
+    public function addMiddlewares(array $middlewares): void
+    {
+        if ($middlewares) {
+            $this->middlewares = array_merge($this->middlewares, $middlewares);
+        }
+    }
+
+    /**
+     * @param array $middlewares
+     */
+    public function setMiddlewares(array $middlewares): void
+    {
+        $this->middlewares = $middlewares;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPreMiddlewares(): array
+    {
+        return $this->preMiddlewares;
+    }
+
+    /**
+     * @param array $preMiddlewares
+     */
+    public function setPreMiddlewares(array $preMiddlewares): void
+    {
+        $this->preMiddlewares = $preMiddlewares;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAfterMiddlewares(): array
+    {
+        return $this->afterMiddlewares;
+    }
+
+    /**
+     * @param array $afterMiddlewares
+     */
+    public function setAfterMiddlewares(array $afterMiddlewares): void
+    {
+        $this->afterMiddlewares = $afterMiddlewares;
+    }
+
+    /**
+     * merge all middlewares
+     *
+     * @param array $middlewares
+     *
+     * @return array
+     */
+    protected function mergeMiddlewares(array $middlewares): array
+    {
+        if ($middlewares) {
+            return array_merge($this->preMiddlewares, $middlewares, $this->afterMiddlewares);
+        }
+
+        return array_merge($this->preMiddlewares, $this->afterMiddlewares);
     }
 }

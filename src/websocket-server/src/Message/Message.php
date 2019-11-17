@@ -47,6 +47,37 @@ class Message implements JsonSerializable
     }
 
     /**
+     * Quick create new message from an map array
+     *
+     * @param array $map
+     *
+     * @return static
+     */
+    public static function newFromArray(array $map): self
+    {
+        // Find ws message route command
+        $cmd = '';
+        if (isset($map['cmd'])) {
+            $cmd = (string)$map['cmd'];
+            unset($map['cmd']);
+        }
+
+        $ext = [];
+        if (isset($map['data'])) {
+            $body = $map['data'];
+
+            // Has ext data for message
+            if (isset($map['ext'])) {
+                $ext = (array)$map['ext'];
+            }
+        } else {
+            $body = $map;
+        }
+
+        return self::new($cmd, $body, $ext);
+    }
+
+    /**
      * @return array
      */
     public function toArray(): array

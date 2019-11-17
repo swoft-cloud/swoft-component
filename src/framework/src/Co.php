@@ -2,6 +2,7 @@
 
 namespace Swoft;
 
+use RuntimeException;
 use Swoft;
 use Swoft\Context\Context;
 use Swoft\Exception\SwoftException;
@@ -166,13 +167,13 @@ class Co
      * @param string $filename
      *
      * @return string
-     * @throws SwoftException
+     * @throws RuntimeException
      */
     public static function readFile(string $filename): string
     {
         $result = Coroutine::readFile($filename);
         if ($result === false) {
-            throw new SwoftException(sprintf('Read(%s) file error!', $filename));
+            throw new RuntimeException(sprintf('Read(%s) file error!', $filename));
         }
 
         return $result;

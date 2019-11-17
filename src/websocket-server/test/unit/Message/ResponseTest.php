@@ -45,5 +45,9 @@ class ResponseTest extends TestCase
         $this->assertTrue($w->isEmpty());
         $w->setContent('hi');
         $this->assertFalse($w->isEmpty());
+        $w->setContent('')->setExt(['a']);
+        $this->assertFalse($w->isEmpty());
+        $w->setContent('')->setExt([])->setData(['a']);
+        $this->assertFalse($w->isEmpty());
     }
 }

@@ -2,10 +2,10 @@
 
 namespace Swoft\Stdlib;
 
-use function count;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
+use function count;
 
 /**
  * Class Reflections
@@ -49,6 +49,7 @@ final class Reflections
 
     /**
      * @param string $className
+     *
      * @return array
      * @throws ReflectionException
      */
@@ -64,6 +65,7 @@ final class Reflections
 
     /**
      * @param string $className
+     *
      * @throws ReflectionException
      */
     public static function cache(string $className): void
@@ -79,6 +81,7 @@ final class Reflections
 
     /**
      * @param ReflectionClass $reflectionClass
+     *
      * @throws ReflectionException
      */
     public static function cacheReflectionClass(ReflectionClass $reflectionClass): void

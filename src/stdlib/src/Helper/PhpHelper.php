@@ -13,8 +13,10 @@ use function method_exists;
 use function ob_get_clean;
 use function ob_start;
 use function preg_replace;
+use function serialize;
 use function sprintf;
 use function strpos;
+use function unserialize;
 use function var_dump;
 use function var_export;
 use const PHP_EOL;
@@ -68,6 +70,27 @@ class PhpHelper
     public static function callByArray($cb, array $args = [])
     {
         return self::call($cb, ...$args);
+    }
+
+    /**
+     * @param $data
+     *
+     * @return string
+     */
+    public static function serialize($data): string
+    {
+        return serialize($data);
+    }
+
+    /**
+     * @param string $data
+     * @param array  $opts
+     *
+     * @return array|mixed
+     */
+    public static function unserialize(string $data, array $opts = ['allowed_classes' => false])
+    {
+        return unserialize($data, $opts);
     }
 
     /**
@@ -131,14 +154,8 @@ class PhpHelper
             return sprintf('%s %s(code:%d) %s', $title, $errClass, $e->getCode(), $e->getMessage());
         }
 
-        return sprintf('%s%s(code:%d): %s At %s line %d',
-            $title ? $title . ' - ' : '',
-            $errClass,
-            $e->getCode(),
-            $e->getMessage(),
-            $e->getFile(),
-            $e->getLine()
-        );
+        return sprintf('%s%s(code:%d): %s At %s line %d', $title ? $title . ' - ' : '', $errClass, $e->getCode(),
+            $e->getMessage(), $e->getFile(), $e->getLine());
     }
 
     /**

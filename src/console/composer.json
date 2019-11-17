@@ -8,11 +8,13 @@
     "swoft",
     "console"
   ],
-  "description": "swoft connection pool component",
+  "description": "swoft command line application component",
+  "homepage": "https://github.com/swoft-cloud/swoft-console",
   "license": "Apache-2.0",
   "require": {
     "php": ">7.1.0",
     "ext-mbstring": "*",
+    "swoft/stdlib": "~2.0.0",
     "toolkit/cli-utils": "~1.0"
   },
   "autoload": {

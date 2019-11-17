@@ -19,6 +19,7 @@ final class RouteRegister
      *      path => '/chat/{id}',
      *      params => ['id' => '\d+'],
      *      controllers => ['class1', 'class2'],
+     *      middlewares => [middleware0],
      *  ]
      * ]
      */
@@ -29,7 +30,7 @@ final class RouteRegister
      * [
      *  controller class => [
      *      prefix => 'home',
-     *
+     *      middles => [middleware0],
      *  ]
      * ]
      */
@@ -61,13 +62,15 @@ final class RouteRegister
     /**
      * @param string $class
      * @param string $prefix
+     * @param array  $middles
      */
-    public static function bindController(string $class, string $prefix): void
+    public static function bindController(string $class, string $prefix, array $middles): void
     {
         self::$commands[$class] = [
-            'prefix' => $prefix ?: Str::getClassName($class, 'Controller'),
-            'class'  => $class,
-            'routes' => [], // see bindCommand()
+            'prefix'  => $prefix ?: Str::getClassName($class, 'Controller'),
+            'class'   => $class,
+            'routes'  => [], // see bindCommand()
+            'middles' => $middles
         ];
     }
 
@@ -75,7 +78,7 @@ final class RouteRegister
      * @param string $class
      * @param string $method
      * @param string $command
-     * @param array  $options
+     * @param array  $options [isRoot => bool, opcode => int, middles => array]
      */
     public static function bindCommand(string $class, string $method, string $command, array $options = []): void
     {
@@ -91,27 +94,31 @@ final class RouteRegister
     public static function registerTo(Router $router): void
     {
         // Modules
-        foreach (self::$modules as $mdlClass => $mdlInfo) {
-            $path = $mdlInfo['path'];
-            $router->addModule($path, $mdlInfo);
+        foreach (self::$modules as $modClass => $modInfo) {
+            $modPath = $modInfo['path'];
+            $middles = $modInfo['middlewares'];
+
+            $router->addModule($modPath, $modInfo);
 
             // Commands
-            foreach ($mdlInfo['controllers'] as $ctrlClass) {
+            foreach ($modInfo['controllers'] as $ctrlClass) {
                 if (!isset(self::$commands[$ctrlClass])) {
                     continue;
                 }
 
-                $info   = self::$commands[$ctrlClass];
-                $prefix = $info['prefix'];
-                // save module class
-                $info['module'] = $mdlClass;
+                $cInfo  = self::$commands[$ctrlClass];
+                $prefix = $cInfo['prefix'];
+                // Save module class
+                $cInfo['module'] = $modClass;
+                $cMiddles = $cInfo['middles'] ? array_merge($middles, $cInfo['middles']): $middles;
 
-                foreach ($info['routes'] as $route) {
+                foreach ($cInfo['routes'] as $route) {
                     $cmd   = $route['command'];
                     $cmdId = $route['isRoot'] ? $cmd : $prefix . '.' . $cmd;
 
-                    $router->addCommand($path, $cmdId, [$ctrlClass, $route['method']], [
-                        'opcode' => $route['opcode'] ?: $mdlInfo['defaultOpcode'],
+                    $router->addCommand($modPath, $cmdId, [$ctrlClass, $route['method']], [
+                        'opcode'  => $route['opcode'] ?: $modInfo['defaultOpcode'],
+                        'middles' => $route['middles'] ? array_merge($cMiddles, $route['middles']) : $cMiddles,
                     ]);
                 }
             }

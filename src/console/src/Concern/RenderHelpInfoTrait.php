@@ -53,14 +53,19 @@ trait RenderHelpInfoTrait
         $swooleVersion = SWOOLE_VERSION;
 
         // Display logo
-        $logoText = $this->logoText ?: Swoft::FONT_LOGO;
-        $output->colored(ltrim($logoText, "\n"));
+        $this->renderBannerLogo();
 
         // Display some information
         $output->writef(
             'PHP: <info>%s</info>, Swoft: <info>%s</info>, Swoole: <info>%s</info>',
             $phpVersion, $swoftVersion, $swooleVersion
         );
+    }
+
+    protected function renderBannerLogo(): void
+    {
+        $logoText = $this->logoText ?: Swoft::FONT_LOGO;
+        Console::colored(ltrim($logoText, "\n"), 'cyan');
     }
 
     /**
@@ -74,8 +79,7 @@ trait RenderHelpInfoTrait
 
         // show logo
         if ($showLogo) {
-            $logoText = $this->logoText ?: Swoft::FONT_LOGO;
-            Console::colored(ltrim($logoText, "\n"), 'cyan');
+            $this->renderBannerLogo();
         }
 
         /** @var Swoft\Console\Input\Input $input */
@@ -84,7 +88,7 @@ trait RenderHelpInfoTrait
         // Global options
         $globalOptions = self::$globalOptions;
         // Append expand option
-        $globalOptions['--expand'] = 'Expand sub-commands for all command groups';
+        $globalOptions['--expand-cmd'] = 'Expand sub-commands for all command groups';
 
         $appVer  = $this->getVersion();
         $appDesc = $this->getDescription();
@@ -101,7 +105,7 @@ trait RenderHelpInfoTrait
 
         /* @var Router $router */
         $router   = Swoft::getBean('cliRouter');
-        $expand   = $input->getBoolOpt('expand');
+        $expand   = $input->getBoolOpt('expand-cmd');
         $keyWidth = $router->getKeyWidth($expand ? 2 : -4);
 
         Console::writeln('<comment>Available Commands:</comment>');

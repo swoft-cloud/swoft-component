@@ -11,6 +11,7 @@
     "active record"
   ],
   "description": "swoft database component",
+  "homepage": "https://github.com/swoft-cloud/swoft-db",
   "license": "Apache-2.0",
   "require": {
     "swoft/framework": "~2.0.0",
@@ -19,10 +20,7 @@
   "autoload": {
     "psr-4": {
       "Swoft\\Db\\": "src/"
-    },
-    "files": [
-      "src/Helper/Functions.php"
-    ]
+    }
   },
   "require-dev": {
     "phpunit/phpunit": "^7.5"

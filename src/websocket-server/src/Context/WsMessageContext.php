@@ -63,17 +63,6 @@ class WsMessageContext extends AbstractContext
     }
 
     /**
-     * Clear resource
-     */
-    public function clear(): void
-    {
-        parent::clear();
-
-        $this->request  = null;
-        $this->response = null;
-    }
-
-    /**
      * Get message object.
      * Notice: Available only during the messaging phase
      *
@@ -114,5 +103,16 @@ class WsMessageContext extends AbstractContext
     public function setResponse(Response $response): void
     {
         $this->response = $response;
+    }
+
+    /**
+     * Clear resource
+     */
+    public function clear(): void
+    {
+        parent::clear();
+
+        $this->request  = null;
+        $this->response = null;
     }
 }

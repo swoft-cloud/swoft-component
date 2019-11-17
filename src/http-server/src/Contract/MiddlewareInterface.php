@@ -5,6 +5,8 @@ namespace Swoft\Http\Server\Contract;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Swoft\Http\Message\Request;
+use Swoft\Http\Message\Response;
 
 /**
  * Class MiddlewareInterface
@@ -16,11 +18,10 @@ interface MiddlewareInterface extends \Psr\Http\Server\MiddlewareInterface
     /**
      * Process an incoming server request.
      *
-     * @param ServerRequestInterface  $request
-     * @param RequestHandlerInterface $handler
+     * @param ServerRequestInterface|Request  $request
+     * @param RequestHandlerInterface|Response $handler
      *
      * @return ResponseInterface
-     * @inheritdoc
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface;
 }

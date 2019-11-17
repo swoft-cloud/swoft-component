@@ -10,15 +10,11 @@ use function dirname;
 
 /**
  * class AutoLoader
+ *
  * @since 2.0
  */
 final class AutoLoader extends SwoftComponent
 {
-    // public function enable(): bool
-    // {
-    //     return true;
-    // }
-
     /**
      * Get namespace and dirs
      *
@@ -49,11 +45,11 @@ final class AutoLoader extends SwoftComponent
     public function beans(): array
     {
         return [
-            'cliApp'    => [
+            'cliApp'        => [
                 'class'   => Application::class,
                 'version' => Swoft::VERSION,
             ],
-            'cliRouter' => [
+            'cliRouter'     => [
                 'class' => Router::class,
             ],
             'cliDispatcher' => [

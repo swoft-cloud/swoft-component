@@ -2,12 +2,25 @@
 
 namespace Swoft\Contract;
 
+use JsonSerializable;
+use Swoft\Stdlib\Contract\Arrayable;
+
 /**
  * Class SessionInterface - use for TCP, WS connection or HTTP-Session session data manage
+ *
  * @since 2.0
  */
-interface SessionInterface
+interface SessionInterface extends Arrayable, JsonSerializable
 {
+    /**
+     * Check if an item exists in an array using "dot" notation.
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function has(string $key): bool;
+
     /**
      * Get value from context
      *
@@ -38,4 +51,9 @@ interface SessionInterface
      * Clear resource
      */
     public function clear(): void;
+
+    /**
+     * @return string
+     */
+    public function toString(): string;
 }

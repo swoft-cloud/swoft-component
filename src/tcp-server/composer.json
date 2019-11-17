@@ -8,11 +8,15 @@
     "swoft"
   ],
   "description": "swoft tcp server component",
+  "homepage": "https://github.com/swoft-cloud/swoft-tcp-server",
   "license": "Apache-2.0",
   "require": {
     "php": ">7.1",
     "swoft/framework": "~2.0.0",
     "swoft/tcp": "~2.0.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^7.5"
   },
   "autoload": {
     "psr-4": {
@@ -24,14 +28,6 @@
       "SwoftTest\\Tcp\\Server\\Unit\\": "test/unit/",
       "SwoftTest\\Tcp\\Server\\Testing\\": "test/testing/"
     }
-  },
-  "repositories": {
-    "packagist": {
-      "type": "composer",
-      "url": "https://packagist.laravel-china.org"
-    }
-  },
-  "require-dev": {
   },
   "scripts": {
   }

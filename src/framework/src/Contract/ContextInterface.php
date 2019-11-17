@@ -10,6 +10,15 @@ namespace Swoft\Contract;
 interface ContextInterface
 {
     /**
+     * Check if an item exists in an array
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function has(string $key): bool;
+
+    /**
      * Get value from context
      *
      * @param string $key
@@ -34,6 +43,13 @@ interface ContextInterface
      * [key => value]
      */
     public function setMulti(array $map): void;
+
+    /**
+     * Unset key
+     *
+     * @param string $key
+     */
+    public function unset(string $key): void;
 
     /**
      * Clear resource

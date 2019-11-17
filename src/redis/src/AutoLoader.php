@@ -3,12 +3,10 @@
 
 namespace Swoft\Redis;
 
-
-use function bean;
 use Redis;
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
+use Swoft\Helper\ComposerJSON;
 use Swoft\SwoftComponent;
+use function bean;
 
 /**
  * Class AutoLoader
@@ -32,7 +30,9 @@ class AutoLoader extends SwoftComponent
      */
     public function metadata(): array
     {
-        return [];
+        $jsonFile = dirname(__DIR__) . '/composer.json';
+
+        return ComposerJSON::open($jsonFile)->getMetadata();
     }
 
     /**

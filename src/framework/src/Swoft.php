@@ -18,24 +18,44 @@ use Swoole\Server;
  *
  * @since 2.0
  */
-class Swoft
+final class Swoft
 {
     use PathAliasTrait;
 
     /**
      * Swoft version
      */
-    public const VERSION = '2.0.6';
+    public const VERSION = '2.0.7';
 
     /**
-     * Swoft log
+     * Swoft terminal logo
      */
     public const FONT_LOGO = "
-  ____                __ _     _____                                            _      ____         
- / ___|_      _____  / _| |_  |  ___| __ __ _ _ __ ___   _____      _____  _ __| | __ |___ \  __  __
- \___ \ \ /\ / / _ \| |_| __| | |_ | '__/ _` | '_ ` _ \ / _ \ \ /\ / / _ \| '__| |/ /   __) | \ \/ /
-  ___) \ V  V / (_) |  _| |_  |  _|| | | (_| | | | | | |  __/\ V  V / (_) | |  |   <   / __/ _ >  < 
- |____/ \_/\_/ \___/|_|  \__| |_|  |_|  \__,_|_| |_| |_|\___| \_/\_/ \___/|_|  |_|\_\ |_____(_)_/\_\                                                                                                    
+   _____               ______     ___    ____
+  / ___/      ______  / __/ /_   |__ \  / __ \
+  \__ \ | /| / / __ \/ /_/ __/   __/ / / / / /
+ ___/ / |/ |/ / /_/ / __/ /_    / __/_/ /_/ /
+/____/|__/|__/\____/_/  \__/   /____(_)____/
+";
+
+    /**
+     * Swoft server start banner logo
+     */
+    public const BANNER_LOGO_SMALL = "
+   ____            _____    ___   ___
+  / __/    _____  / _/ /_  |_  | / _ \
+ _\ \| |/|/ / _ \/ _/ __/ / __/_/ // /
+/___/|__,__/\___/_/ \__/ /____(_)___/
+";
+
+    /**
+     * Swoft server start banner logo
+     */
+    public const BANNER_LOGO_FULL = "
+   ____            _____    ____                                   __     ___   ___
+  / __/    _____  / _/ /_  / __/______ ___ _  ___ _    _____  ____/ /__  |_  | / _ \
+ _\ \| |/|/ / _ \/ _/ __/ / _// __/ _ `/  ' \/ -_) |/|/ / _ \/ __/  '_/ / __/_/ // /
+/___/|__,__/\___/_/ \__/ /_/ /_/  \_,_/_/_/_/\__/|__,__/\___/_/ /_/\_\ /____(_)___/
 ";
 
     /**
@@ -129,21 +149,6 @@ class Swoft
     }
 
     /**
-     * Trigger an swoft application event
-     *
-     * @param string|EventInterface $event eg: 'app.start' 'app.stop'
-     * @param null|mixed            $target
-     * @param array                 $params
-     *
-     * @return EventInterface
-     */
-    public static function trigger($event, $target = null, ...$params): EventInterface
-    {
-        /** @see EventManager::trigger() */
-        return BeanFactory::getSingleton('eventManager')->trigger($event, $target, $params);
-    }
-
-    /**
      * @param string $key
      * @param array  $params
      * @param string $locale
@@ -156,6 +161,21 @@ class Swoft
         $i18n = BeanFactory::getBean('i18n');
 
         return $i18n->translate($key, $params, $locale);
+    }
+
+    /**
+     * Trigger an swoft application event
+     *
+     * @param string|EventInterface $event eg: 'app.start' 'app.stop'
+     * @param null|mixed            $target
+     * @param array                 $params
+     *
+     * @return EventInterface
+     */
+    public static function trigger($event, $target = null, ...$params): EventInterface
+    {
+        /** @see EventManager::trigger() */
+        return BeanFactory::getSingleton('eventManager')->trigger($event, $target, $params);
     }
 
     /**

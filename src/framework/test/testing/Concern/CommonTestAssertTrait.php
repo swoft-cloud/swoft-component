@@ -34,4 +34,15 @@ trait CommonTestAssertTrait
 
         Assert::assertTrue($exist);
     }
+
+    /**
+     * @param array $haystack
+     * @param mixed $needle
+     */
+    public function assertArrayNotContainValue(array $haystack, $needle): void
+    {
+        $exist = in_array($needle, $haystack, true);
+
+        Assert::assertFalse($exist);
+    }
 }

@@ -9,13 +9,11 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
 use Swoft\Context\Context;
-use Swoft\Stdlib\Helper\PhpHelper;
 use Swoft\SwoftEvent;
 use Swoole\Runtime;
 use Throwable;
 use function defined;
 use function get_class;
-use function get_parent_class;
 use function srun;
 
 /**
@@ -24,7 +22,7 @@ use function srun;
  * @since 2.0
  * @Bean("cliDispatcher")
  */
-class ConsoleDispatcher // implements DispatcherInterface
+class ConsoleDispatcher
 {
     /**
      * @param array $route
@@ -44,8 +42,8 @@ class ConsoleDispatcher // implements DispatcherInterface
 
         // Blocking running
         if (!$route['coroutine']) {
-            $this->before(get_parent_class($object), $method);
-            PhpHelper::call([$object, $method], ...$params);
+            $this->before($method, $className);
+            $object->$method(...$params);
             $this->after($method);
             return;
         }
@@ -66,20 +64,20 @@ class ConsoleDispatcher // implements DispatcherInterface
     }
 
     /**
-     * @param object $beanObject
+     * @param object $object
      * @param string $method
      * @param array  $bindParams
      *
      * @throws Throwable
      */
-    public function executeByCo($beanObject, string $method, array $bindParams): void
+    public function executeByCo($object, string $method, array $bindParams): void
     {
         try {
             Context::set($ctx = ConsoleContext::new());
 
-            $this->before($method, get_class($beanObject));
+            $this->before($method, get_class($object));
 
-            PhpHelper::call([$beanObject, $method], ...$bindParams);
+            $object->$method(...$bindParams);
 
             $this->after($method);
         } catch (Throwable $e) {
@@ -127,9 +125,9 @@ class ConsoleDispatcher // implements DispatcherInterface
             $type = $paramType->getName();
 
             if ($type === Output::class) {
-                $bindParams[] = Swoft::getBean('input');
-            } elseif ($type === Input::class) {
                 $bindParams[] = Swoft::getBean('output');
+            } elseif ($type === Input::class) {
+                $bindParams[] = Swoft::getBean('input');
             } else {
                 $bindParams[] = null;
             }
