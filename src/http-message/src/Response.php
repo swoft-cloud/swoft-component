@@ -35,9 +35,9 @@ class Response implements ResponseInterface
     /**
      * For swoole.http-server.response->header() 3th argument.
      *
-     * @var bool|null
+     * @var bool
      */
-    private $headerUcWords;
+    private $headerUcWords = false;
 
     /**
      * @var string
@@ -604,24 +604,16 @@ class Response implements ResponseInterface
     /**
      * @return bool
      */
-    public function isHeaderUcWords(): ?bool
+    public function isHeaderUcWords(): bool
     {
         return $this->headerUcWords;
     }
 
     /**
-     * @param bool|null $headerUcWords
-     *
-     * @return Response
+     * @param bool $headerUcWords
      */
-    public function setHeaderUcWords($headerUcWords): self
+    public function setHeaderUcWords(bool $headerUcWords): void
     {
-        if ($headerUcWords === null) {
-            $this->headerUcWords = null;
-        } else {
-            $this->headerUcWords = (bool)$headerUcWords;
-        }
-
-        return $this;
+        $this->headerUcWords = $headerUcWords;
     }
 }
