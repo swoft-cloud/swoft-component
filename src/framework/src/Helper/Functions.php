@@ -164,14 +164,15 @@ if (!function_exists('validate')) {
      * @param string $validatorName
      * @param array  $fields
      * @param array  $userValidators
+     * @param array  $unfields
      *
      * @return array
      * @throws ValidatorException
      */
-    function validate(array $data, string $validatorName, array $fields = [], array $userValidators = []): array
+    function validate(array $data, string $validatorName, array $fields = [], array $userValidators = [], array $unfields = []): array
     {
         /* @var Validator $validator */
         $validator = BeanFactory::getBean('validator');
-        return $validator->validate($data, $validatorName, $fields, $userValidators);
+        return $validator->validate($data, $validatorName, $fields, $userValidators, $unfields);
     }
 }
