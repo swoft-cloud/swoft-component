@@ -6,6 +6,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Server;
 use Swoft\Server\SwooleEvent;
+use Swoft\WebSocket\Server\Helper\WsHelper;
 use Swoole\Websocket\Frame;
 use Throwable;
 use function array_flip;
@@ -124,6 +125,11 @@ class WebSocketServer extends Server
 
         $fromUser = $sender < 1 ? 'SYSTEM' : $sender;
         $this->log("(private)The #{$fromUser} send message to the user #{$receiver}. Opcode: $opcode Data: {$data}");
+
+        // Fix: since swoole 4.4.12 $finish change type to int.
+        if (WsHelper::isLtSwooleVersion()) {
+            $finish = (bool)$finish;
+        }
 
         return $this->swooleServer->push($receiver, $data, $opcode, $finish);
     }
