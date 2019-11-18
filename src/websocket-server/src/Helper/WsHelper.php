@@ -2,6 +2,7 @@
 
 namespace Swoft\WebSocket\Server\Helper;
 
+use Swoft\Console\Console;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use function base64_decode;
@@ -10,6 +11,7 @@ use function preg_match;
 use function sha1;
 use function strlen;
 use function trim;
+use const SWOOLE_VERSION;
 
 /**
  * Class WsHelper
@@ -104,5 +106,22 @@ class WsHelper
         $response->status(101);
         $response->end();
         return true;
+    }
+
+    /**
+     * @param string $version
+     *
+     * @return bool
+     */
+    public static function isLtSwooleVersion(string $version = '4.4.12'): bool
+    {
+        $curVer = SWOOLE_VERSION;
+
+        if (version_compare($curVer, $version, '<')) {
+            Console::colored("Swoole current version is {$curVer}, suggestion upgrade to {$version}", 'warning');
+            return true;
+        }
+
+        return false;
     }
 }
