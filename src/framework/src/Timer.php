@@ -22,7 +22,6 @@ class Timer
      * @param array ...$params
      *
      * @return int
-     * @throws Exception\SwoftException
      */
     public static function tick(int $msec, $callback, ...$params): int
     {
@@ -53,7 +52,6 @@ class Timer
      * @param array ...$params
      *
      * @return int
-     * @throws Exception\SwoftException
      */
     public static function after(int $msec, $callback, ...$params): int
     {
@@ -124,7 +122,6 @@ class Timer
 
     /**
      * @return array
-     * @throws Exception\SwoftException
      */
     private static function getLogItems(): array
     {
@@ -141,7 +138,6 @@ class Timer
     /**
      * @param array $items
      *
-     * @throws Exception\SwoftException
      */
     private static function initItems(array $items): void
     {

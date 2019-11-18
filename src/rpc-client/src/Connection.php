@@ -143,9 +143,15 @@ class Connection extends AbstractConnection implements ConnectionInterface
     private function getHostPort(): array
     {
         $provider = $this->client->getProvider();
-        $list     = $provider->getList($this->client);
-        if (empty($provider) || !$provider instanceof ProviderInterface || empty($list)) {
+        if (empty($provider) || !$provider instanceof ProviderInterface) {
             return [$this->client->getHost(), $this->client->getPort()];
+        }
+
+        $list = $provider->getList($this->client);
+        if (empty($list)) {
+            throw new RpcClientException(
+                sprintf('Provider return list can not empty!')
+            );
         }
 
         if (!is_array($list)) {
