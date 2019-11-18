@@ -118,7 +118,7 @@ class WsHelper
         $curVer = SWOOLE_VERSION;
 
         if (version_compare($curVer, $version, '<')) {
-            Console::colored("Swoole current version is {$curVer}, suggestion upgrade to {$version}", 'warning');
+            Console::colored("[NOTICE] Swoole current version is {$curVer}, suggestion upgrade to {$version}+", 'warning');
             return true;
         }
 
