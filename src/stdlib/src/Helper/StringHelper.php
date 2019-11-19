@@ -221,39 +221,64 @@ class StringHelper
     /**
      * Return the length of the given string.
      *
-     * @param string $value
+     * @param string|int  $value
+     * @param string|null $encode
      *
      * @return int
      */
-    public static function length($value): int
+    public static function length($value, string $encode = null): int
     {
-        return mb_strlen($value);
-    }
-
-    public static function len(string $value): int
-    {
-        return mb_strlen($value);
+        return mb_strlen((string)$value, $encode);
     }
 
     /**
-     * @param string $string
-     * @param int    $padLen
+     * Return the length of the given string.
+     *
+     * @param string|int $value
+     * @param string|null $encode
+     *
+     * @return int
+     */
+    public static function len($value, string $encode = null): int
+    {
+        return mb_strlen((string)$value, $encode);
+    }
+
+    /**
+     * @param string|int $string
+     * @param int|float $padLen
      * @param string $padStr
      * @param int    $padType
      *
      * @return string
      */
-    public static function pad(string $string, int $padLen, string $padStr = ' ', int $padType = STR_PAD_RIGHT): string
+    public static function pad($string, $padLen, string $padStr = ' ', int $padType = STR_PAD_RIGHT): string
     {
-        return $padLen > 0 ? str_pad($string, $padLen, $padStr, $padType) : $string;
+        $string = (string)$string;
+
+        return $padLen > 0 ? str_pad($string, (int)$padLen, $padStr, $padType) : $string;
     }
 
-    public static function padLeft(string $string, int $padLen, string $padStr = ' '): string
+    /**
+     * @param string|int $string
+     * @param int    $padLen
+     * @param string $padStr
+     *
+     * @return string
+     */
+    public static function padLeft($string, int $padLen, string $padStr = ' '): string
     {
         return $padLen > 0 ? str_pad($string, $padLen, $padStr, STR_PAD_LEFT) : $string;
     }
 
-    public static function padRight(string $string, int $padLen, string $padStr = ' '): string
+    /**
+     * @param string|int $string
+     * @param int    $padLen
+     * @param string $padStr
+     *
+     * @return string
+     */
+    public static function padRight($string, int $padLen, string $padStr = ' '): string
     {
         return $padLen > 0 ? str_pad($string, $padLen, $padStr) : $string;
     }
