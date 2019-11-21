@@ -94,4 +94,20 @@ class ConnStorageSubscriber implements EventSubscriberInterface
 
         $this->getStorage()->remove($fd);
     }
+
+    /**
+     * @return bool
+     */
+    public function isAutoRestoreConn(): bool
+    {
+        return $this->autoRestoreConn;
+    }
+
+    /**
+     * @param bool $autoRestoreConn
+     */
+    public function setAutoRestoreConn(bool $autoRestoreConn): void
+    {
+        $this->autoRestoreConn = $autoRestoreConn;
+    }
 }

@@ -5,7 +5,6 @@ namespace Swoft\WebSocket\Server\Message;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Context\Context;
-use Swoft\Exception\SwoftException;
 use Swoft\Log\Helper\CLog;
 use Swoft\Server\Concern\CommonProtocolDataTrait;
 use Swoft\Session\Session;
@@ -170,10 +169,19 @@ class Response implements ResponseInterface
     }
 
     /**
+     * @return Response
+     */
+    public function broadcast(): self
+    {
+        // Exclude self
+        $this->noFds[] = $this->sender;
+        return $this;
+    }
+
+    /**
      * @param Connection $conn
      *
      * @return int
-     * @throws SwoftException
      */
     public function send(Connection $conn = null): int
     {
@@ -188,7 +196,7 @@ class Response implements ResponseInterface
 
         // Fix: empty response data
         if ($this->isEmpty()) {
-            CLog::warning('cannot send empty response to websocket client');
+            // CLog::warning('cannot send empty response to websocket client');
             return 0;
         }
 
@@ -235,7 +243,6 @@ class Response implements ResponseInterface
      * @param Connection|null $conn
      *
      * @return string
-     * @throws SwoftException
      */
     protected function formatContent(Connection $conn): string
     {
