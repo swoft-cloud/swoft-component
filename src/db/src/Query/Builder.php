@@ -2748,6 +2748,11 @@ class Builder implements PrototypeInterface
             ->get($columns);
 
         if (!$results->isEmpty()) {
+            // Compatible group aggregate
+            if (isset($this->groups)) {
+                return $results->pluck('aggregate')->$function();
+            }
+
             return array_change_key_case((array)$results[0])['aggregate'];
         }
 
@@ -3073,6 +3078,11 @@ class Builder implements PrototypeInterface
     {
         // Convert counters to expression
         foreach ($counters as $column => $value) {
+            if (empty($value)) {
+                unset($counters[$column]);
+                continue;
+            }
+
             if (!$value instanceof Expression) {
                 $wrapped = $this->grammar->wrap($column);
 

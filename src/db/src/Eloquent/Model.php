@@ -459,7 +459,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 
         if ($extra) {
             // Sync extra
-            $this->fill($extra);
+            $this->setRawAttributes($extra, true);
         }
 
         return $this;
@@ -604,8 +604,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     protected function getKeyForSaveQuery()
     {
-        return $this->modelOriginal[$this->getKeyName()]
-            ?? $this->getKey();
+        return $this->modelOriginal[$this->getKeyName()] ?? $this->getKey();
     }
 
     /**

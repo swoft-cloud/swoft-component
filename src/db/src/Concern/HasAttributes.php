@@ -524,7 +524,7 @@ trait HasAttributes
     /**
      * Sync a single original attribute with its current value.
      *
-     * @param string $attribute
+     * @param string|array $attribute
      *
      * @return $this
      */

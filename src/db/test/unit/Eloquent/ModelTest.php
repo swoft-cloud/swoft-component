@@ -709,8 +709,9 @@ on A.id=B.id;', [$resCount - 20]);
         $this->assertEquals($user->getAge() - 1, User::find($id)->getAge());
 
         $user = User::find($id);
-        $user->updateCounters(['age' => -1]);
+        $user->updateCounters(['age' => -1], ['udesc' => 'swoft']);
 
+        $this->assertEquals([], $user->getDirty());
         $this->assertEquals($user->getAge(), User::find($id)->getAge());
     }
 
@@ -876,5 +877,69 @@ on A.id=B.id;', [$resCount - 20]);
         // got id fail
         $this->expectException(DbException::class);
         $user->update(['age' => 2]);
+    }
+
+    public function testDirty(): void
+    {
+        $origin = ['age' => 1, 'name' => 'swoft'];
+        User::updateOrCreate(['id' => 1], $origin);
+
+        $user = User::find(1);
+
+        $dirty = $user->getDirty();
+        // No changes
+        $this->assertEquals([], $dirty);
+
+
+        $user->setAge(2);
+        $dirty = $user->getDirty();
+        // Change age to 2
+        $this->assertEquals(['age' => 2], $dirty);
+
+
+        $user->setName('swoft2');
+        $dirty = $user->getDirty();
+        // Change name to swoft2
+        $this->assertEquals(['age' => 2, 'name' => 'swoft2'], $dirty);
+
+
+        // recovery changes
+        $fillOrigin = $user->fill($origin)->getDirty();
+        $this->assertEquals([], $fillOrigin);
+
+        // setter
+        $user->setModelAttribute('name', 'on');
+        $dirty = $user->getDirty();
+        $this->assertEquals(['name' => 'on'], $dirty);
+    }
+
+    public function testGroupAggregate(): void
+    {
+        User::truncate();
+
+        $origin  = ['age' => 1, 'user_desc' => 'swoft'];
+        $origin2 = ['age' => 2, 'user_desc' => 'swoft2'];
+
+        User::updateOrCreate(['id' => 1], $origin);
+        User::updateOrCreate(['id' => 2], $origin2);
+        User::updateOrCreate(['id' => 3], $origin2);
+
+        $count = User::groupBy('user_desc')->count();
+
+        $this->assertEquals(2, $count);
+
+        $originCount = User::count();
+        $this->assertEquals(3, $originCount);
+
+        $minAge = User::groupBy('age')->min('age');
+        $this->assertEquals(1, $minAge);
+        $this->assertEquals(1, User::min('age'));
+
+        $maxAge = User::groupBy('age')->max('age');
+        $this->assertEquals(2, $maxAge);
+        $this->assertEquals(2, User::max('age'));
+
+        $this->assertEquals(1.6667, User::avg('age'));
+        $this->assertEquals(1.5, User::groupBy('age')->avg('age'));
     }
 }
