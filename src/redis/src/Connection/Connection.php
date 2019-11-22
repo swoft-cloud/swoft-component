@@ -464,6 +464,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     public function hMGet(string $key, array $keys): array
     {
         $values = $this->command('hMGet', [$key, $keys]);
+        if ($values === false) $values = [];
 
         $result = [];
         foreach ($values as $key => $value) {
