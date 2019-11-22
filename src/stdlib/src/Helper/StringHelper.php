@@ -222,11 +222,11 @@ class StringHelper
      * Return the length of the given string.
      *
      * @param string|int  $value
-     * @param string|null $encode
+     * @param string $encode
      *
      * @return int
      */
-    public static function length($value, string $encode = null): int
+    public static function length($value, string $encode = 'utf-8'): int
     {
         return mb_strlen((string)$value, $encode);
     }
@@ -239,7 +239,7 @@ class StringHelper
      *
      * @return int
      */
-    public static function len($value, string $encode = null): int
+    public static function len($value, string $encode = 'utf-8'): int
     {
         return mb_strlen((string)$value, $encode);
     }
