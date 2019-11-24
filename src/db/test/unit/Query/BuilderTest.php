@@ -778,4 +778,22 @@ class BuilderTest extends TestCase
 
         $this->assertEquals($expectSql, $res);
     }
+
+    public function testAndOr(): void
+    {
+        $where   = [
+            'name' => 'swoft',
+        ];
+        $orWhere = [
+            'status' => 1,
+            ['age', '>', 0, 'or'],
+        ];
+
+        $sql = DB::table('user')->where($where)->where($orWhere)->toSql();
+
+        $expectSql = 'select * from `user` where (`name` = ?) and (`status` = ? or `age` > ?)';
+
+        $this->assertEquals($expectSql, $sql);
+    }
+
 }
