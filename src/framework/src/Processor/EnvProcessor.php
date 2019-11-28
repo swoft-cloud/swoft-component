@@ -47,7 +47,7 @@ class EnvProcessor extends Processor
             new PutenvAdapter,
             new ServerConstAdapter
         ]);
-        Dotenv::create($path, $name, $factory)->load();
+        Dotenv::create($path, $name, $factory)->overload();
 
         CLog::info('Env file(%s) is loaded', $envFile);
 
