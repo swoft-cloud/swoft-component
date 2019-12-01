@@ -11,7 +11,6 @@ use function ceil;
 
 /**
  * Class SimpleBar
- * @package Swoft\Console\Advanced\Progress
  */
 class SimpleBar extends NotifyMessage
 {
@@ -51,8 +50,8 @@ class SimpleBar extends NotifyMessage
             'msg'      => '',
             'doneMsg'  => '',
         ], $opts);
-        $msg  = Console::style()->render($opts['msg']);
 
+        $waitMsg  = Console::style()->render($opts['msg']);
         $doneMsg  = Console::style()->render($opts['doneMsg']);
         $waitChar = $opts['waitChar'];
 
@@ -68,10 +67,10 @@ class SimpleBar extends NotifyMessage
             }
 
             $current += $step;
-            $percent = ceil(($current / $total) * 100);
+            $percent = (int)ceil(($current / $total) * 100);
 
             if ($percent >= 100) {
-                $msg      = $doneMsg ?: $msg;
+                $waitMsg  = $doneMsg ?: $waitMsg;
                 $percent  = 100;
                 $finished = true;
             }
@@ -86,7 +85,7 @@ class SimpleBar extends NotifyMessage
             printf("{$tplPrefix}[%'{$waitChar}-100s] %' 3d%% %s",
                 str_repeat($opts['doneChar'], $percent) . ($finished ? '' : $opts['signChar']),
                 $percent,
-                $msg
+                $waitMsg
             );// ♥ ■ ☺ ☻ = #
 
             if ($finished) {

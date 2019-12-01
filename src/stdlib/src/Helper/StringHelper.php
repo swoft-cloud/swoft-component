@@ -12,6 +12,7 @@ use function mb_strtoupper;
 use function preg_match;
 use function preg_replace;
 use function str_pad;
+use function str_repeat;
 use function str_replace;
 use function strlen;
 use function strpos;
@@ -268,6 +269,8 @@ class StringHelper
      */
     public static function padLeft($string, int $padLen, string $padStr = ' '): string
     {
+        $string = (string)$string;
+
         return $padLen > 0 ? str_pad($string, $padLen, $padStr, STR_PAD_LEFT) : $string;
     }
 
@@ -280,7 +283,20 @@ class StringHelper
      */
     public static function padRight($string, int $padLen, string $padStr = ' '): string
     {
+        $string = (string)$string;
+
         return $padLen > 0 ? str_pad($string, $padLen, $padStr) : $string;
+    }
+
+    /**
+     * @param string|int $string
+     * @param int $length
+     *
+     * @return string
+     */
+    public static function repeat($string, $length): string
+    {
+        return str_repeat((string)$string, (int)$length);
     }
 
     /**
