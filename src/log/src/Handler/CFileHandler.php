@@ -3,45 +3,67 @@
 
 namespace Swoft\Log\Handler;
 
-
-use Monolog\Formatter\FormatterInterface;
-use Monolog\Handler\AbstractProcessingHandler;
+use Swoft\Exception\SwoftException;
+use Swoft\Log\Logger;
 
 /**
  * Class CFileHandler
  *
  * @since 2.0
  */
-class CFileHandler extends AbstractProcessingHandler
+class CFileHandler extends FileHandler
 {
     /**
-     * Write log levels
+     * booting records
      *
-     * @var string
+     * @var array
      */
-    protected $levels = '';
+    private $bootingRecords = [];
 
     /**
-     * Write log file
+     * Is boot
      *
-     * @var string
+     * @var bool
      */
-    protected $logFile = '';
+    private $boot = false;
 
     /**
+     * Write console log to file
+     *
      * @param array $record
+     *
+     * @throws SwoftException
      */
     protected function write(array $record): void
     {
-//        var_dump($record);
+        // Logger no ready
+        if (!$this->boot) {
+            $this->bootingRecords[] = [$record];
+            return;
+        }
+
+        parent::write([$record]);
     }
 
     /**
-     * @param FormatterInterface $formatter
+     * Init console file log
+     *
+     * @throws SwoftException
      */
-    public function setFormatter(FormatterInterface $formatter): void
+    public function init(): void
     {
-        $this->formatter = $formatter;
+        if ($this->boot || empty($this->logFile)) {
+            return;
+        }
+        parent::init();
+
+        $this->boot = true;
+
+        foreach ($this->bootingRecords as $records) {
+            parent::write($records);
+        }
+
+        unset($this->bootingRecords);
     }
 
     /**
@@ -49,6 +71,9 @@ class CFileHandler extends AbstractProcessingHandler
      */
     public function setLevels(string $levels): void
     {
+        $levelNames        = explode(',', $levels);
+        $this->levelValues = Logger::getLevelByNames($levelNames);
+
         $this->levels = $levels;
     }
 

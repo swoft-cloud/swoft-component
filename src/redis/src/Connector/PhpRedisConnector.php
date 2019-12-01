@@ -83,7 +83,7 @@ class PhpRedisConnector implements ConnectorInterface
         $parameters = array_values($parameters);
 
         if (version_compare(phpversion('redis'), '4.3.0', '>=')) {
-            $parameters[] = $option['auth'] ?? '';
+            $parameters[] = $auth;
         }
 
         $redisCluster = new RedisCluster(...$parameters);

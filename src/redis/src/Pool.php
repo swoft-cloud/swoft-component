@@ -3,9 +3,7 @@
 
 namespace Swoft\Redis;
 
-use ReflectionException;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\AbstractPool;
 use Swoft\Connection\Pool\Contract\ConnectionInterface;
 use Swoft\Redis\Connection\Connection;
@@ -131,7 +129,7 @@ use Throwable;
  * @method int zUnionStore(string $Output, array $ZSetKeys, array $Weights = null, string $aggregateFunction = 'SUM')
  * @method array hMGet(string $key, array $keys)
  * @method bool hMSet(string $key, array $keyValues)
- * @method int zAdd(string $key, array $scoreValues)
+ * @method int  zAdd(string $key, array $scoreValues)
  * @method array mget(array $keys)
  * @method bool mset(array $keyValues, int $ttl = 0)
  * @method array pipeline(callable $callback)
@@ -147,7 +145,7 @@ class Pool extends AbstractPool
     /**
      * Default pool
      */
-    const DEFAULT_POOL = 'redis.pool';
+    public const DEFAULT_POOL = 'redis.pool';
 
     /**
      * @var RedisDb

@@ -6,6 +6,7 @@ use Swoft\Context\Context;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
+use Swoft\Log\Helper\CLog;
 use Swoft\Log\Helper\Log;
 use Swoft\Server\Context\StartContext;
 use Swoft\Server\ServerEvent;
@@ -36,6 +37,8 @@ class BeforeStartEventListener implements EventHandlerInterface
             ];
             $context->setMulti($data);
         }
+
+        CLog::boot();
 
         Context::set($context);
     }

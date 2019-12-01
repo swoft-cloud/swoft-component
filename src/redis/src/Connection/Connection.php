@@ -466,9 +466,9 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
         $values = $this->command('hMGet', [$key, $keys]);
 
         $result = [];
-        foreach ($values as $key => $value) {
+        foreach ($values as $subKey => $value) {
             if ($value !== false) {
-                $result[$key] = $value;
+                $result[$subKey] = $value;
             }
         }
 
@@ -536,9 +536,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      */
     public function set(string $key, $value, int $timeout = null): bool
     {
-        $result = $this->command('set', [$key, $value, $timeout]);
-
-        return $result;
+        return $this->command('set', [$key, $value, $timeout]);
     }
 
 
@@ -579,7 +577,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     public function mset(array $keyValues, int $ttl = 0): bool
     {
         $result = $this->command('mset', [$keyValues]);
-        if ($ttl == 0) {
+        if ($ttl === 0) {
             return $result;
         }
 
@@ -669,7 +667,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      */
     private function multi(int $mode, callable $callback, bool $reconnect = false): array
     {
-        $name   = ($mode == Redis::PIPELINE) ? 'pipeline' : 'transaction';
+        $name   = ($mode === Redis::PIPELINE) ? 'pipeline' : 'transaction';
         $proKey = sprintf('redis.%s', $name);
         try {
             Log::profileStart($proKey);

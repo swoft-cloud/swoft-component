@@ -4,10 +4,12 @@
 namespace Swoft\Log\Helper;
 
 use Monolog\Formatter\LineFormatter;
-use function sprintf;
+use Swoft\Bean\Container;
 use Swoft\Log\CLogger;
 use Swoft\Log\Handler\CEchoHandler;
 use Swoft\Log\Handler\CFileHandler;
+use function method_exists;
+use function sprintf;
 
 /**
  * Class CLog
@@ -56,6 +58,20 @@ class CLog
         $cLogger->setHandlers([$cEchoHandler, $cFileHandler]);
 
         self::$cLogger = $cLogger;
+    }
+
+    /**
+     * Boot console log
+     */
+    public static function boot(): void
+    {
+        $handlers = self::$cLogger->getHandlers();
+
+        foreach ($handlers as $handler) {
+            if (method_exists($handler, Container::INIT_METHOD)) {
+                $handler->{Container::INIT_METHOD}();
+            }
+        }
     }
 
     /**
