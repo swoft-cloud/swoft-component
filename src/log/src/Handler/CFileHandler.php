@@ -36,6 +36,10 @@ class CFileHandler extends FileHandler
      */
     protected function write(array $record): void
     {
+        if (empty($this->logFile)) {
+            return;
+        }
+
         // Logger no ready
         if (!$this->boot) {
             $this->bootingRecords[] = [$record];
@@ -52,7 +56,11 @@ class CFileHandler extends FileHandler
      */
     public function init(): void
     {
-        if ($this->boot || empty($this->logFile)) {
+        if (empty($this->logFile)) {
+            return;
+        }
+
+        if ($this->boot) {
             return;
         }
         parent::init();
