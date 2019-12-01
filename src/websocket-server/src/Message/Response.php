@@ -70,9 +70,9 @@ class Response implements ResponseInterface
     private $sendToAll = false;
 
     /**
-     * @var bool
+     * @var int
      */
-    private $finish = true;
+    private $finish = 1;
 
     /**
      * @var int WebSocket opcode value
@@ -365,17 +365,25 @@ class Response implements ResponseInterface
      */
     public function isFinish(): bool
     {
+        return $this->finish === 1;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFinish(): int
+    {
         return $this->finish;
     }
 
     /**
-     * @param bool $finish
+     * @param bool|int $finish
      *
      * @return self
      */
-    public function setFinish(bool $finish): self
+    public function setFinish($finish): self
     {
-        $this->finish = $finish;
+        $this->finish = (int)$finish;
         return $this;
     }
 

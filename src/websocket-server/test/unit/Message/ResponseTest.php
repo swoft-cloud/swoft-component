@@ -28,6 +28,7 @@ class ResponseTest extends TestCase
         $this->assertSame(7, $w->getOpcode());
         $this->assertFalse($w->isSent());
         $this->assertFalse($w->isFinish());
+        $this->assertSame(1, $w->getFinish());
 
         $this->assertFalse($w->isSendToAll());
         $w->toAll();
