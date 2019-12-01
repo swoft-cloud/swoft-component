@@ -16,6 +16,7 @@ class ResponseTest extends TestCase
 
         $this->assertSame(22, $w->getFd());
         $this->assertSame(22, $w->getSender());
+        $this->assertSame(1, $w->getFinish());
 
         $w
             ->setFd(33)
@@ -28,7 +29,7 @@ class ResponseTest extends TestCase
         $this->assertSame(7, $w->getOpcode());
         $this->assertFalse($w->isSent());
         $this->assertFalse($w->isFinish());
-        $this->assertSame(1, $w->getFinish());
+        $this->assertSame(0, $w->getFinish());
 
         $this->assertFalse($w->isSendToAll());
         $w->toAll();
