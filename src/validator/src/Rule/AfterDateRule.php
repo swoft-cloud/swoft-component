@@ -26,7 +26,7 @@ class AfterDateRule implements RuleInterface
      * @return array
      * @throws ValidatorException
      */
-    public function validate(array $data, string $propertyName, $item, $default = null): array
+    public function validate(array $data, string $propertyName, $item, $default = null, $strict = false): array
     {
         /* @var AfterDate $item */
         $date = $item->getDate();

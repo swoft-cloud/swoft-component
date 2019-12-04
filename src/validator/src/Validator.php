@@ -23,6 +23,11 @@ use function sprintf;
  */
 class Validator
 {
+    /**
+     * Strict Model
+     * @var bool
+     */
+    protected $strict = false;
     /***
      * @param array  $data
      * @param string $validatorName
@@ -206,7 +211,7 @@ class Validator
 
         /* @var RuleInterface $rule */
         $rule = BeanFactory::getBean($itemClass);
-        $data = $rule->validate($data, $propName, $item, $default);
+        $data = $rule->validate($data, $propName, $item, $default, $this->strict);
         return $data;
     }
 

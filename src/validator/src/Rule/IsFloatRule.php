@@ -27,7 +27,7 @@ class IsFloatRule implements RuleInterface
      * @return array
      * @throws ValidatorException
      */
-    public function validate(array $data, string $propertyName, $item, $default = null): array
+    public function validate(array $data, string $propertyName, $item, $default = null, $strict = false): array
     {
         /* @var IsFloat $item */
         $message = $item->getMessage();
@@ -43,10 +43,17 @@ class IsFloatRule implements RuleInterface
         }
 
         $value = $data[$propertyName];
-        $value = filter_var($value, FILTER_VALIDATE_FLOAT);
-        if ($value !== false) {
-            $data[$propertyName] = $value;
-            return $data;
+        if ($strict) {
+            if (is_float($value)) {
+                $data[$propertyName] = (float)$value;
+                return $data;
+            }
+        } else {
+            $value = filter_var($value, FILTER_VALIDATE_FLOAT);
+            if ($value !== false) {
+                $data[$propertyName] = $value;
+                return $data;
+            }
         }
 
         $message = (empty($message)) ? sprintf('%s must float!', $propertyName) : $message;
