@@ -4,6 +4,7 @@
 namespace SwoftTest\Validator\Testing\Validator;
 
 use Swoft\Validator\Annotation\Mapping\IsArray;
+use Swoft\Validator\Annotation\Mapping\Required;
 use Swoft\Validator\Annotation\Mapping\Validator;
 use Swoft\Validator\Annotation\Mapping\IsBool;
 use Swoft\Validator\Annotation\Mapping\IsFloat;
@@ -21,6 +22,7 @@ class TestValidator
 {
     /**
      * @IsArray()
+     * @Required()
      *
      * @var array
      */
@@ -28,6 +30,7 @@ class TestValidator
 
     /**
      * @IsString()
+     * @Required()
      *
      * @var string
      */
@@ -35,6 +38,7 @@ class TestValidator
 
     /**
      * @IsInt()
+     * @Required()
      *
      * @var int
      */
@@ -42,6 +46,7 @@ class TestValidator
 
     /**
      * @IsBool()
+     * @Required()
      *
      * @var int
      */
@@ -50,6 +55,7 @@ class TestValidator
 
     /**
      * @IsFloat()
+     * @Required()
      *
      * @var int
      */
@@ -58,6 +64,7 @@ class TestValidator
 
     /**
      * @IsArray(message="array message")
+     * @Required()
      *
      * @var array
      */
@@ -65,6 +72,7 @@ class TestValidator
 
     /**
      * @IsString(message="string message")
+     * @Required()
      *
      * @var string
      */
@@ -72,6 +80,7 @@ class TestValidator
 
     /**
      * @IsInt(message="int message")
+     * @Required()
      *
      * @var int
      */
@@ -79,6 +88,7 @@ class TestValidator
 
     /**
      * @IsBool(message="bool message")
+     * @Required()
      *
      * @var int
      */
@@ -86,6 +96,7 @@ class TestValidator
 
     /**
      * @IsFloat(message="float message")
+     * @Required()
      *
      * @var int
      */

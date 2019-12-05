@@ -8,6 +8,7 @@ use Swoft\Validator\Annotation\Mapping\IsBool;
 use Swoft\Validator\Annotation\Mapping\IsFloat;
 use Swoft\Validator\Annotation\Mapping\IsInt;
 use Swoft\Validator\Annotation\Mapping\IsString;
+use Swoft\Validator\Annotation\Mapping\Required;
 use Swoft\Validator\Annotation\Mapping\ValidateType;
 use Swoft\Validator\Contract\RuleInterface;
 use Swoft\Validator\Contract\ValidatorInterface;
@@ -28,13 +29,14 @@ class Validator
      * @var bool
      */
     protected $strict = false;
+
     /***
-     * @param array  $data
+     * @param array $data
      * @param string $validatorName
-     * @param array  $fields
-     * @param array  $userValidators
+     * @param array $fields
+     * @param array $userValidators
      *
-     * @param array  $unfields
+     * @param array $unfields
      *
      * @return array
      * @throws ValidatorException
@@ -50,7 +52,7 @@ class Validator
             throw new ValidatorException('Validator data is empty!');
         }
 
-        $type      = ValidatorRegister::TYPE_DEFAULT;
+        $type = ValidatorRegister::TYPE_DEFAULT;
         $validator = ValidatorRegister::getValidator($validatorName);
 
         if (empty($validator)) {
@@ -67,7 +69,7 @@ class Validator
         foreach ($userValidators as $userValidator => $params) {
             if (is_int($userValidator)) {
                 $userValidator = $params;
-                $params        = [];
+                $params = [];
             }
 
             $validator = ValidatorRegister::getValidator($userValidator);
@@ -105,10 +107,10 @@ class Validator
                 );
             }
 
-            $type     = $validator['type'];
-            $fields   = $validate['fields'] ?? [];
+            $type = $validator['type'];
+            $fields = $validate['fields'] ?? [];
             $unfields = $validate['unfields'] ?? [];
-            $params   = $validate['params'] ?? [];
+            $params = $validate['params'] ?? [];
 
             $validateType = $validate['type'];
 
@@ -125,14 +127,14 @@ class Validator
     }
 
     /**
-     * @param array  $data
-     * @param int    $type
+     * @param array $data
+     * @param int $type
      * @param string $validateName
-     * @param array  $params
-     * @param array  $validator
-     * @param array  $fields
+     * @param array $params
+     * @param array $validator
+     * @param array $fields
      *
-     * @param array  $unfields
+     * @param array $unfields
      *
      * @return array
      * @throws ValidatorException
@@ -171,25 +173,32 @@ class Validator
                 continue;
             }
 
+            if (!isset($data[$propName]) && !$property['required'] && !isset($property['type']['default'])) {
+                continue;
+            }
+
             // Unfields
             if (in_array($propName, $unfields)) {
                 continue;
             }
 
             /* @var IsString|IsInt|IsBool|IsFloat $type */
-            $type        = $property['type']['annotation'] ?? null;
-            $default     = $property['type']['default'] ?? null;
+            $type = $property['type']['annotation'] ?? null;
+            $default = $property['type']['default'] ?? null;
             $annotations = $property['annotations'] ?? [];
             if ($type === null) {
                 continue;
             }
 
-            $name     = $type->getName();
+            $name = $type->getName();
             $propName = empty($name) ? $propName : $name;
 
             // Default validate item(Type) and other item
             $data = $this->validateDefaultItem($data, $propName, $type, $default);
             foreach ($annotations as $annotation) {
+                if ($annotation instanceof Required) {
+                    continue;
+                }
                 $data = $this->validateDefaultItem($data, $propName, $annotation);
             }
         }
@@ -198,10 +207,10 @@ class Validator
     }
 
     /**
-     * @param array  $data
+     * @param array $data
      * @param string $propName
      * @param object $item
-     * @param mixed  $default
+     * @param mixed $default
      *
      * @return array
      */
@@ -217,8 +226,8 @@ class Validator
 
     /**
      * @param string $validateName
-     * @param array  $data
-     * @param array  $params
+     * @param array $data
+     * @param array $params
      *
      * @return array
      * @throws ValidatorException

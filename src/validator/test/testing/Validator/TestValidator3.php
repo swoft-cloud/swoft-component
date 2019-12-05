@@ -7,6 +7,7 @@ use Swoft\Validator\Annotation\Mapping\Email;
 use Swoft\Validator\Annotation\Mapping\Ip;
 use Swoft\Validator\Annotation\Mapping\IsInt;
 use Swoft\Validator\Annotation\Mapping\IsString;
+use Swoft\Validator\Annotation\Mapping\Required;
 use Swoft\Validator\Annotation\Mapping\Validator;
 
 /**
@@ -21,6 +22,7 @@ class TestValidator3
     /**
      * @IsString()
      * @Email()
+     * @Required()
      *
      * @var string
      */

@@ -15,6 +15,7 @@ use Swoft\Validator\Annotation\Mapping\NotEmpty;
 use Swoft\Validator\Annotation\Mapping\Pattern;
 use Swoft\Validator\Annotation\Mapping\Range;
 use Swoft\Validator\Annotation\Mapping\IsString;
+use Swoft\Validator\Annotation\Mapping\Required;
 use Swoft\Validator\Annotation\Mapping\Validator;
 
 /**
@@ -29,6 +30,7 @@ class TestValidator2
     /**
      * @IsString()
      * @Email(message="email messsage")
+     * @Required()
      *
      * @var string
      */
