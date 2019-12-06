@@ -133,13 +133,13 @@ class HttpDispatcher extends AbstractDispatcher
      */
     private function afterRequest(Response $response): void
     {
-        $response->send();
-
-        // Defer
-        Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
-
-        // Destroy
-        Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
+//        $response->send();
+//
+//        // Defer
+//        Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
+//
+//        // Destroy
+//        Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
     }
 
     /**
