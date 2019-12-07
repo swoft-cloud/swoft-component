@@ -2,6 +2,7 @@
 
 namespace Swoft\Validator;
 
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\Validator\Annotation\Mapping\IsBool;
@@ -225,6 +226,12 @@ class Validator
     {
         $itemClass = get_class($item);
 
+        //support i18n
+        $msg = $item->getMessage();
+        $msgLen = strlen($msg) - 1;
+        if (strpos($msg, '{') === 0 && strrpos($msg, '}') === $msgLen) {
+            $item->setMessage(Swoft::t(substr($msg, 1, -1)));
+        }
         /* @var RuleInterface $rule */
         $rule = BeanFactory::getBean($itemClass);
         $data = $rule->validate($data, $propName, $item, $default, $this->strict);
