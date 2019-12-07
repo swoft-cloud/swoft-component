@@ -52,6 +52,7 @@ class ValidatorMiddleware implements MiddlewareInterface
 
         $data  = $request->getParsedBody();
         $query = $request->getQueryParams();
+        $path = $route->getParams();
 
         // ParsedBody is empty string
         $parsedBody    = $data = empty($data) ? [] : $data;
@@ -64,13 +65,13 @@ class ValidatorMiddleware implements MiddlewareInterface
         $validator = BeanFactory::getBean('validator');
 
         /* @var Request $request */
-        [$parsedBody, $query] = $validator->validateRequest($parsedBody, $validates, $query);
+        [$parsedBody, $query, $path] = $validator->validateRequest($parsedBody, $validates, $query, $path);
 
         if ($notParsedBody) {
             $parsedBody = $data;
         }
 
-        $request = $request->withParsedBody($parsedBody)->withParsedQuery($query);
+        $request = $request->withParsedBody($parsedBody)->withParsedQuery($query)->withParsedPath($path);
 
         return $handler->handle($request);
     }

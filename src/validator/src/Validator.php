@@ -96,7 +96,7 @@ class Validator
      * @return array
      * @throws ValidatorException
      */
-    public function validateRequest(array $body, array $validates, array $query = []): array
+    public function validateRequest(array $body, array $validates, array $query = [], array $path = []): array
     {
         foreach ($validates as $validateName => $validate) {
             $validator = ValidatorRegister::getValidator($validateName);
@@ -117,6 +117,13 @@ class Validator
             // Get query params
             if ($validateType == ValidateType::GET) {
                 $query = $this->validateValidator($query, $type, $validateName, $params, $validator, $fields,
+                    $unfields);
+                continue;
+            }
+
+            // Route path params
+            if ($validateType == ValidateType::PATH) {
+                $path = $this->validateValidator($path, $type, $validateName, $params, $validator, $fields,
                     $unfields);
                 continue;
             }

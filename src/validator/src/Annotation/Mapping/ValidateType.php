@@ -19,4 +19,9 @@ class ValidateType
      * Post form and body
      */
     public const BODY = 'body';
+
+    /**
+     * Route path params
+     */
+    public const PATH = 'path';
 }
