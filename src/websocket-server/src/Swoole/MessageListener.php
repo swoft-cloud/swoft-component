@@ -101,7 +101,9 @@ class MessageListener implements MessageInterface
             // Do error dispatching
             $response = $errDispatcher->messageError($e, $frame, $response);
             // Do send response
-            $response->send();
+            if(!$response->isEmpty()){
+                $response->send();
+            }
         } finally {
             // Defer event
             Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
