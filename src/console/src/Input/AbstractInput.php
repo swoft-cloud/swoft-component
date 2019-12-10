@@ -12,8 +12,6 @@ use function trim;
 
 /**
  * Class AbstractInput
- *
- * @package Swoft\Console\Input
  */
 abstract class AbstractInput implements InputInterface
 {

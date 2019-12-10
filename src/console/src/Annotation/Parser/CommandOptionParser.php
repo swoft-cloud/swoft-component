@@ -20,8 +20,8 @@ class CommandOptionParser extends Parser
     /**
      * Parse object
      *
-     * @param int           $type       Class or Method or Property
-     * @param CommandOption $annotation Annotation object
+     * @param int           $type   Class or Method or Property
+     * @param CommandOption $option Annotation object
      *
      * @return array
      * Return empty array is nothing to do!
@@ -29,24 +29,24 @@ class CommandOptionParser extends Parser
      * When property type return [$propertyValue, $isRef] is to reference value
      * @throws AnnotationException
      */
-    public function parse(int $type, $annotation): array
+    public function parse(int $type, $option): array
     {
         if ($type === self::TYPE_PROPERTY) {
             throw new AnnotationException('`@CommandOption` must be defined on class or method!');
         }
 
         $method  = $this->methodName;
-        $valType = $annotation->getType();
-        $defVal  = $annotation->getDefault();
+        $valType = $option->getType();
+        $defVal  = $option->getDefault();
 
         // Add route info for group command action
-        CommandRegister::bindOption($this->className, $method, $annotation->getName(), [
+        CommandRegister::bindOption($this->className, $method, $option->getName(), [
             'method'  => $method,
-            'name'    => $annotation->getName(),
-            'short'   => $annotation->getShort(),
-            'desc'    => $annotation->getDesc(),
-            'mode'    => $annotation->getMode(),
-            'type'    => $annotation->getType(),
+            'name'    => $option->getName(),
+            'short'   => $option->getShort(),
+            'desc'    => $option->getDesc(),
+            'mode'    => $option->getMode(),
+            'type'    => $option->getType(),
             'default' => $valType === 'BOOL' ? Flags::filterBool($defVal) : $defVal,
         ]);
 

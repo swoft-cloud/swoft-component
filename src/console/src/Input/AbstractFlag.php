@@ -9,6 +9,7 @@ use function ucfirst;
 
 /**
  * Class AbstractFlag
+ *
  * @since 2.0
  */
 abstract class AbstractFlag
@@ -63,6 +64,11 @@ abstract class AbstractFlag
      * @var bool
      */
     private $required = false;
+
+    /**
+     * @var mixed
+     */
+    private $_value;
 
     /**
      * Class constructor.
@@ -164,5 +170,13 @@ abstract class AbstractFlag
     public function isRequired(): bool
     {
         return $this->required;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getValue()
+    {
+        return $this->_value;
     }
 }
