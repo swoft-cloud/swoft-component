@@ -48,17 +48,17 @@ class Connection implements SessionInterface
     /**
      * Create an connection from metadata array
      *
-     * @param array $metadata
+     * @param array $data
      *
      * @return Connection
      */
-    public static function newFromArray(array $metadata): self
+    public static function newFromArray(array $data): SessionInterface
     {
         /** @var self $conn */
         $conn = bean(self::class);
 
-        $conn->fd = $metadata['fd'];
-        $conn->set(self::METADATA_KEY, $metadata);
+        $conn->fd = (int)$data['fd'];
+        $conn->set(self::METADATA_KEY, $data);
 
         return $conn;
     }

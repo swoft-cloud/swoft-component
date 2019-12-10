@@ -13,6 +13,13 @@ use Swoft\Stdlib\Contract\Arrayable;
 interface SessionInterface extends Arrayable, JsonSerializable
 {
     /**
+     * @param array $metadata
+     *
+     * @return static
+     */
+    public static function newFromArray(array $metadata): self;
+
+    /**
      * Check if an item exists in an array using "dot" notation.
      *
      * @param string $key
