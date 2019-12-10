@@ -196,7 +196,7 @@ class Response implements ResponseInterface
 
         // Fix: empty response data
         if ($this->isEmpty()) {
-            // CLog::warning('cannot send empty response to websocket client');
+            CLog::warning('cannot send empty response to websocket client');
             return 0;
         }
 

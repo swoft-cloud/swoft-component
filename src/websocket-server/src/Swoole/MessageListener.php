@@ -86,7 +86,9 @@ class MessageListener implements MessageInterface
                 Swoft::trigger(WsServerEvent::MESSAGE_RESPONSE, $response);
 
                 // Do send response
-                $response->send();
+                if(!$response->isEmpty()){
+                    $response->send();
+                }
             }
 
             // Trigger message after event
@@ -100,6 +102,7 @@ class MessageListener implements MessageInterface
 
             // Do error dispatching
             $response = $errDispatcher->messageError($e, $frame, $response);
+
             // Do send response
             if(!$response->isEmpty()){
                 $response->send();
