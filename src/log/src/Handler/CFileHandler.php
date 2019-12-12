@@ -42,7 +42,7 @@ class CFileHandler extends FileHandler
 
         // Logger no ready
         if (!$this->boot) {
-            $this->bootingRecords[] = [$record];
+            $this->bootingRecords[] = $record;
             return;
         }
 
@@ -67,9 +67,8 @@ class CFileHandler extends FileHandler
 
         $this->boot = true;
 
-        foreach ($this->bootingRecords as $records) {
-            parent::write($records);
-        }
+        // write booting console log
+        parent::write($this->bootingRecords);
 
         unset($this->bootingRecords);
     }
