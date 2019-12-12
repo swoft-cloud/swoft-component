@@ -3,7 +3,9 @@
 
 namespace Swoft\Log\Handler;
 
-use Swoft\Exception\SwoftException;
+use InvalidArgumentException;
+use Swoft\Bean\BeanFactory;
+use Swoft\Log\Helper\Log;
 use Swoft\Log\Logger;
 
 /**
@@ -14,25 +16,16 @@ use Swoft\Log\Logger;
 class CFileHandler extends FileHandler
 {
     /**
-     * booting records
+     * booting console log
      *
      * @var array
      */
     private $bootingRecords = [];
 
     /**
-     * Is boot
-     *
-     * @var bool
-     */
-    private $boot = false;
-
-    /**
      * Write console log to file
      *
      * @param array $record
-     *
-     * @throws SwoftException
      */
     protected function write(array $record): void
     {
@@ -40,37 +33,42 @@ class CFileHandler extends FileHandler
             return;
         }
 
-        // Logger no ready
-        if (!$this->boot) {
+        // Not boot bean
+        if (false === BeanFactory::hasBean('logger')) {
             $this->bootingRecords[] = $record;
             return;
         }
 
-        parent::write([$record]);
-    }
+        $records = [$record];
 
-    /**
-     * Init console file log
-     *
-     * @throws SwoftException
-     */
-    public function init(): void
-    {
-        if (empty($this->logFile)) {
-            return;
+        // Not init
+        if ($this->logFile[0] === '@') {
+            $this->init();
+
+            $this->bootingRecords[] = $record;
+
+            $records = $this->bootingRecords;
+
+            unset($this->bootingRecords);
         }
 
-        if ($this->boot) {
-            return;
+        if (Log::getLogger()->isJson()) {
+            $records = array_map([$this, 'formatJson'], $records);
+        } else {
+            $records = array_column($records, 'formatted');
         }
-        parent::init();
+        $messageText = implode("\n", $records) . "\n";
 
-        $this->boot = true;
+        $logFile = $this->formatFile($this->logFile);
 
-        // write booting console log
-        parent::write($this->bootingRecords);
+        // Not all console log in coroutine
+        $res = file_put_contents($logFile, $messageText, FILE_APPEND);
 
-        unset($this->bootingRecords);
+        if ($res === false) {
+            throw new InvalidArgumentException(
+                sprintf('Unable to append to log file: %s', $logFile)
+            );
+        }
     }
 
     /**

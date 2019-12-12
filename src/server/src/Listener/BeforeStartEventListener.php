@@ -38,8 +38,6 @@ class BeforeStartEventListener implements EventHandlerInterface
             $context->setMulti($data);
         }
 
-        CLog::boot();
-
         Context::set($context);
     }
 }
