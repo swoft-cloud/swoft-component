@@ -3,6 +3,8 @@
 namespace Swoft\Console\Input;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Console\Annotation\Mapping\Command;
+use Swoft\Console\Exception\CommandFlagException;
 use Toolkit\Cli\Flags;
 use function array_map;
 use function array_shift;
@@ -49,8 +51,9 @@ class Input extends AbstractInput
             $args = (array)$_SERVER['argv'];
         }
 
-        $this->pwd        = $this->getPwd();
-        $this->tokens     = $args;
+        $this->pwd    = $this->getPwd();
+        $this->tokens = $args;
+
         $this->scriptFile = array_shift($args);
         $this->fullScript = implode(' ', $args);
 
@@ -101,7 +104,106 @@ class Input extends AbstractInput
     }
 
     /***********************************************************************************
-     * getter/setter
+     * Binding options and arguments
+     ***********************************************************************************/
+
+    /**
+     * Binding options and arguments by give config
+     *
+     * @param array $info
+     *
+     * @throws CommandFlagException
+     */
+    public function bindingFlags(array $info): void
+    {
+        // Bind options
+        if ($opts = $info['options']) {
+            $this->bindingOptions($opts);
+        }
+
+        // Bind named argument by index
+        if ($args = $info['arguments']) {
+            $this->bindingArguments($args);
+        }
+    }
+
+    /**
+     * @param array $opts
+     *
+     * @throws CommandFlagException
+     */
+    protected function bindingOptions(array $opts): void
+    {
+        $sOpts = $this->getSOpts();
+        $lOpts = $this->getLOpts();
+
+        foreach ($opts as $name => $opt) {
+            $shortName = $opt['short'];
+            $inputVal  = $this->getLongOpt($name);
+
+            // Exist short
+            if (null === $inputVal && $shortName) {
+                $inputVal = $this->getShortOpt($shortName);
+            }
+
+            // Exist default value
+            if (null === $inputVal && isset($opt['default'])) {
+                $inputVal = $opt['default'];
+            }
+
+            // Has option value
+            if (null !== $inputVal) {
+                $lOpts[$name] = $inputVal;
+
+                if ($shortName) {
+                    $sOpts[$shortName] = $inputVal;
+                }
+
+                // Value is required
+            } elseif ($opt['mode'] === Command::OPT_REQUIRED) {
+                $short = $shortName ? "(short: {$shortName})" : '';
+                throw new CommandFlagException("The option '{$name}'{$short} is required");
+            }
+        }
+
+        // Save to input
+        $this->setLOpts($lOpts, true);
+        $this->setSOpts($sOpts, true);
+    }
+
+    /**
+     * @param array $args
+     *
+     * @throws CommandFlagException
+     */
+    protected function bindingArguments(array $args): void
+    {
+        $index  = 0;
+        $values = $this->getArgs();
+
+        foreach ($args as $name => $arg) {
+            // Bind value to name
+            if (isset($values[$index])) {
+                $values[$name] = $values[$index];
+                // Bind default value
+            } elseif (isset($arg['default'])) {
+                $values[$name]  = $arg['default'];
+                $values[$index] = $arg['default'];
+            }
+
+            // Check arg is required
+            if ($arg['mode'] === Command::ARG_REQUIRED && empty($values[$name])) {
+                throw new CommandFlagException("The argument '{$name}'(position: {$index}) is required");
+            }
+
+            $index++;
+        }
+
+        $this->setArgs($values, true);
+    }
+
+    /***********************************************************************************
+     * Getter/setter methods
      ***********************************************************************************/
 
     /**

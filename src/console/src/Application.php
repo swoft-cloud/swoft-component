@@ -5,10 +5,8 @@ namespace Swoft\Console;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Console\Annotation\Mapping\Command;
 use Swoft\Console\Concern\RenderHelpInfoTrait;
 use Swoft\Console\Contract\ConsoleInterface;
-use Swoft\Console\Exception\CommandFlagException;
 use Swoft\Console\Input\Input;
 use Swoft\Console\Output\Output;
 use Swoft\Console\Router\Router;
@@ -18,8 +16,6 @@ use Swoft\Stdlib\Helper\ObjectHelper;
 use Throwable;
 use function array_merge;
 use function implode;
-use function input;
-use function output;
 use function strpos;
 use function strtr;
 use function trim;
@@ -121,8 +117,8 @@ class Application implements ConsoleInterface
 
     protected function prepare(): void
     {
-        $this->input  = input();
-        $this->output = output();
+        $this->input  = Swoft::getBean('input');
+        $this->output = Swoft::getBean('output');
 
         // load builtin comments vars
         $this->setCommentsVars($this->commentsVars());
@@ -198,7 +194,7 @@ class Application implements ConsoleInterface
         }
 
         // Parse default options and arguments
-        $this->bindCommandFlags($info);
+        $this->input->bindingFlags($info);
         $this->input->setCommandId($info['cmdId']);
 
         Swoft::triggerByArray(ConsoleEvent::DISPATCH_BEFORE, $this, $info);
@@ -226,75 +222,6 @@ class Application implements ConsoleInterface
 
         // Display application help, command list
         $this->showApplicationHelp(false);
-    }
-
-    /**
-     * Bind option and argument values by route info
-     *
-     * @param array $info
-     *
-     * @throws CommandFlagException
-     */
-    protected function bindCommandFlags(array $info): void
-    {
-        // Bind options
-        if ($opts = $info['options']) {
-            $sOpts = $this->input->getSOpts();
-            $lOpts = $this->input->getLOpts();
-
-            foreach ($opts as $name => $opt) {
-                $inputVal = $this->input->getLongOpt($name);
-
-                // Exist short
-                if (null === $inputVal && $opt['short']) {
-                    $inputVal = $this->input->getShortOpt($opt['short']);
-                }
-
-                // Exist default value
-                if (null === $inputVal && isset($opt['default'])) {
-                    $inputVal = $opt['default'];
-                }
-
-                if (null !== $inputVal) {
-                    $sOpts[$name] = $lOpts[$name] = $inputVal;
-
-                    // Required check
-                } elseif ($opt['mode'] === Command::OPT_REQUIRED) {
-                    $short = $opt['short'] ? "(short: {$opt['short']})" : '';
-                    throw new CommandFlagException("The option '{$name}'{$short} is required");
-                }
-            }
-
-            // Save to input
-            $this->input->setLOpts($lOpts, true);
-            $this->input->setSOpts($sOpts, true);
-        }
-
-        // Bind named argument by index
-        if ($args = $info['arguments']) {
-            $index  = 0;
-            $values = $this->input->getArgs();
-
-            foreach ($args as $name => $arg) {
-                // Bind value to name
-                if (isset($values[$index])) {
-                    $values[$name] = $values[$index];
-                    // Bind default value
-                } elseif (isset($arg['default'])) {
-                    $values[$name]  = $arg['default'];
-                    $values[$index] = $arg['default'];
-                }
-
-                // Check arg is required
-                if ($arg['mode'] === Command::ARG_REQUIRED && empty($values[$name])) {
-                    throw new CommandFlagException("The argument '{$name}'(position: {$index}) is required");
-                }
-
-                $index++;
-            }
-
-            $this->input->setArgs($values, true);
-        }
     }
 
     /**

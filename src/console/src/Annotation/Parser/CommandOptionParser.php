@@ -36,8 +36,12 @@ class CommandOptionParser extends Parser
         }
 
         $method  = $this->methodName;
-        $valType = $option->getType();
         $defVal  = $option->getDefault();
+        $valType = $option->getType();
+
+        // if ($valType === 'BOOL') {
+        //     $defVal = Flags::filterBool($defVal);
+        // }
 
         // Add route info for group command action
         CommandRegister::bindOption($this->className, $method, $option->getName(), [
