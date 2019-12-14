@@ -27,6 +27,7 @@ use Throwable;
  *
  * @since 2.0
  * @method int append(string $key, string $value)
+ * @method int bitCount(string $key, int $start, int $end)
  * @method array blPop(array $keys, int $timeout)
  * @method array brPop(array $keys, int $timeout)
  * @method string brpoplpush(string $srcKey, string $dstKey, int $timeout)
@@ -150,6 +151,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      */
     protected $supportedMethods = [
         'append',
+        'bitCount',
         'blpop',
         'brpop',
         'brpoplpush',
