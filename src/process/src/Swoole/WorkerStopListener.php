@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Process\Swoole;
 
-
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Process\Contract\WorkerStopInterface;
+use Swoft\Process\ProcessEvent;
 use Swoole\Process\Pool;
 
 /**
@@ -23,6 +23,7 @@ class WorkerStopListener implements WorkerStopInterface
      */
     public function onWorkerStop(Pool $pool, int $workerId): void
     {
-        file_put_contents('t.txt', 'stop');
+        // file_put_contents('t.txt', 'stop');
+        Swoft::trigger(ProcessEvent::BEFORE_PROCESS_START, $pool, $workerId);
     }
 }
