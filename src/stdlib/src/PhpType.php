@@ -20,4 +20,33 @@ abstract class PhpType
     // Complex data type
     public const ARRAY   = 'array';
     public const OBJECT  = 'object';
+
+    /**
+     * @param string $type
+     * @param mixed $value
+     *
+     * @return mixed
+     */
+    public static function convertType(string $type, $value)
+    {
+        switch ($type) {
+            case self::BOOL:
+            case self::BOOLEAN:
+                $value = (bool)$value;
+                break;
+            case self::INT:
+            case self::INTEGER:
+                $value = (int)$value;
+                break;
+            case self::FLOAT:
+                $value = (float)$value;
+                break;
+            case self::STRING:
+                $value = (string)$value;
+                break;
+
+        }
+
+        return $value;
+    }
 }
