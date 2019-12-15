@@ -7,6 +7,7 @@ use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\Exception\AnnotationException;
 use Swoft\Console\Annotation\Mapping\CommandOption;
 use Swoft\Console\CommandRegister;
+use Swoft\Console\FlagType;
 use Toolkit\Cli\Flags;
 
 /**
@@ -50,8 +51,8 @@ class CommandOptionParser extends Parser
             'short'   => $option->getShort(),
             'desc'    => $option->getDesc(),
             'mode'    => $option->getMode(),
-            'type'    => $option->getType(),
-            'default' => $valType === 'BOOL' ? Flags::filterBool($defVal) : $defVal,
+            'type'    => $valType,
+            'default' => $valType === FlagType::BOOL ? Flags::filterBool($defVal) : $defVal,
         ]);
 
         return [];

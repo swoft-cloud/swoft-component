@@ -51,6 +51,13 @@ abstract class AbstractInput implements InputInterface
     protected $tokens;
 
     /**
+     * Input flags data
+     *
+     * @var array
+     */
+    protected $flags = [];
+
+    /**
      * Input args data
      *
      * @var array
@@ -748,5 +755,21 @@ abstract class AbstractInput implements InputInterface
     public function setTokens(array $tokens): void
     {
         $this->tokens = $tokens;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFlags(): array
+    {
+        return $this->flags;
+    }
+
+    /**
+     * @param array $flags
+     */
+    public function setFlags(array $flags): void
+    {
+        $this->flags = $flags;
     }
 }

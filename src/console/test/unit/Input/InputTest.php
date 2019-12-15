@@ -8,6 +8,14 @@ use Swoft\Console\Input\Input;
 
 class InputTest extends TestCase
 {
+    public function testInput(): void
+    {
+        $args = ['bin/swoft', 'input:test', '-d', '12'];
+        $in = new Input($args);
+
+        $this->assertSame('input:test', $in->getCommand());
+    }
+
     /**
      * @throws CommandFlagException
      */
@@ -19,6 +27,7 @@ class InputTest extends TestCase
             'options'   => [
                 'day' => [
                     'short' => 'd',
+                    'type'  => 'int',
                 ],
             ],
             'arguments' => [],
@@ -27,14 +36,14 @@ class InputTest extends TestCase
         $in = new Input($args);
         $in->bindingFlags($info);
 
-        $this->assertSame('12', $in->getOpt('day'));
-        $this->assertSame('12', $in->getOpt('d'));
+        $this->assertSame(12, $in->getOpt('day'));
+        $this->assertSame(12, $in->getOpt('d'));
 
         $args = ['bin/swoft', '--day', '12'];
         $in = new Input($args);
         $in->bindingFlags($info);
 
-        $this->assertSame('12', $in->getOpt('day'));
-        $this->assertSame('12', $in->getOpt('d'));
+        $this->assertSame(12, $in->getOpt('day'));
+        $this->assertSame(12, $in->getOpt('d'));
     }
 }

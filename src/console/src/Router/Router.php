@@ -71,11 +71,9 @@ class Router implements RouterInterface
      *  // route ID => route info.
      *  'group:cmd' => [
      *      'handler'  => [group class, command method],
-     *      'metadata' => [
-     *          'aliases'   => [],
-     *          'options'   => [],
-     *          'arguments' => [],
-     *      ],
+     *      'aliases'   => [],
+     *      'options'   => [],
+     *      'arguments' => [],
      *  ]
      * ]
      */

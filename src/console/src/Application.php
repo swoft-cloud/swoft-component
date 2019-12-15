@@ -40,8 +40,8 @@ class Application implements ConsoleInterface
         '--debug'       => 'Setting the application runtime debug level(0 - 4)',
         // '--profile'     => 'Display timing and memory usage information',
         '--no-color'    => 'Disable color/ANSI for message output',
-        '-h, --help'    => 'Display this help message',
-        '-V, --version' => 'Show application version information',
+        '-h, --help'    => 'Display help message for application or command',
+        '-V, --version' => 'Display application version information',
     ];
 
     /**
@@ -194,7 +194,7 @@ class Application implements ConsoleInterface
         }
 
         // Parse default options and arguments
-        $this->input->bindingFlags($info);
+        $this->input->parseFlags($info, true);
         $this->input->setCommandId($info['cmdId']);
 
         Swoft::triggerByArray(ConsoleEvent::DISPATCH_BEFORE, $this, $info);

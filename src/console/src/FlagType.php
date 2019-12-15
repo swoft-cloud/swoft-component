@@ -11,5 +11,4 @@ use Swoft\Stdlib\PhpType;
  */
 class FlagType extends PhpType
 {
-
 }

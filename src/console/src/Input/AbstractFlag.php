@@ -3,7 +3,7 @@
 namespace Swoft\Console\Input;
 
 use Swoft\Console\Annotation\Mapping\Command;
-use function strtoupper;
+use function strtolower;
 use function trim;
 use function ucfirst;
 
@@ -66,6 +66,7 @@ abstract class AbstractFlag
     private $required = false;
 
     /**
+     * TODO ...
      * @var mixed
      */
     private $_value;
@@ -128,13 +129,14 @@ abstract class AbstractFlag
     }
 
     /**
-     * @param bool $upper
+     * @param bool $lower
+     *
      * @return string
      */
-    public function getType(bool $upper = true): string
+    public function getType(bool $lower = true): string
     {
         if ($this->type) {
-            return $upper ? strtoupper($this->type) : $this->type;
+            return $lower ? strtolower($this->type) : $this->type;
         }
 
         return '';
