@@ -179,11 +179,18 @@ class Application implements ConsoleInterface
             return;
         }
 
-        $info = $result[1];
+        $info  = $result[1];
+        $group = $info['group'];
+        $this->addCommentsVar('groupName', $group);
 
         // Only input a group name, display help for the group
         if ($result[0] === Router::ONLY_GROUP) {
-            $this->showGroupHelp($info['group']);
+            // Has error command
+            if ($cmd = $info['cmd']) {
+                $output->error("Command '{$cmd}' is not exist in group: {$group}");
+            }
+
+            $this->showGroupHelp($group);
             return;
         }
 
@@ -265,6 +272,15 @@ class Application implements ConsoleInterface
         if ($vars) {
             $this->commentsVars = array_merge($this->commentsVars, $vars);
         }
+    }
+
+    /**
+     * @param string $name
+     * @param string $value
+     */
+    public function addCommentsVar(string $name, string $value): void
+    {
+        $this->commentsVars[$name] = $value;
     }
 
     /**

@@ -9,5 +9,4 @@ namespace Swoft\Console\Contract;
 interface RouterInterface extends \Swoft\Contract\RouterInterface
 {
     public const ONLY_GROUP = 3;
-
 }

@@ -20,8 +20,8 @@ use function output;
  *
  * @Command("http", alias="httpsrv", coroutine=false)
  * @example
- *  {fullCmd}:start     Start the http server
- *  {fullCmd}:stop      Stop the http server
+ *  {groupName}:start     Start the http server
+ *  {groupName}:stop      Stop the http server
  */
 class HttpServerCommand extends BaseServerCommand
 {
