@@ -1,15 +1,24 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\Contract;
+namespace Swoft\Session;
+
+use Swoft\Contract\SessionStorageInterface;
 
 /**
- * Interface SessionStorageInterface
- * refer the class {@see \SessionHandlerInterface}
+ * Class ArrayStorageHandler
  *
  * @since 2.0.8
  */
-interface SessionStorageInterface
+class ArrayStorage implements SessionStorageInterface
 {
+    /**
+     * Storage all sessions
+     * eg [sid0 => session data, ...]
+     *
+     * @var array
+     */
+    private $map = [];
+
     /**
      * Read session data
      *
@@ -20,7 +29,10 @@ interface SessionStorageInterface
      * If nothing was read, it must return an empty string.
      * Note this value is returned internally to PHP for processing.
      */
-    public function read(string $sessionId): string;
+    public function read(string $sessionId): string
+    {
+        return $this->map[$sessionId] ?? '';
+    }
 
     /**
      * Write session data
@@ -28,12 +40,18 @@ interface SessionStorageInterface
      * @param string $sessionId   The session id.
      * @param string $sessionData The encoded session data. This data is a serialized
      *                            string and passing it as this parameter.
+     *                            Please note sessions use an alternative serialization method.
      *
      * @return bool
      * The return value (usually TRUE on success, FALSE on failure).
      * Note this value is returned internally to PHP for processing.
      */
-    public function write(string $sessionId, string $sessionData): bool;
+    public function write(string $sessionId, string $sessionData): bool
+    {
+        $this->map[$sessionId] = $sessionData;
+
+        return true;
+    }
 
     /**
      * Destroy a session
@@ -44,7 +62,15 @@ interface SessionStorageInterface
      * The return value (usually TRUE on success, FALSE on failure).
      * Note this value is returned internally to PHP for processing.
      */
-    public function destroy(string $sessionId): bool;
+    public function destroy(string $sessionId): bool
+    {
+        if (isset($this->map[$sessionId])) {
+            unset($this->map[$sessionId]);
+            return true;
+        }
+
+        return false;
+    }
 
     /**
      * Whether the session exists
@@ -53,12 +79,19 @@ interface SessionStorageInterface
      *
      * @return bool
      */
-    public function exists(string $sessionId): bool;
+    public function exists(string $sessionId): bool
+    {
+        return isset($this->map[$sessionId]);
+    }
 
     /**
      * Clear all session
      *
      * @return bool
      */
-    public function clear(): bool;
+    public function clear(): bool
+    {
+        $this->map = [];
+        return true;
+    }
 }
