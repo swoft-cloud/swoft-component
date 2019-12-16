@@ -14,13 +14,12 @@ use Swoft\Process\ProcessEvent;
  *
  * @since 2.0
  *
- * @Listener(event=ProcessEvent::AFTER_PROCESS)
+ * @Listener(event=ProcessEvent::AFTER_PROCESS_START)
  */
 class AfterProcessListener implements EventHandlerInterface
 {
     /**
      * @param EventInterface $event
-     *
      */
     public function handle(EventInterface $event): void
     {

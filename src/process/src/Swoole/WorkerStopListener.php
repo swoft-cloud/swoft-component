@@ -24,6 +24,6 @@ class WorkerStopListener implements WorkerStopInterface
     public function onWorkerStop(Pool $pool, int $workerId): void
     {
         // file_put_contents('t.txt', 'stop');
-        Swoft::trigger(ProcessEvent::BEFORE_PROCESS_START, $pool, $workerId);
+        Swoft::trigger(ProcessEvent::BEFORE_PROCESS_STOP, $pool, $workerId);
     }
 }
