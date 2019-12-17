@@ -109,6 +109,7 @@ class Application implements ConsoleInterface
             'workDir'     => $this->input->getPwd(),
             'script'      => $script, // bin/app
             'binFile'     => $script,
+            'binName'     => $this->input->getScriptName(),
             'command'     => $this->input->getCommand(), // demo OR home:test
             'fullCmd'     => $fullCmd,
             'fullCommand' => $fullCmd,
