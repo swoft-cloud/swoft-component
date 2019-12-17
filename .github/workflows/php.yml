@@ -61,4 +61,4 @@ jobs:
 
       - name: Run test suite
         run: | # && composer run test
-         ./phpunit nodb
+         pwd && bash ./phpunit nodb
