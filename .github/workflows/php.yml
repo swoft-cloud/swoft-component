@@ -41,15 +41,16 @@ jobs:
         uses: shivammathur/setup-php@v1
         with:
           php-version: ${{ matrix.php}}
-          extensions: mbstring, dom, fileinfo, mysql #optional, setup extensions
+          extensions: mbstring, dom, fileinfo, mysql, openssl, redis, swoole #optional, setup extensions
           ini-values: post_max_size=56M, short_open_tag=On #optional, setup php.ini configuration
           coverage: none #optional, setup coverage driver: xdebug, none
           pecl: true
 
       - name: Install extensions
         run: |
-          echo 'no' | pecl install -f redis
-      #          sudo pecl update-channels && pecl install -f msgpack && pecl install -f igbinary && php -m
+          php -m | grep e
+      # echo 'no' | pecl install -f redis
+      # sudo pecl update-channels && pecl install -f msgpack && pecl install -f igbinary && php -m
 
       - name: Install dependencies
         run: composer install --no-progress --no-suggest
