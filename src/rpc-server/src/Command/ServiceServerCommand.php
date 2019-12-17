@@ -21,8 +21,8 @@ use function output;
  * @Command("rpc", coroutine=false, desc="Provide some commands to manage swoft RPC server")
  *
  * @example
- *  {fullCmd}:start     Start the rpc server
- *  {fullCmd}:stop      Stop the rpc server
+ *  {groupName}:start     Start the rpc server
+ *  {groupName}:stop      Stop the rpc server
  */
 class ServiceServerCommand extends BaseServerCommand
 {

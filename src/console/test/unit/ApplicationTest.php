@@ -40,11 +40,11 @@ class ApplicationTest extends TestCase
         $app = bean('cliApp');
 
         $input = input();
-        $input->setLOpts([
-            'comm1' => 'v1',
-            'comm2' => 'v2',
+        $input->setFlags([
+            '--comm1', 'v1',
+            '--comm2', 'v2',
+            'a1'
         ]);
-        $input->setArgs(['a1']);
         $input->setCommand('demo:sub');
 
         $app->run();

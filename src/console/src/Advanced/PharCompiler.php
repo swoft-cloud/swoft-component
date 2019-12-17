@@ -14,6 +14,7 @@ use Phar;
 use RuntimeException;
 use Seld\PharUtils\Timestamps;
 use SplFileInfo;
+use SplQueue;
 use Swoft\Stdlib\Helper\Dir;
 use Swoft\Stdlib\Helper\FSHelper;
 use Swoft\Stdlib\Helper\Sys;
@@ -33,8 +34,6 @@ use function is_dir;
 use function is_file;
 use function is_string;
 use function ltrim;
-use function openssl_pkey_export;
-use function openssl_pkey_get_details;
 use function preg_replace;
 use function realpath;
 use function str_replace;
@@ -61,6 +60,9 @@ class PharCompiler
     public const ON_ADD   = 'add';
     public const ON_SKIP  = 'skip';
     public const ON_ERROR = 'error';
+
+    public const ON_MESSAGE   = 'message';
+    public const ON_COLLECTED = 'collected';
 
     /** @var array */
     private static $supportedSignatureTypes = [
@@ -172,6 +174,8 @@ class PharCompiler
      */
     private $versionFile = '';
 
+    private $versionFileContent = '';
+
     // -------------------- internal properties --------------------
 
     /** @var int */
@@ -196,6 +200,11 @@ class PharCompiler
      * @var array|Iterator The modifies files list. if not empty, will skip find dirs.
      */
     private $modifies;
+
+    /**
+     * @var SplQueue
+     */
+    private $fileQueue;
 
     /**
      * @param string            $pharFile
@@ -240,7 +249,8 @@ class PharCompiler
     {
         self::checkEnv();
 
-        $this->basePath = realpath($basePath);
+        $this->basePath  = realpath($basePath);
+        $this->fileQueue = new SplQueue();
 
         if (!is_dir($this->basePath)) {
             throw new RuntimeException("The inputted path is not exists. PATH: {$this->basePath}");
@@ -399,7 +409,7 @@ class PharCompiler
      * @throws InvalidArgumentException
      * @throws Exception
      */
-    public function pack(string $pharFile, $refresh = true): string
+    public function pack(string $pharFile, bool $refresh = true): string
     {
         if (!$this->directories) {
             throw new RuntimeException("Please setting the 'directories' want building directories by 'in()'");
@@ -430,36 +440,25 @@ class PharCompiler
             $phar->setSignatureAlgorithm($this->selectSignatureType());
         }
 
-        $basePath = $this->basePath;
+        // Collect files
+        $this->collectFiles($exists, $refresh);
+
+        // Begin packing
+        $this->fire(self::ON_COLLECTED, $this->counter);
         $phar->startBuffering();
 
-        // Only build modifies
-        if (!$refresh && $exists && $this->modifies) {
-            foreach ($this->modifies as $file) {
-                if ('/' === $file[0] || is_file($file = $basePath . '/' . $file)) {
-                    $this->packFile($phar, new SplFileInfo($file));
-                }
-            }
-        } else {
-            // Collect files in there are dirs.
-            foreach ($this->directories as $directory) {
-                foreach ($this->findFiles($directory) as $file) {
-                    $this->packFile($phar, $file);
-                }
-            }
-        }
-
-        // Add special files
-        foreach ($this->files as $filename) {
-            if ('/' === $filename[0] || is_file($filename = $basePath . '/' . $filename)) {
-                $this->packFile($phar, new SplFileInfo($filename));
-            }
-        }
+        $this->fire(self::ON_MESSAGE, 'Files collect complete, begin add file to Phar');
+        $phar->buildFromIterator($this->fileQueue, $this->basePath);
 
         // Add index files
         $this->packIndexFile($phar);
 
-        // Stubs
+        // Add version file
+        if ($content = $this->versionFileContent) {
+            $phar->addFromString($this->versionFile, $content);
+        }
+
+        // Add Stubs
         // $phar->setDefaultStub($this->cliIndex, $this->webIndex));
         $phar->setStub($this->createStub());
 
@@ -477,6 +476,7 @@ class PharCompiler
         //     'Date'        => date('Y-m-d')
         // );
         // $phar->setMetadata($metaData);
+        $this->fire(self::ON_MESSAGE, 'Write requests to the Phar archive, save changes to disk');
         $phar->stopBuffering();
         unset($phar);
 
@@ -488,6 +488,68 @@ class PharCompiler
         }
 
         return $pharFile;
+    }
+
+    /**
+     * @param bool $exists
+     * @param bool $refresh
+     */
+    protected function collectFiles(bool $exists, bool $refresh): void
+    {
+        $basePath = $this->basePath;
+
+        // Only build modifies
+        if (!$refresh && $exists && $this->modifies) {
+            foreach ($this->modifies as $file) {
+                if ('/' === $file[0] || is_file($file = $basePath . '/' . $file)) {
+                    $this->collectFileInfo(new SplFileInfo($file));
+                }
+            }
+        } else {
+            // Collect files in there are dirs.
+            foreach ($this->directories as $directory) {
+                foreach ($this->findFiles($directory) as $fileInfo) {
+                    $this->collectFileInfo($fileInfo);
+                }
+            }
+        }
+
+        // Add special files
+        foreach ($this->files as $filename) {
+            if ('/' === $filename[0] || is_file($filename = $basePath . '/' . $filename)) {
+                // $this->packFile($phar, new SplFileInfo($filename));
+                $this->collectFileInfo(new SplFileInfo($filename));
+            }
+        }
+    }
+
+    /**
+     * @param SplFileInfo $file
+     */
+    protected function collectFileInfo(SplFileInfo $file): void
+    {
+        $filePath = $file->getPathname();
+
+        // Skip not exist file
+        if (!file_exists($filePath)) {
+            $this->fire(self::ON_ERROR, "File $filePath is not exists!");
+            return;
+        }
+
+        $this->counter++;
+        $relativePath = $this->getRelativeFilePath($file);
+
+        $this->fire(self::ON_ADD, $relativePath, $this->counter);
+
+        // have version file
+        if ($relativePath === $this->versionFile) {
+            $content = file_get_contents($filePath);
+            // save content
+            $this->versionFileContent = $this->addVersionInfo($content);
+            return;
+        }
+
+        $this->fileQueue->push($file);
     }
 
     /**
@@ -537,56 +599,16 @@ class PharCompiler
     }
 
     /**
-     * Add a file to the Phar.
-     * @param Phar        $phar
-     * @param SplFileInfo $file
+     * @param string $content
+     *
+     * @return string
      */
-    private function packFile(Phar $phar, SplFileInfo $file): void
-    {
-        $filePath = $file->getPathname();
-
-        // skip error
-        if (!file_exists($filePath)) {
-            $this->fire(self::ON_ERROR, "File $filePath is not exists!");
-            return;
-        }
-
-        $strip = $this->stripComments;
-        $path  = $this->getRelativeFilePath($file);
-
-        $this->counter++;
-        $this->fire(self::ON_ADD, $path, $this->counter);
-
-        // clear php file comments
-        if ($strip && strpos($path, '.php')) {
-            $filter = $this->stripFilter;
-
-            if (!$filter || $filter($file)) {
-                $content = $this->stripWhitespace(file_get_contents($filePath));
-
-                // add content to phar
-                $phar->addFromString(
-                    $path,
-                    $this->addVersionInfo($content) . "\n// added by phar pack"
-                );
-                return;
-            }
-        }
-
-        // have versionFile
-        if ($path === $this->versionFile) {
-            $content = file_get_contents($filePath);
-
-            $phar->addFromString($path, $this->addVersionInfo($content));
-            return;
-        }
-
-        // add file to phar
-        $phar->addFile($filePath, $path);
-    }
-
     private function addVersionInfo(string $content): string
     {
+        if (!$this->collectVersionInfo) {
+            return $content;
+        }
+
         return str_replace([
             '{@package_last_commit}',
             '{@package_last_version}',
@@ -1007,5 +1029,13 @@ EOF;
     public function getPharFile(): string
     {
         return $this->pharFile;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFileCount(): int
+    {
+        return $this->fileQueue->count();
     }
 }

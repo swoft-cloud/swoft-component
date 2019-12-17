@@ -31,7 +31,7 @@ use Throwable;
  * @method float geoDist(string $key, string $member1, string $member2, string $unit = 'm')
  * @method array geohash(string $key, string ...$members)
  * @method array geopos(string $key, string ...$members)
- * @method mixed|bool get(string $key)
+ * @method mixed|false get(string $key)
  * @method int getBit(string $key, int $offset)
  * @method int getOption(string $name)
  * @method string getRange(string $key, int $start, int $end)

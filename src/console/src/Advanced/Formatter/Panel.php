@@ -5,6 +5,7 @@ namespace Swoft\Console\Advanced\Formatter;
 use Swoft\Console\Advanced\MessageFormatter;
 use Swoft\Console\Console;
 use Swoft\Console\Helper\FormatUtil;
+use Swoft\Stdlib\Helper\Str;
 use Swoft\Stdlib\StrBuffer;
 use function array_filter;
 use function array_merge;
@@ -12,9 +13,7 @@ use function ceil;
 use function is_array;
 use function is_bool;
 use function is_numeric;
-use function mb_strlen;
 use function rtrim;
-use function str_pad;
 use function strip_tags;
 use function trim;
 use function ucwords;
@@ -111,7 +110,7 @@ EOF;
         foreach ($data as $label => $value) {
             // label exists
             if (!is_numeric($label)) {
-                $width = mb_strlen($label, 'UTF-8');
+                $width = Str::len($label, 'UTF-8');
                 // save max value
                 $labelMaxWidth = $width > $labelMaxWidth ? $width : $labelMaxWidth;
             }
@@ -141,7 +140,7 @@ EOF;
             // get value width
             /** @var string $value */
             $value = trim($value);
-            $width = mb_strlen(strip_tags($value), 'UTF-8'); // must clear style tag
+            $width = Str::len(strip_tags($value), 'UTF-8'); // must clear style tag
 
             $valueMaxWidth     = $width > $valueMaxWidth ? $width : $valueMaxWidth;
             $panelData[$label] = $value;
@@ -159,16 +158,16 @@ EOF;
         if ($title) {
             $title       = ucwords($title);
             $titleStyle  = $opts['titleStyle'] ?: 'bold';
-            $titleLength = mb_strlen($title, 'UTF-8');
+            $titleLength = Str::len($title, 'UTF-8');
             $panelWidth  = $panelWidth > $titleLength ? $panelWidth : $titleLength;
             $lenValue    = (int)(ceil($panelWidth / 2) - ceil($titleLength / 2));
-            $indentSpace = str_pad(' ', $lenValue + 2 * 2, ' ');
+            $indentSpace = Str::pad(' ', $lenValue + 2 * 2, ' ');
             Console::write("$leftIndent{$indentSpace}<{$titleStyle}>{$title}</{$titleStyle}>");
         }
 
         // output panel top border
         if ($borderChar) {
-            $border = str_pad($borderChar, $panelWidth + (3 * 4), $borderChar);
+            $border = Str::pad($borderChar, $panelWidth + (3 * 4), $borderChar);
             Console::write($leftIndent . $border);
         }
 
@@ -211,7 +210,7 @@ EOF;
         foreach ($data as $label => $value) {
             // label exists
             if (!is_numeric($label)) {
-                $width         = mb_strlen($label, 'UTF-8');
+                $width         = Str::len($label, 'UTF-8');
                 $labelMaxWidth = $width > $labelMaxWidth ? $width : $labelMaxWidth;
             }
 
@@ -240,7 +239,7 @@ EOF;
             // get value width
             /** @var string $value */
             $value = trim($value);
-            $width = mb_strlen(strip_tags($value), 'UTF-8'); // must clear style tag
+            $width = Str::len(strip_tags($value), 'UTF-8'); // must clear style tag
 
             $valueMaxWidth     = $width > $valueMaxWidth ? $width : $valueMaxWidth;
             $panelData[$label] = $value;
@@ -251,15 +250,15 @@ EOF;
         // output title
         if ($title) {
             $title       = ucwords($title);
-            $titleLength = mb_strlen($title, 'UTF-8');
+            $titleLength = Str::len($title, 'UTF-8');
             $panelWidth  = $panelWidth > $titleLength ? $panelWidth : $titleLength;
-            $indentSpace = str_pad(' ', ceil($panelWidth / 2) - ceil($titleLength / 2) + 2 * 2, ' ');
+            $indentSpace = Str::pad(' ', ceil($panelWidth / 2) - ceil($titleLength / 2) + 2 * 2, ' ');
             $buffer->write("  {$indentSpace}<bold>{$title}</bold>\n");
         }
 
         // output panel top border
         if ($topBorder = $this->titleBorder) {
-            $border = str_pad($topBorder, $panelWidth + (3 * 3), $topBorder);
+            $border = Str::pad($topBorder, $panelWidth + (3 * 3), $topBorder);
             $buffer->write('  ' . $border . PHP_EOL);
         }
 
@@ -276,7 +275,7 @@ EOF;
 
         // output panel bottom border
         if ($footBorder = $this->footerBorder) {
-            $border = str_pad($footBorder, $panelWidth + (3 * 3), $footBorder);
+            $border = Str::pad($footBorder, $panelWidth + (3 * 3), $footBorder);
             $buffer->write('  ' . $border . PHP_EOL);
         }
 

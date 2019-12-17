@@ -100,7 +100,7 @@ class Connection implements SessionInterface
      *
      * @return static
      */
-    public static function newFromArray(array $data): self
+    public static function newFromArray(array $data): SessionInterface
     {
         // New request and response
         $req = new \Swoole\Http\Request();

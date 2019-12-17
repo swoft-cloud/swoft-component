@@ -43,12 +43,12 @@ class WorkerStartListener implements WorkerStartInterface
         ProcessPool::$processPool->initProcessPool($pool);
 
         // Before
-        Swoft::trigger(ProcessEvent::BEFORE_PROCESS, $this, $pool, $workerId);
+        Swoft::trigger(ProcessEvent::BEFORE_PROCESS_START, $this, $pool, $workerId);
 
         // Dispatcher
         $this->processDispatcher->dispatcher($pool, $workerId);
 
         // After
-        Swoft::trigger(ProcessEvent::BEFORE_PROCESS, $this, $pool, $workerId);
+        Swoft::trigger(ProcessEvent::AFTER_PROCESS_START, $this, $pool, $workerId);
     }
 }

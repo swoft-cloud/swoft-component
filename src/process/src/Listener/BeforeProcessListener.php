@@ -17,7 +17,7 @@ use Swoft\Process\ProcessEvent;
  *
  * @since 2.0
  *
- * @Listener(event=ProcessEvent::BEFORE_PROCESS)
+ * @Listener(event=ProcessEvent::BEFORE_PROCESS_START)
  */
 class BeforeProcessListener implements EventHandlerInterface
 {
