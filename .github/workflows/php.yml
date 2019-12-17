@@ -32,7 +32,7 @@ jobs:
       fail-fast: false # dont fast fail
       matrix:
         php: [7.1, 7.2, 7.3] # 7.4
-        os: [ubuntu-latest, macOS-latest] # windows-latest
+        os: [ubuntu-latest] # , macOS-latest, windows-latest
 
     steps:
       - uses: actions/checkout@v1
@@ -41,15 +41,17 @@ jobs:
         uses: shivammathur/setup-php@v1
         with:
           php-version: ${{ matrix.php}}
-          extensions: mbstring, dom, fileinfo, mysql #optional, setup extensions
+          extensions: mbstring, dom, fileinfo, mysql, openssl, redis #optional, setup extensions
           ini-values: post_max_size=56M, short_open_tag=On #optional, setup php.ini configuration
           coverage: none #optional, setup coverage driver: xdebug, none
           pecl: true
 
-      - name: Install extensions
-        run:
-          - echo 'no' | pecl install -f redis
-      #          sudo pecl update-channels && pecl install -f msgpack && pecl install -f igbinary && php -m
+      - name: Install swoole extensions
+        timeout-minutes: 5
+        run: |
+          sudo pecl install -f swoole && php -m
+      # echo 'no' | pecl install -f redis
+      # sudo pecl update-channels && pecl install -f msgpack && pecl install -f igbinary && php -m
 
       - name: Install dependencies
         run: composer install --no-progress --no-suggest
@@ -58,6 +60,5 @@ jobs:
       # Docs: https://getcomposer.org/doc/articles/scripts.md
 
       - name: Run test suite
-        run:
-#          - composer run test
-          - ./phpunit nodb
+        run: | # && composer run test
+         pwd && ./phpunit.sh nodb
