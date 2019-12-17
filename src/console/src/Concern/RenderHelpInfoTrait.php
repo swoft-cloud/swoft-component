@@ -85,7 +85,7 @@ trait RenderHelpInfoTrait
 
         /** @var Swoft\Console\Input\Input $input */
         $input  = $this->input;
-        $script = $input->getScriptFile();
+        $script = $input->getScriptName();
         // Global options
         $globalOptions = self::$globalOptions;
         // Append expand option
@@ -151,7 +151,7 @@ trait RenderHelpInfoTrait
 
         /** @var Swoft\Console\Input\Input $input */
         $input  = $this->input;
-        $script = $input->getScriptFile();
+        $script = $input->getScriptName();
 
         Console::startBuffer();
         Console::writeln($info['desc'] . PHP_EOL);
@@ -194,7 +194,7 @@ trait RenderHelpInfoTrait
 
         /** @var Swoft\Console\Input\Input $input */
         $input  = $this->input;
-        $script = $input->getScriptFile();
+        $script = $input->getScriptName();
         $usage  = sprintf('%s %s [arg ...] [--opt ...]', $script, $info['cmdId']);
 
         // If has been custom usage.
