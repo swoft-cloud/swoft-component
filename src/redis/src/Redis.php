@@ -81,7 +81,7 @@ use Throwable;
  * @method static int sUnionStore(string $dstKey, string $key1, string $key2, string $keyN = null)
  * @method static array|bool scan(int &$iterator, string $pattern = null, int $count = 0)
  * @method static mixed script(string|array $nodeParams, string $command, string $script)
- * @method static bool set(string $key, $value, int $timeout = null)
+ * @method static bool set(string $key, $value, $timeout = null)
  * @method static int setBit(string $key, int $offset, int $value)
  * @method static string setRange(string $key, int $offset, $value)
  * @method static int setex(string $key, int $ttl, $value)

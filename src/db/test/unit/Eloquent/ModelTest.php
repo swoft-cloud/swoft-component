@@ -942,4 +942,28 @@ on A.id=B.id;', [$resCount - 20]);
         $this->assertEquals(1.6667, User::avg('age'));
         $this->assertEquals(1.5, User::groupBy('age')->avg('age'));
     }
+
+    public function testFillSave(): void
+    {
+        $id     = 1;
+        $origin = ['age' => 1, 'user_desc' => 'swoft'];
+
+        User::updateOrCreate(['id' => $id], $origin);
+
+        $newUser = User::find($id);
+
+        $newUser->fill([
+            'age'   => 2,
+            'udesc' => 'changed user_desc'
+        ]);
+
+        $newUser->save();
+
+        $this->assertEquals(2, $newUser->getAge());
+        $this->assertEquals('changed user_desc', $newUser->getUserDesc());
+
+        $findUser = User::find($id);
+        $this->assertEquals(2, $findUser->getAge());
+        $this->assertEquals('changed user_desc', $findUser->getUserDesc());
+    }
 }

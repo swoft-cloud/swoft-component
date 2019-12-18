@@ -525,20 +525,19 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     }
 
     /**
-     * @param string   $key
-     * @param mixed    $value
-     * @param int|null $timeout
+     * @param string         $key
+     * @param mixed          $value
+     * @param int|array|null $timeout
      *
      * @return bool
      * @throws ContainerException
      * @throws RedisException
      * @throws ReflectionException
      */
-    public function set(string $key, $value, int $timeout = null): bool
+    public function set(string $key, $value, $timeout = null): bool
     {
         return $this->command('set', [$key, $value, $timeout]);
     }
-
 
     /**
      * @param array $keys
