@@ -2,6 +2,7 @@
 
 namespace Swoft\Tcp\Server;
 
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Contract\SessionInterface;
 use Swoft\Stdlib\Concern\DataPropertyTrait;
@@ -27,6 +28,14 @@ class Connection implements SessionInterface
     private $fd = 0;
 
     /**
+     * @return ConnectionManager
+     */
+    public static function manager(): ConnectionManager
+    {
+        return Swoft::getBean('tcpConnectionManager');
+    }
+
+    /**
      * @param int   $fd
      * @param array $clientInfo
      *
@@ -35,7 +44,7 @@ class Connection implements SessionInterface
     public static function new(int $fd, array $clientInfo): self
     {
         /** @var self $conn */
-        $conn = bean(self::class);
+        $conn = Swoft::getBean(self::class);
 
         // Initial properties
         $conn->fd = $fd;

@@ -74,8 +74,9 @@ class HandshakeListener implements HandshakeInterface
         $ctx  = WsHandshakeContext::new($psr7Req, $psr7Res);
         $conn = Connection::new($wsServer, $psr7Req, $psr7Res);
 
-        // Bind connection and bind cid => sid(fd)
-        Session::set($sid, $conn);
+        // Storage connection and bind cid => sid(fd)
+        // old: Session::set($sid, $conn);
+        Swoft::getBean('wsConnectionManager')->set($sid, $conn);
         // Storage context
         Context::set($ctx);
 

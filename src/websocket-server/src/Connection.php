@@ -71,6 +71,22 @@ class Connection implements SessionInterface
     private $moduleInfo = [];
 
     /**
+     * @return ConnectionManager
+     */
+    public static function manager(): ConnectionManager
+    {
+        return Swoft::getBean('wsConnectionManager');
+    }
+
+    /**
+     * @return static
+     */
+    public static function current(): self
+    {
+        return Swoft::getBean('wsConnectionManager')->current();
+    }
+
+    /**
      * @param WebSocketServer $server
      * @param Request         $request
      * @param Response        $response

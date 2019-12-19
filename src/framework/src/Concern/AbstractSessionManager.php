@@ -118,6 +118,16 @@ abstract class AbstractSessionManager
     abstract protected function restoreSession(string $sessionData): SessionInterface;
 
     /**
+     * @return SessionInterface
+     */
+    public function current(): SessionInterface
+    {
+        $sessionId = Session::getBoundedSid();
+
+        return $this->mustGet($sessionId);
+    }
+
+    /**
      * @param string $sessionId
      *
      * @return SessionInterface
