@@ -12,6 +12,7 @@ use SwoftTool\Command\GitForcePush;
 use SwoftTool\Command\GitReleaseTag;
 use SwoftTool\Command\GitSubtreePush;
 use SwoftTool\Command\GitSubtreePull;
+use SwoftTool\Command\ListComponents;
 use SwoftTool\Command\UpdateSwooleVer;
 use Toolkit\Cli\App;
 
@@ -31,5 +32,6 @@ $cli->addByConfig($gsp2 = new GitSubtreePull(), $gsp2->getHelpConfig());
 $cli->addByConfig($cmd = new GenReadme(), $cmd->getHelpConfig());
 $cli->addByConfig($cmd = new GenVersion(), $cmd->getHelpConfig());
 $cli->addByConfig($cmd = new UpdateSwooleVer(), $cmd->getHelpConfig());
+$cli->addByConfig($cmd = new ListComponents(), $cmd->getHelpConfig());
 
 $cli->run();
