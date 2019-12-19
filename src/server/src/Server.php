@@ -830,8 +830,6 @@ abstract class Server implements ServerInterface
 
     /**
      * Quick restart
-     *
-     * @throws Swoft\Exception\SwoftException
      */
     public function restart(): void
     {

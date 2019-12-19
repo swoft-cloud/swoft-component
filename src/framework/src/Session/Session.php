@@ -22,7 +22,9 @@ class Session
     private static $idMap = [];
 
     /**
-     * Session connection list
+     * Activity ws/tcp session connection list.
+     *
+     * NOTICE: storage data will lost of on worker reload.
      *
      * @var SessionInterface[]
      *

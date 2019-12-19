@@ -19,6 +19,7 @@ use function sprintf;
  * Class ConnectionStorage - use for restore connection data on worker reload
  *
  * @since 2.0.6
+ * @deprecated please use ConnectionManager instead, will remove it on 2.0.10+
  * @Bean("wsConnStorage")
  */
 class ConnectionStorage

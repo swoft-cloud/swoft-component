@@ -15,6 +15,7 @@ use Swoft\Config\Annotation\Mapping\Config;
  * Class ConnStorageSubscriber
  *
  * @since 2.0.6
+ * @deprecated please use ConnectionManager instead, will remove it on 2.0.10+
  * @Subscriber()
  */
 class ConnStorageSubscriber implements EventSubscriberInterface
