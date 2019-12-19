@@ -80,6 +80,9 @@ final class AutoLoader extends SwoftComponent
             'wsDispatcher' => [
                 'class' => WsDispatcher::class,
             ],
+            'wsConnectionManager' => [
+                'prefix'  => 'ws'
+            ],
         ];
     }
 }

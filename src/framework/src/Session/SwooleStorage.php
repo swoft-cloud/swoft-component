@@ -39,6 +39,14 @@ class SwooleStorage implements SessionStorageInterface
     }
 
     /**
+     * destroy swoole table on exist
+     */
+    public function __destruct()
+    {
+        $this->db->destroy();
+    }
+
+    /**
      * create table
      */
     public function create(): void

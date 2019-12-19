@@ -7,6 +7,8 @@ use Swoft\Contract\SessionStorageInterface;
 /**
  * Class ArrayStorageHandler
  *
+ * NOTICE: only can use for test run, storage data will lost of on worker reload.
+ *
  * @since 2.0.8
  */
 class ArrayStorage implements SessionStorageInterface

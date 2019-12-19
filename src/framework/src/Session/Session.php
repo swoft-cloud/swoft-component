@@ -2,9 +2,9 @@
 
 namespace Swoft\Session;
 
-use Swoft;
 use Swoft\Co;
 use Swoft\Contract\SessionInterface;
+use Swoft\Exception\SessionException;
 use Swoft\WebSocket\Server\Connection;
 
 /**
@@ -12,12 +12,8 @@ use Swoft\WebSocket\Server\Connection;
  *
  * @since 2.0
  */
-final class Session
+class Session
 {
-    // The global session manager and storage bean name
-    public const ManagerBean = 'gSessionManager';
-    public const StorageBean = 'gSessionStorage';
-
     /**
      * The map for coroutineID to SessionID
      *
@@ -26,12 +22,23 @@ final class Session
     private static $idMap = [];
 
     /**
-     * @return SessionManager
+     * Activity ws/tcp session connection list.
+     *
+     * NOTICE: storage data will lost of on worker reload.
+     *
+     * @var SessionInterface[]
+     *
+     * @example
+     * [
+     *      // Such as webSocket connection
+     *      'fd'  => SessionInterface,
+     *      'fd2' => SessionInterface,
+     *      'fd3' => SessionInterface,
+     *      // Such as http session
+     *      'sess id' => SessionInterface,
+     * ]
      */
-    public static function getManager(): SessionManager
-    {
-        return Swoft::getBean(self::ManagerBean);
-    }
+    private static $sessions = [];
 
     /*****************************************************************************
      * SID and CID relationship manage
@@ -89,21 +96,20 @@ final class Session
      */
     public static function has(string $sid): bool
     {
-        return self::getManager()->has($sid);
+        return isset(self::$sessions[$sid]);
     }
 
     /**
      * Get session by FD
      *
      * @param string $sid If not specified, return the current corresponding session
-     *
      * @return SessionInterface|Connection
      */
     public static function get(string $sid = ''): ?SessionInterface
     {
         $sid = $sid ?: self::getBoundedSid();
 
-        return self::getManager()->get($sid);
+        return self::$sessions[$sid] ?? null;
     }
 
     /**
@@ -114,23 +120,28 @@ final class Session
     public static function current(): SessionInterface
     {
         $sid = self::getBoundedSid();
+        if (isset(self::$sessions[$sid])) {
+            return self::$sessions[$sid];
+        }
 
-        return self::getManager()->mustGet($sid);
+        throw new SessionException('session information has been lost of the SID: ' . $sid);
     }
 
     /**
      * Get connection by FD. if not found will throw exception.
-     * NOTICE: recommend use Session::current() instead of the method.
      *
      * @param string $sid
-     *
      * @return SessionInterface|Connection
      */
     public static function mustGet(string $sid = ''): SessionInterface
     {
         $sid = $sid ?: self::getBoundedSid();
 
-        return self::getManager()->mustGet($sid);
+        if (isset(self::$sessions[$sid])) {
+            return self::$sessions[$sid];
+        }
+
+        throw new SessionException('session information has been lost of the SID: ' . $sid);
     }
 
     /**
@@ -141,23 +152,26 @@ final class Session
      */
     public static function set(string $sid, SessionInterface $session): void
     {
-        // self::$sessions[$sid] = $session;
-        self::getManager()->set($sid, $session);
+        self::$sessions[$sid] = $session;
 
         // Bind cid => sid(fd)
         self::bindCo($sid);
     }
 
     /**
-     * Destroy session by sessionId
+     * Destroy session
      *
      * @param string $sid If empty, destroy current CID relationship session
-     *
-     * @return bool
      */
-    public static function destroy(string $sid): bool
+    public static function destroy(string $sid = ''): void
     {
-        return self::getManager()->destroy($sid);
+        $sid = $sid ?: self::getBoundedSid();
+
+        if (isset(self::$sessions[$sid])) {
+            // Clear self data.
+            self::$sessions[$sid]->clear();
+            unset(self::$sessions[$sid]);
+        }
     }
 
     /**
@@ -165,19 +179,7 @@ final class Session
      */
     public static function clear(): void
     {
-        self::$idMap = [];
-
-        self::getManager()->clear();
-    }
-
-    /**
-     * Clear all caches
-     */
-    public static function clearCaches(): void
-    {
-        self::$idMap = [];
-
-        self::getManager()->clearCaches();
+        self::$idMap = self::$sessions = [];
     }
 
     /**
@@ -189,12 +191,10 @@ final class Session
     }
 
     /**
-     * Only get all sessions in current worker memory.
-     *
      * @return SessionInterface[]
      */
     public static function getSessions(): array
     {
-        return self::getManager()->getCaches();
+        return self::$sessions;
     }
 }

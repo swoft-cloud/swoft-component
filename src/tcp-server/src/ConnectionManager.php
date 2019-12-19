@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Swoft\WebSocket\Server;
+namespace Swoft\Tcp\Server;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Contract\SessionInterface;
@@ -11,7 +11,7 @@ use Swoft\Stdlib\Helper\JsonHelper;
  * Class ConnectionManager
  *
  * @since 2.0.8
- * @Bean("wsConnectionManager")
+ * @Bean("tcpConnectionManager")
  */
 class ConnectionManager extends AbstractSessionManager
 {
