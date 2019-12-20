@@ -36,6 +36,14 @@ class Connection implements SessionInterface
     }
 
     /**
+     * @return static
+     */
+    public static function current(): self
+    {
+        return Swoft::getBean('tcpConnectionManager')->current();
+    }
+
+    /**
      * @param int   $fd
      * @param array $clientInfo
      *

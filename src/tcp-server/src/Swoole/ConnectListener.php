@@ -37,8 +37,9 @@ class ConnectListener implements ConnectInterface
         $ctx  = TcpConnectContext::new($fd, $reactorId);
         $conn = Connection::new($fd, (array)$server->getClientInfo($fd));
 
-        // Bind session connection and bind cid => sid(fd)
-        Session::set($sid, $conn);
+        // Storage session connection and bind cid => sid(fd)
+        // old: Session::set($sid, $conn);
+        Swoft::getBean('tcpConnectionManager')->set($sid, $conn);
         // Storage context
         Context::set($ctx);
 
