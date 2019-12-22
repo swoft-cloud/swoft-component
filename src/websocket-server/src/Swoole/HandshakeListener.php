@@ -69,6 +69,7 @@ class HandshakeListener implements HandshakeInterface
         $psr7Req  = Psr7Request::new($request);
         $psr7Res  = Psr7Response::new($response);
         $wsServer = Swoft::getBean('wsServer');
+        $manager  = Swoft::getBean('wsConnectionManager');
 
         // Initialize connection session and context
         $ctx  = WsHandshakeContext::new($psr7Req, $psr7Res);
@@ -76,7 +77,7 @@ class HandshakeListener implements HandshakeInterface
 
         // Storage connection and bind cid => sid(fd)
         // old: Session::set($sid, $conn);
-        Swoft::getBean('wsConnectionManager')->set($sid, $conn);
+        $manager->set($sid, $conn);
         // Storage context
         Context::set($ctx);
 
@@ -102,6 +103,8 @@ class HandshakeListener implements HandshakeInterface
             // Response handshake successfully
             $meta = $conn->getMetadata();
             $conn->setHandshake(true);
+            // NOTICE: must sync connection data to storage
+            $manager->set($sid, $conn);
             $psr7Res->quickSend();
 
             $wsServer->log("Handshake: conn#{$fd} handshake successful! meta:", $meta, 'debug');
@@ -122,6 +125,9 @@ class HandshakeListener implements HandshakeInterface
 
             $psr7Res = $errDispatcher->handshakeError($e, $psr7Res);
             $psr7Res->quickSend();
+
+            // Should clear session data on handshake fail
+            $manager->destroy($sid);
         } finally {
             // Defer
             Swoft::trigger(SwoftEvent::COROUTINE_DEFER);

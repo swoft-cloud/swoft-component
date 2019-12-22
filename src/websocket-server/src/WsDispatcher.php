@@ -43,6 +43,7 @@ class WsDispatcher
         $path = $request->getUriPath();
 
         if (!$info = $router->match($path)) {
+            server()->log("Requested websocket route path '{$path}' is not exist, rejected", [], 'debug');
             throw new WsModuleRouteException(sprintf('The requested websocket route path "%s" is not exist!', $path));
         }
 
