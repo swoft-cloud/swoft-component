@@ -435,15 +435,17 @@ class Logger extends \Monolog\Logger
             return;
         }
 
-        reset($this->handlers);
-
-        while ($handler = current($this->handlers)) {
-            $handler->handleBatch($this->messages);
-            next($this->handlers);
-        }
+        $messages = $this->messages;
 
         // Clear message
         $this->messages = [];
+
+        reset($this->handlers);
+
+        while ($handler = current($this->handlers)) {
+            $handler->handleBatch($messages);
+            next($this->handlers);
+        }
     }
 
     /**
