@@ -14,7 +14,8 @@ use Doctrine\Common\Annotations\Annotation\Target;
  * @Annotation
  * @Target("PROPERTY")
  * @Attributes({
- *     @Attribute("message", type="string")
+ *     @Attribute("message", type="string"),
+ *     @Attribute("format", type="string")
  * })
  */
 class Date
@@ -23,6 +24,11 @@ class Date
      * @var string
      */
     private $message = '';
+
+    /**
+     * @var string
+     */
+    private $format = '';
 
     /**
      * Date constructor.
@@ -34,8 +40,13 @@ class Date
         if (isset($values['value'])) {
             $this->message = $values['value'];
         }
+
         if (isset($values['message'])) {
             $this->message = $values['message'];
+        }
+
+        if (isset($values['format'])) {
+            $this->format = $values['format'];
         }
     }
 
@@ -45,5 +56,13 @@ class Date
     public function getMessage(): string
     {
         return $this->message;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFormat(): string
+    {
+        return $this->format;
     }
 }

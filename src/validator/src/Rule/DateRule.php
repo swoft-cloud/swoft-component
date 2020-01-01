@@ -28,13 +28,23 @@ class DateRule implements RuleInterface
      */
     public function validate(array $data, string $propertyName, $item, $default = null): array
     {
+        /* @var Date $item */
+        $format = $item->getFormat();
+
         $value = $data[$propertyName];
-        if (is_string($value)) {
-            $dt = DateTime::createFromFormat("Y-m-d H:i:s", $value);
+
+        if (! empty($format)) {
+            $parsed = date_parse_from_format($format, $value);
+
+            if ($parsed['error_count'] === 0 && $parsed['warning_count'] === 0) {
+                return $data;
+            }
+        } elseif (is_string($value)) {
+            $dt = DateTime::createFromFormat('Y-m-d H:i:s', $value);
             if ($dt !== false && !array_sum($dt::getLastErrors())) {
                 return $data;
             } elseif (ctype_digit($value)) {
-                if (date('Y-m-d', (int)$value)) {
+                if (date('Y-m-d', (int) $value)) {
                     return $data;
                 }
             }
@@ -43,6 +53,7 @@ class DateRule implements RuleInterface
                 return $data;
             }
         }
+
         /* @var Date $item */
         $message = $item->getMessage();
         $message = (empty($message)) ? sprintf('%s must date!', $propertyName) : $message;
