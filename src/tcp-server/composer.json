@@ -1,7 +1,7 @@
 {
   "name": "swoft/tcp-server",
   "type": "library",
-  "version": "v2.0.7",
+  "version": "v2.0.8",
   "keywords": [
     "php",
     "swoole",
