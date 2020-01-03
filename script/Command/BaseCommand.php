@@ -4,6 +4,7 @@ namespace SwoftTool\Command;
 
 use Generator;
 use InvalidArgumentException;
+use function swoole_cpu_num;
 use const PHP_EOL;
 use function sprintf;
 use Swoft\Stdlib\Helper\Sys;
@@ -35,10 +36,16 @@ abstract class BaseCommand
      */
     protected $debug = false;
 
+    /**
+     * @var int
+     */
+    protected $cpuNum;
+
     public function __construct()
     {
         $this->baseDir = BASE_PATH;
         $this->libsDir = BASE_PATH . '/src/';
+        $this->cpuNum  = swoole_cpu_num();
     }
 
     /**

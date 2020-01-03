@@ -1,5 +1,8 @@
 # Swoft Component
 
+[![Actions Status](https://github.com/swoft-cloud/swoft-component/workflows/Unit-tests/badge.svg)](https://github.com/swoft-cloud/swoft-component/actions)
+
+
 This repository is used to manage all swoft core components.
 
 ## [中文说明](README.zh-CN.md)

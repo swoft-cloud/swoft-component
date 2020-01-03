@@ -63,6 +63,9 @@ class AutoLoader extends SwoftComponent
             'tcpServerProtocol' => [
                 'class' => Protocol::class,
             ],
+            'tcpConnectionManager' => [
+                'prefix' => 'tcp',
+            ]
         ];
     }
 }

@@ -67,7 +67,8 @@ class MessageListener implements MessageInterface
             Swoft::trigger(WsServerEvent::MESSAGE_RECEIVE, $fd, $server, $frame);
 
             /** @var Connection $conn */
-            $conn = Session::current();
+            // $conn = Session::current();
+            $conn = Connection::current();
             $info = $conn->getModuleInfo();
 
             // Want custom message handle, will don't trigger message parse and dispatch.

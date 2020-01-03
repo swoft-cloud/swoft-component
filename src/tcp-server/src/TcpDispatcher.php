@@ -144,7 +144,6 @@ class TcpDispatcher implements MiddlewareInterface
      * @return ResponseInterface|Response
      * @throws CommandNotFoundException
      * @throws ReflectionException
-     * @throws Swoft\Exception\SwoftException
      */
     public function process(RequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

@@ -7,7 +7,6 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Context\Context;
 use Swoft\Log\Helper\CLog;
 use Swoft\Server\Concern\CommonProtocolDataTrait;
-use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\Context\WsMessageContext;
 use Swoft\WebSocket\Server\Contract\ResponseInterface;
@@ -200,8 +199,7 @@ class Response implements ResponseInterface
             return 0;
         }
 
-        /** @noinspection CallableParameterUseCaseInTypeContextInspection */
-        $conn = $conn ?: Session::current();
+        $conn = $conn ?: Connection::current();
 
         // Build response content
         $content = $this->formatContent($conn);

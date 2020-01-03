@@ -70,10 +70,10 @@ class CoroutineTest extends TestCase
     public function testGetHostByName(): void
     {
         $ip = '193.187.118.225';
-        $result = Co::getHostByName('www.swoft.org', 2);
+        $result = Co::getHostByName('www.swoft.io', 2);
         $this->assertEquals($result, $ip);
 
-        $result = Co::getAddrInfo('www.swoft.org');
+        $result = Co::getAddrInfo('www.swoft.io');
         $this->assertEquals($result, [$ip]);
     }
 }
