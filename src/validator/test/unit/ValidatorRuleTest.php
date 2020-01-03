@@ -393,7 +393,7 @@ class ValidatorRuleTest extends TestCase
     public function testDnsSuccess()
     {
         $data = [
-            'dataDns' => 'swoft.io'
+            'dataDns' => 'baidu.com'
         ];
         [$result] = (new Validator())->validateRequest($data,
             $this->getValidates(ValidatorRule::class, 'testDns'));
