@@ -4,16 +4,14 @@
 namespace Swoft\Process\Swoole;
 
 
-use ReflectionException;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
+use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Process\Contract\WorkerStartInterface;
 use Swoft\Process\ProcessDispatcher;
 use Swoft\Process\ProcessEvent;
 use Swoft\Process\ProcessPool;
 use Swoole\Process\Pool;
-use Swoft\Bean\Annotation\Mapping\Inject;
 
 
 /**

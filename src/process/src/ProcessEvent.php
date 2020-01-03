@@ -24,11 +24,11 @@ class ProcessEvent
      * Before process
      */
     public const BEFORE_PROCESS_START = 'swoft.process.start.before';
-    public const AFTER_PROCESS_START = 'swoft.process.start.after';
+    public const AFTER_PROCESS_START  = 'swoft.process.start.after';
 
     /**
      * After process
      */
     public const BEFORE_PROCESS_STOP = 'swoft.process.stop.before';
-    public const AFTER_PROCESS_STOP = 'swoft.process.stop.after';
+    public const AFTER_PROCESS_STOP  = 'swoft.process.stop.after';
 }
