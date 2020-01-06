@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Aop\Concern;
 
 use ReflectionException;
@@ -70,10 +69,10 @@ trait AopTrait
      */
     public function getArgsMap(string $className, string $method, array $args): array
     {
-        $relections = Reflections::get($className);
+        $reflections = Reflections::get($className);
 
         $argsMap = [];
-        $params  = $relections['methods'][$method]['params'];
+        $params  = $reflections['methods'][$method]['params'];
 
         // Empty params
         if (empty($params)) {
