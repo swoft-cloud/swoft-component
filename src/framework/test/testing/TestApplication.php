@@ -38,7 +38,8 @@ class TestApplication extends SwoftApplication
             new ConfigProcessor($this),
             new AnnotationProcessor($this),
             new BeanProcessor($this),
-            new EventProcessor($this)
+            new EventProcessor($this),
+            new ConsoleProcessor($this),
         ];
     }
 }

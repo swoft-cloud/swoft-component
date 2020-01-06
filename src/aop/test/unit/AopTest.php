@@ -4,16 +4,16 @@
 namespace SwoftTest\Aop\Unit;
 
 
-use function class_exists;
-use const PHP_EOL;
 use PHPUnit\Framework\TestCase;
-use function sprintf;
 use Swoft\Aop\Ast\Visitor\ProxyVisitor;
 use Swoft\Aop\Proxy;
 use Swoft\Proxy\Ast\Parser;
 use Swoft\Proxy\Exception\ProxyException;
 use Swoft\Proxy\Proxy as BaseProxy;
 use SwoftTest\Aop\Testing\AopClass;
+use function class_exists;
+use function sprintf;
+use const PHP_EOL;
 
 
 /**
@@ -52,7 +52,7 @@ class AopTest extends TestCase
         // Proxy file and proxy code
         $proxyCode = sprintf('<?php %s %s', PHP_EOL, $proxyCode);
 
-        $tpFile  = __DIR__ . '/template/aop.tp';
+        $tpFile = __DIR__ . '/template/aop.tp';
 
         $codeMd5 = md5($proxyCode);
         $tpMd5   = md5(file_get_contents($tpFile));
