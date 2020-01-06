@@ -43,7 +43,7 @@ class EnvProcessor extends Processor
 
         if (!file_exists($envFile)) {
             CLog::warning('Env file(%s) is not exist! skip load it', $envFile);
-            return true;
+            return $this->application->afterEnv();
         }
 
         // Load env info
@@ -55,8 +55,8 @@ class EnvProcessor extends Processor
 
         $path = dirname($envFile);
         $name = basename($envFile);
-        Dotenv::create($path, $name, $factory)->load();
 
+        Dotenv::create($path, $name, $factory)->overload();
         CLog::info('Env file(%s) is loaded', $envFile);
 
         return $this->application->afterEnv();
