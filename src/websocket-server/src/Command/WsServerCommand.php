@@ -10,6 +10,7 @@ use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Server;
 use Swoft\Server\SwooleEvent;
 use Swoft\WebSocket\Server\WebSocketServer;
+use Swoft\WebSocket\Server\WsServerBean;
 use Throwable;
 use function bean;
 use function input;
@@ -125,7 +126,7 @@ class WsServerCommand extends BaseServerCommand
         $command = $this->getFullCommand();
 
         /* @var WebSocketServer $server */
-        $server = bean('wsServer');
+        $server = bean(WsServerBean::SERVER);
         $server->setScriptFile($script);
         $server->setFullCommand($command);
 

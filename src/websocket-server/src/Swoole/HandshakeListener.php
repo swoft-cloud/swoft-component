@@ -19,6 +19,7 @@ use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\Helper\WsHelper;
 use Swoft\WebSocket\Server\WsDispatcher;
 use Swoft\WebSocket\Server\WsErrorDispatcher;
+use Swoft\WebSocket\Server\WsServerBean;
 use Swoft\WebSocket\Server\WsServerEvent;
 use Swoole\Coroutine;
 use Swoole\Http\Request;
@@ -68,8 +69,8 @@ class HandshakeListener implements HandshakeInterface
         // Initialize psr7 Request and Response
         $psr7Req  = Psr7Request::new($request);
         $psr7Res  = Psr7Response::new($response);
-        $wsServer = Swoft::getBean('wsServer');
-        $manager  = Swoft::getBean('wsConnectionManager');
+        $wsServer = Swoft::getBean(WsServerBean::SERVER);
+        $manager  = Swoft::getBean(WsServerBean::MANAGER);
 
         // Initialize connection session and context
         $ctx  = WsHandshakeContext::new($psr7Req, $psr7Res);

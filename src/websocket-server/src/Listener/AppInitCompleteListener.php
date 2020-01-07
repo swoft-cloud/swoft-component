@@ -9,6 +9,7 @@ use Swoft\Log\Helper\CLog;
 use Swoft\SwoftEvent;
 use Swoft\WebSocket\Server\Router\Router;
 use Swoft\WebSocket\Server\Router\RouteRegister;
+use Swoft\WebSocket\Server\WsServerBean;
 use function bean;
 
 /**
@@ -25,10 +26,10 @@ class AppInitCompleteListener implements EventHandlerInterface
      */
     public function handle(EventInterface $event): void
     {
-        // Register WebSocket routes
+        // Register webSocket routes
 
         /** @var Router $router */
-        $router = bean('wsRouter');
+        $router = bean(WsServerBean::ROUTER);
 
         RouteRegister::registerTo($router);
 
