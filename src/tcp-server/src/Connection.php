@@ -32,7 +32,7 @@ class Connection implements SessionInterface
      */
     public static function manager(): ConnectionManager
     {
-        return Swoft::getBean('tcpConnectionManager');
+        return Swoft::getBean(TcpServerBean::MANAGER);
     }
 
     /**
@@ -40,7 +40,7 @@ class Connection implements SessionInterface
      */
     public static function current(): self
     {
-        return Swoft::getBean('tcpConnectionManager')->current();
+        return Swoft::getBean(TcpServerBean::MANAGER)->current();
     }
 
     /**

@@ -13,6 +13,7 @@ use Swoft\SwoftEvent;
 use Swoft\Tcp\Server\Connection;
 use Swoft\Tcp\Server\Context\TcpCloseContext;
 use Swoft\Tcp\Server\TcpErrorDispatcher;
+use Swoft\Tcp\Server\TcpServerBean;
 use Swoft\Tcp\Server\TcpServerEvent;
 use Swoole\Server;
 use Throwable;
@@ -20,7 +21,7 @@ use Throwable;
 /**
  * Class CloseListener
  *
- * @since 2.0
+ * @since 2.0.4
  * @Bean()
  */
 class CloseListener implements CloseInterface
@@ -42,7 +43,7 @@ class CloseListener implements CloseInterface
         Session::bindCo($sid);
 
         /** @var Swoft\Tcp\Server\ConnectionManager $manager */
-        $manager = Swoft::getBean('tcpConnectionManager');
+        $manager = Swoft::getBean(TcpServerBean::MANAGER);
 
         try {
             // Trigger event
