@@ -61,7 +61,7 @@ if (!function_exists('printr')) {
         $pos  = $trace[1]['class'] ?? $trace[0]['file'];
 
         if ($pos) {
-            echo "CALL ON $pos($line):\n";
+            echo "PRINT ON $pos($line):\n";
         }
 
         foreach ($vars as $var) {
@@ -86,7 +86,7 @@ if (!function_exists('vdump')) {
         $pos  = $trace[1]['class'] ?? $trace[0]['file'];
 
         if ($pos) {
-            echo "CALL ON $pos($line):\n";
+            echo "PRINT ON $pos($line):\n";
         }
 
         ob_start();

@@ -7,9 +7,9 @@
 
 Swoft Event Component
 
-## [中文说明](README.zh-CN.md)
+## [ENGLISH](README.md)
 
-中文说明请查看 [README.zh-CN.md](README.zh-CN.md)
+English readme please sess [README.md](README.md)
 
 ## Install
 
