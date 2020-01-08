@@ -84,7 +84,7 @@ use Throwable;
  * @method array|bool scan(int &$iterator, string $pattern = null, int $count = 0)
  * @method mixed script(string|array $nodeParams, string $command, string $script)
  * @method bool set(string $key, $value, $timeout = null)
- * @method int setBit(string $key, int $offset, int $value)
+ * @method int setBit(string $key, int $offset, bool $value)
  * @method string setRange(string $key, int $offset, $value)
  * @method int setex(string $key, int $ttl, $value)
  * @method bool setnx(string $key, $value)
