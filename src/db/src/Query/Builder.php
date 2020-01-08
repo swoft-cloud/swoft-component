@@ -242,6 +242,13 @@ class Builder implements PrototypeInterface
     public $db = '';
 
     /**
+     * @link https://php.net/manual/en/pdo.constants.php#pdo.constants.fetch-obj
+     *
+     * @var int
+     */
+    protected $fetchMode = 0;
+
+    /**
      * @var array
      */
     public $grammars = [
@@ -3317,9 +3324,23 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function db(string $dbname)
+    public function db(string $dbname): self
     {
         $this->db = $dbname;
+        return $this;
+    }
+
+    /**
+     * Set fetch mode
+     *
+     * @param int $mode
+     *
+     * @return $this
+     */
+    public function setFetchMode(int $mode): self
+    {
+        $this->fetchMode = $mode;
+
         return $this;
     }
 
@@ -3336,6 +3357,11 @@ class Builder implements PrototypeInterface
         // Select db name
         if (!empty($this->db)) {
             $connection->db($this->db);
+        }
+
+        // Choose this select fetch mode
+        if (!empty($this->fetchMode)) {
+            $connection->setFetchMode($this->fetchMode);
         }
 
         return $connection;

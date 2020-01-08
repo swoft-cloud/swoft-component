@@ -169,6 +169,9 @@ use function bean;
  * @method static float|int average(string $column)
  * @method static void truncate()
  * @method static Builder useWritePdo()
+ * @method static Builder setFetchMode(int $mode)
+ * @method static static|null first()
+ * @method static array firstArray()
  */
 abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
 {

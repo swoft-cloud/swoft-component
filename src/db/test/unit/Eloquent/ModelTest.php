@@ -966,4 +966,22 @@ on A.id=B.id;', [$resCount - 20]);
         $this->assertEquals(2, $findUser->getAge());
         $this->assertEquals('changed user_desc', $findUser->getUserDesc());
     }
+
+    public function testModelFirstArray(): void
+    {
+        $id     = 1;
+        $origin = ['age' => 1, 'user_desc' => 'swoft'];
+
+        User::updateOrCreate(['id' => $id], $origin);
+
+        $user1 = User::first();
+        $this->assertInstanceOf(User::class, $user1);
+
+        $user1 = User::where('id', $id)->first();
+        $this->assertInstanceOf(User::class, $user1);
+
+        $user1 = User::where('id', $id)->firstArray();
+        $this->assertIsArray($user1);
+        $this->assertArrayHasKey('testJson', $user1);
+    }
 }
