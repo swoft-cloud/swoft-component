@@ -10,6 +10,7 @@ use Swoft\SwoftEvent;
 
 /**
  * Class SessionCompleteListener
+ *
  * @Listener(SwoftEvent::SESSION_COMPLETE)
  */
 class SessionCompleteListener implements EventHandlerInterface

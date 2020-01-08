@@ -37,8 +37,10 @@ class ConnectListener implements ConnectInterface
         $ctx  = TcpConnectContext::new($fd, $reactorId);
         $conn = Connection::new($fd, (array)$server->getClientInfo($fd));
 
-        // Bind session connection and bind cid => sid(fd)
-        Session::set($sid, $conn);
+        // Storage session connection and bind cid => sid(fd)
+        // old: Session::set($sid, $conn);
+        $manager = Swoft::getBean('tcpConnectionManager');
+        $manager->set($sid, $conn);
         // Storage context
         Context::set($ctx);
 
@@ -56,6 +58,9 @@ class ConnectListener implements ConnectInterface
 
             // Handle connect error
             $errDispatcher->connectError($e, $fd);
+
+            // Should clear session data on handshake fail
+            $manager->destroy($sid);
         } finally {
             // Trigger defer event
             Swoft::trigger(SwoftEvent::COROUTINE_DEFER);

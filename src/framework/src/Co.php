@@ -5,7 +5,6 @@ namespace Swoft;
 use RuntimeException;
 use Swoft;
 use Swoft\Context\Context;
-use Swoft\Exception\SwoftException;
 use Swoft\Log\Debug;
 use Swoft\Log\Error;
 use Swoft\Log\Helper\CLog;
@@ -149,13 +148,12 @@ class Co
      * @param int    $flags
      *
      * @return int
-     * @throws SwoftException
      */
     public static function writeFile(string $filename, string $data, int $flags = FILE_USE_INCLUDE_PATH): int
     {
         $result = Coroutine::writeFile($filename, $data, $flags);
         if ($result === false) {
-            throw new SwoftException(sprintf('Write(%s) file error!', $filename));
+            throw new RuntimeException(sprintf('Write(%s) file error!', $filename));
         }
 
         return $result;
@@ -167,7 +165,6 @@ class Co
      * @param string $filename
      *
      * @return string
-     * @throws RuntimeException
      */
     public static function readFile(string $filename): string
     {
@@ -287,7 +284,6 @@ class Co
      * @param int $limit
      *
      * @return array
-     * @throws SwoftException
      */
     public static function getBackTrace(
         int $cid = 0,
@@ -296,7 +292,7 @@ class Co
     ): array {
         $result = Coroutine::getBackTrace($cid, $options, $limit);
         if ($result === false) {
-            throw new SwoftException('cid is not exist!');
+            throw new RuntimeException('cid is not exist!');
         }
 
         return $result;
@@ -323,13 +319,13 @@ class Co
      * @param int      $length
      *
      * @return string
-     * @throws SwoftException
+     * @throws RuntimeException
      */
     public static function fread($handle, int $length = 0): string
     {
         $result = Coroutine::fread($handle, $length);
         if ($result === false) {
-            throw new SwoftException('Fread file error!');
+            throw new RuntimeException('Fread file error!');
         }
 
         return $result;
@@ -339,13 +335,13 @@ class Co
      * @param resource $handle
      *
      * @return string
-     * @throws SwoftException
+     * @throws RuntimeException
      */
     public static function fgets($handle): string
     {
         $result = Coroutine::fgets($handle);
         if ($result === false) {
-            throw new SwoftException('Fgets file error!');
+            throw new RuntimeException('Fgets file error!');
         }
 
         return $result;
@@ -357,13 +353,13 @@ class Co
      * @param int      $length
      *
      * @return int
-     * @throws SwoftException
+     * @throws RuntimeException
      */
     public static function fwrite($handle, string $data, int $length = 0): int
     {
         $result = Coroutine::fwrite($handle, $data, $length);
         if ($result === false) {
-            throw new SwoftException('Fwrite file error! data=' . $data);
+            throw new RuntimeException('Fwrite file error! data=' . $data);
         }
 
         return $result;
@@ -383,13 +379,12 @@ class Co
      * @param int    $family
      *
      * @return string
-     * @throws SwoftException
      */
     public static function getHostByName(string $domain, float $timeout, int $family = 2): string
     {
         $result = Coroutine::gethostbyname($domain, $family, $timeout);
         if ($result === false) {
-            throw new SwoftException('GetHostByName error! domain=' . $domain);
+            throw new RuntimeException('GetHostByName error! domain=' . $domain);
         }
 
         return $result;
@@ -403,7 +398,6 @@ class Co
      * @param string|null $service
      *
      * @return array
-     * @throws SwoftException
      */
     public static function getAddrInfo(
         string $domain,
@@ -414,7 +408,7 @@ class Co
     ): array {
         $result = Coroutine::getaddrinfo($domain, $family, $socktype, $protocol, $service);
         if ($result === false) {
-            throw new SwoftException('GetAddrInfo error! domain=' . $domain);
+            throw new RuntimeException('GetAddrInfo error! domain=' . $domain);
         }
 
         return $result;
@@ -424,13 +418,13 @@ class Co
      * @param string $cmd
      *
      * @return array
-     * @throws SwoftException
+     * @throws RuntimeException
      */
     public static function exec(string $cmd): array
     {
         $result = Coroutine::exec($cmd);
         if ($result === false) {
-            throw new SwoftException('Exec error! command=' . $cmd);
+            throw new RuntimeException('Exec error! command=' . $cmd);
         }
 
         return $result;
@@ -440,13 +434,13 @@ class Co
      * @param string $path
      *
      * @return array
-     * @throws SwoftException
+     * @throws RuntimeException
      */
     public static function statVfs(string $path): array
     {
         $result = Coroutine::statvfs($path);
         if ($result === false) {
-            throw new SwoftException('StatVfs error! path=' . $path);
+            throw new RuntimeException('StatVfs error! path=' . $path);
         }
 
         return $result;

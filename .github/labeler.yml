@@ -1,0 +1,75 @@
+# Add 'kind/annotation' label to any change within the 'annotation' component
+kind/annotation:
+  - src/annotation/**/*
+# add label for 'aop' component
+kind/aop:
+  - src/aop/**/*
+# add label for 'bean' component
+kind/bean:
+  - src/bean/**/*
+# add label for 'config' component
+kind/config:
+  - src/config/**/*
+# add label for 'connection-pool' component
+kind/connection-pool:
+  - src/connection-pool/**/*
+# add label for 'console' component
+kind/console:
+  - src/console/**/*
+# add label for 'db' component
+kind/db:
+  - src/db/**/*
+# add label for 'error' component
+kind/error:
+  - src/error/**/*
+# add label for 'event' component
+kind/event:
+  - src/event/**/*
+# add label for 'framework' component
+kind/framework:
+  - src/framework/**/*
+# add label for 'http-message' component
+kind/http-message:
+  - src/http-message/**/*
+# add label for 'http-server' component
+kind/http-server:
+  - src/http-server/**/*
+# add label for 'i18n' component
+kind/i18n:
+  - src/i18n/**/*
+# add label for 'log' component
+kind/log:
+  - src/log/**/*
+# add label for 'process' component
+kind/process:
+  - src/process/**/*
+# add label for 'proxy' component
+kind/proxy:
+  - src/proxy/**/*
+# add label for 'redis' component
+kind/redis:
+  - src/redis/**/*
+# add label for 'rpc-server' component
+kind/rpc-server:
+  - src/rpc-server/**/*
+  - src/rpc-client/**/*
+  - src/rpc/**/*
+# add label for 'server' component
+kind/server:
+  - src/server/**/*
+# add label for 'stdlib' component
+kind/stdlib:
+  - src/stdlib/**/*
+# add label for 'task' component
+kind/task:
+  - src/task/**/*
+# add label for 'tcp-server' component
+kind/tcp-server:
+  - src/tcp-server/**/*
+  - src/tcp/**/*
+# add label for 'validator' component
+kind/validator:
+  - src/validator/**/*
+# add label for 'websocket-server' component
+kind/websocket-server:
+  - src/websocket-server/**/*

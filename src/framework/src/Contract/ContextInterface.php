@@ -33,16 +33,20 @@ interface ContextInterface
      *
      * @param string $key
      * @param mixed  $value
+     *
+     * @return bool
      */
-    public function set(string $key, $value): void;
+    public function set(string $key, $value): bool;
 
     /**
      * Set multi value to context
      *
      * @param array $map
      * [key => value]
+     *
+     * @return bool
      */
-    public function setMulti(array $map): void;
+    public function setMulti(array $map): bool;
 
     /**
      * Unset key

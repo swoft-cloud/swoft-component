@@ -2,6 +2,7 @@
 
 namespace Swoft\Tcp\Server;
 
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Contract\SessionInterface;
 use Swoft\Stdlib\Concern\DataPropertyTrait;
@@ -27,6 +28,22 @@ class Connection implements SessionInterface
     private $fd = 0;
 
     /**
+     * @return ConnectionManager
+     */
+    public static function manager(): ConnectionManager
+    {
+        return Swoft::getBean('tcpConnectionManager');
+    }
+
+    /**
+     * @return static
+     */
+    public static function current(): self
+    {
+        return Swoft::getBean('tcpConnectionManager')->current();
+    }
+
+    /**
      * @param int   $fd
      * @param array $clientInfo
      *
@@ -35,7 +52,7 @@ class Connection implements SessionInterface
     public static function new(int $fd, array $clientInfo): self
     {
         /** @var self $conn */
-        $conn = bean(self::class);
+        $conn = Swoft::getBean(self::class);
 
         // Initial properties
         $conn->fd = $fd;
@@ -48,17 +65,17 @@ class Connection implements SessionInterface
     /**
      * Create an connection from metadata array
      *
-     * @param array $metadata
+     * @param array $data
      *
      * @return Connection
      */
-    public static function newFromArray(array $metadata): self
+    public static function newFromArray(array $data): SessionInterface
     {
         /** @var self $conn */
         $conn = bean(self::class);
 
-        $conn->fd = $metadata['fd'];
-        $conn->set(self::METADATA_KEY, $metadata);
+        $conn->fd = (int)$data['fd'];
+        $conn->set(self::METADATA_KEY, $data);
 
         return $conn;
     }

@@ -8,7 +8,6 @@ use function array_multisort;
 use function count;
 use function explode;
 use function preg_match;
-use SwoftTest\Component\Testing\Aop\RegAop;
 
 /**
  * Class AopRegister

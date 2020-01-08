@@ -23,10 +23,13 @@ trait DataPropertyTrait
      *
      * @param string $key
      * @param mixed  $value
+     *
+     * @return bool
      */
-    public function set(string $key, $value): void
+    public function set(string $key, $value): bool
     {
         $this->data[$key] = $value;
+        return true;
     }
 
     /**
@@ -69,10 +72,13 @@ trait DataPropertyTrait
      *
      * @param array $map
      * [key => value]
+     *
+     * @return bool
      */
-    public function setMulti(array $map): void
+    public function setMulti(array $map): bool
     {
         $this->data = array_merge($this->data, $map);
+        return true;
     }
 
     /**

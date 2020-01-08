@@ -5,10 +5,8 @@ namespace Swoft\WebSocket\Server\Message;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Context\Context;
-use Swoft\Exception\SwoftException;
 use Swoft\Log\Helper\CLog;
 use Swoft\Server\Concern\CommonProtocolDataTrait;
-use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\Context\WsMessageContext;
 use Swoft\WebSocket\Server\Contract\ResponseInterface;
@@ -71,9 +69,9 @@ class Response implements ResponseInterface
     private $sendToAll = false;
 
     /**
-     * @var bool
+     * @var int
      */
-    private $finish = true;
+    private $finish = 1;
 
     /**
      * @var int WebSocket opcode value
@@ -170,10 +168,19 @@ class Response implements ResponseInterface
     }
 
     /**
+     * @return Response
+     */
+    public function broadcast(): self
+    {
+        // Exclude self
+        $this->noFds[] = $this->sender;
+        return $this;
+    }
+
+    /**
      * @param Connection $conn
      *
      * @return int
-     * @throws SwoftException
      */
     public function send(Connection $conn = null): int
     {
@@ -192,8 +199,7 @@ class Response implements ResponseInterface
             return 0;
         }
 
-        /** @noinspection CallableParameterUseCaseInTypeContextInspection */
-        $conn = $conn ?: Session::current();
+        $conn = $conn ?: Connection::current();
 
         // Build response content
         $content = $this->formatContent($conn);
@@ -235,7 +241,6 @@ class Response implements ResponseInterface
      * @param Connection|null $conn
      *
      * @return string
-     * @throws SwoftException
      */
     protected function formatContent(Connection $conn): string
     {
@@ -358,17 +363,25 @@ class Response implements ResponseInterface
      */
     public function isFinish(): bool
     {
+        return $this->finish === 1;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFinish(): int
+    {
         return $this->finish;
     }
 
     /**
-     * @param bool $finish
+     * @param bool|int $finish
      *
      * @return self
      */
-    public function setFinish(bool $finish): self
+    public function setFinish($finish): self
     {
-        $this->finish = $finish;
+        $this->finish = (int)$finish;
         return $this;
     }
 

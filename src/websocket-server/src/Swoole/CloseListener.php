@@ -57,6 +57,9 @@ class CloseListener implements CloseInterface
         // Unbind cid => sid(fd)
         Session::bindCo($sid);
 
+        /** @var Swoft\WebSocket\Server\ConnectionManager $manager */
+        $manager = Swoft::getBean('wsConnectionManager');
+
         try {
             // Call on close callback
             Swoft::trigger(WsServerEvent::CLOSE_BEFORE, $fd, $server);
@@ -67,7 +70,8 @@ class CloseListener implements CloseInterface
                 $this->notifyOtherWorkersClose($fd, $sid, $server->worker_id);
             } else {
                 /** @var Connection $conn */
-                $conn  = Session::mustGet();
+                // $conn  = Session::mustGet();
+                $conn  = $manager->current();
                 $total = server()->count() - 1;
 
                 server()->log("Close: conn#{$fd} has been closed. connection count $total", [], 'debug');
@@ -102,6 +106,7 @@ class CloseListener implements CloseInterface
 
             // Remove connection
             Swoft::trigger(SwoftEvent::SESSION_COMPLETE, $sid);
+            $manager->destroy($sid);
 
             // Unbind cid => sid(fd)
             Session::unbindCo();

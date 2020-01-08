@@ -830,8 +830,6 @@ abstract class Server implements ServerInterface
 
     /**
      * Quick restart
-     *
-     * @throws Swoft\Exception\SwoftException
      */
     public function restart(): void
     {
@@ -906,7 +904,7 @@ abstract class Server implements ServerInterface
      *
      * @return bool
      */
-    public function stopWorker(int $workerId = -1, bool $waitEvent = false): bool
+    public function stopWorker(int $workerId, bool $waitEvent = false): bool
     {
         if ($workerId > -1 && $this->swooleServer) {
             return $this->swooleServer->stop($workerId, $waitEvent);
@@ -956,8 +954,9 @@ abstract class Server implements ServerInterface
             $tid = Co::tid();
             $cid = Co::id();
             $wid = $this->getPid('workerId');
+            $pid = $this->getPid('workerPid');
 
-            Console::log("[WorkerId:$wid, TID:$tid, CID:$cid] " . $msg, $data, $type);
+            Console::log("[WID:$wid, PID:$pid, TID:$tid, CID:$cid] " . $msg, $data, $type);
         }
     }
 

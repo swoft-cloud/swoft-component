@@ -90,19 +90,19 @@ final class CommandRegister
      * @param string $class
      * @param string $method
      * @param string $optName
-     * @param array  $info
+     * @param array  $optInfo
      */
-    public static function bindOption(string $class, string $method, string $optName, array $info): void
+    public static function bindOption(string $class, string $method, string $optName, array $optInfo): void
     {
         // if not 'commands', is bind group options.
         if (!isset(self::$commands[$class]['commands'])) {
-            self::$commands[$class]['options'][$optName] = $info;
+            self::$commands[$class]['options'][$optName] = $optInfo;
             return;
         }
 
         $cmdInfo = self::$commands[$class]['commands'][$method];
         // add option info
-        $cmdInfo['options'][$optName] = $info;
+        $cmdInfo['options'][$optName] = $optInfo;
         // re-setting
         self::$commands[$class]['commands'][$method] = $cmdInfo;
     }

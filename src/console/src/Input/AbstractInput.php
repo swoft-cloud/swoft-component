@@ -12,8 +12,6 @@ use function trim;
 
 /**
  * Class AbstractInput
- *
- * @package Swoft\Console\Input
  */
 abstract class AbstractInput implements InputInterface
 {
@@ -51,6 +49,13 @@ abstract class AbstractInput implements InputInterface
      * @var array
      */
     protected $tokens;
+
+    /**
+     * Input flags data
+     *
+     * @var array
+     */
+    protected $flags = [];
 
     /**
      * Input args data
@@ -314,7 +319,7 @@ abstract class AbstractInput implements InputInterface
     public function getOpt(string $name, $default = null)
     {
         // is long-opt
-        if (isset($name{1})) {
+        if (isset($name[1])) {
             return $this->lOpt($name, $default);
         }
 
@@ -750,5 +755,21 @@ abstract class AbstractInput implements InputInterface
     public function setTokens(array $tokens): void
     {
         $this->tokens = $tokens;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFlags(): array
+    {
+        return $this->flags;
+    }
+
+    /**
+     * @param array $flags
+     */
+    public function setFlags(array $flags): void
+    {
+        $this->flags = $flags;
     }
 }

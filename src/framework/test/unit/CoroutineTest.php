@@ -4,7 +4,6 @@ namespace SwoftTest\Unit;
 
 use PHPUnit\Framework\TestCase;
 use Swoft\Co;
-use Swoft\Exception\SwoftException;
 use Swoole\Coroutine\Context;
 
 /**
@@ -43,7 +42,7 @@ class CoroutineTest extends TestCase
         }
     }
 
-    public function createNotWait()
+    public function createNotWait(): void
     {
         $current = 6;
         Co::create(function () use ($current) {
@@ -55,9 +54,6 @@ class CoroutineTest extends TestCase
         $this->assertEquals($this->create, $current);
     }
 
-    /**
-     * @throws SwoftException
-     */
     public function testFile(): void
     {
         $data     = 'datas1tring';
@@ -71,16 +67,13 @@ class CoroutineTest extends TestCase
         Co::exec('rm -rf ' . $fileName);
     }
 
-    /**
-     * @throws SwoftException
-     */
     public function testGetHostByName(): void
     {
-        $ip     = '39.106.56.0';
-        $result = Co::getHostByName('www.swoft.org', 2);
+        $ip = '193.187.118.225';
+        $result = Co::getHostByName('www.swoft.io', 2);
         $this->assertEquals($result, $ip);
 
-        $result = Co::getAddrInfo('www.swoft.org');
+        $result = Co::getAddrInfo('www.swoft.io');
         $this->assertEquals($result, [$ip]);
     }
 }

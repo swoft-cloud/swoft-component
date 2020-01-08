@@ -1,0 +1,15 @@
+#!/usr/bin/env php
+<?php
+
+// Disable run test application
+define('RUN_TEST_APP', false);
+
+// Bootstrap
+require_once dirname(__DIR__) . '/bootstrap.php';
+
+Swoole\Coroutine::set([
+    'max_coroutine' => 300000,
+]);
+
+// Run application
+(new \App\Application())->run();

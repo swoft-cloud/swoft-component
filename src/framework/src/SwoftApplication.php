@@ -27,6 +27,7 @@ use function define;
 use function defined;
 use function dirname;
 use function get_class;
+use function sprintf;
 use const IN_PHAR;
 
 /**
@@ -221,7 +222,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
             $this->processor->handle();
         } catch (Throwable $e) {
-            CLog::error('%s(code:%d) %s', get_class($e), $e->getCode(), $e->getMessage());
+            Console::colored(sprintf('%s(code:%d) %s', get_class($e), $e->getCode(), $e->getMessage()), 'red');
             Console::colored('Code Trace:', 'comment');
             echo $e->getTraceAsString(), "\n";
         }

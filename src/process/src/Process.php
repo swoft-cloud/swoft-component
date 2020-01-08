@@ -7,6 +7,8 @@ namespace Swoft\Process;
 use Swoft\Process\Exception\ProcessException;
 use Swoole\Coroutine\Socket;
 use Swoole\Process as SwooleProcess;
+use function swoole_errno;
+use function swoole_strerror;
 
 /**
  * Class Process
@@ -307,6 +309,6 @@ class Process
     private function getError(): string
     {
         $errno = swoole_errno();
-        return (string)swoole_strerror($errno);
+        return swoole_strerror($errno);
     }
 }

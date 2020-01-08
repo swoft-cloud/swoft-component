@@ -7,11 +7,13 @@ use Dotenv\Environment\Adapter\PutenvAdapter;
 use Dotenv\Environment\Adapter\ServerConstAdapter;
 use Dotenv\Environment\DotenvFactory;
 use Dotenv\Dotenv;
+use Swoft;
 use Swoft\Log\Helper\CLog;
-use function alias;
+use Swoft\Stdlib\Helper\Str;
 use function basename;
 use function dirname;
 use function file_exists;
+use const IN_PHAR;
 
 /**
  * Env processor
@@ -32,23 +34,29 @@ class EnvProcessor extends Processor
             return false;
         }
 
-        $envFile = alias($this->application->getEnvFile());
-        $path    = dirname($envFile);
-        $name    = basename($envFile);
+        $envFile = Swoft::getAlias($this->application->getEnvFile());
+
+        // Fix: In phar package, remove phar:// prefix
+        if (IN_PHAR) {
+            $envFile = Str::rmPharPrefix($envFile);
+        }
 
         if (!file_exists($envFile)) {
             CLog::warning('Env file(%s) is not exist! skip load it', $envFile);
-            return true;
+            return $this->application->afterEnv();
         }
 
-        // Load env
+        // Load env info
         $factory = new DotenvFactory([
             new EnvConstAdapter,
             new PutenvAdapter,
             new ServerConstAdapter
         ]);
-        Dotenv::create($path, $name, $factory)->load();
 
+        $path = dirname($envFile);
+        $name = basename($envFile);
+
+        Dotenv::create($path, $name, $factory)->overload();
         CLog::info('Env file(%s) is loaded', $envFile);
 
         return $this->application->afterEnv();

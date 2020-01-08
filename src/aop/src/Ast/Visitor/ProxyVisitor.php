@@ -1,18 +1,16 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Aop\Ast\Visitor;
 
-use function array_unshift;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\NodeFinder;
 use PhpParser\NodeTraverser;
-use function sprintf;
 use Swoft\Aop\Concern\AopTrait;
 use Swoft\Proxy\Ast\Visitor\Visitor;
 use Swoft\Stdlib\Helper\Str;
-use function uniqid;
+use function array_unshift;
+use function sprintf;
 
 /**
  * Class ProxyVisitor
@@ -93,7 +91,7 @@ class ProxyVisitor extends Visitor
         if ($node instanceof Node\Stmt\Class_) {
             $name = $node->name->toString();
 
-            $this->proxyName = sprintf('%s%s%s', $name, self::PROXY, $this->proxyId);
+            $this->proxyName         = sprintf('%s%s%s', $name, self::PROXY, $this->proxyId);
             $this->originalClassName = sprintf('%s\\%s', $this->namespace, $name);
 
             return null;
@@ -196,11 +194,7 @@ class ProxyVisitor extends Visitor
         ];
 
         // Proxy method call
-        $proxyCall = new Node\Expr\MethodCall(
-            new Node\Expr\Variable('this'),
-            '__proxyCall',
-            $newParams
-        );
+        $proxyCall = new Node\Expr\MethodCall(new Node\Expr\Variable('this'), '__proxyCall', $newParams);
 
         // New method stmts
         $type = $node->returnType;
