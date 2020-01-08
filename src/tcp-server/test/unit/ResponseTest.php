@@ -30,5 +30,7 @@ class ResponseTest extends TestCase
         $w->setCode(23);
         $w->setContent('');
         $this->assertFalse($w->isEmpty());
+
+        $this->assertSame('OK', $w->getMsg());
     }
 }

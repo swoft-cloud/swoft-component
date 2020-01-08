@@ -4,6 +4,7 @@ namespace SwoftTest\Tcp\Server\Testing;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Tcp\Server\Response;
+use Swoole\Server;
 
 /**
  * Class MockTcpResponse
@@ -12,5 +13,13 @@ use Swoft\Tcp\Server\Response;
  */
 class MockTcpResponse extends Response
 {
+    /**
+     * @var string
+     */
+    public $responseBody = '';
 
+    protected function doSend(Server $server, string $content): void
+    {
+        $this->responseBody = $content;
+    }
 }

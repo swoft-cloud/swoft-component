@@ -7,14 +7,13 @@ use Swoft\Tcp\Server\Contract\MiddlewareInterface;
 use Swoft\Tcp\Server\Contract\RequestHandlerInterface;
 use Swoft\Tcp\Server\Contract\RequestInterface;
 use Swoft\Tcp\Server\Contract\ResponseInterface;
-use Swoft\Tcp\Server\Response;
 
 /**
- * Class CoreMiddleware
+ * Class Global1Middleware
  *
  * @Bean()
  */
-class CoreMiddleware implements MiddlewareInterface
+class Global1Middleware implements MiddlewareInterface
 {
     /**
      * @param RequestInterface        $request
@@ -24,8 +23,12 @@ class CoreMiddleware implements MiddlewareInterface
      */
     public function process(RequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $resp = Response::new(100);
-        $resp->setContent('[CORE]');
+        $start = '>global ';
+
+        $resp = $handler->handle($request);
+        $old  = $resp->getContent();
+
+        $resp->setContent($start . $old . ' global>');
 
         return $resp;
     }

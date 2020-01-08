@@ -15,6 +15,8 @@ final class TcpServerBean
 
     public const DISPATCHER = 'tcpDispatcher';
 
+    public const CONNECTION = 'tcpConnection';
+
     public const PROTOCOL = 'tcpServerProtocol';
 
     public const MANAGER = 'tcpConnectionManager';
