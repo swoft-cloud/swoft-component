@@ -39,6 +39,5 @@ class ConnectionTest extends TcpServerTestCase
         $this->assertNotEmpty($conn->getData());
         $conn->clear();
         $this->assertEmpty($conn->getData());
-
     }
 }
