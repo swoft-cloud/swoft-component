@@ -16,11 +16,30 @@ class TcpReceiveContextTest extends TestCase
     {
         $req = Request::new(2, 'data', 3);
         $res = new MockTcpResponse();
+        $res->setFd(2);
+        $res->setContent('CONTENT');
 
         $ctx = TcpReceiveContext::new(2, $req, $res);
 
         $this->assertSame(2, $ctx->getFd());
         $this->assertSame(3, $ctx->getRequest()->getReactorId());
         $this->assertSame('data', $ctx->getRequest()->getRawData());
+
+        $this->assertSame(2, $ctx->getResponse()->getFd());
+        $this->assertSame('CONTENT', $ctx->getResponse()->getContent());
+
+        $ctx->clear();
+        $this->assertSame(-1, $ctx->getFd());
+
+        $ctx = new TcpReceiveContext();
+        $this->assertSame(-1, $ctx->getFd());
+
+        $ctx->setRequest($req);
+        $this->assertSame(2, $ctx->getFd());
+        $this->assertSame(3, $ctx->getRequest()->getReactorId());
+
+        $ctx->setResponse($res);
+        $this->assertSame(2, $ctx->getResponse()->getFd());
+        $this->assertSame('CONTENT', $ctx->getResponse()->getContent());
     }
 }

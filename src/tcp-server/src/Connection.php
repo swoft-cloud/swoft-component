@@ -25,7 +25,7 @@ class Connection implements SessionInterface
     /**
      * @var int
      */
-    private $fd = 0;
+    private $fd = -1;
 
     /**
      * @return ConnectionManager
@@ -132,7 +132,7 @@ class Connection implements SessionInterface
      */
     public function clear(): void
     {
-        $this->fd   = 0;
+        $this->fd   = -1;
         $this->data = [];
     }
 
