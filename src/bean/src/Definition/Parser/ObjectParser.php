@@ -2,9 +2,9 @@
 
 namespace Swoft\Bean\Definition\Parser;
 
+use Swoft\Bean\Definition\ObjectDefinition;
 use function is_string;
 use function preg_match;
-use Swoft\Bean\Definition\ObjectDefinition;
 
 /**
  * Class ObjectParser

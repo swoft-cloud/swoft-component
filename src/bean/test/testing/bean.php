@@ -11,7 +11,7 @@ use SwoftTest\Bean\Testing\Definition\SingletonClass;
 use SwoftTest\Bean\Testing\InjectBean;
 
 return [
-    'singleton'       => [
+    'singleton'               => [
         'class'               => SingletonClass::class,
         'privateProp'         => 'privateProp',
         'publicProp'          => 12,
@@ -26,7 +26,7 @@ return [
             'alias' => 'singleton-alias'
         ]
     ],
-    'prototype'       => [
+    'prototype'               => [
         'class'               => PrototypeClass::class,
         'privateProp'         => 'privateProp',
         'publicProp'          => 12,
@@ -40,7 +40,7 @@ return [
             'alias' => 'prototype-alias'
         ]
     ],
-    'requestClass'    => [
+    'requestClass'            => [
         'class'               => RequestClass::class,
         'privateProp'         => 'privateProp',
         'publicProp'          => 12,
@@ -54,7 +54,7 @@ return [
             'alias' => 'request-alias'
         ]
     ],
-    'sessionClass'    => [
+    'sessionClass'            => [
         'class'               => SessionClass::class,
         'privateProp'         => 'privateProp',
         'publicProp'          => 12,
@@ -68,19 +68,19 @@ return [
             'alias' => 'session-alias'
         ]
     ],
-    'manyOneInstance' => [
+    'manyOneInstance'         => [
         'class' => ManyInstance::class,
     ],
-    'manyTwoInstance' => [
+    'manyTwoInstance'         => [
         'class' => ManyInstance::class,
     ],
-    'two.many'        => [
+    'two.many'                => [
         'class' => ManyInstance::class,
     ],
-    'commaNameClass'  => [
+    'commaNameClass'          => [
         'manyInstance2' => \bean('two.many')
     ],
-    'testTypeBean'    => [
+    'testTypeBean'            => [
         'stringVar'  => 1,
         'intVar'     => '1',
         'integerVar' => '2',
@@ -88,7 +88,7 @@ return [
         'doubleVar'  => '1.2',
     ],
     'interfaceBeanDefinition' => [
-        'class' => InterfaceBeanDefinition::class,
+        'class'      => InterfaceBeanDefinition::class,
         'pinterface' => \bean(PrimaryInterface::class)
     ]
 ];

@@ -1,20 +1,17 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Bean\Unit;
 
-
 use PHPUnit\Framework\TestCase;
-use ReflectionException;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\BF;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Bean\InterfaceRegister;
 use SwoftTest\Bean\Testing\Contract\PrimaryInterface;
 use SwoftTest\Bean\Testing\Contract\TestInterface;
 use SwoftTest\Bean\Testing\Definition\InterfaceBean;
 use SwoftTest\Bean\Testing\Definition\InterfaceBeanDefinition;
 use SwoftTest\Bean\Testing\Definition\InterfaceOne;
+use SwoftTest\Bean\Testing\Definition\InterfaceTwo;
 use SwoftTest\Bean\Testing\Definition\PrimaryInterfaceTwo;
 
 /**
@@ -24,10 +21,6 @@ use SwoftTest\Bean\Testing\Definition\PrimaryInterfaceTwo;
  */
 class InterfaceTest extends TestCase
 {
-    /**
-     * @throws ReflectionException
-     * @throws ContainerException
-     */
     public function testGetName(): void
     {
         /* @var InterfaceBean $testInterface */
@@ -42,20 +35,24 @@ class InterfaceTest extends TestCase
         $name3 = $testInterface->getName3();
         $this->assertEquals('InterfaceOne', $name3);
 
-        $obj = BF::getBean(TestInterface::class);
-        $this->assertInstanceOf(InterfaceOne::class, $obj);
+        $faceClass = TestInterface::class;
 
-        $beanName = InterfaceRegister::getInterfaceInjectBean(TestInterface::class);
-        $this->assertEquals($beanName, 'interfaceOne');
+        $beanName = InterfaceRegister::getInterfaceInjectBean($faceClass);
+        if ($beanName === 'interfaceOne') {
+            $wantClass = InterfaceOne::class;
+            $this->assertEquals($beanName, 'interfaceOne');
+        } else {
+            $wantClass = InterfaceTwo::class;
+            $this->assertEquals($beanName, 'interfaceTwo');
+        }
 
-        $obj = BF::getSingleton(TestInterface::class);
-        $this->assertInstanceOf(InterfaceOne::class, $obj);
+        $obj = BF::getBean($faceClass);
+        $this->assertInstanceOf($wantClass, $obj);
+
+        $obj = BF::getSingleton($faceClass);
+        $this->assertInstanceOf($wantClass, $obj);
     }
 
-    /**
-     * @throws ReflectionException
-     * @throws ContainerException
-     */
     public function testGetPname(): void
     {
         /* @var InterfaceBean $testInterface */
@@ -77,10 +74,6 @@ class InterfaceTest extends TestCase
         $this->assertInstanceOf(PrimaryInterfaceTwo::class, $obj);
     }
 
-    /**
-     * @throws ReflectionException
-     * @throws ContainerException
-     */
     public function testGetPnameDefinition(): void
     {
         /* @var InterfaceBeanDefinition $testInterface */

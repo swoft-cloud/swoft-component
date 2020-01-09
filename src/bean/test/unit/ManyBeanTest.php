@@ -40,7 +40,7 @@ class ManyBeanTest extends TestCase
             $this->assertTrue($bean instanceof ManyInstance);
         }
 
-        /* @var CommaNameClass $comma*/
+        /* @var CommaNameClass $comma */
         $comma = BeanFactory::getBean(CommaNameClass::class);
 
         $two = $comma->getManyInstance2();

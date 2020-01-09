@@ -13,5 +13,5 @@ interface TestInterface
     /**
      * @return string
      */
-    public function getName():string ;
+    public function getName(): string;
 }
