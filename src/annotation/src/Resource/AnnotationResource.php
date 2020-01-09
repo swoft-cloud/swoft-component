@@ -490,11 +490,11 @@ class AnnotationResource extends AbstractResource
     }
 
     /**
-     * @param array $excludedFilenames
+     * @param array $filenames
      */
-    public function setExcludedFilenames(array $excludedFilenames): void
+    public function setExcludedFilenames(array $filenames): void
     {
-        $this->excludedFilenames = $excludedFilenames;
+        $this->excludedFilenames = array_merge($this->excludedFilenames, $filenames);
     }
 
     /**
