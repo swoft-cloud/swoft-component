@@ -112,8 +112,7 @@ class BeanFactory
      * @param string $name
      * @param array  $definition
      *
-     * @return object
-     * @return object
+     * @return object|mixed
      * @example
      *
      * $bean = BeanFactory::createBean('className');

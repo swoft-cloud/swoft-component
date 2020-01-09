@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Bean\Testing\Definition;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
