@@ -83,7 +83,7 @@ class AnnotationResource extends AbstractResource
      * @var array
      * eg. ['Psr\\', 'PHPUnit\\', 'Symfony\\']
      */
-    private $excludedPsr4Prefixes;
+    private $excludedPsr4Prefixes = [];
 
     /**
      * Can disable AutoLoader class before load component classes.
@@ -119,11 +119,11 @@ class AnnotationResource extends AbstractResource
      */
     public function __construct(array $config = [])
     {
-        // Init $excludedPsr4Prefixes
-        $this->excludedPsr4Prefixes = self::DEFAULT_EXCLUDED_PSR4_PREFIXES;
-
         // Can set property by array
         ObjectHelper::init($this, $config);
+
+        // Init $excludedPsr4Prefixes
+        array_push($this->excludedPsr4Prefixes, ...self::DEFAULT_EXCLUDED_PSR4_PREFIXES);
 
         $this->registerLoader();
 

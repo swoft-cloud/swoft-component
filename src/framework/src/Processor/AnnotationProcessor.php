@@ -35,7 +35,7 @@ class AnnotationProcessor extends Processor
             'notifyHandler'        => [$this, 'notifyHandle'],
             // TODO force load framework components: bean, error, event, aop
             'disabledAutoLoaders'  => $app->getDisabledAutoLoaders(),
-            'disabledPsr4Prefixes' => $app->getDisabledPsr4Prefixes(),
+            'excludedPsr4Prefixes' => $app->getDisabledPsr4Prefixes(),
         ]);
 
         $stats = AnnotationRegister::getClassStats();
