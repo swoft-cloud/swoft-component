@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace SwoftTest\Tcp\Server\Testing;
+namespace SwoftTest\Testing;
 
 use function array_unshift;
 use function json_encode;
@@ -55,6 +55,16 @@ class TempArray
     }
 
     /**
+     * @param mixed ...$values
+     */
+    public static function add(...$values): void
+    {
+        foreach ($values as $value) {
+            self::$array[] = $value;
+        }
+    }
+
+    /**
      * @param mixed $value
      */
     public static function append($value): void
@@ -96,10 +106,22 @@ class TempArray
 
     /**
      * clear array
+     *
+     * @return array
      */
-    public static function clear(): void
+    public static function clear(): array
     {
-        self::$array = [];
+        return self::getAllAndClean();
+    }
+
+    /**
+     * clear array
+     *
+     * @return array
+     */
+    public static function reset(): array
+    {
+        return self::getAllAndClean();
     }
 
     /**

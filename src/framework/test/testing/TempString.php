@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace SwoftTest\Tcp\Server\Testing;
+namespace SwoftTest\Testing;
 
 use function implode;
 
@@ -55,23 +55,26 @@ class TempString
     }
 
     /**
-     * clear string
-     */
-    public static function clear(): void
-    {
-        self::$string = '';
-    }
-
-    /**
-     * Clear string and return string
+     * Clear string
      *
      * @return string
      */
-    public static function getAndClean(): string
+    public static function clear(): string
     {
-        $tempString   = self::$string;
+        $old = self::$string;
+
         self::$string = '';
 
-        return $tempString;
+        return $old;
+    }
+
+    /**
+     * Clear string
+     *
+     * @return string
+     */
+    public static function reset(): string
+    {
+        return self::clear();
     }
 }

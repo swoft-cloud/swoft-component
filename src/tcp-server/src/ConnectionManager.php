@@ -11,7 +11,7 @@ use Swoft\Stdlib\Helper\JsonHelper;
  * Class ConnectionManager
  *
  * @since 2.0.8
- * @Bean("tcpConnectionManager")
+ * @Bean(TcpServerBean::MANAGER)
  */
 class ConnectionManager extends AbstractSessionManager
 {

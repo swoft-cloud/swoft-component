@@ -44,18 +44,22 @@ echo ""
 for lbName in ${components} ; do
     if [[ "${lbName}" == "component" ]]; then
         echo "======> Testing the【components】"
-          yellow_text "> phpdbg -dauto_globals_jit=Off -qrr run.php --coverage-text -c phpunit.xml"
-          phpdbg -dauto_globals_jit=Off -qrr run.php --coverage-text -c phpunit.xml
-        echo $?
+        yellow_text "> phpdbg -dauto_globals_jit=Off -qrr run.php --coverage-text -c phpunit.xml"
+        phpdbg -dauto_globals_jit=Off -qrr run.php --coverage-text -c phpunit.xml
     else
         if [[ ! -d "src/${lbName}" ]]; then
-            echo "!! Skip invalid component: ${lbName}"
+            cyan_text "!! Skip invalid component: ${lbName}"
         else
           echo "======> Testing the component【${lbName}】"
           yellow_text "> phpdbg -dauto_globals_jit=Off -qrr run.php --coverage-text -c src/${lbName}/phpunit.xml"
           phpdbg -dauto_globals_jit=Off -qrr run.php --coverage-text -c src/${lbName}/phpunit.xml
-          echo $?
         fi
+    fi
+
+    CODE=$?
+    # shellcheck disable=SC2181
+    if [ "$CODE" != "0" ]; then
+      exit 1
     fi
 done
 

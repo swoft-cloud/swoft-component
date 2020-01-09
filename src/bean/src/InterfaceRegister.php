@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Bean;
 
 use RuntimeException;
@@ -78,9 +77,7 @@ class InterfaceRegister
 
         $classNames = self::$interfaces[$interfaceClass] ?? [];
         if (empty($classNames)) {
-            throw new RuntimeException(
-                sprintf('Interface(%s) has not inject instance!', $interfaceClass)
-            );
+            throw new RuntimeException(sprintf('Interface(%s) has not inject instance!', $interfaceClass));
         }
 
         $beanName = current($classNames);

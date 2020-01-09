@@ -24,7 +24,7 @@ use const WEBSOCKET_OPCODE_TEXT;
  * Class Connection
  *
  * @since 2.0
- * @Bean(scope=Bean::PROTOTYPE)
+ * @Bean(name=WsServerBean::CONNECTION, scope=Bean::PROTOTYPE)
  */
 class Connection implements SessionInterface
 {
@@ -80,7 +80,7 @@ class Connection implements SessionInterface
      */
     public static function manager(): ConnectionManager
     {
-        return Swoft::getBean('wsConnectionManager');
+        return Swoft::getBean(WsServerBean::MANAGER);
     }
 
     /**
@@ -88,7 +88,7 @@ class Connection implements SessionInterface
      */
     public static function current(): self
     {
-        return Swoft::getBean('wsConnectionManager')->current();
+        return Swoft::getBean(WsServerBean::MANAGER)->current();
     }
 
     /**
@@ -101,7 +101,7 @@ class Connection implements SessionInterface
     public static function new(WebSocketServer $server, Request $request, Response $response): self
     {
         /** @var self $sess */
-        $sess = Swoft::getBean(self::class);
+        $sess = Swoft::getBean(WsServerBean::CONNECTION);
 
         $sess->fd = $fd = $request->getFd();
 
@@ -145,7 +145,7 @@ class Connection implements SessionInterface
         // Initialize psr7 Request and Response
         $psr7Req  = Psr7Request::new($req);
         $psr7Res  = Psr7Response::new($res);
-        $wsServer = Swoft::getBean('wsServer');
+        $wsServer = Swoft::getBean(WsServerBean::SERVER);
 
         // Initialize connection
         $conn = self::new($wsServer, $psr7Req, $psr7Res);

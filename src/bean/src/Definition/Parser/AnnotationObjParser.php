@@ -2,9 +2,6 @@
 
 namespace Swoft\Bean\Definition\Parser;
 
-use function array_merge;
-use function count;
-use function get_class;
 use InvalidArgumentException;
 use Swoft\Annotation\Annotation\Parser\Parser;
 use Swoft\Annotation\Annotation\Parser\ParserInterface;
@@ -12,6 +9,9 @@ use Swoft\Annotation\Exception\AnnotationException;
 use Swoft\Bean\Definition\MethodInjection;
 use Swoft\Bean\Definition\ObjectDefinition;
 use Swoft\Bean\Definition\PropertyInjection;
+use function array_merge;
+use function count;
+use function get_class;
 
 /**
  * Class AnnotationParser
@@ -108,9 +108,8 @@ class AnnotationObjParser extends ObjectParser
     {
         // Check class annotation tag
         if (!isset($classOneAnnotations['annotation'])) {
-            throw new AnnotationException(
-                sprintf('Property or method(%s) with `@xxx` must be define class annotation', $className)
-            );
+            throw new AnnotationException(sprintf('Property or method(%s) with `@xxx` must be define class annotation',
+                    $className));
         }
 
         // Parse class annotations

@@ -28,7 +28,7 @@ use function server;
  *
  * @since 2.0
  *
- * @Bean("wsMsgDispatcher")
+ * @Bean(WsServerBean::MSG_DISPATCHER)
  */
 class WsMessageDispatcher implements MiddlewareInterface
 {

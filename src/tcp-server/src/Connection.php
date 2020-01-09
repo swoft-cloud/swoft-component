@@ -14,7 +14,7 @@ use function microtime;
  * Class Connection
  *
  * @since 2.0.3
- * @Bean(scope=Bean::PROTOTYPE)
+ * @Bean(name=TcpServerBean::CONNECTION, scope=Bean::PROTOTYPE)
  */
 class Connection implements SessionInterface
 {
@@ -25,14 +25,14 @@ class Connection implements SessionInterface
     /**
      * @var int
      */
-    private $fd = 0;
+    private $fd = -1;
 
     /**
      * @return ConnectionManager
      */
     public static function manager(): ConnectionManager
     {
-        return Swoft::getBean('tcpConnectionManager');
+        return Swoft::getBean(TcpServerBean::MANAGER);
     }
 
     /**
@@ -40,7 +40,7 @@ class Connection implements SessionInterface
      */
     public static function current(): self
     {
-        return Swoft::getBean('tcpConnectionManager')->current();
+        return Swoft::getBean(TcpServerBean::MANAGER)->current();
     }
 
     /**
@@ -52,7 +52,7 @@ class Connection implements SessionInterface
     public static function new(int $fd, array $clientInfo): self
     {
         /** @var self $conn */
-        $conn = Swoft::getBean(self::class);
+        $conn = Swoft::getBean(TcpServerBean::CONNECTION);
 
         // Initial properties
         $conn->fd = $fd;
@@ -132,7 +132,7 @@ class Connection implements SessionInterface
      */
     public function clear(): void
     {
-        $this->fd   = 0;
+        $this->fd   = -1;
         $this->data = [];
     }
 

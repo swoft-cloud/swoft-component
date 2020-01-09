@@ -60,28 +60,28 @@ final class AutoLoader extends SwoftComponent
     public function beans(): array
     {
         return [
-            'wsServer'     => [
+            WsServerBean::SERVER     => [
                 // 'class' => WebSocketServer::class,
                 'port' => 18308,
                 'on'   => [
                     // Enable http handle
                     // SwooleEvent::REQUEST   => \bean(RequestListener::class),
-                    // WebSocket
-                    SwooleEvent::HANDSHAKE    => bean(HandshakeListener::class),
-                    SwooleEvent::MESSAGE      => bean(MessageListener::class),
-                    SwooleEvent::CLOSE        => bean(CloseListener::class),
+                    // For WebSocket
+                    SwooleEvent::HANDSHAKE => bean(HandshakeListener::class),
+                    SwooleEvent::MESSAGE   => bean(MessageListener::class),
+                    SwooleEvent::CLOSE     => bean(CloseListener::class),
                     // For handle clone connection on exist multi worker
                     // SwooleEvent::PIPE_MESSAGE => bean(PipeMessageListener::class),
                 ]
             ],
-            'wsRouter'     => [
+            WsServerBean::ROUTER     => [
                 'class' => Router::class,
             ],
-            'wsDispatcher' => [
+            WsServerBean::DISPATCHER => [
                 'class' => WsDispatcher::class,
             ],
-            'wsConnectionManager' => [
-                'prefix'  => 'ws'
+            WsServerBean::MANAGER    => [
+                'prefix' => 'ws'
             ],
         ];
     }

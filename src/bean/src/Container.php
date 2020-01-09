@@ -532,7 +532,7 @@ class Container implements ContainerInterface
             ];
         }
 
-        $definitionObjParser = new DefinitionObjParser([$name=>$definition], [], [], $this->aliases);
+        $definitionObjParser = new DefinitionObjParser([$name => $definition], [], [], $this->aliases);
         [, $objectDefinitions] = $definitionObjParser->parseDefinitions();
 
         $this->objectDefinitions[$name] = $objectDefinitions[$name];
@@ -648,9 +648,8 @@ class Container implements ContainerInterface
      */
     private function parseAnnotations(): void
     {
-        $annotationParser = new AnnotationObjParser(
-            $this->definitions, $this->objectDefinitions, $this->classNames, $this->aliases
-        );
+        $annotationParser = new AnnotationObjParser($this->definitions, $this->objectDefinitions, $this->classNames,
+            $this->aliases);
         $annotationData   = $annotationParser->parseAnnotations($this->annotations, $this->parsers);
 
         [$this->definitions, $this->objectDefinitions, $this->classNames, $this->aliases] = $annotationData;
@@ -661,9 +660,8 @@ class Container implements ContainerInterface
      */
     private function parseDefinitions(): void
     {
-        $annotationParser = new DefinitionObjParser(
-            $this->definitions, $this->objectDefinitions, $this->classNames, $this->aliases
-        );
+        $annotationParser = new DefinitionObjParser($this->definitions, $this->objectDefinitions, $this->classNames,
+            $this->aliases);
 
         // Collect info
         $definitionData = $annotationParser->parseDefinitions();

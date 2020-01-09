@@ -19,7 +19,7 @@ class TcpReceiveContext extends AbstractContext
     /**
      * @var int
      */
-    private $fd;
+    private $fd = -1;
 
     /**
      * @var Request
@@ -56,6 +56,8 @@ class TcpReceiveContext extends AbstractContext
     {
         parent::clear();
 
+        $this->fd = -1;
+
         $this->request  = null;
         $this->response = null;
     }
@@ -81,6 +83,8 @@ class TcpReceiveContext extends AbstractContext
      */
     public function setRequest(Request $request): void
     {
+        $this->fd = $request->getFd();
+
         $this->request = $request;
     }
 

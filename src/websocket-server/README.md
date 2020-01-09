@@ -7,6 +7,10 @@
 
 Swoft Websocket Server Component
 
+## [中文说明](README.zh-CN.md)
+
+中文说明请查看 [README.zh-CN.md](README.zh-CN.md)
+
 ## Install
 
 - composer command

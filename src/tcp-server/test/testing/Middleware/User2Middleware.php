@@ -24,9 +24,11 @@ class User2Middleware implements MiddlewareInterface
     public function process(RequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $start = '>user2 ';
-        $resp  = $handler->handle($request);
 
-        $resp->setData($start . $resp->getData() . ' user2>');
+        $resp = $handler->handle($request);
+        $old  = $resp->getContent();
+
+        $resp->setContent($start . $old . ' user2>');
 
         return $resp;
     }

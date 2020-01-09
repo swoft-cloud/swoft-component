@@ -50,9 +50,10 @@ abstract class WsServerTestCase extends TestCase
      */
     protected function mockHttpRequest(int $fd = 1, string $path = '/'): Request
     {
-        $req     = MockHttpRequest::new([
+        $req = MockHttpRequest::new([
             'request_uri' => $path,
         ]);
+
         $req->fd = $fd;
 
         return Request::new($req);

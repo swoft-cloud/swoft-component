@@ -12,6 +12,7 @@ use Swoft\Tcp\Server\Connection;
 use Swoft\Tcp\Server\Context\TcpConnectContext;
 use Swoft\Tcp\Server\TcpDispatcher;
 use Swoft\Tcp\Server\TcpErrorDispatcher;
+use Swoft\Tcp\Server\TcpServerBean;
 use Swoft\Tcp\Server\TcpServerEvent;
 use Swoole\Server;
 use Throwable;
@@ -39,7 +40,7 @@ class ConnectListener implements ConnectInterface
 
         // Storage session connection and bind cid => sid(fd)
         // old: Session::set($sid, $conn);
-        $manager = Swoft::getBean('tcpConnectionManager');
+        $manager = Swoft::getBean(TcpServerBean::MANAGER);
         $manager->set($sid, $conn);
         // Storage context
         Context::set($ctx);
@@ -47,9 +48,6 @@ class ConnectListener implements ConnectInterface
         try {
             // Trigger connect event
             Swoft::trigger(TcpServerEvent::CONNECT, $fd, $server, $reactorId);
-
-            /** @var TcpDispatcher $dispatcher */
-            // $dispatcher = Swoft::getSingleton('tcpDispatcher');
         } catch (Throwable $e) {
             Swoft::trigger(TcpServerEvent::CONNECT_ERROR, $e, $fd);
 

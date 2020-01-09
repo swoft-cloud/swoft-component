@@ -9,6 +9,7 @@ use Swoft\Log\Helper\CLog;
 use Swoft\Server\ServerEvent;
 use Swoft\Tcp\Protocol;
 use Swoft\Tcp\Server\TcpServer;
+use Swoft\Tcp\Server\TcpServerBean;
 use function bean;
 
 /**
@@ -30,7 +31,7 @@ class BeforeSettingListener implements EventHandlerInterface
             CLog::debug('sync tcp protocol setting from bean(tcpServerProtocol)');
 
             /** @var Protocol $proto */
-            $proto = bean('tcpServerProtocol');
+            $proto = bean(TcpServerBean::PROTOCOL);
             $server->setSetting($proto->getConfig());
         }
     }

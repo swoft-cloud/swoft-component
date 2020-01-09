@@ -2,6 +2,7 @@
 
 namespace Swoft\WebSocket\Server\Listener;
 
+use Swoft;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
@@ -9,7 +10,7 @@ use Swoft\Log\Helper\CLog;
 use Swoft\SwoftEvent;
 use Swoft\WebSocket\Server\Router\Router;
 use Swoft\WebSocket\Server\Router\RouteRegister;
-use function bean;
+use Swoft\WebSocket\Server\WsServerBean;
 
 /**
  * Class AppInitCompleteListener
@@ -25,10 +26,10 @@ class AppInitCompleteListener implements EventHandlerInterface
      */
     public function handle(EventInterface $event): void
     {
-        // Register WebSocket routes
+        // Register webSocket routes
 
         /** @var Router $router */
-        $router = bean('wsRouter');
+        $router = Swoft::getSingleton(WsServerBean::ROUTER);
 
         RouteRegister::registerTo($router);
 

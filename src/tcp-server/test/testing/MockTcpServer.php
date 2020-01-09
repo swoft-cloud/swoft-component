@@ -30,6 +30,8 @@ class MockTcpServer
     private $tcpServer;
 
     /**
+     * TODO ...
+     *
      * @var Server
      */
     private $swServer;

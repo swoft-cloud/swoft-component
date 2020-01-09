@@ -78,9 +78,9 @@ if ($srvType = (string)getenv('SWOFT_TEST_SERVER')) {
     }
 
     $php  = substr(trim($ret), 7);
-    $proc = new \Swoole\Process(function (\Swoole\Process $proc) use ($php) {
+    $proc = new \Swoole\Process(function (\Swoole\Process $proc) use ($php, $srvType) {
         // $proc->exec($php, [ $dir . '/test/bin/swoft', 'ws:start');
-        $proc->exec($php, ['test/bin/swoft', 'ws:start']);
+        $proc->exec($php, ['test/bin/swoft', $srvType . ':start']);
     });
     $pid  = $proc->start();
     echo "Swoft server started, PID $pid\n";

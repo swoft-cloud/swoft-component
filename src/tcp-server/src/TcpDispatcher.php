@@ -83,7 +83,7 @@ class TcpDispatcher implements MiddlewareInterface
     public function dispatch(Request $request, Response $response): ResponseInterface
     {
         /** @var Protocol $protocol */
-        $protocol = Swoft::getBean('tcpServerProtocol');
+        $protocol = Swoft::getBean(TcpServerBean::PROTOCOL);
         CLog::info('Tcp protocol data packer is %s', $protocol->getPackerClass());
 
         try {
@@ -95,7 +95,7 @@ class TcpDispatcher implements MiddlewareInterface
         }
 
         /** @var Router $router */
-        $router  = Swoft::getSingleton('tcpRouter');
+        $router  = Swoft::getSingleton(TcpServerBean::ROUTER);
         $command = $package->getCmd() ?: $router->getDefaultCommand();
 
         // Match command
@@ -261,10 +261,15 @@ class TcpDispatcher implements MiddlewareInterface
 
     /**
      * @param string $middleware
+     * @param string $name
      */
-    public function addMiddleware(string $middleware): void
+    public function addMiddleware(string $middleware, string $name = ''): void
     {
-        $this->middlewares[] = $middleware;
+        if ($name) {
+            $this->middlewares[$name] = $middleware;
+        } else {
+            $this->middlewares[] = $middleware;
+        }
     }
 
     /**

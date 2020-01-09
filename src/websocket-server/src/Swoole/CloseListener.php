@@ -14,6 +14,7 @@ use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\Context\WsCloseContext;
 use Swoft\WebSocket\Server\WsDispatcher;
 use Swoft\WebSocket\Server\WsErrorDispatcher;
+use Swoft\WebSocket\Server\WsServerBean;
 use Swoft\WebSocket\Server\WsServerEvent;
 use Swoole\Server;
 use Throwable;
@@ -58,7 +59,7 @@ class CloseListener implements CloseInterface
         Session::bindCo($sid);
 
         /** @var Swoft\WebSocket\Server\ConnectionManager $manager */
-        $manager = Swoft::getBean('wsConnectionManager');
+        $manager = Swoft::getBean(WsServerBean::MANAGER);
 
         try {
             // Call on close callback

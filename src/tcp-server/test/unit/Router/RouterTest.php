@@ -5,6 +5,7 @@ namespace SwoftTest\Tcp\Server\Unit\Router;
 use PHPUnit\Framework\TestCase;
 use Swoft\Tcp\Server\Exception\TcpServerRouteException;
 use Swoft\Tcp\Server\Router\Router;
+use Swoft\Tcp\Server\TcpServerBean;
 use SwoftTest\Tcp\Server\Testing\Middleware\User1Middleware;
 use SwoftTest\Tcp\Server\Testing\Middleware\User2Middleware;
 use Throwable;
@@ -74,7 +75,7 @@ class RouterTest extends TestCase
     public function testMiddlewares(): void
     {
         /** @var Router $router */
-        $router = bean('tcpRouter');
+        $router = bean(TcpServerBean::ROUTER);
 
         $this->assertNotEmpty($ms = $router->getMiddlewares());
         $this->assertArrayHasKey('tcpTest.test', $ms);

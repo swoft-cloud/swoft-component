@@ -49,8 +49,7 @@ class ConnectionTest extends WsServerTestCase
         $conn1 = Session::mustGet();
         $this->assertSame($conn, $conn1);
 
-        Session::destroy($sid);
-
+        $this->rmConnection($sid);
         $this->assertFalse(Session::has($sid));
     }
 }
