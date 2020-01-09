@@ -16,6 +16,7 @@ use Swoft\Annotation\Contract\LoaderInterface;
 use Swoft\Stdlib\Helper\ComposerHelper;
 use Swoft\Stdlib\Helper\DirectoryHelper;
 use Swoft\Stdlib\Helper\ObjectHelper;
+use function array_merge;
 use function class_exists;
 use function file_exists;
 use function get_included_files;
@@ -473,11 +474,11 @@ class AnnotationResource extends AbstractResource
     }
 
     /**
-     * @param array $excludedPsr4Prefixes
+     * @param array $psr4Prefixes
      */
-    public function setExcludedPsr4Prefixes(array $excludedPsr4Prefixes): void
+    public function setExcludedPsr4Prefixes(array $psr4Prefixes): void
     {
-        $this->excludedPsr4Prefixes = $excludedPsr4Prefixes;
+        $this->excludedPsr4Prefixes = array_merge($this->excludedPsr4Prefixes, $psr4Prefixes);
     }
 
     /**
