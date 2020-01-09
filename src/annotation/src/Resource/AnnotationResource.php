@@ -16,6 +16,7 @@ use Swoft\Annotation\Contract\LoaderInterface;
 use Swoft\Stdlib\Helper\ComposerHelper;
 use Swoft\Stdlib\Helper\DirectoryHelper;
 use Swoft\Stdlib\Helper\ObjectHelper;
+use function array_merge;
 use function class_exists;
 use function file_exists;
 use function get_included_files;
@@ -83,7 +84,7 @@ class AnnotationResource extends AbstractResource
      * @var array
      * eg. ['Psr\\', 'PHPUnit\\', 'Symfony\\']
      */
-    private $excludedPsr4Prefixes;
+    private $excludedPsr4Prefixes = [];
 
     /**
      * Can disable AutoLoader class before load component classes.
@@ -119,9 +120,9 @@ class AnnotationResource extends AbstractResource
      */
     public function __construct(array $config = [])
     {
-        // Init $excludedPsr4Prefixes
+         // Init $excludedPsr4Prefixes
         $this->excludedPsr4Prefixes = self::DEFAULT_EXCLUDED_PSR4_PREFIXES;
-
+        
         // Can set property by array
         ObjectHelper::init($this, $config);
 
@@ -473,11 +474,11 @@ class AnnotationResource extends AbstractResource
     }
 
     /**
-     * @param array $excludedPsr4Prefixes
+     * @param array $psr4Prefixes
      */
-    public function setExcludedPsr4Prefixes(array $excludedPsr4Prefixes): void
+    public function setExcludedPsr4Prefixes(array $psr4Prefixes): void
     {
-        $this->excludedPsr4Prefixes = $excludedPsr4Prefixes;
+        $this->excludedPsr4Prefixes = array_merge($this->excludedPsr4Prefixes, $psr4Prefixes);
     }
 
     /**
@@ -489,11 +490,11 @@ class AnnotationResource extends AbstractResource
     }
 
     /**
-     * @param array $excludedFilenames
+     * @param array $filenames
      */
-    public function setExcludedFilenames(array $excludedFilenames): void
+    public function setExcludedFilenames(array $filenames): void
     {
-        $this->excludedFilenames = $excludedFilenames;
+        $this->excludedFilenames = array_merge($this->excludedFilenames, $filenames);
     }
 
     /**
