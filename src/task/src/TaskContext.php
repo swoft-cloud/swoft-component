@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Task;
-
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
@@ -27,7 +25,7 @@ class TaskContext extends AbstractContext
     /**
      * @var Response
      */
-    private $repsonse;
+    private $response;
 
     /**
      * @param Request  $request
@@ -37,13 +35,13 @@ class TaskContext extends AbstractContext
      */
     public static function new(Request $request, Response $response): self
     {
-        $intance = self::__instance();
+        $instance = self::__instance();
 
-        $intance->request  = $request;
-        $intance->repsonse = $response;
+        $instance->request  = $request;
+        $instance->response = $response;
 
-        $intance->setMulti($request->getExt());
-        return $intance;
+        $instance->setMulti($request->getExt());
+        return $instance;
     }
 
     /**
@@ -57,9 +55,9 @@ class TaskContext extends AbstractContext
     /**
      * @return Response
      */
-    public function getRepsonse(): Response
+    public function getResponse(): Response
     {
-        return $this->repsonse;
+        return $this->response;
     }
 
     /**
@@ -68,6 +66,6 @@ class TaskContext extends AbstractContext
     public function clear(): void
     {
         $this->request  = null;
-        $this->repsonse = null;
+        $this->response = null;
     }
 }

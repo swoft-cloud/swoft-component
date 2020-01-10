@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Task\Listener;
-
 
 use Swoft\Context\Context;
 use Swoft\Event\Annotation\Mapping\Listener;
@@ -35,6 +33,7 @@ class BeforeTaskListener implements EventHandlerInterface
          * @var Response $response
          */
         [$request, $response] = $event->getParams();
+
         $context = TaskContext::new($request, $response);
 
         if (Log::getLogger()->isEnable()) {
@@ -46,6 +45,7 @@ class BeforeTaskListener implements EventHandlerInterface
             ];
             $context->setMulti($data);
         }
+
         Context::set($context);
     }
 }
