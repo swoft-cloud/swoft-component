@@ -15,6 +15,7 @@ use Throwable;
  * @since 2.0
  *
  * @method static int append(string $key, string $value)
+ * @method int bitCount(string $key, int $start, int $end)
  * @method static array blPop(array $keys, int $timeout)
  * @method static array brPop(array $keys, int $timeout)
  * @method static string brpoplpush(string $srcKey, string $dstKey, int $timeout)
@@ -81,8 +82,8 @@ use Throwable;
  * @method static int sUnionStore(string $dstKey, string $key1, string $key2, string $keyN = null)
  * @method static array|bool scan(int &$iterator, string $pattern = null, int $count = 0)
  * @method static mixed script(string|array $nodeParams, string $command, string $script)
- * @method static bool set(string $key, $value, int $timeout = null)
- * @method static int setBit(string $key, int $offset, int $value)
+ * @method static bool set(string $key, $value, $timeout = null)
+ * @method static int setBit(string $key, int $offset, bool $value)
  * @method static string setRange(string $key, int $offset, $value)
  * @method static int setex(string $key, int $ttl, $value)
  * @method static bool setnx(string $key, $value)

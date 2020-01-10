@@ -126,6 +126,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
     /**
      * Get the application version
+     *
      * @return string
      */
     public static function getVersion(): string
@@ -229,6 +230,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
     /**
      * @noinspection PhpDocSignatureInspection
+     *
      * @param string[] ...$classes
      */
     public function disableAutoLoader(string ...$classes)
@@ -240,6 +242,7 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
 
     /**
      * @noinspection PhpDocSignatureInspection
+     *
      * @param string ...$classes
      */
     public function disableProcessor(string ...$classes)

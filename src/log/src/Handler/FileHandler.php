@@ -99,7 +99,6 @@ class FileHandler extends AbstractProcessingHandler
         } else {
             $records = array_column($records, 'formatted');
         }
-
         $messageText = implode("\n", $records) . "\n";
 
         if (Co::id() <= 0) {
@@ -107,7 +106,8 @@ class FileHandler extends AbstractProcessingHandler
         }
 
         $logFile = $this->formatFile($this->logFile);
-        $res = Co::writeFile($logFile, $messageText, FILE_APPEND);
+        $res     = Co::writeFile($logFile, $messageText, FILE_APPEND);
+
         if ($res === false) {
             throw new InvalidArgumentException(
                 sprintf('Unable to append to log file: %s', $logFile)

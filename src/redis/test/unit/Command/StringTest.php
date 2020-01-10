@@ -57,8 +57,8 @@ class StringTest extends TestCase
     {
         $key = \uniqid();
 
-        $redis         = Redis::connection('redis.inc.pool');
-        
+        $redis = Redis::connection('redis.inc.pool');
+
         $this->assertEquals(1, $redis->incrBy($key, 1));
         $redis->set($key, 2);
         $redis->incr($key);
@@ -91,5 +91,11 @@ class StringTest extends TestCase
 
         $this->assertEquals(count($values), 2);
         $this->assertEquals($values, $keys);
+    }
+
+    public function testBit()
+    {
+        Redis::setBit('user:sign' . date('ymd'), 16, false);
+        $this->assertTrue(true);
     }
 }

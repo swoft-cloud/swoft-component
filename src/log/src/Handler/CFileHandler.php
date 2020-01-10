@@ -3,45 +3,72 @@
 
 namespace Swoft\Log\Handler;
 
-
-use Monolog\Formatter\FormatterInterface;
-use Monolog\Handler\AbstractProcessingHandler;
+use InvalidArgumentException;
+use Swoft\Bean\BeanFactory;
+use Swoft\Log\Helper\Log;
+use Swoft\Log\Logger;
 
 /**
  * Class CFileHandler
  *
  * @since 2.0
  */
-class CFileHandler extends AbstractProcessingHandler
+class CFileHandler extends FileHandler
 {
     /**
-     * Write log levels
+     * booting console log
      *
-     * @var string
+     * @var array
      */
-    protected $levels = '';
+    private $bootingRecords = [];
 
     /**
-     * Write log file
+     * Write console log to file
      *
-     * @var string
-     */
-    protected $logFile = '';
-
-    /**
      * @param array $record
      */
     protected function write(array $record): void
     {
-//        var_dump($record);
-    }
+        if (empty($this->logFile)) {
+            return;
+        }
 
-    /**
-     * @param FormatterInterface $formatter
-     */
-    public function setFormatter(FormatterInterface $formatter): void
-    {
-        $this->formatter = $formatter;
+        // Not boot bean
+        if (false === BeanFactory::hasBean('logger')) {
+            $this->bootingRecords[] = $record;
+            return;
+        }
+
+        $records = [$record];
+
+        // Not init
+        if ($this->logFile[0] === '@') {
+            $this->init();
+
+            $this->bootingRecords[] = $record;
+
+            $records = $this->bootingRecords;
+
+            unset($this->bootingRecords);
+        }
+
+        if (Log::getLogger()->isJson()) {
+            $records = array_map([$this, 'formatJson'], $records);
+        } else {
+            $records = array_column($records, 'formatted');
+        }
+        $messageText = implode("\n", $records) . "\n";
+
+        $logFile = $this->formatFile($this->logFile);
+
+        // Not all console log in coroutine
+        $res = file_put_contents($logFile, $messageText, FILE_APPEND);
+
+        if ($res === false) {
+            throw new InvalidArgumentException(
+                sprintf('Unable to append to log file: %s', $logFile)
+            );
+        }
     }
 
     /**
@@ -49,6 +76,9 @@ class CFileHandler extends AbstractProcessingHandler
      */
     public function setLevels(string $levels): void
     {
+        $levelNames        = explode(',', $levels);
+        $this->levelValues = Logger::getLevelByNames($levelNames);
+
         $this->levels = $levels;
     }
 

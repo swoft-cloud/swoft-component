@@ -59,13 +59,13 @@ interface ConnectionInterface
     public function get(string $key);
 
     /**
-     * @param string   $key
-     * @param mixed    $value
-     * @param int|null $timeout
+     * @param string         $key
+     * @param mixed          $value
+     * @param int|array|null $timeout
      *
      * @return bool
      */
-    public function set(string $key, $value, int $timeout = null): bool;
+    public function set(string $key, $value, $timeout = null): bool;
 
     /**
      * Execute commands in a pipeline.
