@@ -96,7 +96,6 @@ class StringTest extends TestCase
     public function testBit()
     {
         Redis::setBit('user:sign' . date('ymd'), 16, false);
-
         $this->assertTrue(true);
     }
 }
