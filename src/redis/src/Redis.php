@@ -15,6 +15,7 @@ use Throwable;
  * @since 2.0
  *
  * @method static int append(string $key, string $value)
+ * @method int bitCount(string $key, int $start, int $end)
  * @method static array blPop(array $keys, int $timeout)
  * @method static array brPop(array $keys, int $timeout)
  * @method static string brpoplpush(string $srcKey, string $dstKey, int $timeout)
