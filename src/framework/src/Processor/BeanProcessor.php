@@ -5,6 +5,7 @@ namespace Swoft\Processor;
 use InvalidArgumentException;
 use ReflectionException;
 use Swoft\Annotation\AnnotationRegister;
+use Swoft\Annotation\Contract\LoaderInterface;
 use Swoft\Annotation\Exception\AnnotationException;
 use Swoft\Bean\BeanFactory;
 use Swoft\BeanHandler;
@@ -78,9 +79,9 @@ class BeanProcessor extends Processor
 
         // get disabled loaders by application
         $disabledLoaders = $this->application->getDisabledAutoLoaders();
-
+		
         foreach ($autoLoaders as $autoLoader) {
-            if (!$autoLoader instanceof DefinitionInterface) {
+            if (!$autoLoader instanceof DefinitionInterface || !$autoLoader instanceof LoaderInterface) {
                 continue;
             }
 
