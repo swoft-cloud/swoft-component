@@ -390,24 +390,25 @@ class Container implements ContainerInterface
      *
      * When class name will return all of instance for class name
      *
-     * @return object
+     * @return object|mixed
      * @throws InvalidArgumentException
      */
     public function get($id)
     {
-        // It is singleton
+        // It is singleton bean
         if (isset($this->singletonPool[$id])) {
             return $this->singletonPool[$id];
         }
 
-        // Prototype by clone
+        // Prototype bean by clone
         if (isset($this->prototypePool[$id])) {
             return clone $this->prototypePool[$id];
         }
 
-        // Alias name
+        // Has alias name
         $aliasId = $this->aliases[$id] ?? '';
-        if ($aliasId) {
+        // Fix: $aliasId !== $id deny loop get
+        if ($aliasId && $aliasId !== $id) {
             return $this->get($aliasId);
         }
 
@@ -432,7 +433,7 @@ class Container implements ContainerInterface
         /* @var ObjectDefinition $objectDefinition */
         $objectDefinition = $this->objectDefinitions[$id];
 
-        // Prototype
+        // Prototype bean
         return $this->safeNewBean($objectDefinition->getName());
     }
 
@@ -920,8 +921,8 @@ class Container implements ContainerInterface
         // Inject properties values
         $this->newProperty($reflectObject, $reflectionClass, $propertyInjects, $id);
 
-        // Alias
-        if (!empty($alias)) {
+        // Alias name
+        if ($alias && $alias !== $beanName) {
             $this->aliases[$alias] = $beanName;
         }
 
