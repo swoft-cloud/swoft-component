@@ -117,7 +117,7 @@ use function is_null;
  * @method Connection getConnection()
  * @method string implode(string $column, string $glue = '')
  * @method Builder useWritePdo()
- *
+ * @method Builder setFetchMode(int $mode)
  */
 class Builder
 {

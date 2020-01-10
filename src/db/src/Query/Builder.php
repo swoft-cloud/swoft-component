@@ -242,6 +242,13 @@ class Builder implements PrototypeInterface
     public $db = '';
 
     /**
+     * @link https://php.net/manual/en/pdo.constants.php#pdo.constants.fetch-obj
+     *
+     * @var int
+     */
+    protected $fetchMode = 0;
+
+    /**
      * @var array
      */
     public $grammars = [
@@ -2748,6 +2755,11 @@ class Builder implements PrototypeInterface
             ->get($columns);
 
         if (!$results->isEmpty()) {
+            // Compatible group aggregate
+            if (isset($this->groups)) {
+                return $results->pluck('aggregate')->$function();
+            }
+
             return array_change_key_case((array)$results[0])['aggregate'];
         }
 
@@ -3073,6 +3085,11 @@ class Builder implements PrototypeInterface
     {
         // Convert counters to expression
         foreach ($counters as $column => $value) {
+            if (empty($value)) {
+                unset($counters[$column]);
+                continue;
+            }
+
             if (!$value instanceof Expression) {
                 $wrapped = $this->grammar->wrap($column);
 
@@ -3307,9 +3324,23 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function db(string $dbname)
+    public function db(string $dbname): self
     {
         $this->db = $dbname;
+        return $this;
+    }
+
+    /**
+     * Set fetch mode
+     *
+     * @param int $mode
+     *
+     * @return $this
+     */
+    public function setFetchMode(int $mode): self
+    {
+        $this->fetchMode = $mode;
+
         return $this;
     }
 
@@ -3326,6 +3357,11 @@ class Builder implements PrototypeInterface
         // Select db name
         if (!empty($this->db)) {
             $connection->db($this->db);
+        }
+
+        // Choose this select fetch mode
+        if (!empty($this->fetchMode)) {
+            $connection->setFetchMode($this->fetchMode);
         }
 
         return $connection;

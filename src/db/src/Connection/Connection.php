@@ -110,6 +110,13 @@ class Connection extends AbstractConnection implements ConnectionInterface
     protected $selectDb = '';
 
     /**
+     * @link https://php.net/manual/en/pdo.constants.php#pdo.constants.fetch-obj
+     *
+     * @var int
+     */
+    protected $fetchMode = 0;
+
+    /**
      * Replace constructor
      *
      * @param Pool     $pool
@@ -236,6 +243,9 @@ class Connection extends AbstractConnection implements ConnectionInterface
 
             // Reset select db name
             $this->resetDb();
+
+            // Reset fetch mode
+            $this->resetFetchMode();
 
             // Release connection
             parent::release($force);
@@ -784,10 +794,12 @@ class Connection extends AbstractConnection implements ConnectionInterface
      */
     protected function prepared(PDOStatement $statement): PDOStatement
     {
-        $config    = $this->database->getConfig();
-        $fetchMode = $config['fetchMode'] ?? self::DEFAULT_FETCH_MODE;
+        if (!$this->fetchMode) {
+            $config          = $this->database->getConfig();
+            $this->fetchMode = $config['fetchMode'] ?? self::DEFAULT_FETCH_MODE;
+        }
 
-        $statement->setFetchMode($fetchMode);
+        $statement->setFetchMode($this->fetchMode);
 
         return $statement;
     }
@@ -1177,5 +1189,22 @@ class Connection extends AbstractConnection implements ConnectionInterface
             // Other exception to release connection
             $this->release();
         }
+    }
+
+    /**
+     * @param int $fetchMode
+     */
+    public function setFetchMode(int $fetchMode): void
+    {
+        $this->fetchMode = $fetchMode;
+    }
+
+    /**
+     * Reset fetch mode
+     *
+     */
+    private function resetFetchMode(): void
+    {
+        $this->fetchMode = 0;
     }
 }

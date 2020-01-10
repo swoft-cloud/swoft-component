@@ -274,6 +274,10 @@ abstract class AbstractPool implements PoolInterface
 
             // Out of `maxIdleTime`
             if ($time - $lastTime > $this->maxIdleTime) {
+
+                // Fix expired connection not released
+                $connection->close();
+
                 $this->count--;
                 continue;
             }
@@ -289,7 +293,7 @@ abstract class AbstractPool implements PoolInterface
      *
      * @param ConnectionInterface $connection
      */
-    private function releaseToChannel(ConnectionInterface $connection)
+    private function releaseToChannel(ConnectionInterface $connection): void
     {
         $stats = $this->channel->stats();
         if ($stats['queue_num'] < $this->maxActive) {

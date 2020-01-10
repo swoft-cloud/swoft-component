@@ -778,4 +778,52 @@ class BuilderTest extends TestCase
 
         $this->assertEquals($expectSql, $res);
     }
+
+    public function testAndOr(): void
+    {
+        $where   = [
+            'name' => 'swoft',
+        ];
+        $orWhere = [
+            'status' => 1,
+            ['age', '>', 0, 'or'],
+        ];
+
+        $sql = DB::table('user')->where($where)->where($orWhere)->toSql();
+
+        $expectSql = 'select * from `user` where (`name` = ?) and (`status` = ? or `age` > ?)';
+
+        $this->assertEquals($expectSql, $sql);
+    }
+
+    public function testFetchMode(): void
+    {
+        $mode = \PDO::FETCH_OBJ;
+
+        $user = DB::table('user')->setFetchMode($mode)->first();
+
+        $this->assertInstanceOf(\stdClass::class, $user);
+    }
+
+    public function testFirstArray(): void
+    {
+        $id     = 1;
+        $origin = ['age' => 1, 'user_desc' => 'swoft'];
+
+        User::updateOrCreate(['id' => $id], $origin);
+
+        $mode = \PDO::FETCH_OBJ;
+
+        $user2 = DB::table('user')->setFetchMode($mode)->first();
+        $this->assertInstanceOf(\stdClass::class, $user2);
+
+        $user = DB::table('user')->setFetchMode($mode)->firstArray();
+        $this->assertIsArray($user);
+
+        $user1 = DB::table('user')->firstArray();
+        $this->assertIsArray($user1);
+
+        $user1 = DB::table('user')->first();
+        $this->assertIsArray($user1);
+    }
 }
