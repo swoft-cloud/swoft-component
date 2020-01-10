@@ -407,8 +407,7 @@ class Container implements ContainerInterface
 
         // Has alias name
         $aliasId = $this->aliases[$id] ?? '';
-        // Fix: $aliasId !== $id deny loop get
-        if ($aliasId && $aliasId !== $id) {
+        if ($aliasId) {
             return $this->get($aliasId);
         }
 
@@ -922,6 +921,7 @@ class Container implements ContainerInterface
         $this->newProperty($reflectObject, $reflectionClass, $propertyInjects, $id);
 
         // Alias name
+        // Fix: $aliasId !== $id for deny loop get
         if ($alias && $alias !== $beanName) {
             $this->aliases[$alias] = $beanName;
         }
