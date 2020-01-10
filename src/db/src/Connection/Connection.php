@@ -658,6 +658,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
         // the event that the developer needs them. We'll log time in milliseconds.
         return $result;
     }
+    
     /**
      * Get the elapsed time since a given starting point.
      *
@@ -668,6 +669,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     {
         return round((microtime(true) - $start) * 1000, 2);
     }
+    
     /**
      * Run a SQL statement.
      *
