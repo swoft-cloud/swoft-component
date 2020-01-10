@@ -16,6 +16,7 @@ class NoRequiredTest extends TestCase
                 $this->getValidates(ValidatorNoRequired::class, 'testNoRequired'));
         } catch (ValidatorException $e) {
         }
+        
         $this->assertEmpty($result);
         $this->assertIsArray($result);
         $this->assertEquals($data, $result);
