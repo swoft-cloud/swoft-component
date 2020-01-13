@@ -68,7 +68,7 @@ trait RandomStringTrait
     public static function uniqIdReal(int $length = 13): string
     {
         // uniqid gives 13 chars, but you could adjust it to your needs.
-        $bytes = random_bytes(ceil($length / 2));
+        $bytes = random_bytes((int)ceil($length / 2));
 
         return (string)substr(bin2hex($bytes), 0, $length);
     }
