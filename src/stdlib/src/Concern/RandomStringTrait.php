@@ -5,9 +5,12 @@ namespace Swoft\Stdlib\Concern;
 use Exception;
 use RuntimeException;
 use Swoft\Stdlib\Helper\EnvHelper;
+use function base_convert;
 use function bin2hex;
 use function ceil;
+use function microtime;
 use function random_bytes;
+use function random_int;
 use function substr;
 
 /**
@@ -241,5 +244,19 @@ trait RandomStringTrait
         $pool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
         return substr(str_shuffle(str_repeat($pool, $length)), 0, $length);
+    }
+
+    /**
+     * @param int $randMin
+     * @param int $randMax
+     *
+     * @return string
+     * @throws Exception
+     */
+    public static function timeUniId(int $randMin = 100, int $randMax = 999): string
+    {
+        $mt = str_replace('.', '', microtime(true));
+
+        return base_convert($mt . random_int($randMin, $randMax), 10, 16);
     }
 }
