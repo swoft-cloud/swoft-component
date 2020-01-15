@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Task;
-
 
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
@@ -23,9 +21,8 @@ class TaskDispatcher
     /**
      * @param Request  $request
      * @param Response $response
-     *
      */
-    public function dispatch(Request $request, Response $response)
+    public function dispatch(Request $request, Response $response): void
     {
         Swoft::trigger(TaskEvent::BEFORE_TASK, null, $request, $response);
 
@@ -60,17 +57,13 @@ class TaskDispatcher
         [$status, $handler] = $match;
 
         if ($status != Router::FOUND || empty($handler)) {
-            throw new TaskException(
-                sprintf('Task(name=%s method=%s) is not exist!', $name, $method)
-            );
+            throw new TaskException(sprintf('Task(name=%s method=%s) is not exist!', $name, $method));
         }
 
         [$className, $methodName] = $handler;
         $object = BeanFactory::getBean($className);
         if (!method_exists($object, $methodName)) {
-            throw new TaskException(
-                sprintf('Task(name=%s method=%s) method is not exist!', $name, $method)
-            );
+            throw new TaskException(sprintf('Task(name=%s method=%s) method is not exist!', $name, $method));
         }
 
         return PhpHelper::call([$object, $methodName], ... $params);

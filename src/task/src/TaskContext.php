@@ -61,6 +61,22 @@ class TaskContext extends AbstractContext
     }
 
     /**
+     * @return int
+     */
+    public function getTaskId(): int
+    {
+        return $this->request->getTaskId();
+    }
+
+    /**
+     * @return string
+     */
+    public function getTaskUniqId(): string
+    {
+        return $this->request->getTaskUniqid();
+    }
+
+    /**
      * Clear
      */
     public function clear(): void

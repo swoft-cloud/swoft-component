@@ -63,17 +63,13 @@ class SyncTaskDispatcher
         [$status, $handler] = $match;
 
         if ($status != Router::FOUND || empty($handler)) {
-            throw new TaskException(
-                sprintf('Task(name=%s method=%s) is not exist!', $name, $method)
-            );
+            throw new TaskException(sprintf('Task(name=%s method=%s) is not exist!', $name, $method));
         }
 
         [$className, $methodName] = $handler;
         $object = BeanFactory::getBean($className);
         if (!method_exists($object, $methodName)) {
-            throw new TaskException(
-                sprintf('Task(name=%s method=%s) method is not exist!', $name, $method)
-            );
+            throw new TaskException(sprintf('Task(name=%s method=%s) method is not exist!', $name, $method));
         }
 
         return PhpHelper::call([$object, $methodName], ... $params);
