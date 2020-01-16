@@ -4,6 +4,7 @@ namespace Swoft\Concern;
 
 /**
  * Trait SwoftTrait
+ *
  * @since 2.0
  */
 trait SwoftTrait

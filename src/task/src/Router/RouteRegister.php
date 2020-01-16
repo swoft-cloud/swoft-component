@@ -62,7 +62,7 @@ class RouteRegister
             }
 
             $name = $task['name'] ?: $className;
-            
+
             foreach ($mapping as $methodName => $map) {
                 $mappingName = $map['name'] ?? '';
                 if (empty($mappingName)) {

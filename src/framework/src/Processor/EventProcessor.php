@@ -11,12 +11,14 @@ use function bean;
 
 /**
  * Event processor
+ *
  * @since 2.0
  */
 class EventProcessor extends Processor
 {
     /**
      * Handle event register
+     *
      * @return bool
      */
     public function handle(): bool

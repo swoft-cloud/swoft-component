@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Task\Unit;
 
 use Swoft\Context\Context;
@@ -17,7 +16,7 @@ class TaskTest extends TestCase
      * @throws TaskException
      * @expectedException \Swoft\Task\Exception\TaskException
      */
-    public function testCo()
+    public function testCo(): void
     {
         $this->mockTaskServer->co('demoTestTask', 'method', []);
     }
@@ -25,7 +24,7 @@ class TaskTest extends TestCase
     /**
      * @throws TaskException
      */
-    public function testCo2()
+    public function testCo2(): void
     {
         $data   = [
             'name',
@@ -38,7 +37,7 @@ class TaskTest extends TestCase
     /**
      * @throws TaskException
      */
-    public function testCo3()
+    public function testCo3(): void
     {
         $data   = [
             'name',
@@ -63,26 +62,26 @@ class TaskTest extends TestCase
      * @throws TaskException
      * @expectedException \Swoft\Task\Exception\TaskException
      */
-    public function testCo6()
+    public function testCo6(): void
     {
         $this->mockTaskServer->co('demoTestTask', 'method3', ['name', 18306]);
     }
 
     /**
      */
-    public function testAsync()
+    public function testAsync(): void
     {
-//        $id = $this->mockTaskServer->async('demoTestTask', 'method2', ['name', 18306]);
-//        $this->assertGreaterThan(0, $id);
+        //        $id = $this->mockTaskServer->async('demoTestTask', 'method2', ['name', 18306]);
+        //        $this->assertGreaterThan(0, $id);
     }
 
     /**
      * @throws TaskException
      */
-    public function testContext()
+    public function testContext(): void
     {
         $data = [
-            'unit-1',
+            'unit1',
             1,
             'co',
             'demoTestTask',
@@ -100,7 +99,7 @@ class TaskTest extends TestCase
     /**
      * @throws TaskException
      */
-    public function testNotMapping()
+    public function testNotMapping(): void
     {
         $result = $this->mockTaskServer->co('demoTestTask', 'notMapping', []);
         $this->assertEquals($result, ['notMapping']);
@@ -109,7 +108,7 @@ class TaskTest extends TestCase
     /**
      * @throws TaskException
      */
-    public function testBooReturn()
+    public function testBooReturn(): void
     {
         $result = $this->mockTaskServer->co('demoTestTask', 'booReturn', []);
         $this->assertTrue($result);
@@ -127,7 +126,7 @@ class TaskTest extends TestCase
     /**
      * @throws TaskException
      */
-    public function testVoidReturn()
+    public function testVoidReturn(): void
     {
         $result = $this->mockTaskServer->co('demoTestTask', 'voidReturn2', []);
         $this->assertNull($result);

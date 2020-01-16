@@ -83,7 +83,7 @@ class SwooleStorage implements SessionStorageInterface
     /**
      * Write session data
      *
-     * @param string $storageKey   The session id.
+     * @param string $storageKey  The session id.
      * @param string $sessionData The encoded session data. This data is a serialized
      *                            string and passing it as this parameter.
      *

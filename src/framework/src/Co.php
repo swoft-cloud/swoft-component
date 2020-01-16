@@ -116,13 +116,8 @@ class Co
 
                 PhpHelper::call($callable);
             } catch (Throwable $e) {
-                Error::log(
-                    "Coroutine internal error: %s\nAt File %s line %d\nTrace:\n%s",
-                    $e->getMessage(),
-                    $e->getFile(),
-                    $e->getLine(),
-                    $e->getTraceAsString()
-                );
+                Error::log("Coroutine internal error: %s\nAt File %s line %d\nTrace:\n%s", $e->getMessage(),
+                    $e->getFile(), $e->getLine(), $e->getTraceAsString());
 
                 // Trigger co error event
                 Swoft::trigger(SwoftEvent::COROUTINE_EXCEPTION, $e);

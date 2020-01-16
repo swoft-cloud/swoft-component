@@ -52,21 +52,17 @@ class Packet
         $ext    = $data['ext'] ?? [];
 
         if (empty($name) || empty($method) || empty($type)) {
-            throw new TaskException(
-                sprintf('Name or method(name=%s method=%s) can not be empty!', $name, $method)
-            );
+            throw new TaskException(sprintf('Name or method(name=%s method=%s) can not be empty!', $name, $method));
         }
 
         if (!is_array($params)) {
-            throw new TaskException(
-                sprintf('Params(%s) is not formated!', JsonHelper::encode($params, JSON_UNESCAPED_UNICODE))
-            );
+            throw new TaskException(sprintf('Params(%s) is not formated!',
+                    JsonHelper::encode($params, JSON_UNESCAPED_UNICODE)));
         }
 
         if (!is_array($ext)) {
-            throw new TaskException(
-                sprintf('Ext(%s) is not formated!', JsonHelper::encode($ext, JSON_UNESCAPED_UNICODE))
-            );
+            throw new TaskException(sprintf('Ext(%s) is not formated!',
+                    JsonHelper::encode($ext, JSON_UNESCAPED_UNICODE)));
         }
 
         return [$type, $name, $method, $params, $ext];

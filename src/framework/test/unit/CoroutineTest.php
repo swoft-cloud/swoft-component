@@ -69,7 +69,7 @@ class CoroutineTest extends TestCase
 
     public function testGetHostByName(): void
     {
-        $ip = '193.187.118.225';
+        $ip     = '193.187.118.225';
         $result = Co::getHostByName('www.swoft.io', 2);
         $this->assertEquals($result, $ip);
 

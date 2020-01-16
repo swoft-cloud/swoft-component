@@ -2,8 +2,8 @@
 
 namespace Swoft\Context;
 
-use Swoft\Stdlib\Concern\DataPropertyTrait;
 use Swoft\Contract\ContextInterface;
+use Swoft\Stdlib\Concern\DataPropertyTrait;
 
 /**
  * Class AbstractContext
