@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Task;
 
 use Swoft\Bean\Annotation\Mapping\Bean;

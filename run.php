@@ -68,28 +68,6 @@ if (!in_array('-c', $_SERVER['argv'], true)) {
 
 require PHPUNIT_COMPOSER_INSTALL;
 
-// php run.php -c src/websocket-server/phpunit.xml
-// SWOFT_TEST_SERVER: http, ws, rpc, tcp
-if ($srvType = (string)getenv('SWOFT_TEST_SERVER')) {
-    // Output: "php is /usr/local/bin/php"
-    [$ok, $ret,] = \Swoft\Stdlib\Helper\Sys::run('type php');
-    if (0 !== $ok) {
-        exit('php not found');
-    }
-
-    $php  = substr(trim($ret), 7);
-    $proc = new \Swoole\Process(function (\Swoole\Process $proc) use ($php, $srvType) {
-        // $proc->exec($php, [ $dir . '/test/bin/swoft', 'ws:start');
-        $proc->exec($php, ['test/bin/swoft', $srvType . ':start']);
-    });
-    $pid  = $proc->start();
-    echo "Swoft server started, PID $pid\n";
-
-    // wait server starting...
-    sleep(2);
-    echo file_get_contents('http://127.0.0.1:18308/hi');
-}
-
 $status = 0;
 \Swoft\Co::run(function () {
     // Status
@@ -102,11 +80,5 @@ $status = 0;
         echo 'ExitException: ' . $e->getMessage(), "\n";
     }
 });
-
-if (isset($pid) && $pid > 0) {
-    echo "Stop server on tests end. PID $pid";
-    $ok = \Swoole\Process::kill($pid, 15);
-    echo $ok ? " OK\n" : " FAIL\n";
-}
 
 exit($status);

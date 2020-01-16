@@ -5,6 +5,7 @@ namespace Swoft\Task;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
+use Swoft\Log\Helper\CLog;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Swoft\Task\Exception\TaskException;
 use Swoft\Task\Router\Router;
@@ -31,6 +32,7 @@ class TaskDispatcher
             $result = $this->handle($request);
             $response->setResult($result);
         } catch (Throwable $e) {
+            CLog::error('task exec error: %s', $e->getMessage());
             $response->setErrorCode($e->getCode());
             $response->setErrorMessage($e->getMessage());
         }
@@ -56,7 +58,7 @@ class TaskDispatcher
         $match = $router->match($name, $method);
         [$status, $handler] = $match;
 
-        if ($status != Router::FOUND || empty($handler)) {
+        if ($status !== Router::FOUND || empty($handler)) {
             throw new TaskException(sprintf('Task(name=%s method=%s) is not exist!', $name, $method));
         }
 
@@ -66,6 +68,6 @@ class TaskDispatcher
             throw new TaskException(sprintf('Task(name=%s method=%s) method is not exist!', $name, $method));
         }
 
-        return PhpHelper::call([$object, $methodName], ... $params);
+        return PhpHelper::call([$object, $methodName], ...$params);
     }
 }
