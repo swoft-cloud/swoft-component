@@ -2,11 +2,11 @@
 
 namespace Swoft\Processor;
 
+use Dotenv\Dotenv;
 use Dotenv\Environment\Adapter\EnvConstAdapter;
 use Dotenv\Environment\Adapter\PutenvAdapter;
 use Dotenv\Environment\Adapter\ServerConstAdapter;
 use Dotenv\Environment\DotenvFactory;
-use Dotenv\Dotenv;
 use Swoft;
 use Swoft\Log\Helper\CLog;
 use Swoft\Stdlib\Helper\Str;

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use Swoft\Bean\BeanFactory;
 use Swoft\Config\Config;
@@ -32,6 +32,10 @@ if (!function_exists('env')) {
      */
     function env(string $key = null, $default = null)
     {
+        if (!$key) {
+            return $_SERVER;
+        }
+
         $value = getenv($key);
 
         if ($value === false) {
@@ -39,9 +43,13 @@ if (!function_exists('env')) {
         }
 
         switch (strtolower($value)) {
+            case 'on':
+            case 'yes':
             case 'true':
             case '(true)':
                 return true;
+            case 'off':
+            case 'no':
             case 'false':
             case '(false)':
                 return false;
@@ -159,17 +167,22 @@ if (!function_exists('server')) {
 
 if (!function_exists('validate')) {
     /**
-     * @param array  $data
+     * @param array $data
      * @param string $validatorName
-     * @param array  $fields
-     * @param array  $userValidators
-     * @param array  $unfields
+     * @param array $fields
+     * @param array $userValidators
+     * @param array $unfields
      *
      * @return array
      * @throws ValidatorException
      */
-    function validate(array $data, string $validatorName, array $fields = [], array $userValidators = [], array $unfields = []): array
-    {
+    function validate(
+        array $data,
+        string $validatorName,
+        array $fields = [],
+        array $userValidators = [],
+        array $unfields = []
+    ): array {
         /* @var Validator $validator */
         $validator = BeanFactory::getBean('validator');
         return $validator->validate($data, $validatorName, $fields, $userValidators, $unfields);

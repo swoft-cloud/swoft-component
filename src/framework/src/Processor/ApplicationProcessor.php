@@ -7,6 +7,7 @@ use function get_class;
 
 /**
  * Application processor
+ *
  * @since 2.0
  */
 class ApplicationProcessor extends Processor
@@ -41,6 +42,7 @@ class ApplicationProcessor extends Processor
      * Add first processor
      *
      * @param Processor[] $processor
+     *
      * @return bool
      */
     public function addFirstProcessor(Processor ...$processor): bool

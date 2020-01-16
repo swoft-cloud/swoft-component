@@ -7,6 +7,7 @@ use function array_merge;
 
 /**
  * Class AbstractDispatcher
+ *
  * @since 2.0
  */
 abstract class AbstractDispatcher implements DispatcherInterface
@@ -57,8 +58,7 @@ abstract class AbstractDispatcher implements DispatcherInterface
      */
     public function requestMiddleware(): array
     {
-        return $this->middlewares ?
-            array_merge($this->preMiddlewares, $this->middlewares, $this->afterMiddlewares) :
+        return $this->middlewares ? array_merge($this->preMiddlewares, $this->middlewares, $this->afterMiddlewares) :
             array_merge($this->preMiddlewares, $this->afterMiddlewares);
     }
 

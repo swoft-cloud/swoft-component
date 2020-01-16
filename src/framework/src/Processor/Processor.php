@@ -7,6 +7,7 @@ use Swoft\SwoftApplication;
 
 /**
  * Abstract processor
+ *
  * @since 2.0
  */
 abstract class Processor implements ProcessorInterface

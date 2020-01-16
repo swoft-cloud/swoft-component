@@ -17,9 +17,9 @@ use Throwable;
 class Timer
 {
     /**
-     * @param int $msec
+     * @param int            $msec
      * @param array|callable $callback
-     * @param array ...$params
+     * @param array          ...$params
      *
      * @return int
      */
@@ -47,9 +47,9 @@ class Timer
     }
 
     /**
-     * @param int $msec
+     * @param int            $msec
      * @param array|callable $callback
-     * @param array ...$params
+     * @param array          ...$params
      *
      * @return int
      */
@@ -125,7 +125,7 @@ class Timer
      */
     private static function getLogItems(): array
     {
-        $data = [];
+        $data  = [];
         $items = Log::getLogger()->getItems();
 
         foreach ($items as $item) {

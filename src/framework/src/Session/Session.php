@@ -103,6 +103,7 @@ class Session
      * Get session by FD
      *
      * @param string $sid If not specified, return the current corresponding session
+     *
      * @return SessionInterface|Connection
      */
     public static function get(string $sid = ''): ?SessionInterface
@@ -131,6 +132,7 @@ class Session
      * Get connection by FD. if not found will throw exception.
      *
      * @param string $sid
+     *
      * @return SessionInterface|Connection
      */
     public static function mustGet(string $sid = ''): SessionInterface

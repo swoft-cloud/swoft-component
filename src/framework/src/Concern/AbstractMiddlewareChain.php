@@ -40,7 +40,7 @@ abstract class AbstractMiddlewareChain implements Countable
      * Add middleware
      * This method prepends new middleware to the application middleware stack.
      *
-     * @param array ...$middles Any callable that accepts two arguments:
+     * @param array ...$middles                 Any callable that accepts two arguments:
      *                                          1. A Request object
      *                                          2. A Handler object
      *

@@ -4,6 +4,7 @@ namespace Swoft;
 
 /**
  * Class SwoftEvent
+ *
  * @since 2.0
  */
 final class SwoftEvent

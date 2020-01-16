@@ -23,7 +23,7 @@ trait CommonTestAssertTrait
     {
         $exist = strpos($haystack, $needle) !== false;
 
-        Assert::assertTrue($exist);
+        Assert::assertTrue($exist, "Failed asserting that \"$haystack\" contains \"$needle\"");
     }
 
     /**
