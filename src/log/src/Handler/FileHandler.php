@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Log\Handler;
-
 
 use DateTime;
 use InvalidArgumentException;
@@ -10,8 +8,8 @@ use Monolog\Handler\AbstractProcessingHandler;
 use Swoft\Co;
 use Swoft\Exception\SwoftException;
 use Swoft\Log\Helper\Log;
-use Swoft\Log\Logger as SwoftLogger;
 use Swoft\Log\Logger;
+use Swoft\Log\Logger as SwoftLogger;
 use Swoft\Stdlib\Helper\JsonHelper;
 use UnexpectedValueException;
 use function alias;
@@ -73,7 +71,6 @@ class FileHandler extends AbstractProcessingHandler
      * @param array $records
      *
      * @return void
-     * @throws SwoftException
      */
     public function handleBatch(array $records): void
     {
@@ -89,8 +86,6 @@ class FileHandler extends AbstractProcessingHandler
      * Write file
      *
      * @param array $records
-     *
-     * @throws SwoftException
      */
     protected function write(array $records): void
     {
@@ -109,9 +104,7 @@ class FileHandler extends AbstractProcessingHandler
         $res     = Co::writeFile($logFile, $messageText, FILE_APPEND);
 
         if ($res === false) {
-            throw new InvalidArgumentException(
-                sprintf('Unable to append to log file: %s', $logFile)
-            );
+            throw new InvalidArgumentException(sprintf('Unable to append to log file: %s', $logFile));
         }
     }
 
@@ -149,13 +142,14 @@ class FileHandler extends AbstractProcessingHandler
     public function formatJson(array $record): string
     {
         unset($record['formatted'], $record['extra']);
-        if ($record['level'] == Logger::NOTICE) {
+        if ($record['level'] === Logger::NOTICE) {
             unset($record['context']);
         }
 
         if ($record['datetime'] instanceof DateTime) {
             $record['datetime'] = $record['datetime']->format('Y-m-d H:i:s');
         }
+
         return JsonHelper::encode($record, JSON_UNESCAPED_UNICODE);
     }
 
@@ -169,9 +163,8 @@ class FileHandler extends AbstractProcessingHandler
         if ($logDir !== null && !is_dir($logDir)) {
             $status = mkdir($logDir, 0777, true);
             if ($status === false) {
-                throw new UnexpectedValueException(
-                    sprintf('There is no existing directory at "%s" and its not buildable: ', $logDir)
-                );
+                $errMsg = sprintf('There is no existing directory at "%s" and its not buildable', $logDir);
+                throw new UnexpectedValueException($errMsg);
             }
         }
     }

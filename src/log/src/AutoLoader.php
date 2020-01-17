@@ -2,9 +2,9 @@
 
 namespace Swoft\Log;
 
-use function dirname;
 use Swoft\Helper\ComposerJSON;
 use Swoft\SwoftComponent;
+use function dirname;
 
 /**
  * Class AutoLoader
