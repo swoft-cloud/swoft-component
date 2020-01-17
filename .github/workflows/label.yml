@@ -19,14 +19,14 @@ jobs:
 #       env:
 #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-#     - name: PR Labeler
-#       uses: paulfantom/periodic-labeler@master
-#       env:
-#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#         GITHUB_REPOSITORY: ${{ github.repository }}
-#         LABEL_MAPPINGS_FILE: .github/pr-labeler.yml
+    - name: PR Labeler
+      uses: paulfantom/periodic-labeler@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        LABEL_MAPPINGS_FILE: .github/pr-labeler.yml
 
-    - uses: actions/labeler@v2
-      with:
-        repo-token: "${{ secrets.GITHUB_TOKEN }}"
-        configuration-path: ".github/pr-labeler.yml"
+#     - uses: actions/labeler@v2
+#       with:
+#         repo-token: "${{ secrets.GITHUB_TOKEN }}"
+#         configuration-path: ".github/pr-labeler.yml"
