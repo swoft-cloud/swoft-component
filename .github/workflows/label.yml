@@ -13,11 +13,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: TimonVS/pr-labeler-action@v3
-      with:
-        configuration-path: .github/pr-labeler.yml # optional, .github/pr-labeler.yml is the default value
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#     - uses: TimonVS/pr-labeler-action@v3
+#       with:
+#         configuration-path: .github/pr-labeler.yml # optional, .github/pr-labeler.yml is the default value
+#       env:
+#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 #     - name: PR Labeler
 #       uses: paulfantom/periodic-labeler@master
@@ -26,7 +26,7 @@ jobs:
 #         GITHUB_REPOSITORY: ${{ github.repository }}
 #         LABEL_MAPPINGS_FILE: .github/pr-labeler.yml
 
-#     - uses: actions/labeler@v2
-#       with:
-#         repo-token: "${{ secrets.GITHUB_TOKEN }}"
-#         configuration-path: ".github/pr-labeler.yml"
+    - uses: actions/labeler@v2
+      with:
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+        configuration-path: ".github/pr-labeler.yml"
