@@ -8,6 +8,7 @@ use Swoft\Console\Annotation\Mapping\CommandOption;
 use Swoft\Server\Command\BaseServerCommand;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Tcp\Server\TcpServer;
+use Swoft\Tcp\Server\TcpServerBean;
 use Throwable;
 use function bean;
 use function input;
@@ -107,7 +108,7 @@ class TcpServerCommand extends BaseServerCommand
         $command = $this->getFullCommand();
 
         /* @var TcpServer $server */
-        $server = bean('tcpServer');
+        $server = bean(TcpServerBean::SERVER);
         $server->setScriptFile($script);
         $server->setFullCommand($command);
 

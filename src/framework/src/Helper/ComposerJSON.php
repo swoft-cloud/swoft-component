@@ -2,15 +2,16 @@
 
 namespace Swoft\Helper;
 
+use InvalidArgumentException;
+use Swoft\Stdlib\Helper\ArrayHelper;
 use function file_exists;
 use function file_get_contents;
-use InvalidArgumentException;
 use function json_decode;
-use Swoft\Stdlib\Helper\ArrayHelper;
 
 /**
  * Class ComposerJSONHelper
- * @package Swoft\Helper
+ *
+ * @since 2.0.0
  */
 class ComposerJSON
 {
@@ -21,6 +22,7 @@ class ComposerJSON
 
     /**
      * @param string $jsonFile
+     *
      * @return ComposerJSON
      */
     public static function open(string $jsonFile): self
@@ -30,6 +32,7 @@ class ComposerJSON
 
     /**
      * Class constructor.
+     *
      * @param string $jsonFile
      */
     public function __construct(string $jsonFile)
@@ -45,6 +48,7 @@ class ComposerJSON
 
     /**
      * get a component metadata from package composer.json
+     *
      * @return array
      */
     public function getMetadata(): array
@@ -65,6 +69,7 @@ class ComposerJSON
 
     /**
      * @param string $key
+     *
      * @return mixed
      */
     public function get(string $key)

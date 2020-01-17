@@ -1,4 +1,5 @@
 <?php
+
 use Composer\Autoload\ClassLoader;
 use SwoftTest\Testing\TestApplication;
 

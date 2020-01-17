@@ -8,7 +8,6 @@ use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Log\Helper\CLog;
-use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Contract\MessageHandlerInterface;
 use Swoft\WebSocket\Server\Contract\MiddlewareInterface;
 use Swoft\WebSocket\Server\Contract\RequestInterface;
@@ -29,7 +28,7 @@ use function server;
  *
  * @since 2.0
  *
- * @Bean("wsMsgDispatcher")
+ * @Bean(WsServerBean::MSG_DISPATCHER)
  */
 class WsMessageDispatcher implements MiddlewareInterface
 {
@@ -85,7 +84,7 @@ class WsMessageDispatcher implements MiddlewareInterface
     public function dispatch(array $module, Request $request, Response $response): ResponseInterface
     {
         /** @var Connection $conn */
-        $conn  = Session::current();
+        $conn  = Connection::current();
         $frame = $request->getFrame();
 
         CLog::info('Message: message data parser is %s', $conn->getParserClass());
@@ -142,7 +141,6 @@ class WsMessageDispatcher implements MiddlewareInterface
      *
      * @return ResponseInterface
      * @throws ReflectionException
-     * @throws Swoft\Exception\SwoftException
      * @throws WsMessageRouteException
      * @internal for middleware dispatching
      */

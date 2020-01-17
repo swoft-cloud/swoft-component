@@ -7,12 +7,13 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Stdlib\Concern\DataPropertyTrait;
 use Swoft\WebSocket\Server\Contract\RequestInterface;
 use Swoole\WebSocket\Frame;
+use Swoft\WebSocket\Server\WsServerBean;
 
 /**
  * Class Request
  *
  * @since 2.0
- * @Bean(scope=Bean::PROTOTYPE)
+ * @Bean(name=WsServerBean::REQUEST, scope=Bean::PROTOTYPE)
  */
 class Request implements RequestInterface
 {
@@ -40,7 +41,7 @@ class Request implements RequestInterface
      */
     public static function new(Frame $frame): self
     {
-        $self = Swoft::getBean(self::class);
+        $self = Swoft::getBean(WsServerBean::REQUEST);
 
         // Init properties
         $self->frame = $frame;

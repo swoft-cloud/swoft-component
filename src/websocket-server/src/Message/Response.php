@@ -5,13 +5,13 @@ namespace Swoft\WebSocket\Server\Message;
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Context\Context;
-use Swoft\Exception\SwoftException;
 use Swoft\Log\Helper\CLog;
 use Swoft\Server\Concern\CommonProtocolDataTrait;
-use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\Context\WsMessageContext;
 use Swoft\WebSocket\Server\Contract\ResponseInterface;
+use Swoft\WebSocket\Server\WebSocketServer;
+use Swoft\WebSocket\Server\WsServerBean;
 use Swoft\WebSocket\Server\WsServerEvent;
 use Swoole\WebSocket\Frame;
 use function is_object;
@@ -21,7 +21,7 @@ use const WEBSOCKET_OPCODE_TEXT;
  * Class Response
  *
  * @since 2.0.1
- * @Bean(scope=Bean::PROTOTYPE)
+ * @Bean(name=WsServerBean::RESPONSE, scope=Bean::PROTOTYPE)
  */
 class Response implements ResponseInterface
 {
@@ -71,9 +71,9 @@ class Response implements ResponseInterface
     private $sendToAll = false;
 
     /**
-     * @var bool
+     * @var int
      */
-    private $finish = true;
+    private $finish = 1;
 
     /**
      * @var int WebSocket opcode value
@@ -97,7 +97,7 @@ class Response implements ResponseInterface
      */
     public static function new(int $fd = 0): self
     {
-        $self = Swoft::getBean(self::class);
+        $self = Swoft::getBean(WsServerBean::RESPONSE);
 
         // Use sender as default receiver
         $self->fd     = $fd;
@@ -170,10 +170,19 @@ class Response implements ResponseInterface
     }
 
     /**
+     * @return Response
+     */
+    public function broadcast(): self
+    {
+        // Exclude self
+        $this->noFds[] = $this->sender;
+        return $this;
+    }
+
+    /**
      * @param Connection $conn
      *
      * @return int
-     * @throws SwoftException
      */
     public function send(Connection $conn = null): int
     {
@@ -188,12 +197,11 @@ class Response implements ResponseInterface
 
         // Fix: empty response data
         if ($this->isEmpty()) {
-            CLog::warning('cannot send empty response to websocket client');
-            return 0;
+            // CLog::warning('cannot send empty response to websocket client');
+            return -1;
         }
 
-        /** @noinspection CallableParameterUseCaseInTypeContextInspection */
-        $conn = $conn ?: Session::current();
+        $conn = $conn ?: Connection::current();
 
         // Build response content
         $content = $this->formatContent($conn);
@@ -203,30 +211,45 @@ class Response implements ResponseInterface
         // Trigger event before push message content to client
         Swoft::trigger(WsServerEvent::MESSAGE_PUSH, $server, $content, $this);
 
-        // To all users
+        // Do sending
+        return $this->doSend($server, $content, $sender);
+    }
+
+    /**
+     * @param WebSocketServer $server
+     * @param string          $content
+     * @param int             $sender
+     *
+     * @return int
+     */
+    protected function doSend(WebSocketServer $server, string $content, int $sender): int
+    {
+        $opcode   = $this->opcode;
         $pageSize = $this->pageSize;
+
+        // To all users
         if ($this->sendToAll) {
-            return $server->sendToAll($content, $sender, $pageSize, $this->opcode);
+            return $server->sendToAll($content, $sender, $pageSize, $opcode);
         }
 
         // To special users
         if ($this->fds) {
-            return $server->sendToSome($content, $this->fds, $this->noFds, $sender, $pageSize, $this->opcode);
+            return $server->sendToSome($content, $this->fds, $this->noFds, $sender, $pageSize, $opcode);
         }
 
         // Except some users
         if ($this->noFds) {
-            return $server->sendToSome($content, [], $this->noFds, $sender, $pageSize, $this->opcode);
+            return $server->sendToSome($content, [], $this->noFds, $sender, $pageSize, $opcode);
         }
 
         // No receiver
         if ($this->fd < 1) {
             CLog::warning('no receiver for the response message');
-            return 0;
+            return -2;
         }
 
         // To one user
-        $ok = $server->sendTo($this->fd, $content, $sender, $this->opcode, $this->finish);
+        $ok = $server->sendTo($this->fd, $content, $sender, $opcode, $this->finish);
 
         return $ok ? 1 : 0;
     }
@@ -235,7 +258,6 @@ class Response implements ResponseInterface
      * @param Connection|null $conn
      *
      * @return string
-     * @throws SwoftException
      */
     protected function formatContent(Connection $conn): string
     {
@@ -358,17 +380,25 @@ class Response implements ResponseInterface
      */
     public function isFinish(): bool
     {
+        return $this->finish === 1;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFinish(): int
+    {
         return $this->finish;
     }
 
     /**
-     * @param bool $finish
+     * @param bool|int $finish
      *
      * @return self
      */
-    public function setFinish(bool $finish): self
+    public function setFinish($finish): self
     {
-        $this->finish = $finish;
+        $this->finish = (int)$finish;
         return $this;
     }
 

@@ -3,6 +3,9 @@
 namespace Swoft\Console\Input;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Console\Annotation\Mapping\Command;
+use Swoft\Console\Exception\CommandFlagException;
+use Swoft\Console\FlagType;
 use Toolkit\Cli\Flags;
 use function array_map;
 use function array_shift;
@@ -49,10 +52,13 @@ class Input extends AbstractInput
             $args = (array)$_SERVER['argv'];
         }
 
-        $this->pwd        = $this->getPwd();
-        $this->tokens     = $args;
+        $this->tokens = $args;
+
         $this->scriptFile = array_shift($args);
         $this->fullScript = implode(' ', $args);
+
+        $this->flags = $args;
+        $this->pwd   = $this->getPwd();
 
         if ($parsing) {
             // list($this->args, $this->sOpts, $this->lOpts) = InputParser::fromArgv($args);
@@ -86,8 +92,8 @@ class Input extends AbstractInput
     /**
      * Read input information
      *
-     * @param string $question 若不为空，则先输出文本消息
-     * @param bool   $nl       true 会添加换行符 false 原样输出，不添加换行符
+     * @param string $question The message before read input
+     * @param bool   $nl       Add new line. True: will add new line. False: direct output.
      *
      * @return string
      */
@@ -101,7 +107,134 @@ class Input extends AbstractInput
     }
 
     /***********************************************************************************
-     * getter/setter
+     * Binding options and arguments
+     ***********************************************************************************/
+
+    /**
+     * Re-parse flags by command info
+     *
+     * @param array $info
+     * @param bool  $binding
+     *
+     * @throws CommandFlagException
+     */
+    public function parseFlags(array $info, bool $binding = false): void
+    {
+        $config = [];
+
+        // Parse options(find bool and array options)
+        if ($cmdOpts = $info['options']) {
+            foreach ($cmdOpts as $name => $opt) {
+                if ($opt['type'] === FlagType::BOOL) {
+                    $config['boolOpts'][] = $name;
+                } elseif ($opt['type'] === FlagType::ARRAY) {
+                    $config['arrayOpts'][] = $name;
+                }
+            }
+        }
+
+        if ($this->flags) {
+            [$this->args, $this->sOpts, $this->lOpts] = Flags::parseArgv($this->flags, $config);
+
+            // Binding
+            if ($binding) {
+                $this->bindingFlags($info);
+            }
+        }
+    }
+
+    /**
+     * Binding options and arguments by give config
+     *
+     * @param array $info
+     *
+     * @throws CommandFlagException
+     */
+    public function bindingFlags(array $info): void
+    {
+        // Bind options
+        if ($opts = $info['options']) {
+            $this->bindingOptions($opts);
+        }
+
+        // Bind named argument by index
+        if ($args = $info['arguments']) {
+            $this->bindingArguments($args);
+        }
+    }
+
+    /**
+     * @param array $cmdOpts The command options definition
+     *
+     * @throws CommandFlagException
+     */
+    protected function bindingOptions(array $cmdOpts): void
+    {
+        foreach ($cmdOpts as $name => $opt) {
+            $shortName = $opt['short'];
+            $inputVal  = $this->getLongOpt($name);
+
+            // Exist short name
+            if (null === $inputVal && $shortName) {
+                $inputVal = $this->getShortOpt($shortName);
+            }
+
+            // Exist default value
+            if (null === $inputVal && isset($opt['default'])) {
+                $inputVal = $opt['default'];
+            }
+
+            // Has option value
+            if (null !== $inputVal) {
+                $typedValue = FlagType::convertType($opt['type'], $inputVal);
+
+                $this->lOpts[$name] = $typedValue;
+                if ($shortName) {
+                    $this->sOpts[$shortName] = $typedValue;
+                }
+
+                // Value is required
+            } elseif ($opt['mode'] === Command::OPT_REQUIRED) {
+                $short = $shortName ? "(short: {$shortName})" : '';
+                throw new CommandFlagException("The option '{$name}'{$short} is required");
+            }
+        }
+    }
+
+    /**
+     * @param array $cmdArgs The command options definition
+     *
+     * @throws CommandFlagException
+     */
+    protected function bindingArguments(array $cmdArgs): void
+    {
+        $index  = 0;
+        $values = $this->getArgs();
+
+        foreach ($cmdArgs as $name => $arg) {
+            // Bind value to name
+            if (isset($values[$index])) {
+                $typeValue = FlagType::convertType($arg['type'], $values[$index]);
+                // Re-set strict type value
+                $this->args[$name] = $this->args[$index] = $typeValue;
+                // Bind default value
+            } elseif (isset($arg['default'])) {
+                $typeValue = FlagType::convertType($arg['type'], $arg['default']);
+                // Re-set strict type value
+                $this->args[$name] = $this->args[$index] = $typeValue;
+            }
+
+            // Check arg is required
+            if ($arg['mode'] === Command::ARG_REQUIRED && empty($values[$index])) {
+                throw new CommandFlagException("The argument '{$name}'(position: {$index}) is required");
+            }
+
+            $index++;
+        }
+    }
+
+    /***********************************************************************************
+     * Getter/setter methods
      ***********************************************************************************/
 
     /**

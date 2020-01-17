@@ -28,9 +28,7 @@ class MockResponse extends Response
 
         [$result, $errorCode, $errorMessage] = Packet::unpackResponse($result);
         if ($errorCode !== null) {
-            throw new TaskException(
-                sprintf('%s(code=%d)', $errorMessage, $errorCode)
-            );
+            throw new TaskException(sprintf('%s(code=%d)', $errorMessage, $errorCode));
         }
 
         return $result;

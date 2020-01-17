@@ -3,6 +3,7 @@
 namespace Swoft\Console\Helper;
 
 use Swoft\Stdlib\Helper\Arr;
+use Swoft\Stdlib\Helper\Str;
 use Swoft\Stdlib\Helper\Sys;
 use Toolkit\Cli\ColorTag;
 use function array_keys;
@@ -20,7 +21,6 @@ use function is_numeric;
 use function is_scalar;
 use function rtrim;
 use function sprintf;
-use function str_pad;
 use function str_repeat;
 use function str_replace;
 use function strpos;
@@ -258,7 +258,7 @@ final class FormatUtil
             $text   .= $opts['leftChar'];
 
             if ($hasKey && $opts['keyMaxWidth']) {
-                $key  = str_pad($key, $opts['keyMaxWidth'], ' ');
+                $key  = Str::pad($key, $opts['keyMaxWidth'], ' ');
                 $text .= ColorTag::wrap($key, $keyStyle) . $opts['sepChar'];
             }
 

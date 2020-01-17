@@ -2,6 +2,7 @@
 
 namespace Swoft\Tcp\Server;
 
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Contract\SessionInterface;
 use Swoft\Stdlib\Concern\DataPropertyTrait;
@@ -13,7 +14,7 @@ use function microtime;
  * Class Connection
  *
  * @since 2.0.3
- * @Bean(scope=Bean::PROTOTYPE)
+ * @Bean(name=TcpServerBean::CONNECTION, scope=Bean::PROTOTYPE)
  */
 class Connection implements SessionInterface
 {
@@ -24,7 +25,23 @@ class Connection implements SessionInterface
     /**
      * @var int
      */
-    private $fd = 0;
+    private $fd = -1;
+
+    /**
+     * @return ConnectionManager
+     */
+    public static function manager(): ConnectionManager
+    {
+        return Swoft::getBean(TcpServerBean::MANAGER);
+    }
+
+    /**
+     * @return static
+     */
+    public static function current(): self
+    {
+        return Swoft::getBean(TcpServerBean::MANAGER)->current();
+    }
 
     /**
      * @param int   $fd
@@ -35,7 +52,7 @@ class Connection implements SessionInterface
     public static function new(int $fd, array $clientInfo): self
     {
         /** @var self $conn */
-        $conn = bean(self::class);
+        $conn = Swoft::getBean(TcpServerBean::CONNECTION);
 
         // Initial properties
         $conn->fd = $fd;
@@ -48,17 +65,17 @@ class Connection implements SessionInterface
     /**
      * Create an connection from metadata array
      *
-     * @param array $metadata
+     * @param array $data
      *
      * @return Connection
      */
-    public static function newFromArray(array $metadata): self
+    public static function newFromArray(array $data): SessionInterface
     {
         /** @var self $conn */
         $conn = bean(self::class);
 
-        $conn->fd = $metadata['fd'];
-        $conn->set(self::METADATA_KEY, $metadata);
+        $conn->fd = (int)$data['fd'];
+        $conn->set(self::METADATA_KEY, $data);
 
         return $conn;
     }
@@ -115,7 +132,7 @@ class Connection implements SessionInterface
      */
     public function clear(): void
     {
-        $this->fd   = 0;
+        $this->fd   = -1;
         $this->data = [];
     }
 

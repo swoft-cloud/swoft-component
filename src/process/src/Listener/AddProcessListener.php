@@ -65,8 +65,8 @@ class AddProcessListener implements EventHandlerInterface
             $pipeType  = $userProcess->getPipeType();
             $coroutine = $userProcess->isCoroutine();
 
-            $function = function (SwooleProcess $process) use ($callback, $server, $name) {
-                $process = Process::new($process);
+            $function = function (SwooleProcess $swProcess) use ($callback, $server, $name) {
+                $process = Process::new($swProcess);
 
                 // Before
                 Swoft::trigger(ProcessEvent::BEFORE_USER_PROCESS, null, $server, $process, $name);

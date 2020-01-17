@@ -33,15 +33,13 @@ if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
 use Swoft\Annotation\AnnotationRegister;
 use Swoft\Bean\BeanFactory;
 
-AnnotationRegister::load(
-    [
+AnnotationRegister::load([
         'onlyNamespaces' => [
             'SwoftTest\\Bean\\Testing\\',
             'Swoft\\Bean\\',
             'Swoft\\Annotation\\',
         ],
-    ]
-);
+    ]);
 
 $definitions = require 'testing/bean.php';
 $parsers     = AnnotationRegister::getParsers();

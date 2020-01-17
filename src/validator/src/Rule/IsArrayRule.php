@@ -48,7 +48,7 @@ class IsArrayRule implements RuleInterface
             return $data;
         }
 
-        $message = (empty($message)) ? sprintf('%s must bool!', $propertyName) : $message;
+        $message = (empty($message)) ? sprintf('%s must array!', $propertyName) : $message;
         throw new ValidatorException($message);
     }
 }

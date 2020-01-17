@@ -7,7 +7,7 @@ use function array_merge;
 /**
  * Trait DataPropertyTrait
  *
- * @since 2.0
+ * @since      2.0
  * @deprecated please use Swoft\Stdlib\Concern\DataPropertyTrait instead.
  */
 trait DataPropertyTrait

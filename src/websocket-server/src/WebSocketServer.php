@@ -18,7 +18,7 @@ use const WEBSOCKET_OPCODE_TEXT;
 /**
  * Class WebSocketServer
  *
- * @Bean("wsServer")
+ * @Bean(WsServerBean::SERVER)
  *
  * @since 2.0
  */

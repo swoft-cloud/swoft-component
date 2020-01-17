@@ -14,6 +14,7 @@ use Swoft\Tcp\Server\Request;
 use Swoft\Tcp\Server\Response;
 use Swoft\Tcp\Server\TcpDispatcher;
 use Swoft\Tcp\Server\TcpErrorDispatcher;
+use Swoft\Tcp\Server\TcpServerBean;
 use Swoft\Tcp\Server\TcpServerEvent;
 use Swoole\Server;
 use Throwable;
@@ -21,7 +22,7 @@ use Throwable;
 /**
  * Class ReceiveListener
  *
- * @since 2.0
+ * @since 2.0.4
  * @Bean()
  */
 class ReceiveListener implements ReceiveInterface
@@ -54,7 +55,7 @@ class ReceiveListener implements ReceiveInterface
             Swoft::trigger(TcpServerEvent::RECEIVE_BEFORE, $fd, $server, $reactorId);
 
             /** @var TcpDispatcher $dispatcher */
-            $dispatcher = Swoft::getSingleton('tcpDispatcher');
+            $dispatcher = Swoft::getSingleton(TcpServerBean::DISPATCHER);
 
             // Dispatching. allow user disable dispatch.
             if ($dispatcher->isEnable()) {

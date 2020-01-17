@@ -63,7 +63,7 @@ class WsDispatcherTest extends WsServerTestCase
     public function testModuleInfo(string $sid): void
     {
         $this->assertTrue(Session::has($sid));
-        $conn = Session::mustGet();
+        $conn = Session::current();
         $this->assertSame($conn, Session::mustGet($sid));
 
         $info = $conn->getModuleInfo();

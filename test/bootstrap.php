@@ -21,6 +21,10 @@ if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
     exit('Please run "composer install" to install the dependencies' . PHP_EOL);
 }
 
+if (defined('RUN_TEST_APP') && !RUN_TEST_APP) {
+    return;
+}
+
 $application = new TestApplication();
 $application->setBeanFile(__DIR__ . '/testing/bean.php');
 $application->run();

@@ -1,12 +1,11 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Bean\Unit;
-
 
 use PHPUnit\Framework\TestCase;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Container;
+use Swoft\Stdlib\Helper\Str;
 use SwoftTest\Bean\Testing\Definition\PrototypeClass;
 use SwoftTest\Bean\Testing\Definition\RequestClass;
 use SwoftTest\Bean\Testing\Definition\SessionClass;
@@ -15,88 +14,75 @@ use SwoftTest\Bean\Testing\InjectBean;
 
 class DefinitionTest extends TestCase
 {
-    /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     */
-    public function testSingle()
+    public function testSingle(): void
     {
-        /* @var SingletonClass $singletoClass */
-        $singletoClass = BeanFactory::getBean('singleton');
-        $this->assertTrue($singletoClass instanceof SingletonClass);
+        /* @var SingletonClass $singletonClass */
+        $singletonClass = BeanFactory::getBean('singleton');
+        $this->assertInstanceOf(SingletonClass::class, $singletonClass);
 
-        $this->beanCase($singletoClass);
+        $this->beanCase($singletonClass);
 
-        /* @var SingletonClass $singletoClass */
-        $singletoClass = BeanFactory::getSingleton('singleton');
-        $this->assertTrue($singletoClass instanceof SingletonClass);
+        /* @var SingletonClass $singletonClass */
+        $singletonClass = BeanFactory::getSingleton('singleton');
+        $this->assertInstanceOf(SingletonClass::class, $singletonClass);
 
-        $this->beanCase($singletoClass);
+        $this->beanCase($singletonClass);
         $this->assertTrue(BeanFactory::hasBean('singleton'));
 
-        /* @var SingletonClass $singletoClass */
-        $singletoClass = BeanFactory::getBean('singleton-alias');
-        $this->assertTrue($singletoClass instanceof SingletonClass);
+        /* @var SingletonClass $singletonClass */
+        $singletonClass = BeanFactory::getBean('singleton-alias');
+        $this->assertInstanceOf(SingletonClass::class, $singletonClass);
 
-        $this->beanCase($singletoClass);
+        $this->beanCase($singletonClass);
 
-        /* @var SingletonClass $singletoClass */
-        $singletoClass = BeanFactory::getSingleton('singleton-alias');
-        $this->assertTrue($singletoClass instanceof SingletonClass);
+        /* @var SingletonClass $singletonClass */
+        $singletonClass = BeanFactory::getSingleton('singleton-alias');
+        $this->assertInstanceOf(SingletonClass::class, $singletonClass);
 
-        $this->beanCase($singletoClass);
+        $this->beanCase($singletonClass);
         $this->assertTrue(BeanFactory::hasBean('singleton-alias'));
 
 
-        /* @var SingletonClass $singletoClass */
-        $singletoClass = BeanFactory::getBean(SingletonClass::class);
-        $this->assertTrue($singletoClass instanceof SingletonClass);
+        /* @var SingletonClass $singletonClass */
+        $singletonClass = BeanFactory::getBean(SingletonClass::class);
+        $this->assertInstanceOf(SingletonClass::class, $singletonClass);
 
-        $this->beanCase($singletoClass);
+        $this->beanCase($singletonClass);
 
-        /* @var SingletonClass $singletoClass */
-        $singletoClass = BeanFactory::getSingleton(SingletonClass::class);
-        $this->assertTrue($singletoClass instanceof SingletonClass);
+        /* @var SingletonClass $singletonClass */
+        $singletonClass = BeanFactory::getSingleton(SingletonClass::class);
+        $this->assertInstanceOf(SingletonClass::class, $singletonClass);
 
         $this->assertTrue(BeanFactory::hasBean(SingletonClass::class));
 
-
-        $this->beanCase($singletoClass);
+        $this->beanCase($singletonClass);
     }
 
-    /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     */
-    public function testPrototype()
+    public function testPrototype(): void
     {
         /* @var SingletonClass $prototypeClass */
         $prototypeClass = BeanFactory::getBean('prototype');
-        $this->assertTrue($prototypeClass instanceof PrototypeClass);
+        $this->assertInstanceOf(PrototypeClass::class, $prototypeClass);
 
         $this->beanCase($prototypeClass);
 
-        /* @var SingletonClass $singletoClass */
+        /* @var SingletonClass $singletonClass */
         $prototypeClass = BeanFactory::getBean('prototype-alias');
-        $this->assertTrue($prototypeClass instanceof PrototypeClass);
+        $this->assertInstanceOf(PrototypeClass::class, $prototypeClass);
 
         $this->beanCase($prototypeClass);
 
 
-        /* @var SingletonClass $singletoClass */
+        /* @var SingletonClass $singletonClass */
         $prototypeClass = BeanFactory::getBean(PrototypeClass::class);
-        $this->assertTrue($prototypeClass instanceof PrototypeClass);
+        $this->assertInstanceOf(PrototypeClass::class, $prototypeClass);
 
         $this->beanCase($prototypeClass);
     }
 
-    /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     */
-    public function testRequest()
+    public function testRequest(): void
     {
-        $id = uniqid();
+        $id = Str::uniqID();
 
         /* @var RequestClass $requestClass */
         $requestClass = BeanFactory::getRequestBean('requestClass', $id);
@@ -112,16 +98,12 @@ class DefinitionTest extends TestCase
 
         BeanFactory::destroyRequest($id);
 
-        $this->assertTrue(empty(Container::getInstance()->getRequestPool()));
+        $this->assertEmpty(Container::getInstance()->getRequestPool());
     }
 
-    /**
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
-     */
-    public function testSession()
+    public function testSession(): void
     {
-        $id = uniqid();
+        $id = Str::uniqID();
 
         /* @var SessionClass $sessionClass */
         $sessionClass = BeanFactory::getSessionBean('sessionClass', $id);
@@ -137,46 +119,46 @@ class DefinitionTest extends TestCase
 
         BeanFactory::destroySession($id);
 
-        $this->assertTrue(empty(Container::getInstance()->getSessionPool()));
+        $this->assertEmpty(Container::getInstance()->getSessionPool());
     }
 
     /**
-     * @param SingletonClass|PrototypeClass|RequestClass|SessionClass $singletoClass
+     * @param SingletonClass|PrototypeClass|RequestClass|SessionClass $singletonClass
      */
-    private function beanCase($singletoClass)
+    private function beanCase($singletonClass): void
     {
-        $this->assertEquals($singletoClass->getClassPrivate(), 'classPrivate');
-        $this->assertEquals($singletoClass->getClassPublic(), 12);
-        $this->assertEquals($singletoClass->getPrivateProp(), 'privateProp');
-        $this->assertEquals($singletoClass->getPublicProp(), 12);
-        $this->assertEquals($singletoClass->getSetProp(), 'setProp-setter');
+        $this->assertEquals($singletonClass->getClassPrivate(), 'classPrivate');
+        $this->assertEquals($singletonClass->getClassPublic(), 12);
+        $this->assertEquals($singletonClass->getPrivateProp(), 'privateProp');
+        $this->assertEquals($singletonClass->getPublicProp(), 12);
+        $this->assertEquals($singletonClass->getSetProp(), 'setProp-setter');
 
-        $injectBean = $singletoClass->getInjectBean();
-        $this->assertTrue($injectBean instanceof InjectBean);
+        $injectBean = $singletonClass->getInjectBean();
+        $this->assertInstanceOf(InjectBean::class, $injectBean);
         $this->assertEquals($injectBean->getData(), 'InjectBeanData-InjectChildBeanData');
 
-        $injectBean = $singletoClass->getInjectBeanAlias();
-        $this->assertTrue($injectBean instanceof InjectBean);
+        $injectBean = $singletonClass->getInjectBeanAlias();
+        $this->assertInstanceOf(InjectBean::class, $injectBean);
         $this->assertEquals($injectBean->getData(), 'InjectBeanData-InjectChildBeanData');
 
-        $injectBean = $singletoClass->getInjectBeanName();
-        $this->assertTrue($injectBean instanceof InjectBean);
+        $injectBean = $singletonClass->getInjectBeanName();
+        $this->assertInstanceOf(InjectBean::class, $injectBean);
         $this->assertEquals($injectBean->getData(), 'InjectBeanData-InjectChildBeanData');
 
-        $injectBean = $singletoClass->getInjectBeanClass();
-        $this->assertTrue($injectBean instanceof InjectBean);
+        $injectBean = $singletonClass->getInjectBeanClass();
+        $this->assertInstanceOf(InjectBean::class, $injectBean);
         $this->assertEquals($injectBean->getData(), 'InjectBeanData-InjectChildBeanData');
 
-        $injectBean = $singletoClass->getDefinitionBean();
-        $this->assertTrue($injectBean instanceof InjectBean);
+        $injectBean = $singletonClass->getDefinitionBean();
+        $this->assertInstanceOf(InjectBean::class, $injectBean);
         $this->assertEquals($injectBean->getData(), 'InjectBeanData-InjectChildBeanData');
 
-        $injectBean = $singletoClass->getDefinitionBeanAlias();
-        $this->assertTrue($injectBean instanceof InjectBean);
+        $injectBean = $singletonClass->getDefinitionBeanAlias();
+        $this->assertInstanceOf(InjectBean::class, $injectBean);
         $this->assertEquals($injectBean->getData(), 'InjectBeanData-InjectChildBeanData');
 
-        $injectBean = $singletoClass->getDefinitionBeanClass();
-        $this->assertTrue($injectBean instanceof InjectBean);
+        $injectBean = $singletonClass->getDefinitionBeanClass();
+        $this->assertInstanceOf(InjectBean::class, $injectBean);
         $this->assertEquals($injectBean->getData(), 'InjectBeanData-InjectChildBeanData');
     }
 }

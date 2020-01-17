@@ -27,6 +27,7 @@ use Throwable;
  *
  * @since 2.0
  * @method int append(string $key, string $value)
+ * @method int bitCount(string $key, int $start, int $end)
  * @method array blPop(array $keys, int $timeout)
  * @method array brPop(array $keys, int $timeout)
  * @method string brpoplpush(string $srcKey, string $dstKey, int $timeout)
@@ -150,6 +151,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      */
     protected $supportedMethods = [
         'append',
+        'bitcount',
         'blpop',
         'brpop',
         'brpoplpush',
@@ -464,11 +466,14 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     public function hMGet(string $key, array $keys): array
     {
         $values = $this->command('hMGet', [$key, $keys]);
+        if ($values === false) {
+            $values = [];
+        }
 
         $result = [];
-        foreach ($values as $key => $value) {
+        foreach ($values as $subKey => $value) {
             if ($value !== false) {
-                $result[$key] = $value;
+                $result[$subKey] = $value;
             }
         }
 
@@ -525,22 +530,19 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     }
 
     /**
-     * @param string   $key
-     * @param mixed    $value
-     * @param int|null $timeout
+     * @param string         $key
+     * @param mixed          $value
+     * @param int|array|null $timeout
      *
      * @return bool
      * @throws ContainerException
      * @throws RedisException
      * @throws ReflectionException
      */
-    public function set(string $key, $value, int $timeout = null): bool
+    public function set(string $key, $value, $timeout = null): bool
     {
-        $result = $this->command('set', [$key, $value, $timeout]);
-
-        return $result;
+        return $this->command('set', [$key, $value, $timeout]);
     }
-
 
     /**
      * @param array $keys
@@ -579,7 +581,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     public function mset(array $keyValues, int $ttl = 0): bool
     {
         $result = $this->command('mset', [$keyValues]);
-        if ($ttl == 0) {
+        if ($ttl === 0) {
             return $result;
         }
 
@@ -669,7 +671,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      */
     private function multi(int $mode, callable $callback, bool $reconnect = false): array
     {
-        $name   = ($mode == Redis::PIPELINE) ? 'pipeline' : 'transaction';
+        $name   = ($mode === Redis::PIPELINE) ? 'pipeline' : 'transaction';
         $proKey = sprintf('redis.%s', $name);
         try {
             Log::profileStart($proKey);

@@ -10,6 +10,7 @@ use function bean;
 
 /**
  * Console processor
+ *
  * @since 2.0
  */
 class ConsoleProcessor extends Processor
@@ -32,11 +33,7 @@ class ConsoleProcessor extends Processor
         // Register console routes
         CommandRegister::register($router);
 
-        CLog::info(
-            'Console command route registered (group %d, command %d)',
-            $router->groupCount(),
-            $router->count()
-        );
+        CLog::info('Console command route registered (group %d, command %d)', $router->groupCount(), $router->count());
 
         // Run console application
         bean('cliApp')->run();

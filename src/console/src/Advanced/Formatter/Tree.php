@@ -5,11 +5,11 @@ namespace Swoft\Console\Advanced\Formatter;
 use Swoft\Console\Advanced\MessageFormatter;
 use Swoft\Console\Console;
 use Swoft\Console\Helper\FormatUtil;
+use Swoft\Stdlib\Helper\Str;
 use Toolkit\Cli\Cli;
 use function array_merge;
 use function is_array;
 use function is_scalar;
-use function str_pad;
 
 /**
  * Class Tree
@@ -53,7 +53,7 @@ class Tree extends MessageFormatter
         foreach ($data as $key => $value) {
             if (is_scalar($value)) {
                 $counter++;
-                $leftString = $opts['leftPadding'] . str_pad($opts['prefix'], $opts['_level'] + 1, $opts['char']);
+                $leftString = $opts['leftPadding'] . Str::pad($opts['prefix'], $opts['_level'] + 1, $opts['char']);
 
                 Console::write($leftString . ' ' . FormatUtil::typeToString($value));
             } elseif (is_array($value)) {

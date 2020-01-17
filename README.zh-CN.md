@@ -1,12 +1,15 @@
 # Swoft Component
 
+[![Actions Status](https://github.com/swoft-cloud/swoft-component/workflows/Unit-tests/badge.svg)](https://github.com/swoft-cloud/swoft-component/actions)
+[![Build Status](https://travis-ci.org/swoft-cloud/swoft-component.svg?branch=master)](https://travis-ci.org/swoft-cloud/swoft-component)
+
 这里是swoft基础和核心组件的开发仓库，所有的核心组件都是由这里分发出去的。
 
 ## [English](README.md)
 
 ## 如何使用
 
-Add require to `composer.json`
+添加组件到`composer.json`
 
 ```json
 "require": {
@@ -14,15 +17,15 @@ Add require to `composer.json`
 }
 ```
 
-Install:
+安装:
 
-```json
+```bash
 composer update
 ```
 
 ### 单元测试
 
-Quick run tests for component:
+快速运行测试:
 
 ```bash
 // For all components
@@ -33,7 +36,7 @@ Quick run tests for component:
 ./phpunit.sh event
 ```
 
-Only tests an special component:
+测试指定的组件:
 
 ```bash
 ./phpunit.sh event
@@ -43,7 +46,7 @@ php run.php -c src/event/phpunit.xml
 php run.php -c src/event/phpunit.xml --filter testAddModule
 ```
 
-Output coverage data:
+输出测试覆盖率:
 
 ```bash
 // output coverage. require xdebug ext
@@ -52,6 +55,10 @@ phpunit --coverage-text
 phpdbg -dauto_globals_jit=Off -qrr /usr/local/bin/phpunit --coverage-text
 phpdbg -dauto_globals_jit=Off -qrr run.php --coverage-text -c src/event/phpunit.xml
 ```
+
+## 版本发布
+
+需要使用工具 https://github.com/swoftlabs/swoft-releasecli
 
 ## 使用文档
 

@@ -50,7 +50,7 @@ class AutoLoader extends SwoftComponent
     public function beans(): array
     {
         return [
-            'tcpServer'         => [
+            TcpServerBean::SERVER   => [
                 'port' => 18309,
                 'on'   => [
                     SwooleEvent::CONNECT => bean(ConnectListener::class),
@@ -60,9 +60,12 @@ class AutoLoader extends SwoftComponent
                     // SwooleEvent::PIPE_MESSAGE => bean(PipeMessageListener::class),
                 ]
             ],
-            'tcpServerProtocol' => [
+            TcpServerBean::PROTOCOL => [
                 'class' => Protocol::class,
             ],
+            TcpServerBean::MANAGER  => [
+                'prefix' => 'tcp',
+            ]
         ];
     }
 }

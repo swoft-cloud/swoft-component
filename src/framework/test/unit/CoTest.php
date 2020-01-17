@@ -4,14 +4,12 @@
 namespace SwoftTest\Unit;
 
 
-use function count;
 use Exception;
 use PHPUnit\Framework\TestCase;
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Co;
 use Swoft\Context\Context;
 use Swoole\Coroutine\Http\Client;
+use function count;
 
 /**
  * Class CoTest

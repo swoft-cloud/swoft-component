@@ -2,10 +2,6 @@
 
 namespace Swoft;
 
-use function array_shift;
-use function explode;
-use function get_class;
-use function implode;
 use ReflectionClass;
 use ReflectionException;
 use Swoft;
@@ -14,6 +10,10 @@ use Swoft\Aop\Proxy;
 use Swoft\Bean\Definition\ObjectDefinition;
 use Swoft\Bean\Handler;
 use Swoft\Proxy\Exception\ProxyException;
+use function array_shift;
+use function explode;
+use function get_class;
+use function implode;
 
 /**
  * Class BeanHandler
@@ -30,37 +30,37 @@ class BeanHandler extends Handler
      * @param ObjectDefinition $objDfn
      * @param array            $annotation
      *
-     * @example
-     * [
-     *     'annotation' => [
-     *          new ClassAnnotation(),
-     *          new ClassAnnotation(),
-     *          new ClassAnnotation(),
-     *     ]
-     *     'reflection' => new ReflectionClass(),
-     *     'properties' => [
-     *          'propertyName' => [
-     *              'annotation' => [
-     *                  new PropertyAnnotation(),
-     *                  new PropertyAnnotation(),
-     *                  new PropertyAnnotation(),
-     *              ]
-     *             'reflection' => new ReflectionProperty(),
-     *          ]
-     *     ],
-     *    'methods' => [
-     *          'methodName' => [
-     *              'annotation' => [
-     *                  new MethodAnnotation(),
-     *                  new MethodAnnotation(),
-     *                  new MethodAnnotation(),
-     *              ]
-     *             'reflection' => new ReflectionFunctionAbstract(),
-     *          ]
-     *    ],
-     * ]
-     *
      * @throws ReflectionException
+     * @example
+     *                  [
+     *                  'annotation' => [
+     *                  new ClassAnnotation(),
+     *                  new ClassAnnotation(),
+     *                  new ClassAnnotation(),
+     *                  ]
+     *                  'reflection' => new ReflectionClass(),
+     *                  'properties' => [
+     *                  'propertyName' => [
+     *                  'annotation' => [
+     *                  new PropertyAnnotation(),
+     *                  new PropertyAnnotation(),
+     *                  new PropertyAnnotation(),
+     *                  ]
+     *                  'reflection' => new ReflectionProperty(),
+     *                  ]
+     *                  ],
+     *                  'methods' => [
+     *                  'methodName' => [
+     *                  'annotation' => [
+     *                  new MethodAnnotation(),
+     *                  new MethodAnnotation(),
+     *                  new MethodAnnotation(),
+     *                  ]
+     *                  'reflection' => new ReflectionFunctionAbstract(),
+     *                  ]
+     *                  ],
+     *                  ]
+     *
      */
     public function beforeInit(string $beanName, string $className, ObjectDefinition $objDfn, array $annotation): void
     {

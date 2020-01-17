@@ -4,7 +4,6 @@ namespace Swoft\Tcp\Server;
 
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Log\Helper\CLog;
 use Swoft\Tcp\Protocol;
 use Swoft\Tcp\Response as TcpResponse;
 use Swoft\Tcp\Server\Contract\ResponseInterface;
@@ -14,8 +13,8 @@ use Swoole\Server;
 /**
  * Class Response
  *
- * @since 2.0
- * @Bean(name="tcpResponse", scope=Bean::PROTOTYPE)
+ * @since 2.0.4
+ * @Bean(name=TcpServerBean::RESPONSE, scope=Bean::PROTOTYPE)
  */
 class Response extends TcpResponse implements ResponseInterface
 {
@@ -48,7 +47,7 @@ class Response extends TcpResponse implements ResponseInterface
     public static function new(int $fd = -1): TcpResponse
     {
         /** @var self $self */
-        $self = Swoft::getBean('tcpResponse');
+        $self = Swoft::getBean(TcpServerBean::RESPONSE);
 
         // Set properties
         $self->fd    = $fd;
@@ -76,12 +75,12 @@ class Response extends TcpResponse implements ResponseInterface
 
         // Content is empty, skip send
         if ($this->isEmpty()) {
-            CLog::warning('cannot send empty content to tcp client');
-            return 0;
+            // CLog::warning('cannot send empty content to tcp client');
+            return -1;
         }
 
         /** @var Protocol $protocol */
-        $protocol = Swoft::getBean('tcpServerProtocol');
+        $protocol = Swoft::getBean(TcpServerBean::PROTOCOL);
         $content  = $protocol->packResponse($this);
 
         $server = $server ?: Swoft::server()->getSwooleServer();
@@ -90,12 +89,23 @@ class Response extends TcpResponse implements ResponseInterface
         Swoft::trigger(TcpServerEvent::CONTENT_SEND, $server, $content, $this);
 
         // Do send content
+        $this->doSend($server, $content);
+
+        return 1;
+    }
+
+    /**
+     * @param Server $server
+     * @param string $content
+     *
+     * @throws TcpResponseException
+     */
+    protected function doSend(Server $server, string $content): void
+    {
         if ($server->send($this->fd, $content) === false) {
             $code = $server->getLastError();
             throw new TcpResponseException("Error on send data to client #{$this->fd}", $code);
         }
-
-        return 1;
     }
 
     /**

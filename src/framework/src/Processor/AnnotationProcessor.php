@@ -9,6 +9,7 @@ use const IN_PHAR;
 
 /**
  * Annotation processor
+ *
  * @since 2.0
  */
 class AnnotationProcessor extends Processor
@@ -35,17 +36,13 @@ class AnnotationProcessor extends Processor
             'notifyHandler'        => [$this, 'notifyHandle'],
             // TODO force load framework components: bean, error, event, aop
             'disabledAutoLoaders'  => $app->getDisabledAutoLoaders(),
-            'disabledPsr4Prefixes' => $app->getDisabledPsr4Prefixes(),
+            'excludedPsr4Prefixes' => $app->getDisabledPsr4Prefixes(),
         ]);
 
         $stats = AnnotationRegister::getClassStats();
 
-        CLog::info(
-            'Annotations is scanned(autoloader %d, annotation %d, parser %d)',
-            $stats['autoloader'],
-            $stats['annotation'],
-            $stats['parser']
-        );
+        CLog::info('Annotations is scanned(autoloader %d, annotation %d, parser %d)', $stats['autoloader'],
+            $stats['annotation'], $stats['parser']);
 
         return $this->application->afterAnnotation();
     }
@@ -53,6 +50,7 @@ class AnnotationProcessor extends Processor
     /**
      * @param string $type
      * @param string $target
+     *
      * @see \Swoft\Annotation\Resource\AnnotationResource::load()
      */
     public function notifyHandle(string $type, $target): void

@@ -19,15 +19,9 @@ Coroutine::set([
  * file that was distributed with this source code.
  */
 if (version_compare('7.1.0', PHP_VERSION, '>')) {
-    fwrite(
-        STDERR,
-        sprintf(
-            'This version of PHPUnit is supported on PHP 7.1 and PHP 7.2.' . PHP_EOL .
-            'You are using PHP %s (%s).' . PHP_EOL,
-            PHP_VERSION,
-            PHP_BINARY
-        )
-    );
+    fwrite(STDERR,
+        sprintf('This version of PHPUnit is supported on PHP 7.1 and PHP 7.2.' . PHP_EOL . 'You are using PHP %s (%s).' . PHP_EOL,
+            PHP_VERSION, PHP_BINARY));
     die(1);
 }
 
@@ -37,11 +31,10 @@ if (!ini_get('date.timezone')) {
 
 // add loader file
 foreach ([
-             __DIR__ . '/../../autoload.php',
-             __DIR__ . '/../vendor/autoload.php',
-             __DIR__ . '/vendor/autoload.php'
-         ] as $__loader_file
-) {
+    __DIR__ . '/../../autoload.php',
+    __DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/vendor/autoload.php'
+] as $__loader_file) {
     if (file_exists($__loader_file)) {
         define('PHPUNIT_COMPOSER_INSTALL', $__loader_file);
         break;
@@ -49,12 +42,8 @@ foreach ([
 }
 
 if (!defined('PHPUNIT_COMPOSER_INSTALL')) {
-    fwrite(
-        STDERR,
-        'You need to set up the project dependencies using Composer:' . PHP_EOL . PHP_EOL .
-        '        composer install' . PHP_EOL . PHP_EOL .
-        'You can learn all about Composer on https://getcomposer.org/.' . PHP_EOL
-    );
+    fwrite(STDERR,
+        'You need to set up the project dependencies using Composer:' . PHP_EOL . PHP_EOL . '        composer install' . PHP_EOL . PHP_EOL . 'You can learn all about Composer on https://getcomposer.org/.' . PHP_EOL);
     die(1);
 }
 
@@ -88,7 +77,7 @@ $status = 0;
         $status = Command::main(false);
     } catch (ExitException $e) {
         $status = $e->getCode();
-        echo 'ExitException: ' .$e->getMessage(), "\n";
+        echo 'ExitException: ' . $e->getMessage(), "\n";
     }
 });
 

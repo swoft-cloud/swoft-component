@@ -33,7 +33,7 @@ class ValidatorRuleTest extends TestCase
     }
 
     /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
+     * @expectedException \Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage alpha message
      *
      * @throws ValidatorException

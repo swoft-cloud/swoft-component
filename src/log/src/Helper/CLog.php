@@ -4,10 +4,10 @@
 namespace Swoft\Log\Helper;
 
 use Monolog\Formatter\LineFormatter;
-use function sprintf;
 use Swoft\Log\CLogger;
 use Swoft\Log\Handler\CEchoHandler;
 use Swoft\Log\Handler\CFileHandler;
+use function sprintf;
 
 /**
  * Class CLog

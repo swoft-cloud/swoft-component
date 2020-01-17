@@ -5,13 +5,14 @@ namespace Swoft\Tcp\Server\Router;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Contract\RouterInterface;
 use Swoft\Tcp\Server\Exception\TcpServerRouteException;
+use Swoft\Tcp\Server\TcpServerBean;
 use function count;
 use function trim;
 
 /**
  * Class Router
  *
- * @Bean("tcpRouter")
+ * @Bean(TcpServerBean::ROUTER)
  */
 class Router implements RouterInterface
 {

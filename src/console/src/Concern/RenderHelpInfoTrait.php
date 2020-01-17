@@ -5,15 +5,16 @@ namespace Swoft\Console\Concern;
 use Swoft;
 use Swoft\Console\Console;
 use Swoft\Console\ConsoleEvent;
+use Swoft\Console\FlagType;
 use Swoft\Console\Helper\FormatUtil;
 use Swoft\Console\Helper\Show;
 use Swoft\Console\Output\Output;
 use Swoft\Console\Router\Router;
 use Swoft\Stdlib\Helper\Arr;
+use Swoft\Stdlib\Helper\JsonHelper;
 use Swoft\Stdlib\Helper\Str;
 use function array_shift;
 use function explode;
-use function implode;
 use function is_array;
 use function is_bool;
 use function is_scalar;
@@ -23,6 +24,7 @@ use function sort;
 use function sprintf;
 use function strlen;
 use function strpos;
+use function strtoupper;
 use function trim;
 use const PHP_EOL;
 use const PHP_VERSION;
@@ -30,6 +32,7 @@ use const SWOOLE_VERSION;
 
 /**
  * Trait RenderHelpInfoTrait
+ *
  * @package Swoft\Console\Concern
  */
 trait RenderHelpInfoTrait
@@ -56,10 +59,8 @@ trait RenderHelpInfoTrait
         $this->renderBannerLogo();
 
         // Display some information
-        $output->writef(
-            'PHP: <info>%s</info>, Swoft: <info>%s</info>, Swoole: <info>%s</info>',
-            $phpVersion, $swoftVersion, $swooleVersion
-        );
+        $output->writef('PHP: <info>%s</info>, Swoft: <info>%s</info>, Swoole: <info>%s</info>', $phpVersion,
+            $swoftVersion, $swooleVersion);
     }
 
     protected function renderBannerLogo(): void
@@ -84,7 +85,7 @@ trait RenderHelpInfoTrait
 
         /** @var Swoft\Console\Input\Input $input */
         $input  = $this->input;
-        $script = $input->getScriptFile();
+        $script = $input->getScriptName();
         // Global options
         $globalOptions = self::$globalOptions;
         // Append expand option
@@ -111,21 +112,15 @@ trait RenderHelpInfoTrait
         Console::writeln('<comment>Available Commands:</comment>');
 
         $grpHandler = function (string $group, array $info) use ($keyWidth) {
-            Console::writef(
-                '  <info>%s</info>%s%s',
-                Str::padRight($group, $keyWidth),
+            Console::writef('  <info>%s</info>%s%s', Str::padRight($group, $keyWidth),
                 $info['desc'] ?: 'No description message',
-                $info['alias'] ? "(alias: <info>{$info['alias']}</info>)" : ''
-            );
+                $info['alias'] ? "(alias: <info>{$info['alias']}</info>)" : '');
         };
 
         $cmdHandler = function (string $cmdId, array $info) use ($keyWidth) {
-            Console::writef(
-                '  <info>%s</info> %s%s',
-                Str::padRight($cmdId, $keyWidth),
+            Console::writef('  <info>%s</info> %s%s', Str::padRight($cmdId, $keyWidth),
                 $info['desc'] ?: 'No description message',
-                $info['alias'] ? "(alias: <info>{$info['alias']}</info>)" : ''
-            );
+                $info['alias'] ? "(alias: <info>{$info['alias']}</info>)" : '');
         };
 
         $router->sortedEach($grpHandler, $expand ? $cmdHandler : null);
@@ -138,7 +133,7 @@ trait RenderHelpInfoTrait
      * Display help, command list of the group
      *
      * @param string $group Group name
-     * @param array  $info Some base info of the group
+     * @param array  $info  Some base info of the group
      */
     protected function showGroupHelp(string $group, array $info = []): void
     {
@@ -156,7 +151,7 @@ trait RenderHelpInfoTrait
 
         /** @var Swoft\Console\Input\Input $input */
         $input  = $this->input;
-        $script = $input->getScriptFile();
+        $script = $input->getScriptName();
 
         Console::startBuffer();
         Console::writeln($info['desc'] . PHP_EOL);
@@ -174,12 +169,9 @@ trait RenderHelpInfoTrait
         foreach ($names as $name) {
             $cmdId = $router->buildCommandID($group, $name);
             $cInfo = $router->getRouteByID($cmdId);
-            Console::writef(
-                '  <info>%s</info> %s%s',
-                Str::padRight($name, $keyWidth),
+            Console::writef('  <info>%s</info> %s%s', Str::padRight($name, $keyWidth),
                 $cInfo['desc'] ?: 'No description message',
-                $cInfo['alias'] ? "(alias: <info>{$cInfo['alias']}</info>)" : ''
-            );
+                $cInfo['alias'] ? "(alias: <info>{$cInfo['alias']}</info>)" : '');
         }
 
         if ($info['example']) {
@@ -202,7 +194,7 @@ trait RenderHelpInfoTrait
 
         /** @var Swoft\Console\Input\Input $input */
         $input  = $this->input;
-        $script = $input->getScriptFile();
+        $script = $input->getScriptName();
         $usage  = sprintf('%s %s [arg ...] [--opt ...]', $script, $info['cmdId']);
 
         // If has been custom usage.
@@ -229,7 +221,7 @@ trait RenderHelpInfoTrait
             foreach ($arguments as $name => $meta) {
                 Console::writef(
                     '  <info>%s</info> %s   %s%s',
-                    Str::padRight($name, $keyWidth), $meta['type'],
+                    Str::padRight($name, $keyWidth), strtoupper($meta['type']),
                     $meta['desc'],
                     $this->renderDefaultValue($meta['default'])
                 );
@@ -268,7 +260,11 @@ trait RenderHelpInfoTrait
                 continue;
             }
 
-            $typeName = $meta['type'] === 'BOOL' ? '' : $meta['type'];
+            $typeName = $meta['type'] === FlagType::BOOL ? '' : $meta['type'];
+            if ($typeName) {
+                $typeName = strtoupper($typeName);
+            }
+
             if ($len === 1) {
                 $key = sprintf('-<info>%s</info> %s', $name, $typeName);
             } else {
@@ -281,9 +277,9 @@ trait RenderHelpInfoTrait
                 $key = sprintf('<info>%s--%s</info> %s', $shortMark, $name, $typeName);
             }
 
-            $kenLen = strlen($key);
-            if ($kenLen > $maxLen) {
-                $maxLen = $kenLen;
+            $keyLen = strlen($key);
+            if ($keyLen > $maxLen) {
+                $maxLen = $keyLen;
             }
 
             $newOpts[$key] = $meta;
@@ -323,6 +319,7 @@ trait RenderHelpInfoTrait
 
     /**
      * @param mixed $defVal
+     *
      * @return string
      */
     private function renderDefaultValue($defVal): string
@@ -336,9 +333,9 @@ trait RenderHelpInfoTrait
         if (is_bool($defVal)) {
             $text .= $defVal ? 'True' : 'False';
         } elseif (is_scalar($defVal)) {
-            $text .=  $defVal;
+            $text .= $defVal;
         } elseif (is_array($defVal)) {
-            $text .=  implode(', ', $defVal);
+            $text .= JsonHelper::encode($defVal);
         } else {
             $text .= $defVal;
         }

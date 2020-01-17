@@ -1,5 +1,9 @@
 # Swoft Component
 
+[![Actions Status](https://github.com/swoft-cloud/swoft-component/workflows/Unit-tests/badge.svg)](https://github.com/swoft-cloud/swoft-component/actions)
+[![Build Status](https://travis-ci.org/swoft-cloud/swoft-component.svg?branch=master)](https://travis-ci.org/swoft-cloud/swoft-component)
+
+
 This repository is used to manage all swoft core components.
 
 ## [中文说明](README.zh-CN.md)
@@ -20,7 +24,7 @@ Add require to `composer.json`
 
 Install:
 
-```json
+```bash
 composer update
 ```
 
@@ -56,6 +60,10 @@ phpunit --coverage-text
 phpdbg -dauto_globals_jit=Off -qrr /usr/local/bin/phpunit --coverage-text
 phpdbg -dauto_globals_jit=Off -qrr run.php --coverage-text -c src/event/phpunit.xml
 ```
+
+## Releases
+
+Please see https://github.com/swoftlabs/swoft-releasecli
 
 ## Document
 

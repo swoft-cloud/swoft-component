@@ -112,7 +112,7 @@ class BeanFactory
      * @param string $name
      * @param array  $definition
      *
-     * @return object
+     * @return object|mixed
      * @example
      *
      * $bean = BeanFactory::createBean('className');
@@ -122,7 +122,6 @@ class BeanFactory
      *     ......
      * ]);
      *
-     * @return object
      */
     public static function createBean(string $name, array $definition = [])
     {

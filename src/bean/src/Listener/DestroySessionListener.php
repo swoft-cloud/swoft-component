@@ -4,11 +4,11 @@
 namespace Swoft\Bean\Listener;
 
 
+use Swoft\Bean\BeanEvent;
 use Swoft\Bean\BeanFactory;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
-use Swoft\Bean\BeanEvent;
 
 /**
  * Class DestroySessionListener

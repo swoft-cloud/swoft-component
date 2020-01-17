@@ -29,7 +29,7 @@ final class TcpServerEvent
     /**
      * On receive before
      */
-    public const RECEIVE_BEFORE = 'swoft.tcp.server.receive.before';
+    public const RECEIVE_BEFORE = 'swoft.tcp.server.receive';
 
     /**
      * On package send

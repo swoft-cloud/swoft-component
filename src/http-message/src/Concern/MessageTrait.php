@@ -389,7 +389,7 @@ trait MessageTrait
     protected function initializeHeaders(array $headers): void
     {
         foreach ($headers as $name => $value) {
-            $name = strtolower($name);
+            $name = strtolower((string)$name);
 
             $this->headers[$name]     = [$value];
             $this->headerNames[$name] = $name;

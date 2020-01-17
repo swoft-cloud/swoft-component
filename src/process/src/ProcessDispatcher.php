@@ -3,10 +3,8 @@
 
 namespace Swoft\Process;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Log\Error;
 use Swoft\Process\Contract\ProcessInterface;
 use Swoft\Process\Exception\ProcessException;
@@ -41,9 +39,8 @@ class ProcessDispatcher
             $process = $this->getProcess($workerId);
             PhpHelper::call([$process, self::METHOD], $pool, $workerId);
         } catch (Throwable $e) {
-            Error::log(
-                sprintf('Run process for process pool fail(%s %s %d)!', $e->getMessage(), $e->getFile(), $e->getLine())
-            );
+            Error::log(sprintf('Run process for process pool fail(%s %s %d)!', $e->getMessage(), $e->getFile(),
+                    $e->getLine()));
         }
     }
 

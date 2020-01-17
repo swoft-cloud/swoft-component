@@ -3,9 +3,7 @@
 
 namespace Swoft\Redis;
 
-use ReflectionException;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\AbstractPool;
 use Swoft\Connection\Pool\Contract\ConnectionInterface;
 use Swoft\Redis\Connection\Connection;
@@ -31,7 +29,7 @@ use Throwable;
  * @method float geoDist(string $key, string $member1, string $member2, string $unit = 'm')
  * @method array geohash(string $key, string ...$members)
  * @method array geopos(string $key, string ...$members)
- * @method mixed|bool get(string $key)
+ * @method mixed|false get(string $key)
  * @method int getBit(string $key, int $offset)
  * @method int getOption(string $name)
  * @method string getRange(string $key, int $start, int $end)
@@ -85,8 +83,8 @@ use Throwable;
  * @method int sUnionStore(string $dstKey, string $key1, string $key2, string $keyN = null)
  * @method array|bool scan(int &$iterator, string $pattern = null, int $count = 0)
  * @method mixed script(string|array $nodeParams, string $command, string $script)
- * @method bool set(string $key, $value, int $timeout = null)
- * @method int setBit(string $key, int $offset, int $value)
+ * @method bool set(string $key, $value, $timeout = null)
+ * @method int setBit(string $key, int $offset, bool $value)
  * @method string setRange(string $key, int $offset, $value)
  * @method int setex(string $key, int $ttl, $value)
  * @method bool setnx(string $key, $value)
@@ -131,7 +129,7 @@ use Throwable;
  * @method int zUnionStore(string $Output, array $ZSetKeys, array $Weights = null, string $aggregateFunction = 'SUM')
  * @method array hMGet(string $key, array $keys)
  * @method bool hMSet(string $key, array $keyValues)
- * @method int zAdd(string $key, array $scoreValues)
+ * @method int  zAdd(string $key, array $scoreValues)
  * @method array mget(array $keys)
  * @method bool mset(array $keyValues, int $ttl = 0)
  * @method array pipeline(callable $callback)
@@ -147,7 +145,7 @@ class Pool extends AbstractPool
     /**
      * Default pool
      */
-    const DEFAULT_POOL = 'redis.pool';
+    public const DEFAULT_POOL = 'redis.pool';
 
     /**
      * @var RedisDb

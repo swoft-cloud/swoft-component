@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Aop;
 
 use ReflectionException;
@@ -112,11 +111,11 @@ class AspectHandler
                 return $this->invokeAdvice($afThw, $this->throwable);
             }
             throw $this->throwable;
-        } else {
-            // Invoke afterReturning advice
-            if (!empty($afRetn)) {
-                $result = $this->invokeAdvice($afRetn, null, $result);
-            }
+        }
+
+        // Invoke afterReturning advice
+        if (!empty($afRetn)) {
+            $result = $this->invokeAdvice($afRetn, null, $result);
         }
 
         return $result;
@@ -244,7 +243,7 @@ class AspectHandler
                 continue;
             }
 
-            if ($type == Throwable::class) {
+            if ($type === Throwable::class) {
                 $aspectArgs[] = $catch;
             }
 
@@ -310,7 +309,7 @@ class AspectHandler
      */
     private function nextHandler(): AspectHandler
     {
-        $aspect = clone  $this;
+        $aspect = clone $this;
 
         // Next aspect data
         $aspect->aspect  = array_shift($this->aspects);

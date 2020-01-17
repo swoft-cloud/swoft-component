@@ -30,7 +30,7 @@ class BeanParser extends Parser
     public function parse(int $type, $annotationObject): array
     {
         // Only to parse class annotation with `@Bean`
-        if ($type != self::TYPE_CLASS) {
+        if ($type !== self::TYPE_CLASS) {
             return [];
         }
 

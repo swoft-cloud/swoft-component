@@ -38,11 +38,11 @@ class Task
             $params
         ];
         $result  = self::cos($tasks, $timeout, $ext);
+
         if (empty($result)) {
-            throw new TaskException(
-                sprintf('Task(name=%s method=%s) execution error!', $name, $method)
-            );
+            throw new TaskException(sprintf('Task(name=%s method=%s) execution error!', $name, $method));
         }
+
         return $result[0];
     }
 
@@ -68,12 +68,10 @@ class Task
         $data   = Packet::pack(self::ASYNC, $name, $method, $params, $ext);
         $result = Swoft::swooleServer()->task($data, $dstWorkerId, $fallback);
         if ($result === false) {
-            throw new TaskException(
-                sprintf('Task error name=%d method=%d', $name, $method)
-            );
+            throw new TaskException(sprintf('Task error name=%d method=%d', $name, $method));
         }
 
-        return self::getUniqid($result);
+        return self::getUniqId($result);
     }
 
     /**
@@ -119,16 +117,12 @@ class Task
         foreach ($taskResults as $key => $taskResult) {
             if ($taskResult == false) {
                 [$name, $method] = $tasks[$key];
-                throw new TaskException(
-                    sprintf('Task co error(name=%s method=%s)', $name, $method)
-                );
+                throw new TaskException(sprintf('Task co error(name=%s method=%s)', $name, $method));
             }
 
             [$result, $errorCode, $errorMessage] = Packet::unpackResponse($taskResult);
             if ($errorCode !== null) {
-                throw new TaskException(
-                    sprintf('%s(code=%d)', $errorMessage, $errorCode)
-                );
+                throw new TaskException(sprintf('%s(code=%d)', $errorMessage, $errorCode));
             }
             $resultData[] = $result;
         }
@@ -143,14 +137,13 @@ class Task
      *
      * @return string
      */
-    public static function getUniqid(int $taskId): string
+    public static function getUniqId(int $taskId): string
     {
         $server = Server::getServer();
-        if (empty($server)) {
-            return sprintf('unit-%d', $taskId);
+        if ($server === null) {
+            return sprintf('unit%d', $taskId);
         }
 
-        $serverUniqid = Server::getServer()->getUniqid();
-        return sprintf('%s-%d', $serverUniqid, $taskId);
+        return sprintf('%s%d', $server->getUniqid(), $taskId);
     }
 }

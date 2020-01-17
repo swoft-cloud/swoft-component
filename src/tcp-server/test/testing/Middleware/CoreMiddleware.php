@@ -25,7 +25,7 @@ class CoreMiddleware implements MiddlewareInterface
     public function process(RequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $resp = Response::new(100);
-        $resp->setData('[CORE]');
+        $resp->setContent('[CORE]');
 
         return $resp;
     }

@@ -48,9 +48,7 @@ class MockTaskServer
         $taskResult = $response->getResponseData();
         [$result, $errorCode, $errorMessage] = Packet::unpackResponse($taskResult);
         if ($errorCode !== null) {
-            throw new TaskException(
-                sprintf('%s(code=%d)', $errorMessage, $errorCode)
-            );
+            throw new TaskException(sprintf('%s(code=%d)', $errorMessage, $errorCode));
         }
 
         return $result;

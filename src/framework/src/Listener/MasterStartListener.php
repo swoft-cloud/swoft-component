@@ -7,9 +7,9 @@ use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Server\Event\ServerStartEvent;
+use Swoft\Server\SwooleEvent;
 use Swoft\Stdlib\Helper\Sys;
 use Swoole\Process;
-use Swoft\Server\SwooleEvent;
 
 /**
  * Class MasterStartListener

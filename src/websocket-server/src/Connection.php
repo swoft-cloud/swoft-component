@@ -24,7 +24,7 @@ use const WEBSOCKET_OPCODE_TEXT;
  * Class Connection
  *
  * @since 2.0
- * @Bean(scope=Bean::PROTOTYPE)
+ * @Bean(name=WsServerBean::CONNECTION, scope=Bean::PROTOTYPE)
  */
 class Connection implements SessionInterface
 {
@@ -36,6 +36,11 @@ class Connection implements SessionInterface
      * @var int
      */
     private $fd = 0;
+
+    /**
+     * @var string
+     */
+    // private $sessionId = '';
 
     /**
      * Save handshake success module instance
@@ -71,6 +76,22 @@ class Connection implements SessionInterface
     private $moduleInfo = [];
 
     /**
+     * @return ConnectionManager
+     */
+    public static function manager(): ConnectionManager
+    {
+        return Swoft::getBean(WsServerBean::MANAGER);
+    }
+
+    /**
+     * @return static
+     */
+    public static function current(): self
+    {
+        return Swoft::getBean(WsServerBean::MANAGER)->current();
+    }
+
+    /**
      * @param WebSocketServer $server
      * @param Request         $request
      * @param Response        $response
@@ -80,9 +101,10 @@ class Connection implements SessionInterface
     public static function new(WebSocketServer $server, Request $request, Response $response): self
     {
         /** @var self $sess */
-        $sess = Swoft::getBean(self::class);
+        $sess = Swoft::getBean(WsServerBean::CONNECTION);
 
-        $sess->fd     = $fd = $request->getFd();
+        $sess->fd = $fd = $request->getFd();
+
         $sess->server = $server;
 
         // Init meta info
@@ -96,34 +118,36 @@ class Connection implements SessionInterface
     }
 
     /**
+     * Restore connection object
+     *
      * @param array $data
      *
      * @return static
      */
-    public static function newFromArray(array $data): self
+    public static function newFromArray(array $data): SessionInterface
     {
         // New request and response
         $req = new \Swoole\Http\Request();
         $res = new \Swoole\Http\Response();
 
-        // Init swoole request
-        $req->fd     = $data['fd'];
+        // Initialize swoole request
+        $req->fd     = (int)$data['fd'];
         $req->get    = $data['get'];
         $req->post   = $data['post'];
         $req->cookie = $data['cookie'];
         $req->header = $data['header'];
         $req->server = $data['server'];
 
-        // Init swoole response
+        // Initialize swoole response
         $res->cookie = $data['resCookie'];
         $res->header = $data['resHeader'];
 
         // Initialize psr7 Request and Response
         $psr7Req  = Psr7Request::new($req);
         $psr7Res  = Psr7Response::new($res);
-        $wsServer = Swoft::getBean('wsServer');
+        $wsServer = Swoft::getBean(WsServerBean::SERVER);
 
-        // Restore connection object
+        // Initialize connection
         $conn = self::new($wsServer, $psr7Req, $psr7Res);
         // Session data
         $conn->data = $data['sessionData'];
@@ -141,7 +165,7 @@ class Connection implements SessionInterface
     {
         $info = $this->server->getClientInfo($fd);
 
-        server()->log("Handshake: conn#{$fd} send handshake request to {$path}, client info: ", $info, 'debug');
+        server()->log("Handshake: conn#{$fd} session data created. path: {$path}, client info: ", $info, 'debug');
 
         $this->set(self::METADATA_KEY, [
             'fd'            => $fd,

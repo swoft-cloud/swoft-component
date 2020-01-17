@@ -13,6 +13,7 @@ use Swoft\SwoftEvent;
 use Swoft\Tcp\Server\Connection;
 use Swoft\Tcp\Server\Context\TcpCloseContext;
 use Swoft\Tcp\Server\TcpErrorDispatcher;
+use Swoft\Tcp\Server\TcpServerBean;
 use Swoft\Tcp\Server\TcpServerEvent;
 use Swoole\Server;
 use Throwable;
@@ -20,7 +21,7 @@ use Throwable;
 /**
  * Class CloseListener
  *
- * @since 2.0
+ * @since 2.0.4
  * @Bean()
  */
 class CloseListener implements CloseInterface
@@ -41,6 +42,9 @@ class CloseListener implements CloseInterface
         // Bind cid => sid(fd)
         Session::bindCo($sid);
 
+        /** @var Swoft\Tcp\Server\ConnectionManager $manager */
+        $manager = Swoft::getBean(TcpServerBean::MANAGER);
+
         try {
             // Trigger event
             Swoft::trigger(TcpServerEvent::CLOSE, $fd, $server, $reactorId);
@@ -55,7 +59,8 @@ class CloseListener implements CloseInterface
                 server()->log("Close: conn#{$fd} has been closed. server conn count $total", [], 'debug');
 
                 /** @var Connection $conn */
-                $conn = Session::mustGet();
+                // $conn = Session::mustGet();
+                $conn = $manager->current();
                 if (!$meta = $conn->getMetadata()) {
                     server()->log("Close: conn#{$fd} connection meta info has been lost");
                     return;
@@ -79,6 +84,7 @@ class CloseListener implements CloseInterface
 
             // Remove connection
             Swoft::trigger(SwoftEvent::SESSION_COMPLETE, $sid);
+            $manager->destroy($sid);
 
             // Unbind cid => sid(fd)
             Session::unbindCo();
