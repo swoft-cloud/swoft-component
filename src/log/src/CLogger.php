@@ -1,11 +1,10 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Log;
 
+use Monolog\Handler\HandlerInterface;
 use function count;
 use function debug_backtrace;
-use Monolog\Handler\HandlerInterface;
 use function sprintf;
 
 /**
@@ -39,12 +38,12 @@ class CLogger extends \Monolog\Logger
      *
      * @var array
      */
-    protected static $levels = array(
+    protected static $levels = [
         self::INFO    => 'INFO',
         self::DEBUG   => 'DEBUG',
         self::WARNING => 'WARNING',
         self::ERROR   => 'ERROR',
-    );
+    ];
 
     /**
      * Logger constructor.
@@ -63,7 +62,7 @@ class CLogger extends \Monolog\Logger
      *
      * @return bool
      */
-    public function addRecord($level, $message, array $context = array()): bool
+    public function addRecord($level, $message, array $context = []): bool
     {
         if (!$this->enable) {
             return true;

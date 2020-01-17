@@ -5,9 +5,11 @@ namespace Swoft\Console\Input;
 use Swoft\Console\Contract\InputInterface;
 use Swoft\Console\Exception\CommandFlagException;
 use function array_merge;
+use function array_values;
 use function getcwd;
 use function is_bool;
 use function is_int;
+use function strpos;
 use function trim;
 
 /**
@@ -93,26 +95,27 @@ abstract class AbstractInput implements InputInterface
 
     /**
      * find command name. it is first argument.
+     *
+     * @param array $flags
+     *
+     * @return array
      */
-    protected function findCommand(): void
+    protected function findCommand(array $flags): array
     {
-        if (!isset($this->args[0])) {
-            return;
+        if (!isset($flags[0])) {
+            return $flags;
         }
 
-        $newArgs = [];
-
-        foreach ($this->args as $key => $value) {
-            if ($key === 0) {
-                $this->command = trim($value);
-            } elseif (is_int($key)) {
-                $newArgs[] = $value;
-            } else {
-                $newArgs[$key] = $value;
-            }
+        // Not input command name
+        if (strpos($flags[0], '-') === 0) {
+            return $flags;
         }
 
-        $this->args = $newArgs;
+        $this->command = trim($flags[0]);
+
+        // remove first element, reset index key.
+        unset($flags[0]);
+        return array_values($flags);
     }
 
     /***********************************************************************************

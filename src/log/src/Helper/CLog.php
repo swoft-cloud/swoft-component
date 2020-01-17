@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Log\Helper;
 
 use Monolog\Formatter\LineFormatter;
 use Swoft\Log\CLogger;
 use Swoft\Log\Handler\CEchoHandler;
 use Swoft\Log\Handler\CFileHandler;
+use function is_array;
 use function sprintf;
 
 /**
@@ -14,7 +14,7 @@ use function sprintf;
  *
  * @since 2.0
  */
-class CLog
+final class CLog
 {
     /**
      * @var CLogger
@@ -66,12 +66,18 @@ class CLog
      */
     public static function debug(string $message, ...$params): void
     {
+        $context = [];
+
         if ($params) {
-            $message = sprintf($message, ...$params);
+            if (is_array($params[0])) {
+                $context = $params[0];
+            } else {
+                $message = sprintf($message, ...$params);
+            }
         }
 
         if (SWOFT_DEBUG) {
-            self::$cLogger->debug($message, []);
+            self::$cLogger->debug($message, $context);
         }
     }
 
@@ -83,11 +89,17 @@ class CLog
      */
     public static function info(string $message, ...$params): void
     {
+        $context = [];
+
         if ($params) {
-            $message = sprintf($message, ...$params);
+            if (is_array($params[0])) {
+                $context = $params[0];
+            } else {
+                $message = sprintf($message, ...$params);
+            }
         }
 
-        self::$cLogger->info($message, []);
+        self::$cLogger->info($message, $context);
     }
 
     /**
@@ -98,11 +110,17 @@ class CLog
      */
     public static function warning(string $message, ...$params): void
     {
+        $context = [];
+
         if ($params) {
-            $message = sprintf($message, ...$params);
+            if (is_array($params[0])) {
+                $context = $params[0];
+            } else {
+                $message = sprintf($message, ...$params);
+            }
         }
 
-        self::$cLogger->warning($message, []);
+        self::$cLogger->warning($message, $context);
     }
 
     /**
@@ -113,10 +131,16 @@ class CLog
      */
     public static function error(string $message, ...$params): void
     {
+        $context = [];
+
         if ($params) {
-            $message = sprintf($message, ...$params);
+            if (is_array($params[0])) {
+                $context = $params[0];
+            } else {
+                $message = sprintf($message, ...$params);
+            }
         }
 
-        self::$cLogger->error($message, []);
+        self::$cLogger->error($message, $context);
     }
 }

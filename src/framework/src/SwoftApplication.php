@@ -92,46 +92,13 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     private $processor;
 
     /**
-     * Can disable processor class before handle.
-     * eg.
-     * [
-     *  Swoft\Processor\ConsoleProcessor::class => 1,
-     * ]
-     *
-     * @var array
-     */
-    private $disabledProcessors = [];
-
-    /**
-     * Can disable AutoLoader class before handle.
-     * eg.
-     * [
-     *  Swoft\Console\AutoLoader::class  => 1,
-     * ]
-     *
-     * @var array
-     */
-    private $disabledAutoLoaders = [];
-
-    /**
-     * Scans containing these namespace prefixes will be excluded.
-     *
-     * @var array
-     * eg.
-     * [
-     *  'PHPUnit\\',
-     * ]
-     */
-    private $disabledPsr4Prefixes = [];
-
-    /**
      * Get the application version
      *
      * @return string
      */
-    public static function getVersion(): string
+    public function getVersion(): string
     {
-        return self::VERSION;
+        return Swoft::VERSION;
     }
 
     /**
@@ -302,30 +269,6 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
             new EventProcessor($this),
             new ConsoleProcessor($this),
         ];
-    }
-
-    /**
-     * @return array
-     */
-    public function getDisabledProcessors(): array
-    {
-        return $this->disabledProcessors;
-    }
-
-    /**
-     * @return array
-     */
-    public function getDisabledAutoLoaders(): array
-    {
-        return $this->disabledAutoLoaders;
-    }
-
-    /**
-     * @return array
-     */
-    public function getDisabledPsr4Prefixes(): array
-    {
-        return $this->disabledPsr4Prefixes;
     }
 
     /**

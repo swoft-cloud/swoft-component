@@ -27,11 +27,11 @@ class RegAspect
      *
      * @param JoinPoint $joinPoint
      *
-     * @throws \Throwable
      * @return mixed
+     * @throws \Throwable
      */
     public function afterReturn(JoinPoint $joinPoint)
     {
-        return 'RegAspect='.$joinPoint->getReturn();
+        return 'RegAspect=' . $joinPoint->getReturn();
     }
 }

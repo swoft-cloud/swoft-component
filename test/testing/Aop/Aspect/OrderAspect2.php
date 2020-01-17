@@ -54,8 +54,8 @@ class OrderAspect2
      *
      * @param JoinPoint $joinPoint
      *
-     * @throws \Throwable
      * @return mixed
+     * @throws \Throwable
      */
     public function afterReturn(JoinPoint $joinPoint)
     {

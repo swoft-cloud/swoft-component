@@ -5,7 +5,7 @@ use Swoft\Log\Handler\FileHandler;
 use Swoft\Log\Logger;
 
 return [
-    'lineFormatter'      => [
+    'lineFormatter'   => [
         'class'      => LineFormatter::class,
         'format'     => '%datetime% [%level_name%] [%channel%] [%event%] [tid:%tid%] [cid:%cid%] [traceid:%traceid%] [spanid:%spanid%] [parentid:%parentid%] %messages%',
         'dateFormat' => 'Y-m-d H:i:s',
@@ -16,7 +16,7 @@ return [
         'formatter' => bean('lineFormatter'),
         'levels'    => 'error,warning',
     ],
-    'logger'             => [
+    'logger'          => [
         'class'        => Logger::class,
         'flushRequest' => false,
         'enable'       => false,

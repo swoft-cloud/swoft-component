@@ -1,12 +1,16 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Log\Handler;
 
 use InvalidArgumentException;
 use Swoft\Bean\BeanFactory;
 use Swoft\Log\Helper\Log;
 use Swoft\Log\Logger;
+use function array_column;
+use function array_map;
+use function file_put_contents;
+use function implode;
+use const FILE_APPEND;
 
 /**
  * Class CFileHandler
@@ -42,7 +46,7 @@ class CFileHandler extends FileHandler
         $records = [$record];
 
         // Not init
-        if ($this->logFile[0] === '@') {
+        if (strpos($this->logFile, '@') === 0) {
             $this->init();
 
             $this->bootingRecords[] = $record;
@@ -57,17 +61,14 @@ class CFileHandler extends FileHandler
         } else {
             $records = array_column($records, 'formatted');
         }
-        $messageText = implode("\n", $records) . "\n";
 
+        $message = implode("\n", $records) . "\n";
         $logFile = $this->formatFile($this->logFile);
 
         // Not all console log in coroutine
-        $res = file_put_contents($logFile, $messageText, FILE_APPEND);
-
-        if ($res === false) {
-            throw new InvalidArgumentException(
-                sprintf('Unable to append to log file: %s', $logFile)
-            );
+        $count = file_put_contents($logFile, $message, FILE_APPEND);
+        if ($count === false) {
+            throw new InvalidArgumentException(sprintf('Unable to append to log file: %s', $logFile));
         }
     }
 
@@ -76,7 +77,8 @@ class CFileHandler extends FileHandler
      */
     public function setLevels(string $levels): void
     {
-        $levelNames        = explode(',', $levels);
+        $levelNames = explode(',', $levels);
+
         $this->levelValues = Logger::getLevelByNames($levelNames);
 
         $this->levels = $levels;

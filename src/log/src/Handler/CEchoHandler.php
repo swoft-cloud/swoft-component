@@ -1,17 +1,16 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Log\Handler;
-
 
 use DateTime;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
-use function sprintf;
 use Swoft\Log\Logger as SwoftLogger;
 use Toolkit\Cli\Color;
 use Toolkit\Cli\ColorTag;
+use function in_array;
+use function sprintf;
 
 /**
  * Class CEchoHandler
@@ -120,7 +119,7 @@ class CEchoHandler extends AbstractProcessingHandler
      *
      * @return bool
      */
-    public function isHandling(array $record)
+    public function isHandling(array $record): bool
     {
         if (empty($this->levelValues)) {
             return true;

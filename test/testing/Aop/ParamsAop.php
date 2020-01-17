@@ -14,7 +14,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
  */
 class ParamsAop
 {
-    public function method(string $name, int $count, int $type = 2, int $max = null):string
+    public function method(string $name, int $count, int $type = 2, int $max = null): string
     {
         return 'method';
     }

@@ -36,7 +36,9 @@ class ConsoleProcessor extends Processor
         CLog::info('Console command route registered (group %d, command %d)', $router->groupCount(), $router->count());
 
         // Run console application
-        bean('cliApp')->run();
+        if ($this->application->isStartConsole()) {
+            bean('cliApp')->run();
+        }
 
         return $this->application->afterConsole();
     }
