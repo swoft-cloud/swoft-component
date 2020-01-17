@@ -57,15 +57,13 @@ class Input extends AbstractInput
         $this->scriptFile = array_shift($args);
         $this->fullScript = implode(' ', $args);
 
-        $this->flags = $args;
+        // find command name, other is flags
+        $this->flags = $this->findCommand($args);
         $this->pwd   = $this->getPwd();
 
         if ($parsing) {
             // list($this->args, $this->sOpts, $this->lOpts) = InputParser::fromArgv($args);
             [$this->args, $this->sOpts, $this->lOpts] = Flags::parseArgv($args);
-
-            // find command name
-            $this->findCommand();
         }
     }
 
@@ -133,6 +131,7 @@ class Input extends AbstractInput
             }
         }
 
+        // re-parsing
         if ($this->flags) {
             [$this->args, $this->sOpts, $this->lOpts] = Flags::parseArgv($this->flags, $config);
 
