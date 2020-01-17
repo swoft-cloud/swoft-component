@@ -46,4 +46,12 @@ class Url
     {
         return $this->message;
     }
+
+    /**
+     * @param string $message
+     */
+    public function setMessage(string $message): void
+    {
+        $this->message = $message;
+    }
 }

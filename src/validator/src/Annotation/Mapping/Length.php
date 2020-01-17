@@ -76,4 +76,12 @@ class Length
     {
         return $this->max;
     }
+
+    /**
+     * @param string $message
+     */
+    public function setMessage(string $message): void
+    {
+        $this->message = $message;
+    }
 }

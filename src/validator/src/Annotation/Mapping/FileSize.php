@@ -63,4 +63,12 @@ class FileSize
     {
         return $this->size;
     }
+
+    /**
+     * @param string $message
+     */
+    public function setMessage(string $message): void
+    {
+        $this->message = $message;
+    }
 }

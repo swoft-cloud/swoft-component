@@ -63,4 +63,12 @@ class FileSuffix
     {
         return $this->suffix;
     }
+
+    /**
+     * @param string $message
+     */
+    public function setMessage(string $message): void
+    {
+        $this->message = $message;
+    }
 }

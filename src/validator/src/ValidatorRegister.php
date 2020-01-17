@@ -5,10 +5,11 @@ namespace Swoft\Validator;
 
 use ReflectionClass;
 use ReflectionException;
-use function sprintf;
+use Swoft\Validator\Annotation\Mapping\Required;
 use Swoft\Validator\Annotation\Mapping\Type;
 use Swoft\Validator\Contract\ValidatorInterface;
 use Swoft\Validator\Exception\ValidatorException;
+use function sprintf;
 
 /**
  * Class ValidatorRegister
@@ -88,7 +89,7 @@ class ValidatorRegister
     public static function registerValidator(string $className, string $validatorName): void
     {
         $reflectClass = new ReflectionClass($className);
-        $interfaces   = $reflectClass->getInterfaceNames();
+        $interfaces = $reflectClass->getInterfaceNames();
 
         $type = self::TYPE_DEFAULT;
         if (in_array(ValidatorInterface::class, $interfaces)) {
@@ -96,9 +97,9 @@ class ValidatorRegister
         }
 
         self::$validators[$validatorName] = [
-            'name'  => $validatorName,
+            'name' => $validatorName,
             'class' => $className,
-            'type'  => $type,
+            'type' => $type,
         ];
 
         self::$validatorClasses[$className] = $validatorName;
@@ -129,14 +130,20 @@ class ValidatorRegister
             );
         }
 
+        self::$validators[$validateName]['properties'][$propertyName]['required'] = false;
+
+        if ($objAnnotation instanceof Required) {
+            self::$validators[$validateName]['properties'][$propertyName]['required'] = true;
+        }
+
         if ($objAnnotation instanceof Type) {
-            $rc          = new ReflectionClass($className);
+            $rc = new ReflectionClass($className);
             $defaultProp = $rc->getProperty($propertyName);
             $defaultProp->setAccessible(true);
 
             $default = $defaultProp->getValue(new $className());
 
-            self::$validators[$validateName]['properties'][$propertyName]['type']['default']    = $default;
+            self::$validators[$validateName]['properties'][$propertyName]['type']['default'] = $default;
             self::$validators[$validateName]['properties'][$propertyName]['type']['annotation'] = $objAnnotation;
             return;
         }
