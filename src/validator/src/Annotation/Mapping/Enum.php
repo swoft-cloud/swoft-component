@@ -64,4 +64,12 @@ class Enum
     {
         return $this->values;
     }
+
+    /**
+     * @param string $message
+     */
+    public function setMessage(string $message): void
+    {
+        $this->message = $message;
+    }
 }

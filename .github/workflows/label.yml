@@ -5,7 +5,7 @@
 # file with configuration.  For more information, see:
 # https://github.com/actions/labeler/blob/master/README.md
 
-name: PR Labeler
+name: Pull Request Labeler
 on: [pull_request]
 
 jobs:
@@ -13,6 +13,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+#     - uses: TimonVS/pr-labeler-action@v3
+#       with:
+#         configuration-path: .github/pr-labeler.yml # optional, .github/pr-labeler.yml is the default value
+#       env:
+#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - name: PR Labeler
       uses: paulfantom/periodic-labeler@master
       env:

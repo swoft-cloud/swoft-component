@@ -79,4 +79,12 @@ class DateRange
     {
         return $this->end;
     }
+
+    /**
+     * @param string $message
+     */
+    public function setMessage(string $message): void
+    {
+        $this->message = $message;
+    }
 }

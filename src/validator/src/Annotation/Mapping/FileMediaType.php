@@ -63,4 +63,12 @@ class FileMediaType
     {
         return $this->mediaType;
     }
+
+    /**
+     * @param string $message
+     */
+    public function setMessage(string $message): void
+    {
+        $this->message = $message;
+    }
 }

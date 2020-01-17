@@ -35,4 +35,13 @@ class AutoLoader extends SwoftComponent
 
         return ComposerJSON::open($jsonFile)->getMetadata();
     }
+
+    public function beans(): array
+    {
+        return [
+          'validator' => [
+              'strict' => false
+          ]
+        ];
+    }
 }

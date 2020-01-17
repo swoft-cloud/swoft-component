@@ -82,6 +82,11 @@ class Request extends PsrRequest implements ServerRequestInterface
     private $parsedQuery;
 
     /**
+     * @var array|null
+     */
+    private $parsedPath;
+
+    /**
      * @var array
      */
     private $queryParams = [];
@@ -368,6 +373,15 @@ class Request extends PsrRequest implements ServerRequestInterface
     }
 
     /**
+     * @return array
+     */
+    public function getParsedPath(): array
+    {
+        return $this->parsedPath;
+    }
+
+
+    /**
      * @param string $key
      * @param null   $default
      *
@@ -381,6 +395,19 @@ class Request extends PsrRequest implements ServerRequestInterface
     }
 
     /**
+     * @param string $key
+     * @param null $default
+     *
+     * @return mixed|null
+     */
+    public function parsedPath(string $key, $default = null)
+    {
+        $parsedPath = $this->getParsedPath();
+
+        return $parsedPath[$key] ?? $default;
+    }
+
+    /**
      * @param array $query
      *
      * @return Request
@@ -390,6 +417,19 @@ class Request extends PsrRequest implements ServerRequestInterface
         $clone = clone $this;
 
         $clone->parsedQuery = $query;
+        return $clone;
+    }
+
+    /**
+     * @param array $path
+     *
+     * @return Request
+     */
+    public function withParsedPath(array $path): self
+    {
+        $clone = clone $this;
+
+        $clone->parsedPath = $path;
         return $clone;
     }
 

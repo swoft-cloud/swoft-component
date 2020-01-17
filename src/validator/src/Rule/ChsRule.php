@@ -25,7 +25,7 @@ class ChsRule implements RuleInterface
      * @return array
      * @throws ValidatorException
      */
-    public function validate(array $data, string $propertyName, $item, $default = null): array
+    public function validate(array $data, string $propertyName, $item, $default = null, $strict = false): array
     {
         $value = $data[$propertyName];
         $rule = '/^[\x{4e00}-\x{9fa5}]+$/u';
