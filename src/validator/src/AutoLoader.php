@@ -39,9 +39,9 @@ class AutoLoader extends SwoftComponent
     public function beans(): array
     {
         return [
-          'validator' => [
-              'strict' => false
-          ]
+            'validator' => [
+                'strict' => false
+            ]
         ];
     }
 }

@@ -13,10 +13,10 @@ interface ValidatorInterface
     /**
      * Validate error is thrown exception, otherwise is return `$data`
      *
-     * @param array  $data
-     * @param array  $params
+     * @param array $data
+     * @param array $params
      *
      * @return array
      */
-    public function validate(array $data, array $params): array ;
+    public function validate(array $data, array $params): array;
 }

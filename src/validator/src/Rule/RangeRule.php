@@ -40,8 +40,8 @@ class RangeRule implements RuleInterface
         }
 
         $message = $item->getMessage();
-        $message = (empty($message)) ? sprintf('%s is invalid range(min=%d, max=%d)', $propertyName, $min,
-            $max) : $message;
+        $message = (empty($message)) ? sprintf('%s is invalid range(min=%d, max=%d)', $propertyName, $min, $max) :
+            $message;
 
         throw new ValidatorException($message);
     }

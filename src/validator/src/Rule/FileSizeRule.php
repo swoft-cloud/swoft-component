@@ -19,10 +19,10 @@ use Swoft\Validator\Exception\ValidatorException;
 class FileSizeRule implements RuleInterface
 {
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $propertyName
      * @param object $item
-     * @param null $default
+     * @param null   $default
      *
      * @return array
      * @throws ValidatorException
@@ -30,10 +30,10 @@ class FileSizeRule implements RuleInterface
     public function validate(array $data, string $propertyName, $item, $default = null, $strict = false): array
     {
         /* @var FileSize $item */
-        $size = $item->getSize();
+        $size    = $item->getSize();
         $message = $item->getMessage();
         $message = (empty($message)) ? sprintf('%s file oversize', $propertyName) : $message;
-        $files = Context::mustGet()->getRequest()->getUploadedFiles();
+        $files   = Context::mustGet()->getRequest()->getUploadedFiles();
         foreach ($files as $key => $field) {
             if ($key !== $propertyName) {
                 continue;

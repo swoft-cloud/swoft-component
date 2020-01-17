@@ -17,10 +17,10 @@ use Swoft\Validator\Exception\ValidatorException;
 class AlphaDashRule implements RuleInterface
 {
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $propertyName
      * @param object $item
-     * @param null $default
+     * @param null   $default
      *
      * @return array
      * @throws ValidatorException
@@ -28,7 +28,7 @@ class AlphaDashRule implements RuleInterface
     public function validate(array $data, string $propertyName, $item, $default = null, $strict = false): array
     {
         $value = $data[$propertyName];
-        $rule = '/^[A-Za-z0-9\-\_]+$/';
+        $rule  = '/^[A-Za-z0-9\-\_]+$/';
         if (preg_match($rule, $value)) {
             return $data;
         }

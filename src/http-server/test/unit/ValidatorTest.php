@@ -51,7 +51,7 @@ class ValidatorTest extends TestCase
     /**
      * @throws SwoftException
      */
-    public function testUserValidator()
+    public function testUserValidator(): void
     {
         $data     = [
             'start'  => 12,
@@ -65,7 +65,7 @@ class ValidatorTest extends TestCase
     /**
      * @throws ValidatorException
      */
-    public function testUserValidator2()
+    public function testUserValidator2(): void
     {
         $data = [
             'start'  => 12,
@@ -85,7 +85,7 @@ class ValidatorTest extends TestCase
     /**
      * @throws SwoftException
      */
-    public function testDefaultValidatorQuery()
+    public function testDefaultValidatorQuery(): void
     {
         $data     = [
             'string'  => 'string',
@@ -105,7 +105,7 @@ class ValidatorTest extends TestCase
     /**
      * @throws SwoftException
      */
-    public function testFailUserValidatorQuery()
+    public function testFailUserValidatorQuery(): void
     {
         $data     = [
             'start' => 12,
@@ -118,7 +118,7 @@ class ValidatorTest extends TestCase
     /**
      * @throws SwoftException
      */
-    public function testUserValidatorQuery()
+    public function testUserValidatorQuery(): void
     {
         $data     = [
             'start'  => 12,
@@ -132,7 +132,7 @@ class ValidatorTest extends TestCase
     /**
      * @throws SwoftException
      */
-    public function testNoToValidate()
+    public function testNoToValidate(): void
     {
         $content = 'swoft framework';
         $ext     = [

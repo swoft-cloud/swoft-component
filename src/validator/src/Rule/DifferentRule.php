@@ -17,10 +17,10 @@ use Swoft\Validator\Exception\ValidatorException;
 class DifferentRule implements RuleInterface
 {
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $propertyName
      * @param object $item
-     * @param null $default
+     * @param null   $default
      *
      * @return array
      * @throws ValidatorException
@@ -28,13 +28,14 @@ class DifferentRule implements RuleInterface
     public function validate(array $data, string $propertyName, $item, $default = null, $strict = false): array
     {
         /* @var Different $item */
-        $name = $data[$item->getName()] ?? '';
+        $name  = $data[$item->getName()] ?? '';
         $value = $data[$propertyName];
         if ((string)$value !== (string)$name) {
             return $data;
         }
         $message = $item->getMessage();
-        $message = (empty($message)) ? sprintf('%s must be different %s field', $propertyName, $item->getName()) : $message;
+        $message = (empty($message)) ? sprintf('%s must be different %s field', $propertyName, $item->getName()) :
+            $message;
         throw new ValidatorException($message);
     }
 }

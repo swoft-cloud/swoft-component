@@ -18,10 +18,10 @@ use Swoft\Validator\Exception\ValidatorException;
 class DateRule implements RuleInterface
 {
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $propertyName
      * @param object $item
-     * @param null $default
+     * @param null   $default
      *
      * @return array
      * @throws ValidatorException

@@ -19,10 +19,10 @@ use Swoft\Validator\Exception\ValidatorException;
 class FileSuffixRule implements RuleInterface
 {
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $propertyName
      * @param object $item
-     * @param null $default
+     * @param null   $default
      *
      * @return array
      * @throws ValidatorException
@@ -30,10 +30,10 @@ class FileSuffixRule implements RuleInterface
     public function validate(array $data, string $propertyName, $item, $default = null, $strict = false): array
     {
         /* @var FileSuffix $item */
-        $values = $item->getSuffix();
-        $message = $item->getMessage();
-        $message = (empty($message)) ? sprintf('%s file suffix name must be in ', $propertyName) : $message;
-        $files = Context::mustGet()->getRequest()->getUploadedFiles();
+        $values     = $item->getSuffix();
+        $message    = $item->getMessage();
+        $message    = (empty($message)) ? sprintf('%s file suffix name must be in ', $propertyName) : $message;
+        $files      = Context::mustGet()->getRequest()->getUploadedFiles();
         $suffixName = function ($file) {
             return pathinfo($file, PATHINFO_EXTENSION);
         };

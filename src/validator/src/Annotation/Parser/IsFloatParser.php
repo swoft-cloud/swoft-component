@@ -6,9 +6,9 @@ namespace Swoft\Validator\Annotation\Parser;
 use ReflectionException;
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
+use Swoft\Validator\Annotation\Mapping\IsFloat;
 use Swoft\Validator\Exception\ValidatorException;
 use Swoft\Validator\ValidatorRegister;
-use Swoft\Validator\Annotation\Mapping\IsFloat;
 
 /**
  * Class IsFloatParser

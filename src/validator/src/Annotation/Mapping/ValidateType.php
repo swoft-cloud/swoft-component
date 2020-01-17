@@ -13,7 +13,7 @@ class ValidateType
     /**
      * Get query params
      */
-    public  const GET = 'get';
+    public const GET = 'get';
 
     /**
      * Post form and body
