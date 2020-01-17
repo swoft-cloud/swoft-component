@@ -10,6 +10,44 @@ namespace Swoft\Concern;
 trait SwoftTrait
 {
     /**
+     * @var bool
+     */
+    protected $startConsole = true;
+
+    /**
+     * Can disable processor class before handle.
+     * eg.
+     * [
+     *  Swoft\Processor\ConsoleProcessor::class => 1,
+     * ]
+     *
+     * @var array
+     */
+    private $disabledProcessors = [];
+
+    /**
+     * Can disable AutoLoader class before handle.
+     * eg.
+     * [
+     *  Swoft\Console\AutoLoader::class  => 1,
+     * ]
+     *
+     * @var array
+     */
+    private $disabledAutoLoaders = [];
+
+    /**
+     * Scans containing these namespace prefixes will be excluded.
+     *
+     * @var array
+     * eg.
+     * [
+     *  'PHPUnit\\',
+     * ]
+     */
+    private $disabledPsr4Prefixes = [];
+
+    /**
      * Get env name
      *
      * Return `true` is to continue
@@ -185,5 +223,69 @@ trait SwoftTrait
     public function afterConsole(): bool
     {
         return true;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDisabledProcessors(): array
+    {
+        return $this->disabledProcessors;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDisabledAutoLoaders(): array
+    {
+        return $this->disabledAutoLoaders;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDisabledPsr4Prefixes(): array
+    {
+        return $this->disabledPsr4Prefixes;
+    }
+
+    /**
+     * @param array $disabledAutoLoaders
+     */
+    public function setDisabledAutoLoaders(array $disabledAutoLoaders): void
+    {
+        $this->disabledAutoLoaders = $disabledAutoLoaders;
+    }
+
+    /**
+     * @param array $disabledPsr4Prefixes
+     */
+    public function setDisabledPsr4Prefixes(array $disabledPsr4Prefixes): void
+    {
+        $this->disabledPsr4Prefixes = $disabledPsr4Prefixes;
+    }
+
+    /**
+     * @param array $disabledProcessors
+     */
+    public function setDisabledProcessors(array $disabledProcessors): void
+    {
+        $this->disabledProcessors = $disabledProcessors;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isStartConsole(): bool
+    {
+        return $this->startConsole;
+    }
+
+    /**
+     * @param bool $startConsole
+     */
+    public function setStartConsole($startConsole): void
+    {
+        $this->startConsole = (bool)$startConsole;
     }
 }

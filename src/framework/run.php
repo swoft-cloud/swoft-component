@@ -36,28 +36,21 @@ foreach ([
 }
 unset($file);
 if (!defined('PHPUNIT_COMPOSER_INSTALL')) {
-    fwrite(STDERR,
-        'You need to set up the project dependencies using Composer:' . PHP_EOL . PHP_EOL . '        composer install' . PHP_EOL . PHP_EOL . 'You can learn all about Composer on https://getcomposer.org/.' . PHP_EOL);
+    $tips = <<<TXT
+You need to set up the project dependencies using Composer:
+    composer install
+You can learn all about Composer on https://getcomposer.org/
+TXT;
+
+    fwrite(STDERR, $tips . PHP_EOL);
     die(1);
-} else {
-    if (array_reverse(explode('/', __DIR__))[0] ?? '' === 'tests') {
-        $vendor_dir = dirname(PHPUNIT_COMPOSER_INSTALL);
-        $bin_unit   = "{$vendor_dir}/bin/phpunit";
-        $unit_uint  = "{$vendor_dir}/phpunit/phpunit/phpunit";
-        if (file_exists($bin_unit)) {
-            @unlink($bin_unit);
-            @symlink(__FILE__, $bin_unit);
-        }
-        if (file_exists($unit_uint)) {
-            @unlink($unit_uint);
-            @symlink(__FILE__, $unit_uint);
-        }
-    }
 }
+
 if (!in_array('-c', $_SERVER['argv'])) {
     $_SERVER['argv'][] = '-c';
     $_SERVER['argv'][] = __DIR__ . '/phpunit.xml';
 }
+
 require PHPUNIT_COMPOSER_INSTALL;
 
 $status = 0;

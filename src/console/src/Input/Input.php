@@ -63,7 +63,7 @@ class Input extends AbstractInput
 
         if ($parsing) {
             // list($this->args, $this->sOpts, $this->lOpts) = InputParser::fromArgv($args);
-            [$this->args, $this->sOpts, $this->lOpts] = Flags::parseArgv($args);
+            [$this->args, $this->sOpts, $this->lOpts] = Flags::parseArgv($this->flags);
         }
     }
 

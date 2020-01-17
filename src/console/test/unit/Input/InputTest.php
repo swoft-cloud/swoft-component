@@ -14,6 +14,9 @@ class InputTest extends TestCase
         $in = new Input($args);
 
         $this->assertSame('input:test', $in->getCommand());
+        $this->assertSame([], $in->getArgs());
+        $this->assertSame(['-d', '12'], $in->getFlags());
+        $this->assertSame(['d' => '12'], $in->getOpts());
     }
 
     /**

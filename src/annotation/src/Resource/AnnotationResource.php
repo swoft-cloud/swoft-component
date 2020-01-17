@@ -122,7 +122,7 @@ class AnnotationResource extends AbstractResource
     {
          // Init $excludedPsr4Prefixes
         $this->excludedPsr4Prefixes = self::DEFAULT_EXCLUDED_PSR4_PREFIXES;
-        
+
         // Can set property by array
         ObjectHelper::init($this, $config);
 
