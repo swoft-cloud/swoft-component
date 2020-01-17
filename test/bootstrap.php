@@ -32,7 +32,7 @@ if (defined('RUN_TEST_APP') && !RUN_TEST_APP) {
 }
 
 $app = new TestApplication([
-    'beanFile'            => dirname(__DIR__) . '/testing/bean.php',
+    'beanFile'            => __DIR__ . '/testing/bean.php',
     'disabledAutoLoaders' => [
         \App\AutoLoader::class => 1,
     ],
