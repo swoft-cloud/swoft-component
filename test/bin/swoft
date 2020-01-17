@@ -3,13 +3,19 @@
 
 // Disable run test application
 define('RUN_TEST_APP', false);
+define('WS_TEST_SERVER', true);
 
 // Bootstrap
-require_once dirname(__DIR__) . '/bootstrap.php';
-
-Swoole\Coroutine::set([
-    'max_coroutine' => 300000,
-]);
+require dirname(__DIR__) . '/bootstrap.php';
 
 // Run application
-(new \App\Application())->run();
+$app = new \SwoftTest\Component\Testing\TestApplication([
+    'startConsole'        => true,
+    'basePath'            => dirname(__DIR__),
+    'beanFile'            => dirname(__DIR__) . '/testing/bean.php',
+    'disabledAutoLoaders' => [
+        \App\AutoLoader::class => 1,
+    ],
+]);
+
+$app->run();

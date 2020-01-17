@@ -17,10 +17,10 @@ use Swoft\Validator\Exception\ValidatorException;
 class NotInEnumRule implements RuleInterface
 {
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $propertyName
      * @param object $item
-     * @param null $default
+     * @param null   $default
      *
      * @return array
      * @throws ValidatorException
@@ -29,7 +29,7 @@ class NotInEnumRule implements RuleInterface
     {
         /* @var NotInEnum $item */
         $values = $item->getValues();
-        $value = $data[$propertyName];
+        $value  = $data[$propertyName];
         if (!in_array($value, $values)) {
             return $data;
         }

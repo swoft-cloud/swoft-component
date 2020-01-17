@@ -17,10 +17,10 @@ use Swoft\Validator\Exception\ValidatorException;
 class ConfirmRule implements RuleInterface
 {
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $propertyName
      * @param object $item
-     * @param null $default
+     * @param null   $default
      *
      * @return array
      * @throws ValidatorException
@@ -28,7 +28,7 @@ class ConfirmRule implements RuleInterface
     public function validate(array $data, string $propertyName, $item, $default = null, $strict = false): array
     {
         /* @var Confirm $item */
-        $name = $data[$item->getName()] ?? '';
+        $name  = $data[$item->getName()] ?? '';
         $value = $data[$propertyName];
 
         if ((string)$value === (string)$name) {

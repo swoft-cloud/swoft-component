@@ -34,7 +34,7 @@ class HttpErrorDispatcher
         $handlers = Swoft::getSingleton(ErrorManager::class);
 
         /** @var HttpErrorHandlerInterface $handler */
-        if ($handler = $handlers->matchHandler($e, ErrorType::HTTP)) {
+        if ($handler = $handlers->match($e, ErrorType::HTTP)) {
             return $handler->handle($e, $response);
         }
 

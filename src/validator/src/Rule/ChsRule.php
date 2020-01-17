@@ -17,10 +17,10 @@ use Swoft\Validator\Exception\ValidatorException;
 class ChsRule implements RuleInterface
 {
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $propertyName
      * @param object $item
-     * @param null $default
+     * @param null   $default
      *
      * @return array
      * @throws ValidatorException
@@ -28,7 +28,7 @@ class ChsRule implements RuleInterface
     public function validate(array $data, string $propertyName, $item, $default = null, $strict = false): array
     {
         $value = $data[$propertyName];
-        $rule = '/^[\x{4e00}-\x{9fa5}]+$/u';
+        $rule  = '/^[\x{4e00}-\x{9fa5}]+$/u';
         if (preg_match($rule, $value)) {
             return $data;
         }

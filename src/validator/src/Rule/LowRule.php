@@ -17,10 +17,10 @@ use Swoft\Validator\Exception\ValidatorException;
 class LowRule implements RuleInterface
 {
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $propertyName
      * @param object $item
-     * @param null $default
+     * @param null   $default
      *
      * @return array
      * @throws ValidatorException
@@ -28,7 +28,7 @@ class LowRule implements RuleInterface
     public function validate(array $data, string $propertyName, $item, $default = null, $strict = false): array
     {
         $value = $data[$propertyName];
-        $rule = '/^[a-z]+$/';
+        $rule  = '/^[a-z]+$/';
         if (preg_match($rule, $value)) {
             return $data;
         }

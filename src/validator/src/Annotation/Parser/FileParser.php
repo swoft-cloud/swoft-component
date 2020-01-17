@@ -19,7 +19,7 @@ use Swoft\Validator\ValidatorRegister;
 class FileParser extends Parser
 {
     /**
-     * @param int $type
+     * @param int    $type
      * @param object $annotationObject
      *
      * @return array

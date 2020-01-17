@@ -89,7 +89,7 @@ class ValidatorRegister
     public static function registerValidator(string $className, string $validatorName): void
     {
         $reflectClass = new ReflectionClass($className);
-        $interfaces = $reflectClass->getInterfaceNames();
+        $interfaces   = $reflectClass->getInterfaceNames();
 
         $type = self::TYPE_DEFAULT;
         if (in_array(ValidatorInterface::class, $interfaces)) {
@@ -97,9 +97,9 @@ class ValidatorRegister
         }
 
         self::$validators[$validatorName] = [
-            'name' => $validatorName,
+            'name'  => $validatorName,
             'class' => $className,
-            'type' => $type,
+            'type'  => $type,
         ];
 
         self::$validatorClasses[$className] = $validatorName;
@@ -116,18 +116,14 @@ class ValidatorRegister
     public static function registerValidatorItem(string $className, string $propertyName, $objAnnotation): void
     {
         if (!isset(self::$validatorClasses[$className])) {
-            throw new ValidatorException(
-                sprintf('%s must be define class `@Validate()`', get_class($objAnnotation))
-            );
+            throw new ValidatorException(sprintf('%s must be define class `@Validate()`', get_class($objAnnotation)));
         }
 
         $validateName = self::$validatorClasses[$className];
 
         $type = self::$validators[$validateName]['properties'][$propertyName]['type'] ?? [];
         if (!empty($type) && $objAnnotation instanceof Type) {
-            throw new ValidatorException(
-                sprintf('Only one `@XxxType` can be defined(propterty=%s)!', $propertyName)
-            );
+            throw new ValidatorException(sprintf('Only one `@XxxType` can be defined(propterty=%s)!', $propertyName));
         }
 
         self::$validators[$validateName]['properties'][$propertyName]['required'] = false;
@@ -137,13 +133,13 @@ class ValidatorRegister
         }
 
         if ($objAnnotation instanceof Type) {
-            $rc = new ReflectionClass($className);
+            $rc          = new ReflectionClass($className);
             $defaultProp = $rc->getProperty($propertyName);
             $defaultProp->setAccessible(true);
 
             $default = $defaultProp->getValue(new $className());
 
-            self::$validators[$validateName]['properties'][$propertyName]['type']['default'] = $default;
+            self::$validators[$validateName]['properties'][$propertyName]['type']['default']    = $default;
             self::$validators[$validateName]['properties'][$propertyName]['type']['annotation'] = $objAnnotation;
             return;
         }
@@ -165,9 +161,8 @@ class ValidatorRegister
             foreach ($properties as $propName => $propValues) {
                 $type = $propValues['type'] ?? null;
                 if (empty($type)) {
-                    throw new ValidatorException(
-                        sprintf('Property(%s->%s) must be define `@XxxType`', $className, $propName)
-                    );
+                    throw new ValidatorException(sprintf('Property(%s->%s) must be define `@XxxType`', $className,
+                            $propName));
                 }
             }
         }

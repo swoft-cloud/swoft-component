@@ -19,7 +19,7 @@ use Swoft\Validator\ValidatorRegister;
 class ChsAlphaDashParser extends Parser
 {
     /**
-     * @param int $type
+     * @param int    $type
      * @param object $annotationObject
      *
      * @return array

@@ -332,11 +332,7 @@ class Logger extends \Monolog\Logger
      */
     public function counting(string $name, int $hit, int $total = null): void
     {
-        if (!$this->enable) {
-            return;
-        }
-
-        if (!$name) {
+        if (!$this->enable || !$name) {
             return;
         }
 
@@ -452,7 +448,7 @@ class Logger extends \Monolog\Logger
      *
      * @throws Exception
      */
-    public function appendNoticeLog($flush = false): void
+    public function appendNoticeLog(bool $flush = false): void
     {
         if (!$this->enable) {
             return;
@@ -468,8 +464,8 @@ class Logger extends \Monolog\Logger
         unset($this->profiles[$cid], $this->countings[$cid], $this->pushlogs[$cid], $this->profileStacks[$cid]);
         $levelName = self::$levels[self::NOTICE];
 
+        // Json
         if ($this->json) {
-            // Json
             $message = $this->formatRecord('', [], self::NOTICE, $levelName, $ts, []);
             unset($message['messages']);
 

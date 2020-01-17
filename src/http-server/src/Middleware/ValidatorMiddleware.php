@@ -66,7 +66,6 @@ class ValidatorMiddleware implements MiddlewareInterface
 
         /* @var Request $request */
         [$parsedBody, $query, $path] = $validator->validateRequest($parsedBody, $validates, $query, $path);
-
         if ($notParsedBody) {
             $parsedBody = $data;
         }

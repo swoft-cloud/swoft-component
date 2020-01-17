@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Http\Server\Testing\Controller;
 
 use Swoft\Http\Message\Request;
@@ -28,7 +27,7 @@ class ValidatorController
      *
      * @return array
      */
-    public function defaultValidator(Request $request)
+    public function defaultValidator(Request $request): array
     {
         $data            = $request->getParsedBody();
         $data['kString'] = $request->parsedBody('string');
@@ -47,13 +46,10 @@ class ValidatorController
      *
      * @return array
      */
-    public function userValidator(Request $request)
+    public function userValidator(Request $request): array
     {
-        $data = $request->getParsedBody();
-
-        return $data;
+        return $request->getParsedBody();
     }
-
 
     /**
      * @Validate(validator=DefaultValidator::class, type=ValidateType::GET)
@@ -63,7 +59,7 @@ class ValidatorController
      *
      * @return array
      */
-    public function defaultValidatorQuery(Request $request)
+    public function defaultValidatorQuery(Request $request): array
     {
         $data = $request->getParsedQuery();
 
@@ -83,11 +79,9 @@ class ValidatorController
      *
      * @return array
      */
-    public function userValidatorQuery(Request $request)
+    public function userValidatorQuery(Request $request): array
     {
-        $data = $request->getParsedQuery();
-
-        return $data;
+        return $request->getParsedQuery();
     }
 
     /**
