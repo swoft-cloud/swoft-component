@@ -20,7 +20,7 @@ class LogTest extends TestCase
         $result = Log::formatLog('message%s', []);
         $this->assertEquals($result, ['message%s', []]);
 
-        $result = Log::formatLog('message%s', ['a' => 'b']);
+        $result = Log::formatLog('message%s', [['a' => 'b']]);
         $this->assertEquals($result, ['message%s', ['a' => 'b']]);
     }
 }
