@@ -2,13 +2,9 @@
 /** For Swoole coroutine tests */
 
 use PHPUnit\TextUI\Command;
+use Swoft\Stdlib\Helper\Sys;
 use Swoole\Coroutine;
-use Swoole\ExitException;
-
-Coroutine::set([
-    'log_level'   => SWOOLE_LOG_INFO,
-    'trace_flags' => 0
-]);
+use Swoole\Process;
 
 /*
  * This file is part of PHPUnit.
@@ -42,23 +38,14 @@ foreach ([
 }
 
 if (!defined('PHPUNIT_COMPOSER_INSTALL')) {
-    fwrite(STDERR,
-        'You need to set up the project dependencies using Composer:' . PHP_EOL . PHP_EOL . '        composer install' . PHP_EOL . PHP_EOL . 'You can learn all about Composer on https://getcomposer.org/.' . PHP_EOL);
-    die(1);
-}
+    $tips = <<<TXT
+You need to set up the project dependencies using Composer:
+    composer install
+You can learn all about Composer on https://getcomposer.org/
+TXT;
 
-if (array_reverse(explode('/', __DIR__))[0] ?? '' === 'tests') {
-    $vendor_dir = dirname(PHPUNIT_COMPOSER_INSTALL);
-    $bin_unit   = "{$vendor_dir}/bin/phpunit";
-    $unit_uint  = "{$vendor_dir}/phpunit/phpunit/phpunit";
-    if (file_exists($bin_unit)) {
-        @unlink($bin_unit);
-        @symlink(__FILE__, $bin_unit);
-    }
-    if (file_exists($unit_uint)) {
-        @unlink($unit_uint);
-        @symlink(__FILE__, $unit_uint);
-    }
+    fwrite(STDERR, $tips . PHP_EOL);
+    die(1);
 }
 
 if (!in_array('-c', $_SERVER['argv'], true)) {
@@ -68,17 +55,51 @@ if (!in_array('-c', $_SERVER['argv'], true)) {
 
 require PHPUNIT_COMPOSER_INSTALL;
 
+// php run.php -c src/tcp-server/phpunit.xml
+// SWOFT_TEST_TCP_SERVER=1
+if (1 === (int)getenv('SWOFT_TEST_SERVER')) {
+    // Output: "php is /usr/local/bin/php"
+    [$ok, $ret,] = Sys::run('type php');
+    if (0 !== $ok) {
+        exit('php not found');
+    }
+
+    $type = 'tcp';
+    $php  = substr(trim($ret), 7);
+    $proc = new Process(function (Process $proc) use ($php, $type) {
+        // $proc->exec($php, [ $dir . '/test/bin/swoft', 'ws:start');
+        $proc->exec($php, ['test/bin/swoft', $type . ':start']);
+    });
+    $pid  = $proc->start();
+    echo "Swoft test server started, PID $pid\n";
+
+    // wait server starting...
+    sleep(2);
+    echo file_get_contents('http://127.0.0.1:28308/hi');
+}
+
 $status = 0;
+
+Coroutine::set([
+    'log_level'   => SWOOLE_LOG_INFO,
+    'trace_flags' => 0
+]);
 \Swoft\Co::run(function () {
     // Status
     global $status;
 
     try {
         $status = Command::main(false);
-    } catch (ExitException $e) {
+    } catch (Throwable $e) {
         $status = $e->getCode();
         echo 'ExitException: ' . $e->getMessage(), "\n";
     }
 });
+
+if (isset($pid) && $pid > 0) {
+    echo "Stop server on tests end. PID $pid";
+    $ok = Process::kill($pid, 15);
+    echo $ok ? " OK\n" : " FAIL\n";
+}
 
 exit($status);

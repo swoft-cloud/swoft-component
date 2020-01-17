@@ -22,5 +22,8 @@ indent_size = 2
 [*.html]
 indent_size = 2
 
+[*.xml]
+indent_size = 2
+
 [Makefile]
 indent_style = tab

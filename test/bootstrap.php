@@ -1,9 +1,9 @@
 <?php
 
-use SwoftTest\Testing\TestApplication;
+use SwoftTest\Component\Testing\TestApplication;
 
 if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
-    require dirname(__DIR__) . '/vendor/autoload.php';
+    $loader = require dirname(__DIR__) . '/vendor/autoload.php';
     // application's vendor
 } elseif (file_exists(dirname(__DIR__, 3) . '/autoload.php')) {
     /** @var \Composer\Autoload\ClassLoader $loader */
@@ -21,10 +21,20 @@ if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
     exit('Please run "composer install" to install the dependencies' . PHP_EOL);
 }
 
+/** @var \Composer\Autoload\ClassLoader $loader */
+$loader->addPsr4("Swoft\\Cache\\", 'vendor/swoft/cache/src/');
+$loader->addPsr4("Swoft\\Swlib\\", 'vendor/swoft/swlib/src/');
+$loader->addPsr4("Swoft\\Serialize\\", 'vendor/swoft/serialize/src/');
+
+// if is from ../bin/swoft
 if (defined('RUN_TEST_APP') && !RUN_TEST_APP) {
     return;
 }
 
-$application = new TestApplication();
-$application->setBeanFile(__DIR__ . '/testing/bean.php');
-$application->run();
+$app = new TestApplication([
+    'beanFile'            => dirname(__DIR__) . '/testing/bean.php',
+    'disabledAutoLoaders' => [
+        \App\AutoLoader::class => 1,
+    ],
+]);
+$app->run();

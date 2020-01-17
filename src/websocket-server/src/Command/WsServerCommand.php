@@ -60,9 +60,8 @@ class WsServerCommand extends BaseServerCommand
         $info = parent::buildMainServerInfo($server);
 
         $openHttp = $server->hasListener(SwooleEvent::REQUEST);
-        $httpText = $openHttp ? 'enabled' : 'disabled';
 
-        $info['worker'] .= " (HTTP:$httpText)";
+        $info['HTTP'] = $openHttp ? 'Enabled' : 'Disabled';
         return $info;
     }
 
