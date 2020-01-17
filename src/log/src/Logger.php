@@ -332,11 +332,7 @@ class Logger extends \Monolog\Logger
      */
     public function counting(string $name, int $hit, int $total = null): void
     {
-        if (!$this->enable) {
-            return;
-        }
-
-        if (!$name) {
+        if (!$this->enable || !$name) {
             return;
         }
 
