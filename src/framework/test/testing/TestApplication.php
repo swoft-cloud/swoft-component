@@ -45,7 +45,7 @@ class TestApplication extends SwoftApplication
 
         $config = array_merge([
             'basePath'            => $basePath,
-            'beanFile'            => $basePath . '/testing/bean.php',
+            'beanFile'            => $basePath . '/bean.php',
             'disabledAutoLoaders' => [
                 \App\AutoLoader::class => 1,
             ],

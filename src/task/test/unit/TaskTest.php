@@ -67,12 +67,10 @@ class TaskTest extends TestCase
         $this->mockTaskServer->co('demoTestTask', 'method3', ['name', 18306]);
     }
 
-    /**
-     */
     public function testAsync(): void
     {
-        //        $id = $this->mockTaskServer->async('demoTestTask', 'method2', ['name', 18306]);
-        //        $this->assertGreaterThan(0, $id);
+        //  $id = $this->mockTaskServer->async('demoTestTask', 'method2', ['name', 18306]);
+        //  $this->assertGreaterThan(0, $id);
     }
 
     /**

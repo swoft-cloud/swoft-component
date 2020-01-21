@@ -5,7 +5,7 @@ use SwoftTest\Rpc\Server\Testing\Middleware\UserMd;
 
 return [
     'config'            => [
-        'path' => __DIR__ . '/../config',
+        'path' => __DIR__ . '/config',
     ],
     'serviceDispatcher' => [
         'class'       => ServiceDispatcher::class,

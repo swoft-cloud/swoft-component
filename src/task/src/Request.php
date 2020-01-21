@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Task;
-
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
@@ -76,7 +74,6 @@ class Request implements RequestInterface
      * @var array
      */
     private $ext = [];
-
 
     /**
      * @param Server     $server
