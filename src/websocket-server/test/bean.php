@@ -2,6 +2,6 @@
 
 return [
     'config' => [
-        'path' => dirname(__DIR__) . '/config',
+        'path' => __DIR__ . '/config',
     ],
 ];

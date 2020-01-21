@@ -7,6 +7,7 @@ use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Exception\WsModuleRouteException;
 use Swoft\WebSocket\Server\MessageParser\JsonParser;
 use Swoft\WebSocket\Server\WsDispatcher;
+use Swoft\WebSocket\Server\WsServerBean;
 use SwoftTest\WebSocket\Server\Testing\ChatModule;
 use Throwable;
 use function bean;
@@ -28,7 +29,7 @@ class WsDispatcherTest extends WsServerTestCase
     {
         /** @var WsDispatcher $dp */
         $fd = 10;
-        $dp = bean('wsDispatcher');
+        $dp = bean(WsServerBean::DISPATCHER);
 
         $this->assertNotEmpty($dp);
 
@@ -38,7 +39,8 @@ class WsDispatcherTest extends WsServerTestCase
         [$status, $res] = $dp->handshake($conn->getRequest(), $conn->getResponse());
 
         $this->assertTrue($status);
-        $this->assertSame('in testing', (string)$res->getBody());
+        $this->assertArrayHasKey('ws-conn', $hs = $res->getHeaders());
+        $this->assertSame('in testing', $res->getHeaderLine('ws-conn'));
         $want = 'SwoftTest\WebSocket\Server\Testing\ChatModule::checkHandshake';
         $this->assertSame($want, $conn->get('handshake:/ws-test/chat'));
 

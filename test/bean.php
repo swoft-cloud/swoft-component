@@ -7,30 +7,33 @@ use Swoft\WebSocket\Server\WebSocketServer;
 
 return [
     'config'              => [
-        'path' => dirname(__DIR__) . '/config',
+        'path' => __DIR__ . '/config',
     ],
-    'rpcServer'         => [
-        'port' => 28307,
+    'rpcServer'           => [
+        'port'  => 28307,
         'class' => \Swoft\Rpc\Server\ServiceServer::class,
     ],
-    'httpServer' => [
+    'tcpServer'           => [
+        'port' => 28309,
+    ],
+    'httpServer'          => [
         'port' => 28306,
     ],
-    'wsServer'          => [
-        'class'   => WebSocketServer::class,
-        'port'    => 28308,
+    'wsServer'            => [
+        'class'    => WebSocketServer::class,
+        'port'     => 28308,
         'listener' => [
             // 'rpc' => bean('rpcServer'),
             // 'tcp' => bean('tcpServer'),
         ],
-        'on'      => [
+        'on'       => [
             // Enable http handle
             SwooleEvent::REQUEST => bean(RequestListener::class),
         ],
-        'debug'   => 1,
+        'debug'    => 1,
         // 'debug'   => env('SWOFT_DEBUG', 0),
         /* @see WebSocketServer::$setting */
-        'setting' => [
+        'setting'  => [
             'log_file' => alias('@runtime/swoole.log'),
         ],
     ],

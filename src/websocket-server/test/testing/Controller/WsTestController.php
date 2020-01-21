@@ -8,7 +8,7 @@
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
-namespace SwoftTest\Component\Testing\WebSocket\Controller;
+namespace SwoftTest\WebSocket\Server\Testing\Controller;
 
 use Swoft\Log\Helper\CLog;
 use Swoft\Session\Session;
@@ -18,7 +18,7 @@ use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\Message\Message;
 use Swoft\WebSocket\Server\Message\Request;
 use Swoft\WebSocket\Server\Message\Response;
-use SwoftTest\Component\Testing\WebSocket\Middleware\WsDemoMiddleware;
+use SwoftTest\WebSocket\Server\Testing\Middleware\User1Middleware;
 use function is_numeric;
 use function json_encode;
 use function server;
@@ -27,7 +27,7 @@ use const WEBSOCKET_OPCODE_PONG;
 /**
  * Class WsTestController
  *
- * @WsController(middlewares={WsDemoMiddleware::class})
+ * @WsController(middlewares={User1Middleware::class})
  */
 class WsTestController
 {

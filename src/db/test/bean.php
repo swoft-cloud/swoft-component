@@ -6,7 +6,7 @@ use SwoftTest\Db\Testing\DbSelector;
 
 return [
     'config'   => [
-        'path' => __DIR__ . '/../config',
+        'path' => __DIR__ . '/config',
     ],
     'db'       => [
         'class'    => Database::class,

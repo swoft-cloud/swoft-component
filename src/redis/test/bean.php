@@ -2,7 +2,7 @@
 
 return [
     'config'              => [
-        'path' => __DIR__ . '/../config',
+        'path' => __DIR__ . '/config',
     ],
     'redis'               => [
         'class'         => \Swoft\Redis\RedisDb::class,

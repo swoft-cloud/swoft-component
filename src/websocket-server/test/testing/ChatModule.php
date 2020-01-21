@@ -13,7 +13,6 @@ use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\MessageParser\JsonParser;
 use SwoftTest\WebSocket\Server\Testing\Chat\ChatController;
 use SwoftTest\WebSocket\Server\Testing\Chat\UserController;
-use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
 
 /**
@@ -45,9 +44,9 @@ class ChatModule implements WsModuleInterface
      */
     public function checkHandshake(Request $request, Response $response): array
     {
-        Session::mustGet()->set('handshake:' . $request->getUriPath(), __METHOD__);
+        Session::current()->set('handshake:' . $request->getUriPath(), __METHOD__);
 
-        return [true, $response->withContent('in testing')];
+        return [true, $response->withHeader('ws-conn', 'in testing')];
     }
 
     /**
@@ -58,7 +57,8 @@ class ChatModule implements WsModuleInterface
      */
     public function onOpen(Request $request, int $fd): void
     {
-        Session::mustGet()->set("open:$fd:" . $request->getUriPath(), __METHOD__);
+        Session::current()->set("open:$fd:" . $request->getUriPath(), __METHOD__);
+        Session::current()->push(__METHOD__);
     }
 
     /**
@@ -71,7 +71,7 @@ class ChatModule implements WsModuleInterface
      */
     public function onClose(Server $server, int $fd): void
     {
-        Session::mustGet()->set("close:$fd", __METHOD__);
+        Session::current()->set("close:$fd", __METHOD__);
     }
 
     /**

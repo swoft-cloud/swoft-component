@@ -1,7 +1,7 @@
 {
   "name": "swoft/connection-pool",
   "type": "library",
-  "version": "v2.0.8",
+  "version": "v2.0.9",
   "keywords": [
     "php",
     "swoole",

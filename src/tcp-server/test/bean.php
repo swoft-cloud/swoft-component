@@ -2,7 +2,7 @@
 
 return [
     'config'            => [
-        'path' => dirname(__DIR__) . '/config',
+        'path' => __DIR__ . '/config',
     ],
     /** @see \Swoft\Tcp\Server\TcpDispatcher */
     'tcpDispatcher'     => [
