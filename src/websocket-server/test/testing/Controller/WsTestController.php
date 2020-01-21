@@ -8,7 +8,7 @@
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
-namespace SwoftTest\WebSocket\Server\Testing\WsTestController;
+namespace SwoftTest\WebSocket\Server\Testing\Controller;
 
 use Swoft\Log\Helper\CLog;
 use Swoft\Session\Session;
