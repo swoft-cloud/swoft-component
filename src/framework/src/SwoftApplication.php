@@ -3,7 +3,7 @@
 namespace Swoft;
 
 use Swoft;
-use Swoft\Concern\SwoftTrait;
+use Swoft\Concern\SwoftConfigTrait;
 use Swoft\Console\Console;
 use Swoft\Contract\ApplicationInterface;
 use Swoft\Contract\SwoftInterface;
@@ -33,11 +33,11 @@ use const IN_PHAR;
 /**
  * Swoft application
  *
- * @since 2.0
+ * @since 2.0.0
  */
 class SwoftApplication implements SwoftInterface, ApplicationInterface
 {
-    use SwoftTrait;
+    use SwoftConfigTrait;
 
     /**
      * Base path
@@ -54,18 +54,18 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
     protected $envFile = '@base/.env';
 
     /**
-     * Application path
-     *
-     * @var string
-     */
-    protected $appPath = '@base/app';
-
-    /**
      * Default bean file
      *
      * @var string
      */
     protected $beanFile = '@app/bean.php';
+
+    /**
+     * Application path
+     *
+     * @var string
+     */
+    protected $appPath = '@base/app';
 
     /**
      * Config path
@@ -192,30 +192,6 @@ class SwoftApplication implements SwoftInterface, ApplicationInterface
             Console::colored(sprintf('%s(code:%d) %s', get_class($e), $e->getCode(), $e->getMessage()), 'red');
             Console::colored('Code Trace:', 'comment');
             echo $e->getTraceAsString(), "\n";
-        }
-    }
-
-    /**
-     * @noinspection PhpDocSignatureInspection
-     *
-     * @param string[] ...$classes
-     */
-    public function disableAutoLoader(string ...$classes)
-    {
-        foreach ($classes as $class) {
-            $this->disabledAutoLoaders[$class] = 1;
-        }
-    }
-
-    /**
-     * @noinspection PhpDocSignatureInspection
-     *
-     * @param string ...$classes
-     */
-    public function disableProcessor(string ...$classes)
-    {
-        foreach ($classes as $class) {
-            $this->disabledProcessors[$class] = 1;
         }
     }
 

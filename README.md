@@ -2,7 +2,7 @@
 
 [![Actions Status](https://github.com/swoft-cloud/swoft-component/workflows/Unit-tests/badge.svg)](https://github.com/swoft-cloud/swoft-component/actions)
 [![Build Status](https://travis-ci.org/swoft-cloud/swoft-component.svg?branch=master)](https://travis-ci.org/swoft-cloud/swoft-component)
-
+[![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/swoft-cloud/swoft-component)](https://github.com/swoft-cloud/swoft-component)
 
 This repository is used to manage all swoft core components.
 

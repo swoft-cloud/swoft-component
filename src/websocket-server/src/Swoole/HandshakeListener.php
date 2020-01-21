@@ -180,7 +180,7 @@ class HandshakeListener implements HandshakeInterface
             Swoft::trigger(WsServerEvent::OPEN_AFTER, $fd, $server, $request);
         } catch (Throwable $e) {
             Swoft::trigger(WsServerEvent::OPEN_ERROR, $e, $request);
-
+\vdump($e);
             /** @var WsErrorDispatcher $errDispatcher */
             $errDispatcher = BeanFactory::getSingleton(WsErrorDispatcher::class);
             $errDispatcher->openError($e, $request);

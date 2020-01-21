@@ -3,11 +3,11 @@
 namespace Swoft\Concern;
 
 /**
- * Trait SwoftTrait
+ * Trait SwoftConfigTrait
  *
  * @since 2.0
  */
-trait SwoftTrait
+trait SwoftConfigTrait
 {
     /**
      * @var bool
@@ -57,6 +57,30 @@ trait SwoftTrait
     public function getEnvFile(): string
     {
         return $this->envFile;
+    }
+
+    /**
+     * @noinspection PhpDocSignatureInspection
+     *
+     * @param string[] ...$classes
+     */
+    public function disableAutoLoader(string ...$classes): void
+    {
+        foreach ($classes as $class) {
+            $this->disabledAutoLoaders[$class] = 1;
+        }
+    }
+
+    /**
+     * @noinspection PhpDocSignatureInspection
+     *
+     * @param string ...$classes
+     */
+    public function disableProcessor(string ...$classes): void
+    {
+        foreach ($classes as $class) {
+            $this->disabledProcessors[$class] = 1;
+        }
     }
 
     /**

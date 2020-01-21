@@ -64,7 +64,7 @@ if (1 === (int)getenv('SWOFT_TEST_SERVER')) {
         exit('php not found');
     }
 
-    $type = 'tcp';
+    $type = 'ws';
     $php  = substr(trim($ret), 7);
     $proc = new Process(function (Process $proc) use ($php, $type) {
         // $proc->exec($php, [ $dir . '/test/bin/swoft', 'ws:start');

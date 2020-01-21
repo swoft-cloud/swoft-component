@@ -125,16 +125,16 @@ class MockRequest extends Request
         }
 
         if ($method === self::POST) {
-            $instance->post    = $params;
-            $instance->content = $content;
+            $instance->post = $params;
         }
 
         // Patch and Put
         $methods = [
             self::PUT,
+            self::POST,
             self::PATCH,
         ];
-        if (in_array($method, $methods)) {
+        if (in_array($method, $methods, true)) {
             $instance->content = $content;
         }
 
@@ -144,7 +144,7 @@ class MockRequest extends Request
     /**
      * @return string
      */
-    public function rawContent()
+    public function rawContent(): string
     {
         return $this->content;
     }
@@ -243,7 +243,7 @@ class MockRequest extends Request
     public static function defaultHeaders(): array
     {
         return [
-            'user-agent' => 'curl/7.29.0',
+            'user-agent' => 'swoft/2.0.0',
             'host'       => '127.0.0.1:18306',
             'accept'     => '*/*',
         ];
