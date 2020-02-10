@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\WebSocket\Server\Swoole;
 
@@ -180,7 +188,7 @@ class HandshakeListener implements HandshakeInterface
             Swoft::trigger(WsServerEvent::OPEN_AFTER, $fd, $server, $request);
         } catch (Throwable $e) {
             Swoft::trigger(WsServerEvent::OPEN_ERROR, $e, $request);
-\vdump($e);
+            \vdump($e);
             /** @var WsErrorDispatcher $errDispatcher */
             $errDispatcher = BeanFactory::getSingleton(WsErrorDispatcher::class);
             $errDispatcher->openError($e, $request);

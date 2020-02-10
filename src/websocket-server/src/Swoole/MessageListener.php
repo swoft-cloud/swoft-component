@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\WebSocket\Server\Swoole;
 
@@ -87,7 +95,7 @@ class MessageListener implements MessageInterface
                 Swoft::trigger(WsServerEvent::MESSAGE_RESPONSE, $response);
 
                 // Do send response
-                if(!$response->isEmpty()){
+                if (!$response->isEmpty()) {
                     $response->send();
                 }
             }
@@ -105,7 +113,7 @@ class MessageListener implements MessageInterface
             $response = $errDispatcher->messageError($e, $frame, $response);
 
             // Do send response
-            if(!$response->isEmpty()){
+            if (!$response->isEmpty()) {
                 $response->send();
             }
         } finally {
