@@ -94,4 +94,15 @@ class ChatModuleTest extends RealConnTestCase
 
         return $client;
     }
+
+    /**
+     * @depends testSendMessage
+     *
+     * @param Client $client
+     */
+    public function testCloseConn(Client $client): void
+    {
+        $this->assertTrue($client->close());
+        $this->assertFalse($client->connected);
+    }
 }
