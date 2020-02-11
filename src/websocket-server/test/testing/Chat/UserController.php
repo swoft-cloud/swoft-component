@@ -12,6 +12,7 @@ namespace SwoftTest\WebSocket\Server\Testing\Chat;
 
 use Swoft\WebSocket\Server\Annotation\Mapping\MessageMapping;
 use Swoft\WebSocket\Server\Annotation\Mapping\WsController;
+use Swoft\WebSocket\Server\Message\Message;
 
 /**
  * Class UserController
@@ -31,5 +32,18 @@ class UserController
      */
     public function logout(): void
     {
+    }
+
+    /**
+     * @MessageMapping()
+     * @param Message $message
+     *
+     * @return Message
+     */
+    public function reply(Message $message): Message
+    {
+        $msg = $message->getDataString();
+
+        return $message->newWithData('RECV: ' . $msg);
     }
 }

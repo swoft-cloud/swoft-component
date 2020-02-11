@@ -24,9 +24,11 @@ class ChatController
 {
     /**
      * @MessageMapping(middlewares={User2Middleware::class})
+     * @return string
      */
-    public function send(): void
+    public function send(): string
     {
+        return __METHOD__;
     }
 
     /**
@@ -35,4 +37,5 @@ class ChatController
     public function notify(): void
     {
     }
+
 }

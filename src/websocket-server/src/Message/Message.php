@@ -86,6 +86,22 @@ class Message implements JsonSerializable
     }
 
     /**
+     * @param       $data
+     * @param array $ext
+     *
+     * @return $this
+     */
+    public function newWithData($data, array $ext = []): self
+    {
+        $self = clone $this;
+
+        $self->data = $data;
+        $self->ext  = $ext;
+
+        return $self;
+    }
+
+    /**
      * @return array
      */
     public function toArray(): array

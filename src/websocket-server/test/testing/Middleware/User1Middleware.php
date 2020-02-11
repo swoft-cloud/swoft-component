@@ -31,10 +31,10 @@ class User1Middleware implements MiddlewareInterface
      */
     public function process(RequestInterface $request, MessageHandlerInterface $handler): ResponseInterface
     {
-        $start = '>user1 ';
+        $start = '>USER1 ';
 
         $resp = $handler->handle($request);
 
-        return $resp->setData($start . $resp->getData() . ' user1>');
+        return $resp->setData($start . $resp->getData() . ' USER1>');
     }
 }

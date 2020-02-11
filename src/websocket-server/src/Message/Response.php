@@ -351,7 +351,7 @@ class Response implements ResponseInterface
     /**
      * Set data. override raw method.
      *
-     * @param mixed $data
+     * @param mixed|Message|string|array $data
      *
      * @return $this|ResponseInterface
      */
