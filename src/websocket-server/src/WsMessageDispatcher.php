@@ -122,6 +122,8 @@ class WsMessageDispatcher implements MiddlewareInterface
             // Append command middlewares
             if ($middlewares) {
                 $middlewares = array_merge($this->middlewares, $middlewares);
+            } else {
+                $middlewares = $this->middlewares;
             }
 
             // If this->preCheckRoute is True, pre-check route match status
