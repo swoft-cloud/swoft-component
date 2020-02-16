@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 /**
  * This file is part of Swoft.
  *
@@ -8,8 +9,16 @@
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
+use Swoft\WebSocket\Server\WsServerBean;
+use SwoftTest\WebSocket\Server\Testing\Middleware\GlobalMiddleware;
+
 return [
-    'config' => [
+    'config'                     => [
         'path' => __DIR__ . '/config',
     ],
+    WsServerBean::MSG_DISPATCHER => [
+        'middlewares' => [
+            GlobalMiddleware::class,
+        ]
+    ]
 ];

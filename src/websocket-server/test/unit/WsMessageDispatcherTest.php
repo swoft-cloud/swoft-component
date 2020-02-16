@@ -10,21 +10,22 @@
 
 namespace SwoftTest\WebSocket\Server\Unit;
 
-use PHPUnit\Framework\TestCase;
 use Swoft\WebSocket\Server\WsMessageDispatcher;
+use SwoftTest\WebSocket\Server\Testing\Middleware\GlobalMiddleware;
 
 /**
  * Class WsMessageDispatcherTest
  */
-class WsMessageDispatcherTest extends TestCase
+class WsMessageDispatcherTest extends WsServerTestCase
 {
-    /**
-     */
     public function testBasic(): void
     {
         /** @var WsMessageDispatcher $wmd */
         $wmd = bean('wsMsgDispatcher');
+
         $this->assertNotEmpty($wmd);
+        $this->assertNotEmpty($mds = $wmd->getMiddlewares());
+        $this->assertArrayContainValue($mds, GlobalMiddleware::class);
     }
 
     public function testDispatch(): void
@@ -33,8 +34,6 @@ class WsMessageDispatcherTest extends TestCase
         $this->assertNotEmpty($wmd);
     }
 
-    /**
-     */
     public function testCustomDispatch(): void
     {
         $wmd = bean('wsMsgDispatcher');

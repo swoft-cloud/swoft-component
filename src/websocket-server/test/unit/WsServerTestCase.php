@@ -16,6 +16,7 @@ use Swoft\Http\Message\Response;
 use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\WebSocketServer;
+use SwoftTest\Testing\Concern\CommonTestAssertTrait;
 use SwoftTest\WebSocket\Server\Testing\MockHttpRequest;
 use SwoftTest\WebSocket\Server\Testing\MockHttpResponse;
 use SwoftTest\WebSocket\Server\Testing\MockWsServer;
@@ -27,6 +28,8 @@ use SwoftTest\WebSocket\Server\Testing\MockWsServer;
  */
 abstract class WsServerTestCase extends TestCase
 {
+    use CommonTestAssertTrait;
+
     /**
      * @var MockWsServer
      */

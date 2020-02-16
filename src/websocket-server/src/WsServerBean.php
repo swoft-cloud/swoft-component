@@ -10,6 +10,8 @@
 
 namespace Swoft\WebSocket\Server;
 
+use Swoft\WebSocket\Server\Router\Router;
+
 /**
  * Class WsServerBean
  *
@@ -17,16 +19,34 @@ namespace Swoft\WebSocket\Server;
  */
 final class WsServerBean
 {
+    /**
+     * @see WebSocketServer
+     */
     public const SERVER = 'wsServer';
 
+    /**
+     * @see Router
+     */
     public const ROUTER = 'wsRouter';
 
-    public const DISPATCHER = 'wsDispatcher';
-
+    /**
+     * @see Connection
+     */
     public const CONNECTION = 'wsConnection';
 
+    /**
+     * @see WsDispatcher
+     */
+    public const DISPATCHER = 'wsDispatcher';
+
+    /**
+     * @see WsMessageDispatcher
+     */
     public const MSG_DISPATCHER = 'wsMsgDispatcher';
 
+    /**
+     * @see ConnectionManager
+     */
     public const MANAGER = 'wsConnectionManager';
 
     public const REQUEST = 'wsRequest';
