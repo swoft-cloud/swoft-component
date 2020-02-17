@@ -36,6 +36,7 @@ use function get_class;
 use function range;
 use function sprintf;
 use function srun;
+use function trim;
 use function ucfirst;
 use const SWOOLE_PROCESS;
 use const SWOOLE_SOCK_TCP;
@@ -972,10 +973,14 @@ abstract class Server implements ServerInterface
         // Is pid file exist ?
         if (file_exists($pidFile)) {
             // Get pid file content and parse the content
-            $pidFile = file_get_contents($pidFile);
+            $content = (string)file_get_contents($pidFile);
+
+            if (!$content = trim($content, ', ')) {
+                return false;
+            }
 
             // Parse and record PIDs
-            [$masterPID, $managerPID] = explode(',', $pidFile);
+            [$masterPID, $managerPID] = explode(',', $content, 2);
             // Format type
             $masterPID  = (int)$masterPID;
             $managerPID = (int)$managerPID;
