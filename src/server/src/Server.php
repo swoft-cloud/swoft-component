@@ -21,6 +21,7 @@ use Swoole\Coroutine;
 use Swoole\Process;
 use Swoole\Runtime;
 use Swoole\Server as CoServer;
+use function strpos;
 use function swoole_cpu_num;
 use Throwable;
 use function alias;
@@ -971,28 +972,32 @@ abstract class Server implements ServerInterface
         $pidFile = alias($this->pidFile);
 
         // Is pid file exist ?
-        if (file_exists($pidFile)) {
-            // Get pid file content and parse the content
-            $content = (string)file_get_contents($pidFile);
-
-            if (!$content = trim($content, ', ')) {
-                return false;
-            }
-
-            // Parse and record PIDs
-            [$masterPID, $managerPID] = explode(',', $content, 2);
-            // Format type
-            $masterPID  = (int)$masterPID;
-            $managerPID = (int)$managerPID;
-
-            $this->pidMap['masterPid']  = $masterPID;
-            $this->pidMap['managerPid'] = $managerPID;
-
-            // Notice: skip pid 1, resolve start server on docker.
-            return $masterPID > 1 && Process::kill($masterPID, 0);
+        if (!file_exists($pidFile)) {
+            return false;
         }
 
-        return false;
+        // Get pid file content and parse the content
+        $content = (string)file_get_contents($pidFile);
+        if (!$content = trim($content, ', ')) {
+            return false;
+        }
+
+        // Content is valid
+        if (strpos($content, ',') === false) {
+            return false;
+        }
+
+        // Parse and record PIDs
+        [$masterPID, $managerPID] = explode(',', $content, 2);
+        // Format type
+        $masterPID  = (int)$masterPID;
+        $managerPID = (int)$managerPID;
+
+        $this->pidMap['masterPid']  = $masterPID;
+        $this->pidMap['managerPid'] = $managerPID;
+
+        // Notice: skip pid 1, resolve start server on docker.
+        return $masterPID > 1 && Process::kill($masterPID, 0);
     }
 
     /**
