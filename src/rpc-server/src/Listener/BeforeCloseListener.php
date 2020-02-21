@@ -1,11 +1,7 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Server\Listener;
 
-
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Context\Context;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
@@ -30,7 +26,7 @@ class BeforeCloseListener implements EventHandlerInterface
      */
     public function handle(EventInterface $event): void
     {
-        list($server, $fd, $reactorId) = $event->getParams();
+        [$server, $fd, $reactorId] = $event->getParams();
         $context = ServiceCloseContext::new($server, $fd, $reactorId);
 
         if (Log::getLogger()->isEnable()) {

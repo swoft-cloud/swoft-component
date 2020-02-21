@@ -1,12 +1,9 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Server\Swoole;
-
 
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Rpc\Server\ServiceServerEvent;
 use Swoft\Server\Contract\CloseInterface;
 use Swoole\Server;

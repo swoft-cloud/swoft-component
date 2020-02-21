@@ -1,17 +1,15 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Packet;
 
-
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Rpc\Error;
 use Swoft\Rpc\Exception\RpcException;
 use Swoft\Rpc\Protocol;
 use Swoft\Rpc\Response;
 use Swoft\Stdlib\Helper\JsonHelper;
+use const JSON_ERROR_NONE;
+use const JSON_UNESCAPED_UNICODE;
 
 /**
  * Class JsonPacket
@@ -25,7 +23,7 @@ class JsonPacket extends AbstractPacket
     /**
      * Json-rpc version
      */
-    const VERSION = '2.0';
+    public const VERSION = '2.0';
 
     /**
      * @param Protocol $protocol
@@ -62,7 +60,7 @@ class JsonPacket extends AbstractPacket
     {
         $data  = JsonHelper::decode($string, true);
         $error = json_last_error();
-        if ($error != JSON_ERROR_NONE) {
+        if ($error !== JSON_ERROR_NONE) {
             throw new RpcException(
                 sprintf('Data(%s) is not json format!', $string)
             );

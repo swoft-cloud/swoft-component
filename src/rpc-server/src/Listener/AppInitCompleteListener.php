@@ -1,12 +1,8 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Server\Listener;
 
-
-use ReflectionException;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;

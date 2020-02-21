@@ -2,8 +2,6 @@
 
 namespace Swoft\Rpc\Server;
 
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Helper\ComposerJSON;
 use Swoft\Rpc\Packet;
 use Swoft\Rpc\Server\Swoole\CloseListener;
