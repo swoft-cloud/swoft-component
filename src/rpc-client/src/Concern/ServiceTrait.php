@@ -1,14 +1,10 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Client\Concern;
 
-use ReflectionException;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\Exception\ConnectionPoolException;
 use Swoft\Log\Error;
-use Swoft\Log\Helper\CLog;
 use Swoft\Rpc\Client\Connection;
 use Swoft\Rpc\Client\Exception\RpcClientException;
 use Swoft\Rpc\Client\Exception\RpcResponseException;
@@ -32,8 +28,6 @@ trait ServiceTrait
      *
      * @return mixed
      * @throws ConnectionPoolException
-     * @throws ContainerException
-     * @throws ReflectionException
      * @throws RpcClientException
      * @throws RpcResponseException
      */
@@ -93,8 +87,6 @@ trait ServiceTrait
      *
      * @return string
      * @throws RpcClientException
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     private function sendAndRecv(Connection $connection, string $data, string $message, bool $reconnect = false): string
     {

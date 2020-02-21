@@ -1,11 +1,8 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Redis;
 
 use function bean;
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Redis\Connection\Connection;
 use Swoft\Redis\Connection\PhpRedisConnection;
 use Swoft\Redis\Connector\PhpRedisConnector;
@@ -23,12 +20,12 @@ class RedisDb
     /**
      * Php redis
      */
-    const PHP_REDIS = 'phpredis';
+    public const PHP_REDIS = 'phpredis';
 
     /**
      * P redis
      */
-    const P_REDIS = 'predis';
+    public const P_REDIS = 'predis';
 
     /**
      * @var string

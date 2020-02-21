@@ -1,17 +1,13 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc;
 
-
-use function bean;
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Rpc\Contract\PacketInterface;
 use Swoft\Rpc\Exception\RpcException;
 use Swoft\Rpc\Packet\AbstractPacket;
 use Swoft\Rpc\Packet\JsonPacket;
 use Swoft\Stdlib\Helper\Arr;
+use function bean;
 
 /**
  * Class Packet
@@ -23,7 +19,7 @@ class Packet implements PacketInterface
     /**
      * Json packet
      */
-    const JSON = 'JSON';
+    public const JSON = 'JSON';
 
     /**
      * Packet type
@@ -155,15 +151,11 @@ class Packet implements PacketInterface
         $packets = Arr::merge($this->defaultPackets(), $this->packets);
         $packet  = $packets[$this->type] ?? null;
         if (empty($packet)) {
-            throw new RpcException(
-                sprintf('Packet type(%s) is not supported!', $this->type)
-            );
+            throw new RpcException(sprintf('Packet type(%s) is not supported!', $this->type));
         }
 
         if (!$packet instanceof AbstractPacket) {
-            throw new RpcException(
-                sprintf('Packet type(%s) is not instanceof PacketInterface!', $this->type)
-            );
+            throw new RpcException(sprintf('Packet type(%s) is not instanceof PacketInterface!', $this->type));
         }
 
         $packet->initialize($this);
