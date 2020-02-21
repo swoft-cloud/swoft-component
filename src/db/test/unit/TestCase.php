@@ -1,10 +1,7 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Db\Unit;
 
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Exception\DbException;
 use Swoft\Stdlib\Helper\Str;
 use SwoftTest\Db\Testing\Entity\Count;
@@ -19,9 +16,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     /**
      * @return int
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function addRecord(): int
     {
@@ -41,9 +36,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
      * @param null $userId
      *
      * @return null|int
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function addCountRecord($userId = null)
     {

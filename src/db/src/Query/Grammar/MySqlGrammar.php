@@ -1,11 +1,8 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Db\Query\Grammar;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Query\Builder;
 use Swoft\Db\Query\JsonExpression;
 use Swoft\Stdlib\Collection;
@@ -53,8 +50,6 @@ class MySqlGrammar extends Grammar
      * @param Builder $query
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compileSelect(Builder $query)
     {
@@ -78,8 +73,6 @@ class MySqlGrammar extends Grammar
      * @param string $value
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function compileJsonContains($column, $value)
     {
@@ -94,8 +87,6 @@ class MySqlGrammar extends Grammar
      * @param string $value
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function compileJsonLength($column, $operator, $value)
     {
@@ -154,8 +145,6 @@ class MySqlGrammar extends Grammar
      * @param array   $values
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compileUpdate(Builder $query, $values)
     {
@@ -224,8 +213,6 @@ class MySqlGrammar extends Grammar
      * @param JsonExpression $value
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function compileJsonUpdateColumn($key, JsonExpression $value)
     {
@@ -259,8 +246,6 @@ class MySqlGrammar extends Grammar
      * @param Builder $query
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compileDelete(Builder $query)
     {

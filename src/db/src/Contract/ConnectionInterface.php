@@ -1,12 +1,9 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Db\Contract;
 
 use Closure;
 use Generator;
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Expression;
 use Throwable;
@@ -85,9 +82,7 @@ interface ConnectionInterface
      * @param string $sequence
      *
      * @return string
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function insertGetId(string $query, array $bindings = [], string $sequence = null): string;
 

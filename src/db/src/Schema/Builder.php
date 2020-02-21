@@ -1,14 +1,11 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Db\Schema;
 
 use Closure;
 use InvalidArgumentException;
 use LogicException;
-use ReflectionException;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\Database;
 use Swoft\Db\DB;
@@ -214,8 +211,6 @@ class Builder
      *
      * @return bool
      * @throws DbException
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function hasTable(string $table): bool
     {
@@ -256,9 +251,7 @@ class Builder
      * @param string $column
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function hasColumn(string $table, string $column): bool
     {
@@ -274,9 +267,7 @@ class Builder
      * @param array $columns
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function hasColumns($table, array $columns)
     {
@@ -297,9 +288,7 @@ class Builder
      * @param string $table
      *
      * @return array
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function getColumnListing(string $table)
     {
@@ -359,9 +348,7 @@ class Builder
      * @param string  $table
      * @param Closure $callback
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function table(string $table, Closure $callback)
     {
@@ -375,9 +362,7 @@ class Builder
      * @param Closure $callback
      * @param bool    $ifNotExists
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function create(string $table, Closure $callback, bool $ifNotExists = false)
     {
@@ -394,9 +379,7 @@ class Builder
      * @param string  $table
      * @param Closure $callback
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function createIfNotExists(string $table, Closure $callback)
     {
@@ -412,9 +395,7 @@ class Builder
      *
      * @param string $table
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function drop(string $table)
     {
@@ -428,9 +409,7 @@ class Builder
      *
      * @param string $table
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function dropIfExists(string $table)
     {
@@ -445,9 +424,7 @@ class Builder
      * @param string $from
      * @param string $to
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function rename(string $from, string $to)
     {
@@ -460,9 +437,7 @@ class Builder
      * Enable foreign key constraints.
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function enableForeignKeyConstraints()
     {
@@ -475,9 +450,7 @@ class Builder
      * Disable foreign key constraints.
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function disableForeignKeyConstraints()
     {
@@ -491,9 +464,7 @@ class Builder
      *
      * @param Blueprint $blueprint
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function build(Blueprint $blueprint)
     {

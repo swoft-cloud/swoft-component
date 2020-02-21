@@ -1,14 +1,10 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Db\Eloquent;
-
 
 use Closure;
 use DateTimeInterface;
 use Generator;
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Concern\BuildsQueries;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\EntityRegister;
@@ -402,9 +398,7 @@ class Builder
      * @param array  $bindings
      *
      * @return Collection
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function fromQuery(string $query, array $bindings = [])
     {
@@ -516,9 +510,7 @@ class Builder
      * @param array $values
      *
      * @return Model
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function firstOrCreate(array $attributes, array $values = []): Model
     {
@@ -540,9 +532,7 @@ class Builder
      * @param array $counters
      *
      * @return null|object|Builder|Model
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function updateOrCreate(array $attributes, array $values = [], array $counters = [])
     {
@@ -566,9 +556,7 @@ class Builder
      * @param array $counters
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function updateOrInsert(array $attributes, array $values = [], array $counters = []): bool
     {
@@ -675,9 +663,7 @@ class Builder
      * Get a generator for the given query.
      *
      * @return Generator
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function cursor(): Generator
     {
@@ -796,9 +782,7 @@ class Builder
      * @param array $attributes
      *
      * @return Model
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function create(array $attributes = []): Model
     {
@@ -814,9 +798,7 @@ class Builder
      * @param array $values
      *
      * @return int
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function update(array $values): int
     {
@@ -833,9 +815,7 @@ class Builder
      * @param array $values
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function modify(array $attributes, array $values): bool
     {
@@ -856,9 +836,7 @@ class Builder
      * @param array $values
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function modifyById(int $id, array $values): bool
     {
@@ -880,9 +858,7 @@ class Builder
      * @param array $extra
      *
      * @return int
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function updateAllCountersById(array $ids, array $counters, array $extra = []): int
     {
@@ -902,9 +878,7 @@ class Builder
      * @param array $extra
      *
      * @return int
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function updateAllCounters(array $attributes, array $counters, array $extra = []): int
     {
@@ -923,9 +897,7 @@ class Builder
      * @param array $extra
      *
      * @return int
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function updateAllCountersAdoptPrimary(array $attributes, array $counters, array $extra = []): int
     {
@@ -945,9 +917,7 @@ class Builder
      * @param array     $extra
      *
      * @return int
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function increment(string $column, $amount = 1, array $extra = []): int
     {
@@ -964,9 +934,7 @@ class Builder
      * @param array     $extra
      *
      * @return int
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function decrement($column, $amount = 1, array $extra = []): int
     {
@@ -1021,9 +989,7 @@ class Builder
      * Delete a record from the database.
      *
      * @return int|mixed
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function delete()
     {
@@ -1040,9 +1006,7 @@ class Builder
      * Since we do not apply scopes here, the row will actually be deleted.
      *
      * @return int
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function forceDelete(): int
     {
@@ -1155,9 +1119,7 @@ class Builder
      * @param string|null $sequence
      *
      * @return string
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function insertGetId(array $values, string $sequence = null): string
     {
@@ -1176,9 +1138,7 @@ class Builder
      * @param array $values
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function insert(array $values): bool
     {
@@ -1206,9 +1166,7 @@ class Builder
      * @param array $values
      *
      * @return int
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function batchUpdateByIds(array $values): int
     {

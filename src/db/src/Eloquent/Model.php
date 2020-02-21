@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Db\Eloquent;
 
 use ArrayAccess;
@@ -8,9 +7,7 @@ use Closure;
 use DateTimeInterface;
 use Generator;
 use JsonSerializable;
-use ReflectionException;
 use Swoft\Aop\Proxy;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Concern\HasAttributes;
 use Swoft\Db\Concern\HasEvent;
 use Swoft\Db\Concern\HasTimestamps;
@@ -398,9 +395,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param array $attributes
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function update(array $attributes = [])
     {
@@ -418,9 +413,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param array $extra
      *
      * @return int
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function updateCounters(array $counters, array $extra = []): int
     {
@@ -472,9 +465,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Save the model to the database.
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function save(): bool
     {
@@ -546,9 +537,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param Builder $query
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function performUpdate(Builder $query): bool
     {
@@ -616,9 +605,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param Builder $query
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function performInsert(Builder $query): bool
     {
@@ -663,9 +650,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param array   $attributes
      *
      * @return void
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function insertAndSetId(Builder $query, $attributes)
     {
@@ -679,9 +664,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * Delete the model from the database.
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function delete(): bool
     {
@@ -716,9 +699,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * This method protects developers from running forceDelete when trait is missing.
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function forceDelete()
     {
@@ -728,9 +709,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     /**
      * Perform the actual delete query on this model instance.
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function performDeleteOnModel()
     {

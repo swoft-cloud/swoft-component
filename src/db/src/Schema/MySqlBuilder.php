@@ -1,11 +1,8 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Db\Schema;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder as QueryBuilder;
 use Swoft\Stdlib\Helper\StringHelper;
@@ -19,15 +16,12 @@ use Swoft\Stdlib\Helper\StringHelper;
  */
 class MySqlBuilder extends Builder
 {
-
     /**
      * Determine if the given table exists.
      *
      * @param string $table
      *
      * @return bool
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws DbException
      */
     public function hasTable(string $table): bool
@@ -46,9 +40,7 @@ class MySqlBuilder extends Builder
      * @param string $table
      *
      * @return array
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function getColumnListing(string $table)
     {
@@ -189,9 +181,7 @@ class MySqlBuilder extends Builder
      * Check Mysql Database exists
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function checkDatabaseExists(): bool
     {
@@ -206,9 +196,7 @@ class MySqlBuilder extends Builder
      * Drop all tables from the database.
      *
      * @return void
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function dropAllTables()
     {
@@ -237,9 +225,7 @@ class MySqlBuilder extends Builder
      * Drop all views from the database.
      *
      * @return void
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function dropAllViews()
     {
@@ -264,8 +250,6 @@ class MySqlBuilder extends Builder
      * Get all of the table names for the database.
      *
      * @return array
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws DbException
      */
     protected function getAllTables()
@@ -279,9 +263,7 @@ class MySqlBuilder extends Builder
      * Get all of the view names for the database.
      *
      * @return array
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function getAllViews()
     {
