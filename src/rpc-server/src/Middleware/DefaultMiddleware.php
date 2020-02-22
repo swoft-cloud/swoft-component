@@ -1,14 +1,9 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Server\Middleware;
 
-
-use function context;
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Rpc\Code;
 use Swoft\Rpc\Server\Contract\MiddlewareInterface;
 use Swoft\Rpc\Server\Contract\RequestHandlerInterface;
@@ -18,6 +13,9 @@ use Swoft\Rpc\Server\Exception\RpcServerException;
 use Swoft\Rpc\Server\Request;
 use Swoft\Rpc\Server\Router\Router;
 use Swoft\Stdlib\Helper\PhpHelper;
+use function context;
+use function method_exists;
+use function sprintf;
 
 /**
  * Class DefaultMiddleware
@@ -34,7 +32,6 @@ class DefaultMiddleware implements MiddlewareInterface
      *
      * @return ResponseInterface
      * @throws RpcServerException
-     * @throws \Swoft\Exception\SwoftException
      */
     public function process(RequestInterface $request, RequestHandlerInterface $requestHandler): ResponseInterface
     {
@@ -46,7 +43,6 @@ class DefaultMiddleware implements MiddlewareInterface
      *
      * @return ResponseInterface
      * @throws RpcServerException
-     * @throws \Swoft\Exception\SwoftException
      */
     private function handler(RequestInterface $request): ResponseInterface
     {
@@ -55,29 +51,21 @@ class DefaultMiddleware implements MiddlewareInterface
         $method    = $request->getMethod();
         $params    = $request->getParams();
 
-
         [$status, $className] = $request->getAttribute(Request::ROUTER_ATTRIBUTE);
 
         if ($status != Router::FOUND) {
-            throw new RpcServerException(
-                sprintf('Route(%s-%s) is not founded!', $version, $interface),
-                Code::INVALID_REQUEST
-            );
+            throw new RpcServerException(sprintf('Route(%s-%s) is not founded!', $version, $interface),
+                Code::INVALID_REQUEST);
         }
 
         $object = BeanFactory::getBean($className);
         if (!$object instanceof $interface) {
-            throw new RpcServerException(
-                sprintf('Object is not instanceof %s', $interface),
-                Code::INVALID_REQUEST
-            );
+            throw new RpcServerException(sprintf('Object is not instanceof %s', $interface), Code::INVALID_REQUEST);
         }
 
         if (!method_exists($object, $method)) {
-            throw new RpcServerException(
-                sprintf('Method(%s::%s) is not founded!', $interface, $method),
-                Code::METHOD_NOT_FOUND
-            );
+            throw new RpcServerException(sprintf('Method(%s::%s) is not founded!', $interface, $method),
+                Code::METHOD_NOT_FOUND);
         }
 
         $data = PhpHelper::call([$object, $method], ...$params);

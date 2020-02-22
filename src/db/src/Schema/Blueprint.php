@@ -1,13 +1,10 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Db\Schema;
 
 use Closure;
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Schema\Grammars\Grammar;
@@ -111,9 +108,7 @@ class Blueprint
      *
      * @param Builder $builder
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function build(Builder $builder)
     {

@@ -1,20 +1,16 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Server;
 
-
-use function array_splice;
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Rpc\Server\Contract\MiddlewareInterface;
 use Swoft\Rpc\Server\Contract\RequestHandlerInterface;
 use Swoft\Rpc\Server\Contract\RequestInterface;
 use Swoft\Rpc\Server\Contract\ResponseInterface;
 use Swoft\Rpc\Server\Exception\RpcServerException;
+use function array_splice;
 
 /**
  * Class ServiceHandler

@@ -1,13 +1,9 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Server\Swoole;
 
-
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Rpc\Exception\RpcException;
 use Swoft\Rpc\Server\Request;
 use Swoft\Rpc\Server\Response;

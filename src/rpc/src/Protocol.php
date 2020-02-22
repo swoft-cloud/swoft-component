@@ -1,13 +1,9 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\ContainerException;
-
 
 /**
  * Class Protocol
@@ -18,12 +14,12 @@ use Swoft\Bean\Exception\ContainerException;
  */
 class Protocol
 {
+    use PrototypeTrait;
+
     /**
      * Default version
      */
-    const DEFAULT_VERSION = '1.0';
-
-    use PrototypeTrait;
+    public const DEFAULT_VERSION = '1.0';
 
     /**
      * @var string

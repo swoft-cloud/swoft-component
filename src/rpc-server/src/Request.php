@@ -1,14 +1,11 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Server;
-
 
 use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Concern\PrototypeTrait;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Rpc\Exception\RpcException;
 use Swoft\Rpc\Packet;
 use Swoft\Rpc\Server\Contract\RequestInterface;

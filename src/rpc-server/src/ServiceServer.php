@@ -1,11 +1,8 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Server;
 
-
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Server;
 use Swoft\Stdlib\Helper\Arr;

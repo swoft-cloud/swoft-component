@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\WebSocket\Server\Helper;
 
@@ -22,7 +30,9 @@ use const SWOOLE_VERSION;
 class WsHelper
 {
     public const WS_VERSION = '13';
+
     public const KEY_PATTEN = '#^[+/0-9A-Za-z]{21}[AQgw]==$#';
+
     public const SIGN_KEY   = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 
     /**
@@ -31,9 +41,13 @@ class WsHelper
      * @see \WEBSOCKET_OPCODE_TEXT
      */
     public const OPCODE_TEXT   = 0x01;
+
     public const OPCODE_BINARY = 0x02;
+
     public const OPCODE_CLOSE  = 0x08;
+
     public const OPCODE_PING   = 0x09;
+
     public const OPCODE_PONG   = 0x10;
 
     /**

@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Tcp\Server\Swoole;
 
@@ -10,7 +18,6 @@ use Swoft\Session\Session;
 use Swoft\SwoftEvent;
 use Swoft\Tcp\Server\Connection;
 use Swoft\Tcp\Server\Context\TcpConnectContext;
-use Swoft\Tcp\Server\TcpDispatcher;
 use Swoft\Tcp\Server\TcpErrorDispatcher;
 use Swoft\Tcp\Server\TcpServerBean;
 use Swoft\Tcp\Server\TcpServerEvent;

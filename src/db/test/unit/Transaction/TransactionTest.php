@@ -1,11 +1,7 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Db\Unit\Transaction;
 
-
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\DB;
 use Swoft\Db\Exception\DbException;
 use Swoft\Stdlib\Helper\Str;
@@ -23,9 +19,7 @@ use SwoftTest\Db\Unit\TestCase;
 class TransactionTest extends TestCase
 {
     /**
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function testCommit()
     {
@@ -54,9 +48,7 @@ class TransactionTest extends TestCase
     }
 
     /**
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function testCommitByNest()
     {
@@ -88,9 +80,7 @@ class TransactionTest extends TestCase
     }
 
     /**
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function testRollback()
     {
@@ -119,9 +109,7 @@ class TransactionTest extends TestCase
     }
 
     /**
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function testRollbackByNest()
     {

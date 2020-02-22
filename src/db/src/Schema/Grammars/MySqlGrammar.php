@@ -1,12 +1,9 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Db\Schema\Grammars;
 
-use ReflectionException;
 use RuntimeException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\Schema\Blueprint;
 use Swoft\Stdlib\Fluent;
@@ -117,8 +114,6 @@ class MySqlGrammar extends Grammar
      * @param Connection $connection
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compileCreate(Blueprint $blueprint, Fluent $command, Connection $connection)
     {
@@ -150,8 +145,6 @@ class MySqlGrammar extends Grammar
      * @param Connection $connection
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function compileCreateTable(Blueprint $blueprint, $command, $connection)
     {
@@ -232,8 +225,6 @@ class MySqlGrammar extends Grammar
      * @param Fluent    $command
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compileAdd(Blueprint $blueprint, Fluent $command)
     {
@@ -249,8 +240,6 @@ class MySqlGrammar extends Grammar
      * @param Fluent    $command
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compilePrimary(Blueprint $blueprint, Fluent $command)
     {
@@ -266,8 +255,6 @@ class MySqlGrammar extends Grammar
      * @param Fluent    $command
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compileUnique(Blueprint $blueprint, Fluent $command)
     {
@@ -281,8 +268,6 @@ class MySqlGrammar extends Grammar
      * @param Fluent    $command
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compileIndex(Blueprint $blueprint, Fluent $command)
     {
@@ -296,8 +281,6 @@ class MySqlGrammar extends Grammar
      * @param Fluent    $command
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compileSpatialIndex(Blueprint $blueprint, Fluent $command)
     {
@@ -312,8 +295,6 @@ class MySqlGrammar extends Grammar
      * @param string    $type
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function compileKey(Blueprint $blueprint, Fluent $command, string $type)
     {
@@ -333,8 +314,6 @@ class MySqlGrammar extends Grammar
      * @param Fluent    $command
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compileDrop(Blueprint $blueprint, Fluent $command)
     {
@@ -348,8 +327,6 @@ class MySqlGrammar extends Grammar
      * @param Fluent    $command
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compileDropIfExists(Blueprint $blueprint, Fluent $command)
     {
@@ -363,8 +340,6 @@ class MySqlGrammar extends Grammar
      * @param Fluent    $command
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compileDropColumn(Blueprint $blueprint, Fluent $command)
     {
@@ -380,8 +355,6 @@ class MySqlGrammar extends Grammar
      * @param Fluent    $command
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compileDropPrimary(Blueprint $blueprint, Fluent $command)
     {
@@ -395,8 +368,6 @@ class MySqlGrammar extends Grammar
      * @param Fluent    $command
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compileDropUnique(Blueprint $blueprint, Fluent $command)
     {
@@ -412,8 +383,6 @@ class MySqlGrammar extends Grammar
      * @param Fluent    $command
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compileDropIndex(Blueprint $blueprint, Fluent $command)
     {
@@ -429,8 +398,6 @@ class MySqlGrammar extends Grammar
      * @param Fluent    $command
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compileDropSpatialIndex(Blueprint $blueprint, Fluent $command)
     {
@@ -444,8 +411,6 @@ class MySqlGrammar extends Grammar
      * @param Fluent    $command
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compileDropForeign(Blueprint $blueprint, Fluent $command)
     {
@@ -461,8 +426,6 @@ class MySqlGrammar extends Grammar
      * @param Fluent    $command
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compileRename(Blueprint $blueprint, Fluent $command)
     {
@@ -478,8 +441,6 @@ class MySqlGrammar extends Grammar
      * @param Fluent    $command
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compileRenameColumn(Blueprint $blueprint, Fluent $command): string
     {
@@ -514,8 +475,6 @@ class MySqlGrammar extends Grammar
      * @param Fluent    $command
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function compileRenameIndex(Blueprint $blueprint, Fluent $command)
     {
@@ -609,7 +568,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    protected function typeString(Fluent $column)
+    protected function typeString(Fluent $column): string
     {
         return "varchar({$column['length']})";
     }
@@ -621,7 +580,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    protected function typeText(Fluent $column)
+    protected function typeText(Fluent $column): string
     {
         return 'text';
     }
@@ -633,7 +592,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    protected function typeMediumText(Fluent $column)
+    protected function typeMediumText(Fluent $column): string
     {
         return 'mediumtext';
     }
@@ -1232,8 +1191,6 @@ class MySqlGrammar extends Grammar
      * @param Fluent    $column
      *
      * @return null|string
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     protected function modifyAfter(Blueprint $blueprint, Fluent $column)
     {

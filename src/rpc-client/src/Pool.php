@@ -1,11 +1,7 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Client;
 
-
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\AbstractPool;
 use Swoft\Connection\Pool\Contract\ConnectionInterface;
 use Swoft\Rpc\Client\Exception\RpcClientException;

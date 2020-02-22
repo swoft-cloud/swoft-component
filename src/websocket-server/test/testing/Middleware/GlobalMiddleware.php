@@ -17,11 +17,11 @@ use Swoft\WebSocket\Server\Contract\RequestInterface;
 use Swoft\WebSocket\Server\Contract\ResponseInterface;
 
 /**
- * Class User1Middleware
+ * Class GlobalMiddleware
  *
  * @Bean()
  */
-class User1Middleware implements MiddlewareInterface
+class GlobalMiddleware implements MiddlewareInterface
 {
     /**
      * @param RequestInterface        $request
@@ -31,10 +31,9 @@ class User1Middleware implements MiddlewareInterface
      */
     public function process(RequestInterface $request, MessageHandlerInterface $handler): ResponseInterface
     {
-        $start = '>USER1 ';
-
         $resp = $handler->handle($request);
+        $old  = $resp->getData();
 
-        return $resp->setData($start . $resp->getData() . ' USER1>');
+        return $resp->setData("[GLOBAL] $old [GLOBAL]");
     }
 }

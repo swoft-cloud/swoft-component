@@ -1,13 +1,9 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Server\Middleware;
 
-
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Rpc\Server\Contract\MiddlewareInterface;
 use Swoft\Rpc\Server\Contract\RequestHandlerInterface;
 use Swoft\Rpc\Server\Contract\RequestInterface;

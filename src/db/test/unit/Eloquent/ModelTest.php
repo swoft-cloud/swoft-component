@@ -1,11 +1,7 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Db\Unit\Eloquent;
 
-
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\DB;
 use Swoft\Db\Eloquent\Collection;
 use Swoft\Db\Exception\DbException;
@@ -22,9 +18,7 @@ use SwoftTest\Db\Unit\TestCase;
 class ModelTest extends TestCase
 {
     /**
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function testSave()
     {
@@ -115,9 +109,7 @@ class ModelTest extends TestCase
     }
 
     /**
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function testDelete()
     {
@@ -195,9 +187,7 @@ class ModelTest extends TestCase
     }
 
     /**
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function testUpdate()
     {

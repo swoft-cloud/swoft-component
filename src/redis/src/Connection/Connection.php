@@ -1,17 +1,11 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Redis\Connection;
 
-
-use function count;
 use Redis;
 use RedisCluster;
-use ReflectionException;
-use function sprintf;
 use Swoft;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\AbstractConnection;
 use Swoft\Log\Helper\Log;
 use Swoft\Redis\Contract\ConnectionInterface;
@@ -21,6 +15,8 @@ use Swoft\Redis\RedisDb;
 use Swoft\Redis\RedisEvent;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Throwable;
+use function count;
+use function sprintf;
 
 /**
  * Class Connection
@@ -364,8 +360,6 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      *
      * @return mixed
      * @throws RedisException
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function command(string $method, array $parameters = [], bool $reconnect = false)
     {
@@ -409,9 +403,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @param bool     $reconnect
      *
      * @return mixed
-     * @throws ContainerException
      * @throws Throwable
-     * @throws ReflectionException
      *
      * @example
      *         Uses eval script
@@ -459,9 +451,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @param array  $keys
      *
      * @return array
-     * @throws ContainerException
      * @throws RedisException
-     * @throws ReflectionException
      */
     public function hMGet(string $key, array $keys): array
     {
@@ -488,9 +478,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @param array  $valueScores
      *
      * @return int Number of values added
-     * @throws ContainerException
      * @throws RedisException
-     * @throws ReflectionException
      */
     public function zAdd(string $key, array $valueScores): int
     {
@@ -510,9 +498,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      *
      * @return bool|mixed If key didn't exist, FALSE is returned. Otherwise, the value
      *
-     * @throws ContainerException
      * @throws RedisException
-     * @throws ReflectionException
      */
     public function get(string $key)
     {
@@ -535,9 +521,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @param int|array|null $timeout
      *
      * @return bool
-     * @throws ContainerException
      * @throws RedisException
-     * @throws ReflectionException
      */
     public function set(string $key, $value, $timeout = null): bool
     {
@@ -548,9 +532,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @param array $keys
      *
      * @return array
-     * @throws ContainerException
      * @throws RedisException
-     * @throws ReflectionException
      */
     public function mget(array $keys): array
     {
@@ -574,9 +556,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @param int   $ttl
      *
      * @return bool
-     * @throws ContainerException
      * @throws RedisException
-     * @throws ReflectionException
      */
     public function mset(array $keyValues, int $ttl = 0): bool
     {
@@ -596,9 +576,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @param callable $callback
      *
      * @return array
-     * @throws ContainerException
      * @throws RedisException
-     * @throws ReflectionException
      */
     public function pipeline(callable $callback): array
     {
@@ -609,9 +587,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @param callable $callback
      *
      * @return array
-     * @throws ContainerException
      * @throws RedisException
-     * @throws ReflectionException
      */
     public function transaction(callable $callback): array
     {
@@ -641,8 +617,6 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      *
      * @return mixed
      * @throws RedisException
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function __call(string $method, array $parameters)
     {
@@ -665,9 +639,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @param int      $mode
      *
      * @return array
-     * @throws ContainerException
      * @throws RedisException
-     * @throws ReflectionException
      */
     private function multi(int $mode, callable $callback, bool $reconnect = false): array
     {

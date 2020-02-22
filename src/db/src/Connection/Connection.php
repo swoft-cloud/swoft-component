@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Db\Connection;
 
 use Closure;
@@ -9,10 +8,8 @@ use Generator;
 use InvalidArgumentException;
 use PDO;
 use PDOStatement;
-use ReflectionException;
 use Swoft;
 use Swoft\Bean\BeanFactory;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Connection\Pool\AbstractConnection;
 use Swoft\Db\Concern\HasEvent;
 use Swoft\Db\Contract\ConnectionInterface;
@@ -345,9 +342,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param bool   $useReadPdo
      *
      * @return mixed
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function selectOne($query, $bindings = [], $useReadPdo = true)
     {
@@ -364,9 +359,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param bool   $useReadPdo
      *
      * @return array
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function select(string $query, array $bindings = [], bool $useReadPdo = true): array
     {
@@ -421,9 +414,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param bool   $useReadPdo
      *
      * @return Generator
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function cursor(string $query, array $bindings = [], bool $useReadPdo = true): Generator
     {
@@ -459,9 +450,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param array  $bindings
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function insert(string $query, array $bindings = []): bool
     {
@@ -476,9 +465,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param string $sequence
      *
      * @return string
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function insertGetId(string $query, array $bindings = [], string $sequence = null): string
     {
@@ -492,9 +479,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param array  $bindings
      *
      * @return int
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function update(string $query, array $bindings = []): int
     {
@@ -508,9 +493,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param array  $bindings
      *
      * @return int
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function delete(string $query, array $bindings = []): int
     {
@@ -524,9 +507,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param array  $bindings
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function statement(string $query, array $bindings = []): bool
     {
@@ -547,9 +528,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param string $sequence
      *
      * @return string
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function insertGetIdStatement(string $query, array $bindings = [], string $sequence = null): string
     {
@@ -570,9 +549,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param array  $bindings
      *
      * @return int
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function affectingStatement(string $query, array $bindings = []): int
     {
@@ -591,9 +568,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
             }
 
             $statement->execute();
-            $count = $statement->rowCount();
-
-            return $count;
+            return $statement->rowCount();
         });
     }
 
@@ -601,17 +576,13 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param string $query
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function unprepared(string $query): bool
     {
         return (bool)$this->run($query, [], function ($query) {
 
-            $change = $this->getPdo()->exec($query);
-
-            return $change;
+            return $this->getPdo()->exec($query);
         });
     }
 
@@ -649,9 +620,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return mixed
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function run(string $query, array $bindings, Closure $callback)
     {
@@ -668,7 +637,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
         // the event that the developer needs them. We'll log time in milliseconds.
         return $result;
     }
-    
+
     /**
      * Get the elapsed time since a given starting point.
      *
@@ -679,7 +648,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     {
         return round((microtime(true) - $start) * 1000, 2);
     }
-    
+
     /**
      * Run a SQL statement.
      *
@@ -690,9 +659,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return mixed
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function runQueryCallback(string $query, array $bindings, Closure $callback, bool $reconnect = false)
     {

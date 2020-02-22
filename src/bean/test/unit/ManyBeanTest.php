@@ -3,10 +3,8 @@
 namespace SwoftTest\Bean\Unit;
 
 use PHPUnit\Framework\TestCase;
-use ReflectionException;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Container;
-use Swoft\Bean\Exception\ContainerException;
 use SwoftTest\Bean\Testing\Definition\CommaNameClass;
 use SwoftTest\Bean\Testing\Definition\ManyInstance;
 
