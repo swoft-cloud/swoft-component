@@ -33,8 +33,7 @@ class ValidateParser extends Parser
         $unfields  = $annotationObject->getUnfields();
 
         ValidateRegister::registerValidate($this->className, $this->methodName, $validator, $fields, $unfields, $params,
-            '',
-            $type);
+            '', $type);
 
         return [];
     }

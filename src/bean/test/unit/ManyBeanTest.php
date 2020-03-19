@@ -1,14 +1,10 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Bean\Unit;
 
-
 use PHPUnit\Framework\TestCase;
-use ReflectionException;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Container;
-use Swoft\Bean\Exception\ContainerException;
 use SwoftTest\Bean\Testing\Definition\CommaNameClass;
 use SwoftTest\Bean\Testing\Definition\ManyInstance;
 
@@ -19,32 +15,28 @@ use SwoftTest\Bean\Testing\Definition\ManyInstance;
  */
 class ManyBeanTest extends TestCase
 {
-    /**
-     * @throws ReflectionException
-     * @throws ContainerException
-     */
-    public function testMany()
+    public function testMany(): void
     {
         $beans = Container::getInstance()->gets(ManyInstance::class);
 
-        $this->assertEquals(3, count($beans));
+        $this->assertCount(3, $beans);
 
         foreach ($beans as $bean) {
-            $this->assertTrue($bean instanceof ManyInstance);
+            $this->assertInstanceOf(ManyInstance::class, $bean);
         }
 
         $beans = BeanFactory::getBeans(ManyInstance::class);
-        $this->assertEquals(3, count($beans));
+        $this->assertCount(3, $beans);
 
         foreach ($beans as $bean) {
-            $this->assertTrue($bean instanceof ManyInstance);
+            $this->assertInstanceOf(ManyInstance::class, $bean);
         }
 
-        /* @var CommaNameClass $comma*/
+        /* @var CommaNameClass $comma */
         $comma = BeanFactory::getBean(CommaNameClass::class);
 
         $two = $comma->getManyInstance2();
 
-        $this->assertTrue($two instanceof ManyInstance);
+        $this->assertInstanceOf(ManyInstance::class, $two);
     }
 }

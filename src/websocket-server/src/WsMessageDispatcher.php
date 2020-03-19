@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\WebSocket\Server;
 
@@ -8,7 +16,6 @@ use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Log\Helper\CLog;
-use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Contract\MessageHandlerInterface;
 use Swoft\WebSocket\Server\Contract\MiddlewareInterface;
 use Swoft\WebSocket\Server\Contract\RequestInterface;
@@ -29,7 +36,7 @@ use function server;
  *
  * @since 2.0
  *
- * @Bean("wsMsgDispatcher")
+ * @Bean(WsServerBean::MSG_DISPATCHER)
  */
 class WsMessageDispatcher implements MiddlewareInterface
 {
@@ -85,7 +92,7 @@ class WsMessageDispatcher implements MiddlewareInterface
     public function dispatch(array $module, Request $request, Response $response): ResponseInterface
     {
         /** @var Connection $conn */
-        $conn  = Session::current();
+        $conn  = Connection::current();
         $frame = $request->getFrame();
 
         CLog::info('Message: message data parser is %s', $conn->getParserClass());
@@ -115,6 +122,8 @@ class WsMessageDispatcher implements MiddlewareInterface
             // Append command middlewares
             if ($middlewares) {
                 $middlewares = array_merge($this->middlewares, $middlewares);
+            } else {
+                $middlewares = $this->middlewares;
             }
 
             // If this->preCheckRoute is True, pre-check route match status
@@ -142,7 +151,6 @@ class WsMessageDispatcher implements MiddlewareInterface
      *
      * @return ResponseInterface
      * @throws ReflectionException
-     * @throws Swoft\Exception\SwoftException
      * @throws WsMessageRouteException
      * @internal for middleware dispatching
      */

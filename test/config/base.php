@@ -1,6 +1,6 @@
 <?php
 return [
-    'data' => 'baseData',
+    'data'  => 'baseData',
     'array' => [
         'arr',
         'arr2',

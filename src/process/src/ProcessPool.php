@@ -159,6 +159,7 @@ class ProcessPool
 
     /**
      * Quick restart
+     *
      * @throws SwoftException
      */
     public function restart(): void

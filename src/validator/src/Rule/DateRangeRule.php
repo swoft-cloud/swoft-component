@@ -18,19 +18,19 @@ use Swoft\Validator\Exception\ValidatorException;
 class DateRangeRule implements RuleInterface
 {
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $propertyName
      * @param object $item
-     * @param null $default
+     * @param null   $default
      *
      * @return array
      * @throws ValidatorException
      */
-    public function validate(array $data, string $propertyName, $item, $default = null): array
+    public function validate(array $data, string $propertyName, $item, $default = null, $strict = false): array
     {
         /* @var DateRange $item */
         $start = $item->getStart();
-        $end = $item->getEnd();
+        $end   = $item->getEnd();
         $value = $data[$propertyName];
         if (is_string($value)) {
             $dt = DateTime::createFromFormat("Y-m-d H:i:s", $value);
@@ -47,8 +47,8 @@ class DateRangeRule implements RuleInterface
             }
         }
         $message = $item->getMessage();
-        $message = (empty($message)) ? sprintf('%s is invalid  date range(start=%s, end=%s)', $propertyName, $start,
-            $end) : $message;
+        $message = (empty($message)) ?
+            sprintf('%s is invalid  date range(start=%s, end=%s)', $propertyName, $start, $end) : $message;
         throw new ValidatorException($message);
     }
 }

@@ -2,8 +2,10 @@
 
 namespace SwoftTest\Stdlib\Unit\Helper;
 
+use Exception;
 use PHPUnit\Framework\TestCase;
 use Swoft\Stdlib\Helper\Str;
+use const STR_PAD_LEFT;
 
 /**
  * Class StringHelperTest
@@ -44,11 +46,25 @@ class StringHelperTest extends TestCase
         $this->assertSame('/vendor/composer/.env', $path);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetUnique(): void
     {
         $uniqueId = Str::getUniqid();
 
         $this->assertNotEmpty($uniqueId);
         $this->assertIsString($uniqueId);
+
+        $uniqueId = Str::uniqIdReal();
+        $this->assertNotEmpty($uniqueId);
+    }
+
+    public function testPad(): void
+    {
+        $this->assertSame('ABC   ', Str::pad('ABC', 6));
+        $this->assertSame('   ABC', Str::pad('ABC', 6, ' ', STR_PAD_LEFT));
+
+        $this->assertSame('123   ', Str::pad(123, 6));
     }
 }

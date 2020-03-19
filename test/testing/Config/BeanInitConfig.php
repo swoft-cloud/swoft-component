@@ -1,11 +1,8 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Component\Testing\Config;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 
 /**
  * Class BeanInitConfig
@@ -21,17 +18,13 @@ class BeanInitConfig
      */
     private $configValue;
 
-    /**
-     * @throws ContainerException
-     * @throws ReflectionException
-     */
     public function init(): void
     {
         $this->configValue = config('data');
     }
 
     /**
-     * @return array
+     * @return string
      */
     public function getConfigValue(): string
     {

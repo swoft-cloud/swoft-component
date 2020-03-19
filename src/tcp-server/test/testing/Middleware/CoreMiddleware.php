@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\Tcp\Server\Testing\Middleware;
 
@@ -25,7 +33,7 @@ class CoreMiddleware implements MiddlewareInterface
     public function process(RequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $resp = Response::new(100);
-        $resp->setData('[CORE]');
+        $resp->setContent('[CORE]');
 
         return $resp;
     }

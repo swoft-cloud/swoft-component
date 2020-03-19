@@ -3,10 +3,10 @@
 namespace Swoft\Listener;
 
 use Swoft;
+use Swoft\Event\Annotation\Mapping\Listener;
 use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\SwoftEvent;
-use Swoft\Event\Annotation\Mapping\Listener;
 
 /**
  * Class AfterTimerAfterListener

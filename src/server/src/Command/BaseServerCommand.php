@@ -17,6 +17,7 @@ use function trim;
 
 /**
  * Class BaseServerCommand
+ *
  * @since 2.0
  */
 abstract class BaseServerCommand
@@ -50,9 +51,10 @@ abstract class BaseServerCommand
 
         // Port listeners
         $panel = $this->appendPortsToPanel($server, $panel);
+        $title = sprintf('SERVER INFORMATION(v%s)', Swoft::VERSION);
 
         // Show server info
-        Show::panel($panel, 'Server Information', [
+        Show::panel($panel, $title, [
             'titleStyle' => 'cyan',
         ]);
 
@@ -104,12 +106,19 @@ abstract class BaseServerCommand
         $mainHost = $server->getHost();
         $mainPort = $server->getPort();
 
-        return [
+        $info = [
             'listen' => $mainHost . ':' . $mainPort,
-            'type'   => $server->getTypeName(),
-            'mode'   => $server->getModeName(),
-            'worker' => $workerNum,
+            // 'type'   => $server->getTypeName(),
+            'Mode'   => $server->getModeName(),
+            'Worker' => $workerNum,
         ];
+
+        $taskNum = $settings['task_worker_num'] ?? 0;
+        if ($taskNum > 0) {
+            $info['Task worker'] = $taskNum;
+        }
+
+        return $info;
     }
 
     /**
@@ -128,10 +137,11 @@ abstract class BaseServerCommand
                 continue;
             }
 
-            $upperName = strtoupper($name);
+            $upperName         = strtoupper($name);
             $panel[$upperName] = [
                 'listen' => $listener->getHost() . ':' . $listener->getPort(),
-                'type'   => $listener->getTypeName()
+                // 'type'   => $listener->getTypeName(),
+                '(attached)'
             ];
         }
 

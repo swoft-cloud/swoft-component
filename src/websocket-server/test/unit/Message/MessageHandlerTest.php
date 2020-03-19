@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\WebSocket\Server\Unit\Message;
 
@@ -31,6 +39,6 @@ class MessageHandlerTest extends TestCase
         $resp = $mc->run($req);
 
         $this->assertSame(100, $resp->getSender());
-        $this->assertSame('>user1 >user2 [CORE] user2> user1>', $resp->getData());
+        $this->assertSame('>USER1 >USER2 [CORE] USER2> USER1>', $resp->getData());
     }
 }

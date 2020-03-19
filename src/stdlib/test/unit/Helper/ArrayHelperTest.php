@@ -53,9 +53,10 @@ class ArrayHelperTest extends TestCase
     public function testGetValue(): void
     {
         //test base
-        $arr = ['a' => 1, 'b' => 2];
+        $arr = ['a' => 1, 'b' => 2, 3];
         $rs  = ArrayHelper::getValue($arr, 'b');
         $this->assertSame(2, $rs);
+        $this->assertSame(3, ArrayHelper::getValue($arr, 0));
 
         //test get not exist key
         $rs2 = ArrayHelper::getValue($arr, 'c');

@@ -18,5 +18,5 @@ interface RuleInterface
      *
      * @return array
      */
-    public function validate(array $data, string $propertyName, $item, $default = null): array;
+    public function validate(array $data, string $propertyName, $item, $default = null, $strict = false): array;
 }

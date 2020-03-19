@@ -63,4 +63,12 @@ class BeforeDate
     {
         return $this->date;
     }
+
+    /**
+     * @param string $message
+     */
+    public function setMessage(string $message): void
+    {
+        $this->message = $message;
+    }
 }

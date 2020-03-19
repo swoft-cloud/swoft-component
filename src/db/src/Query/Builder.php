@@ -1,25 +1,22 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Db\Query;
 
-use function is_array;
 use Closure;
 use DateTimeInterface;
 use Generator;
 use InvalidArgumentException;
-use ReflectionException;
 use RuntimeException;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Bean\Contract\PrototypeInterface;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Concern\BuildsQueries;
 use Swoft\Db\Connection\Connection;
 use Swoft\Db\Database;
 use Swoft\Db\DB;
 use Swoft\Db\Eloquent\Builder as EloquentBuilder;
+use Swoft\Db\Eloquent\Collection;
 use Swoft\Db\Eloquent\Model;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Pool;
@@ -27,11 +24,10 @@ use Swoft\Db\Query\Grammar\Grammar;
 use Swoft\Db\Query\Grammar\MySqlGrammar;
 use Swoft\Db\Query\Processor\MySqlProcessor;
 use Swoft\Db\Query\Processor\Processor;
-use Swoft\Db\Eloquent\Collection;
 use Swoft\Stdlib\Contract\Arrayable;
 use Swoft\Stdlib\Helper\Arr;
-use Swoft\Stdlib\Helper\ArrayHelper;
 use Swoft\Stdlib\Helper\Str;
+use function is_array;
 
 /**
  * Class Builder
@@ -242,6 +238,13 @@ class Builder implements PrototypeInterface
     public $db = '';
 
     /**
+     * @link https://php.net/manual/en/pdo.constants.php#pdo.constants.fetch-obj
+     *
+     * @var int
+     */
+    protected $fetchMode = 0;
+
+    /**
      * @var array
      */
     public $grammars = [
@@ -312,9 +315,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function selectSub($query, string $as): self
     {
@@ -350,9 +351,7 @@ class Builder implements PrototypeInterface
      *
      * @return static
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function fromSub($query, string $as): self
     {
@@ -386,9 +385,7 @@ class Builder implements PrototypeInterface
      * @param Closure|static|string $query
      *
      * @return array
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function createSub($query): array
     {
@@ -410,8 +407,6 @@ class Builder implements PrototypeInterface
      * @param mixed $query
      *
      * @return array
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     protected function parseSub($query): array
     {
@@ -539,9 +534,7 @@ class Builder implements PrototypeInterface
      *
      * @return static|static
      *
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function joinSub(
         $query,
@@ -601,9 +594,7 @@ class Builder implements PrototypeInterface
      * @param string|null           $second
      *
      * @return static
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function leftJoinSub($query, string $as, $first, string $operator = null, string $second = null): self
     {
@@ -650,9 +641,7 @@ class Builder implements PrototypeInterface
      * @param string|null           $second
      *
      * @return static
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function rightJoinSub($query, string $as, $first, string $operator = null, string $second = null): self
     {
@@ -2297,8 +2286,6 @@ class Builder implements PrototypeInterface
      * Get the SQL representation of the query.
      *
      * @return string
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function toSql(): string
     {
@@ -2354,9 +2341,7 @@ class Builder implements PrototypeInterface
      * Run the query as a "select" statement against the connection.
      *
      * @return array
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     protected function runSelect(): array
     {
@@ -2424,9 +2409,7 @@ class Builder implements PrototypeInterface
      * Get a generator for the given query.
      *
      * @return Generator
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function cursor(): Generator
     {
@@ -2623,9 +2606,7 @@ class Builder implements PrototypeInterface
      * Determine if any rows exist for the current query.
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function exists(): bool
     {
@@ -2649,9 +2630,7 @@ class Builder implements PrototypeInterface
      * Determine if no rows exist for the current query.
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function doesntExist(): bool
     {
@@ -2748,6 +2727,11 @@ class Builder implements PrototypeInterface
             ->get($columns);
 
         if (!$results->isEmpty()) {
+            // Compatible group aggregate
+            if (isset($this->groups)) {
+                return $results->pluck('aggregate')->$function();
+            }
+
             return array_change_key_case((array)$results[0])['aggregate'];
         }
 
@@ -2836,9 +2820,7 @@ class Builder implements PrototypeInterface
      * @param array $values
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function insert(array $values)
     {
@@ -2880,9 +2862,7 @@ class Builder implements PrototypeInterface
      * @param string $primary
      *
      * @return int
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function batchUpdateByIds(array $values, string $primary = 'id')
     {
@@ -2901,9 +2881,7 @@ class Builder implements PrototypeInterface
      * @param string|null $sequence
      *
      * @return string
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function insertGetId(array $values, string $sequence = null): string
     {
@@ -2921,9 +2899,7 @@ class Builder implements PrototypeInterface
      * @param Closure|static|string $query
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function insertUsing(array $columns, $query)
     {
@@ -2941,9 +2917,7 @@ class Builder implements PrototypeInterface
      * @param array $values
      *
      * @return int
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function update(array $values)
     {
@@ -2962,9 +2936,7 @@ class Builder implements PrototypeInterface
      * @param array $counters
      *
      * @return bool
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function updateOrInsert(array $attributes, array $values = [], array $counters = [])
     {
@@ -2987,9 +2959,7 @@ class Builder implements PrototypeInterface
      * @param array     $extra
      *
      * @return int
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function increment(string $column, $amount = 1, array $extra = [])
     {
@@ -3012,9 +2982,7 @@ class Builder implements PrototypeInterface
      * @param array     $extra
      *
      * @return int
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function decrement(string $column, $amount = 1, array $extra = [])
     {
@@ -3045,9 +3013,7 @@ class Builder implements PrototypeInterface
      * @param array $extra
      *
      * @return int
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function updateAllCounters(array $where, array $counters, array $extra = []): int
     {
@@ -3066,13 +3032,16 @@ class Builder implements PrototypeInterface
      * @param array $counters
      *
      * @return array
-     * @throws ContainerException
-     * @throws ReflectionException
      */
     public function warpCounters(array $counters): array
     {
         // Convert counters to expression
         foreach ($counters as $column => $value) {
+            if (empty($value)) {
+                unset($counters[$column]);
+                continue;
+            }
+
             if (!$value instanceof Expression) {
                 $wrapped = $this->grammar->wrap($column);
 
@@ -3092,9 +3061,7 @@ class Builder implements PrototypeInterface
      * @param string $primary
      *
      * @return int
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function updateAllCountersById(
         array $ids,
@@ -3126,9 +3093,7 @@ class Builder implements PrototypeInterface
      * @param string $primary
      *
      * @return int
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function updateAllCountersAdoptPrimary(
         array $attributes,
@@ -3153,9 +3118,7 @@ class Builder implements PrototypeInterface
      * @param mixed $id
      *
      * @return int
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function delete($id = null)
     {
@@ -3177,9 +3140,7 @@ class Builder implements PrototypeInterface
      * Run a truncate statement on the table.
      *
      * @return void
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function truncate()
     {
@@ -3307,9 +3268,23 @@ class Builder implements PrototypeInterface
      *
      * @return $this
      */
-    public function db(string $dbname)
+    public function db(string $dbname): self
     {
         $this->db = $dbname;
+        return $this;
+    }
+
+    /**
+     * Set fetch mode
+     *
+     * @param int $mode
+     *
+     * @return $this
+     */
+    public function setFetchMode(int $mode): self
+    {
+        $this->fetchMode = $mode;
+
         return $this;
     }
 
@@ -3326,6 +3301,11 @@ class Builder implements PrototypeInterface
         // Select db name
         if (!empty($this->db)) {
             $connection->db($this->db);
+        }
+
+        // Choose this select fetch mode
+        if (!empty($this->fetchMode)) {
+            $connection->setFetchMode($this->fetchMode);
         }
 
         return $connection;

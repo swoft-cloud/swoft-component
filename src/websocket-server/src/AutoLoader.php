@@ -1,9 +1,16 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\WebSocket\Server;
 
 use Swoft\Helper\ComposerJSON;
-use Swoft\Server\Swoole\PipeMessageListener;
 use Swoft\Server\SwooleEvent;
 use Swoft\SwoftComponent;
 use Swoft\WebSocket\Server\Router\Router;
@@ -61,25 +68,28 @@ final class AutoLoader extends SwoftComponent
     public function beans(): array
     {
         return [
-            'wsServer'     => [
+            WsServerBean::SERVER     => [
                 // 'class' => WebSocketServer::class,
                 'port' => 18308,
                 'on'   => [
                     // Enable http handle
                     // SwooleEvent::REQUEST   => \bean(RequestListener::class),
-                    // WebSocket
-                    SwooleEvent::HANDSHAKE    => bean(HandshakeListener::class),
-                    SwooleEvent::MESSAGE      => bean(MessageListener::class),
-                    SwooleEvent::CLOSE        => bean(CloseListener::class),
+                    // For WebSocket
+                    SwooleEvent::HANDSHAKE => bean(HandshakeListener::class),
+                    SwooleEvent::MESSAGE   => bean(MessageListener::class),
+                    SwooleEvent::CLOSE     => bean(CloseListener::class),
                     // For handle clone connection on exist multi worker
-                    SwooleEvent::PIPE_MESSAGE => bean(PipeMessageListener::class),
+                    // SwooleEvent::PIPE_MESSAGE => bean(PipeMessageListener::class),
                 ]
             ],
-            'wsRouter'     => [
+            WsServerBean::ROUTER     => [
                 'class' => Router::class,
             ],
-            'wsDispatcher' => [
+            WsServerBean::DISPATCHER => [
                 'class' => WsDispatcher::class,
+            ],
+            WsServerBean::MANAGER    => [
+                'prefix' => 'ws'
             ],
         ];
     }

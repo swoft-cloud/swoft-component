@@ -25,7 +25,7 @@ final class Swoft
     /**
      * Swoft version
      */
-    public const VERSION = '2.0.7';
+    public const VERSION = '2.0.9';
 
     /**
      * Swoft terminal logo
@@ -120,11 +120,11 @@ final class Swoft
     }
 
     /**
-     * @see Container::getSingleton()
-     *
      * @param string $name
      *
      * @return mixed
+     * @see Container::getSingleton()
+     *
      */
     public static function getSingleton(string $name)
     {

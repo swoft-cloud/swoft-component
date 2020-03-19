@@ -13,6 +13,13 @@ use Swoft\Stdlib\Contract\Arrayable;
 interface SessionInterface extends Arrayable, JsonSerializable
 {
     /**
+     * @param array $metadata
+     *
+     * @return static
+     */
+    public static function newFromArray(array $metadata): self;
+
+    /**
      * Check if an item exists in an array using "dot" notation.
      *
      * @param string $key
@@ -36,16 +43,20 @@ interface SessionInterface extends Arrayable, JsonSerializable
      *
      * @param string $key
      * @param mixed  $value
+     *
+     * @return bool
      */
-    public function set(string $key, $value): void;
+    public function set(string $key, $value): bool;
 
     /**
      * Set multi value to context
      *
      * @param array $map
      * [key => value]
+     *
+     * @return bool
      */
-    public function setMulti(array $map): void;
+    public function setMulti(array $map): bool;
 
     /**
      * Clear resource

@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Tcp\Server;
 
@@ -83,7 +91,7 @@ class TcpDispatcher implements MiddlewareInterface
     public function dispatch(Request $request, Response $response): ResponseInterface
     {
         /** @var Protocol $protocol */
-        $protocol = Swoft::getBean('tcpServerProtocol');
+        $protocol = Swoft::getBean(TcpServerBean::PROTOCOL);
         CLog::info('Tcp protocol data packer is %s', $protocol->getPackerClass());
 
         try {
@@ -95,7 +103,7 @@ class TcpDispatcher implements MiddlewareInterface
         }
 
         /** @var Router $router */
-        $router  = Swoft::getSingleton('tcpRouter');
+        $router  = Swoft::getSingleton(TcpServerBean::ROUTER);
         $command = $package->getCmd() ?: $router->getDefaultCommand();
 
         // Match command
@@ -144,7 +152,6 @@ class TcpDispatcher implements MiddlewareInterface
      * @return ResponseInterface|Response
      * @throws CommandNotFoundException
      * @throws ReflectionException
-     * @throws Swoft\Exception\SwoftException
      */
     public function process(RequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -262,10 +269,15 @@ class TcpDispatcher implements MiddlewareInterface
 
     /**
      * @param string $middleware
+     * @param string $name
      */
-    public function addMiddleware(string $middleware): void
+    public function addMiddleware(string $middleware, string $name = ''): void
     {
-        $this->middlewares[] = $middleware;
+        if ($name) {
+            $this->middlewares[$name] = $middleware;
+        } else {
+            $this->middlewares[] = $middleware;
+        }
     }
 
     /**

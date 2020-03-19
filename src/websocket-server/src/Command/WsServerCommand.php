@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\WebSocket\Server\Command;
 
@@ -10,6 +18,7 @@ use Swoft\Server\Exception\ServerException;
 use Swoft\Server\Server;
 use Swoft\Server\SwooleEvent;
 use Swoft\WebSocket\Server\WebSocketServer;
+use Swoft\WebSocket\Server\WsServerBean;
 use Throwable;
 use function bean;
 use function input;
@@ -59,9 +68,8 @@ class WsServerCommand extends BaseServerCommand
         $info = parent::buildMainServerInfo($server);
 
         $openHttp = $server->hasListener(SwooleEvent::REQUEST);
-        $httpText = $openHttp ? 'enabled' : 'disabled';
 
-        $info['worker'] .= " (HTTP:$httpText)";
+        $info['HTTP'] = $openHttp ? 'Enabled' : 'Disabled';
         return $info;
     }
 
@@ -125,11 +133,10 @@ class WsServerCommand extends BaseServerCommand
         $command = $this->getFullCommand();
 
         /* @var WebSocketServer $server */
-        $server = bean('wsServer');
+        $server = bean(WsServerBean::SERVER);
         $server->setScriptFile($script);
         $server->setFullCommand($command);
 
         return $server;
     }
 }
-

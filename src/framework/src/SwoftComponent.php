@@ -32,6 +32,7 @@ abstract class SwoftComponent implements ComponentInterface
      *  'description' => 'description for the component',
      *  'homepage'    => 'https://github.com/inhere/some-component',
      * ]
+     *
      * @var array
      */
     private $metadata;

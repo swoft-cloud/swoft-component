@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\WebSocket\Server\Unit;
 
@@ -8,6 +16,7 @@ use Swoft\Http\Message\Response;
 use Swoft\Session\Session;
 use Swoft\WebSocket\Server\Connection;
 use Swoft\WebSocket\Server\WebSocketServer;
+use SwoftTest\Testing\Concern\CommonTestAssertTrait;
 use SwoftTest\WebSocket\Server\Testing\MockHttpRequest;
 use SwoftTest\WebSocket\Server\Testing\MockHttpResponse;
 use SwoftTest\WebSocket\Server\Testing\MockWsServer;
@@ -19,6 +28,8 @@ use SwoftTest\WebSocket\Server\Testing\MockWsServer;
  */
 abstract class WsServerTestCase extends TestCase
 {
+    use CommonTestAssertTrait;
+
     /**
      * @var MockWsServer
      */
@@ -50,9 +61,10 @@ abstract class WsServerTestCase extends TestCase
      */
     protected function mockHttpRequest(int $fd = 1, string $path = '/'): Request
     {
-        $req     = MockHttpRequest::new([
+        $req = MockHttpRequest::new([
             'request_uri' => $path,
         ]);
+
         $req->fd = $fd;
 
         return Request::new($req);

@@ -1,12 +1,9 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Db;
 
 use Swoft\Stdlib\Collection;
 use Swoft\Db\Query\Expression;
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 
 /**
  * Class Grammar
@@ -40,8 +37,6 @@ abstract class Grammar
      * @param Expression|string $table
      *
      * @return string
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function wrapTable($table)
     {
@@ -59,8 +54,6 @@ abstract class Grammar
      * @param bool              $prefixAlias
      *
      * @return string
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     public function wrap($value, $prefixAlias = false)
     {
@@ -85,8 +78,6 @@ abstract class Grammar
      * @param bool   $prefixAlias
      *
      * @return string
-     * @throws ReflectionException
-     * @throws ContainerException
      */
     protected function wrapAliasedValue($value, $prefixAlias = false)
     {
@@ -179,7 +170,7 @@ abstract class Grammar
      *
      * @return string
      */
-    public function quoteString($value)
+    public function quoteString($value): string
     {
         if (is_array($value)) {
             return implode(', ', array_map([$this, __FUNCTION__], $value));
@@ -217,7 +208,7 @@ abstract class Grammar
      *
      * @return string
      */
-    public function getDateFormat()
+    public function getDateFormat(): string
     {
         return 'Y-m-d H:i:s';
     }
@@ -227,7 +218,7 @@ abstract class Grammar
      *
      * @return string
      */
-    public function getTablePrefix()
+    public function getTablePrefix(): string
     {
         return $this->tablePrefix;
     }

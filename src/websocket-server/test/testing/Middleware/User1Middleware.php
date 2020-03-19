@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\WebSocket\Server\Testing\Middleware;
 
@@ -23,10 +31,10 @@ class User1Middleware implements MiddlewareInterface
      */
     public function process(RequestInterface $request, MessageHandlerInterface $handler): ResponseInterface
     {
-        $start = '>user1 ';
+        $start = '>USER1 ';
 
         $resp = $handler->handle($request);
 
-        return $resp->setData($start . $resp->getData() . ' user1>');
+        return $resp->setData($start . $resp->getData() . ' USER1>');
     }
 }

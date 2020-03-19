@@ -2,13 +2,9 @@
 /** For Swoole coroutine tests */
 
 use PHPUnit\TextUI\Command;
+use Swoft\Stdlib\Helper\Sys;
 use Swoole\Coroutine;
-use Swoole\ExitException;
-
-Coroutine::set([
-    'log_level'   => SWOOLE_LOG_INFO,
-    'trace_flags' => 0
-]);
+use Swoole\Process;
 
 /*
  * This file is part of PHPUnit.
@@ -19,15 +15,9 @@ Coroutine::set([
  * file that was distributed with this source code.
  */
 if (version_compare('7.1.0', PHP_VERSION, '>')) {
-    fwrite(
-        STDERR,
-        sprintf(
-            'This version of PHPUnit is supported on PHP 7.1 and PHP 7.2.' . PHP_EOL .
-            'You are using PHP %s (%s).' . PHP_EOL,
-            PHP_VERSION,
-            PHP_BINARY
-        )
-    );
+    fwrite(STDERR,
+        sprintf('This version of PHPUnit is supported on PHP 7.1 and PHP 7.2.' . PHP_EOL . 'You are using PHP %s (%s).' . PHP_EOL,
+            PHP_VERSION, PHP_BINARY));
     die(1);
 }
 
@@ -37,11 +27,10 @@ if (!ini_get('date.timezone')) {
 
 // add loader file
 foreach ([
-             __DIR__ . '/../../autoload.php',
-             __DIR__ . '/../vendor/autoload.php',
-             __DIR__ . '/vendor/autoload.php'
-         ] as $__loader_file
-) {
+    __DIR__ . '/../../autoload.php',
+    __DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/vendor/autoload.php'
+] as $__loader_file) {
     if (file_exists($__loader_file)) {
         define('PHPUNIT_COMPOSER_INSTALL', $__loader_file);
         break;
@@ -49,27 +38,14 @@ foreach ([
 }
 
 if (!defined('PHPUNIT_COMPOSER_INSTALL')) {
-    fwrite(
-        STDERR,
-        'You need to set up the project dependencies using Composer:' . PHP_EOL . PHP_EOL .
-        '        composer install' . PHP_EOL . PHP_EOL .
-        'You can learn all about Composer on https://getcomposer.org/.' . PHP_EOL
-    );
-    die(1);
-}
+    $tips = <<<TXT
+You need to set up the project dependencies using Composer:
+    composer install
+You can learn all about Composer on https://getcomposer.org/
+TXT;
 
-if (array_reverse(explode('/', __DIR__))[0] ?? '' === 'tests') {
-    $vendor_dir = dirname(PHPUNIT_COMPOSER_INSTALL);
-    $bin_unit   = "{$vendor_dir}/bin/phpunit";
-    $unit_uint  = "{$vendor_dir}/phpunit/phpunit/phpunit";
-    if (file_exists($bin_unit)) {
-        @unlink($bin_unit);
-        @symlink(__FILE__, $bin_unit);
-    }
-    if (file_exists($unit_uint)) {
-        @unlink($unit_uint);
-        @symlink(__FILE__, $unit_uint);
-    }
+    fwrite(STDERR, $tips . PHP_EOL);
+    die(1);
 }
 
 if (!in_array('-c', $_SERVER['argv'], true)) {
@@ -80,16 +56,22 @@ if (!in_array('-c', $_SERVER['argv'], true)) {
 require PHPUNIT_COMPOSER_INSTALL;
 
 $status = 0;
+
+Coroutine::set([
+    'log_level'   => SWOOLE_LOG_INFO,
+    'trace_flags' => 0
+]);
 \Swoft\Co::run(function () {
     // Status
     global $status;
 
     try {
         $status = Command::main(false);
-    } catch (ExitException $e) {
+    } catch (Throwable $e) {
         $status = $e->getCode();
-        echo 'ExitException: ' .$e->getMessage(), "\n";
+        echo 'ExitException: ' . $e->getMessage(), "\n";
     }
 });
+
 
 exit($status);

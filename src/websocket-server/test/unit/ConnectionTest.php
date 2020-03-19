@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\WebSocket\Server\Unit;
 
@@ -49,8 +57,7 @@ class ConnectionTest extends WsServerTestCase
         $conn1 = Session::mustGet();
         $this->assertSame($conn, $conn1);
 
-        Session::destroy($sid);
-
+        $this->rmConnection($sid);
         $this->assertFalse(Session::has($sid));
     }
 }

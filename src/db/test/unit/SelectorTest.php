@@ -1,10 +1,7 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Db\Unit;
 
-use ReflectionException;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\DB;
 use Swoft\Db\Exception\DbException;
 use SwoftTest\Db\Testing\Entity\Count2;
@@ -18,8 +15,6 @@ use SwoftTest\Db\Testing\Entity\User;
 class SelectorTest extends TestCase
 {
     /**
-     * @throws ReflectionException
-     * @throws ContainerException
      * @throws DbException
      */
     public function testSelector()
@@ -36,9 +31,7 @@ class SelectorTest extends TestCase
     }
 
     /**
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function testModelSelect()
     {
@@ -59,9 +52,7 @@ class SelectorTest extends TestCase
     }
 
     /**
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function testQuerySelect()
     {
@@ -79,9 +70,7 @@ class SelectorTest extends TestCase
     }
 
     /**
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function testDbSelect()
     {

@@ -17,15 +17,15 @@ use Swoft\Validator\Exception\ValidatorException;
 class UrlRule implements RuleInterface
 {
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $propertyName
      * @param object $item
-     * @param null $default
+     * @param null   $default
      *
      * @return array
      * @throws ValidatorException
      */
-    public function validate(array $data, string $propertyName, $item, $default = null): array
+    public function validate(array $data, string $propertyName, $item, $default = null, $strict = false): array
     {
         $value = $data[$propertyName];
         if (filter_var($value, FILTER_VALIDATE_URL)) {

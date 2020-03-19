@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Tcp\Server;
 
@@ -86,8 +94,9 @@ class TcpErrorDispatcher
      */
     private function defaultHandle(string $typeName, Throwable $e): void
     {
-        Log::error($e->getMessage());
-        CLog::error("Tcp %s Error(no handler, %s): %s\nAt File %s line %d\nTrace:\n%s", $typeName, get_class($e),
-            $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString());
+        Log::error($msg = $e->getMessage());
+
+        $logFormat = "Tcp %s Error(no handler, %s): %s\nAt File %s line %d\nTrace:\n%s";
+        CLog::error($logFormat, $typeName, get_class($e), $msg, $e->getFile(), $e->getLine(), $e->getTraceAsString());
     }
 }

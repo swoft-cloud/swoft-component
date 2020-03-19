@@ -71,11 +71,9 @@ class Router implements RouterInterface
      *  // route ID => route info.
      *  'group:cmd' => [
      *      'handler'  => [group class, command method],
-     *      'metadata' => [
-     *          'aliases'   => [],
-     *          'options'   => [],
-     *          'arguments' => [],
-     *      ],
+     *      'aliases'   => [],
+     *      'options'   => [],
+     *      'arguments' => [],
      *  ]
      * ]
      */
@@ -148,7 +146,7 @@ class Router implements RouterInterface
     /**
      * Match route by input command
      *
-     * @param array $params [$route]
+     * @param string $inputCmd
      *
      * @return array
      *
@@ -156,10 +154,10 @@ class Router implements RouterInterface
      *  status, info(array)
      * ]
      */
-    public function match(...$params): array
+    public function match(string $inputCmd): array
     {
         $delimiter = $this->delimiter;
-        $inputCmd  = trim($params[0], "$delimiter ");
+        $inputCmd  = trim($inputCmd, "$delimiter ");
         $noSepChar = strpos($inputCmd, $delimiter) === false;
 
         // If is full command ID
@@ -181,12 +179,11 @@ class Router implements RouterInterface
             $group   = $this->defaultGroup;
             $command = $this->resolveCommandAlias($inputCmd);
 
-            // Only a group name
+            // Only an group name
         } elseif ($noSepChar) {
             $group = $this->resolveGroupAlias($inputCmd);
-
             if (isset($this->groups[$group])) {
-                return [self::ONLY_GROUP, ['group' => $group]];
+                return [self::ONLY_GROUP, ['group' => $group, 'cmd' => '']];
             }
 
             return [self::NOT_FOUND];
@@ -216,8 +213,12 @@ class Router implements RouterInterface
             return [self::FOUND, $info];
         }
 
+        // Group is valid, but command is error
         if ($group && isset($this->groups[$group])) {
-            return [self::ONLY_GROUP, ['group' => $group]];
+            return [self::ONLY_GROUP, [
+                'group' => $group,
+                'cmd'   => $command
+            ]];
         }
 
         return [self::NOT_FOUND];

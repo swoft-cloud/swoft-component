@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Task;
-
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
@@ -77,7 +75,6 @@ class Request implements RequestInterface
      */
     private $ext = [];
 
-
     /**
      * @param Server     $server
      * @param SwooleTask $task
@@ -94,7 +91,7 @@ class Request implements RequestInterface
         $instance->srcWorkerId = $task->worker_id;
         $instance->data        = $task->data;
         $instance->task        = $task;
-        $instance->taskUniqid  = Task::getUniqid($task->id);
+        $instance->taskUniqid  = Task::getUniqId($task->id);
 
         [
             $instance->type,

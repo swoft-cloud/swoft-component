@@ -18,25 +18,25 @@ use Swoft\Validator\Exception\ValidatorException;
 class AfterDateRule implements RuleInterface
 {
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $propertyName
      * @param object $item
-     * @param null $default
+     * @param null   $default
      *
      * @return array
      * @throws ValidatorException
      */
-    public function validate(array $data, string $propertyName, $item, $default = null): array
+    public function validate(array $data, string $propertyName, $item, $default = null, $strict = false): array
     {
         /* @var AfterDate $item */
-        $date = $item->getDate();
+        $date  = $item->getDate();
         $value = $data[$propertyName];
         if (is_string($value)) {
             $dt = DateTime::createFromFormat("Y-m-d H:i:s", $value);
-            if (($dt !== false && !array_sum($dt::getLastErrors())) && strtotime($value)>=strtotime($date)) {
+            if (($dt !== false && !array_sum($dt::getLastErrors())) && strtotime($value) >= strtotime($date)) {
                 return $data;
             } elseif (ctype_digit($value)) {
-                if (date('Y-m-d', (int)$value) && $value>=strtotime($date)) {
+                if (date('Y-m-d', (int)$value) && $value >= strtotime($date)) {
                     return $data;
                 }
             }

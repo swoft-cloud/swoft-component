@@ -1,6 +1,7 @@
 <?php
 // vendor at component dir
 if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
+    /** @noinspection PhpIncludeInspection */
     require dirname(__DIR__) . '/vendor/autoload.php';
     // application's vendor
 } elseif (file_exists(dirname(__DIR__, 3) . '/vendor/autoload.php')) {
@@ -33,17 +34,15 @@ if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
 use Swoft\Annotation\AnnotationRegister;
 use Swoft\Bean\BeanFactory;
 
-AnnotationRegister::load(
-    [
-        'onlyNamespaces' => [
-            'SwoftTest\\Bean\\Testing\\',
-            'Swoft\\Bean\\',
-            'Swoft\\Annotation\\',
-        ],
-    ]
-);
+AnnotationRegister::load([
+    'onlyNamespaces' => [
+        'SwoftTest\\Bean\\Testing\\',
+        'Swoft\\Bean\\',
+        'Swoft\\Annotation\\',
+    ],
+]);
 
-$definitions = require 'testing/bean.php';
+$definitions = require 'bean.php';
 $parsers     = AnnotationRegister::getParsers();
 $annotations = AnnotationRegister::getAnnotations();
 

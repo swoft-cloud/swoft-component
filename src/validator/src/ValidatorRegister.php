@@ -5,10 +5,11 @@ namespace Swoft\Validator;
 
 use ReflectionClass;
 use ReflectionException;
-use function sprintf;
+use Swoft\Validator\Annotation\Mapping\Required;
 use Swoft\Validator\Annotation\Mapping\Type;
 use Swoft\Validator\Contract\ValidatorInterface;
 use Swoft\Validator\Exception\ValidatorException;
+use function sprintf;
 
 /**
  * Class ValidatorRegister
@@ -115,18 +116,20 @@ class ValidatorRegister
     public static function registerValidatorItem(string $className, string $propertyName, $objAnnotation): void
     {
         if (!isset(self::$validatorClasses[$className])) {
-            throw new ValidatorException(
-                sprintf('%s must be define class `@Validate()`', get_class($objAnnotation))
-            );
+            throw new ValidatorException(sprintf('%s must be define class `@Validate()`', get_class($objAnnotation)));
         }
 
         $validateName = self::$validatorClasses[$className];
 
         $type = self::$validators[$validateName]['properties'][$propertyName]['type'] ?? [];
         if (!empty($type) && $objAnnotation instanceof Type) {
-            throw new ValidatorException(
-                sprintf('Only one `@XxxType` can be defined(propterty=%s)!', $propertyName)
-            );
+            throw new ValidatorException(sprintf('Only one `@XxxType` can be defined(propterty=%s)!', $propertyName));
+        }
+
+        self::$validators[$validateName]['properties'][$propertyName]['required'] = false;
+
+        if ($objAnnotation instanceof Required) {
+            self::$validators[$validateName]['properties'][$propertyName]['required'] = true;
         }
 
         if ($objAnnotation instanceof Type) {
@@ -158,9 +161,8 @@ class ValidatorRegister
             foreach ($properties as $propName => $propValues) {
                 $type = $propValues['type'] ?? null;
                 if (empty($type)) {
-                    throw new ValidatorException(
-                        sprintf('Property(%s->%s) must be define `@XxxType`', $className, $propName)
-                    );
+                    throw new ValidatorException(sprintf('Property(%s->%s) must be define `@XxxType`', $className,
+                            $propName));
                 }
             }
         }

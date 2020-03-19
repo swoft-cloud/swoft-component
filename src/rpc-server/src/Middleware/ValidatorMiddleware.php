@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Server\Middleware;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
@@ -34,8 +33,7 @@ class ValidatorMiddleware implements MiddlewareInterface
     public function process(RequestInterface $request, RequestHandlerInterface $requestHandler): ResponseInterface
     {
         [$status, $className] = $request->getAttribute(Request::ROUTER_ATTRIBUTE);
-
-        if ($status != Router::FOUND) {
+        if ($status !== Router::FOUND) {
             return $requestHandler->handle($request);
         }
 

@@ -6,12 +6,11 @@ use Swoft\Processor\Processor;
 
 /**
  * Swoft interface
+ *
  * @since 2.0
  */
 interface SwoftInterface
 {
-    public const VERSION = '1.0.0';
-
     /**
      * Get env name
      *

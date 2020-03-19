@@ -19,17 +19,17 @@ use Swoft\Validator\Exception\ValidatorException;
 class FileRule implements RuleInterface
 {
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $propertyName
      * @param object $item
-     * @param null $default
+     * @param null   $default
      *
      * @return array
      * @throws ValidatorException
      */
-    public function validate(array $data, string $propertyName, $item, $default = null): array
+    public function validate(array $data, string $propertyName, $item, $default = null, $strict = false): array
     {
-        $request = Context::mustGet()->getRequest();
+        $request     = Context::mustGet()->getRequest();
         $filesFields = $request->getUploadedFiles();
 
         /* @var File $item */
@@ -39,7 +39,7 @@ class FileRule implements RuleInterface
             $message = (empty($message)) ? sprintf('%s must exist!', $propertyName) : $message;
             throw new ValidatorException($message);
         }
-        if (isset($data[$propertyName])) {
+        if (!isset($data[$propertyName])) {
             throw new ValidatorException($message);
         }
         foreach ($filesFields as $key => $field) {

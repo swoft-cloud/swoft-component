@@ -28,7 +28,7 @@ class LengthRule implements RuleInterface
      * @return array
      * @throws ValidatorException
      */
-    public function validate(array $data, string $propertyName, $item, $default = null): array
+    public function validate(array $data, string $propertyName, $item, $default = null, $strict = false): array
     {
         /* @var Length $item */
         $min = $item->getMin();
@@ -40,8 +40,8 @@ class LengthRule implements RuleInterface
         }
 
         $message = $item->getMessage();
-        $message = (empty($message)) ? sprintf('%s is invalid length(min=%d, max=%d)', $propertyName, $min,
-            $max) : $message;
+        $message = (empty($message)) ? sprintf('%s is invalid length(min=%d, max=%d)', $propertyName, $min, $max) :
+            $message;
 
         throw new ValidatorException($message);
     }

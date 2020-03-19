@@ -13,10 +13,15 @@ class ValidateType
     /**
      * Get query params
      */
-    public  const GET = 'get';
+    public const GET = 'get';
 
     /**
      * Post form and body
      */
     public const BODY = 'body';
+
+    /**
+     * Route path params
+     */
+    public const PATH = 'path';
 }

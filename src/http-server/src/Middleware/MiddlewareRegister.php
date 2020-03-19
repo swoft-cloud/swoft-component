@@ -103,7 +103,7 @@ class MiddlewareRegister
             $methodMiddlewares     = $middlewares['methods'] ?? [];
 
             foreach ($methodMiddlewares as $methodName => $oneMethodMiddlewares) {
-                if (!empty($oneMethodMiddlewares) || !empty($oneMethodMiddlewares)) {
+                if (!empty($oneMethodMiddlewares)) {
                     $allMiddlewares = array_merge($controllerMiddlewares, $oneMethodMiddlewares);
 
                     self::$handlerMiddlewares[$className][$methodName] = array_unique($allMiddlewares);

@@ -77,7 +77,7 @@ class RouteRegister
                 $path    = $routePath[0] === '/' ? $routePath : $prefix . '/' . $routePath;
                 $handler = $class . '@' . $route['action'];
 
-                $router->map($route['method'], $path, $handler, $route['params']);
+                $router->map($route['method'], $path, $handler, $route['params'], ['name' => $route['name']]);
             }
         }
     }

@@ -2,17 +2,24 @@
 
 namespace Swoft\Validator;
 
+use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\BeanFactory;
 use Swoft\Validator\Annotation\Mapping\IsBool;
 use Swoft\Validator\Annotation\Mapping\IsFloat;
 use Swoft\Validator\Annotation\Mapping\IsInt;
 use Swoft\Validator\Annotation\Mapping\IsString;
+use Swoft\Validator\Annotation\Mapping\Required;
 use Swoft\Validator\Annotation\Mapping\ValidateType;
 use Swoft\Validator\Contract\RuleInterface;
 use Swoft\Validator\Contract\ValidatorInterface;
 use Swoft\Validator\Exception\ValidatorException;
+use function get_class;
+use function in_array;
 use function sprintf;
+use function strlen;
+use function strpos;
+use function substr;
 
 /**
  * Class Validator
@@ -23,6 +30,13 @@ use function sprintf;
  */
 class Validator
 {
+    /**
+     * Strict Model
+     *
+     * @var bool
+     */
+    protected $strict = false;
+
     /***
      * @param array  $data
      * @param string $validatorName
@@ -49,12 +63,10 @@ class Validator
         $validator = ValidatorRegister::getValidator($validatorName);
 
         if (empty($validator)) {
-            throw new ValidatorException(
-                sprintf('Validator(%s) is not exist!', $validatorName)
-            );
+            throw new ValidatorException(sprintf('Validator(%s) is not exist!', $validatorName));
         }
 
-        $data = $this->validateValidator($data, $type, $validatorName, [], $validator, $fields, $unfields);
+        $data = $this->doValidate($data, $type, $validatorName, [], $validator, $fields, $unfields);
         if (empty($userValidators)) {
             return $data;
         }
@@ -68,14 +80,12 @@ class Validator
             $validator = ValidatorRegister::getValidator($userValidator);
 
             // Check type
-            $type = $validator['type'];
-            if ($type != ValidatorRegister::TYPE_USER) {
-                throw new ValidatorException(
-                    sprintf('Validator(%s) is user validator!', $userValidator)
-                );
+            $type = (int)$validator['type'];
+            if ($type !== ValidatorRegister::TYPE_USER) {
+                throw new ValidatorException(sprintf('Validator(%s) is user validator!', $userValidator));
             }
 
-            $data = $this->validateValidator($data, $type, $userValidator, $params, $validator, $fields, $unfields);
+            $data = $this->doValidate($data, $type, $userValidator, $params, $validator, $fields, $unfields);
         }
 
         return $data;
@@ -85,19 +95,18 @@ class Validator
      * @param array $body
      * @param array $validates
      * @param array $query
+     * @param array $path
      *
      * @return array
      * @throws ValidatorException
      */
-    public function validateRequest(array $body, array $validates, array $query = []): array
+    public function validateRequest(array $body, array $validates, array $query = [], array $path = []): array
     {
-        foreach ($validates as $validateName => $validate) {
-            $validator = ValidatorRegister::getValidator($validateName);
+        foreach ($validates as $name => $validate) {
+            $validator = ValidatorRegister::getValidator($name);
 
             if (empty($validator)) {
-                throw new ValidatorException(
-                    sprintf('Validator(%s) is not exist!', $validateName)
-                );
+                throw new ValidatorException(sprintf('Validator(%s) is not exist!', $name));
             }
 
             $type     = $validator['type'];
@@ -108,15 +117,21 @@ class Validator
             $validateType = $validate['type'];
 
             // Get query params
-            if ($validateType == ValidateType::GET) {
-                $query = $this->validateValidator($query, $type, $validateName, $params, $validator, $fields,
-                    $unfields);
+            if ($validateType === ValidateType::GET) {
+                $query = $this->doValidate($query, $type, $name, $params, $validator, $fields, $unfields);
                 continue;
             }
 
-            $body = $this->validateValidator($body, $type, $validateName, $params, $validator, $fields, $unfields);
+            // Route path params
+            if ($validateType === ValidateType::PATH) {
+                $path = $this->doValidate($path, $type, $name, $params, $validator, $fields, $unfields);
+                continue;
+            }
+
+            $body = $this->doValidate($body, $type, $name, $params, $validator, $fields, $unfields);
         }
-        return [$body, $query];
+
+        return [$body, $query, $path];
     }
 
     /**
@@ -132,7 +147,7 @@ class Validator
      * @return array
      * @throws ValidatorException
      */
-    protected function validateValidator(
+    protected function doValidate(
         array $data,
         int $type,
         string $validateName,
@@ -142,7 +157,7 @@ class Validator
         array $unfields = []
     ): array {
         // User validator
-        if ($type == ValidatorRegister::TYPE_USER) {
+        if ($type === ValidatorRegister::TYPE_USER) {
             return $this->validateUserValidator($validateName, $data, $params);
         }
 
@@ -162,12 +177,16 @@ class Validator
     {
         $properties = $validator['properties'] ?? [];
         foreach ($properties as $propName => $property) {
-            if (!empty($fields) && !in_array($propName, $fields)) {
+            if (!empty($fields) && !in_array($propName, $fields, true)) {
+                continue;
+            }
+
+            if (!isset($data[$propName]) && !$property['required'] && !isset($property['type']['default'])) {
                 continue;
             }
 
             // Unfields
-            if (in_array($propName, $unfields)) {
+            if (in_array($propName, $unfields, true)) {
                 continue;
             }
 
@@ -185,6 +204,9 @@ class Validator
             // Default validate item(Type) and other item
             $data = $this->validateDefaultItem($data, $propName, $type, $default);
             foreach ($annotations as $annotation) {
+                if ($annotation instanceof Required) {
+                    continue;
+                }
                 $data = $this->validateDefaultItem($data, $propName, $annotation);
             }
         }
@@ -204,9 +226,15 @@ class Validator
     {
         $itemClass = get_class($item);
 
+        //support i18n
+        $msg    = $item->getMessage();
+        $msgLen = strlen($msg) - 1;
+        if (strpos($msg, '{') === 0 && strrpos($msg, '}') === $msgLen) {
+            $item->setMessage(Swoft::t(substr($msg, 1, -1)));
+        }
         /* @var RuleInterface $rule */
         $rule = BeanFactory::getBean($itemClass);
-        $data = $rule->validate($data, $propName, $item, $default);
+        $data = $rule->validate($data, $propName, $item, $default, $this->strict);
         return $data;
     }
 
@@ -222,9 +250,8 @@ class Validator
     {
         $validator = BeanFactory::getBean($validateName);
         if (!$validator instanceof ValidatorInterface) {
-            throw new ValidatorException(
-                sprintf('User validator(%s) must instance of ValidatorInterface', $validateName)
-            );
+            throw new ValidatorException(sprintf('User validator(%s) must instance of ValidatorInterface',
+                    $validateName));
         }
 
         return $validator->validate($data, $params);

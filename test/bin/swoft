@@ -1,0 +1,16 @@
+#!/usr/bin/env php
+<?php
+
+// Disable run test application
+define('RUN_TEST_APP', false);
+
+// Bootstrap
+require dirname(__DIR__) . '/bootstrap.php';
+
+// Run application
+$base = dirname(__DIR__);
+$app  = new \SwoftTest\Testing\TestApplication($base, [
+    'startConsole' => true,
+]);
+
+$app->run();

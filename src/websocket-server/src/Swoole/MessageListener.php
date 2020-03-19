@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\WebSocket\Server\Swoole;
 
@@ -67,7 +75,8 @@ class MessageListener implements MessageInterface
             Swoft::trigger(WsServerEvent::MESSAGE_RECEIVE, $fd, $server, $frame);
 
             /** @var Connection $conn */
-            $conn = Session::current();
+            // $conn = Session::current();
+            $conn = Connection::current();
             $info = $conn->getModuleInfo();
 
             // Want custom message handle, will don't trigger message parse and dispatch.
@@ -86,7 +95,9 @@ class MessageListener implements MessageInterface
                 Swoft::trigger(WsServerEvent::MESSAGE_RESPONSE, $response);
 
                 // Do send response
-                $response->send();
+                if (!$response->isEmpty()) {
+                    $response->send();
+                }
             }
 
             // Trigger message after event
@@ -100,8 +111,11 @@ class MessageListener implements MessageInterface
 
             // Do error dispatching
             $response = $errDispatcher->messageError($e, $frame, $response);
+
             // Do send response
-            $response->send();
+            if (!$response->isEmpty()) {
+                $response->send();
+            }
         } finally {
             // Defer event
             Swoft::trigger(SwoftEvent::COROUTINE_DEFER);

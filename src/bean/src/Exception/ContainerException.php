@@ -2,7 +2,6 @@
 
 namespace Swoft\Bean\Exception;
 
-
 use Exception;
 use Psr\Container\ContainerExceptionInterface;
 

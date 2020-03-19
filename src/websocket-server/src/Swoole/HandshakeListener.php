@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\WebSocket\Server\Swoole;
 
@@ -19,6 +27,7 @@ use Swoft\WebSocket\Server\Contract\WsModuleInterface;
 use Swoft\WebSocket\Server\Helper\WsHelper;
 use Swoft\WebSocket\Server\WsDispatcher;
 use Swoft\WebSocket\Server\WsErrorDispatcher;
+use Swoft\WebSocket\Server\WsServerBean;
 use Swoft\WebSocket\Server\WsServerEvent;
 use Swoole\Coroutine;
 use Swoole\Http\Request;
@@ -68,14 +77,16 @@ class HandshakeListener implements HandshakeInterface
         // Initialize psr7 Request and Response
         $psr7Req  = Psr7Request::new($request);
         $psr7Res  = Psr7Response::new($response);
-        $wsServer = Swoft::getBean('wsServer');
+        $wsServer = Swoft::getBean(WsServerBean::SERVER);
+        $manager  = Swoft::getBean(WsServerBean::MANAGER);
 
         // Initialize connection session and context
         $ctx  = WsHandshakeContext::new($psr7Req, $psr7Res);
         $conn = Connection::new($wsServer, $psr7Req, $psr7Res);
 
-        // Bind connection and bind cid => sid(fd)
-        Session::set($sid, $conn);
+        // Storage connection and bind cid => sid(fd)
+        // old: Session::set($sid, $conn);
+        $manager->set($sid, $conn);
         // Storage context
         Context::set($ctx);
 
@@ -101,6 +112,8 @@ class HandshakeListener implements HandshakeInterface
             // Response handshake successfully
             $meta = $conn->getMetadata();
             $conn->setHandshake(true);
+            // NOTICE: must sync connection data to storage
+            $manager->set($sid, $conn);
             $psr7Res->quickSend();
 
             $wsServer->log("Handshake: conn#{$fd} handshake successful! meta:", $meta, 'debug');
@@ -121,6 +134,9 @@ class HandshakeListener implements HandshakeInterface
 
             $psr7Res = $errDispatcher->handshakeError($e, $psr7Res);
             $psr7Res->quickSend();
+
+            // Should clear session data on handshake fail
+            $manager->destroy($sid);
         } finally {
             // Defer
             Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
@@ -172,7 +188,7 @@ class HandshakeListener implements HandshakeInterface
             Swoft::trigger(WsServerEvent::OPEN_AFTER, $fd, $server, $request);
         } catch (Throwable $e) {
             Swoft::trigger(WsServerEvent::OPEN_ERROR, $e, $request);
-
+            \vdump($e);
             /** @var WsErrorDispatcher $errDispatcher */
             $errDispatcher = BeanFactory::getSingleton(WsErrorDispatcher::class);
             $errDispatcher->openError($e, $request);

@@ -21,6 +21,7 @@ use Swoole\Coroutine;
 use Swoole\Process;
 use Swoole\Runtime;
 use Swoole\Server as CoServer;
+use function strpos;
 use function swoole_cpu_num;
 use Throwable;
 use function alias;
@@ -36,6 +37,7 @@ use function get_class;
 use function range;
 use function sprintf;
 use function srun;
+use function trim;
 use function ucfirst;
 use const SWOOLE_PROCESS;
 use const SWOOLE_SOCK_TCP;
@@ -830,8 +832,6 @@ abstract class Server implements ServerInterface
 
     /**
      * Quick restart
-     *
-     * @throws Swoft\Exception\SwoftException
      */
     public function restart(): void
     {
@@ -906,7 +906,7 @@ abstract class Server implements ServerInterface
      *
      * @return bool
      */
-    public function stopWorker(int $workerId = -1, bool $waitEvent = false): bool
+    public function stopWorker(int $workerId, bool $waitEvent = false): bool
     {
         if ($workerId > -1 && $this->swooleServer) {
             return $this->swooleServer->stop($workerId, $waitEvent);
@@ -956,8 +956,9 @@ abstract class Server implements ServerInterface
             $tid = Co::tid();
             $cid = Co::id();
             $wid = $this->getPid('workerId');
+            $pid = $this->getPid('workerPid');
 
-            Console::log("[WorkerId:$wid, TID:$tid, CID:$cid] " . $msg, $data, $type);
+            Console::log("[WID:$wid, PID:$pid, TID:$tid, CID:$cid] " . $msg, $data, $type);
         }
     }
 
@@ -971,24 +972,32 @@ abstract class Server implements ServerInterface
         $pidFile = alias($this->pidFile);
 
         // Is pid file exist ?
-        if (file_exists($pidFile)) {
-            // Get pid file content and parse the content
-            $pidFile = file_get_contents($pidFile);
-
-            // Parse and record PIDs
-            [$masterPID, $managerPID] = explode(',', $pidFile);
-            // Format type
-            $masterPID  = (int)$masterPID;
-            $managerPID = (int)$managerPID;
-
-            $this->pidMap['masterPid']  = $masterPID;
-            $this->pidMap['managerPid'] = $managerPID;
-
-            // Notice: skip pid 1, resolve start server on docker.
-            return $masterPID > 1 && Process::kill($masterPID, 0);
+        if (!file_exists($pidFile)) {
+            return false;
         }
 
-        return false;
+        // Get pid file content and parse the content
+        $content = (string)file_get_contents($pidFile);
+        if (!$content = trim($content, ', ')) {
+            return false;
+        }
+
+        // Content is valid
+        if (strpos($content, ',') === false) {
+            return false;
+        }
+
+        // Parse and record PIDs
+        [$masterPID, $managerPID] = explode(',', $content, 2);
+        // Format type
+        $masterPID  = (int)$masterPID;
+        $managerPID = (int)$managerPID;
+
+        $this->pidMap['masterPid']  = $masterPID;
+        $this->pidMap['managerPid'] = $managerPID;
+
+        // Notice: skip pid 1, resolve start server on docker.
+        return $masterPID > 1 && Process::kill($masterPID, 0);
     }
 
     /**

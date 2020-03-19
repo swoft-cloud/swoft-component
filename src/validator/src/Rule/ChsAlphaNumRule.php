@@ -17,26 +17,26 @@ use Swoft\Validator\Exception\ValidatorException;
 class ChsAlphaNumRule implements RuleInterface
 {
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $propertyName
      * @param object $item
-     * @param null $default
+     * @param null   $default
      *
      * @return array
      * @throws ValidatorException
      */
-    public function validate(array $data, string $propertyName, $item, $default = null): array
+    public function validate(array $data, string $propertyName, $item, $default = null, $strict = false): array
     {
         $value = $data[$propertyName];
-        $rule = '/^[\x{4e00}-\x{9fa5}a-zA-Z0-9]+$/u';
+        $rule  = '/^[\x{4e00}-\x{9fa5}a-zA-Z0-9]+$/u';
         if (preg_match($rule, $value)) {
             return $data;
         }
 
         /* @var ChsAlphaNum $item */
         $message = $item->getMessage();
-        $message = (empty($message)) ? sprintf('%s must be Chinese characters  alpha or number',
-            $propertyName) : $message;
+        $message = (empty($message)) ? sprintf('%s must be Chinese characters  alpha or number', $propertyName) :
+            $message;
 
         throw new ValidatorException($message);
     }

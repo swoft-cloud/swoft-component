@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\WebSocket\Server\Unit\Message;
 
@@ -16,6 +24,7 @@ class ResponseTest extends TestCase
 
         $this->assertSame(22, $w->getFd());
         $this->assertSame(22, $w->getSender());
+        $this->assertSame(1, $w->getFinish());
 
         $w
             ->setFd(33)
@@ -28,6 +37,7 @@ class ResponseTest extends TestCase
         $this->assertSame(7, $w->getOpcode());
         $this->assertFalse($w->isSent());
         $this->assertFalse($w->isFinish());
+        $this->assertSame(0, $w->getFinish());
 
         $this->assertFalse($w->isSendToAll());
         $w->toAll();

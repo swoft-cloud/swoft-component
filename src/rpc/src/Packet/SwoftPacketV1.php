@@ -1,12 +1,8 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Packet;
 
-
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Rpc\Error;
 use Swoft\Rpc\Protocol;
 use Swoft\Rpc\Response;
@@ -25,7 +21,6 @@ class SwoftPacketV1 extends AbstractPacket
      * @param Protocol $protocol
      *
      * @return string
-     * @throws \Swoft\Exception\SwoftException
      */
     public function encode(Protocol $protocol): string
     {

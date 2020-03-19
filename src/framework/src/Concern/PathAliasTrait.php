@@ -14,7 +14,7 @@ use function str_replace;
 trait PathAliasTrait
 {
     /**
-     * Aliases
+     * Path aliases
      *
      * @var array
      */
@@ -39,7 +39,6 @@ trait PathAliasTrait
      * @param string $path
      *
      * @return void
-     * @throws InvalidArgumentException
      */
     public static function setAlias(string $alias, string $path = ''): void
     {
@@ -82,7 +81,6 @@ trait PathAliasTrait
      * @param string $alias
      *
      * @return string
-     * @throws InvalidArgumentException
      */
     public static function getAlias(string $alias): string
     {
@@ -97,7 +95,7 @@ trait PathAliasTrait
 
         [$root] = explode('/', $alias, 2);
         if (!isset(self::$aliases[$root])) {
-            throw new InvalidArgumentException('The set root alias does not exist，alias=' . $root);
+            throw new InvalidArgumentException('The alias does not exist，alias=' . $root);
         }
 
         $rootPath  = self::$aliases[$root];

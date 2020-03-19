@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\WebSocket\Server;
 
@@ -19,7 +27,7 @@ use function sprintf;
  * Class WsDispatcher
  *
  * @since 1.0
- * @Bean("wsDispatcher")
+ * @Bean(WsServerBean::DISPATCHER)
  */
 class WsDispatcher
 {
@@ -36,13 +44,14 @@ class WsDispatcher
     public function handshake(Request $request, Response $response): array
     {
         /** @var Router $router */
-        $router = Swoft::getSingleton('wsRouter');
+        $router = Swoft::getSingleton(WsServerBean::ROUTER);
 
         /** @var Connection $conn */
         $conn = Session::mustGet();
         $path = $request->getUriPath();
 
         if (!$info = $router->match($path)) {
+            server()->log("Requested websocket route path '{$path}' is not exist, rejected", [], 'debug');
             throw new WsModuleRouteException(sprintf('The requested websocket route path "%s" is not exist!', $path));
         }
 

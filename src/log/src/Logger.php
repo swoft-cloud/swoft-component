@@ -1,16 +1,17 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Log;
 
+use DateTime;
+use DateTimeZone;
+use Exception;
+use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Co;
 use function basename;
 use function context;
 use function count;
 use function date_default_timezone_get;
-use DateTime;
-use DateTimeZone;
 use function debug_backtrace;
-use Exception;
 use function implode;
 use function is_array;
 use function is_bool;
@@ -19,9 +20,6 @@ use function json_encode;
 use function memory_get_peak_usage;
 use function microtime;
 use function sprintf;
-use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Co;
-use Swoft\Exception\SwoftException;
 use function urlencode;
 use function var_export;
 
@@ -45,6 +43,16 @@ class Logger extends \Monolog\Logger
      * @var string
      */
     protected $name = 'swoft';
+
+    /**
+     * @var bool
+     */
+    protected $enable = false;
+
+    /**
+     * @var bool
+     */
+    protected $json = false;
 
     /**
      * Flush interval
@@ -101,16 +109,6 @@ class Logger extends \Monolog\Logger
      * @var array
      */
     protected $processors = [];
-
-    /**
-     * @var bool
-     */
-    protected $enable = false;
-
-    /**
-     * @var bool
-     */
-    protected $json = false;
 
     /**
      * Customized items
@@ -189,7 +187,6 @@ class Logger extends \Monolog\Logger
         }
 
         $this->messages[] = $record;
-
         if (count($this->messages) >= $this->flushInterval) {
             $this->flushLog();
         }
@@ -208,8 +205,6 @@ class Logger extends \Monolog\Logger
      * @param array    $extra
      *
      * @return array
-     * @throws SwoftException
-     * @throws SwoftException
      */
     public function formatRecord(
         string $message,
@@ -219,7 +214,6 @@ class Logger extends \Monolog\Logger
         DateTime $ts,
         array $extra
     ): array {
-
         $record = [
             'messages'   => $message,
             'context'    => $context,
@@ -237,7 +231,6 @@ class Logger extends \Monolog\Logger
         foreach ($this->items as $item) {
             $record[$item] = context()->get($item, '');
         }
-
 
         return $record;
     }
@@ -323,6 +316,7 @@ class Logger extends \Monolog\Logger
                 continue;
             }
             $cost         = sprintf('%.2f', $profile['cost'] * 1000);
+
             $profileAry[] = "$key=" . $cost . '(ms)/' . $profile['total'];
         }
 
@@ -338,7 +332,7 @@ class Logger extends \Monolog\Logger
      */
     public function counting(string $name, int $hit, int $total = null): void
     {
-        if (!is_string($name) || empty($name)) {
+        if (!$this->enable || !$name) {
             return;
         }
 
@@ -435,15 +429,16 @@ class Logger extends \Monolog\Logger
             return;
         }
 
-        reset($this->handlers);
-
-        while ($handler = current($this->handlers)) {
-            $handler->handleBatch($this->messages);
-            next($this->handlers);
-        }
+        $messages = $this->messages;
 
         // Clear message
         $this->messages = [];
+
+        reset($this->handlers);
+        while ($handler = current($this->handlers)) {
+            $handler->handleBatch($messages);
+            next($this->handlers);
+        }
     }
 
     /**
@@ -453,11 +448,12 @@ class Logger extends \Monolog\Logger
      *
      * @throws Exception
      */
-    public function appendNoticeLog($flush = false): void
+    public function appendNoticeLog(bool $flush = false): void
     {
         if (!$this->enable) {
             return;
         }
+
         $cid = Co::tid();
         $ts  = $this->getLoggerTime();
 
@@ -468,8 +464,8 @@ class Logger extends \Monolog\Logger
         unset($this->profiles[$cid], $this->countings[$cid], $this->pushlogs[$cid], $this->profileStacks[$cid]);
         $levelName = self::$levels[self::NOTICE];
 
+        // Json
         if ($this->json) {
-            // Json
             $message = $this->formatRecord('', [], self::NOTICE, $levelName, $ts, []);
             unset($message['messages']);
 
@@ -492,9 +488,6 @@ class Logger extends \Monolog\Logger
      * Format notice message
      *
      * @return array
-     * @throws SwoftException
-     * @throws SwoftException
-     * @throws SwoftException
      */
     private function formatNoticeMessage(): array
     {
@@ -512,7 +505,7 @@ class Logger extends \Monolog\Logger
 
         if ($this->json) {
             $messageAry = [
-                'cost(ms)'  => (float)$timeUsed,
+                'cost(ms)' => (float)$timeUsed,
                 'mem(MB)'  => (float)$memUsed,
                 'uri'      => $this->getUri(),
                 'pushLog'  => implode(' ', $pushLogs),
@@ -649,7 +642,6 @@ class Logger extends \Monolog\Logger
      * Request uri
      *
      * @return string
-     * @throws SwoftException
      */
     private function getUri(): string
     {
@@ -660,7 +652,6 @@ class Logger extends \Monolog\Logger
      * Request time
      *
      * @return float
-     * @throws SwoftException
      */
     private function getRequestTime(): float
     {

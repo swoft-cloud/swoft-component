@@ -1,0 +1,65 @@
+#
+# Github actions for swoft component tests
+# https://github.com/marketplace?type=actions
+#
+name: Unit-tests
+
+on: [push, pull_request]
+
+# usage refer https://github.com/shivammathur/setup-php
+jobs:
+  test:
+    name: Test on php ${{ matrix.php}} and ${{ matrix.os }} OS
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    env:
+      SWOFT_DEBUG: 0
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: false
+          MYSQL_ROOT_PASSWORD: swoft123456
+          MYSQL_DATABASE: test
+        ports:
+          - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+      redis:
+        image: redis
+        ports:
+          - 6379/tcp
+        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    strategy:
+      fail-fast: false # dont fast fail
+      matrix:
+        php: [7.1, 7.2, 7.3] # 7.4
+        os: [ubuntu-latest] # , macOS-latest, windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup PHP
+        timeout-minutes: 5
+        uses: shivammathur/setup-php@v1
+        with:
+          php-version: ${{ matrix.php}}
+          extensions: mbstring, dom, fileinfo, mysql, openssl, redis #optional, setup extensions
+          ini-values: post_max_size=56M, short_open_tag=On #optional, setup php.ini configuration
+          coverage: none #optional, setup coverage driver: xdebug, none
+          pecl: true
+
+      - name: Install swoole extensions
+        timeout-minutes: 5
+        run: |
+          sudo pecl install -f swoole && php -m
+      # echo 'no' | pecl install -f redis
+      # sudo pecl update-channels && pecl install -f msgpack && pecl install -f igbinary && php -m
+
+      - name: Install dependencies
+        run: composer install --no-progress --no-suggest
+
+      # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
+      # Docs: https://getcomposer.org/doc/articles/scripts.md
+
+      - name: Run test suite
+        run: | # && composer run test
+         pwd && ./phpunit.sh nodb

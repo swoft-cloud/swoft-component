@@ -1,17 +1,26 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Tcp\Server\Router;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Contract\RouterInterface;
 use Swoft\Tcp\Server\Exception\TcpServerRouteException;
+use Swoft\Tcp\Server\TcpServerBean;
 use function count;
 use function trim;
 
 /**
  * Class Router
  *
- * @Bean("tcpRouter")
+ * @Bean(TcpServerBean::ROUTER)
  */
 class Router implements RouterInterface
 {

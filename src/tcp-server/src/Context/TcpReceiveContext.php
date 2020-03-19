@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Tcp\Server\Context;
 
@@ -19,7 +27,7 @@ class TcpReceiveContext extends AbstractContext
     /**
      * @var int
      */
-    private $fd;
+    private $fd = -1;
 
     /**
      * @var Request
@@ -56,6 +64,8 @@ class TcpReceiveContext extends AbstractContext
     {
         parent::clear();
 
+        $this->fd = -1;
+
         $this->request  = null;
         $this->response = null;
     }
@@ -81,6 +91,8 @@ class TcpReceiveContext extends AbstractContext
      */
     public function setRequest(Request $request): void
     {
+        $this->fd = $request->getFd();
+
         $this->request = $request;
     }
 

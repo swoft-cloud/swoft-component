@@ -64,4 +64,12 @@ class Pattern
     {
         return $this->regex;
     }
+
+    /**
+     * @param string $message
+     */
+    public function setMessage(string $message): void
+    {
+        $this->message = $message;
+    }
 }

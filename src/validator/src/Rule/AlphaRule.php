@@ -17,18 +17,18 @@ use Swoft\Validator\Exception\ValidatorException;
 class AlphaRule implements RuleInterface
 {
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $propertyName
      * @param object $item
-     * @param null $default
+     * @param null   $default
      *
      * @return array
      * @throws ValidatorException
      */
-    public function validate(array $data, string $propertyName, $item, $default = null): array
+    public function validate(array $data, string $propertyName, $item, $default = null, $strict = false): array
     {
         $value = $data[$propertyName];
-        $rule = '/^[A-Za-z]+$/';
+        $rule  = '/^[A-Za-z]+$/';
         if (preg_match($rule, $value)) {
             return $data;
         }

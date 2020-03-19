@@ -8,6 +8,7 @@ use Swoft\Db\Eloquent\Model;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder;
 use Swoft\Db\Eloquent\Builder as EloquentBuilder;
+use Swoft\Stdlib\Contract\Arrayable;
 
 /**
  * Class BuildsQueries
@@ -94,6 +95,31 @@ trait BuildsQueries
         /* @var \Swoft\Db\Eloquent\Builder $builder */
         $builder = $this->take(1);
         return $builder->get($columns)->first();
+    }
+
+    /**
+     * Execute the query and get the first array result.
+     *
+     * @param array $columns
+     *
+     * @return array
+     * @throws DbException
+     */
+    public function firstArray(array $columns = ['*']): array
+    {
+        /* @var \Swoft\Db\Eloquent\Builder $builder */
+        $builder = $this->take(1);
+        $result  = $builder->get($columns)->first();
+
+        if (!$result) {
+            return [];
+        }
+
+        if (is_object($result) && $result instanceof Arrayable) {
+            return $result->toArray();
+        }
+
+        return (array)$result;
     }
 
     /**

@@ -16,17 +16,31 @@ help:
 update:
 	git checkout . && git pull
 
+  installcli:	## Install the swoft releasecli tool from github
+installcli:
+	cd ~
+	git clone https://github.com/swoftlabs/swoft-releasecli
+	cd swoft-releasecli; \
+	ln -s $PWD/bin/releasecli /usr/local/bin/releasecli; \
+	chmod a+x bin/releasecli
+
+  updatecli:	## Update the swoft releasecli tool from github
+updatecli:
+	cd ~/swoft-releasecli; \
+	git pull; \
+	chmod a+x bin/releasecli
+
   addrmt:	## Add the remote repository address of each component to the local remote
-addrmt:
-	php dtool.php git:addrmt --all
+addrmt: update
+	releasecli git:addrmt --all
 
   fpush:	## Push all update to remote sub-repo by git push with '--force'
-fpush:
-	php dtool.php git:fpush --all
+fpush: update
+	releasecli git:fpush --all
 
   release:	## Release all sub-repo to new tag version and push to remote repo. eg: tag=v2.0.3
 release:
-	php dtool.php tag:release --all -y -t $(TAG)
+	releasecli tag:release --all -y -t $(TAG)
 
   sami:		## Gen classes docs by sami.phar
 classdoc:

@@ -56,7 +56,7 @@ class FinishContext extends AbstractContext
         $instance->server     = $server;
         $instance->taskData   = $data;
         $instance->taskId     = $taskId;
-        $instance->taskUniqid = Task::getUniqid($taskId);
+        $instance->taskUniqid = Task::getUniqId($taskId);
 
         return $instance;
     }

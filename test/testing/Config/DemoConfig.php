@@ -1,11 +1,9 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Component\Testing\Config;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Config\Annotation\Mapping\Config;
-use Swoft\Http\Server\Annotation\Mapping\RequestMapping;
 
 /**
  * Class DemoConfig

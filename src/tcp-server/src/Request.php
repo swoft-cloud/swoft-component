@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Tcp\Server;
 
@@ -11,8 +19,8 @@ use Swoft\Tcp\Server\Contract\RequestInterface;
 /**
  * Class Request
  *
- * @since 2.0
- * @Bean(name="tcpRequest", scope=Bean::PROTOTYPE)
+ * @since 2.0.4
+ * @Bean(name=TcpServerBean::REQUEST, scope=Bean::PROTOTYPE)
  */
 class Request implements RequestInterface
 {
@@ -68,7 +76,7 @@ class Request implements RequestInterface
     public static function new(int $fd, string $data, int $reactorId): self
     {
         /** @var self $self */
-        $self = Swoft::getBean('tcpRequest');
+        $self = Swoft::getBean(TcpServerBean::REQUEST);
 
         // Set properties
         $self->fd        = $fd;

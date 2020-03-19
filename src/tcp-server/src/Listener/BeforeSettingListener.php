@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Tcp\Server\Listener;
 
@@ -9,6 +17,7 @@ use Swoft\Log\Helper\CLog;
 use Swoft\Server\ServerEvent;
 use Swoft\Tcp\Protocol;
 use Swoft\Tcp\Server\TcpServer;
+use Swoft\Tcp\Server\TcpServerBean;
 use function bean;
 
 /**
@@ -30,7 +39,7 @@ class BeforeSettingListener implements EventHandlerInterface
             CLog::debug('sync tcp protocol setting from bean(tcpServerProtocol)');
 
             /** @var Protocol $proto */
-            $proto = bean('tcpServerProtocol');
+            $proto = bean(TcpServerBean::PROTOCOL);
             $server->setSetting($proto->getConfig());
         }
     }

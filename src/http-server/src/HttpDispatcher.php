@@ -146,7 +146,6 @@ class HttpDispatcher extends AbstractDispatcher
      * @param Request $request
      *
      * @return Request
-     * @throws SwoftException
      */
     private function matchRouter(Request $request): Request
     {

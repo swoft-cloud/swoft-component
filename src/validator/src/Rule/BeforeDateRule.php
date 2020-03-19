@@ -18,18 +18,18 @@ use Swoft\Validator\Exception\ValidatorException;
 class BeforeDateRule implements RuleInterface
 {
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $propertyName
      * @param object $item
-     * @param null $default
+     * @param null   $default
      *
      * @return array
      * @throws ValidatorException
      */
-    public function validate(array $data, string $propertyName, $item, $default = null): array
+    public function validate(array $data, string $propertyName, $item, $default = null, $strict = false): array
     {
         /* @var BeforeDate $item */
-        $date = $item->getDate();
+        $date  = $item->getDate();
         $value = $data[$propertyName];
         if (is_string($value)) {
             $dt = DateTime::createFromFormat("Y-m-d H:i:s", $value);

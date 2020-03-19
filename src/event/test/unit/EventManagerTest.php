@@ -34,7 +34,6 @@ class EventManagerTest extends TestCase
         $l1 = new TestHandler();
         $em->attach('test', $l1);
         $em->attach('test', function () {
-            //
         });
 
         $this->assertTrue($em->hasListener($l1));
@@ -45,6 +44,15 @@ class EventManagerTest extends TestCase
 
         $em->detach('test', $l1);
         $this->assertCount(1, $em->getEventListeners('test'));
+
+        $buffer = '';
+        $em->attach('test1', function () use (&$buffer) {
+            $buffer = 'data';
+        });
+
+        $this->assertSame('', $buffer);
+        $em->trigger('test1');
+        $this->assertSame('data', $buffer);
     }
 
     public function testPriority(): void
@@ -98,9 +106,7 @@ class EventManagerTest extends TestCase
         $evt = $em->trigger(TestSubscriber::EVENT_ONE);
 
         $this->assertArrayHasKey('msg', $evt->getParams());
-        $this->assertSame(
-            'handle the event: test.event1 position: TestSubscriber.handleEvent1()',
-            $evt->getParam('msg')
-        );
+        $this->assertSame('handle the event: test.event1 position: TestSubscriber.handleEvent1()',
+            $evt->getParam('msg'));
     }
 }

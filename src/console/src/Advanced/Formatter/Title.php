@@ -8,11 +8,9 @@ use Swoft\Stdlib\Helper\Str;
 use Swoft\Stdlib\Helper\Sys;
 use function array_merge;
 use function ceil;
-use function str_pad;
 
 /**
  * Class Title
- * @package Swoft\Console\Advanced\Formatter
  */
 class Title extends MessageFormatter
 {
@@ -60,7 +58,7 @@ class Title extends MessageFormatter
         }
 
         $titleLine  = "$titleIndent<bold>$title</bold>\n";
-        $borderLine = $bdIndent . str_pad($char, $width, $char);
+        $borderLine = $bdIndent . Str::pad($char, $width, $char);
 
         Console::write($titleLine . $borderLine);
     }

@@ -1,11 +1,8 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Db\Query\Processor;
 
-use ReflectionException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Bean\Exception\ContainerException;
 use Swoft\Db\Exception\DbException;
 use Swoft\Db\Query\Builder;
 
@@ -40,14 +37,11 @@ class Processor
      * @param string  $sequence
      *
      * @return string
-     * @throws ContainerException
      * @throws DbException
-     * @throws ReflectionException
      */
     public function processInsertGetId(Builder $query, $sql, $values, string $sequence = null): string
     {
-        $id = $query->getConnection()->insertGetId($sql, $values, $sequence);
-        return $id;
+        return $query->getConnection()->insertGetId($sql, $values, $sequence);
     }
 
     /**

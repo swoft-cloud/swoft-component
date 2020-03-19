@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\WebSocket\Server\Message;
 
@@ -7,12 +15,13 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Stdlib\Concern\DataPropertyTrait;
 use Swoft\WebSocket\Server\Contract\RequestInterface;
 use Swoole\WebSocket\Frame;
+use Swoft\WebSocket\Server\WsServerBean;
 
 /**
  * Class Request
  *
  * @since 2.0
- * @Bean(scope=Bean::PROTOTYPE)
+ * @Bean(name=WsServerBean::REQUEST, scope=Bean::PROTOTYPE)
  */
 class Request implements RequestInterface
 {
@@ -40,7 +49,7 @@ class Request implements RequestInterface
      */
     public static function new(Frame $frame): self
     {
-        $self = Swoft::getBean(self::class);
+        $self = Swoft::getBean(WsServerBean::REQUEST);
 
         // Init properties
         $self->frame = $frame;

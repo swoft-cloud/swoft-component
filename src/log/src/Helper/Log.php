@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Log\Helper;
-
 
 use Swoft\Bean\BeanFactory;
 use Swoft\Log\Logger;
@@ -18,7 +16,8 @@ class Log
      */
     public static function emergency(string $message, ...$params): bool
     {
-        [$message, $context] = self::formatLog($message, ...$params);
+        [$message, $context] = self::formatLog($message, $params);
+
         return self::getLogger()->emergency($message, $context);
     }
 
@@ -30,7 +29,8 @@ class Log
      */
     public static function debug(string $message, ...$params): bool
     {
-        [$message, $context] = self::formatLog($message, ...$params);
+        [$message, $context] = self::formatLog($message, $params);
+
         if (APP_DEBUG) {
             return self::getLogger()->debug($message, $context);
         }
@@ -46,7 +46,8 @@ class Log
      */
     public static function alert(string $message, ...$params): bool
     {
-        [$message, $context] = self::formatLog($message, ...$params);
+        [$message, $context] = self::formatLog($message, $params);
+
         return self::getLogger()->alert($message, $context);
     }
 
@@ -58,7 +59,8 @@ class Log
      */
     public static function info(string $message, ...$params): bool
     {
-        [$message, $context] = self::formatLog($message, ...$params);
+        [$message, $context] = self::formatLog($message, $params);
+
         return self::getLogger()->info($message, $context);
     }
 
@@ -70,7 +72,8 @@ class Log
      */
     public static function warning(string $message, ...$params): bool
     {
-        [$message, $context] = self::formatLog($message, ...$params);
+        [$message, $context] = self::formatLog($message, $params);
+
         return self::getLogger()->warning($message, $context);
     }
 
@@ -82,7 +85,8 @@ class Log
      */
     public static function error(string $message, ...$params): bool
     {
-        [$message, $context] = self::formatLog($message, ...$params);
+        [$message, $context] = self::formatLog($message, $params);
+
         return self::getLogger()->error($message, $context);
     }
 
@@ -107,7 +111,7 @@ class Log
      */
     public static function profileStart(string $name, ...$params): void
     {
-        if (!empty($params)) {
+        if ($params) {
             $name = sprintf($name, ...$params);
         }
 
@@ -134,7 +138,7 @@ class Log
      */
     public static function profileEnd(string $name, ...$params): void
     {
-        if (!empty($params)) {
+        if ($params) {
             $name = sprintf($name, ...$params);
         }
 
@@ -155,18 +159,18 @@ class Log
      *
      * @return array
      */
-    public static function formatLog(string $message, ...$params): array
+    public static function formatLog(string $message, array $params): array
     {
-        $firstParam = $params[0] ?? null;
-        if (is_array($firstParam)) {
-            return [$message, $firstParam];
+        $context = [];
+
+        if ($params) {
+            if (is_array($params[0])) {
+                $context = $params[0];
+            } else {
+                $message = sprintf($message, ...$params);
+            }
         }
 
-        if (!empty($params)) {
-            $message = sprintf($message, ...$params);
-            return [$message, []];
-        }
-
-        return [$message, []];
+        return [$message, $context];
     }
 }
