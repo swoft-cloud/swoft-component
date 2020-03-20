@@ -8,31 +8,25 @@ use SwoftTest\Validator\Testing\ValidatorRequired;
 
 class RequiredTest extends TestCase
 {
-    public function testRequiredType()
+    /**
+     * @expectedException \Swoft\Validator\Exception\ValidatorException
+     */
+    public function testRequiredFailed()
     {
         // 断言异常出现
-        $data = [];
-        $message = '';
         $validator = new Validator();
-        try {
-            $validates = $this->getValidates(ValidatorRequired::class, 'testRequired');
-            $validator->validateRequest($data, $validates);
-        } catch (ValidatorException $e) {
-            $message = $e->getMessage();
-        }
+        $validates = $this->getValidates(ValidatorRequired::class, 'testRequired');
+        $validator->validateRequest([], $validates);
+    }
 
-        $this->assertEquals('required must exist!', $message);
-
+    public function testRequiredPassed()
+    {
         // 断言异常不出现
-        $data = ['required'=>''];
-        $message = '';
-        try {
-            $validates = $this->getValidates(ValidatorRequired::class, 'testRequired');
-            $validator->validateRequest($data, $validates);
-        } catch (ValidatorException $e) {
-            $message = $e->getMessage();
-        }
+        $this->expectOutputString('successful');
+        $validator = new Validator();
+        $validates = $this->getValidates(ValidatorRequired::class, 'testRequired');
+        $validator->validateRequest(['required'=>''], $validates);
 
-        $this->assertEquals('', $message);
+        echo 'successful';
     }
 }
