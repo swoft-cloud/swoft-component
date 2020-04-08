@@ -97,9 +97,7 @@ class Client
     public function getPacket(): PacketInterface
     {
         if (empty($this->packet)) {
-            throw new RpcClientException(
-                sprintf('Client(%s) packet can not be null', __CLASS__)
-            );
+            throw new RpcClientException(sprintf('Client(%s) packet can not be null', __CLASS__));
         }
 
         return $this->packet;

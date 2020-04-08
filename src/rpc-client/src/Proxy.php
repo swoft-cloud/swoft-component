@@ -30,8 +30,8 @@ class Proxy
             throw new RpcClientException('`@var` for `@Reference` must be exist interface!');
         }
 
-        $proxyId   = sprintf('IGNORE_%s', Str::getUniqid());
-        $visitor   = new ProxyVisitor($proxyId);
+        $proxyId = sprintf('IGNORE_%s', Str::getUniqid());
+        $visitor = new ProxyVisitor($proxyId);
 
         return BaseProxy::newClassName($className, $visitor);
     }

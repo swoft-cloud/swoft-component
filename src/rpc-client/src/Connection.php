@@ -8,7 +8,6 @@ use Swoft\Connection\Pool\AbstractConnection;
 use Swoft\Log\Debug;
 use Swoft\Rpc\Client\Client as RpcClient;
 use Swoft\Rpc\Client\Contract\ConnectionInterface;
-use Swoft\Rpc\Client\Contract\ProviderInterface;
 use Swoft\Rpc\Client\Exception\RpcClientException;
 use Swoft\Rpc\Contract\PacketInterface;
 use Swoft\Stdlib\Helper\JsonHelper;
@@ -141,7 +140,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     private function getHostPort(): array
     {
         $provider = $this->client->getProvider();
-        if (!$provider || !$provider instanceof ProviderInterface) {
+        if (!$provider) {
             return [$this->client->getHost(), $this->client->getPort()];
         }
 

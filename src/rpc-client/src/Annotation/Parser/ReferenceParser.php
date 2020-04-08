@@ -43,9 +43,8 @@ class ReferenceParser extends Parser
         $propClassType   = $phpReader->getPropertyClass($reflectProperty);
 
         if (empty($propClassType)) {
-            throw new RpcClientException(
-                sprintf('`@Reference`(%s->%s) must to define `@var xxx`', $this->className, $this->propertyName)
-            );
+            throw new RpcClientException(sprintf('`@Reference`(%s->%s) must to define `@var xxx`', $this->className,
+                    $this->propertyName));
         }
 
         $className = Proxy::newClassName($propClassType);

@@ -46,9 +46,7 @@ class ReferenceRegister
     {
         $pool = self::$references[$className]['pool'] ?? '';
         if (empty($pool)) {
-            throw new RpcClientException(
-                sprintf('`@Reference` pool (%s) is not exist!', $className)
-            );
+            throw new RpcClientException(sprintf('`@Reference` pool (%s) is not exist!', $className));
         }
 
         return $pool;
@@ -64,9 +62,7 @@ class ReferenceRegister
     {
         $version = self::$references[$className]['version'] ?? '';
         if ($version == '') {
-            throw new RpcClientException(
-                sprintf('`@Reference` version(%s) is not exist!', $className)
-            );
+            throw new RpcClientException(sprintf('`@Reference` version(%s) is not exist!', $className));
         }
 
         return $version;
