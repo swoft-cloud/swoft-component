@@ -27,6 +27,11 @@ abstract class UserProcess implements UserProcessInterface
     protected $coroutine = true;
 
     /**
+     * @var \Swoole\Process
+     */
+    private $swooleProcess;
+
+    /**
      * @return bool
      */
     public function isStdinOut(): bool
@@ -48,5 +53,21 @@ abstract class UserProcess implements UserProcessInterface
     public function isCoroutine(): bool
     {
         return $this->coroutine;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setSwooleProcess(\Swoole\Process $process): void
+    {
+        $this->swooleProcess = $process;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getSwooleProcess(): \Swoole\Process
+    {
+        return $this->swooleProcess;
     }
 }
