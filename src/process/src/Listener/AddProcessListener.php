@@ -38,7 +38,7 @@ class AddProcessListener implements EventHandlerInterface
         /* @var Server $server */
         $server = $event->getTarget();
 
-        $this->addProcess($server);
+        $this->addProcesses($server);
     }
 
     /**
@@ -48,7 +48,7 @@ class AddProcessListener implements EventHandlerInterface
      *
      * @throws ServerException
      */
-    private function addProcess(Server $server): void
+    private function addProcesses(Server $server): void
     {
         $process = $server->getProcess();
         if (empty($process)) {
@@ -82,6 +82,9 @@ class AddProcessListener implements EventHandlerInterface
             };
 
             $process = new SwooleProcess($function, $stdinOut, $pipeType, $coroutine);
+
+            // save swoole process
+            $userProcess->setSwooleProcess($process);
             $server->getSwooleServer()->addProcess($process);
         }
     }
