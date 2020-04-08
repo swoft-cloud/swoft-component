@@ -1,23 +1,23 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Client;
 
-
-use function count;
-use function explode;
-use function sprintf;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Concern\PrototypeTrait;
 use Swoft\Connection\Pool\AbstractConnection;
 use Swoft\Log\Debug;
+use Swoft\Rpc\Client\Client as RpcClient;
 use Swoft\Rpc\Client\Contract\ConnectionInterface;
 use Swoft\Rpc\Client\Contract\ProviderInterface;
 use Swoft\Rpc\Client\Exception\RpcClientException;
 use Swoft\Rpc\Contract\PacketInterface;
 use Swoft\Stdlib\Helper\JsonHelper;
 use Swoole\Coroutine\Client;
-use Swoft\Rpc\Client\Client as RpcClient;
+use function array_rand;
+use function count;
+use function explode;
+use function is_array;
+use function sprintf;
 
 /**
  * Class Connection
@@ -64,18 +64,15 @@ class Connection extends AbstractConnection implements ConnectionInterface
     public function create(): void
     {
         $connection = new Client(SWOOLE_SOCK_TCP);
-
         [$host, $port] = $this->getHostPort();
-        $setting = $this->client->getSetting();
 
-        if (!empty($setting)) {
+        $setting = $this->client->getSetting();
+        if ($setting) {
             $connection->set($setting);
         }
 
         if (!$connection->connect($host, (int)$port)) {
-            throw new RpcClientException(
-                sprintf('Connect failed host=%s port=%d', $host, $port)
-            );
+            throw new RpcClientException(sprintf('Connect failed host=%s port=%d', $host, $port));
         }
 
         $this->connection = $connection;
@@ -133,7 +130,8 @@ class Connection extends AbstractConnection implements ConnectionInterface
      */
     public function recv()
     {
-        return $this->connection->recv((float)-1);
+        // fix: The timeout setting uses the configuration when the client connects. timeout, read_timeout
+        return $this->connection->recv();
     }
 
     /**
@@ -143,33 +141,27 @@ class Connection extends AbstractConnection implements ConnectionInterface
     private function getHostPort(): array
     {
         $provider = $this->client->getProvider();
-        if (empty($provider) || !$provider instanceof ProviderInterface) {
+        if (!$provider || !$provider instanceof ProviderInterface) {
             return [$this->client->getHost(), $this->client->getPort()];
         }
 
         $list = $provider->getList($this->client);
-        if (empty($list)) {
-            throw new RpcClientException(
-                sprintf('Provider return list can not empty!')
-            );
+        if (!$list) {
+            throw new RpcClientException(sprintf('Provider return list can not empty!'));
         }
 
         if (!is_array($list)) {
-            throw new RpcClientException(
-                sprintf('Provider(%s) return format is error!', JsonHelper::encode($list))
-            );
+            throw new RpcClientException(sprintf('Provider(%s) return format is error!', JsonHelper::encode($list)));
         }
+
         $randKey  = array_rand($list, 1);
         $hostPort = explode(':', $list[$randKey]);
 
         if (count($hostPort) < 2) {
-            throw new RpcClientException(
-                sprintf('Provider(%s) return format is error!', JsonHelper::encode($hostPort))
-            );
+            throw new RpcClientException(sprintf('Provider(%s) return format is error!', $list[$randKey]));
         }
 
         [$host, $port] = $hostPort;
-
         return [$host, $port];
     }
 }
