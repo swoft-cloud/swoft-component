@@ -1,17 +1,15 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Client\Proxy\Ast;
 
-
-use function array_unshift;
-use function sprintf;
-use Swoft\Proxy\Ast\Visitor\Visitor;
-use Swoft\Rpc\Client\Concern\ServiceTrait;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\NodeFinder;
 use PhpParser\NodeTraverser;
+use Swoft\Proxy\Ast\Visitor\Visitor;
+use Swoft\Rpc\Client\Concern\ServiceTrait;
+use function array_unshift;
+use function sprintf;
 use function uniqid;
 
 /**
@@ -79,7 +77,6 @@ class ProxyVisitor extends Visitor
     {
         // Namespace for proxy class name
         if ($node instanceof Node\Stmt\Namespace_) {
-
             $this->namespace = $node->name->toString();
             return null;
         }
@@ -176,11 +173,7 @@ class ProxyVisitor extends Visitor
         ];
 
         // Proxy method call
-        $proxyCall = new Node\Expr\MethodCall(
-            new Node\Expr\Variable('this'),
-            '__proxyCall',
-            $newParams
-        );
+        $proxyCall = new Node\Expr\MethodCall(new Node\Expr\Variable('this'), '__proxyCall', $newParams);
 
         // New method stmts
         $type = $node->returnType;
