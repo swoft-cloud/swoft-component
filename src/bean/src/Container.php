@@ -890,7 +890,6 @@ class Container implements ContainerInterface
 
         // Get object definition
         $objectDefinition = $this->getNewObjectDefinition($beanName);
-        $propertyInjects  = $objectDefinition->getPropertyInjections();
 
         $scope = $objectDefinition->getScope();
         $alias = $objectDefinition->getAlias();
@@ -919,7 +918,8 @@ class Container implements ContainerInterface
             }
         }
 
-        $reflectObject = $this->newInstance($reflectClass, $constructArgs);
+        $reflectObject   = $this->newInstance($reflectClass, $constructArgs);
+        $propertyInjects = $objectDefinition->getPropertyInjections();
 
         // Inject properties values
         $this->newProperty($reflectObject, $reflectClass, $propertyInjects, $id);
