@@ -20,7 +20,6 @@ use Swoft\Stdlib\Helper\JsonHelper;
  */
 trait ServiceTrait
 {
-
     /**
      * @param string $interfaceClass
      * @param string $methodName
@@ -30,6 +29,7 @@ trait ServiceTrait
      * @throws ConnectionPoolException
      * @throws RpcClientException
      * @throws RpcResponseException
+     * @noinspection MagicMethodsValidityInspection
      */
     protected function __proxyCall(string $interfaceClass, string $methodName, array $params)
     {

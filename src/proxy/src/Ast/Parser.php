@@ -1,11 +1,8 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Proxy\Ast;
 
 use Exception;
-use function file_exists;
-use function file_get_contents;
 use PhpParser\ErrorHandler;
 use PhpParser\Lexer;
 use PhpParser\NodeTraverser;
@@ -14,6 +11,8 @@ use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard;
 use Swoft\Proxy\Exception\ProxyException;
 use Swoft\Stdlib\Helper\ComposerHelper;
+use function file_exists;
+use function file_get_contents;
 
 /**
  * Class Parser

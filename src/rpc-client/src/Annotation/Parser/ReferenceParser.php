@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Client\Annotation\Parser;
-
 
 use PhpDocReader\AnnotationException;
 use PhpDocReader\PhpDocReader;

@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Proxy\Unit;
-
 
 use PHPUnit\Framework\TestCase;
 
