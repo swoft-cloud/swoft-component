@@ -1,11 +1,9 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Process;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Co;
-use Swoft\Exception\SwoftException;
 use Swoft\Log\Helper\CLog;
 use Swoft\Process\Exception\ProcessException;
 use Swoft\Server\Helper\ServerHelper;
@@ -159,8 +157,6 @@ class ProcessPool
 
     /**
      * Quick restart
-     *
-     * @throws SwoftException
      */
     public function restart(): void
     {

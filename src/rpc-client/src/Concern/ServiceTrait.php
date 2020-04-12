@@ -20,7 +20,6 @@ use Swoft\Stdlib\Helper\JsonHelper;
  */
 trait ServiceTrait
 {
-
     /**
      * @param string $interfaceClass
      * @param string $methodName
@@ -30,6 +29,7 @@ trait ServiceTrait
      * @throws ConnectionPoolException
      * @throws RpcClientException
      * @throws RpcResponseException
+     * @noinspection MagicMethodsValidityInspection
      */
     protected function __proxyCall(string $interfaceClass, string $methodName, array $params)
     {
@@ -49,10 +49,8 @@ trait ServiceTrait
 
         $protocol = Protocol::new($version, $interfaceClass, $methodName, $params, $ext);
         $data     = $packet->encode($protocol);
-        $message  = sprintf(
-            'Rpc call failed.interface=%s method=%s pool=%s version=%s',
-            $interfaceClass, $methodName, $poolName, $version
-        );
+        $message  = sprintf('Rpc call failed.interface=%s method=%s pool=%s version=%s', $interfaceClass, $methodName,
+            $poolName, $version);
 
         $result = $this->sendAndRecv($connection, $data, $message);
         $connection->release();
@@ -64,10 +62,8 @@ trait ServiceTrait
             $errorData = $response->getError()->getData();
 
             // Record rpc error message
-            $errorMsg = sprintf(
-                'Rpc call error!code=%d message=%s data=%s pool=%s version=%s',
-                $code, $message, JsonHelper::encode($errorData), $poolName, $version
-            );
+            $errorMsg = sprintf('Rpc call error!code=%d message=%s data=%s pool=%s version=%s', $code, $message,
+                JsonHelper::encode($errorData), $poolName, $version);
 
             Error::log($errorMsg);
 

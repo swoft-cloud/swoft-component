@@ -92,5 +92,5 @@ abstract class AbstractConnection implements ConnectionInterface
             $this->pool->release($this);
         }
     }
-
 }
+

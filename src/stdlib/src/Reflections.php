@@ -66,17 +66,17 @@ final class Reflections
     /**
      * @param string $className
      *
+     * @return ReflectionClass
      * @throws ReflectionException
      */
-    public static function cache(string $className): void
+    public static function cache(string $className): ReflectionClass
     {
-        if (isset(self::$pool[$className])) {
-            return;
-        }
-
         $reflectionClass = new ReflectionClass($className);
 
+        // Cache some metadata for the class
         self::cacheReflectionClass($reflectionClass);
+
+        return $reflectionClass;
     }
 
     /**

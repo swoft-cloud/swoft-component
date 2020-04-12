@@ -7,7 +7,7 @@ use Swoft\Rpc\Client\Contract\ExtenderInterface;
 use Swoft\Rpc\Client\Contract\ProviderInterface;
 use Swoft\Rpc\Client\Exception\RpcClientException;
 use Swoft\Rpc\Contract\PacketInterface;
-use Swoft\Stdlib\Helper\Arr;
+use function array_merge;
 
 /**
  * Class Client
@@ -87,7 +87,7 @@ class Client
      */
     public function getSetting(): array
     {
-        return Arr::merge($this->defaultSetting(), $this->setting);
+        return array_merge($this->defaultSetting(), $this->setting);
     }
 
     /**
@@ -97,10 +97,9 @@ class Client
     public function getPacket(): PacketInterface
     {
         if (empty($this->packet)) {
-            throw new RpcClientException(
-                sprintf('Client(%s) packet can not be null', __CLASS__)
-            );
+            throw new RpcClientException(sprintf('Client(%s) packet can not be null', __CLASS__));
         }
+
         return $this->packet;
     }
 
@@ -112,6 +111,7 @@ class Client
         if (!empty($this->extender) && $this->extender instanceof ExtenderInterface) {
             return $this->extender;
         }
+
         return BeanFactory::getBean('rpcClientExtender');
     }
 

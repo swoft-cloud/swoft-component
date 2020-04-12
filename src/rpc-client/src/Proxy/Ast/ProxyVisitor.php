@@ -1,18 +1,16 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Client\Proxy\Ast;
 
-
-use function array_unshift;
-use function sprintf;
-use Swoft\Proxy\Ast\Visitor\Visitor;
-use Swoft\Rpc\Client\Concern\ServiceTrait;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\NodeFinder;
 use PhpParser\NodeTraverser;
-use function uniqid;
+use Swoft\Proxy\Ast\Visitor\Visitor;
+use Swoft\Rpc\Client\Concern\ServiceTrait;
+use Swoft\Stdlib\Helper\Str;
+use function array_unshift;
+use function sprintf;
 
 /**
  * Class ProxyVisitor
@@ -22,28 +20,28 @@ use function uniqid;
 class ProxyVisitor extends Visitor
 {
     /**
-     * Namespace
+     * Namespace. eg: "App\Rpc\Lib"
      *
      * @var string
      */
     private $namespace = '';
 
     /**
-     * New class name
+     * New class name suffix. eg: "IGNORE_5e92a0ad04171"
      *
      * @var string
      */
     private $proxyId;
 
     /**
-     * Origin class name
+     * Origin interface class name. eg: "App\Rpc\Lib\UserInterface"
      *
      * @var string
      */
     private $originalInterfaceName = '';
 
     /**
-     * Proxy class name without namespace
+     * Proxy class name without namespace. eg: "UserInterface_IGNORE_5e92a0ad04171"
      *
      * @var string
      */
@@ -59,13 +57,15 @@ class ProxyVisitor extends Visitor
     /**
      * ProxyVisitor constructor.
      *
+     * TODO 提前传入原类名，可以直接得到 namespace, proxyName, originalInterfaceName
+     *
      * @param string $proxyId
-     * @param string $TraitClassName
+     * @param string $traitClassName
      */
-    public function __construct(string $proxyId = '', string $TraitClassName = ServiceTrait::class)
+    public function __construct(string $proxyId = '', string $traitClassName = ServiceTrait::class)
     {
-        $this->serviceTrait = $TraitClassName;
-        $this->proxyId      = $proxyId ?: uniqid();
+        $this->serviceTrait = $traitClassName;
+        $this->proxyId      = $proxyId ?: Str::getUniqid();
     }
 
     /**
@@ -79,14 +79,14 @@ class ProxyVisitor extends Visitor
     {
         // Namespace for proxy class name
         if ($node instanceof Node\Stmt\Namespace_) {
-
             $this->namespace = $node->name->toString();
             return null;
         }
 
         // Origin interface node
         if ($node instanceof Node\Stmt\Interface_) {
-            $name                        = $node->name->toString();
+            $name = $node->name->toString();
+
             $this->proxyName             = sprintf('%s_%s', $name, $this->proxyId);
             $this->originalInterfaceName = sprintf('%s\\%s', $this->namespace, $name);
 
@@ -144,10 +144,10 @@ class ProxyVisitor extends Visitor
         /** @var Node\Stmt\Class_ $classNode */
         $classNode = $nodeFinder->findFirstInstanceOf($nodes, Node\Stmt\Class_::class);
 
-        $traitNode          = $this->getTraitNode();
-        $originalMethodNode = $this->getOriginalClassNameMethodNode();
+        $traitNode     = $this->getTraitNode();
+        $orgMethodNode = $this->getOriginalClassNameMethodNode();
 
-        array_unshift($classNode->stmts, $traitNode, $originalMethodNode);
+        array_unshift($classNode->stmts, $traitNode, $orgMethodNode);
         return $nodes;
     }
 
@@ -176,11 +176,7 @@ class ProxyVisitor extends Visitor
         ];
 
         // Proxy method call
-        $proxyCall = new Node\Expr\MethodCall(
-            new Node\Expr\Variable('this'),
-            '__proxyCall',
-            $newParams
-        );
+        $proxyCall = new Node\Expr\MethodCall(new Node\Expr\Variable('this'), '__proxyCall', $newParams);
 
         // New method stmts
         $type = $node->returnType;

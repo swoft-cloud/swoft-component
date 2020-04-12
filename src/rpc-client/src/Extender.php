@@ -1,12 +1,10 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Rpc\Client;
 
-
-use function context;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Rpc\Client\Contract\ExtenderInterface;
+use function context;
 
 /**
  * Class Extender
@@ -19,7 +17,6 @@ class Extender implements ExtenderInterface
 {
     /**
      * @return array
-     * @throws \Swoft\Exception\SwoftException
      */
     public function getExt(): array
     {
@@ -27,6 +24,7 @@ class Extender implements ExtenderInterface
             context()->get('traceid', ''),
             context()->get('spanid', ''),
             context()->get('parentid', ''),
+            context()->get('extra', null),
         ];
     }
 }

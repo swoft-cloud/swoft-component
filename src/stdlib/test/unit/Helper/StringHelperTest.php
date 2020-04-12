@@ -58,6 +58,9 @@ class StringHelperTest extends TestCase
 
         $uniqueId = Str::uniqIdReal();
         $this->assertNotEmpty($uniqueId);
+
+        $uniqueId = Str::microTimeId();
+        $this->assertNotEmpty($uniqueId);
     }
 
     public function testPad(): void

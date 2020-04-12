@@ -40,7 +40,7 @@ class ProcessDispatcher
             PhpHelper::call([$process, self::METHOD], $pool, $workerId);
         } catch (Throwable $e) {
             Error::log(sprintf('Run process for process pool fail(%s %s %d)!', $e->getMessage(), $e->getFile(),
-                    $e->getLine()));
+                $e->getLine()));
         }
     }
 

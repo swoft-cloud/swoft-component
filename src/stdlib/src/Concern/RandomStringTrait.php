@@ -60,6 +60,18 @@ trait RandomStringTrait
     }
 
     /**
+     * @param string $prefix
+     *
+     * @return string eg: "e6d7ce8a6de"
+     */
+    public static function microTimeId(string $prefix = ''): string
+    {
+        $micro = microtime(true) * 10000;
+
+        return $prefix . base_convert($micro, 10, 16);
+    }
+
+    /**
      * Use the instead of uniqid()
      *
      * @param int $length

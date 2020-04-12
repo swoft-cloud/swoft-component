@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Bean;
 
 use Swoft\Bean\Contract\HandlerInterface;
