@@ -29,7 +29,7 @@ abstract class UserProcess implements UserProcessInterface
     /**
      * @var \Swoole\Process
      */
-    private $swooleProcess;
+    protected $swooleProcess;
 
     /**
      * @return bool

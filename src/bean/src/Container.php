@@ -890,13 +890,14 @@ class Container implements ContainerInterface
 
         // Get object definition
         $objectDefinition = $this->getNewObjectDefinition($beanName);
+        $propertyInjects  = $objectDefinition->getPropertyInjections();
 
-        $scope     = $objectDefinition->getScope();
-        $alias     = $objectDefinition->getAlias();
-        $className = $objectDefinition->getClassName();
+        $scope = $objectDefinition->getScope();
+        $alias = $objectDefinition->getAlias();
 
         // Cache reflection class info
-        Reflections::cache($className);
+        $className    = $objectDefinition->getClassName();
+        $reflectClass = Reflections::cache($className);
 
         // Before initialize bean
         $this->beforeInit($beanName, $className, $objectDefinition);
@@ -907,18 +908,21 @@ class Container implements ContainerInterface
             $constructArgs = $this->getConstructParams($constructInject, $id);
         }
 
-        $propertyInjects = $objectDefinition->getPropertyInjections();
-
-        // Proxy class
+        // It's proxy class. eg: AOP, RPC client class
         if ($this->handler) {
+            $oldCName  = $className;
             $className = $this->handler->classProxy($className);
+
+            // New class name from handler->classProxy()
+            if ($oldCName !== $className) {
+                $reflectClass = new ReflectionClass($className);
+            }
         }
 
-        $reflectionClass = new ReflectionClass($className);
-        $reflectObject   = $this->newInstance($reflectionClass, $constructArgs);
+        $reflectObject = $this->newInstance($reflectClass, $constructArgs);
 
         // Inject properties values
-        $this->newProperty($reflectObject, $reflectionClass, $propertyInjects, $id);
+        $this->newProperty($reflectObject, $reflectClass, $propertyInjects, $id);
 
         // Alias name
         // Fix: $aliasId !== $id for deny loop get
@@ -927,7 +931,7 @@ class Container implements ContainerInterface
         }
 
         // Call init method if exist
-        if ($reflectionClass->hasMethod(self::INIT_METHOD)) {
+        if ($reflectClass->hasMethod(self::INIT_METHOD)) {
             $reflectObject->{self::INIT_METHOD}();
         }
 
@@ -1147,7 +1151,7 @@ class Container implements ContainerInterface
         $value = substr($value, 1);
 
         // Other: read config reference
-        if ($this->handler !== null) {
+        if ($this->handler) {
             $value = $this->handler->getReferenceValue($value);
         }
 

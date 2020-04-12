@@ -30,12 +30,12 @@ class ObjectDefinition
      *
      * @var string
      */
-    private $scope = Bean::SINGLETON;
+    private $scope;
 
     /**
      * @var string
      */
-    private $alias = '';
+    private $alias;
 
     /**
      * Constructor parameter injection.
