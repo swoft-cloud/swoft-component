@@ -5,6 +5,8 @@ namespace Swoft\Aop;
 use Swoft\Aop\Ast\Visitor\ProxyVisitor;
 use Swoft\Proxy\Exception\ProxyException;
 use Swoft\Proxy\Proxy as BaseProxy;
+use function explode;
+use function strpos;
 
 /**
  * Class Proxy
@@ -28,7 +30,7 @@ class Proxy
             return $className;
         }
 
-        // Ignore aop proxy
+        // Is RPC proxy
         if (strpos($className, '_IGNORE_') !== false) {
             return $className;
         }
@@ -46,7 +48,7 @@ class Proxy
      */
     public static function getClassName(string $proxyClassName): string
     {
-        list($className) = explode('_', $proxyClassName);
+        [$className] = explode('_', $proxyClassName);
         return $className;
     }
 
@@ -59,8 +61,8 @@ class Proxy
      */
     public static function getOriginalClassName(string $proxyClassName): string
     {
-        $proxys = explode(ProxyVisitor::PROXY, $proxyClassName);
+        $proxies = explode(ProxyVisitor::PROXY, $proxyClassName);
 
-        return $proxys[0];
+        return $proxies[0];
     }
 }

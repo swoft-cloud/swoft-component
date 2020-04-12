@@ -11,6 +11,7 @@ use Swoft\Proxy\Ast\Visitor\Visitor;
 use Swoft\Stdlib\Helper\Str;
 use function array_unshift;
 use function sprintf;
+use function strpos;
 
 /**
  * Class ProxyVisitor
@@ -32,21 +33,21 @@ class ProxyVisitor extends Visitor
     private $namespace = '';
 
     /**
-     * New class name
+     * New class name. it's random string. eg: '5e8455cdd6887'
      *
      * @var string
      */
     private $proxyId;
 
     /**
-     * Origin class name
+     * Origin class name. eg: 'SameNamespace\\SomeClass'
      *
      * @var string
      */
     private $originalClassName = '';
 
     /**
-     * Proxy class name without namespace
+     * Proxy class name without namespace. eg: 'SomeClass_PROXY_5e8455cdd6887'
      *
      * @var string
      */
@@ -68,7 +69,8 @@ class ProxyVisitor extends Visitor
     public function __construct(string $proxyId = '', string $aopClassName = AopTrait::class)
     {
         $this->aopClassName = $aopClassName;
-        $this->proxyId      = $proxyId ?: Str::getUniqid();
+
+        $this->proxyId = $proxyId ?: Str::getUniqid();
     }
 
     /**
@@ -82,7 +84,6 @@ class ProxyVisitor extends Visitor
     {
         // Namespace for proxy class name
         if ($node instanceof Node\Stmt\Namespace_) {
-
             $this->namespace = $node->name->toString();
             return null;
         }
@@ -116,7 +117,6 @@ class ProxyVisitor extends Visitor
 
         // Parse new class node
         if ($node instanceof Node\Stmt\Class_) {
-
             // Fix such as '\Xxxx' class bug
             $extendClass = $this->originalClassName;
             if (strpos($extendClass, '\\') !== 0) {
@@ -181,7 +181,7 @@ class ProxyVisitor extends Visitor
     {
         $methodName = $node->name->toString();
 
-        $params = [];
+        $params = []; // TODO ??
         foreach ($node->params as $key => $param) {
             $params[] = $param;
         }

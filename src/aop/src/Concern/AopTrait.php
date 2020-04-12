@@ -24,6 +24,7 @@ trait AopTrait
      *
      * @return mixed
      * @throws Throwable
+     * @noinspection MagicMethodsValidityInspection
      */
     public function __proxyCall(string $className, string $methodName, array $args)
     {
@@ -53,6 +54,7 @@ trait AopTrait
      * @param array  $args
      *
      * @return mixed
+     * @noinspection MagicMethodsValidityInspection
      */
     public function __invokeTarget(string $methodName, array $args)
     {

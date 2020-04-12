@@ -134,14 +134,15 @@ class AspectHandler
         $before = $this->aspect['before'] ?? [];
 
         // Invoke before advice
-        if (!empty($before)) {
+        if ($before) {
             $this->invokeAdvice($before);
         }
 
         // Invoke next aspect
-        if (!empty($this->aspects)) {
-            $nextAspect      = $this->nextHandler();
-            $result          = $nextAspect->invokeAspect();
+        if ($this->aspects) {
+            $nextAspect = $this->nextHandler();
+            $result     = $nextAspect->invokeAspect();
+
             $this->throwable = $nextAspect->throwable;
 
             return $result;
