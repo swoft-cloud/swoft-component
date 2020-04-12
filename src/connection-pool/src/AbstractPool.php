@@ -164,7 +164,12 @@ abstract class AbstractPool implements PoolInterface
                 continue;
             }
 
-            $connection->close();
+            try {
+                // May be disconnected
+                $connection->close();
+            } catch (Throwable $e) {
+                CLog::warning('Pool close connection error ' . $e->getMessage());
+            }
         }
 
         return $this->count;
@@ -275,8 +280,12 @@ abstract class AbstractPool implements PoolInterface
             // Out of `maxIdleTime`
             if ($time - $lastTime > $this->maxIdleTime) {
 
-                // Fix expired connection not released
-                $connection->close();
+                try {
+                    // Fix expired connection not released, May be disconnected
+                    $connection->close();
+                } catch (Throwable $e) {
+                    CLog::warning('popByChannel close connection error ' . $e->getMessage());
+                }
 
                 $this->count--;
                 continue;
