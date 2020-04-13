@@ -126,7 +126,9 @@ class ValidatorRegister
             throw new ValidatorException(sprintf('Only one `@XxxType` can be defined(propterty=%s)!', $propertyName));
         }
 
-        self::$validators[$validateName]['properties'][$propertyName]['required'] = false;
+        if(!isset(self::$validators[$validateName]['properties'][$propertyName]['required'])) {
+            self::$validators[$validateName]['properties'][$propertyName]['required'] = false;
+        }
 
         if ($objAnnotation instanceof Required) {
             self::$validators[$validateName]['properties'][$propertyName]['required'] = true;

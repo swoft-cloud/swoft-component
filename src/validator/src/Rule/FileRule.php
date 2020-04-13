@@ -39,7 +39,7 @@ class FileRule implements RuleInterface
             $message = (empty($message)) ? sprintf('%s must exist!', $propertyName) : $message;
             throw new ValidatorException($message);
         }
-        if (isset($data[$propertyName])) {
+        if (!isset($data[$propertyName])) {
             throw new ValidatorException($message);
         }
         foreach ($filesFields as $key => $field) {
