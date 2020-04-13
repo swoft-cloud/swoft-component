@@ -592,7 +592,9 @@ class Container implements ContainerInterface
      */
     public function destroyRequest(string $id): void
     {
-        unset($this->requestPool[$id]);
+        if (isset($this->requestPool[$id])) {
+            unset($this->requestPool[$id]);
+        }
     }
 
     /**
@@ -602,7 +604,9 @@ class Container implements ContainerInterface
      */
     public function destroySession(string $sid): void
     {
-        unset($this->sessionPool[$sid]);
+        if (isset($this->sessionPool[$sid])) {
+            unset($this->sessionPool[$sid]);
+        }
     }
 
     /**

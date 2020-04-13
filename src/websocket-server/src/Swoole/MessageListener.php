@@ -31,6 +31,7 @@ use Swoole\Websocket\Frame;
 use Swoole\Websocket\Server;
 use Throwable;
 use function server;
+use const WEBSOCKET_OPCODE_CLOSE;
 
 /**
  * Class MessageListener
@@ -55,7 +56,14 @@ class MessageListener implements MessageInterface
     public function onMessage(Server $server, Frame $frame): void
     {
         $fd  = $frame->fd;
-        $sid = (string)$fd;
+
+        // Fix: if setting: 'open_websocket_close_frame' => true
+        if ($frame->opcode === WEBSOCKET_OPCODE_CLOSE) {
+            CLog::info('Close ws#%d connection by close opcode message, reason: %s', $fd, $frame->reason);
+            // Swoft::getBean(CloseListener::class)->onClose($server, $fd, 0);
+            // NOTICE: swoole will auto call close event.
+            return;
+        }
 
         server()->log("Message: conn#{$fd} received message data", [], 'debug');
 
@@ -63,6 +71,7 @@ class MessageListener implements MessageInterface
         $response = Response::new($fd);
 
         /** @var WsMessageContext $ctx */
+        $sid = (string)$fd;
         $ctx = WsMessageContext::new($request, $response);
 
         // Storage context
