@@ -22,11 +22,11 @@ class DestroyRequestListener implements EventHandlerInterface
      */
     public function handle(EventInterface $event): void
     {
-        $id = (string)$event->getParam(0, '');
-        if (empty($id)) {
+        $id = $event->getParam(0, '');
+        if (!$id) {
             return;
         }
 
-        BeanFactory::destroyRequest($id);
+        BeanFactory::destroyRequest((string)$id);
     }
 }

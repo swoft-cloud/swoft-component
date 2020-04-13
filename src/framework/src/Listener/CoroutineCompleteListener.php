@@ -12,6 +12,7 @@ use Swoft\Event\EventHandlerInterface;
 use Swoft\Event\EventInterface;
 use Swoft\Log\Logger;
 use Swoft\SwoftEvent;
+use Throwable;
 use function bean;
 use function sgo;
 
@@ -47,24 +48,28 @@ class CoroutineCompleteListener implements EventHandlerInterface
      */
     private function coroutineComplete(): void
     {
-        // Wait
-        Context::getWaitGroup()->wait();
-
         /* @var Logger $logger */
         $logger = bean('logger');
 
-        // Add notice log
-        if ($logger->isEnable()) {
-            $logger->appendNoticeLog();
+        try {
+            // Wait coroutine
+            Context::getWaitGroup()->wait();
+
+            // Add notice log
+            if ($logger->isEnable()) {
+                $logger->appendNoticeLog();
+            }
+
+            // Coroutine destroy
+            Swoft::trigger(SwoftEvent::COROUTINE_DESTROY);
+        } catch (Throwable $e) {
+            $logger->error('run coroutine complete handle error: ' . $e->getMessage());
+        } finally { // Use finally ensure context destroy
+            // Destroy request bean
+            Swoft::trigger(BeanEvent::DESTROY_REQUEST, $this, Co::tid());
+
+            // Destroy context
+            Context::destroy();
         }
-
-        // Coroutine destroy
-        Swoft::trigger(SwoftEvent::COROUTINE_DESTROY);
-
-        // Destroy request bean
-        Swoft::trigger(BeanEvent::DESTROY_REQUEST, $this, Co::tid());
-
-        // Destroy context
-        Context::destroy();
     }
 }
