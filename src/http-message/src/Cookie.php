@@ -20,11 +20,11 @@ class Cookie
      * Default cookie properties
      */
     public const DEFAULTS = [
-        'value' => '',
-        'domain' => '',
-        'path' => '',
-        'expires' => 0,
-        'secure' => false,
+        'value'    => '',
+        'domain'   => '',
+        'path'     => '',
+        'expires'  => 0,
+        'secure'   => false,
         'httpOnly' => false,
         'hostOnly' => false,
         'sameSite' => ''
@@ -33,7 +33,7 @@ class Cookie
     /**
      * SameSite Values
      */
-    public const SAME_SITE_VALUES = ['Strict','Lax','None'];
+    public const SAME_SITE_VALUES = ['Strict', 'Lax', 'None'];
 
     /**
      * @var string
@@ -63,7 +63,7 @@ class Cookie
     /**
      * @var bool
      */
-    private $secure = false;
+    private $secure  = false;
 
     /**
      * @var bool
@@ -80,13 +80,10 @@ class Cookie
      */
     private $sameSite = '';
 
-
     /**
      * @param array $config
      *
      * @return self
-     * @throws \ReflectionException
-     * @throws \Swoft\Bean\Exception\ContainerException
      */
     public static function new(array $config = []): self
     {
@@ -105,11 +102,11 @@ class Cookie
     public function toArray(): array
     {
         return [
-            'value' => $this->value,
-            'domain' => $this->domain,
-            'path' => $this->path,
-            'expires' => $this->expires,
-            'secure' => $this->secure,
+            'value'    => $this->value,
+            'domain'   => $this->domain,
+            'path'     => $this->path,
+            'expires'  => $this->expires,
+            'secure'   => $this->secure,
             'httpOnly' => $this->httpOnly,
             'hostOnly' => $this->hostOnly,
             'sameSite' => $this->sameSite,
@@ -151,7 +148,6 @@ class Cookie
             $result .= '; HttpOnly';
         }
 
-
         return $result;
     }
 
@@ -168,7 +164,7 @@ class Cookie
      */
     public function delete(): void
     {
-        $this->value = '';
+        $this->value   = '';
         $this->expires = -60;
     }
 
@@ -339,9 +335,9 @@ class Cookie
      */
     public function setSameSite(string $sameSite): Cookie
     {
-        if (in_array($sameSite,static::SAME_SITE_VALUES)){
+        if (in_array($sameSite, static::SAME_SITE_VALUES)) {
             $this->sameSite = $sameSite;
-        }else{
+        } else {
             $this->sameSite = '';
         }
 
