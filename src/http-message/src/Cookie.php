@@ -6,6 +6,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use function bean;
 use function gmdate;
+use function in_array;
 use function urlencode;
 
 /**
@@ -335,7 +336,7 @@ class Cookie
      */
     public function setSameSite(string $sameSite): Cookie
     {
-        if (in_array($sameSite, static::SAME_SITE_VALUES)) {
+        if (in_array($sameSite, static::SAME_SITE_VALUES, true)) {
             $this->sameSite = $sameSite;
         } else {
             $this->sameSite = '';
