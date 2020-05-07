@@ -138,6 +138,19 @@ use Throwable;
  * @method static void subscribe(array $channels, string|array $callback)
  * @method static array geoRadius(string $key, float $longitude, float $latitude, float $radius, string $radiusUnit, array $options)
  * @method static bool expireAt(string $key, int $timestamp)
+ * @method static integer xAck(string $stream_key, string $group, array $id_list)
+ * @method static string xAdd(string $stream_key, string $id, array $message, int $max_len, bool $approximate)
+ * @method static string xClaim(string $stream_key, string $group, string $consumer, string $min_idle_time, array $id_list, array $options)
+ * @method static string xDel(string $stream_key, array $id_list)
+ * @method static string xGroup() @TODO
+ * @method static string xInfo() @TODO
+ * @method static integer xLen(string $stream_key)
+ * @method static array xPending(string $stream_key, string $group, string $start, string $end, int $count, string $consumer)
+ * @method static array xRange(string $stream_key, string $start, string $end, int $count)
+ * @method static array xRevRange(string $stream_key, string $end, string $start, int $count)
+ * @method static array xRead(array|string $stream_keys, int $count, int $block)
+ * @method static array xReadGroup(string $group, string consumer, array|string $stream_keys, int $count, int $block)
+ * @method static integer xTrim(string $stream_key, int $max_len, bool $approximate)
  */
 class Redis
 {

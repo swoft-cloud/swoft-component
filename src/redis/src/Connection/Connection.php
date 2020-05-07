@@ -137,6 +137,19 @@ use function sprintf;
  * @method void subscribe(array $channels, string|array $callback)
  * @method array geoRadius(string $key, float $longitude, float $latitude, float $radius, string $radiusUnit, array $options)
  * @method bool expireAt(string $key, int $timestamp)
+ * @method integer xAck(string $stream_key, string $group, array $id_list)
+ * @method string xAdd(string $stream_key, string $id, array $message, int $max_len, bool $approximate)
+ * @method string xClaim(string $stream_key, string $group, string $consumer, string $min_idle_time, array $id_list, array $options)
+ * @method string xDel(string $stream_key, array $id_list)
+ * @method string xGroup() @TODO
+ * @method string xInfo() @TODO
+ * @method integer xLen(string $stream_key)
+ * @method array xPending(string $stream_key, string $group, string $start, string $end, int $count, string $consumer)
+ * @method array xRange(string $stream_key, string $start, string $end, int $count)
+ * @method array xRevRange(string $stream_key, string $end, string $start, int $count)
+ * @method array xRead(array|string $stream_keys, int $count, int $block)
+ * @method array xReadGroup(string $group, string consumer, array|string $stream_keys, int $count, int $block)
+ * @method integer xTrim(string $stream_key, int $max_len, bool $approximate)
  */
 abstract class Connection extends AbstractConnection implements ConnectionInterface
 {
@@ -272,7 +285,20 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
         'punsubscribe',
         'subscribe',
         'unsubscribe',
-        'expireat'
+        'expireat',
+        'xack',
+        'xadd',
+        'xclaim',
+        'xdel',
+        'xgroup',
+        'xinfo',
+        'xlen',
+        'xpending',
+        'xrange',
+        'xread',
+        'xreadgroup',
+        'xrevrange',
+        'xtrim',
     ];
 
     /**
