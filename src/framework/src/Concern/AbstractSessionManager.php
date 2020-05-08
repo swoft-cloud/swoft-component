@@ -84,6 +84,10 @@ abstract class AbstractSessionManager
     }
 
     /**
+     * Get connection session object by sessionId.
+     *
+     * - If not found on current worker, will try find from storage driver.
+     *
      * @param string $sessionId The session Id. eg: swoole.fd, http session id
      *
      * @return SessionInterface|null

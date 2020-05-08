@@ -80,11 +80,12 @@ class MessageListener implements MessageInterface
         Session::bindCo($sid);
 
         try {
-            // Trigger message before event
+            // Trigger message before event.
+            // NOTICE: on the event, maybe session has been lost. TODO
             Swoft::trigger(WsServerEvent::MESSAGE_RECEIVE, $fd, $server, $frame);
 
             /** @var Connection $conn */
-            // $conn = Session::current();
+            // NOTICE: don't use Session::current(). must use Connection::current(), it can be restore connection from storage.
             $conn = Connection::current();
             $info = $conn->getModuleInfo();
 
