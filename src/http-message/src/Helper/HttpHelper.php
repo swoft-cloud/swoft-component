@@ -1,5 +1,12 @@
-<?php
-
+<?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Http\Message\Helper;
 
 use function array_keys;
@@ -46,7 +53,6 @@ class HttpHelper
 
         return $normalized;
     }
-
 
     /**
      * Create and return an UploadedFile instance from a $_FILES specification.
@@ -100,7 +106,6 @@ class HttpHelper
         return $normalizedFiles;
     }
 
-
     /**
      * Get a Uri populated with values from $swooleRequest->server.
      *
@@ -111,7 +116,7 @@ class HttpHelper
      *
      * @return Uri
      */
-    public static function newUriByCoRequest(string $path, string $query,  string $headerHost, array &$server): Uri
+    public static function newUriByCoRequest(string $path, string $query, string $headerHost, array &$server): Uri
     {
         /** @var Uri $uri */
         $uri = BeanFactory::getBean(Uri::class);
