@@ -16,7 +16,7 @@ use Swoft\Exception\SwoftException;
  *
  * @since 2.0
  */
-class HeaderTest extends TestCase
+class HeaderTest extends HttpServerTestCase
 {
     /**
      * @throws SwoftException

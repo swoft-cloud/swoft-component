@@ -20,7 +20,7 @@ use SwoftTest\Http\Server\Testing\MockRequest;
  * @since 2.0
  *
  */
-class RouteTest extends TestCase
+class RouteTest extends HttpServerTestCase
 {
     /**
      * @throws SwoftException

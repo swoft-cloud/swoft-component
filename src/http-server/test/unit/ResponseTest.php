@@ -19,7 +19,7 @@ use SwoftTest\Http\Server\Testing\MockRequest;
  *
  * @package SwoftTest\Http\Server\Unit
  */
-class ResponseTest extends TestCase
+class ResponseTest extends HttpServerTestCase
 {
     /**
      * @throws SwoftException

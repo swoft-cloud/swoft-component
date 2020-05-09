@@ -17,7 +17,7 @@ use Swoft\Http\Message\ContentType;
  *
  * @since 2.0
  */
-class MdTest extends TestCase
+class MdTest extends HttpServerTestCase
 {
     public function testMethod()
     {

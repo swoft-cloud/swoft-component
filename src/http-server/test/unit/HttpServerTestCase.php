@@ -17,14 +17,14 @@ use SwoftTest\Http\Server\Testing\MockHttpServer;
  *
  * @since 2.0
  */
-abstract class TestCase extends \PHPUnit\Framework\TestCase
+abstract class HttpServerTestCase extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var MockHttpServer
      */
     protected $mockServer;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->mockServer = BeanFactory::getBean(MockHttpServer::class);
     }

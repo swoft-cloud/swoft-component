@@ -19,7 +19,7 @@ use SwoftTest\Http\Server\Testing\Validator\UserBaseValidate;
  *
  * @since 2.0
  */
-class ValidatorTest extends TestCase
+class ValidatorTest extends HttpServerTestCase
 {
     /**
      * @throws SwoftException

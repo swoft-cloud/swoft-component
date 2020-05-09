@@ -343,6 +343,45 @@ final class Route implements IteratorAggregate
      ******************************************************************************/
 
     /**
+     * Build an URL by route path vars
+     *
+     * @param array $pathVars Path vars. eg: ['name' => 'inhere']
+     *
+     * @return string
+     */
+    public function createUrl(array $pathVars = []): string
+    {
+        $pairs = [];
+        foreach ($pathVars as $name => $val) {
+            $name = '{' . $name . '}';
+            // save
+            $pairs[$name] = $val;
+        }
+
+        if ($pairs) {
+            return strtr($this->path, $pairs);
+        }
+
+        return $this->path;
+    }
+
+    /**
+     * Build uri path string.
+     *
+     * @param array  $pathVars Path vars. eg: ['{name}' => 'inhere']
+     *
+     * @return string
+     */
+    public function toUri(array $pathVars = []): string
+    {
+        if ($pathVars) {
+            return strtr($this->path, $pathVars);
+        }
+
+        return $this->path;
+    }
+
+    /**
      * @param array $params
      *
      * @return Route
@@ -359,7 +398,7 @@ final class Route implements IteratorAggregate
     /**
      * push middleware(s) to the route
      *
-     * @param array ...$middleware
+     * @param array|mixed ...$middleware
      *
      * @return Route
      */
@@ -394,22 +433,6 @@ final class Route implements IteratorAggregate
     public function setChains(array $chains): void
     {
         $this->chains = $chains;
-    }
-
-    /**
-     * build uri string.
-     *
-     * @param array $pathVars
-     *
-     * @return string
-     */
-    public function toUri(array $pathVars = []): string
-    {
-        if ($pathVars) {
-            return strtr($this->path, $pathVars);
-        }
-
-        return $this->path;
     }
 
     /**

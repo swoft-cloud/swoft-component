@@ -19,7 +19,7 @@ use SwoftTest\Http\Server\Testing\MockRequest;
  *
  * @since 2.0
  */
-class RequestTest extends TestCase
+class RequestTest extends HttpServerTestCase
 {
     public function testPost(): void
     {

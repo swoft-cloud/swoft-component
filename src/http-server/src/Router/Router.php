@@ -639,7 +639,7 @@ class Router implements RouterInterface
 
     /**
      * @param string $name Route name
-     * @param array  $pathVars
+     * @param array  $pathVars Path vars. eg: ['{name}' => 'inhere']
      *
      * @return string
      */

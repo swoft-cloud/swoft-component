@@ -18,7 +18,7 @@ use SwoftTest\Http\Server\Testing\MockRequest;
  *
  * @since 2.0
  */
-class RestTest extends TestCase
+class RestTest extends HttpServerTestCase
 {
     /**
      * @throws \Swoft\Exception\SwoftException

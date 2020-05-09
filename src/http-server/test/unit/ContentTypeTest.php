@@ -16,7 +16,7 @@ use Swoft\Http\Message\ContentType;
  *
  * @since 2.0
  */
-class ContentTypeTest extends TestCase
+class ContentTypeTest extends HttpServerTestCase
 {
     public function testUserCt()
     {
