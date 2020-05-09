@@ -6,6 +6,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Stdlib\Helper\ObjectHelper;
 use function bean;
 use function gmdate;
+use function in_array;
 use function urlencode;
 
 /**
@@ -27,7 +28,13 @@ class Cookie
         'secure'   => false,
         'httpOnly' => false,
         'hostOnly' => false,
+        'sameSite' => ''
     ];
+
+    /**
+     * SameSite Values
+     */
+    public const SAME_SITE_VALUES = ['Strict', 'Lax', 'None'];
 
     /**
      * @var string
@@ -70,6 +77,11 @@ class Cookie
     private $httpOnly = false;
 
     /**
+     * @var string
+     */
+    private $sameSite = '';
+
+    /**
      * @param array $config
      *
      * @return self
@@ -98,6 +110,7 @@ class Cookie
             'secure'   => $this->secure,
             'httpOnly' => $this->httpOnly,
             'hostOnly' => $this->hostOnly,
+            'sameSite' => $this->sameSite,
         ];
     }
 
@@ -124,13 +137,13 @@ class Cookie
             $result .= '; expires=' . gmdate('D, d-M-Y H:i:s e', $timestamp);
         }
 
+        if ($this->sameSite) {
+            $result .= '; SameSite=' . $this->sameSite;
+        }
+
         if ($this->secure) {
             $result .= '; secure';
         }
-
-        // if ($hostOnly) {
-        //     $result .= '; HostOnly';
-        // }
 
         if ($this->httpOnly) {
             $result .= '; HttpOnly';
@@ -305,6 +318,30 @@ class Cookie
     public function setHttpOnly(bool $httpOnly): Cookie
     {
         $this->httpOnly = $httpOnly;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSameSite(): string
+    {
+        return $this->sameSite;
+    }
+
+    /**
+     * @param string $sameSite
+     *
+     * @return Cookie
+     */
+    public function setSameSite(string $sameSite): Cookie
+    {
+        if (in_array($sameSite, static::SAME_SITE_VALUES, true)) {
+            $this->sameSite = $sameSite;
+        } else {
+            $this->sameSite = '';
+        }
+
         return $this;
     }
 }
