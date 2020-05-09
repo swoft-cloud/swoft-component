@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Http\Server\Router;
 
 use function array_keys;
@@ -42,8 +49,10 @@ class Router implements RouterInterface
 
     /** @var string */
     protected $currentGroupPrefix;
+
     /** @var array */
     protected $currentGroupOption = [];
+
     /** @var array */
     protected $currentGroupChains = [];
 

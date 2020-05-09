@@ -1,5 +1,12 @@
-<?php
-
+<?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace SwoftTest\Http\Server\Router;
 
 use PHPUnit\Framework\TestCase;
@@ -363,7 +370,6 @@ class RouterTest extends TestCase
         $this->assertSame(['func3', 'func4', 'func2'], $route->getChains());
         $this->assertArrayHasKey('n1', $route->getOptions());
     }
-
 
     public function testRouteCache(): void
     {

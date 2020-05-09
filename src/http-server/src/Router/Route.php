@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Http\Server\Router;
 
 use function array_merge;
@@ -447,7 +454,10 @@ final class Route implements IteratorAggregate
     {
         return sprintf(
             '%-7s %-25s --> %s (%d middleware)',
-            $this->method, $this->path, $this->getHandlerName(), count($this->chains)
+            $this->method,
+            $this->path,
+            $this->getHandlerName(),
+            count($this->chains)
         );
     }
 
