@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Console;
 
 use Swoft\Console\Style\Style;
@@ -34,10 +41,15 @@ class Console
 {
     // constants for error level 0 - 4. you can setting by '--debug LEVEL'
     public const VERB_QUIET = 0;
+
     public const VERB_ERROR = 1; // default reporting on error
+
     public const VERB_WARN  = 2;
+
     public const VERB_INFO  = 3;
+
     public const VERB_DEBUG = 4;
+
     public const VERB_CRAZY = 5;
 
     // level => name

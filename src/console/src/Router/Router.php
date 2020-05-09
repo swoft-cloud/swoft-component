@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Console\Router;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
@@ -179,7 +186,7 @@ class Router implements RouterInterface
             $group   = $this->defaultGroup;
             $command = $this->resolveCommandAlias($inputCmd);
 
-            // Only an group name
+        // Only an group name
         } elseif ($noSepChar) {
             $group = $this->resolveGroupAlias($inputCmd);
             if (isset($this->groups[$group])) {
@@ -456,7 +463,7 @@ class Router implements RouterInterface
     {
         // Filter disabled groups
         if (isset($this->disabledGroups[$name])) {
-           return;
+            return;
         }
 
         $this->groups[$name] = $info;
