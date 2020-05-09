@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace SwoftTest\Event\Testing;
 
 use Swoft\Event\Annotation\Mapping\Subscriber;
@@ -14,6 +21,7 @@ use Swoft\Event\Listener\ListenerPriority;
 class TestSubscriber implements EventSubscriberInterface
 {
     public const EVENT_ONE = 'test.event1';
+
     public const EVENT_TWO = 'test.event2';
 
     /**

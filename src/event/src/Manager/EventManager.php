@@ -7,14 +7,18 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-
 namespace Swoft\Event\Manager;
 
 use Closure;
 use InvalidArgumentException;
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Event\{Event, EventHandlerInterface, EventInterface, EventSubscriberInterface};
-use Swoft\Event\Listener\{LazyListener, ListenerPriority, ListenerQueue};
+use Swoft\Event\Event;
+use Swoft\Event\EventHandlerInterface;
+use Swoft\Event\EventInterface;
+use Swoft\Event\EventSubscriberInterface;
+use Swoft\Event\Listener\LazyListener;
+use Swoft\Event\Listener\ListenerPriority;
+use Swoft\Event\Listener\ListenerQueue;
 use function array_keys;
 use function class_exists;
 use function count;
@@ -156,7 +160,7 @@ class EventManager implements EventManagerInterface
             // only handler method name
             if (is_string($conf)) {
                 $queue->add(new LazyListener([$object, $conf]), $priority);
-                // with priority ['onPost', ListenerPriority::LOW]
+            // with priority ['onPost', ListenerPriority::LOW]
             } elseif (is_string($conf[0])) {
                 $queue->add(new LazyListener([$object, $conf[0]]), $conf[1] ?? $priority);
             }
@@ -193,7 +197,7 @@ class EventManager implements EventManagerInterface
             if (is_string($listener) && class_exists($listener)) {
                 $listener = new $listener;
 
-                // like 'function' OR '[object, method]'
+            // like 'function' OR '[object, method]'
             } else {
                 $listener = new LazyListener($listener);
             }

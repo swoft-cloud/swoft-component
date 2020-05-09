@@ -1,11 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: inhere
- * Date: 2019-02-01
- * Time: 21:51
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-
 namespace Swoft\Event\Annotation\Mapping;
 
 use Doctrine\Common\Annotations\Annotation\Target;
