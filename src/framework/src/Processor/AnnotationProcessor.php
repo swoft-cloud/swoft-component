@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Processor;
 
 use Exception;
@@ -41,8 +48,12 @@ class AnnotationProcessor extends Processor
 
         $stats = AnnotationRegister::getClassStats();
 
-        CLog::info('Annotations is scanned(autoloader %d, annotation %d, parser %d)', $stats['autoloader'],
-            $stats['annotation'], $stats['parser']);
+        CLog::info(
+            'Annotations is scanned(autoloader %d, annotation %d, parser %d)',
+            $stats['autoloader'],
+            $stats['annotation'],
+            $stats['parser']
+        );
 
         return $this->application->afterAnnotation();
     }

@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft;
 
 use RuntimeException;
@@ -116,8 +123,13 @@ class Co
 
                 PhpHelper::call($callable);
             } catch (Throwable $e) {
-                Error::log("Coroutine internal error: %s\nAt File %s line %d\nTrace:\n%s", $e->getMessage(),
-                    $e->getFile(), $e->getLine(), $e->getTraceAsString());
+                Error::log(
+                    "Coroutine internal error: %s\nAt File %s line %d\nTrace:\n%s",
+                    $e->getMessage(),
+                    $e->getFile(),
+                    $e->getLine(),
+                    $e->getTraceAsString()
+                );
 
                 // Trigger co error event
                 Swoft::trigger(SwoftEvent::COROUTINE_EXCEPTION, $e);
