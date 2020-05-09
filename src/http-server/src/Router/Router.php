@@ -184,7 +184,13 @@ class Router implements RouterInterface
 
     /**
      * register a route, allow GET request method.
-     * {@inheritdoc}
+     *
+     * @param string $path
+     * @param mixed  $handler
+     * @param array  $pathParams
+     * @param array  $opts
+     *
+     * @return Route
      */
     public function get(string $path, $handler, array $pathParams = [], array $opts = []): Route
     {
@@ -194,7 +200,13 @@ class Router implements RouterInterface
 
     /**
      * register a route, allow POST request method.
-     * {@inheritdoc}
+     *
+     * @param string $path
+     * @param mixed  $handler
+     * @param array  $pathParams
+     * @param array  $opts
+     *
+     * @return Route
      */
     public function post(string $path, $handler, array $pathParams = [], array $opts = []): Route
     {
@@ -203,7 +215,13 @@ class Router implements RouterInterface
 
     /**
      * register a route, allow PUT request method.
-     * {@inheritdoc}
+     *
+     * @param string $path
+     * @param mixed  $handler
+     * @param array  $pathParams
+     * @param array  $opts
+     *
+     * @return Route
      */
     public function put(string $path, $handler, array $pathParams = [], array $opts = []): Route
     {
@@ -212,7 +230,13 @@ class Router implements RouterInterface
 
     /**
      * register a route, allow PATCH request method.
-     * {@inheritdoc}
+     *
+     * @param string $path
+     * @param mixed  $handler
+     * @param array  $pathParams
+     * @param array  $opts
+     *
+     * @return Route
      */
     public function patch(string $path, $handler, array $pathParams = [], array $opts = []): Route
     {
@@ -221,7 +245,13 @@ class Router implements RouterInterface
 
     /**
      * register a route, allow DELETE request method.
-     * {@inheritdoc}
+     *
+     * @param string $path
+     * @param mixed  $handler
+     * @param array  $pathParams
+     * @param array  $opts
+     *
+     * @return Route
      */
     public function delete(string $path, $handler, array $pathParams = [], array $opts = []): Route
     {
@@ -230,7 +260,13 @@ class Router implements RouterInterface
 
     /**
      * register a route, allow HEAD request method.
-     * {@inheritdoc}
+     *
+     * @param string $path
+     * @param mixed  $handler
+     * @param array  $pathParams
+     * @param array  $opts
+     *
+     * @return Route
      */
     public function head(string $path, $handler, array $pathParams = [], array $opts = []): Route
     {
@@ -239,7 +275,13 @@ class Router implements RouterInterface
 
     /**
      * register a route, allow OPTIONS request method.
-     * {@inheritdoc}
+     *
+     * @param string $path
+     * @param mixed  $handler
+     * @param array  $pathParams
+     * @param array  $opts
+     *
+     * @return Route
      */
     public function options(string $path, $handler, array $pathParams = [], array $opts = []): Route
     {
@@ -248,7 +290,13 @@ class Router implements RouterInterface
 
     /**
      * register a route, allow CONNECT request method.
-     * {@inheritdoc}
+     *
+     * @param string $path
+     * @param mixed  $handler
+     * @param array  $pathParams
+     * @param array  $opts
+     *
+     * @return Route
      */
     public function connect(string $path, $handler, array $pathParams = [], array $opts = []): Route
     {
@@ -257,7 +305,11 @@ class Router implements RouterInterface
 
     /**
      * register a route, allow any request METHOD.
-     * {@inheritdoc}
+     *
+     * @param string $path
+     * @param mixed  $handler
+     * @param array  $pathParams
+     * @param array  $opts
      */
     public function any(string $path, $handler, array $pathParams = [], array $opts = []): void
     {
@@ -271,7 +323,7 @@ class Router implements RouterInterface
      * @param array           $pathParams
      * @param array           $opts
      */
-    public function map($methods, string $path, $handler, array $pathParams = [], array $opts = [])
+    public function map($methods, string $path, $handler, array $pathParams = [], array $opts = []): void
     {
         foreach ((array)$methods as $method) {
             $this->add($method, $path, $handler, $pathParams, $opts);
@@ -294,7 +346,6 @@ class Router implements RouterInterface
         }
 
         $method = strtoupper($method);
-
         if ($method === 'ANY') {
             $this->any($path, $handler, $pathParams, $opts);
             return Route::createFromArray();
@@ -653,7 +704,6 @@ class Router implements RouterInterface
      */
     public function each(Closure $func): void
     {
-        /** @var Route $route */
         foreach ($this->staticRoutes as $route) {
             $func($route);
         }
@@ -726,7 +776,6 @@ class Router implements RouterInterface
         $strings   = ['# Routes Number: ' . $this->count()];
         $strings[] = "\n# Static Routes:";
 
-        /** @var Route $route */
         foreach ($this->staticRoutes as $route) {
             $routeString = $route->toString();
 

@@ -115,7 +115,7 @@ interface RouterInterface extends IteratorAggregate, Countable, \Swoft\Contract\
      *     'schemas' => ['https'],
      * ]
      */
-    public function map($methods, string $path, $handler, array $binds = [], array $opts = []);
+    public function map($methods, string $path, $handler, array $binds = [], array $opts = []): void;
 
     /**
      * find the matched route info for the given request uri path
