@@ -42,9 +42,10 @@ class IsBoolRule implements RuleInterface
             throw new ValidatorException($message);
         }
 
-        $value = $data[$propertyName];
-        if ($value == 'true' || $value == 'false' || is_bool($value)) {
-            $data[$propertyName] = (bool)$value;
+        $value = filter_var($data[$propertyName], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+
+        if (is_bool($value)) {
+            $data[$propertyName] = $value;
             return $data;
         }
 
