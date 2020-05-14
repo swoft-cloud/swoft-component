@@ -1,15 +1,24 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Http\Server\Router;
 
 use Swoft\Stdlib\Helper\Str;
+use function rtrim;
 
 /**
  * Class RoutesRegister - collect all routes info from annotations
  *
  * @since 2.0
  */
-class RouteRegister
+final class RouteRegister
 {
     /**
      * @var array
@@ -77,7 +86,9 @@ class RouteRegister
                 $path    = $routePath[0] === '/' ? $routePath : $prefix . '/' . $routePath;
                 $handler = $class . '@' . $route['action'];
 
-                $router->map($route['method'], $path, $handler, $route['params'], ['name' => $route['name']]);
+                $router->map($route['method'], $path, $handler, $route['params'], [
+                    'name' => $route['name'],
+                ]);
             }
         }
     }

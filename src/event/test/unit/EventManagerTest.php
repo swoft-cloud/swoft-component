@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace SwoftTest\Event\Unit;
 
 use PHPUnit\Framework\TestCase;
@@ -72,8 +79,7 @@ class EventManagerTest extends TestCase
 
     public function testTrigger(): void
     {
-        $l0 = new class
-        {
+        $l0 = new class {
             public function __invoke(Event $evt)
             {
                 $evt->addParam('key1', 'val1');
@@ -106,7 +112,9 @@ class EventManagerTest extends TestCase
         $evt = $em->trigger(TestSubscriber::EVENT_ONE);
 
         $this->assertArrayHasKey('msg', $evt->getParams());
-        $this->assertSame('handle the event: test.event1 position: TestSubscriber.handleEvent1()',
-            $evt->getParam('msg'));
+        $this->assertSame(
+            'handle the event: test.event1 position: TestSubscriber.handleEvent1()',
+            $evt->getParam('msg')
+        );
     }
 }

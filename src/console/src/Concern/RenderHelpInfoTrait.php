@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Console\Concern;
 
 use Swoft;
@@ -59,8 +66,12 @@ trait RenderHelpInfoTrait
         $this->renderBannerLogo();
 
         // Display some information
-        $output->writef('PHP: <info>%s</info>, Swoft: <info>%s</info>, Swoole: <info>%s</info>', $phpVersion,
-            $swoftVersion, $swooleVersion);
+        $output->writef(
+            'PHP: <info>%s</info>, Swoft: <info>%s</info>, Swoole: <info>%s</info>',
+            $phpVersion,
+            $swoftVersion,
+            $swooleVersion
+        );
     }
 
     protected function renderBannerLogo(): void
@@ -112,15 +123,21 @@ trait RenderHelpInfoTrait
         Console::writeln('<comment>Available Commands:</comment>');
 
         $grpHandler = function (string $group, array $info) use ($keyWidth) {
-            Console::writef('  <info>%s</info>%s%s', Str::padRight($group, $keyWidth),
+            Console::writef(
+                '  <info>%s</info>%s%s',
+                Str::padRight($group, $keyWidth),
                 $info['desc'] ?: 'No description message',
-                $info['alias'] ? "(alias: <info>{$info['alias']}</info>)" : '');
+                $info['alias'] ? "(alias: <info>{$info['alias']}</info>)" : ''
+            );
         };
 
         $cmdHandler = function (string $cmdId, array $info) use ($keyWidth) {
-            Console::writef('  <info>%s</info> %s%s', Str::padRight($cmdId, $keyWidth),
+            Console::writef(
+                '  <info>%s</info> %s%s',
+                Str::padRight($cmdId, $keyWidth),
                 $info['desc'] ?: 'No description message',
-                $info['alias'] ? "(alias: <info>{$info['alias']}</info>)" : '');
+                $info['alias'] ? "(alias: <info>{$info['alias']}</info>)" : ''
+            );
         };
 
         $router->sortedEach($grpHandler, $expand ? $cmdHandler : null);
@@ -169,9 +186,12 @@ trait RenderHelpInfoTrait
         foreach ($names as $name) {
             $cmdId = $router->buildCommandID($group, $name);
             $cInfo = $router->getRouteByID($cmdId);
-            Console::writef('  <info>%s</info> %s%s', Str::padRight($name, $keyWidth),
+            Console::writef(
+                '  <info>%s</info> %s%s',
+                Str::padRight($name, $keyWidth),
                 $cInfo['desc'] ?: 'No description message',
-                $cInfo['alias'] ? "(alias: <info>{$cInfo['alias']}</info>)" : '');
+                $cInfo['alias'] ? "(alias: <info>{$cInfo['alias']}</info>)" : ''
+            );
         }
 
         if ($info['example']) {
@@ -221,7 +241,8 @@ trait RenderHelpInfoTrait
             foreach ($arguments as $name => $meta) {
                 Console::writef(
                     '  <info>%s</info> %s   %s%s',
-                    Str::padRight($name, $keyWidth), strtoupper($meta['type']),
+                    Str::padRight($name, $keyWidth),
+                    strtoupper($meta['type']),
                     $meta['desc'],
                     $this->renderDefaultValue($meta['default'])
                 );

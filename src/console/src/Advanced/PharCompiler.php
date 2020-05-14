@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Console\Advanced;
 
 use BadMethodCallException;
@@ -58,10 +65,13 @@ use const T_WHITESPACE;
 class PharCompiler
 {
     public const ON_ADD   = 'add';
+
     public const ON_SKIP  = 'skip';
+
     public const ON_ERROR = 'error';
 
     public const ON_MESSAGE   = 'message';
+
     public const ON_COLLECTED = 'collected';
 
     /** @var array */
@@ -576,7 +586,7 @@ class PharCompiler
             if (strpos($file, 'M ') === 0) {
                 yield substr($file, 2);
 
-                // new files
+            // new files
             } elseif (strpos($file, '?? ') === 0) {
                 yield substr($file, 3);
             }

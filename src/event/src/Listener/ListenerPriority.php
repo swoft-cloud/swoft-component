@@ -7,7 +7,6 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-
 namespace Swoft\Event\Listener;
 
 /**
@@ -19,10 +18,16 @@ namespace Swoft\Event\Listener;
 class ListenerPriority
 {
     public const MIN          = -300;
+
     public const LOW          = -200;
+
     public const BELOW_NORMAL = -100;
+
     public const NORMAL       = 0;
+
     public const ABOVE_NORMAL = 100;
+
     public const HIGH         = 200;
+
     public const MAX          = 300;
 }

@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Console\Advanced\Progress;
 
 use Generator;
@@ -82,7 +89,8 @@ class SimpleBar extends NotifyMessage
              */
             // printf("\r[%'--100s] %d%% %s",
             // printf("\x0D\x1B[2K[%'{$waitChar}-100s] %d%% %s",
-            printf("{$tplPrefix}[%'{$waitChar}-100s] %' 3d%% %s",
+            printf(
+                "{$tplPrefix}[%'{$waitChar}-100s] %' 3d%% %s",
                 str_repeat($opts['doneChar'], $percent) . ($finished ? '' : $opts['signChar']),
                 $percent,
                 $waitMsg
@@ -96,5 +104,4 @@ class SimpleBar extends NotifyMessage
 
         yield false;
     }
-
 }

@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Console\Helper;
 
 use function array_merge;
@@ -53,7 +60,9 @@ class DocBlock
 
         $comment = str_replace("\r\n", "\n", $comment);
         $comment = "@{$default} \n" .
-            str_replace("\r", '',
+            str_replace(
+                "\r",
+                '',
                 trim(preg_replace('/^\s*\**( |\t)?/m', '', $comment))
             );
 

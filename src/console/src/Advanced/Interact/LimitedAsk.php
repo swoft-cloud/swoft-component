@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Console\Advanced\Interact;
 
 use Closure;
@@ -16,7 +23,6 @@ use function ucfirst;
  */
 class LimitedAsk extends InteractMessage
 {
-
     /**
      * Ask a question, ask for a limited number of times
      *   若输入了值且验证成功则返回 输入的结果

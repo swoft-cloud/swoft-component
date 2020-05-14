@@ -96,6 +96,7 @@ class Connection implements SessionInterface
      */
     public static function current(): self
     {
+        /** @see ConnectionManager::current() */
         return Swoft::getBean(WsServerBean::MANAGER)->current();
     }
 

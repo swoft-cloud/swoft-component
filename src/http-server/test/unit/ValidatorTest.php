@@ -1,6 +1,12 @@
 <?php declare(strict_types=1);
-
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace SwoftTest\Http\Server\Unit;
 
 use Swoft\Exception\SwoftException;
@@ -13,7 +19,7 @@ use SwoftTest\Http\Server\Testing\Validator\UserBaseValidate;
  *
  * @since 2.0
  */
-class ValidatorTest extends TestCase
+class ValidatorTest extends HttpServerTestCase
 {
     /**
      * @throws SwoftException
@@ -80,7 +86,6 @@ class ValidatorTest extends TestCase
         $result = validate($data, UserBaseValidate::class, [], $users);
         $this->assertEquals($data, $result);
     }
-
 
     /**
      * @throws SwoftException

@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Db\Connection;
 
 use RuntimeException;
@@ -8,6 +7,8 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Co;
 use Swoft\Concern\ArrayPropertyTrait;
 use Swoft\Connection\Pool\Contract\ConnectionInterface as BaseConnection;
+use function sprintf;
+use function str_replace;
 
 /**
  * Class ConnectionManager
@@ -69,7 +70,8 @@ class ConnectionManager
     public function setOrdinaryConnection(BaseConnection $connection, string $poolName): void
     {
         $poolName = $this->formatName($poolName);
-        $key      = sprintf('%d.connection.%d.%s.%d', Co::tid(), Co::id(), $poolName, $connection->getId());
+
+        $key = sprintf('%d.connection.%d.%s.%d', Co::tid(), Co::id(), $poolName, $connection->getId());
         $this->set($key, $connection);
     }
 
@@ -77,10 +79,11 @@ class ConnectionManager
      * @param int    $id
      * @param string $poolName
      */
-    public function releaseOrdinaryConnection(int $id, string $poolName)
+    public function releaseOrdinaryConnection(int $id, string $poolName): void
     {
         $poolName = $this->formatName($poolName);
-        $key      = sprintf('%d.connection.%d.%s.%d', Co::tid(), Co::id(), $poolName, $id);
+
+        $key = sprintf('%d.connection.%d.%s.%d', Co::tid(), Co::id(), $poolName, $id);
         $this->unset($key);
     }
 
@@ -170,6 +173,7 @@ class ConnectionManager
     public function getTransactionConnection(string $poolName): Connection
     {
         $poolName = $this->formatName($poolName);
+
         $key      = sprintf('%d.transaction.%d.%s.connection', Co::tid(), Co::id(), $poolName);
         $con      = $this->get($key, null);
         if (!$con instanceof Connection) {
@@ -187,6 +191,7 @@ class ConnectionManager
     public function releaseTransaction(string $poolName): void
     {
         $poolName = $this->formatName($poolName);
+
         $key      = sprintf('%d.transaction.%d.%s', Co::tid(), Co::id(), $poolName);
         $this->unset($key);
     }

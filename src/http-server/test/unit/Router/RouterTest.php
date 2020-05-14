@@ -1,10 +1,19 @@
-<?php
-
+<?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace SwoftTest\Http\Server\Router;
 
 use PHPUnit\Framework\TestCase;
 use Swoft\Http\Server\Router\Route;
 use Swoft\Http\Server\Router\Router;
+use Throwable;
+use function sprintf;
 
 /**
  * Class RouterTest
@@ -55,14 +64,14 @@ class RouterTest extends TestCase
 
         $string = (string)$r;
         foreach (Router::METHODS_ARRAY as $method) {
-            $s = \sprintf('%-7s %-25s --> %s', $method, "/$method", "handle_$method");
+            $s = sprintf('%-7s %-25s --> %s', $method, "/$method", "handle_$method");
             $this->assertContains($s, $string);
         }
 
         $r->add('ANY', '/any', 'handler_any');
         $string = $r->toString();
         foreach (Router::METHODS_ARRAY as $method) {
-            $s = \sprintf('%-7s %-25s --> %s', $method, '/any', 'handler_any');
+            $s = sprintf('%-7s %-25s --> %s', $method, '/any', 'handler_any');
             $this->assertContains($s, $string);
         }
 
@@ -71,7 +80,7 @@ class RouterTest extends TestCase
 
         try {
             $r->add('invalid', '/path', '/handler');
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->assertContains('The method [INVALID] is not supported', $e->getMessage());
         }
     }
@@ -90,7 +99,7 @@ class RouterTest extends TestCase
         $r3 = $router->add('get', '/path3', 'handler3');
         $r3->namedTo('r3', $router);
 
-        $r4 = $router->add('get', '/path4', 'handler4', [], ['name' => 'r4']);
+        $r4 = $router->add('get', '/path4/{var}', 'handler4', [], ['name' => 'r4']);
         $r5 = Route::create('get', '/path5', 'handler5', [], ['name' => 'r5'])
             ->attachTo($router);
 
@@ -99,6 +108,8 @@ class RouterTest extends TestCase
         $this->assertEquals($r2, $router->getRoute('r2'));
         $this->assertEquals($r4, $router->getRoute('r4'));
         $this->assertEquals($r5, $router->getRoute('r5'));
+
+        $this->assertSame('/path4/val', $router->createUri('r4', ['{var}' => 'val']));
 
         $ret = $router->getRoute('r3');
         $this->assertEquals($r3, $ret);
@@ -214,10 +225,10 @@ class RouterTest extends TestCase
         // invalid
         [$status, ,] = $router->match('/hi/dont-match');
         $this->assertSame(Router::NOT_FOUND, $status);
-        
+
         // '/user/upload/moment/orj/{name}'
         $router->get('/user/upload/moment/orj/{name}', 'handler4');
-        
+
         [$status, $path, $route] = $router->match('/user/upload/moment/orj/da');
 
         $this->assertSame(Router::FOUND, $status);
@@ -363,7 +374,6 @@ class RouterTest extends TestCase
         $this->assertSame(['func3', 'func4', 'func2'], $route->getChains());
         $this->assertArrayHasKey('n1', $route->getOptions());
     }
-
 
     public function testRouteCache(): void
     {

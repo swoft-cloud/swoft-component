@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Concern;
 
 use Swoft\Contract\SessionInterface;
@@ -84,6 +91,10 @@ abstract class AbstractSessionManager
     }
 
     /**
+     * Get connection session object by sessionId.
+     *
+     * - If not found on current worker, will try find from storage driver.
+     *
      * @param string $sessionId The session Id. eg: swoole.fd, http session id
      *
      * @return SessionInterface|null

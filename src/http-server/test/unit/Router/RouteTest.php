@@ -1,7 +1,15 @@
-<?php
-
+<?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace SwoftTest\Http\Server\Router;
 
+use LogicException;
 use PHPUnit\Framework\TestCase;
 use Swoft\Http\Server\Router\Route;
 
@@ -15,14 +23,14 @@ class RouteTest extends TestCase
     public function testCreateFromArray(): void
     {
         $route = Route::createFromArray([
-            'path'      => '/kfhxlkeugug/{name}',
+            'path'      => '/hi/{name}',
             'method'    => 'GET',
             'handler'   => 'handler_func',
             'bindVars'  => [],
             'params'    => [],
             'pathVars'  => ['name',],
-            'pathRegex' => '#^/kfhxlkeugug/([^/]+)$#',
-            'pathStart' => '/kfhxlkeugug/',
+            'pathRegex' => '#^/hi/([^/]+)$#',
+            'pathStart' => '/hi/',
             'chains'    => [],
             'options'   => [],
         ]);
@@ -30,10 +38,13 @@ class RouteTest extends TestCase
 
         $this->assertEquals('GET', $route->getMethod());
         $this->assertEquals(['name'], $route->getPathVars());
-        $this->assertEquals('/kfhxlkeugug/', $route->getPathStart());
-        $this->assertEquals('#^/kfhxlkeugug/([^/]+)$#', $route->getPathRegex());
+        $this->assertEquals('/hi/', $route->getPathStart());
+        $this->assertEquals('#^/hi/([^/]+)$#', $route->getPathRegex());
         $this->assertArrayHasKey('name', $route->toArray());
         $this->assertArrayHasKey('n1', $route->getOptions());
+
+        $this->assertSame('/hi/inhere', $route->toUri(['{name}' => 'inhere']));
+        $this->assertSame('/hi/inhere', $route->createUrl(['name' => 'inhere']));
     }
 
     public function testParseParam(): void
@@ -110,7 +121,7 @@ class RouteTest extends TestCase
         $this->assertEquals('#^/blog-(\w+)$#', $route->getPathRegex());
 
         $route = Route::create('GET', '/some/[to/]path', 'my_handler');
-        $this->expectException(\LogicException::class);
+        $this->expectException(LogicException::class);
         $this->expectExceptionMessage('Optional segments can only occur at the end of a route');
         $route->parseParam();
     }

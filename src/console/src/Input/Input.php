@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace Swoft\Console\Input;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
@@ -216,7 +223,7 @@ class Input extends AbstractInput
                 $typeValue = FlagType::convertType($arg['type'], $values[$index]);
                 // Re-set strict type value
                 $this->args[$name] = $this->args[$index] = $typeValue;
-                // Bind default value
+            // Bind default value
             } elseif (isset($arg['default'])) {
                 $typeValue = FlagType::convertType($arg['type'], $arg['default']);
                 // Re-set strict type value

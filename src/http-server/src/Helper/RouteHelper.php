@@ -1,11 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: Inhere
- * Date: 2018/4/19 0019
- * Time: 23:56
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
-
 namespace Swoft\Http\Server\Helper;
 
 use function preg_replace;

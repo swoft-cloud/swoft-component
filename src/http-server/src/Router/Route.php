@@ -1,17 +1,26 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Http\Server\Router;
 
+use ArrayIterator;
+use IteratorAggregate;
+use LogicException;
+use Traversable;
 use function array_merge;
 use function array_shift;
-use ArrayIterator;
 use function count;
 use function get_class;
 use function is_array;
 use function is_object;
 use function is_string;
-use IteratorAggregate;
-use LogicException;
 use function preg_match;
 use function preg_match_all;
 use function property_exists;
@@ -24,7 +33,6 @@ use function strtoupper;
 use function strtr;
 use function substr;
 use function substr_count;
-use Traversable;
 use function trim;
 
 /**
@@ -57,6 +65,7 @@ final class Route implements IteratorAggregate
     /**
      * map where parameter binds.
      * [param name => regular expression path (or symbol name)]
+     *
      * @var string[]
      */
     private $bindVars;
@@ -64,6 +73,7 @@ final class Route implements IteratorAggregate
     /**
      * dynamic route param values, only use for route cache
      * [param name => value]
+     *
      * @var string[]
      */
     private $params = [];
@@ -72,6 +82,7 @@ final class Route implements IteratorAggregate
 
     /**
      * path var names.
+     *
      * @var array '/users/{id}' => ['id']
      */
     private $pathVars = [];
@@ -84,6 +95,7 @@ final class Route implements IteratorAggregate
     /**
      * '/users/{id}' -> '/users/'
      * '/blog/post-{id}' -> '/blog/post-'
+     *
      * @var string
      */
     private $pathStart = '';
@@ -92,12 +104,14 @@ final class Route implements IteratorAggregate
 
     /**
      * middleware handler chains
+     *
      * @var callable[]
      */
     private $chains = [];
 
     /**
      * some custom route options data.
+     *
      * @var array
      */
     private $options;
@@ -329,13 +343,53 @@ final class Route implements IteratorAggregate
      ******************************************************************************/
 
     /**
+     * Build an URL by route path vars
+     *
+     * @param array $pathVars Path vars. eg: ['name' => 'inhere']
+     *
+     * @return string
+     */
+    public function createUrl(array $pathVars = []): string
+    {
+        $pairs = [];
+        foreach ($pathVars as $name => $val) {
+            $name = '{' . $name . '}';
+            // save
+            $pairs[$name] = $val;
+        }
+
+        if ($pairs) {
+            return strtr($this->path, $pairs);
+        }
+
+        return $this->path;
+    }
+
+    /**
+     * Build uri path string.
+     *
+     * @param array  $pathVars Path vars. eg: ['{name}' => 'inhere']
+     *
+     * @return string
+     */
+    public function toUri(array $pathVars = []): string
+    {
+        if ($pathVars) {
+            return strtr($this->path, $pathVars);
+        }
+
+        return $this->path;
+    }
+
+    /**
      * @param array $params
      *
      * @return Route
      */
     public function copyWithParams(array $params): self
     {
-        $route         = clone $this;
+        $route = clone $this;
+        // set params
         $route->params = $params;
 
         return $route;
@@ -344,7 +398,7 @@ final class Route implements IteratorAggregate
     /**
      * push middleware(s) to the route
      *
-     * @param array ...$middleware
+     * @param array|mixed ...$middleware
      *
      * @return Route
      */
@@ -359,11 +413,12 @@ final class Route implements IteratorAggregate
 
     /**
      * alias of the method: middleware()
-     * @see middleware()
      *
      * @param mixed ...$middleware
      *
      * @return Route
+     * @see middleware()
+     *
      */
     public function push(...$middleware): self
     {
@@ -381,23 +436,8 @@ final class Route implements IteratorAggregate
     }
 
     /**
-     * build uri string.
-     *
-     * @param array $pathVars
-     *
-     * @return string
-     */
-    public function toUri(array $pathVars = []): string
-    {
-        if ($pathVars) {
-            return strtr($this->path, $pathVars);
-        }
-
-        return $this->path;
-    }
-
-    /**
      * get basic info data
+     *
      * @return array
      */
     public function info(): array
@@ -411,6 +451,7 @@ final class Route implements IteratorAggregate
 
     /**
      * get all info data
+     *
      * @return array
      */
     public function toArray(): array
@@ -445,10 +486,8 @@ final class Route implements IteratorAggregate
      */
     public function toString(): string
     {
-        return sprintf(
-            '%-7s %-25s --> %s (%d middleware)',
-            $this->method, $this->path, $this->getHandlerName(), count($this->chains)
-        );
+        return sprintf('%-7s %-25s --> %s (%d middleware)', $this->method, $this->path, $this->getHandlerName(),
+            count($this->chains));
     }
 
     /**
@@ -502,6 +541,7 @@ final class Route implements IteratorAggregate
 
     /**
      * Retrieve an external iterator
+     *
      * @link  https://php.net/manual/en/iteratoraggregate.getiterator.php
      * @return Traversable An instance of an object implementing <b>Iterator</b> or <b>Traversable</b>
      * @since 5.0.0
