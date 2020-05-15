@@ -12,6 +12,7 @@ namespace SwoftTest\Http\Server\Testing\Controller;
 use Swoft\Http\Server\Annotation\Mapping\Controller;
 use Swoft\Http\Server\Annotation\Mapping\RequestMapping;
 use Swoft\Http\Server\Annotation\Mapping\RequestMethod;
+use function context;
 
 /**
  * Class RouteController
@@ -23,6 +24,16 @@ use Swoft\Http\Server\Annotation\Mapping\RequestMethod;
 class RouteController extends BaseController
 {
     use TraitController;
+
+    /**
+     * @RequestMapping("")
+     *
+     * @return string
+     */
+    public function testRoute(): string
+    {
+        return 'testRoute';
+    }
 
     /**
      * @RequestMapping("string")
@@ -70,8 +81,7 @@ class RouteController extends BaseController
      */
     public function parser(): array
     {
-        $body = \context()->getRequest()->getParsedBody();
-        return $body;
+        return context()->getRequest()->getParsedBody();
     }
 
     /**

@@ -22,6 +22,15 @@ use Swoft\Http\Server\Annotation\Mapping\RequestMapping;
 class TestController
 {
     /**
+     * @RequestMapping("@prefix")
+     * @return string
+     */
+    public function home(): string
+    {
+        return 'home';
+    }
+
+    /**
      * @RequestMapping()
      * @return string
      */

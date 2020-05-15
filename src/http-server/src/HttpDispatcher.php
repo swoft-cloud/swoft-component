@@ -14,7 +14,6 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Bean\Annotation\Mapping\Inject;
 use Swoft\Concern\AbstractDispatcher;
 use Swoft\Context\Context;
-use Swoft\Exception\SwoftException;
 use Swoft\Http\Message\Request;
 use Swoft\Http\Message\Response;
 use Swoft\Http\Server\Formatter\AcceptResponseFormatter;
@@ -60,8 +59,6 @@ class HttpDispatcher extends AbstractDispatcher
      * Dispatch http request
      *
      * @param mixed ...$params
-     *
-     * @throws SwoftException
      */
     public function dispatch(...$params): void
     {

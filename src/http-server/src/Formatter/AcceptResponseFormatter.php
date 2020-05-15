@@ -10,7 +10,6 @@
 namespace Swoft\Http\Server\Formatter;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
-use Swoft\Exception\SwoftException;
 use Swoft\Http\Message\ContentType;
 use Swoft\Http\Message\Contract\ResponseFormatterInterface;
 use Swoft\Http\Message\Response;
@@ -51,7 +50,6 @@ class AcceptResponseFormatter implements ResponseFormatterInterface
      * @param Response $response
      *
      * @return Response
-     * @throws SwoftException
      */
     public function format(Response $response): Response
     {

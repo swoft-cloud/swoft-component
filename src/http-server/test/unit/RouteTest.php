@@ -35,6 +35,9 @@ class RouteTest extends HttpServerTestCase
 
         $response = $this->mockServer->request(MockRequest::GET, '/testRoute/null');
         $response->assertEqualContent('{}');
+
+        $response = $this->mockServer->request(MockRequest::GET, '/testRoute');
+        $response->assertEqualJson(['data' => 'testRoute']);
     }
 
     /**

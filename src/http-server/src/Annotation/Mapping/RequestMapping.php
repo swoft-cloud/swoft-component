@@ -20,8 +20,14 @@ use Doctrine\Common\Annotations\Annotation\Target;
  *
  * @since 2.0
  */
-class RequestMapping
+final class RequestMapping
 {
+    // If route path:
+    // - use "", eg: `@RequestMapping("")`
+    // - or use "@prefix", eg: `@RequestMapping("@prefix")`
+    // Will use the route prefix(Controller.prefix) as route.
+    public const USE_PREFIX = '@prefix';
+
     /**
      * Action routing path
      *
@@ -58,10 +64,17 @@ class RequestMapping
      */
     public function __construct(array $values)
     {
+        $route = null;
         if (isset($values['value'])) {
-            $this->route = (string)$values['value'];
+            $route = (string)$values['value'];
         } elseif (isset($values['route'])) {
-            $this->route = (string)$values['route'];
+            $route = (string)$values['route'];
+        }
+
+        if (isset($route)) {
+            // If use "", eg: `@RequestMapping("")`
+            // Will use the route prefix as route.
+            $this->route = $route === '' ? self::USE_PREFIX : $route;
         }
 
         if (isset($values['name'])) {
