@@ -10,6 +10,7 @@ use Swoft\Rpc\Exception\RpcException;
 use Swoft\Rpc\Packet;
 use Swoft\Rpc\Server\Contract\RequestInterface;
 use Swoole\Server;
+use function microtime;
 
 /**
  * Class Request
@@ -134,9 +135,8 @@ class Request implements RequestInterface
         $rc       = BeanFactory::getReflection($this->interface);
         $rxParams = $rc['methods'][$this->method]['params'];
 
-        $index     = 0;
         $paramsMap = [];
-        foreach ($rxParams as $methodParams) {
+        foreach ($rxParams as $index => $methodParams) {
             if (!isset($this->params[$index])) {
                 break;
             }
