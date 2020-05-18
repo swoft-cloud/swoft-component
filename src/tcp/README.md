@@ -5,7 +5,11 @@
 [![Swoft Doc](https://img.shields.io/badge/docs-passing-green.svg?maxAge=2592000)](https://www.swoft.org/docs)
 [![Swoft License](https://img.shields.io/hexpm/l/plug.svg?maxAge=2592000)](https://github.com/swoft-cloud/swoft/blob/master/LICENSE)
 
-Swoft Tcp Common Component
+Swoft Tcp Component
+
+## [中文说明](README.zh-CN.md)
+
+中文说明请查看 [README.zh-CN.md](README.zh-CN.md)
 
 ## Install
 

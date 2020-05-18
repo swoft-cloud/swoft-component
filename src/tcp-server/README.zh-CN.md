@@ -11,15 +11,15 @@ Swoft Tcp Server Component
 
 English readme please sess [README.md](README.md)
 
-## Install
+## 安装
 
-- composer command
+- composer 命令
 
 ```bash
 composer require swoft/tcp-server
 ```
 
-## Resources
+## 相关资源
 
 * [Documentation](https://swoft.org/docs)
 * [Contributing](https://github.com/swoft-cloud/swoft/blob/master/CONTRIBUTING.md)
