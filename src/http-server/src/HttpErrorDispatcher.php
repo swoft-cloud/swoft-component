@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Http\Server;
 
 use Swoft;
@@ -31,7 +32,7 @@ class HttpErrorDispatcher
 {
     /**
      * @param Throwable $e
-     * @param Response   $response
+     * @param Response  $response
      *
      * @return Response
      */

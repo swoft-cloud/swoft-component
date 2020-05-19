@@ -368,7 +368,7 @@ final class Route implements IteratorAggregate
     /**
      * Build uri path string.
      *
-     * @param array  $pathVars Path vars. eg: ['{name}' => 'inhere']
+     * @param array $pathVars Path vars. eg: ['{name}' => 'inhere']
      *
      * @return string
      */

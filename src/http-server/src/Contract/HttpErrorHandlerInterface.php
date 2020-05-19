@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Http\Server\Contract;
 
 use Swoft\Error\Contract\ErrorHandlerInterface;
@@ -22,7 +23,7 @@ interface HttpErrorHandlerInterface extends ErrorHandlerInterface
 {
     /**
      * @param Throwable $e
-     * @param Response   $response
+     * @param Response  $response
      *
      * @return Response
      */

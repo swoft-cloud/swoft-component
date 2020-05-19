@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Http\Server\Middleware;
 
 use Psr\Http\Message\ResponseInterface;
@@ -59,7 +60,7 @@ class ValidatorMiddleware implements MiddlewareInterface
 
         $data  = $request->getParsedBody();
         $query = $request->getQueryParams();
-        $path = $route->getParams();
+        $path  = $route->getParams();
 
         // ParsedBody is empty string
         $parsedBody    = $data = empty($data) ? [] : $data;

@@ -7,11 +7,12 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace SwoftTest\Http\Server\Testing\Concern;
 
 use PHPUnit\Framework\Assert;
-use function strpos;
 use Swoft\Stdlib\Helper\JsonHelper;
+use function strpos;
 
 /**
  * Class HttpResponseAssertTrait

@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Http\Server\Contract;
 
 use Countable;
@@ -15,48 +16,49 @@ use Swoft\Http\Server\Router\Route;
 
 /**
  * Interface RouterInterface
+ *
  * @since 1.0
  */
 interface RouterInterface extends IteratorAggregate, Countable, \Swoft\Contract\RouterInterface
 {
     public const METHOD_NOT_ALLOWED = 3;
 
-    public const FAV_ICON      = '/favicon.ico';
+    public const FAV_ICON = '/favicon.ico';
 
     public const DEFAULT_REGEX = '[^/]+';
 
     /** supported method list */
-    public const GET     = 'GET';
+    public const GET = 'GET';
 
-    public const POST    = 'POST';
+    public const POST = 'POST';
 
-    public const PUT     = 'PUT';
+    public const PUT = 'PUT';
 
-    public const PATCH   = 'PATCH';
+    public const PATCH = 'PATCH';
 
-    public const DELETE  = 'DELETE';
+    public const DELETE = 'DELETE';
 
     public const OPTIONS = 'OPTIONS';
 
-    public const HEAD    = 'HEAD';
+    public const HEAD = 'HEAD';
 
-    public const COPY    = 'COPY';
+    public const COPY = 'COPY';
 
-    public const PURGE   = 'PURGE';
+    public const PURGE = 'PURGE';
 
-    public const LINK    = 'LINK';
+    public const LINK = 'LINK';
 
-    public const UNLINK  = 'UNLINK';
+    public const UNLINK = 'UNLINK';
 
-    public const LOCK    = 'LOCK';
+    public const LOCK = 'LOCK';
 
-    public const UNLOCK  = 'UNLOCK';
+    public const UNLOCK = 'UNLOCK';
 
-    public const SEARCH  = 'SEARCH';
+    public const SEARCH = 'SEARCH';
 
     public const CONNECT = 'CONNECT';
 
-    public const TRACE   = 'TRACE';
+    public const TRACE = 'TRACE';
 
     /** supported methods name list */
     public const METHODS_ARRAY = [
@@ -79,48 +81,54 @@ interface RouterInterface extends IteratorAggregate, Countable, \Swoft\Contract\
     /** the matched result index key */
     public const INDEX_STATUS = 0;
 
-    public const INDEX_PATH   = 1;
+    public const INDEX_PATH = 1;
 
-    public const INDEX_INFO   = 2;
+    public const INDEX_INFO = 2;
 
     /**
      * add a route to the router.
-     * @param string $method Request method name. eg 'GET'
-     * @param string $path The route path. eg '/users'
+     *
+     * @param string $method  Request method name. eg 'GET'
+     * @param string $path    The route path. eg '/users'
      * @param mixed  $handler The route handler. allow: string, array, object
-     * @param array  $binds The route path var bind. eg. [ 'id' => '[0-9]+', ]
-     * @param array  $opts Extra options
-     * - name: string
-     * - ... more
+     * @param array  $binds   The route path var bind. eg. [ 'id' => '[0-9]+', ]
+     * @param array  $opts    Extra options
+     *                        - name: string
+     *                        - ... more
+     *
      * @return Route
      */
     public function add(string $method, string $path, $handler, array $binds = [], array $opts = []): Route;
 
     /**
      * add a Route to the router
+     *
      * @param Route $route
+     *
      * @return Route
      */
     public function addRoute(Route $route): Route;
 
     /**
      * @param array|string    $methods The match request method(s). e.g ['get','post']
-     * @param string          $path The route path string. is allow empty string. eg: '/user/login'
+     * @param string          $path    The route path string. is allow empty string. eg: '/user/login'
      * @param callable|string $handler
-     * @param array           $binds route path var bind. eg. [ 'id' => '[0-9]+', ]
-     * @param array           $opts some option data
-     * [
-     *     'defaults' => [ 'id' => 10, ],
-     *     'domains'  => [ 'a-domain.com', '*.b-domain.com'],
-     *     'schemas' => ['https'],
-     * ]
+     * @param array           $binds   route path var bind. eg. [ 'id' => '[0-9]+', ]
+     * @param array           $opts    some option data
+     *                                 [
+     *                                 'defaults' => [ 'id' => 10, ],
+     *                                 'domains'  => [ 'a-domain.com', '*.b-domain.com'],
+     *                                 'schemas' => ['https'],
+     *                                 ]
      */
     public function map($methods, string $path, $handler, array $binds = [], array $opts = []): void;
 
     /**
      * find the matched route info for the given request uri path
+     *
      * @param string $method
      * @param string $path
+     *
      * @return array
      *
      *  [self::NOT_FOUND, $path, null]

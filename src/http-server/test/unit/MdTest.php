@@ -7,10 +7,11 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace SwoftTest\Http\Server\Unit;
 
-use SwoftTest\Http\Server\Testing\MockRequest;
 use Swoft\Http\Message\ContentType;
+use SwoftTest\Http\Server\Testing\MockRequest;
 
 /**
  * Class MdTest

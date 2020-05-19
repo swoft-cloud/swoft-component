@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Http\Server\Contract;
 
 use Psr\Http\Message\ResponseInterface;
@@ -25,7 +26,7 @@ interface MiddlewareInterface extends \Psr\Http\Server\MiddlewareInterface
     /**
      * Process an incoming server request.
      *
-     * @param ServerRequestInterface|Request  $request
+     * @param ServerRequestInterface|Request   $request
      * @param RequestHandlerInterface|Response $handler
      *
      * @return ResponseInterface
