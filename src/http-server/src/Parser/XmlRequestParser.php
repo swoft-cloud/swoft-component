@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Http\Server\Parser;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
@@ -35,9 +36,8 @@ class XmlRequestParser implements RequestParserInterface
         try {
             $parsedBody = XmlHelper::decode($content);
         } catch (Throwable $e) {
-            throw new HttpServerException(
-                sprintf('Request body parse to xml errro(%s), body=%s', $e->getMessage(), $content)
-            );
+            throw new HttpServerException(sprintf('Request body parse to xml errro(%s), body=%s', $e->getMessage(),
+                    $content));
         }
 
         return $parsedBody;

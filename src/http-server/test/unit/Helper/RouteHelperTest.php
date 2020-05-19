@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace SwoftTest\Http\Server\Helper;
 
 use PHPUnit\Framework\TestCase;
@@ -14,6 +15,7 @@ use Swoft\Http\Server\Helper\RouteHelper;
 
 /**
  * Class RouteHelperTest
+ *
  * @package SwoftTest\Http\Server\Helper
  */
 class RouteHelperTest extends TestCase

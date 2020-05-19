@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace SwoftTest\Http\Server\Testing\Controller;
 
 use Swoft\Http\Message\ContentType;
@@ -21,6 +22,15 @@ use Swoft\Http\Server\Annotation\Mapping\RequestMapping;
  */
 class TestController
 {
+    /**
+     * @RequestMapping("@prefix")
+     * @return string
+     */
+    public function home(): string
+    {
+        return 'home';
+    }
+
     /**
      * @RequestMapping()
      * @return string

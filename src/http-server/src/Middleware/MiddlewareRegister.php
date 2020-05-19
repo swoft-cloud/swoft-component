@@ -7,11 +7,12 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Http\Server\Middleware;
 
-use function array_unique;
 use Swoft\Http\Server\Exception\HttpServerException;
 use Swoft\Http\Server\Router\RouteRegister;
+use function array_unique;
 
 /**
  * Class MiddlewareRegister
@@ -95,6 +96,7 @@ class MiddlewareRegister
 
     /**
      * Register handler middleware
+     *
      * @throws HttpServerException
      */
     public static function register(): void

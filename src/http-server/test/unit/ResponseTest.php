@@ -7,9 +7,9 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace SwoftTest\Http\Server\Unit;
 
-use Swoft\Exception\SwoftException;
 use Swoft\Http\Message\ContentType;
 use SwoftTest\Http\Server\Testing\Controller\TestController;
 use SwoftTest\Http\Server\Testing\MockRequest;
@@ -21,9 +21,14 @@ use SwoftTest\Http\Server\Testing\MockRequest;
  */
 class ResponseTest extends HttpServerTestCase
 {
-    /**
-     * @throws SwoftException
-     */
+    public function testRoute(): void
+    {
+        /** @see TestController */
+        $response = $this->mockServer->request(MockRequest::GET, '/fixture/test');
+
+        $response->assertEqualJson(['data' => 'home']);
+    }
+
     public function testCookie(): void
     {
         /** @see TestController */
@@ -34,9 +39,6 @@ class ResponseTest extends HttpServerTestCase
         $this->assertSame('ck=val', $cks['ck']);
     }
 
-    /**
-     * @throws SwoftException
-     */
     public function testHtml(): void
     {
         /** @see TestController */

@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Swoft Issues
+    url: https://github.com/swoft-cloud/swoft/issues
+    about: Please report security vulnerabilities here. 请打开此页面报告bug或改进问题！
+  - name: Swoft Development
+    url: https://github.com/swoft-cloud/swoft-component
+    about: Participate in contributing swoft code, please jump to this project. 参与贡献swoft代码，请跳转到这个项目
+  - name: Swoft 中文文档
+    url: https://swoft.org
+    about: Please ask and answer questions here. swoft 2.0新版风格中文文档请访问此网站。
+  - name: Swoft English Documents
+    url: http://swoft.io
+    about: Please report security vulnerabilities here. swoft英文文档或者旧版风格文档请访问此网站。

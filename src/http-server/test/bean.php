@@ -8,15 +8,15 @@
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 return [
-    'config' => [
+    'config'         => [
         'path' => __DIR__ . '/config',
     ],
-    'logger'            => [
+    'logger'         => [
         'flushRequest' => false,
         'enable'       => false,
         'json'         => false,
     ],
-    'httpDispatcher'    => [
+    'httpDispatcher' => [
         'afterMiddlewares' => [
             \Swoft\Http\Server\Middleware\ValidatorMiddleware::class
         ]

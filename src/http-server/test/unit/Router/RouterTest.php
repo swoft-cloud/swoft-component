@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace SwoftTest\Http\Server\Router;
 
 use PHPUnit\Framework\TestCase;
@@ -100,8 +101,7 @@ class RouterTest extends TestCase
         $r3->namedTo('r3', $router);
 
         $r4 = $router->add('get', '/path4/{var}', 'handler4', [], ['name' => 'r4']);
-        $r5 = Route::create('get', '/path5', 'handler5', [], ['name' => 'r5'])
-            ->attachTo($router);
+        $r5 = Route::create('get', '/path5', 'handler5', [], ['name' => 'r5'])->attachTo($router);
 
         $this->assertEmpty($router->getRoute('not-exist'));
         $this->assertEquals($r1, $router->getRoute('r1'));

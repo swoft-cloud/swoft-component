@@ -7,25 +7,26 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Http\Server\Router;
 
-use function array_keys;
-use function array_merge;
-use function array_shift;
 use ArrayIterator;
 use Closure;
-use function count;
-use function implode;
 use InvalidArgumentException;
 use LogicException;
-use function rtrim;
-use function strpos;
-use function strtoupper;
-use function substr;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Http\Server\Contract\RouterInterface;
 use Swoft\Http\Server\Helper\RouteHelper;
 use Traversable;
+use function array_keys;
+use function array_merge;
+use function array_shift;
+use function count;
+use function implode;
+use function rtrim;
+use function strpos;
+use function strtoupper;
+use function substr;
 use function trim;
 
 /**
@@ -60,12 +61,14 @@ class Router implements RouterInterface
 
     /**
      * name routes. use for find a route by name.
+     *
      * @var array [name => Route]
      */
     protected $namedRoutes = [];
 
     /**
      * static Routes - no dynamic argument match. e.g. '/user/login'
+     *
      * @var Route[]
      * [
      *     'GET /user/login' =>  Route,
@@ -110,6 +113,7 @@ class Router implements RouterInterface
 
     /**
      * There are latest route caches. like static routes
+     *
      * @see $staticRoutes
      * @var Route[]
      * [
@@ -352,9 +356,8 @@ class Router implements RouterInterface
         }
 
         if (false === strpos(self::METHODS_STRING, ',' . $method . ',')) {
-            throw new InvalidArgumentException(
-                "The method [$method] is not supported, Allow: " . trim(self::METHODS_STRING, ',')
-            );
+            throw new InvalidArgumentException("The method [$method] is not supported, Allow: " . trim(self::METHODS_STRING,
+                    ','));
         }
 
         // create Route
@@ -402,10 +405,10 @@ class Router implements RouterInterface
      * Create a route group with a common prefix.
      * All routes created in the passed callback will have the given group prefix prepended.
      *
-     * @param string   $prefix
+     * @param string  $prefix
      * @param Closure $callback
-     * @param array    $middleware
-     * @param array    $opts
+     * @param array   $middleware
+     * @param array   $opts
      */
     public function group(string $prefix, Closure $callback, array $middleware = [], array $opts = []): void
     {
@@ -638,7 +641,7 @@ class Router implements RouterInterface
      ******************************************************************************/
 
     /**
-     * @param string $name Route name
+     * @param string $name     Route name
      * @param array  $pathVars Path vars. eg: ['{name}' => 'inhere']
      *
      * @return string
@@ -723,6 +726,7 @@ class Router implements RouterInterface
 
     /**
      * get all routes
+     *
      * @return array
      */
     public function getRoutes(): array
@@ -745,6 +749,7 @@ class Router implements RouterInterface
 
     /**
      * Retrieve an external iterator
+     *
      * @link  https://php.net/manual/en/iteratoraggregate.getiterator.php
      * @return Traversable An instance of an object implementing <b>Iterator</b> or
      * <b>Traversable</b>

@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Http\Server\Annotation\Mapping;
 
 use Doctrine\Common\Annotations\Annotation\Attribute;

@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace SwoftTest\Http\Server\Unit;
 
 use Swoft\Http\Message\ContentType;
@@ -20,10 +21,7 @@ use SwoftTest\Http\Server\Testing\MockRequest;
  */
 class RestTest extends HttpServerTestCase
 {
-    /**
-     * @throws \Swoft\Exception\SwoftException
-     */
-    public function testList()
+    public function testList(): void
     {
         $headers = [
             ContentType::KEY => ContentType::JSON
@@ -33,9 +31,7 @@ class RestTest extends HttpServerTestCase
         $response->assertEqualJson(['list']);
     }
 
-    /**
-     */
-    public function testCreate()
+    public function testCreate(): void
     {
         $headers = [
             ContentType::KEY => ContentType::JSON
@@ -53,7 +49,7 @@ class RestTest extends HttpServerTestCase
         $response->assertEqualJson($data);
     }
 
-    public function testGetUser()
+    public function testGetUser(): void
     {
         $headers = [
             ContentType::KEY => ContentType::JSON
@@ -72,7 +68,7 @@ class RestTest extends HttpServerTestCase
         $response->assertEqualJson(['getUser', 0]);
     }
 
-    public function testGetBookFromUser()
+    public function testGetBookFromUser(): void
     {
         $headers = [
             ContentType::KEY => ContentType::JSON
@@ -88,7 +84,7 @@ class RestTest extends HttpServerTestCase
         $response->assertEqualJson($data);
     }
 
-    public function testDelete()
+    public function testDelete(): void
     {
         $headers = [
             ContentType::KEY => ContentType::JSON
@@ -103,7 +99,7 @@ class RestTest extends HttpServerTestCase
         $response->assertEqualJson($data);
     }
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $headers = [
             ContentType::KEY => ContentType::JSON

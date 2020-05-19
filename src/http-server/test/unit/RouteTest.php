@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace SwoftTest\Http\Server\Unit;
 
 use Swoft\Exception\SwoftException;
@@ -35,6 +36,9 @@ class RouteTest extends HttpServerTestCase
 
         $response = $this->mockServer->request(MockRequest::GET, '/testRoute/null');
         $response->assertEqualContent('{}');
+
+        $response = $this->mockServer->request(MockRequest::GET, '/testRoute');
+        $response->assertEqualJson(['data' => 'testRoute']);
     }
 
     /**

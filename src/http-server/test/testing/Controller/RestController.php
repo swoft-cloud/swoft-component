@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace SwoftTest\Http\Server\Testing\Controller;
 
 use Swoft\Http\Message\Request;
@@ -26,7 +27,6 @@ class RestController
     /**
      * Query
      * Uri:/user/
-
      * @RequestMapping(route="/testRestUser", method={RequestMethod::GET})
      *
      * @return array

@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Http\Server\Listener;
 
 use Swoft;
@@ -22,6 +23,7 @@ use Swoft\SwoftEvent;
 
 /**
  * Class AppInitCompleteListener
+ *
  * @since 2.0
  *
  * @Listener(SwoftEvent::APP_INIT_COMPLETE)

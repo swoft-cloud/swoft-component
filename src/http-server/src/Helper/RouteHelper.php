@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Http\Server\Helper;
 
 use function preg_replace;
@@ -16,13 +17,16 @@ use function strpos;
 
 /**
  * Class RouteHelper
+ *
  * @package Swoft\Http\Server\Helper
  */
 class RouteHelper
 {
     /**
      * check route path is static route
+     *
      * @param string $route
+     *
      * @return bool
      */
     public static function isStaticRoute(string $route): bool
@@ -32,8 +36,10 @@ class RouteHelper
 
     /**
      * Format URI path
+     *
      * @param string $path
      * @param bool   $ignoreLastSlash
+     *
      * @return string
      */
     public static function formatPath(string $path, bool $ignoreLastSlash = true): string

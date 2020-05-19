@@ -319,12 +319,12 @@ class EventManager implements EventManagerInterface
             return $isString ? $this->basicEvent : $event;
         }
 
-        /** @var EventInterface $event */
         if ($isString) {
-            $event = $this->events[$name] ?? $this->basicEvent;
+            // Use clone basic event object for fix coroutine error
+            $event = $this->events[$name] ?? clone $this->basicEvent;
         }
 
-        // Initial value
+        /** @var EventInterface $event Initial value */
         $event->setName($name);
         $event->setParams($args);
         $event->setTarget($target);
@@ -509,7 +509,6 @@ class EventManager implements EventManagerInterface
             }
         } else {
             foreach ($this->listeners as $queue) {
-                /**  @var $queue ListenerQueue */
                 $queue->remove($listener);
             }
         }
