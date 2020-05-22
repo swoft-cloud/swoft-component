@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 use Swoft\Bean\BeanFactory;
 use Swoft\Config\Config;
 use Swoft\Context\Context;

@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace SwoftTest\Unit\Context;
 
 use PHPUnit\Framework\TestCase;
