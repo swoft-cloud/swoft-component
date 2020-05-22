@@ -1,8 +1,14 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\Annotation\Testing;
-
 
 use SwoftTest\Annotation\Testing\Annotation\Mapping\DemoClass;
 use SwoftTest\Annotation\Testing\Annotation\Mapping\DemoMethod;
@@ -36,7 +42,6 @@ class DemoAnnotation
      */
     public function method(): void
     {
-
     }
 
     /**
@@ -44,6 +49,5 @@ class DemoAnnotation
      */
     public function defaultMethod(): void
     {
-
     }
 }
