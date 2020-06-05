@@ -14,7 +14,8 @@ use Swoft\Rpc\Response;
 class RpcResponseException extends Exception
 {
     /**
-     * response property ,it will be set when client get an error.
+     * Response property ,it will be set when client get an error.
+     *
      * @var $rpcResponse Response
      */
     private $rpcResponse;
