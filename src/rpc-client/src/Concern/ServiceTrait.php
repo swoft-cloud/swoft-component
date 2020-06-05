@@ -68,7 +68,11 @@ trait ServiceTrait
             Error::log($errorMsg);
 
             // Only to throw message and code
-            throw new RpcResponseException($message, $code);
+            $rpcResponseException = new RpcResponseException($message, $code);
+            // set response property
+            $rpcResponseException->setRpcResponse($response);
+            // throw exception
+            throw $rpcResponseException;
         }
 
         return $response->getResult();
