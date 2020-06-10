@@ -49,8 +49,7 @@ trait ServiceTrait
 
         $protocol = Protocol::new($version, $interfaceClass, $methodName, $params, $ext);
         $data = $packet->encode($protocol);
-        //$message = sprintf('Rpc call failed.interface=%s method=%s pool=%s version=%s', $interfaceClass, $methodName,
-        //    $poolName, $version);
+
         $message = 'Rpc call failed.code=%d message=%s ' . sprintf('interface=%s method=%s pool=%s version=%s',
                 $interfaceClass, $methodName, $poolName, $version);
 
@@ -95,7 +94,7 @@ trait ServiceTrait
 
         if (!$connection->send($data)) {
             if ($reconnect) {
-                $message = sprintf($message, $connection->errCode(), $connection->errMsg());
+                $message = sprintf($message, $connection->getErrCode(), $connection->getErrMsg());
                 $connection->release();
                 throw new RpcClientException($message);
             }
@@ -106,8 +105,8 @@ trait ServiceTrait
         $result = $connection->recv();
         if ($result === false || empty($result)) {
             //Reconnected or receive date timeout
-            if ($reconnect || $connection->errCode() === SOCKET_ETIMEDOUT) {
-                $message = sprintf($message, $connection->errCode(), $connection->errMsg());
+            if ($reconnect || $connection->getErrCode() === SOCKET_ETIMEDOUT) {
+                $message = sprintf($message, $connection->getErrCode(), $connection->getErrMsg());
                 $connection->release();
                 throw new RpcClientException($message);
             }

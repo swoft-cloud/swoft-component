@@ -137,7 +137,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * @return int
      */
-    public function errCode()
+    public function getErrCode()
     {
         return $this->connection->errCode;
     }
@@ -145,7 +145,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * @return string
      */
-    public function errMsg()
+    public function getErrMsg()
     {
         return $this->connection->errMsg;
     }
