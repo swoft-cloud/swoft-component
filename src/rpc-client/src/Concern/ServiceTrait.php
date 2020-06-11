@@ -23,7 +23,7 @@ trait ServiceTrait
     /**
      * @param string $interfaceClass
      * @param string $methodName
-     * @param array  $params
+     * @param array $params
      *
      * @return mixed
      * @throws ConnectionPoolException
@@ -34,7 +34,7 @@ trait ServiceTrait
     protected function __proxyCall(string $interfaceClass, string $methodName, array $params)
     {
         $poolName = ReferenceRegister::getPool(__CLASS__);
-        $version  = ReferenceRegister::getVersion(__CLASS__);
+        $version = ReferenceRegister::getVersion(__CLASS__);
 
         /* @var Pool $pool */
         $pool = BeanFactory::getBean($poolName);
@@ -48,17 +48,18 @@ trait ServiceTrait
         $ext = $connection->getClient()->getExtender()->getExt();
 
         $protocol = Protocol::new($version, $interfaceClass, $methodName, $params, $ext);
-        $data     = $packet->encode($protocol);
-        $message  = sprintf('Rpc call failed.interface=%s method=%s pool=%s version=%s', $interfaceClass, $methodName,
-            $poolName, $version);
+        $data = $packet->encode($protocol);
+
+        $message = 'Rpc call failed.code=%d message=%s ' . sprintf('interface=%s method=%s pool=%s version=%s',
+                $interfaceClass, $methodName, $poolName, $version);
 
         $result = $this->sendAndRecv($connection, $data, $message);
         $connection->release();
 
         $response = $packet->decodeResponse($result);
         if ($response->getError() !== null) {
-            $code      = $response->getError()->getCode();
-            $message   = $response->getError()->getMessage();
+            $code = $response->getError()->getCode();
+            $message = $response->getError()->getMessage();
             $errorData = $response->getError()->getData();
 
             // Record rpc error message
@@ -68,7 +69,11 @@ trait ServiceTrait
             Error::log($errorMsg);
 
             // Only to throw message and code
-            throw new RpcResponseException($message, $code);
+            $rpcResponseException = new RpcResponseException($message, $code);
+            // set response property
+            $rpcResponseException->setRpcResponse($response);
+            // throw exception
+            throw $rpcResponseException;
         }
 
         return $response->getResult();
@@ -77,9 +82,9 @@ trait ServiceTrait
 
     /**
      * @param Connection $connection
-     * @param string     $data
-     * @param string     $message
-     * @param bool       $reconnect
+     * @param string $data
+     * @param string $message
+     * @param bool $reconnect
      *
      * @return string
      * @throws RpcClientException
@@ -93,6 +98,8 @@ trait ServiceTrait
 
         if (!$connection->send($data)) {
             if ($reconnect) {
+                $message = sprintf($message, $connection->getErrCode(), $connection->getErrMsg());
+                $connection->release();
                 throw new RpcClientException($message);
             }
 
@@ -101,7 +108,10 @@ trait ServiceTrait
 
         $result = $connection->recv();
         if ($result === false || empty($result)) {
-            if ($reconnect) {
+            //Reconnected or receive date timeout
+            if ($reconnect || $connection->getErrCode() === SOCKET_ETIMEDOUT) {
+                $message = sprintf($message, $connection->getErrCode(), $connection->getErrMsg());
+                $connection->release();
                 throw new RpcClientException($message);
             }
 
