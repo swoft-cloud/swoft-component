@@ -41,7 +41,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
 
     /**
      * @param \Swoft\Rpc\Client\Client $client
-     * @param Pool                     $pool
+     * @param Pool $pool
      *
      * @return Connection
      */
@@ -50,7 +50,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
         $instance = self::__instance();
 
         $instance->client = $client;
-        $instance->pool   = $pool;
+        $instance->pool = $pool;
 
         $instance->lastTime = time();
 
@@ -133,6 +133,23 @@ class Connection extends AbstractConnection implements ConnectionInterface
         return $this->connection->recv();
     }
 
+
+    /**
+     * @return int
+     */
+    public function getErrCode()
+    {
+        return $this->connection->errCode;
+    }
+
+    /**
+     * @return string
+     */
+    public function getErrMsg()
+    {
+        return $this->connection->errMsg;
+    }
+
     /**
      * @return array
      * @throws RpcClientException
@@ -153,7 +170,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
             throw new RpcClientException(sprintf('Provider(%s) return format is error!', JsonHelper::encode($list)));
         }
 
-        $randKey  = array_rand($list, 1);
+        $randKey = array_rand($list, 1);
         $hostPort = explode(':', $list[$randKey]);
 
         if (count($hostPort) < 2) {
