@@ -148,7 +148,7 @@ use function sprintf;
  * @method array xRange(string $stream_key, string $start, string $end, int $count)
  * @method array xRevRange(string $stream_key, string $end, string $start, int $count)
  * @method array xRead(array|string $stream_keys, int $count, int $block)
- * @method array xReadGroup(string $group, string consumer, array|string $stream_keys, int $count, int $block)
+ * @method array xReadGroup(string $group, string $consumer, array|string $stream_keys, int $count, int $block)
  * @method integer xTrim(string $stream_key, int $max_len, bool $approximate)
  */
 abstract class Connection extends AbstractConnection implements ConnectionInterface

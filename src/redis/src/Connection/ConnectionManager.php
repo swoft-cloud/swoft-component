@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Redis\Connection;
 
 use Swoft\Bean\Annotation\Mapping\Bean;
@@ -61,7 +60,7 @@ class ConnectionManager
                 $connection->release();
             }
         }
-        
+
         if ($final) {
             $finalKey = sprintf('%d', Co::tid());
             $this->unset($finalKey);
