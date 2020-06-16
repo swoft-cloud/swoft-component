@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Rpc\Client;
 
@@ -21,10 +29,10 @@ class Extender implements ExtenderInterface
     public function getExt(): array
     {
         return [
-            context()->get('traceid', ''),
-            context()->get('spanid', ''),
-            context()->get('parentid', ''),
-            context()->get('extra', null),
+            'traceid'  => context()->get('traceid', ''),
+            'spanid'   => context()->get('spanid', ''),
+            'parentid' => context()->get('parentid', ''),
+            'extra'    => context()->get('extra', null),
         ];
     }
 }

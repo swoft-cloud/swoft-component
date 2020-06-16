@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Rpc\Client;
 
@@ -30,7 +37,7 @@ class ReferenceRegister
      * @param string $pool
      * @param string $version
      */
-    public static function register(string $className, string $pool, string $version)
+    public static function register(string $className, string $pool, string $version): void
     {
         self::$references[$className]['pool']    = $pool;
         self::$references[$className]['version'] = $version;
@@ -61,7 +68,7 @@ class ReferenceRegister
     public static function getVersion(string $className): string
     {
         $version = self::$references[$className]['version'] ?? '';
-        if ($version == '') {
+        if ($version === '') {
             throw new RpcClientException(sprintf('`@Reference` version(%s) is not exist!', $className));
         }
 

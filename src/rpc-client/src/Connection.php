@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Rpc\Client;
 
@@ -133,21 +141,20 @@ class Connection extends AbstractConnection implements ConnectionInterface
         return $this->connection->recv();
     }
 
-
     /**
      * @return int
      */
-    public function getErrCode()
+    public function getErrCode(): int
     {
-        return $this->connection->errCode;
+        return (int)$this->connection->errCode;
     }
 
     /**
      * @return string
      */
-    public function getErrMsg()
+    public function getErrMsg(): string
     {
-        return $this->connection->errMsg;
+        return (string)$this->connection->errMsg;
     }
 
     /**
@@ -170,7 +177,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
             throw new RpcClientException(sprintf('Provider(%s) return format is error!', JsonHelper::encode($list)));
         }
 
-        $randKey = array_rand($list, 1);
+        $randKey  = array_rand($list, 1);
         $hostPort = explode(':', $list[$randKey]);
 
         if (count($hostPort) < 2) {
