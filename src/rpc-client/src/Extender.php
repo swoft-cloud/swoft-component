@@ -29,10 +29,10 @@ class Extender implements ExtenderInterface
     public function getExt(): array
     {
         return [
-            context()->get('traceid', ''),
-            context()->get('spanid', ''),
-            context()->get('parentid', ''),
-            context()->get('extra', null),
+            'traceid'  => context()->get('traceid', ''),
+            'spanid'   => context()->get('spanid', ''),
+            'parentid' => context()->get('parentid', ''),
+            'extra'    => context()->get('extra', null),
         ];
     }
 }

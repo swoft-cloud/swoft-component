@@ -120,7 +120,6 @@ trait ServiceTrait
         if (!$connection->send($data)) {
             if ($reconnect) {
                 $message = sprintf($message, $connection->getErrCode(), $connection->getErrMsg());
-                $connection->release();
                 throw new RpcClientException($message);
             }
 
@@ -129,10 +128,9 @@ trait ServiceTrait
 
         $result = $connection->recv();
         if ($result === false || empty($result)) {
-            //Reconnected or receive date timeout
+            // Has been reconnected OR receive date timeout
             if ($reconnect || $connection->getErrCode() === SOCKET_ETIMEDOUT) {
                 $message = sprintf($message, $connection->getErrCode(), $connection->getErrMsg());
-                $connection->release();
                 throw new RpcClientException($message);
             }
 
