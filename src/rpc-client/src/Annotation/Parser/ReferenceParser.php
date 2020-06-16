@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Rpc\Client\Annotation\Parser;
 
@@ -41,8 +49,11 @@ class ReferenceParser extends Parser
         $propClassType   = $phpReader->getPropertyClass($reflectProperty);
 
         if (empty($propClassType)) {
-            throw new RpcClientException(sprintf('`@Reference`(%s->%s) must to define `@var xxx`', $this->className,
-                    $this->propertyName));
+            throw new RpcClientException(sprintf(
+                '`@Reference`(%s->%s) must to define `@var xxx`',
+                $this->className,
+                $this->propertyName
+            ));
         }
 
         $className = Proxy::newClassName($propClassType);

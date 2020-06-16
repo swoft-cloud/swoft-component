@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Rpc\Client\Concern;
 
@@ -51,8 +59,13 @@ trait ServiceTrait
         $reqData  = $packet->encode($protocol);
 
         $result  = null;
-        $message = 'Rpc call failed.code=%d message=%s ' . sprintf('interface=%s method=%s pool=%s version=%s',
-                $interfaceClass, $methodName, $poolName, $version);
+        $message = 'Rpc call failed.code=%d message=%s ' . sprintf(
+            'interface=%s method=%s pool=%s version=%s',
+            $interfaceClass,
+            $methodName,
+            $poolName,
+            $version
+        );
 
         try {
             $rawResult = $this->sendAndRecv($connection, $reqData, $message);

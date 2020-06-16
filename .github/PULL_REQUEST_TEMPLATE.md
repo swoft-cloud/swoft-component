@@ -29,8 +29,11 @@ HOW TO WRITE A GOOD PULL REQUEST?
 ### More
 
 - [ ] Added/updated tests
-- [ ] Added/updated documentation
+- [ ] Added/updated documentation [new][doc2] or [old][doc1]
 
 ### Additional Notes
 
 <!-- Anything else we should know when reviewing? -->
+
+[doc1]: https://github.com/swoft-cloud/swoft-doc/blob/2.x/zh-CN/introduction/update.md
+[doc2]: https://github.com/swoft-cloud/swoft-www-cn
