@@ -619,7 +619,7 @@ class Grammar extends BaseGrammar
      *
      * @return string
      */
-    public function prepareBindingForJsonContains($binding)
+    public function prepareBindingForJsonContains($binding): string
     {
         return json_encode($binding);
     }
@@ -663,7 +663,7 @@ class Grammar extends BaseGrammar
      *
      * @return string
      */
-    protected function compileGroups(Builder $query, $groups)
+    protected function compileGroups(Builder $query, $groups): string
     {
         return 'group by ' . $this->columnize($groups);
     }
@@ -676,7 +676,7 @@ class Grammar extends BaseGrammar
      *
      * @return string
      */
-    protected function compileHavings(Builder $query, $havings)
+    protected function compileHavings(Builder $query, $havings): string
     {
         $sql = implode(' ', array_map([$this, 'compileHaving'], $havings));
 
@@ -690,14 +690,16 @@ class Grammar extends BaseGrammar
      *
      * @return string
      */
-    protected function compileHaving(array $having)
+    protected function compileHaving(array $having): string
     {
         // If the having clause is "raw", we can just return the clause straight away
         // without doing any more processing on it. Otherwise, we will compile the
         // clause into SQL based on the components that make it up from builder.
         if ($having['type'] === 'Raw') {
             return $having['boolean'] . ' ' . $having['sql'];
-        } elseif ($having['type'] === 'between') {
+        }
+
+        if ($having['type'] === 'between') {
             return $this->compileHavingBetween($having);
         }
 
@@ -711,7 +713,7 @@ class Grammar extends BaseGrammar
      *
      * @return string
      */
-    protected function compileBasicHaving($having)
+    protected function compileBasicHaving($having): string
     {
         $column = $this->wrap($having['column']);
 
@@ -727,7 +729,7 @@ class Grammar extends BaseGrammar
      *
      * @return string
      */
-    protected function compileHavingBetween($having)
+    protected function compileHavingBetween($having): string
     {
         $between = $having['not'] ? 'not between' : 'between';
 
@@ -748,7 +750,7 @@ class Grammar extends BaseGrammar
      *
      * @return string
      */
-    protected function compileOrders(Builder $query, $orders)
+    protected function compileOrders(Builder $query, $orders): string
     {
         if (!empty($orders)) {
             return 'order by ' . implode(', ', $this->compileOrdersToArray($query, $orders));
@@ -781,7 +783,7 @@ class Grammar extends BaseGrammar
      *
      * @return string
      */
-    public function compileRandom($seed)
+    public function compileRandom($seed): string
     {
         return 'RANDOM()';
     }
@@ -794,7 +796,7 @@ class Grammar extends BaseGrammar
      *
      * @return string
      */
-    protected function compileLimit(Builder $query, $limit)
+    protected function compileLimit(Builder $query, $limit): string
     {
         return 'limit ' . (int)$limit;
     }
@@ -807,7 +809,7 @@ class Grammar extends BaseGrammar
      *
      * @return string
      */
-    protected function compileOffset(Builder $query, $offset)
+    protected function compileOffset(Builder $query, $offset): string
     {
         return 'offset ' . (int)$offset;
     }
@@ -819,7 +821,7 @@ class Grammar extends BaseGrammar
      *
      * @return string
      */
-    protected function compileUnions(Builder $query)
+    protected function compileUnions(Builder $query): string
     {
         $sql = '';
 
@@ -849,7 +851,7 @@ class Grammar extends BaseGrammar
      *
      * @return string
      */
-    protected function compileUnion(array $union)
+    protected function compileUnion(array $union): string
     {
         $conjunction = $union['all'] ? ' union all ' : ' union ';
 
@@ -1088,7 +1090,7 @@ class Grammar extends BaseGrammar
      *
      * @return string
      */
-    protected function compileLock(Builder $query, $value)
+    protected function compileLock(Builder $query, $value): string
     {
         return is_string($value) ? $value : '';
     }
@@ -1165,7 +1167,7 @@ class Grammar extends BaseGrammar
      *
      * @return string
      */
-    protected function wrapJsonSelector($value)
+    protected function wrapJsonSelector($value): string
     {
         throw new RuntimeException('This database engine does not support JSON operations.');
     }

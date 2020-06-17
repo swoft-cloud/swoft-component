@@ -1,11 +1,9 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Db\Connector;
 
-
-use Exception;
 use PDO;
+use Swoft\Db\Exception\DbException;
 use function sprintf;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Throwable;
@@ -39,14 +37,12 @@ class MySqlConnector extends AbstractConnector
         try {
             $connection = $this->createConnection($dsn, $username, $password, $options);
         } catch (Throwable $e) {
-            if ($e->getCode() == 2002) {
-                throw new Exception(
-                    sprintf('Dsn(%s) can not to connected!', $dsn)
-                );
+            if ($e->getCode() === 2002) {
+                throw new DbException(sprintf('Dsn(%s) can not to connected!', $dsn));
             }
 
-            if ($e->getCode() == 1045) {
-                throw new Exception('Username or password is error!');
+            if ($e->getCode() === 1045) {
+                throw new DbException('Username or password is error!');
             }
 
             throw $e;
@@ -112,7 +108,7 @@ class MySqlConnector extends AbstractConnector
      *
      * @return bool
      */
-    protected function hasSocket(array $config)
+    protected function hasSocket(array $config): bool
     {
         return isset($config['unix_socket']) && !empty($config['unix_socket']);
     }
@@ -124,7 +120,7 @@ class MySqlConnector extends AbstractConnector
      *
      * @return string
      */
-    protected function getSocketDsn(array $config)
+    protected function getSocketDsn(array $config): string
     {
         return "mysql:unix_socket={$config['unix_socket']};dbname={$config['database']}";
     }
@@ -165,7 +161,7 @@ class MySqlConnector extends AbstractConnector
      *
      * @return string
      */
-    protected function strictMode(PDO $connection)
+    protected function strictMode(PDO $connection): string
     {
         if (version_compare($connection->getAttribute(PDO::ATTR_SERVER_VERSION), '8.0.11') >= 0) {
             return "set session sql_mode='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'";

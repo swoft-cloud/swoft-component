@@ -37,22 +37,22 @@ class Connection extends AbstractConnection implements ConnectionInterface
     /**
      * Default fetch mode
      */
-    const DEFAULT_FETCH_MODE = PDO::FETCH_OBJ;
+    public const DEFAULT_FETCH_MODE = PDO::FETCH_OBJ;
 
     /**
      * Default type
      */
-    const TYPE_DEFAULT = 0;
+    public const TYPE_DEFAULT = 0;
 
     /**
      * Use write pdo
      */
-    const TYPE_WRITE = 1;
+    public const TYPE_WRITE = 1;
 
     /**
      * Use read pdo
      */
-    const TYPE_READ = 2;
+    public const TYPE_READ = 2;
 
     /**
      * The active PDO connection.
@@ -120,7 +120,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      * @param Database $database
      *
      */
-    public function initialize(Pool $pool, Database $database)
+    public function initialize(Pool $pool, Database $database): void
     {
         $this->pool     = $pool;
         $this->database = $database;
@@ -391,7 +391,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      */
     public function db(string $dbname)
     {
-        if ($this->db == $dbname) {
+        if ($this->db === $dbname) {
             return $this;
         }
 
@@ -625,6 +625,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     protected function run(string $query, array $bindings, Closure $callback)
     {
         $this->reconnectIfMissingConnection();
+
         $start = microtime(true);
         // Here we will run this query. If an exception occurs we'll determine if it was
         // caused by a connection that has been lost. If that is the cause, we'll try
@@ -679,7 +680,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
                 $this->releaseOrRemove();
 
                 // Throw exception
-                throw new DbException($e->getMessage(), (int)$e->getCode());
+                throw new DbException($e->getMessage(), $e->getCode());
             }
 
             // If an exception occurs when attempting to run a query, we'll format the error
@@ -697,7 +698,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
             CLog::error('Fail sql = <error>%s</error>', $rawSql);
 
             // Throw exception
-            throw new DbException($e->getMessage(), (int)$e->getCode());
+            throw new DbException($e->getMessage(), $e->getCode());
         }
 
         $this->pdoType = self::TYPE_DEFAULT;
@@ -714,7 +715,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return string the raw SQL with parameter values inserted into the corresponding placeholders in [[sql]].
      */
-    public function getRawSql(string $sql, array $bindings)
+    public function getRawSql(string $sql, array $bindings): string
     {
         if (empty($bindings)) {
             return $sql;
@@ -756,7 +757,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return void
      */
-    protected function reconnectIfMissingConnection()
+    protected function reconnectIfMissingConnection(): void
     {
         if (is_null($this->pdo)) {
             $this->reconnect();
@@ -850,7 +851,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
         }
 
         // Commit
-        if ($ts == 1) {
+        if ($ts === 1) {
             $this->getPdo()->commit();
 
             //Release from transaction manager
@@ -1006,7 +1007,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     protected function performRollBack(int $toLevel): void
     {
         $cm = $this->getConMananger();
-        if ($toLevel == 0) {
+        if ($toLevel === 0) {
             $this->getPdo()->rollBack();
 
             //Release transaction
@@ -1031,7 +1032,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     protected function createTransaction(ConnectionManager $cm): void
     {
         $ts = $cm->getTransactionTransactons($this->poolName);
-        if ($ts == 0) {
+        if ($ts === 0) {
             $this->getPdo()->beginTransaction();
             $cm->setTransactionConnection($this, $this->poolName);
         } elseif ($ts >= 1 && $this->queryGrammar->supportsSavepoints()) {
@@ -1084,11 +1085,12 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @throws DbException
      */
-    private function createReadPdo()
+    private function createReadPdo(): void
     {
         $reads = $this->database->getReads();
         if (!empty($reads)) {
-            $read          = $reads[array_rand($reads)];
+            $read = $reads[array_rand($reads)];
+
             $this->readPdo = $this->database->getConnector()->connect($read);
         }
     }

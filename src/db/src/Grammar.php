@@ -118,7 +118,7 @@ abstract class Grammar
      *
      * @return string
      */
-    protected function wrapValue($value)
+    protected function wrapValue($value): string
     {
         if ($value !== '*') {
             return '"' . str_replace('"', '""', $value) . '"';
@@ -134,7 +134,7 @@ abstract class Grammar
      *
      * @return string
      */
-    public function columnize(array $columns)
+    public function columnize(array $columns): string
     {
         return implode(', ', array_map([$this, 'wrap'], $columns));
     }
@@ -146,7 +146,7 @@ abstract class Grammar
      *
      * @return string
      */
-    public function parameterize(array $values)
+    public function parameterize(array $values): string
     {
         return implode(', ', array_map([$this, 'parameter'], $values));
     }
@@ -158,7 +158,7 @@ abstract class Grammar
      *
      * @return string
      */
-    public function parameter($value)
+    public function parameter($value): string
     {
         return $this->isExpression($value) ? $this->getValue($value) : '?';
     }
@@ -186,7 +186,7 @@ abstract class Grammar
      *
      * @return bool
      */
-    public function isExpression($value)
+    public function isExpression($value): bool
     {
         return $value instanceof Expression;
     }

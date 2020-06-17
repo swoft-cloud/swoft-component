@@ -46,6 +46,7 @@ class MySqlConnection extends Connection
         if (!$grammar instanceof MySqlGrammar) {
             throw new InvalidArgumentException('%s class is not Grammar instance', get_class($grammar));
         }
+
         return $this->withTablePrefix($grammar);
     }
 
@@ -68,20 +69,22 @@ class MySqlConnection extends Connection
     protected function isReconnect(): bool
     {
         $pdo = null;
-        if ($this->pdoType == self::TYPE_WRITE) {
+        if ($this->pdoType === self::TYPE_WRITE) {
             $pdo = $this->pdo;
-        } elseif ($this->pdoType == self::TYPE_READ) {
+        } elseif ($this->pdoType === self::TYPE_READ) {
             $pdo = $this->readPdo;
         }
 
-        if (empty($pdo)) {
+        if ($pdo === null) {
             return false;
         }
 
         $errorInfo = $pdo->errorInfo();
         $errorCode = $errorInfo[1] ?? 0;
         $errorCode = (int)$errorCode;
-        if ($errorCode == 2006 || $errorCode == 2013) {
+
+        // Error code
+        if ($errorCode === 2006 || $errorCode === 2013) {
             return true;
         }
 

@@ -117,7 +117,7 @@ class DB
      */
     public static function __callStatic(string $name, array $arguments)
     {
-        if (!in_array($name, self::$passthru)) {
+        if (!in_array($name, self::$passthru, true)) {
             throw new DbException(sprintf('Method(%s) is not exist!', $name));
         }
 
@@ -160,6 +160,7 @@ class DB
 
         $connection->setRelease(true);
         $conManager->setOrdinaryConnection($connection, $name);
+
         return $connection;
     }
 }

@@ -102,7 +102,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    protected function compileUnion(array $union)
+    protected function compileUnion(array $union): string
     {
         $conjunction = $union['all'] ? ' union all ' : ' union ';
 
@@ -116,7 +116,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    public function compileRandom($seed)
+    public function compileRandom($seed): string
     {
         return 'RAND(' . $seed . ')';
     }
@@ -129,7 +129,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    protected function compileLock(Builder $query, $value)
+    protected function compileLock(Builder $query, $value): string
     {
         if (!is_string($value)) {
             return $value ? 'for update' : 'lock in share mode';
@@ -327,7 +327,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    protected function wrapValue($value)
+    protected function wrapValue($value): string
     {
         return $value === '*' ? $value : '`' . str_replace('`', '``', $value) . '`';
     }
@@ -339,7 +339,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    protected function wrapJsonSelector($value)
+    protected function wrapJsonSelector($value): string
     {
         $delimiter = Str::contains($value, '->>')
             ? '->>'
