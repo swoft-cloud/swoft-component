@@ -151,7 +151,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      *
      * @return void
      */
-    public function useDefaultPostProcessor()
+    public function useDefaultPostProcessor(): void
     {
         $this->postProcessor = $this->getDefaultPostProcessor();
     }
