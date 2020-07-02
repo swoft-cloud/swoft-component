@@ -149,7 +149,7 @@ use Throwable;
  * @method static array xRange(string $stream_key, string $start, string $end, int $count)
  * @method static array xRevRange(string $stream_key, string $end, string $start, int $count)
  * @method static array xRead(array|string $stream_keys, int $count, int $block)
- * @method static array xReadGroup(string $group, string consumer, array|string $stream_keys, int $count, int $block)
+ * @method static array xReadGroup(string $group, string $consumer, array|string $stream_keys, int $count, int $block)
  * @method static integer xTrim(string $stream_key, int $max_len, bool $approximate)
  */
 class Redis

@@ -149,7 +149,7 @@ class RedisDb
         $connection  = $connections[$this->driver] ?? null;
 
         if (!$connection instanceof Connection) {
-            throw new RedisException(sprintf('Connection(dirver=%s) is not exist', $this->driver));
+            throw new RedisException(sprintf('Connection(driver=%s) is not exist', $this->driver));
         }
 
         return $connection;
