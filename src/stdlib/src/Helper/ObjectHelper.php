@@ -4,6 +4,7 @@ namespace Swoft\Stdlib\Helper;
 
 use InvalidArgumentException;
 use ReflectionProperty;
+use stdClass;
 use Throwable;
 use function is_numeric;
 use function json_encode;
@@ -173,5 +174,42 @@ class ObjectHelper
         }
 
         return $value;
+    }
+    
+    /**
+     * Converts an array into standard object.
+     * 
+     * @param array
+     * 
+     * @return stdClass 
+     */
+    public static function toObject(array $array): stdClass
+    {
+        $object = new \stdClass;
+
+        if (!$array) {
+            return $object;
+        }
+
+        foreach ($array as $name => $value) {
+            if ($name == '') {
+                continue;
+            }
+
+            $isNumericArray = false;
+
+            if ((array) $value === $value) {
+                foreach ($value as $k => $v) {
+                    if (is_numeric($k)) {
+                        $isNumericArray = true;
+                        break;
+                    }
+                }
+            }
+            
+            $object->$name = $isNumericArray ?$value :static::toObject($value);
+        }
+        
+        return $object;
     }
 }
