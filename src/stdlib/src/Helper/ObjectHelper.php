@@ -185,7 +185,7 @@ class ObjectHelper
      */
     public static function toObject(array $array): stdClass
     {
-        $object = new \stdClass;
+        $object = new stdClass;
 
         if (!$array) {
             return $object;
@@ -206,10 +206,10 @@ class ObjectHelper
                     }
                 }
             }
-            
-            $object->$name = $isNumericArray ?$value :static::toObject($value);
+
+            $object->$name = $isNumericArray ? $value : static::toObject($value);
         }
-        
+
         return $object;
     }
 }
