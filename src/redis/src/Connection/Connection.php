@@ -104,6 +104,8 @@ use function sprintf;
  * @method int zCount(string $key, int $start, int $end)
  * @method float zIncrBy(string $key, float $value, string $member)
  * @method int zLexCount(string $key, int $min, int $max)
+ * @method array zPopMin(string $key, int $count)
+ * @method array zPopMax(string $key, int $count) 
  * @method array zRange(string $key, int $start, int $end, bool $withscores = null)
  * @method array zRangeByLex(string $key, int $min, int $max, int $offset = null, int $limit = null)
  * @method array zRangeByScore(string $key, string $start, string $end, array $options = [])
@@ -141,8 +143,8 @@ use function sprintf;
  * @method string xAdd(string $stream_key, string $id, array $message, int $max_len, bool $approximate)
  * @method string xClaim(string $stream_key, string $group, string $consumer, string $min_idle_time, array $id_list, array $options)
  * @method string xDel(string $stream_key, array $id_list)
- * @method string xGroup() @TODO
- * @method string xInfo() @TODO
+ * @method mixed xGroup(...$args)
+ * @method mixed xInfo(...$args)
  * @method integer xLen(string $stream_key)
  * @method array xPending(string $stream_key, string $group, string $start, string $end, int $count, string $consumer)
  * @method array xRange(string $stream_key, string $start, string $end, int $count)
@@ -248,6 +250,8 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
         'zcount',
         'zincrby',
         'zlexcount',
+        'zpopmin',
+        'zpopmax',
         'zrange',
         'zrangebylex',
         'zrangebyscore',
