@@ -26,8 +26,14 @@ jobs:
 #         GITHUB_REPOSITORY: ${{ github.repository }}
 #         LABEL_MAPPINGS_FILE: .github/pr-labeler.yml
 
-      - name: PR Labeler
-        uses: actions/labeler@v2
-        with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+    - name: PR Labeler
+      uses: inherelab/pr-labeler@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         LABEL_CONFIG: .github/pr-labeler.yml
+
+#       - name: PR Labeler
+#         uses: actions/labeler@v2
+#         with:
+#           repo-token: "${{ secrets.GITHUB_TOKEN }}"
 #           configuration-path: ".github/labeler.yml"
