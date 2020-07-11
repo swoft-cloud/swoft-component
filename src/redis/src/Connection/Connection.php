@@ -394,8 +394,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     public function command(string $method, array $parameters = [], bool $reconnect = false)
     {
         try {
-            $lowerMethod = strtolower($method);
-            if (!in_array($lowerMethod, $this->supportedMethods, true)) {
+            if (false === method_exists($this, $method)) {
                 throw new RedisException(
                     sprintf('Method(%s) is not supported!', $method)
                 );
