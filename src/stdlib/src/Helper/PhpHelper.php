@@ -36,7 +36,7 @@ class PhpHelper
      *
      * @return mixed
      */
-    public static function call($cb, ...$args)
+    public static function call($cb, &...$args)
     {
         if (is_string($cb)) {
             // className::method
