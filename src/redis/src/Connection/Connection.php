@@ -105,7 +105,7 @@ use function sprintf;
  * @method float zIncrBy(string $key, float $value, string $member)
  * @method int zLexCount(string $key, int $min, int $max)
  * @method array zPopMin(string $key, int $count)
- * @method array zPopMax(string $key, int $count) 
+ * @method array zPopMax(string $key, int $count)
  * @method array zRange(string $key, int $start, int $end, bool $withscores = null)
  * @method array zRangeByLex(string $key, int $min, int $max, int $offset = null, int $limit = null)
  * @method array zRangeByScore(string $key, string $start, string $end, array $options = [])
@@ -394,8 +394,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     public function command(string $method, array $parameters = [], bool $reconnect = false)
     {
         try {
-            $lowerMethod = strtolower($method);
-            if (!in_array($lowerMethod, $this->supportedMethods, true)) {
+            if (false === method_exists($this->client, $method)) {
                 throw new RedisException(
                     sprintf('Method(%s) is not supported!', $method)
                 );
