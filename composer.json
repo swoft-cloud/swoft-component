@@ -21,7 +21,7 @@
     "psr/http-message": "^1.0",
     "psr/http-server-handler": "^1.0",
     "psr/http-server-middleware": "^1.0",
-    "vlucas/phpdotenv": "^3.4",
+    "vlucas/phpdotenv": "^3.4 || ^5.0",
     "symfony/yaml": "^4.3",
     "toolkit/cli-utils": "^1.0",
     "monolog/monolog": "^1.24",
