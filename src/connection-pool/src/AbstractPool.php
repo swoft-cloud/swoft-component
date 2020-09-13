@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Connection\Pool;
 
@@ -208,7 +215,6 @@ abstract class AbstractPool implements PoolInterface
 
         // Channel is empty or  not reach `maxActive` number
         if ($this->count < $this->maxActive) {
-
             return $this->create();
         }
 
@@ -216,8 +222,12 @@ abstract class AbstractPool implements PoolInterface
         $stats = $this->channel->stats();
         if ($this->maxWait > 0 && $stats['consumer_num'] >= $this->maxWait) {
             throw new ConnectionPoolException(
-                sprintf('Channel consumer is full, maxActive=%d, maxWait=%d, currentCount=%d',
-                    $this->maxActive, $this->maxWaitTime, $this->count)
+                sprintf(
+                    'Channel consumer is full, maxActive=%d, maxWait=%d, currentCount=%d',
+                    $this->maxActive,
+                    $this->maxWaitTime,
+                    $this->count
+                )
             );
         }
 
@@ -253,10 +263,12 @@ abstract class AbstractPool implements PoolInterface
             $this->count--;
 
             throw new ConnectionPoolException(
-                sprintf('Create connection error(%s) file(%s) line (%d)',
+                sprintf(
+                    'Create connection error(%s) file(%s) line (%d)',
                     $e->getMessage(),
                     $e->getFile(),
-                    $e->getLine())
+                    $e->getLine()
+                )
             );
         }
 
@@ -279,7 +291,6 @@ abstract class AbstractPool implements PoolInterface
 
             // Out of `maxIdleTime`
             if ($time - $lastTime > $this->maxIdleTime) {
-
                 try {
                     // Fix expired connection not released, May be disconnected
                     $connection->close();
