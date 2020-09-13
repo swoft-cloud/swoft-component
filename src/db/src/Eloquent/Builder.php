@@ -387,7 +387,13 @@ class Builder
         $instance = $this->newModelInstance();
 
         return $instance->newCollection(array_map(function ($item) use ($instance) {
-            return $instance->newFromBuilder($item);
+            $model = $instance->newFromBuilder($item);
+
+            // overwirte
+            $model->setModelHidden($this->model->getModelHidden());
+            $model->setModelVisible($this->model->getModelVisible());
+
+            return $model;
         }, $items));
     }
 
