@@ -184,6 +184,7 @@ class Validator
     protected function validateDefaultValidator(array $data, array $validator, array $fields, array $unfields): array
     {
         $properties = $validator['properties'] ?? [];
+
         foreach ($properties as $propName => $property) {
             /* @var IsString|IsInt|IsBool|IsFloat $type */
             $type = $property['type']['annotation'] ?? null;
@@ -191,17 +192,17 @@ class Validator
                 continue;
             }
 
-            $propName = $type->getName() ?: $propName;
             if ($fields && !in_array($propName, $fields, true)) {
                 continue;
             }
 
-            if (!isset($data[$propName]) && !$property['required'] && !isset($property['type']['default'])) {
+            // Un-fields - exclude validate
+            if (in_array($propName, $unfields, true)) {
                 continue;
             }
 
-            // Unfields
-            if (in_array($propName, $unfields, true)) {
+            $propName = $type->getName() ?: $propName;
+            if (!isset($data[$propName]) && !$property['required'] && !isset($property['type']['default'])) {
                 continue;
             }
 

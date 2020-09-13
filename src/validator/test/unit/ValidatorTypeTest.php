@@ -161,8 +161,9 @@ class ValidatorTypeTest extends TestCase
     public function testName(): void
     {
         $data = [];
-        [$result] = (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testName'));
-        $this->assertEquals($result, ['swoftName' => 'swoft']);
+        $validates = $this->getValidates(ValidateDemo::class, 'testName');
+        [$result] = (new Validator())->validateRequest($data, $validates);
+        $this->assertEquals(['swoftName' => 'swoft'], $result);
     }
 
     /**
