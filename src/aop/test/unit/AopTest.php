@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Aop\Unit;
-
 
 use PHPUnit\Framework\TestCase;
 use Swoft\Aop\Ast\Visitor\ProxyVisitor;
@@ -14,7 +12,6 @@ use SwoftTest\Aop\Testing\AopClass;
 use function class_exists;
 use function sprintf;
 use const PHP_EOL;
-
 
 /**
  * Class AopTest

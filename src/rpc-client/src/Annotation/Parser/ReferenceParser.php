@@ -33,7 +33,7 @@ class ReferenceParser extends Parser
 {
     /**
      * @param int       $type
-     * @param Reference $annotationObject
+     * @param Reference $refObject
      *
      * @return array
      * @throws RpcClientException
@@ -41,7 +41,7 @@ class ReferenceParser extends Parser
      * @throws ReflectionException
      * @throws ProxyException
      */
-    public function parse(int $type, $annotationObject): array
+    public function parse(int $type, $refObject): array
     {
         // Parse php document
         $phpReader       = new PhpDocReader();
@@ -56,13 +56,14 @@ class ReferenceParser extends Parser
             ));
         }
 
-        $className = Proxy::newClassName($propClassType);
+        $refVersion = $refObject->getVersion();
+        $className  = Proxy::newClassName($propClassType, $refVersion);
 
         $this->definitions[$className] = [
             'class' => $className,
         ];
 
-        ReferenceRegister::register($className, $annotationObject->getPool(), $annotationObject->getVersion());
+        ReferenceRegister::register($className, $refObject->getPool(), $refVersion);
         return [$className, true];
     }
 }
