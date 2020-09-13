@@ -28,6 +28,7 @@ use Swoft\WebSocket\Server\MessageParser\RawTextParser;
  *     @Attribute("path", type="string"),
  *     @Attribute("controllers", type="array"),
  *     @Attribute("messageParser", type="string"),
+ *     @Attribute("defaultCommand", type="string"),
  * )
  */
 final class WsModule

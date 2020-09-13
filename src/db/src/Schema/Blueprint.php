@@ -155,7 +155,7 @@ class Blueprint
     protected function commandsNamed(array $names)
     {
         return Collection::make($this->commands)->filter(function ($command) use ($names) {
-            return in_array($command->name, $names);
+            return in_array($command->name, $names, true);
         });
     }
 
@@ -289,7 +289,7 @@ class Blueprint
      *
      * @return void
      */
-    public function temporary()
+    public function temporary(): void
     {
         $this->temporary = true;
     }
@@ -301,7 +301,7 @@ class Blueprint
      *
      * @return void
      */
-    public function comment(string $comment)
+    public function comment(string $comment): void
     {
         $this->comment = $comment;
     }
@@ -310,7 +310,7 @@ class Blueprint
      * Indicate that the table should be dropped.
      *
      */
-    public function drop()
+    public function drop(): Fluent
     {
         return $this->addCommand('drop');
     }
@@ -1464,7 +1464,7 @@ class Blueprint
      *
      * @return Fluent
      */
-    protected function addCommand($name, array $parameters = [])
+    protected function addCommand($name, array $parameters = []): Fluent
     {
         $this->commands[] = $command = $this->createCommand($name, $parameters);
 
@@ -1479,7 +1479,7 @@ class Blueprint
      *
      * @return Fluent
      */
-    protected function createCommand($name, array $parameters = [])
+    protected function createCommand($name, array $parameters = []): Fluent
     {
         return new Fluent(array_merge(compact('name'), $parameters));
     }
@@ -1489,7 +1489,7 @@ class Blueprint
      *
      * @return string
      */
-    public function getTable()
+    public function getTable(): string
     {
         return $this->table;
     }

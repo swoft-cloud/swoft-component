@@ -64,8 +64,8 @@ class ProcessDispatcher
     private function getProcess(int $workerId): ProcessInterface
     {
         $processName = ProcessRegister::getProcess($workerId);
-        $process     = BeanFactory::getBean($processName);
 
+        $process = BeanFactory::getBean($processName);
         if (!$process instanceof ProcessInterface) {
             throw new ProcessException('Process must be instanceof ProcessInterface');
         }

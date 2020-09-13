@@ -146,7 +146,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    protected function compileCreateTable(Blueprint $blueprint, $command, $connection)
+    protected function compileCreateTable(Blueprint $blueprint, $command, $connection): string
     {
         $ifNotExist = '';
         if ($command['ifNotExists']) {
@@ -211,7 +211,9 @@ class MySqlGrammar extends Grammar
     {
         if (isset($blueprint->engine)) {
             return $sql . ' engine = ' . $blueprint->engine;
-        } elseif ($engine = $connection->getDatabase()->getConfig()['engine'] ?? 'InnoDB') {
+        }
+
+        if ($engine = $connection->getDatabase()->getConfig()['engine'] ?? 'InnoDB') {
             return $sql . ' engine = ' . $engine;
         }
 
@@ -877,7 +879,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    protected function typeYear(Fluent $column)
+    protected function typeYear(Fluent $column): string
     {
         return 'year';
     }
@@ -889,7 +891,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    protected function typeBinary(Fluent $column)
+    protected function typeBinary(Fluent $column): string
     {
         return 'blob';
     }
@@ -901,7 +903,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    protected function typeUuid(Fluent $column)
+    protected function typeUuid(Fluent $column): string
     {
         return 'char(36)';
     }
@@ -913,7 +915,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    protected function typeIpAddress(Fluent $column)
+    protected function typeIpAddress(Fluent $column): string
     {
         return 'varchar(45)';
     }
@@ -925,7 +927,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    protected function typeMacAddress(Fluent $column)
+    protected function typeMacAddress(Fluent $column): string
     {
         return 'varchar(17)';
     }
@@ -937,7 +939,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    public function typeGeometry(Fluent $column)
+    public function typeGeometry(Fluent $column): string
     {
         return 'geometry';
     }
@@ -949,7 +951,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    public function typePoint(Fluent $column)
+    public function typePoint(Fluent $column): string
     {
         return 'point';
     }
@@ -961,7 +963,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    public function typeLineString(Fluent $column)
+    public function typeLineString(Fluent $column): string
     {
         return 'linestring';
     }
@@ -973,7 +975,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    public function typePolygon(Fluent $column)
+    public function typePolygon(Fluent $column): string
     {
         return 'polygon';
     }
@@ -985,7 +987,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    public function typeGeometryCollection(Fluent $column)
+    public function typeGeometryCollection(Fluent $column): string
     {
         return 'geometrycollection';
     }
@@ -997,7 +999,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    public function typeMultiPoint(Fluent $column)
+    public function typeMultiPoint(Fluent $column): string
     {
         return 'multipoint';
     }
@@ -1009,7 +1011,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    public function typeMultiLineString(Fluent $column)
+    public function typeMultiLineString(Fluent $column): string
     {
         return 'multilinestring';
     }
@@ -1021,7 +1023,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    public function typeMultiPolygon(Fluent $column)
+    public function typeMultiPolygon(Fluent $column): string
     {
         return 'multipolygon';
     }
@@ -1243,7 +1245,7 @@ class MySqlGrammar extends Grammar
      *
      * @return string
      */
-    protected function wrapValue($value)
+    protected function wrapValue($value): string
     {
         if ($value !== '*') {
             return '`' . str_replace('`', '``', $value) . '`';

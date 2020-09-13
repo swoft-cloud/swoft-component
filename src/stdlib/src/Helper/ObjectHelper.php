@@ -154,6 +154,8 @@ class ObjectHelper
         $value = null;
         switch ($type) {
             case 'int':
+            case 'float':
+            case 'double':
             case 'integer':
                 $value = 0;
                 break;
@@ -163,12 +165,6 @@ class ObjectHelper
             case 'bool':
             case 'boolean':
                 $value = false;
-                break;
-            case 'float':
-                $value = 0;
-                break;
-            case 'double':
-                $value = 0;
                 break;
         }
 

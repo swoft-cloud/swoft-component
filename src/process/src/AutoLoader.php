@@ -43,7 +43,8 @@ class AutoLoader extends SwoftComponent
                 'on'    => [
                     SwooleEvent::WORKER_START => bean(WorkerStartListener::class),
                     SwooleEvent::WORKER_STOP  => bean(WorkerStopListener::class)
-                ]
+                ],
+                'workerNum' => 2,
             ]
         ];
     }

@@ -15,9 +15,7 @@ use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Contract\SessionInterface;
 use Swoft\Http\Message\Request;
-use Swoft\Http\Message\Request as Psr7Request;
 use Swoft\Http\Message\Response;
-use Swoft\Http\Message\Response as Psr7Response;
 use Swoft\Stdlib\Concern\DataPropertyTrait;
 use Swoft\Stdlib\Helper\JsonHelper;
 use Swoft\WebSocket\Server\Contract\MessageParserInterface;
@@ -152,8 +150,8 @@ class Connection implements SessionInterface
         $res->header = $data['resHeader'];
 
         // Initialize psr7 Request and Response
-        $psr7Req  = Psr7Request::new($req);
-        $psr7Res  = Psr7Response::new($res);
+        $psr7Req  = Request::new($req);
+        $psr7Res  = Response::new($res);
         $wsServer = Swoft::getBean(WsServerBean::SERVER);
 
         // Initialize connection

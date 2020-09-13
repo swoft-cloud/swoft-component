@@ -65,7 +65,7 @@ class Schema
      */
     public static function __callStatic(string $name, array $arguments)
     {
-        if (!in_array($name, self::$passthru)) {
+        if (!in_array($name, self::$passthru, true)) {
             throw new DbException(sprintf('Schema not support method(%s)!', $name));
         }
 

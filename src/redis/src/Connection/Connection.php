@@ -16,6 +16,7 @@ use Swoft\Redis\RedisEvent;
 use Swoft\Stdlib\Helper\PhpHelper;
 use Throwable;
 use function count;
+use function method_exists;
 use function sprintf;
 
 /**
@@ -169,7 +170,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
      * @param Pool    $pool
      * @param RedisDb $redisDb
      */
-    public function initialize(Pool $pool, RedisDb $redisDb)
+    public function initialize(Pool $pool, RedisDb $redisDb): void
     {
         $this->pool     = $pool;
         $this->redisDb  = $redisDb;
@@ -244,10 +245,10 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     public function command(string $method, array $parameters = [], bool $reconnect = false)
     {
         try {
+            // if (!in_array($lowerMethod, $this->supportedMethods, true)) {
+            // Up: use method_exists check command is valid.
             if (false === method_exists($this->client, $method)) {
-                throw new RedisException(
-                    sprintf('Method(%s) is not supported!', $method)
-                );
+                throw new RedisException(sprintf('Redis method(%s) is not supported!', $method));
             }
 
             // Before event
@@ -267,9 +268,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
                 return $this->command($method, $parameters, true);
             }
 
-            throw new RedisException(
-                sprintf('Redis command reconnect error(%s)', $e->getMessage())
-            );
+            throw new RedisException('Redis command reconnect error=' . $e->getMessage(), $e->getCode(), $e);
         }
 
         return $result;

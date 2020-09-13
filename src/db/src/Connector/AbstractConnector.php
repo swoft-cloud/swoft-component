@@ -39,7 +39,7 @@ abstract class AbstractConnector implements ConnectorInterface
      *
      * @throws Exception
      */
-    public function createConnection($dsn, string $username, string $password, array $options)
+    public function createConnection($dsn, string $username, string $password, array $options): PDO
     {
         $options = $this->getOptions($options);
         return new PDO($dsn, $username, $password, $options);
@@ -55,7 +55,7 @@ abstract class AbstractConnector implements ConnectorInterface
      *
      * @return PDO
      */
-    protected function createPdoConnection($dsn, $username, $password, $options)
+    protected function createPdoConnection($dsn, $username, $password, $options): PDO
     {
         return new PDO($dsn, $username, $password, $options);
     }
@@ -67,7 +67,7 @@ abstract class AbstractConnector implements ConnectorInterface
      *
      * @return array
      */
-    public function getOptions(array $options)
+    public function getOptions(array $options): array
     {
         return array_diff_key($this->options, $options) + $options;
     }

@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-
 namespace Swoft\Db\Concern;
 
 use Swoft;
@@ -33,13 +32,11 @@ trait HasEvent
         if ($this->getContextName() !== 'model') {
             return true;
         }
+
         // Trigger model method event
         $modelEventResult = Swoft::trigger($this->getModelEventName($event), $this, ...$args);
-        if ($modelEventResult->isPropagationStopped() === true) {
-            return false;
-        }
 
-        return true;
+        return !($modelEventResult->isPropagationStopped() === true);
     }
 
     /**
@@ -70,6 +67,7 @@ trait HasEvent
         if ($this instanceof Model) {
             return 'model';
         }
+
         return 'db';
     }
 }
