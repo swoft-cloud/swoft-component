@@ -74,17 +74,19 @@ class AddProcessListener implements EventHandlerInterface
             $function = function (SwooleProcess $swProcess) use ($callback, $server, $name) {
                 $process = Process::new($swProcess);
 
-                // Before
-                Swoft::trigger(ProcessEvent::BEFORE_USER_PROCESS, null, $server, $process, $name);
+                try {
+                    // Before
+                    Swoft::trigger(ProcessEvent::BEFORE_USER_PROCESS, null, $server, $process, $name);
 
-                try {// Run
+                    // Run
+                    // TODO use $userProcess->run($process);
                     PhpHelper::call($callback, $process);
+
+                    // After
+                    Swoft::trigger(ProcessEvent::AFTER_USER_PROCESS);
                 } catch (Throwable $e) {
                     Error::log('User process fail(%s %s %d)!', $e->getFile(), $e->getMessage(), $e->getLine());
                 }
-
-                // After
-                Swoft::trigger(ProcessEvent::AFTER_USER_PROCESS);
             };
 
             $process = new SwooleProcess($function, $stdinOut, $pipeType, $coroutine);
