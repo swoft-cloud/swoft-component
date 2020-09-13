@@ -98,6 +98,8 @@ use Throwable;
  * @method static int zCount(string $key, int $start, int $end)
  * @method static float zIncrBy(string $key, float $value, string $member)
  * @method static int zLexCount(string $key, int $min, int $max)
+ * @method static array zPopMin(string $key, int $count)
+ * @method static array zPopMax(string $key, int $count)
  * @method static array zRange(string $key, int $start, int $end, bool $withscores = null)
  * @method static array zRangeByLex(string $key, int $min, int $max, int $offset = null, int $limit = null)
  * @method static array zRangeByScore(string $key, string $start, string $end, array $options = [])
@@ -142,8 +144,8 @@ use Throwable;
  * @method static string xAdd(string $stream_key, string $id, array $message, int $max_len, bool $approximate)
  * @method static string xClaim(string $stream_key, string $group, string $consumer, string $min_idle_time, array $id_list, array $options)
  * @method static string xDel(string $stream_key, array $id_list)
- * @method static string xGroup() @TODO
- * @method static string xInfo() @TODO
+ * @method static mixed xGroup(...$args)
+ * @method static mixed xInfo(...$args)
  * @method static integer xLen(string $stream_key)
  * @method static array xPending(string $stream_key, string $group, string $start, string $end, int $count, string $consumer)
  * @method static array xRange(string $stream_key, string $start, string $end, int $count)

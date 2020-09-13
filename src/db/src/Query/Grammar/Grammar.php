@@ -947,10 +947,13 @@ class Grammar extends BaseGrammar
 
             $setStr .= " `$column` = case `$primary` ";
             foreach ($values as $row) {
-                $value    = $row[$column];
-                $rowValue = is_string($value) ? "'$value'" : $value;
+                $value = $row[$column];
+                $id    = $row[$primary];
 
-                $setStr .= " when '$row[$primary]' then $rowValue ";
+                $rowValue = is_string($value) ? "'$value'" : $value;
+                $rowId    = is_string($id) ? "'$id'" : $id;
+
+                $setStr .= " when $rowId then $rowValue ";
             }
             $setStr .= ' end,';
         }

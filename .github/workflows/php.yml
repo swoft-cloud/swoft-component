@@ -30,9 +30,9 @@ jobs:
           - 6379/tcp
         options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
     strategy:
-      fail-fast: false # dont fast fail
+      fail-fast: true # fast fail
       matrix:
-        php: [7.1, 7.2, 7.3] # 7.4
+        php: [7.1, 7.2, 7.3, 7.4]
         os: [ubuntu-latest] # , macOS-latest, windows-latest
 
     steps:
