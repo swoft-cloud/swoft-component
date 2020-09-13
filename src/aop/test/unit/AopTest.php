@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\Aop\Unit;
 
@@ -23,7 +31,7 @@ class AopTest extends TestCase
     /**
      * @throws ProxyException
      */
-    public function testProxyClass()
+    public function testProxyClass(): void
     {
         $visitor   = new ProxyVisitor();
         $className = BaseProxy::newClassName(AopClass::class, $visitor);
@@ -34,7 +42,7 @@ class AopTest extends TestCase
     /**
      * @throws ProxyException
      */
-    public function testProxyCode()
+    public function testProxyCode(): void
     {
         $parser    = new Parser();
         $visitor   = new ProxyVisitor('proxy_id');
