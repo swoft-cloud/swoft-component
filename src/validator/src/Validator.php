@@ -177,6 +177,17 @@ class Validator
     {
         $properties = $validator['properties'] ?? [];
         foreach ($properties as $propName => $property) {
+            /* @var IsString|IsInt|IsBool|IsFloat $type */
+            $type        = $property['type']['annotation'] ?? null;
+            $default     = $property['type']['default'] ?? null;
+            $annotations = $property['annotations'] ?? [];
+            if ($type === null) {
+                continue;
+            }
+
+            $name     = $type->getName();
+            $propName = empty($name) ? $propName : $name;
+
             if (!empty($fields) && !in_array($propName, $fields, true)) {
                 continue;
             }
@@ -189,17 +200,6 @@ class Validator
             if (in_array($propName, $unfields, true)) {
                 continue;
             }
-
-            /* @var IsString|IsInt|IsBool|IsFloat $type */
-            $type        = $property['type']['annotation'] ?? null;
-            $default     = $property['type']['default'] ?? null;
-            $annotations = $property['annotations'] ?? [];
-            if ($type === null) {
-                continue;
-            }
-
-            $name     = $type->getName();
-            $propName = empty($name) ? $propName : $name;
 
             // Default validate item(Type) and other item
             $data = $this->validateDefaultItem($data, $propName, $type, $default);
