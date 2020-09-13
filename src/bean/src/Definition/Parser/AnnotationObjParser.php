@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Bean\Definition\Parser;
 
@@ -108,8 +116,10 @@ class AnnotationObjParser extends ObjectParser
     {
         // Check class annotation tag
         if (!isset($classOneAnnotations['annotation'])) {
-            throw new AnnotationException(sprintf('Property or method(%s) with `@xxx` must be define class annotation',
-                    $className));
+            throw new AnnotationException(sprintf(
+                'Property or method(%s) with `@xxx` must be define class annotation',
+                $className
+            ));
         }
 
         // Parse class annotations
@@ -227,7 +237,6 @@ class AnnotationObjParser extends ObjectParser
         string $propertyName,
         array $propertyAnnotations
     ): ?PropertyInjection {
-
         $propertyInjection = null;
         foreach ($propertyAnnotations as $propertyAnnotation) {
             $annotationClass = get_class($propertyAnnotation);
