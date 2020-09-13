@@ -82,8 +82,7 @@ class Event implements EventInterface, ArrayAccess, Serializable
      */
     public function destroy(): self
     {
-        $this->params = [];
-        $this->target = [];
+        $this->params = $this->target = [];
 
         return $this;
     }
@@ -158,7 +157,7 @@ class Event implements EventInterface, ArrayAccess, Serializable
     /**
      * clear all param
      */
-    public function clearParams()
+    public function clearParams(): array
     {
         $old = $this->params;
         // clear
@@ -229,7 +228,7 @@ class Event implements EventInterface, ArrayAccess, Serializable
     /**
      * @param string $name
      */
-    public function removeParam($name)
+    public function removeParam($name): void
     {
         if (isset($this->params[$name])) {
             unset($this->params[$name]);
