@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Error;
 
@@ -56,7 +64,7 @@ class DefaultErrorDispatcher
     {
         set_error_handler([$this, 'handleError'], $this->errorTypes);
         set_exception_handler([$this, 'handleException']);
-        register_shutdown_function(function () {
+        register_shutdown_function(function (): void {
             if (!$e = error_get_last()) {
                 return;
             }
