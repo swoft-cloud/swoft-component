@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Log\Handler;
 
@@ -6,7 +14,6 @@ use DateTime;
 use InvalidArgumentException;
 use Monolog\Handler\AbstractProcessingHandler;
 use Swoft\Co;
-use Swoft\Exception\SwoftException;
 use Swoft\Log\Helper\Log;
 use Swoft\Log\Logger;
 use Swoft\Log\Logger as SwoftLogger;
