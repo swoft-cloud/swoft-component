@@ -1,5 +1,13 @@
-<?php 
+<?php
  declare (strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 namespace SwoftTest\Aop\Testing;
 
 class AopClass_PROXY_proxy_id extends \SwoftTest\Aop\Testing\AopClass
@@ -21,8 +29,8 @@ class AopClass_PROXY_proxy_id extends \SwoftTest\Aop\Testing\AopClass
     {
         $this->__proxyCall('SwoftTest\\Aop\\Testing\\AopClass', 'MethodVoid', func_get_args());
     }
-    public function MethodNull($int, $str, $float, $aopClass)
+    public function MethodNull($int, $str, $float, $aopClass) : void
     {
-        return $this->__proxyCall('SwoftTest\\Aop\\Testing\\AopClass', 'MethodNull', func_get_args());
+        $this->__proxyCall('SwoftTest\\Aop\\Testing\\AopClass', 'MethodNull', func_get_args());
     }
 }
