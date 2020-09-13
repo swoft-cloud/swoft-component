@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\Validator\Testing;
 
@@ -20,7 +27,6 @@ class ValidateDemo2
      */
     public function testEmail(): void
     {
-
     }
 
     /**
@@ -28,7 +34,6 @@ class ValidateDemo2
      */
     public function testEnum(): void
     {
-
     }
 
     /**
@@ -36,7 +41,6 @@ class ValidateDemo2
      */
     public function testIp(): void
     {
-
     }
 
     /**
@@ -44,7 +48,6 @@ class ValidateDemo2
      */
     public function testLength(): void
     {
-
     }
 
     /**
@@ -52,7 +55,6 @@ class ValidateDemo2
      */
     public function testMax(): void
     {
-
     }
 
     /**
@@ -60,7 +62,6 @@ class ValidateDemo2
      */
     public function testMin(): void
     {
-
     }
 
     /**
@@ -68,7 +69,6 @@ class ValidateDemo2
      */
     public function testMobile(): void
     {
-
     }
 
     /**
@@ -76,7 +76,6 @@ class ValidateDemo2
      */
     public function testNotEmpty(): void
     {
-
     }
 
     /**
@@ -84,7 +83,6 @@ class ValidateDemo2
      */
     public function testPattern(): void
     {
-
     }
 
     /**
@@ -92,6 +90,5 @@ class ValidateDemo2
      */
     public function testRange(): void
     {
-
     }
 }

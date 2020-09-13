@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\Validator\Unit;
 
@@ -15,7 +22,7 @@ use SwoftTest\Validator\Testing\Validator\TestValidator3;
  */
 class UnfieldsTest extends TestCase
 {
-    public function testUnfields()
+    public function testUnfields(): void
     {
         $data = [];
         [$body] = (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo3::class, 'unfield'));
@@ -27,10 +34,9 @@ class UnfieldsTest extends TestCase
             'email' => '121',
         ];
 
-        $body = (new Validator())->validate($data, TestValidator3::class, [], [], ["ip", "count", "email"]);
+        $body = (new Validator())->validate($data, TestValidator3::class, [], [], ['ip', 'count', 'email']);
         $this->assertIsArray($body);
         $this->assertEquals($body, $data);
-
     }
 
     /**
@@ -38,7 +44,7 @@ class UnfieldsTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testUnfieldsException()
+    public function testUnfieldsException(): void
     {
         $data = [];
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo3::class, 'unfield2'));
@@ -50,11 +56,11 @@ class UnfieldsTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testUnfieldsException2()
+    public function testUnfieldsException2(): void
     {
         $data = [
             'email' => '121',
         ];
-        (new Validator())->validate($data, TestValidator3::class, [], [], ["ip", "count"]);
+        (new Validator())->validate($data, TestValidator3::class, [], [], ['ip', 'count']);
     }
 }

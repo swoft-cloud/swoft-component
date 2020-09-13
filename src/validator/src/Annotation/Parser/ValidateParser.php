@@ -1,8 +1,14 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Validator\Annotation\Parser;
-
 
 use Swoft\Annotation\Annotation\Mapping\AnnotationParser;
 use Swoft\Annotation\Annotation\Parser\Parser;
@@ -29,11 +35,19 @@ class ValidateParser extends Parser
         $validator = $annotationObject->getValidator();
         $fields    = $annotationObject->getFields();
         $params    = $annotationObject->getParams();
-        $type      = $annotationObject->getType();
+        $dataType  = $annotationObject->getType();
         $unfields  = $annotationObject->getUnfields();
 
-        ValidateRegister::registerValidate($this->className, $this->methodName, $validator, $fields, $unfields, $params,
-            '', $type);
+        ValidateRegister::registerValidate(
+            $this->className,
+            $this->methodName,
+            $validator,
+            $fields,
+            $unfields,
+            $params,
+            '',
+            $dataType
+        );
 
         return [];
     }

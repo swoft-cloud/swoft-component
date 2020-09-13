@@ -1,9 +1,16 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\Validator\Unit;
 
 use Swoft\Validator\Validator;
-use Swoft\Validator\Exception\ValidatorException;
 use SwoftTest\Validator\Testing\ValidatorRequired;
 
 class RequiredTest extends TestCase
@@ -11,7 +18,7 @@ class RequiredTest extends TestCase
     /**
      * @expectedException \Swoft\Validator\Exception\ValidatorException
      */
-    public function testRequiredFailed()
+    public function testRequiredFailed(): void
     {
         // 断言异常出现
         $validator = new Validator();
@@ -19,7 +26,7 @@ class RequiredTest extends TestCase
         $validator->validateRequest([], $validates);
     }
 
-    public function testRequiredPassed()
+    public function testRequiredPassed(): void
     {
         // 断言异常不出现
         $this->expectOutputString('successful');

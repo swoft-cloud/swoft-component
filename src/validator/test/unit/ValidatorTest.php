@@ -1,8 +1,14 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\Validator\Unit;
-
 
 use Swoft\Validator\Exception\ValidatorException;
 use Swoft\Validator\Validator;
@@ -21,7 +27,7 @@ class ValidatorTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testTypeEmail()
+    public function testTypeEmail(): void
     {
         $data = [];
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testEmail'));
@@ -33,7 +39,7 @@ class ValidatorTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testFailEmail()
+    public function testFailEmail(): void
     {
         $data = [
             'email' => 'swoft'
@@ -47,7 +53,7 @@ class ValidatorTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testFailEmail2()
+    public function testFailEmail2(): void
     {
         $data = [
             'email' => 'swoft'
@@ -59,7 +65,7 @@ class ValidatorTest extends TestCase
     /**
      * @throws ValidatorException
      */
-    public function testEmail()
+    public function testEmail(): void
     {
         $data = [
             'email' => 'swoft@swoft.org'
@@ -71,7 +77,7 @@ class ValidatorTest extends TestCase
     /**
      * @throws ValidatorException
      */
-    public function testEmail2()
+    public function testEmail2(): void
     {
         $data   = [
             'email' => 'swoft@swoft.org'
@@ -86,7 +92,7 @@ class ValidatorTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testFailEnum()
+    public function testFailEnum(): void
     {
         $data = [
             'enum' => 1,
@@ -97,7 +103,7 @@ class ValidatorTest extends TestCase
     /**
      * @throws ValidatorException
      */
-    public function testEnum()
+    public function testEnum(): void
     {
         $data = [
             'enum' => 4,
@@ -113,7 +119,7 @@ class ValidatorTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testFailIp()
+    public function testFailIp(): void
     {
         $data = [
             'ip' => '11',
@@ -124,7 +130,7 @@ class ValidatorTest extends TestCase
     /**
      * @throws ValidatorException
      */
-    public function testIp()
+    public function testIp(): void
     {
         $data = [
             'ip' => '127.0.0.1',
@@ -140,7 +146,7 @@ class ValidatorTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testFailLength()
+    public function testFailLength(): void
     {
         $data = [
             'length' => '1',
@@ -151,7 +157,7 @@ class ValidatorTest extends TestCase
     /**
      * @throws ValidatorException
      */
-    public function testLength()
+    public function testLength(): void
     {
         $data = [
             'length' => '12121',
@@ -167,7 +173,7 @@ class ValidatorTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testFailMax()
+    public function testFailMax(): void
     {
         $data = [
             'max' => 18,
@@ -178,7 +184,7 @@ class ValidatorTest extends TestCase
     /**
      * @throws ValidatorException
      */
-    public function testMax()
+    public function testMax(): void
     {
         $data = [
             'max' => 12,
@@ -194,7 +200,7 @@ class ValidatorTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testFailMin()
+    public function testFailMin(): void
     {
         $data = [
             'min' => 0,
@@ -205,7 +211,7 @@ class ValidatorTest extends TestCase
     /**
      * @throws ValidatorException
      */
-    public function testMin()
+    public function testMin(): void
     {
         $data = [
             'min' => 2,
@@ -221,7 +227,7 @@ class ValidatorTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testFailMobile()
+    public function testFailMobile(): void
     {
         $data = [
             'mobile' => '13442',
@@ -232,7 +238,7 @@ class ValidatorTest extends TestCase
     /**
      * @throws ValidatorException
      */
-    public function testMobile()
+    public function testMobile(): void
     {
         $data = [
             'mobile' => '13511111111',
@@ -248,7 +254,7 @@ class ValidatorTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testFailNotEmpty()
+    public function testFailNotEmpty(): void
     {
         $data = [
             'notEmpty' => '',
@@ -259,13 +265,15 @@ class ValidatorTest extends TestCase
     /**
      * @throws ValidatorException
      */
-    public function testNotEmpty()
+    public function testNotEmpty(): void
     {
         $data = [
             'notEmpty' => '121',
         ];
-        [$result] = (new Validator())->validateRequest($data,
-            $this->getValidates(ValidateDemo2::class, 'testNotEmpty'));
+        [$result] = (new Validator())->validateRequest(
+            $data,
+            $this->getValidates(ValidateDemo2::class, 'testNotEmpty')
+        );
 
         $this->assertEquals($result, $data);
     }
@@ -276,7 +284,7 @@ class ValidatorTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testFailPattern()
+    public function testFailPattern(): void
     {
         $data = [
             'pattern' => 'swift',
@@ -287,7 +295,7 @@ class ValidatorTest extends TestCase
     /**
      * @throws ValidatorException
      */
-    public function testPattern()
+    public function testPattern(): void
     {
         $data = [
             'pattern' => 'swoft',
@@ -303,7 +311,7 @@ class ValidatorTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testFailRange()
+    public function testFailRange(): void
     {
         $data = [
             'range' => 100,
@@ -317,7 +325,7 @@ class ValidatorTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testFailRange2()
+    public function testFailRange2(): void
     {
         $data = [
             'range' => 100,
@@ -328,7 +336,7 @@ class ValidatorTest extends TestCase
     /**
      * @throws ValidatorException
      */
-    public function testRange()
+    public function testRange(): void
     {
         $data = [
             'range' => 99,
@@ -341,7 +349,7 @@ class ValidatorTest extends TestCase
     /**
      * @throws ValidatorException
      */
-    public function testRange2()
+    public function testRange2(): void
     {
         $data = [
             'range' => 99,

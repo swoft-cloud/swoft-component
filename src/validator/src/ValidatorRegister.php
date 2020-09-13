@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Validator;
 
@@ -126,7 +133,7 @@ class ValidatorRegister
             throw new ValidatorException(sprintf('Only one `@XxxType` can be defined(propterty=%s)!', $propertyName));
         }
 
-        if(!isset(self::$validators[$validateName]['properties'][$propertyName]['required'])) {
+        if (!isset(self::$validators[$validateName]['properties'][$propertyName]['required'])) {
             self::$validators[$validateName]['properties'][$propertyName]['required'] = false;
         }
 
@@ -152,7 +159,7 @@ class ValidatorRegister
     /**
      * @throws ValidatorException
      */
-    public static function checkValidators()
+    public static function checkValidators(): void
     {
         foreach (self::$validators as $className => $values) {
             if ($values['type'] == self::TYPE_USER) {
@@ -163,8 +170,11 @@ class ValidatorRegister
             foreach ($properties as $propName => $propValues) {
                 $type = $propValues['type'] ?? null;
                 if (empty($type)) {
-                    throw new ValidatorException(sprintf('Property(%s->%s) must be define `@XxxType`', $className,
-                            $propName));
+                    throw new ValidatorException(sprintf(
+                        'Property(%s->%s) must be define `@XxxType`',
+                        $className,
+                        $propName
+                    ));
                 }
             }
         }

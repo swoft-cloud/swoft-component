@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\Validator\Unit;
 
@@ -14,7 +22,7 @@ class ValidatorRuleTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testAfterDateError()
+    public function testAfterDateError(): void
     {
         $data = [
             'dataAfterDate' => '2019-07-06'
@@ -22,13 +30,15 @@ class ValidatorRuleTest extends TestCase
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testAfterDate'));
     }
 
-    public function testAfterDateSuccess()
+    public function testAfterDateSuccess(): void
     {
         $data = [
             'dataAfterDate' => '2019-07-09 00:00:00'
         ];
-        [$result] = (new Validator())->validateRequest($data,
-            $this->getValidates(ValidatorRule::class, 'testAfterDate'));
+        [$result] = (new Validator())->validateRequest(
+            $data,
+            $this->getValidates(ValidatorRule::class, 'testAfterDate')
+        );
         $this->assertEquals($data, $result);
     }
 
@@ -38,7 +48,7 @@ class ValidatorRuleTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testAlphaError()
+    public function testAlphaError(): void
     {
         $data = [
             'dataAlpha' => 'abcde0123'
@@ -46,13 +56,15 @@ class ValidatorRuleTest extends TestCase
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testAlpha'));
     }
 
-    public function testAlphaSuccess()
+    public function testAlphaSuccess(): void
     {
         $data = [
             'dataAlpha' => 'abcd'
         ];
-        [$result] = (new Validator())->validateRequest($data,
-            $this->getValidates(ValidatorRule::class, 'testAlpha'));
+        [$result] = (new Validator())->validateRequest(
+            $data,
+            $this->getValidates(ValidatorRule::class, 'testAlpha')
+        );
         $this->assertEquals($data, $result);
     }
 
@@ -62,7 +74,7 @@ class ValidatorRuleTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testAlphaDashError()
+    public function testAlphaDashError(): void
     {
         $data = [
             'dataAlphaDash' => '.='
@@ -70,13 +82,15 @@ class ValidatorRuleTest extends TestCase
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testAlphaDash'));
     }
 
-    public function testAlphaDashSuccess()
+    public function testAlphaDashSuccess(): void
     {
         $data = [
             'dataAlphaDash' => 'abcd0123-_'
         ];
-        [$result] = (new Validator())->validateRequest($data,
-            $this->getValidates(ValidatorRule::class, 'testAlphaDash'));
+        [$result] = (new Validator())->validateRequest(
+            $data,
+            $this->getValidates(ValidatorRule::class, 'testAlphaDash')
+        );
         $this->assertEquals($data, $result);
     }
 
@@ -86,7 +100,7 @@ class ValidatorRuleTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testAlphaNumError()
+    public function testAlphaNumError(): void
     {
         $data = [
             'dataAlphaNum' => 'abcde-'
@@ -94,13 +108,15 @@ class ValidatorRuleTest extends TestCase
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testAlphaNum'));
     }
 
-    public function testAlphaNumSuccess()
+    public function testAlphaNumSuccess(): void
     {
         $data = [
             'dataAlphaNum' => 'abcd012'
         ];
-        [$result] = (new Validator())->validateRequest($data,
-            $this->getValidates(ValidatorRule::class, 'testAlphaNum'));
+        [$result] = (new Validator())->validateRequest(
+            $data,
+            $this->getValidates(ValidatorRule::class, 'testAlphaNum')
+        );
         $this->assertEquals($data, $result);
     }
 
@@ -110,7 +126,7 @@ class ValidatorRuleTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testBeforeDateError()
+    public function testBeforeDateError(): void
     {
         $data = [
             'dataBeforeDate' => '2019-07-10'
@@ -118,13 +134,15 @@ class ValidatorRuleTest extends TestCase
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testBeforeDate'));
     }
 
-    public function testBeforeDateSuccess()
+    public function testBeforeDateSuccess(): void
     {
         $data = [
             'dataBeforeDate' => '2019-07-01 00:00:00'
         ];
-        [$result] = (new Validator())->validateRequest($data,
-            $this->getValidates(ValidatorRule::class, 'testBeforeDate'));
+        [$result] = (new Validator())->validateRequest(
+            $data,
+            $this->getValidates(ValidatorRule::class, 'testBeforeDate')
+        );
         $this->assertEquals($data, $result);
     }
 
@@ -134,7 +152,7 @@ class ValidatorRuleTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testChsError()
+    public function testChsError(): void
     {
         $data = [
             'dataChs' => 'english'
@@ -142,13 +160,15 @@ class ValidatorRuleTest extends TestCase
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testChs'));
     }
 
-    public function testChsSuccess()
+    public function testChsSuccess(): void
     {
         $data = [
             'dataChs' => '中文'
         ];
-        [$result] = (new Validator())->validateRequest($data,
-            $this->getValidates(ValidatorRule::class, 'testChs'));
+        [$result] = (new Validator())->validateRequest(
+            $data,
+            $this->getValidates(ValidatorRule::class, 'testChs')
+        );
         $this->assertEquals($data, $result);
     }
 
@@ -158,7 +178,7 @@ class ValidatorRuleTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testChsAlphaError()
+    public function testChsAlphaError(): void
     {
         $data = [
             'dataChsAlpha' => '-_'
@@ -166,13 +186,15 @@ class ValidatorRuleTest extends TestCase
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testChsAlpha'));
     }
 
-    public function testChsAlphaSuccess()
+    public function testChsAlphaSuccess(): void
     {
         $data = [
             'dataChsAlpha' => '中文english'
         ];
-        [$result] = (new Validator())->validateRequest($data,
-            $this->getValidates(ValidatorRule::class, 'testChsAlpha'));
+        [$result] = (new Validator())->validateRequest(
+            $data,
+            $this->getValidates(ValidatorRule::class, 'testChsAlpha')
+        );
         $this->assertEquals($data, $result);
     }
 
@@ -182,7 +204,7 @@ class ValidatorRuleTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testChsAlphaDashError()
+    public function testChsAlphaDashError(): void
     {
         $data = [
             'dataChsAlphaDash' => '>?'
@@ -190,13 +212,15 @@ class ValidatorRuleTest extends TestCase
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testChsAlphaDash'));
     }
 
-    public function testChsAlphaDashSuccess()
+    public function testChsAlphaDashSuccess(): void
     {
         $data = [
             'dataChsAlphaDash' => '中文english0123-_'
         ];
-        [$result] = (new Validator())->validateRequest($data,
-            $this->getValidates(ValidatorRule::class, 'testChsAlphaDash'));
+        [$result] = (new Validator())->validateRequest(
+            $data,
+            $this->getValidates(ValidatorRule::class, 'testChsAlphaDash')
+        );
         $this->assertEquals($data, $result);
     }
 
@@ -206,7 +230,7 @@ class ValidatorRuleTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testChsAlphaNumError()
+    public function testChsAlphaNumError(): void
     {
         $data = [
             'dataChsAlphaNum' => '-_'
@@ -214,13 +238,15 @@ class ValidatorRuleTest extends TestCase
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testChsAlphaNum'));
     }
 
-    public function testChsAlphaNumSuccess()
+    public function testChsAlphaNumSuccess(): void
     {
         $data = [
             'dataChsAlphaNum' => '中文english0123'
         ];
-        [$result] = (new Validator())->validateRequest($data,
-            $this->getValidates(ValidatorRule::class, 'testChsAlphaNum'));
+        [$result] = (new Validator())->validateRequest(
+            $data,
+            $this->getValidates(ValidatorRule::class, 'testChsAlphaNum')
+        );
         $this->assertEquals($data, $result);
     }
 
@@ -230,7 +256,7 @@ class ValidatorRuleTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testConfirmError()
+    public function testConfirmError(): void
     {
         $data = [
             'dataConfirm' => '123',
@@ -239,14 +265,16 @@ class ValidatorRuleTest extends TestCase
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testConfirm'));
     }
 
-    public function testConfirmSuccess()
+    public function testConfirmSuccess(): void
     {
         $data = [
             'dataConfirm' => '123',
             'confirm' => '123'
         ];
-        [$result] = (new Validator())->validateRequest($data,
-            $this->getValidates(ValidatorRule::class, 'testConfirm'));
+        [$result] = (new Validator())->validateRequest(
+            $data,
+            $this->getValidates(ValidatorRule::class, 'testConfirm')
+        );
         $this->assertEquals($data, $result);
     }
 
@@ -256,7 +284,7 @@ class ValidatorRuleTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testDifferentError()
+    public function testDifferentError(): void
     {
         $data = [
             'dataDifferent' => '123',
@@ -265,14 +293,16 @@ class ValidatorRuleTest extends TestCase
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testDifferent'));
     }
 
-    public function testDifferentSuccess()
+    public function testDifferentSuccess(): void
     {
         $data = [
             'dataDifferent' => '123',
             'different' => '1234a'
         ];
-        [$result] = (new Validator())->validateRequest($data,
-            $this->getValidates(ValidatorRule::class, 'testDifferent'));
+        [$result] = (new Validator())->validateRequest(
+            $data,
+            $this->getValidates(ValidatorRule::class, 'testDifferent')
+        );
         $this->assertEquals($data, $result);
     }
 
@@ -282,7 +312,7 @@ class ValidatorRuleTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testGreaterThanError()
+    public function testGreaterThanError(): void
     {
         $data = [
             'dataGreaterThan' => '12',
@@ -291,14 +321,16 @@ class ValidatorRuleTest extends TestCase
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testGreaterThan'));
     }
 
-    public function testGreaterThanSuccess()
+    public function testGreaterThanSuccess(): void
     {
         $data = [
             'dataGreaterThan' => '124',
             'gt' => '123'
         ];
-        [$result] = (new Validator())->validateRequest($data,
-            $this->getValidates(ValidatorRule::class, 'testGreaterThan'));
+        [$result] = (new Validator())->validateRequest(
+            $data,
+            $this->getValidates(ValidatorRule::class, 'testGreaterThan')
+        );
         $this->assertEquals($data, $result);
     }
 
@@ -308,7 +340,7 @@ class ValidatorRuleTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testLessThanError()
+    public function testLessThanError(): void
     {
         $data = [
             'dataLessThan' => '124',
@@ -317,14 +349,16 @@ class ValidatorRuleTest extends TestCase
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testLessThan'));
     }
 
-    public function testLessThanSuccess()
+    public function testLessThanSuccess(): void
     {
         $data = [
             'dataLessThan' => '122',
             'lt' => '123'
         ];
-        [$result] = (new Validator())->validateRequest($data,
-            $this->getValidates(ValidatorRule::class, 'testLessThan'));
+        [$result] = (new Validator())->validateRequest(
+            $data,
+            $this->getValidates(ValidatorRule::class, 'testLessThan')
+        );
         $this->assertEquals($data, $result);
     }
 
@@ -334,7 +368,7 @@ class ValidatorRuleTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testDateError()
+    public function testDateError(): void
     {
         $data = [
             'dataDate' => '2019f'
@@ -342,13 +376,15 @@ class ValidatorRuleTest extends TestCase
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testDate'));
     }
 
-    public function testDateSuccess()
+    public function testDateSuccess(): void
     {
         $data = [
             'dataDate' => '2019-07-08 12:00:30'
         ];
-        [$result] = (new Validator())->validateRequest($data,
-            $this->getValidates(ValidatorRule::class, 'testDate'));
+        [$result] = (new Validator())->validateRequest(
+            $data,
+            $this->getValidates(ValidatorRule::class, 'testDate')
+        );
         $this->assertEquals($data, $result);
     }
 
@@ -358,7 +394,7 @@ class ValidatorRuleTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testDateRangeError()
+    public function testDateRangeError(): void
     {
         $data = [
             'dataDateRange' => '2019-06-18'
@@ -366,13 +402,15 @@ class ValidatorRuleTest extends TestCase
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testDateRange'));
     }
 
-    public function testDateRangeSuccess()
+    public function testDateRangeSuccess(): void
     {
         $data = [
             'dataDateRange' => '2019-07-07 00:00:00'
         ];
-        [$result] = (new Validator())->validateRequest($data,
-            $this->getValidates(ValidatorRule::class, 'testDateRange'));
+        [$result] = (new Validator())->validateRequest(
+            $data,
+            $this->getValidates(ValidatorRule::class, 'testDateRange')
+        );
         $this->assertEquals($data, $result);
     }
 
@@ -382,7 +420,7 @@ class ValidatorRuleTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testDnsError()
+    public function testDnsError(): void
     {
         $data = [
             'dataDns' => 'swoft.con'
@@ -390,13 +428,15 @@ class ValidatorRuleTest extends TestCase
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testDns'));
     }
 
-    public function testDnsSuccess()
+    public function testDnsSuccess(): void
     {
         $data = [
             'dataDns' => 'baidu.com'
         ];
-        [$result] = (new Validator())->validateRequest($data,
-            $this->getValidates(ValidatorRule::class, 'testDns'));
+        [$result] = (new Validator())->validateRequest(
+            $data,
+            $this->getValidates(ValidatorRule::class, 'testDns')
+        );
         $this->assertEquals($data, $result);
     }
 
@@ -429,13 +469,14 @@ class ValidatorRuleTest extends TestCase
 //    public function testIsFileSuccess()
 //    {
 //    }
+
     /**
      * @expectedException Swoft\Validator\Exception\ValidatorException
      * @expectedExceptionMessage low message
      *
      * @throws ValidatorException
      */
-    public function testLowError()
+    public function testLowError(): void
     {
         $data = [
             'dataLow' => 'swofT'
@@ -443,13 +484,15 @@ class ValidatorRuleTest extends TestCase
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testLow'));
     }
 
-    public function testLowSuccess()
+    public function testLowSuccess(): void
     {
         $data = [
             'dataLow' => 'swoft'
         ];
-        [$result] = (new Validator())->validateRequest($data,
-            $this->getValidates(ValidatorRule::class, 'testLow'));
+        [$result] = (new Validator())->validateRequest(
+            $data,
+            $this->getValidates(ValidatorRule::class, 'testLow')
+        );
         $this->assertEquals($data, $result);
     }
 
@@ -459,7 +502,7 @@ class ValidatorRuleTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testNotInEnumError()
+    public function testNotInEnumError(): void
     {
         $data = [
             'dataNotInEnum' => '1'
@@ -467,13 +510,15 @@ class ValidatorRuleTest extends TestCase
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testNotInEnum'));
     }
 
-    public function testNotInEnumSuccess()
+    public function testNotInEnumSuccess(): void
     {
         $data = [
             'dataNotInEnum' => '4'
         ];
-        [$result] = (new Validator())->validateRequest($data,
-            $this->getValidates(ValidatorRule::class, 'testNotInEnum'));
+        [$result] = (new Validator())->validateRequest(
+            $data,
+            $this->getValidates(ValidatorRule::class, 'testNotInEnum')
+        );
         $this->assertEquals($data, $result);
     }
 
@@ -483,7 +528,7 @@ class ValidatorRuleTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testNotInRangeError()
+    public function testNotInRangeError(): void
     {
         $data = [
             'dataNotInRange' => '1'
@@ -491,13 +536,15 @@ class ValidatorRuleTest extends TestCase
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testNotInRange'));
     }
 
-    public function testNotInRangeSuccess()
+    public function testNotInRangeSuccess(): void
     {
         $data = [
             'dataNotInRange' => '4'
         ];
-        [$result] = (new Validator())->validateRequest($data,
-            $this->getValidates(ValidatorRule::class, 'testNotInRange'));
+        [$result] = (new Validator())->validateRequest(
+            $data,
+            $this->getValidates(ValidatorRule::class, 'testNotInRange')
+        );
         $this->assertEquals($data, $result);
     }
 
@@ -507,7 +554,7 @@ class ValidatorRuleTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testUpperError()
+    public function testUpperError(): void
     {
         $data = [
             'dataUpper' => 'sWOFT'
@@ -515,13 +562,15 @@ class ValidatorRuleTest extends TestCase
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testUpper'));
     }
 
-    public function testUpperSuccess()
+    public function testUpperSuccess(): void
     {
         $data = [
             'dataUpper' => 'SWOFT'
         ];
-        [$result] = (new Validator())->validateRequest($data,
-            $this->getValidates(ValidatorRule::class, 'testUpper'));
+        [$result] = (new Validator())->validateRequest(
+            $data,
+            $this->getValidates(ValidatorRule::class, 'testUpper')
+        );
         $this->assertEquals($data, $result);
     }
 
@@ -531,7 +580,7 @@ class ValidatorRuleTest extends TestCase
      *
      * @throws ValidatorException
      */
-    public function testUrlError()
+    public function testUrlError(): void
     {
         $data = [
             'dataUrl' => 'baidu.com'
@@ -539,13 +588,15 @@ class ValidatorRuleTest extends TestCase
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testUrl'));
     }
 
-    public function testUrlSuccess()
+    public function testUrlSuccess(): void
     {
         $data = [
             'dataUrl' => 'http://baidu.com'
         ];
-        [$result] = (new Validator())->validateRequest($data,
-            $this->getValidates(ValidatorRule::class, 'testUrl'));
+        [$result] = (new Validator())->validateRequest(
+            $data,
+            $this->getValidates(ValidatorRule::class, 'testUrl')
+        );
         $this->assertEquals($data, $result);
     }
 }

@@ -9,7 +9,7 @@ Swoft Db Component
 
 ## [ENGLISH](README.md)
 
-English readme please sess [README.md](README.md)
+The english readme please see [README.md](README.md)
 
 ## 安装
 

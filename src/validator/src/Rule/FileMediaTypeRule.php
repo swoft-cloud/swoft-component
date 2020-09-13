@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Validator\Rule;
 
@@ -43,7 +51,6 @@ class FileMediaTypeRule implements RuleInterface
                 /* @var UploadedFile $field */
 
                 if (!in_array($field->getClientMediaType(), $values)) {
-
                     throw new ValidatorException($message);
                 }
             } else {
