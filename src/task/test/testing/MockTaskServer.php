@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\Task\Testing;
 
@@ -13,7 +20,6 @@ use Swoft\Task\Task;
 use Swoft\Task\TaskDispatcher;
 use Swoole\Server;
 use Swoole\Server\Task as SwooleTask;
-
 
 /**
  * Class MockTaskServer
@@ -86,7 +92,7 @@ class MockTaskServer
      * @param Response $response
      *
      */
-    private function task(Request $request, Response $response)
+    private function task(Request $request, Response $response): void
     {
         /* @var TaskDispatcher $dispatcher */
         $dispatcher = BeanFactory::getBean('taskDispatcher');

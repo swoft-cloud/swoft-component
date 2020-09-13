@@ -1,11 +1,19 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\Task\Testing;
 
 use Swoft\Task\Annotation\Mapping\Task;
 use Swoft\Task\Annotation\Mapping\TaskMapping;
 use Swoft\Task\Exception\TaskException;
+use function context;
 
 /**
  * Class DemoTask
@@ -70,7 +78,7 @@ class DemoTask
      */
     public function method6(string $name, int $count): array
     {
-        $request = \context()->getRequest();
+        $request = context()->getRequest();
 
         return [
             $request->getTaskUniqid(),
@@ -117,7 +125,7 @@ class DemoTask
     /**
      * @TaskMapping()
      */
-    public function voidReturn2()
+    public function voidReturn2(): void
     {
         return;
     }

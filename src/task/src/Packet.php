@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Task;
 
@@ -56,13 +63,17 @@ class Packet
         }
 
         if (!is_array($params)) {
-            throw new TaskException(sprintf('Params(%s) is not formated!',
-                    JsonHelper::encode($params, JSON_UNESCAPED_UNICODE)));
+            throw new TaskException(sprintf(
+                'Params(%s) is not formated!',
+                JsonHelper::encode($params, JSON_UNESCAPED_UNICODE)
+            ));
         }
 
         if (!is_array($ext)) {
-            throw new TaskException(sprintf('Ext(%s) is not formated!',
-                    JsonHelper::encode($ext, JSON_UNESCAPED_UNICODE)));
+            throw new TaskException(sprintf(
+                'Ext(%s) is not formated!',
+                JsonHelper::encode($ext, JSON_UNESCAPED_UNICODE)
+            ));
         }
 
         return [$type, $name, $method, $params, $ext];
