@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Rpc\Server\Middleware;
 
@@ -54,8 +62,10 @@ class DefaultMiddleware implements MiddlewareInterface
         [$status, $className] = $request->getAttribute(Request::ROUTER_ATTRIBUTE);
 
         if ($status != Router::FOUND) {
-            throw new RpcServerException(sprintf('Route(%s-%s) is not founded!', $version, $interface),
-                Code::INVALID_REQUEST);
+            throw new RpcServerException(
+                sprintf('Route(%s-%s) is not founded!', $version, $interface),
+                Code::INVALID_REQUEST
+            );
         }
 
         $object = BeanFactory::getBean($className);
@@ -64,8 +74,10 @@ class DefaultMiddleware implements MiddlewareInterface
         }
 
         if (!method_exists($object, $method)) {
-            throw new RpcServerException(sprintf('Method(%s::%s) is not founded!', $interface, $method),
-                Code::METHOD_NOT_FOUND);
+            throw new RpcServerException(
+                sprintf('Method(%s::%s) is not founded!', $interface, $method),
+                Code::METHOD_NOT_FOUND
+            );
         }
 
         $data = PhpHelper::call([$object, $method], ...$params);

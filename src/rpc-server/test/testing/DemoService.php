@@ -1,10 +1,18 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\Rpc\Server\Testing;
 
 use Swoft\Rpc\Server\Annotation\Mapping\Service;
 use SwoftTest\Rpc\Server\Testing\Lib\DemoInterface;
+use Exception;
 
 /**
  * Class DemoService
@@ -77,10 +85,10 @@ class DemoService implements DemoInterface
 
     /**
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function error(): bool
     {
-        throw new \Exception('error message', 324231);
+        throw new Exception('error message', 324231);
     }
 }

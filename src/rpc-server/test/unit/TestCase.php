@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\Rpc\Server\Unit;
 
@@ -20,7 +27,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     /**
      * Set up
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->mockRpcServer = new MockRpcServer();
     }

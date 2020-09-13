@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Rpc\Server\Listener;
 
@@ -26,7 +34,7 @@ class BeforeConnectListener implements EventHandlerInterface
      */
     public function handle(EventInterface $event): void
     {
-        list($server, $fd, $reactorId) = $event->getParams();
+        [$server, $fd, $reactorId] = $event->getParams();
         $context = ServiceConnectContext::new($server, $fd, $reactorId);
 
         if (Log::getLogger()->isEnable()) {

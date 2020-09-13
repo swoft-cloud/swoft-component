@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Rpc\Server;
 
@@ -36,12 +44,14 @@ class RpcErrorDispatcher
             return $handler->handle($e, $response);
         }
 
-        Debug::log("Rpc Error(no handler, %s): %s\nAt File %s line %d\nTrace:\n%s",
+        Debug::log(
+            "Rpc Error(no handler, %s): %s\nAt File %s line %d\nTrace:\n%s",
             get_class($e),
             $e->getMessage(),
             $e->getFile(),
             $e->getLine(),
-            $e->getTraceAsString());
+            $e->getTraceAsString()
+        );
 
         $error = Error::new($e->getCode(), $e->getMessage(), null);
 
