@@ -1,8 +1,14 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Task\Listener;
-
 
 use Swoft\Context\Context;
 use Swoft\Event\Annotation\Mapping\Listener;
@@ -28,7 +34,7 @@ class BeforeFinishListener implements EventHandlerInterface
      */
     public function handle(EventInterface $event): void
     {
-        list($server, $taskId, $data) = $event->getParams();
+        [$server, $taskId, $data] = $event->getParams();
 
         $context = FinishContext::new($server, $taskId, $data);
 

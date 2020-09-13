@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Rpc\Server\Listener;
 
@@ -35,7 +43,6 @@ class BeforeReceiveListener implements EventHandlerInterface
         $serviceContext = ServiceContext::new($request, $response);
 
         if (Log::getLogger()->isEnable()) {
-
             $uri = sprintf('%s::%s::%s', $request->getVersion(), $request->getInterface(), $request->getMethod());
 
             $data = [

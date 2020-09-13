@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Rpc\Server;
 
@@ -28,7 +36,7 @@ class ServiceDispatcher extends AbstractDispatcher
      * @param array $params
      *
      */
-    public function dispatch(...$params)
+    public function dispatch(...$params): void
     {
         /**
          * @var Request  $request

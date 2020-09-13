@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Aop;
 
@@ -11,6 +19,7 @@ use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Stdlib\Reflections;
 use Throwable;
 use function array_shift;
+use function bean;
 
 /**
  * Class Handler
@@ -94,7 +103,6 @@ class AspectHandler
                 // Invoke target and before advice
                 $result = $this->invokeTarget();
             }
-
         } catch (Throwable $e) {
             $this->throwable = $e;
         }
@@ -251,7 +259,7 @@ class AspectHandler
             $aspectArgs[] = null;
         }
 
-        $aspect = \bean($aspectClass);
+        $aspect = bean($aspectClass);
         return $aspect->$aspectMethod(...$aspectArgs);
     }
 

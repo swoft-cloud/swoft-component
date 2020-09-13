@@ -1,7 +1,13 @@
-<?php
-/** For Swoole coroutine tests */
+<?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
-use PHPUnit\TextUI\Command;
 use Swoole\ExitException;
 
 Co::set([
@@ -73,7 +79,7 @@ if (!in_array('-c', $_SERVER['argv'])) {
 require PHPUNIT_COMPOSER_INSTALL;
 
 $status = 0;
-srun(function (){
+srun(function (): void {
     // Status
     global $status;
 

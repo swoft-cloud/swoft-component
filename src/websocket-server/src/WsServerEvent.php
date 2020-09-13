@@ -37,7 +37,7 @@ final class WsServerEvent
     /**
      * On websocket opened: before
      */
-    public const OPEN_BEFORE = 'swoft.ws.server.open.after';
+    public const OPEN_BEFORE = 'swoft.ws.server.open.before';
 
     /**
      * On websocket opened: after

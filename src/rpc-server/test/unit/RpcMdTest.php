@@ -1,8 +1,14 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\Rpc\Server\Unit;
-
 
 use SwoftTest\Rpc\Server\Testing\Lib\DemoInterface;
 
@@ -11,7 +17,7 @@ class RpcMdTest extends TestCase
     /**
      * @throws \Swoft\Rpc\Exception\RpcException
      */
-    public function testAllMd()
+    public function testAllMd(): void
     {
         $data     = [
             'name'      => 'list',
@@ -30,7 +36,7 @@ class RpcMdTest extends TestCase
     /**
      * @throws \Swoft\Rpc\Exception\RpcException
      */
-    public function testOneMd()
+    public function testOneMd(): void
     {
         $data     = [
             'name'      => 'info',
@@ -47,7 +53,7 @@ class RpcMdTest extends TestCase
     /**
      * @throws \Swoft\Rpc\Exception\RpcException
      */
-    public function testNotClassMd()
+    public function testNotClassMd(): void
     {
         $data = [
             'name'     => 'notClassMd',

@@ -38,14 +38,16 @@ class Proxy
      *
      * @param string  $className
      * @param Visitor $visitor
+     * @param string  $suffix useful for RPC client proxy version
      *
      * @return string
      * @throws ProxyException
      */
-    public static function newClassName(string $className, Visitor $visitor): string
+    public static function newClassName(string $className, Visitor $visitor, string $suffix = ''): string
     {
-        if (isset(self::$caches[$className])) {
-            return self::$caches[$className];
+        $cacheKey = $className . $suffix;
+        if (isset(self::$caches[$cacheKey])) {
+            return self::$caches[$cacheKey];
         }
 
         $parser = new Parser();
@@ -75,7 +77,7 @@ class Proxy
         }
 
         // Add cache, mark has been required.
-        self::$caches[$className] = $newClassName;
+        self::$caches[$cacheKey] = $newClassName;
         return $newClassName;
     }
 

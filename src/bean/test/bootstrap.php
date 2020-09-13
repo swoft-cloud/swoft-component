@@ -1,9 +1,17 @@
-<?php
-// vendor at component dir
+<?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
+
 if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
     /** @noinspection PhpIncludeInspection */
     require dirname(__DIR__) . '/vendor/autoload.php';
-    // application's vendor
+// application's vendor
 } elseif (file_exists(dirname(__DIR__, 3) . '/vendor/autoload.php')) {
     /** @var \Composer\Autoload\ClassLoader $loader */
     $loader = require dirname(__DIR__, 3) . '/vendor/autoload.php';

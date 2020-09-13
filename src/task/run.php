@@ -1,4 +1,12 @@
-<?php
+<?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 use Swoole\ExitException;
 
@@ -15,9 +23,14 @@ Co::set([
  * file that was distributed with this source code.
  */
 if (version_compare('7.1.0', PHP_VERSION, '>')) {
-    fwrite(STDERR,
-        sprintf('This version of PHPUnit is supported on PHP 7.1 and PHP 7.2.' . PHP_EOL . 'You are using PHP %s (%s).' . PHP_EOL,
-            PHP_VERSION, PHP_BINARY));
+    fwrite(
+        STDERR,
+        sprintf(
+            'This version of PHPUnit is supported on PHP 7.1 and PHP 7.2.' . PHP_EOL . 'You are using PHP %s (%s).' . PHP_EOL,
+            PHP_VERSION,
+            PHP_BINARY
+        )
+    );
     die(1);
 }
 if (!ini_get('date.timezone')) {
@@ -35,8 +48,10 @@ foreach ([
 }
 unset($file);
 if (!defined('PHPUNIT_COMPOSER_INSTALL')) {
-    fwrite(STDERR,
-        'You need to set up the project dependencies using Composer:' . PHP_EOL . PHP_EOL . '        composer install' . PHP_EOL . PHP_EOL . 'You can learn all about Composer on https://getcomposer.org/.' . PHP_EOL);
+    fwrite(
+        STDERR,
+        'You need to set up the project dependencies using Composer:' . PHP_EOL . PHP_EOL . '        composer install' . PHP_EOL . PHP_EOL . 'You can learn all about Composer on https://getcomposer.org/.' . PHP_EOL
+    );
     die(1);
 } else {
     if (array_reverse(explode('/', __DIR__))[0] ?? '' === 'tests') {
@@ -60,7 +75,7 @@ if (!in_array('-c', $_SERVER['argv'])) {
 require PHPUNIT_COMPOSER_INSTALL;
 
 $status = 0;
-srun(function () {
+srun(function (): void {
     // Status
     global $status;
 

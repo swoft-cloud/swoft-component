@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Rpc\Server;
 
@@ -9,6 +17,7 @@ use Swoft\Rpc\Exception\RpcException;
 use Swoft\Rpc\Packet;
 use Swoft\Rpc\Server\Contract\ResponseInterface;
 use Swoole\Server;
+use function bean;
 
 /**
  * Class Response
@@ -151,7 +160,7 @@ class Response implements ResponseInterface
     protected function prepare(): void
     {
         /* @var Packet $packet */
-        $packet = \bean('rpcServerPacket');
+        $packet = bean('rpcServerPacket');
 
         if ($this->error === null) {
             $this->content = $packet->encodeResponse($this->data);

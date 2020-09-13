@@ -1,8 +1,14 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\Bean\Unit;
-
 
 use PHPUnit\Framework\TestCase;
 use Swoft\Bean\BeanFactory;
@@ -17,7 +23,7 @@ use SwoftTest\Bean\Testing\InjectBean;
  */
 class BeanTest extends TestCase
 {
-    public function testType()
+    public function testType(): void
     {
         /* @var TypeBean $typeBean */
         $typeBean = BeanFactory::getBean('testTypeBean');

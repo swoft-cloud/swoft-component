@@ -1,6 +1,13 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
-// vendor at package dir
 $packagePath = dirname(__DIR__);
 if (file_exists($packagePath . '/vendor/autoload.php')) {
     /** @noinspection PhpIncludeInspection */
@@ -36,4 +43,3 @@ if (file_exists($packagePath . '/vendor/autoload.php')) {
         $loader->addPsr4($prefix, $componentDir . '/' . $dir);
     }
 }
-

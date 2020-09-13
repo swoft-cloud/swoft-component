@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Server;
 
@@ -272,7 +280,7 @@ abstract class Server implements ServerInterface
         Sys::setProcessTitle($title);
 
         // Use `go` to open coroutine
-        Coroutine::create(function () use ($server) {
+        Coroutine::create(function () use ($server): void {
             // Before
             Swoft::trigger(ServerEvent::BEFORE_START_EVENT, $this, $server);
 
@@ -334,7 +342,7 @@ abstract class Server implements ServerInterface
         ServerHelper::removePidFile(alias($this->commandFile));
 
         // Use `Scheduler` to open coroutine
-        srun(function () use ($server) {
+        srun(function () use ($server): void {
             // Before
             Swoft::trigger(ServerEvent::BEFORE_SHUTDOWN_EVENT, $this, $server);
 
@@ -367,7 +375,7 @@ abstract class Server implements ServerInterface
         if ($event->taskProcess) {
             $procRole  = 'task';
             $eventName = ServerEvent::TASK_PROCESS_START;
-            // Worker process
+        // Worker process
         } else {
             $procRole  = 'worker';
             $eventName = ServerEvent::WORK_PROCESS_START;
@@ -417,7 +425,7 @@ abstract class Server implements ServerInterface
         $event->taskProcess = $workerId >= $server->setting['worker_num'];
 
         // Use `Scheduler` to open coroutine
-        srun(function () use ($event, $server, $workerId) {
+        srun(function () use ($event, $server, $workerId): void {
             // Before
             Swoft::trigger(ServerEvent::BEFORE_WORKER_STOP_EVENT, $this, $server, $workerId);
 

@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\Rpc\Server\Unit;
 
@@ -10,7 +17,7 @@ class RpcV2Test extends TestCase
     /**
      * @throws \Swoft\Rpc\Exception\RpcException
      */
-    public function testGetList()
+    public function testGetList(): void
     {
         $list = [
             'name' => 'list',
@@ -30,7 +37,7 @@ class RpcV2Test extends TestCase
     /**
      * @throws \Swoft\Rpc\Exception\RpcException
      */
-    public function testGetInfo()
+    public function testGetInfo(): void
     {
         $info = [
             'name' => 'info',
@@ -49,7 +56,7 @@ class RpcV2Test extends TestCase
     /**
      * @throws \Swoft\Rpc\Exception\RpcException
      */
-    public function testGetDelete()
+    public function testGetDelete(): void
     {
         $response = $this->mockRpcServer->call(DemoInterface::class, 'delete', [12], [], '1.1');
         $response->assertSuccess();
@@ -63,7 +70,7 @@ class RpcV2Test extends TestCase
     /**
      * @throws \Swoft\Rpc\Exception\RpcException
      */
-    public function testCallErro()
+    public function testCallErro(): void
     {
         $response = $this->mockRpcServer->call(DemoInterface::class, 'delete', [], [], '1.1');
         $response->assertFail();
@@ -74,9 +81,8 @@ class RpcV2Test extends TestCase
     /**
      * @throws \Swoft\Rpc\Exception\RpcException
      */
-    public function testException()
+    public function testException(): void
     {
-
         $response = $this->mockRpcServer->call(DemoInterface::class, 'error', [], [], '1.1');
         $response->assertFail();
         $response->assertErrorCode(324231);

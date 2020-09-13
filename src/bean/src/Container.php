@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Bean;
 
@@ -652,8 +660,12 @@ class Container implements ContainerInterface
      */
     private function parseAnnotations(): void
     {
-        $annotationParser = new AnnotationObjParser($this->definitions, $this->objectDefinitions, $this->classNames,
-            $this->aliases);
+        $annotationParser = new AnnotationObjParser(
+            $this->definitions,
+            $this->objectDefinitions,
+            $this->classNames,
+            $this->aliases
+        );
         $annotationData   = $annotationParser->parseAnnotations($this->annotations, $this->parsers);
 
         [$this->definitions, $this->objectDefinitions, $this->classNames, $this->aliases] = $annotationData;
@@ -664,8 +676,12 @@ class Container implements ContainerInterface
      */
     private function parseDefinitions(): void
     {
-        $annotationParser = new DefinitionObjParser($this->definitions, $this->objectDefinitions, $this->classNames,
-            $this->aliases);
+        $annotationParser = new DefinitionObjParser(
+            $this->definitions,
+            $this->objectDefinitions,
+            $this->classNames,
+            $this->aliases
+        );
 
         // Collect info
         $definitionData = $annotationParser->parseDefinitions();

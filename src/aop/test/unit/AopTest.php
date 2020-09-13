@@ -1,8 +1,14 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\Aop\Unit;
-
 
 use PHPUnit\Framework\TestCase;
 use Swoft\Aop\Ast\Visitor\ProxyVisitor;
@@ -15,7 +21,6 @@ use function class_exists;
 use function sprintf;
 use const PHP_EOL;
 
-
 /**
  * Class AopTest
  *
@@ -26,7 +31,7 @@ class AopTest extends TestCase
     /**
      * @throws ProxyException
      */
-    public function testProxyClass()
+    public function testProxyClass(): void
     {
         $visitor   = new ProxyVisitor();
         $className = BaseProxy::newClassName(AopClass::class, $visitor);
@@ -37,12 +42,11 @@ class AopTest extends TestCase
     /**
      * @throws ProxyException
      */
-    public function testProxyCode()
+    public function testProxyCode(): void
     {
         $parser    = new Parser();
         $visitor   = new ProxyVisitor('proxy_id');
         $className = AopClass::class;
-
 
         $visitorClassName = get_class($visitor);
         $parser->addNodeVisitor($visitorClassName, $visitor);
@@ -50,8 +54,8 @@ class AopTest extends TestCase
         $proxyCode = $parser->parse($className);
 
         // Proxy file and proxy code
-        $proxyCode = sprintf('<?php %s %s', PHP_EOL, $proxyCode);
-
+        $proxyCode = sprintf("<?php%s %s\n", PHP_EOL, $proxyCode);
+// \vdump($proxyCode);
         $tpFile = __DIR__ . '/template/aop.tp';
 
         $codeMd5 = md5($proxyCode);

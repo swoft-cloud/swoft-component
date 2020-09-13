@@ -1,8 +1,14 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Rpc\Packet;
-
 
 use Swoft\Rpc\Contract\PacketInterface;
 use Swoft\Rpc\Packet;
@@ -27,7 +33,7 @@ abstract class AbstractPacket implements PacketInterface
     /**
      * @param Packet $packet
      */
-    public function initialize(Packet $packet)
+    public function initialize(Packet $packet): void
     {
         $this->packet = $packet;
     }

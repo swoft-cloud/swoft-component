@@ -10,13 +10,13 @@
 
 namespace Swoft\Rpc\Client\Exception;
 
-use Exception;
+use RuntimeException;
 
 /**
  * Class RpcClientException
  *
  * @since 2.0
  */
-class RpcClientException extends Exception
+class RpcClientException extends RuntimeException
 {
 }
