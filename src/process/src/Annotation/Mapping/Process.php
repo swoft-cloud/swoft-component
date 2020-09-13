@@ -28,7 +28,7 @@ use Doctrine\Common\Annotations\Annotation\Target;
 class Process
 {
     /**
-     * Default
+     * Default run the first worker
      */
     public const DEFAULT = -1;
 

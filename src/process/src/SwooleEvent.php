@@ -12,6 +12,7 @@ namespace Swoft\Process;
 
 use Swoft\Process\Contract\WorkerStartInterface;
 use Swoft\Process\Contract\WorkerStopInterface;
+use Swoft\Process\Contract\MessageInterface;
 
 /**
  * Class SwooleEvent
@@ -31,10 +32,16 @@ class SwooleEvent
     public const WORKER_STOP = 'workerStop';
 
     /**
+     * On message
+     */
+    public const MESSAGE = 'message';
+
+    /**
      * Listener mapping
      */
     public const LISTENER_MAPPING = [
         self::WORKER_START => WorkerStartInterface::class,
-        self::WORKER_STOP  => WorkerStopInterface::class
+        self::WORKER_STOP  => WorkerStopInterface::class,
+        self::MESSAGE      => MessageInterface::class
     ];
 }
