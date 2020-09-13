@@ -680,7 +680,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
                 $this->releaseOrRemove();
 
                 // Throw exception
-                throw new DbException($e->getMessage(), $e->getCode());
+                throw new DbException($e->getMessage(), $e->getCode(), $e);
             }
 
             // If an exception occurs when attempting to run a query, we'll format the error
@@ -695,10 +695,10 @@ class Connection extends AbstractConnection implements ConnectionInterface
 
             // Print Error Sql
             $rawSql = $this->getRawSql($query, $bindings);
-            CLog::error('Fail sql = <error>%s</error>', $rawSql);
+            CLog::error('Fail err=<error>%s</error> sql=%s', $e->getMessage(), $rawSql);
 
             // Throw exception
-            throw new DbException($e->getMessage(), $e->getCode());
+            throw new DbException($e->getMessage(), $e->getCode(), $e);
         }
 
         $this->pdoType = self::TYPE_DEFAULT;
@@ -1111,6 +1111,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
             if (count($explodeParams) !== 2) {
                 throw new DbException(sprintf('Dsn(%s) format error, please check Dsn', $dns));
             }
+
             [$key, $value] = $explodeParams;
             $params[$key] = $value;
         }

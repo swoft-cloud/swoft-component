@@ -37,9 +37,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      # usage refer https://github.com/shivammathur/setup-php
       - name: Setup PHP
         timeout-minutes: 5
-        uses: shivammathur/setup-php@v1
+        uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php}}
           extensions: mbstring, dom, fileinfo, mysql, openssl, redis #optional, setup extensions
