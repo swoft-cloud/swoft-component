@@ -36,7 +36,7 @@ class ProcessParser extends Parser
     public function parse(int $type, $annotationObject): array
     {
         // Register
-        ProcessRegister::registerProcess($this->className, $annotationObject->getWorkerId());
+        ProcessRegister::registerProcess($this->className, $annotationObject->getWorkerNum());
 
         return [$this->className, $this->className, Bean::SINGLETON, ''];
     }

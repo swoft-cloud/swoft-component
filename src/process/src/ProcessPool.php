@@ -43,11 +43,6 @@ class ProcessPool
     /**
      * @var int
      */
-    private $workerNum = 3;
-
-    /**
-     * @var int
-     */
     private $ipcType = SWOOLE_IPC_NONE;
 
     /**
@@ -106,7 +101,7 @@ class ProcessPool
      */
     public function start(): void
     {
-        $this->pool = new Pool($this->workerNum, $this->ipcType, $this->msgQueueKey, $this->coroutine);
+        $this->pool = new Pool(ProcessRegister::getWorkerNum(), $this->ipcType, $this->msgQueueKey, $this->coroutine);
         foreach ($this->on as $name => $listener) {
             $listenerInterface = SwooleEvent::LISTENER_MAPPING[$name] ?? '';
             if (empty($listenerInterface)) {

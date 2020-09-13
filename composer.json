@@ -187,6 +187,7 @@
     "tcp": "php run.php -c src/tcp/phpunit.xml",
     "tcp-server": "php run.php -c src/tcp-server/phpunit.xml",
     "validator": "php run.php -c src/validator/phpunit.xml",
-    "websocket-server": "php run.php -c src/websocket-server/phpunit.xml"
+    "websocket-server": "php run.php -c src/websocket-server/phpunit.xml",
+    "process": "php run.php -c src/process/phpunit.xml"
   }
 }

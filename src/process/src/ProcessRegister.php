@@ -32,19 +32,20 @@ class ProcessRegister
     private static $process = [];
 
     /**
+     * @var int
+     */
+    private static $workerId = 0;
+
+    /**
      * @param string $className
-     * @param array  $workerIds
+     * @param int    $workerNum
      *
      * @throws ProcessException
      */
-    public static function registerProcess(string $className, array $workerIds): void
+    public static function registerProcess(string $className, int $workerNum): void
     {
-        foreach ($workerIds as $workerId) {
-            if (isset(self::$process[$workerId])) {
-                throw new ProcessException(sprintf('Worker process(%d) for process pool must be only one!', $workerId));
-            }
-
-            self::$process[$workerId]['class'] = $className;
+        for ($i = 0; $i < $workerNum; $i ++) {
+            self::$process[self::$workerId ++]['class'] = $className;
         }
     }
 
@@ -60,13 +61,14 @@ class ProcessRegister
         if (!empty($className)) {
             return $className;
         }
+        throw new ProcessException(sprintf('Worker process(%d) for process pool must be defined!', $workerId));
+    }
 
-        $default   = ProcessAnnotation::DEFAULT;
-        $className = self::$process[$default]['class'] ?? '';
-        if (empty($className)) {
-            throw new ProcessException(sprintf('Worker process(%d) for process pool must be defined!', $workerId));
-        }
-
-        return $className;
+    /**
+     * @return int
+     */
+    public static function getWorkerNum(): int
+    {
+        return count(self::$process);
     }
 }
