@@ -303,6 +303,11 @@ class EventManager implements EventManagerInterface
             $shouldCall[$name] = '';
         }
 
+        // Have global wildcards '*' listener.
+        if (isset($this->listenedEvents['*'])) {
+            $shouldCall['*'] = '';
+        }
+
         // Like 'app.db.query' => prefix: 'app.db'
         if ($pos = strrpos($name, '.')) {
             $prefix = substr($name, 0, $pos);
@@ -339,12 +344,7 @@ class EventManager implements EventManagerInterface
             }
         }
 
-        // Have global wildcards '*' listener.
-        if (isset($this->listenedEvents['*'])) {
-            $this->triggerListeners($this->listeners['*'], $event);
-        }
-
-        return $this->destroyAfterFire ? $event->destroy() : $event;
+        return $event;
     }
 
     /**
