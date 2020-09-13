@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Validator\Rule;
 
@@ -32,7 +40,7 @@ class BeforeDateRule implements RuleInterface
         $date  = $item->getDate();
         $value = $data[$propertyName];
         if (is_string($value)) {
-            $dt = DateTime::createFromFormat("Y-m-d H:i:s", $value);
+            $dt = DateTime::createFromFormat('Y-m-d H:i:s', $value);
             if (($dt !== false && !array_sum($dt::getLastErrors())) && strtotime($value) <= strtotime($date)) {
                 return $data;
             } elseif (ctype_digit($value)) {

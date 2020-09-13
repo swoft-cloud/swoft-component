@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Validator;
 
@@ -178,17 +186,13 @@ class Validator
         $properties = $validator['properties'] ?? [];
         foreach ($properties as $propName => $property) {
             /* @var IsString|IsInt|IsBool|IsFloat $type */
-            $type        = $property['type']['annotation'] ?? null;
-            $default     = $property['type']['default'] ?? null;
-            $annotations = $property['annotations'] ?? [];
+            $type = $property['type']['annotation'] ?? null;
             if ($type === null) {
                 continue;
             }
 
-            $name     = $type->getName();
-            $propName = empty($name) ? $propName : $name;
-
-            if (!empty($fields) && !in_array($propName, $fields, true)) {
+            $propName = $type->getName() ?: $propName;
+            if ($fields && !in_array($propName, $fields, true)) {
                 continue;
             }
 
@@ -201,8 +205,11 @@ class Validator
                 continue;
             }
 
+            $defaultVal  = $property['type']['default'] ?? null;
+            $annotations = $property['annotations'] ?? [];
+
             // Default validate item(Type) and other item
-            $data = $this->validateDefaultItem($data, $propName, $type, $default);
+            $data = $this->validateDefaultItem($data, $propName, $type, $defaultVal);
             foreach ($annotations as $annotation) {
                 if ($annotation instanceof Required) {
                     continue;
@@ -250,8 +257,10 @@ class Validator
     {
         $validator = BeanFactory::getBean($validateName);
         if (!$validator instanceof ValidatorInterface) {
-            throw new ValidatorException(sprintf('User validator(%s) must instance of ValidatorInterface',
-                    $validateName));
+            throw new ValidatorException(sprintf(
+                'User validator(%s) must instance of ValidatorInterface',
+                $validateName
+            ));
         }
 
         return $validator->validate($data, $params);

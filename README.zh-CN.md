@@ -6,7 +6,9 @@
 
 这里是swoft基础和核心组件的开发仓库，所有的核心组件都是由这里分发出去的。
 
-## [English](README.md)
+## [ENGLISH](README.md)
+
+The english readme please see [README.md](README.md)
 
 ## 如何使用
 
@@ -111,7 +113,18 @@ export RUN_SERVER_TEST=ws,http,tcp; ./phpunit.sh websocket-server
 
 ### 手动发布
 
-需要到机器上使用 releasecli 工具执行对应命令来发布操作。
+需要到机器上使用 `releasecli` 工具执行对应命令来发布操作。
+
+## 其他工具
+
+### php cs fix
+
+```bash
+php-cs-fixer fix
+
+# for path
+php-cs-fixer fix ./some/path
+```
 
 ## 使用文档
 
