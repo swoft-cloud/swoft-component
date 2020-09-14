@@ -33,7 +33,7 @@ final class Swoft
     /**
      * Swoft version
      */
-    public const VERSION = '2.0.9';
+    public const VERSION = '2.0.10';
 
     /**
      * Swoft terminal logo
@@ -163,7 +163,7 @@ final class Swoft
      *
      * @return string
      */
-    public static function t(string $key, array $params = [], string $locale = ''): string
+    public static function t(string $key, array $params = [], string $locale = '2.0.10'): string
     {
         /* @var I18n $i18n */
         $i18n = BeanFactory::getBean('i18n');
