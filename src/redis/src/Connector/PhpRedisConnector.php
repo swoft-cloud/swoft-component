@@ -30,6 +30,11 @@ class PhpRedisConnector implements ConnectorInterface
      */
     public function connect(array $config, array $option): Redis
     {
+        if (isset($option['auth'])) {
+            $config['auth'] = $option['auth'];
+            unset($option['auth']);
+        }
+
         $client = new Redis();
         $this->establishConnection($client, $config);
 
@@ -159,12 +164,17 @@ class PhpRedisConnector implements ConnectorInterface
             $config['host'],
             $config['port'],
             $config['timeout'],
-            '',
+            null,
             $config['retry_interval'],
         ];
 
-        if (version_compare(phpversion('redis'), '3.1.3', '>=')) {
+        $redisVersion = \phpversion('redis');
+        if (\version_compare($redisVersion, '3.1.3', '>=')) {
             $parameters[] = $config['read_timeout'];
+
+            if (!empty($config['auth']) && \version_compare($redisVersion, '3.5', '>=')) {
+                $parameters[] = ['auth' => $config['auth']];
+            }
         }
 
         $result = $client->connect(...$parameters);
