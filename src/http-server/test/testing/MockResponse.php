@@ -80,14 +80,15 @@ class MockResponse extends Response
     }
 
     /**
-     * @param string      $name
-     * @param string      $value
-     * @param int|string  $expires
-     * @param string|null $path
-     * @param string      $domain
-     * @param bool        $secure
-     * @param bool        $httpOnly
-     * @param null        $samesite
+     * @param string          $name
+     * @param string|null     $value
+     * @param int|string|null $expires
+     * @param string|null     $path
+     * @param string|null     $domain
+     * @param bool|null       $secure
+     * @param bool|null       $httpOnly
+     * @param string|null     $samesite
+     * @param string|null     $priority
      */
     public function cookie(
         $name,
@@ -97,7 +98,8 @@ class MockResponse extends Response
         $domain = null,
         $secure = null,
         $httpOnly = null,
-        $samesite = null
+        $samesite = null,
+        $priority = null
     ) {
         $result = \urlencode($name) . '=' . \urlencode($value);
 
@@ -117,20 +119,24 @@ class MockResponse extends Response
             }
 
             if ($timestamp !== 0) {
-                $result .= '; expires=' . \gmdate('D, d-M-Y H:i:s e', $timestamp);
+                $result .= '; Expires=' . \gmdate('D, d-M-Y H:i:s e', $timestamp);
             }
         }
 
         if ($secure) {
-            $result .= '; secure';
+            $result .= '; Secure';
         }
-
-        // if ($hostOnly) {
-        //     $result .= '; HostOnly';
-        // }
 
         if ($httpOnly) {
             $result .= '; HttpOnly';
+        }
+
+        if ($samesite) {
+            $result .= '; SameSite=' . $samesite;
+        }
+
+        if ($priority) {
+            $result .= '; Priority=' . $priority;
         }
 
         $this->cookie[$name] = $result;
