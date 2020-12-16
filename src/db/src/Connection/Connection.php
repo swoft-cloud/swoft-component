@@ -680,7 +680,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
                 $this->releaseOrRemove();
 
                 // Throw exception
-                throw new DbException($e->getMessage(), $e->getCode(), $e);
+                throw new DbException($e->getMessage(), (int)$e->getCode(), $e);
             }
 
             // If an exception occurs when attempting to run a query, we'll format the error
@@ -698,7 +698,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
             CLog::error('Fail err=<error>%s</error> sql=%s', $e->getMessage(), $rawSql);
 
             // Throw exception
-            throw new DbException($e->getMessage(), $e->getCode(), $e);
+            throw new DbException($e->getMessage(), (int)$e->getCode(), $e);
         }
 
         $this->pdoType = self::TYPE_DEFAULT;
