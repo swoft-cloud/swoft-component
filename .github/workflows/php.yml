@@ -43,7 +43,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php}}
-          extensions: mbstring, dom, fileinfo, mysql, openssl, redis #optional, setup extensions
+          extensions: mbstring, dom, fileinfo, mysql, openssl, redis, swoole #optional, setup extensions
           ini-values: post_max_size=56M, short_open_tag=On #optional, setup php.ini configuration
           coverage: none #optional, setup coverage driver: xdebug, none
           pecl: true
@@ -51,7 +51,8 @@ jobs:
       - name: Install swoole extensions
         timeout-minutes: 5
         run: |
-          sudo pecl install -f swoole && php -m && php --re swoole | grep class
+          php -m && php --re swoole | grep class
+      #    sudo pecl install -f swoole
       # echo 'no' | pecl install -f redis
       # sudo pecl update-channels && pecl install -f msgpack && pecl install -f igbinary && php -m
 
