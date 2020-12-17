@@ -51,9 +51,7 @@ jobs:
       - name: Install swoole extensions
         timeout-minutes: 5
         run: |
-          sudo pecl install -f swoole
-          php -m
-          php --re swoole | grep class
+          sudo pecl install -f swoole && php -m && php --re swoole | grep class
       # echo 'no' | pecl install -f redis
       # sudo pecl update-channels && pecl install -f msgpack && pecl install -f igbinary && php -m
 
