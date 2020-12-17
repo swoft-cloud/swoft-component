@@ -57,10 +57,14 @@ require PHPUNIT_COMPOSER_INSTALL;
 
 $status = 0;
 
-Coroutine::set([
-    'log_level'   => SWOOLE_LOG_INFO,
-    'trace_flags' => 0
-]);
+// fix: swoole >= 4.5.9
+if (class_exists('Swoole\Coroutine', false)) {
+    Coroutine::set([
+        'log_level'   => SWOOLE_LOG_INFO,
+        'trace_flags' => 0
+    ]);
+}
+
 \Swoft\Co::run(function () {
     // Status
     global $status;
