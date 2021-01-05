@@ -11,6 +11,7 @@ use Swoft\Redis\Contract\ConnectorInterface;
 use Swoft\Redis\Exception\RedisException;
 use Swoft\Stdlib\Helper\Arr;
 use Swoft\Stdlib\Helper\JsonHelper;
+use function version_compare;
 
 /**
  * Class PhpRedisConnector
