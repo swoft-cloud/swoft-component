@@ -325,7 +325,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     }
 
     /**
-     * @param $iterator
+     * @param int $iterator
      * @param string|null $pattern
      * @param int $count
      * @return array
