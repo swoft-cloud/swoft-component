@@ -32,8 +32,13 @@ jobs:
     strategy:
       fail-fast: true # fast fail
       matrix:
-        php: [7.1, 7.2, 7.3, 7.4]
+        php: [7.2, 7.3, 7.4]
         os: [ubuntu-latest] # , macOS-latest, windows-latest
+        swoole-versions: ['latest']
+        include:
+        - os: 'ubuntu-latest'
+          php: '7.1'
+          swoole-versions: '4.5.10'   
 
     steps:
       - uses: actions/checkout@v2
@@ -46,7 +51,6 @@ jobs:
           extensions: mbstring, dom, fileinfo, mysql, openssl, redis, swoole #optional, setup extensions
           ini-values: post_max_size=56M, short_open_tag=On #optional, setup php.ini configuration
           coverage: none #optional, setup coverage driver: xdebug, none
-          pecl: true
 
       - name: Display swoole extensions
         timeout-minutes: 1
