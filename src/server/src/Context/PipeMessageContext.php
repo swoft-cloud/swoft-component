@@ -1,10 +1,11 @@
 <?php
 /**
- * The file is part of the swoft_marketing_engine.
+ * This file is part of Swoft.
  *
- * (c) alan <alan1766447919@gmail.com>.
- *
- * 2021/1/3 1:43 下午
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
 
 namespace Swoft\Server\Context;
