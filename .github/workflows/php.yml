@@ -48,7 +48,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php}}
-          extensions: mbstring, dom, fileinfo, mysql, openssl, redis, swoole #optional, setup extensions
+          extensions: mbstring, dom, fileinfo, mysql, openssl, redis, swoole-${{ matrix.swoole-versions }} #optional, setup extensions
           ini-values: post_max_size=56M, short_open_tag=On #optional, setup php.ini configuration
           coverage: none #optional, setup coverage driver: xdebug, none
 
