@@ -32,13 +32,13 @@ jobs:
     strategy:
       fail-fast: true # fast fail
       matrix:
-        php: [7.2, 7.3, 7.4]
+        php: [7.2, 7.3, 7.4, 8.0]
         os: [ubuntu-latest] # , macOS-latest, windows-latest
         swoole-versions: [''] # latest
         include:
         - os: 'ubuntu-latest'
           php: '7.1'
-          swoole-versions: '-4.5.10'   
+          swoole-versions: '-4.5.10'
 
     steps:
       - uses: actions/checkout@v2
