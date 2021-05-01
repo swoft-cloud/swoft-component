@@ -77,30 +77,21 @@ class PhpConfigTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /**
-     * @expectedException Swoft\Config\Exception\ConfigException
-     * @throws \Swoft\Config\Exception\ConfigException
-     */
     public function testForget()
     {
         $this->config->forget('');
+        $this->expectException(\Swoft\Config\Exception\ConfigException::class);
     }
 
-    /**
-     * @expectedException Swoft\Config\Exception\ConfigException
-     * @throws \Swoft\Config\Exception\ConfigException
-     */
     public function testOffsetUnset()
     {
         $this->config->offsetUnset('');
+        $this->expectException(\Swoft\Config\Exception\ConfigException::class);
     }
 
-    /**
-     * @expectedException Swoft\Config\Exception\ConfigException
-     * @throws \Swoft\Config\Exception\ConfigException
-     */
     public function testOffsetSett()
     {
         $this->config->offsetSet('key', 'value');
+        $this->expectException(\Swoft\Config\Exception\ConfigException::class);
     }
 }
