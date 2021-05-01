@@ -22,7 +22,7 @@ class TaskTest extends TestCase
 {
     public function testCo(): void
     {
-        $this->expectedException(\Swoft\Task\Exception\TaskException::class);
+        $this->expectException(\Swoft\Task\Exception\TaskException::class);
         $this->mockTaskServer->co('demoTestTask', 'method', []);
     }
 
@@ -65,7 +65,7 @@ class TaskTest extends TestCase
 
     public function testCo6(): void
     {
-        $this->expectedException(\Swoft\Task\Exception\TaskException::class);
+        $this->expectException(\Swoft\Task\Exception\TaskException::class);
         $this->mockTaskServer->co('demoTestTask', 'method3', ['name', 18306]);
     }
 
