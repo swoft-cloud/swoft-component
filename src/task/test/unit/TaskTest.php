@@ -20,12 +20,9 @@ use Swoft\Task\Exception\TaskException;
  */
 class TaskTest extends TestCase
 {
-    /**
-     * @throws TaskException
-     * @expectedException \Swoft\Task\Exception\TaskException
-     */
     public function testCo(): void
     {
+        $this->expectedException(\Swoft\Task\Exception\TaskException::class);
         $this->mockTaskServer->co('demoTestTask', 'method', []);
     }
 
@@ -66,12 +63,9 @@ class TaskTest extends TestCase
         Context::getWaitGroup()->wait();
     }
 
-    /**
-     * @throws TaskException
-     * @expectedException \Swoft\Task\Exception\TaskException
-     */
     public function testCo6(): void
     {
+        $this->expectedException(\Swoft\Task\Exception\TaskException::class);
         $this->mockTaskServer->co('demoTestTask', 'method3', ['name', 18306]);
     }
 
