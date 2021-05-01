@@ -79,19 +79,19 @@ class PhpConfigTest extends TestCase
 
     public function testForget()
     {
-        $this->config->forget('');
         $this->expectException(\Swoft\Config\Exception\ConfigException::class);
+        $this->config->forget('');
     }
 
     public function testOffsetUnset()
     {
-        $this->config->offsetUnset('');
         $this->expectException(\Swoft\Config\Exception\ConfigException::class);
+        $this->config->offsetUnset('');
     }
 
     public function testOffsetSett()
     {
-        $this->config->offsetSet('key', 'value');
         $this->expectException(\Swoft\Config\Exception\ConfigException::class);
+        $this->config->offsetSet('key', 'value');
     }
 }
