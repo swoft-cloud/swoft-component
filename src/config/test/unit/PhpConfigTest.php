@@ -27,13 +27,12 @@ class PhpConfigTest extends TestCase
     /**
      * Set up
      */
-    public function setUp()
+    public function setUp(): void
     {
         $config = new Config();
         $config->setPath(__DIR__ . '/../config-php');
         $config->setEnv('pro');
         $config->init();
-        ;
 
         $this->config = $config;
     }
