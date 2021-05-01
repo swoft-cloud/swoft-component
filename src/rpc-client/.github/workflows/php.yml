@@ -23,7 +23,7 @@ jobs:
         include:
         - os: 'ubuntu-latest'
           php: '7.1'
-          swoole-versions: '-4.5.24'
+          swoole-versions: '-4.5.11'
 
     steps:
       - uses: actions/checkout@v2
