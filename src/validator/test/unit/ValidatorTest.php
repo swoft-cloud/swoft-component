@@ -21,44 +21,32 @@ use SwoftTest\Validator\Testing\ValidateDemo2;
  */
 class ValidatorTest extends TestCase
 {
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage email must exist!
-     *
-     * @throws ValidatorException
-     */
     public function testTypeEmail(): void
     {
         $data = [];
+        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectExceptionMessage('email must exist!');
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testEmail'));
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage email messsage
-     *
-     * @throws ValidatorException
-     */
     public function testFailEmail(): void
     {
         $data = [
             'email' => 'swoft'
         ];
+        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectExceptionMessage('email messsage');
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testEmail'));
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage email messsage
-     *
-     * @throws ValidatorException
-     */
     public function testFailEmail2(): void
     {
         $data = [
             'email' => 'swoft'
         ];
 
+        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectExceptionMessage('email messsage');
         (new Validator())->validate($data, 'testDefaultValidator', ['email']);
     }
 
@@ -86,17 +74,13 @@ class ValidatorTest extends TestCase
         $this->assertEquals($result, $data);
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage enum message
-     *
-     * @throws ValidatorException
-     */
     public function testFailEnum(): void
     {
         $data = [
             'enum' => 1,
         ];
+        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectExceptionMessage('enum messsage');
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testEnum'));
     }
 
@@ -124,6 +108,8 @@ class ValidatorTest extends TestCase
         $data = [
             'ip' => '11',
         ];
+        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectExceptionMessage('ip messsage');
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testIp'));
     }
 
