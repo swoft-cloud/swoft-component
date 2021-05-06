@@ -28,7 +28,9 @@ class Proxy
     /**
      * @param string $className
      * @param string $suffix Rpc version+pool name.
-     *                       For resolve https://github.com/swoft-cloud/swoft/issues/1297
+     *                       For resolve
+     *                       - https://github.com/swoft-cloud/swoft/issues/1297
+     *                       - https://github.com/swoft-cloud/swoft/issues/1373
      *
      * @return string
      * @throws ProxyException

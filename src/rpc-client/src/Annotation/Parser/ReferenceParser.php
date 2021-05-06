@@ -56,14 +56,13 @@ class ReferenceParser extends Parser
             ));
         }
 
+        $poolName   = $refObject->getPool();
         $refVersion = $refObject->getVersion();
-        $className  = Proxy::newClassName($propClassType, $refVersion);
+        $className  = Proxy::newClassName($propClassType, $poolName . '_' . $refVersion);
 
-        $this->definitions[$className] = [
-            'class' => $className,
-        ];
+        $this->definitions[$className] = ['class' => $className];
 
-        ReferenceRegister::register($className, $refObject->getPool(), $refVersion);
+        ReferenceRegister::register($className, $poolName, $refVersion);
         return [$className, true];
     }
 }
