@@ -49,6 +49,14 @@ classdoc:
 # gen docs
 	php sami.phar update ./script/sami.doc.inc
 
+  test-all:		## Run all unit tests
+test-all:
+	./phpunit.sh all
+
+  test-nodb:	## Run unit tests without db tests
+test-nodb:
+	./phpunit.sh nodb
+
   all:		## Run update, addrmt, fpush and release
 all: update addrmt fpush release
 

@@ -68,7 +68,7 @@ trait RandomStringTrait
     {
         $micro = microtime(true) * 10000;
 
-        return $prefix . base_convert($micro, 10, 16);
+        return $prefix . base_convert((string)$micro, 10, 16);
     }
 
     /**

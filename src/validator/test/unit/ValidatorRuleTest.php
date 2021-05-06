@@ -21,7 +21,7 @@ class ValidatorRuleTest extends TestCase
         $data = [
             'dataAfterDate' => '2019-07-06'
         ];
-        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $this->expectExceptionMessage('dataAfterDate must be after 2019-07-08');
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testAfterDate'));
     }
@@ -43,7 +43,7 @@ class ValidatorRuleTest extends TestCase
         $data = [
             'dataAlpha' => 'abcde0123'
         ];
-        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $this->expectExceptionMessage('alpha message');
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testAlpha'));
     }
@@ -65,7 +65,7 @@ class ValidatorRuleTest extends TestCase
         $data = [
             'dataAlphaDash' => '.='
         ];
-        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $this->expectExceptionMessage('alphadash message');
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testAlphaDash'));
     }
@@ -88,7 +88,7 @@ class ValidatorRuleTest extends TestCase
             'dataAlphaNum' => 'abcde-'
         ];
 
-        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $this->expectExceptionMessage('alphanum message');
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testAlphaNum'));
     }
@@ -110,7 +110,7 @@ class ValidatorRuleTest extends TestCase
         $data = [
             'dataBeforeDate' => '2019-07-10'
         ];
-        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $this->expectExceptionMessage('before date message');
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testBeforeDate'));
     }
@@ -132,7 +132,7 @@ class ValidatorRuleTest extends TestCase
         $data = [
             'dataChs' => 'english'
         ];
-        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $this->expectExceptionMessage('chs message');
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testChs'));
     }
@@ -154,7 +154,7 @@ class ValidatorRuleTest extends TestCase
         $data = [
             'dataChsAlpha' => '-_'
         ];
-        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $this->expectExceptionMessage('chsalpha message');
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testChsAlpha'));
     }
@@ -176,7 +176,7 @@ class ValidatorRuleTest extends TestCase
         $data = [
             'dataChsAlphaDash' => '>?'
         ];
-        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $this->expectExceptionMessage('chsalphadash message');
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testChsAlphaDash'));
     }
@@ -198,7 +198,7 @@ class ValidatorRuleTest extends TestCase
         $data = [
             'dataChsAlphaNum' => '-_'
         ];
-        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $this->expectExceptionMessage('chsalphanum message');
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testChsAlphaNum'));
     }
@@ -221,7 +221,7 @@ class ValidatorRuleTest extends TestCase
             'dataConfirm' => '123',
             'confirm' => '456'
         ];
-        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $this->expectExceptionMessage('confirm message');
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testConfirm'));
     }
@@ -245,7 +245,7 @@ class ValidatorRuleTest extends TestCase
             'dataDifferent' => '123',
             'different' => '123'
         ];
-        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $this->expectExceptionMessage('different message');
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testDifferent'));
     }
@@ -269,7 +269,7 @@ class ValidatorRuleTest extends TestCase
             'dataGreaterThan' => '12',
             'gt' => '123'
         ];
-        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $this->expectExceptionMessage('greaterthan message');
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testGreaterThan'));
     }
@@ -293,7 +293,7 @@ class ValidatorRuleTest extends TestCase
             'dataLessThan' => '124',
             'lt' => '123'
         ];
-        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $this->expectExceptionMessage('lessthan message');
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testLessThan'));
     }
@@ -316,7 +316,7 @@ class ValidatorRuleTest extends TestCase
         $data = [
             'dataDate' => '2019f'
         ];
-        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $this->expectExceptionMessage('date message');
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testDate'));
     }
@@ -338,7 +338,7 @@ class ValidatorRuleTest extends TestCase
         $data = [
             'dataDateRange' => '2019-06-18'
         ];
-        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $this->expectExceptionMessage('daterange message');
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testDateRange'));
     }
@@ -352,6 +352,7 @@ class ValidatorRuleTest extends TestCase
             $data,
             $this->getValidates(ValidatorRule::class, 'testDateRange')
         );
+
         $this->assertEquals($data, $result);
     }
 
@@ -360,7 +361,7 @@ class ValidatorRuleTest extends TestCase
         $data = [
             'dataDns' => 'swoft.con'
         ];
-        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $this->expectExceptionMessage('dns message');
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testDns'));
     }
@@ -412,7 +413,7 @@ class ValidatorRuleTest extends TestCase
         $data = [
             'dataLow' => 'swofT'
         ];
-        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $this->expectExceptionMessage('low message');
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testLow'));
     }
@@ -434,7 +435,7 @@ class ValidatorRuleTest extends TestCase
         $data = [
             'dataNotInEnum' => '1'
         ];
-        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $this->expectExceptionMessage('notinenum message');
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testNotInEnum'));
     }
@@ -456,7 +457,7 @@ class ValidatorRuleTest extends TestCase
         $data = [
             'dataNotInRange' => '1'
         ];
-        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $this->expectExceptionMessage('notinrange message');
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testNotInRange'));
     }
@@ -478,7 +479,7 @@ class ValidatorRuleTest extends TestCase
         $data = [
             'dataUpper' => 'sWOFT'
         ];
-        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $this->expectExceptionMessage('upper message');
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testUpper'));
     }
@@ -500,7 +501,7 @@ class ValidatorRuleTest extends TestCase
         $data = [
             'dataUrl' => 'baidu.com'
         ];
-        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectException(ValidatorException::class);
         $this->expectExceptionMessage('url message');
         (new Validator())->validateRequest($data, $this->getValidates(ValidatorRule::class, 'testUrl'));
     }
