@@ -12,10 +12,15 @@ namespace Swoft\Server\Swoole;
 
 use Swoft;
 use Swoft\Bean\Annotation\Mapping\Bean;
+use Swoft\Context\Context;
+use Swoft\Log\Error;
 use Swoft\Log\Helper\CLog;
 use Swoft\Server\Contract\PipeMessageInterface;
 use Swoft\Server\ServerEvent;
+use Swoft\SwoftEvent;
 use Swoole\Server;
+use Swoft\Server\Context\PipeMessageContext;
+use Throwable;
 
 /**
  * Class PipeMessageListener
@@ -34,8 +39,26 @@ class PipeMessageListener implements PipeMessageInterface
      */
     public function onPipeMessage(Server $server, int $srcWorkerId, $message): void
     {
-        CLog::debug("PipeMessage: received pipe-message fromWID=$srcWorkerId message=$message");
+        Context::set(PipeMessageContext::new($srcWorkerId, $message));
 
-        Swoft::trigger(ServerEvent::PIPE_MESSAGE, $message, $srcWorkerId, $server);
+        CLog::debug("PipeMessage: received pipe-message fromWID={$srcWorkerId}}");
+
+        try {
+
+            Swoft::trigger(ServerEvent::PIPE_MESSAGE, $message, $srcWorkerId, $server);
+
+        } catch (Throwable $e) {
+
+            Error::log("PipeMessage handle fails: {$e->getMessage()} in {$e->getFile()}:{$e->getLine()}");
+
+        } finally {
+
+            // Defer
+            Swoft::trigger(SwoftEvent::COROUTINE_DEFER);
+
+            // Destroy
+            Swoft::trigger(SwoftEvent::COROUTINE_COMPLETE);
+
+        }
     }
 }

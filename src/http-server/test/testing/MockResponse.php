@@ -97,7 +97,8 @@ class MockResponse extends Response
         $domain = null,
         $secure = null,
         $httpOnly = null,
-        $samesite = null
+        $samesite = null,
+        $priority = null
     ) {
         $result = \urlencode($name) . '=' . \urlencode($value);
 

@@ -16,6 +16,8 @@ use function array_multisort;
 use function count;
 use function explode;
 use function preg_match;
+use function preg_quote;
+use function strpos;
 
 /**
  * Class AopRegister
@@ -160,6 +162,12 @@ class Aop
 
             // Class
             [$executionClass, $executionMethod] = $executionAry;
+
+            // fix: php8 Compilation failed: unrecognized character follows \
+            if (strpos($executionClass, '\\\\') === false) {
+                // convert 'SwoftTest\Component\Testing\Aop\ZeroAop' to 'SwoftTest\\Component\\Testing\\Aop\\ZeroAop'
+                $executionClass = preg_quote($executionClass);
+            }
 
             // Class reg
             $classReg = '/' . $executionClass . '/';

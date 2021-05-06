@@ -60,6 +60,7 @@ class ConnectionManager
                 $connection->release();
             }
         }
+        $this->unset($key);
 
         if ($final) {
             $finalKey = sprintf('%d', Co::tid());

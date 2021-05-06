@@ -36,7 +36,7 @@ class TimerTest extends TestCase
 
     /**
      */
-    public function setUp()
+    public function setUp(): void
     {
         Context::set(TestContext::new());
     }

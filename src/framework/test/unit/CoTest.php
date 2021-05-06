@@ -26,7 +26,7 @@ class CoTest extends TestCase
 {
     /**
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         Context::getWaitGroup()->wait();
     }

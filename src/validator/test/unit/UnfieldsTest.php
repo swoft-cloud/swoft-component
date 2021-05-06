@@ -39,28 +39,21 @@ class UnfieldsTest extends TestCase
         $this->assertEquals($body, $data);
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     *
-     * @throws ValidatorException
-     */
     public function testUnfieldsException(): void
     {
         $data = [];
+        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo3::class, 'unfield2'));
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage email must be a email
-     *
-     * @throws ValidatorException
-     */
     public function testUnfieldsException2(): void
     {
         $data = [
             'email' => '121',
         ];
+
+        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectExceptionMessage('email must be a email');
         (new Validator())->validate($data, TestValidator3::class, [], [], ['ip', 'count']);
     }
 }

@@ -325,6 +325,41 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
     }
 
     /**
+     * @param int $iterator
+     * @param string|null $pattern
+     * @param int $count
+     * @return array
+     * @throws RedisException
+     */
+    public function scan($iterator, string $pattern = null, int $count = 0): array
+    {
+        try {
+            // Before event
+            Swoft::trigger(RedisEvent::BEFORE_COMMAND, null, 'scan', [$iterator, $pattern, $count]);
+
+            Log::profileStart('redis.%s', 'scan');
+            $rest = $this->client->scan($iterator, $pattern, $count);
+            Log::profileEnd('redis.%s', 'scan');
+
+            // After event
+            Swoft::trigger(RedisEvent::AFTER_COMMAND, null, 'scan', [$iterator, $pattern, $count], ['cursor'=>$iterator,'result'=>$rest]);
+
+            // Release Connection
+            $this->release();
+            return ['cursor'=>$iterator,'result'=>$rest];
+        } catch (Throwable $e) {
+            if ($this->reconnect()) {
+                $rest = $this->client->scan($iterator, $pattern, $count);
+                return ['cursor'=>$iterator,'result'=>$rest];
+            }
+
+            throw new RedisException(
+                sprintf('Redis command reconnect error(%s)', $e->getMessage())
+            );
+        }
+    }
+
+    /**
      * @param string $key
      * @param array  $keys
      *
