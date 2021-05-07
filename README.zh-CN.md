@@ -92,6 +92,7 @@ export RUN_SERVER_TEST=ws,http,tcp; ./phpunit.sh websocket-server
 ### 自动发布
 
 使用 Github PR 评论发布组件新版本。
+在 [swoft/swoft-component][component] 和 [swoft/swoft-ext][ext] 下的PR评论即发布相应仓库的代码
 
 评论格式:
 
@@ -105,10 +106,10 @@ export RUN_SERVER_TEST=ws,http,tcp; ./phpunit.sh websocket-server
 
 ```text
 # 所有的组件
-@swoftbot release v2.0.8 all
+@swoftbot release v2.0.11 all
 
 # 指定的组件
-@swoftbot release v2.0.8 bean,event
+@swoftbot release v2.0.11 bean,event
 ```
 
 ### 手动发布
