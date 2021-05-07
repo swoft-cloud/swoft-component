@@ -101,8 +101,8 @@ class FileHandler extends AbstractProcessingHandler
         } else {
             $records = array_column($records, 'formatted');
         }
-        $messageText = implode("\n", $records) . "\n";
 
+        $messageText = implode("\n", $records) . "\n";
         if (Co::id() <= 0) {
             throw new InvalidArgumentException('Write log file must be under Coroutine!');
         }
@@ -125,6 +125,7 @@ class FileHandler extends AbstractProcessingHandler
     private function recordFilter(array $records): array
     {
         $messages = [];
+        $outJson = Log::getLogger()->isJson();
         foreach ($records as $record) {
             if (!isset($record['level'])) {
                 continue;
@@ -133,8 +134,15 @@ class FileHandler extends AbstractProcessingHandler
                 continue;
             }
 
-            $record              = $this->processRecord($record);
-            $record['formatted'] = $this->getFormatter()->format($record);
+            $record = $this->processRecord($record);
+
+            // format record
+            if ($outJson) {
+                // optimize, dont call formatter
+                $record['formatted'] = '';
+            } else {
+                $record['formatted'] = $this->getFormatter()->format($record);
+            }
 
             $messages[] = $record;
         }
