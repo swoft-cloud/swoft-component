@@ -41,20 +41,20 @@ class PhpRedisConnector implements ConnectorInterface
             $client->select($config['database']);
         }
 
-        if (!empty($config['read_timeout'])) {
-            $client->setOption(Redis::OPT_READ_TIMEOUT, (string)$config['read_timeout']);
+        if (isset($config['read_timeout'])) {
+            $client->setOption(Redis::OPT_READ_TIMEOUT, (int)$config['read_timeout']);
         }
 
         if (!empty($option['prefix'])) {
             $client->setOption(Redis::OPT_PREFIX, $option['prefix']);
         }
 
-        if (!empty($option['serializer'])) {
-            $client->setOption(Redis::OPT_SERIALIZER, (string)$option['serializer']);
+        if (isset($option['serializer'])) {
+            $client->setOption(Redis::OPT_SERIALIZER, (int)$option['serializer']);
         }
 
-        if (!empty($option['scan'])) {
-            $client->setOption(Redis::OPT_SCAN, (string)$option['scan']);
+        if (isset($option['scan'])) {
+            $client->setOption(Redis::OPT_SCAN, (int)$option['scan']);
         }
 
         return $client;

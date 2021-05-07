@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 
-
 namespace SwoftTest\Redis\Unit\Command;
-
 
 use Swoft\Redis\Redis;
 use SwoftTest\Redis\Unit\TestCase;
@@ -14,7 +12,6 @@ use SwoftTest\Redis\Unit\TestCase;
  */
 class HashTest extends TestCase
 {
-
     public function testhMsetAndhMget()
     {
         $key    = \uniqid();

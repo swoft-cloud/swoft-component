@@ -88,7 +88,6 @@ use function sprintf;
  * @method string|array|bool sRandMember(string $key, int $count = null)
  * @method array sUnion(string $key1, string $key2, string $keyN = null)
  * @method int sUnionStore(string $dstKey, string $key1, string $key2, string $keyN = null)
- * @method array|bool scan(int &$iterator, string $pattern = null, int $count = 0)
  * @method mixed script(string|array $nodeParams, string $command, string $script)
  * @method int setBit(string $key, int $offset, int $value)
  * @method string setRange(string $key, int $offset, string $value)
@@ -255,6 +254,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
             Swoft::trigger(RedisEvent::BEFORE_COMMAND, null, $method, $parameters);
 
             Log::profileStart('redis.%s', $method);
+            /** @see Redis::class */
             $result = $this->client->{$method}(...$parameters);
             Log::profileEnd('redis.%s', $method);
 
@@ -265,10 +265,11 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
             $this->release();
         } catch (Throwable $e) {
             if (!$reconnect && $this->reconnect()) {
+                \vdump($e->getMessage(),  $this->client->getLastError());
                 return $this->command($method, $parameters, true);
             }
 
-            throw new RedisException('Redis command reconnect error=' . $e->getMessage(), $e->getCode(), $e);
+            throw new RedisException("Redis command exec '$method', error=" . $e->getMessage(), $e->getCode(), $e);
         }
 
         return $result;

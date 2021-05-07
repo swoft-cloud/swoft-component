@@ -228,7 +228,7 @@ class RedisDb
      */
     public function getRetryInterval(): int
     {
-        return (int)$this->retryInterval;
+        return $this->retryInterval;
     }
 
     /**
@@ -236,7 +236,7 @@ class RedisDb
      */
     public function getReadTimeout(): int
     {
-        return (int)$this->readTimeout;
+        return $this->readTimeout;
     }
 
     /**

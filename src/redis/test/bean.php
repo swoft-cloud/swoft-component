@@ -7,12 +7,12 @@ return [
     'redis'               => [
         'class'         => \Swoft\Redis\RedisDb::class,
         'host'          => '127.0.0.1',
-        'port'          => 6379,
+        'port'          => 16379,
         'database'      => 0,
         'retryInterval' => 10,
         'readTimeout'   => 0,
         'timeout'       => 2,
-        'password'      => '123$~@456',
+        // 'password'      => '123$~@456',
         'driver'        => 'phpredis',
         'option'        => [
             'prefix' => 'swoft-t_x',
@@ -65,7 +65,7 @@ return [
     'inc'                 => [
         'class'         => \Swoft\Redis\RedisDb::class,
         'host'          => '127.0.0.1',
-        'port'          => 6379,
+        'port'          => 16379,
         'database'      => 0,
         'retryInterval' => 10,
         'readTimeout'   => 0,
