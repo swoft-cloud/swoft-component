@@ -27,13 +27,12 @@ class PhpConfigTest extends TestCase
     /**
      * Set up
      */
-    public function setUp()
+    public function setUp(): void
     {
         $config = new Config();
         $config->setPath(__DIR__ . '/../config-php');
         $config->setEnv('pro');
         $config->init();
-        ;
 
         $this->config = $config;
     }
@@ -78,30 +77,21 @@ class PhpConfigTest extends TestCase
         $this->assertTrue($result);
     }
 
-    /**
-     * @expectedException Swoft\Config\Exception\ConfigException
-     * @throws \Swoft\Config\Exception\ConfigException
-     */
     public function testForget()
     {
+        $this->expectException(\Swoft\Config\Exception\ConfigException::class);
         $this->config->forget('');
     }
 
-    /**
-     * @expectedException Swoft\Config\Exception\ConfigException
-     * @throws \Swoft\Config\Exception\ConfigException
-     */
     public function testOffsetUnset()
     {
+        $this->expectException(\Swoft\Config\Exception\ConfigException::class);
         $this->config->offsetUnset('');
     }
 
-    /**
-     * @expectedException Swoft\Config\Exception\ConfigException
-     * @throws \Swoft\Config\Exception\ConfigException
-     */
     public function testOffsetSett()
     {
+        $this->expectException(\Swoft\Config\Exception\ConfigException::class);
         $this->config->offsetSet('key', 'value');
     }
 }

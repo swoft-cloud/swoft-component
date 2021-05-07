@@ -21,44 +21,32 @@ use SwoftTest\Validator\Testing\ValidateDemo2;
  */
 class ValidatorTest extends TestCase
 {
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage email must exist!
-     *
-     * @throws ValidatorException
-     */
     public function testTypeEmail(): void
     {
         $data = [];
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('email must exist!');
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testEmail'));
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage email messsage
-     *
-     * @throws ValidatorException
-     */
     public function testFailEmail(): void
     {
         $data = [
             'email' => 'swoft'
         ];
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('email messsage');
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testEmail'));
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage email messsage
-     *
-     * @throws ValidatorException
-     */
     public function testFailEmail2(): void
     {
         $data = [
             'email' => 'swoft'
         ];
 
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('email messsage');
         (new Validator())->validate($data, 'testDefaultValidator', ['email']);
     }
 
@@ -86,17 +74,13 @@ class ValidatorTest extends TestCase
         $this->assertEquals($result, $data);
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage enum message
-     *
-     * @throws ValidatorException
-     */
     public function testFailEnum(): void
     {
         $data = [
             'enum' => 1,
         ];
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('enum message');
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testEnum'));
     }
 
@@ -113,23 +97,16 @@ class ValidatorTest extends TestCase
         $this->assertEquals($result, $data);
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage ip message
-     *
-     * @throws ValidatorException
-     */
     public function testFailIp(): void
     {
         $data = [
             'ip' => '11',
         ];
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('ip message');
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testIp'));
     }
 
-    /**
-     * @throws ValidatorException
-     */
     public function testIp(): void
     {
         $data = [
@@ -140,17 +117,14 @@ class ValidatorTest extends TestCase
         $this->assertEquals($result, $data);
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage length message
-     *
-     * @throws ValidatorException
-     */
     public function testFailLength(): void
     {
         $data = [
             'length' => '1',
         ];
+
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('length message');
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testLength'));
     }
 
@@ -167,17 +141,15 @@ class ValidatorTest extends TestCase
         $this->assertEquals($result, $data);
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage max message
-     *
-     * @throws ValidatorException
-     */
     public function testFailMax(): void
     {
         $data = [
             'max' => 18,
         ];
+
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('max message');
+
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testMax'));
     }
 
@@ -194,17 +166,15 @@ class ValidatorTest extends TestCase
         $this->assertEquals($result, $data);
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage min message
-     *
-     * @throws ValidatorException
-     */
     public function testFailMin(): void
     {
         $data = [
             'min' => 0,
         ];
+
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('min message');
+
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testMin'));
     }
 
@@ -221,17 +191,15 @@ class ValidatorTest extends TestCase
         $this->assertEquals($result, $data);
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage mobile message
-     *
-     * @throws ValidatorException
-     */
     public function testFailMobile(): void
     {
         $data = [
             'mobile' => '13442',
         ];
+
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('mobile message');
+
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testMobile'));
     }
 
@@ -248,17 +216,15 @@ class ValidatorTest extends TestCase
         $this->assertEquals($result, $data);
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage not empty message
-     *
-     * @throws ValidatorException
-     */
     public function testFailNotEmpty(): void
     {
         $data = [
             'notEmpty' => '',
         ];
+
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('not empty message');
+
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testNotEmpty'));
     }
 
@@ -278,17 +244,15 @@ class ValidatorTest extends TestCase
         $this->assertEquals($result, $data);
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage pattern message
-     *
-     * @throws ValidatorException
-     */
     public function testFailPattern(): void
     {
         $data = [
             'pattern' => 'swift',
         ];
+
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('pattern message');
+
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testPattern'));
     }
 
@@ -305,31 +269,27 @@ class ValidatorTest extends TestCase
         $this->assertEquals($result, $data);
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage range message
-     *
-     * @throws ValidatorException
-     */
     public function testFailRange(): void
     {
         $data = [
             'range' => 100,
         ];
+
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('range message');
+
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo2::class, 'testRange'));
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage range message
-     *
-     * @throws ValidatorException
-     */
     public function testFailRange2(): void
     {
         $data = [
             'range' => 100,
         ];
+
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('range message');
+
         (new Validator())->validate($data, 'testDefaultValidator', ['range']);
     }
 

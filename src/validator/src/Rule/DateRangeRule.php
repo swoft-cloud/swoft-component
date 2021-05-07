@@ -10,11 +10,11 @@
 
 namespace Swoft\Validator\Rule;
 
-use DateTime;
 use Swoft\Bean\Annotation\Mapping\Bean;
 use Swoft\Validator\Annotation\Mapping\DateRange;
 use Swoft\Validator\Contract\RuleInterface;
 use Swoft\Validator\Exception\ValidatorException;
+use function strtotime;
 
 /**
  * Class AlphaRule
@@ -26,37 +26,40 @@ use Swoft\Validator\Exception\ValidatorException;
 class DateRangeRule implements RuleInterface
 {
     /**
-     * @param array  $data
-     * @param string $propertyName
-     * @param object $item
-     * @param null   $default
+     * @param array            $data
+     * @param string           $propertyName
+     * @param object|DateRange $item
+     * @param null             $default
+     * @param bool             $strict
      *
      * @return array
-     * @throws ValidatorException
      */
     public function validate(array $data, string $propertyName, $item, $default = null, $strict = false): array
     {
-        /* @var DateRange $item */
-        $start = $item->getStart();
-        $end   = $item->getEnd();
+        $endTs = strtotime($end = $item->getEnd());
         $value = $data[$propertyName];
+
+        $startTs = strtotime($start = $item->getStart());
         if (is_string($value)) {
-            $dt = DateTime::createFromFormat('Y-m-d H:i:s', $value);
-            if (($dt !== false && !array_sum($dt::getLastErrors())) && strtotime($value) >= strtotime($start) && $value <= strtotime($end)) {
+            // $dt = DateTime::createFromFormat('Y-m-d H:i:s', $value);
+            $ts = strtotime($value);
+            if ($ts > 0 && $ts >= $startTs && $ts <= $endTs) {
                 return $data;
-            } elseif (ctype_digit($value)) {
-                if (date('Y-m-d', (int)$value) && $value >= strtotime($start) && $value <= strtotime($end)) {
-                    return $data;
-                }
+            }
+
+            // is timestamp
+            if (ctype_digit($value) && date('Y-m-d', (int)$value) && $value >= $startTs && $value <= $endTs) {
+                return $data;
             }
         } elseif (filter_var($value, FILTER_VALIDATE_INT)) {
-            if ($value >= strtotime($start) && $value <= strtotime($end)) {
+            if ($value >= $startTs && $value <= $endTs) {
                 return $data;
             }
         }
+
         $message = $item->getMessage();
-        $message = (empty($message)) ?
-            sprintf('%s is invalid  date range(start=%s, end=%s)', $propertyName, $start, $end) : $message;
+        $message = $message ?: sprintf('%s is invalid date range(start=%s, end=%s)', $propertyName, $start, $end);
+
         throw new ValidatorException($message);
     }
 }

@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Stdlib;
 
@@ -159,8 +167,8 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
     public function median($key = null)
     {
         $values = (isset($key) ? $this->pluck($key) : $this)->filter(function ($item) {
-                return $item !== null;
-            })->sort()->values();
+            return $item !== null;
+        })->sort()->values();
 
         $count = $values->count();
 
@@ -197,7 +205,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
 
         $counts = new self;
 
-        $collection->each(function ($value) use ($counts) {
+        $collection->each(function ($value) use ($counts): void {
             $counts[$value] = isset($counts[$value]) ? $counts[$value] + 1 : 1;
         });
 
@@ -310,9 +318,9 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      */
     public function dump(): self
     {
-        (new static(func_get_args()))->push($this)->each(function ($item) {
-                var_dump($item);
-            });
+        (new static(func_get_args()))->push($this)->each(function ($item): void {
+            var_dump($item);
+        });
 
         return $this;
     }

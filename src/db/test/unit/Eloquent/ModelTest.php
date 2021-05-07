@@ -780,14 +780,14 @@ on A.id=B.id;', [$resCount - 20]);
 
         $expectSql = '`user_desc` = ?';
         $sql       = User::whereProp('udesc', $desc)->toSql();
-        $this->assertContains($expectSql, $sql);
+        $this->assertStringContainsString($expectSql, $sql);
 
         $expectSql1 = 'select * from `user` where (`user_desc` = ? and `test_json`->\'$."user_status"\' = ?)';
         $sql1       = User::whereProp([
             'udesc'                  => $desc,
             'test_json->user_status' => $rand
         ])->toSql();
-        $this->assertContains($expectSql1, $sql1);
+        $this->assertStringContainsString($expectSql1, $sql1);
     }
 
     public function testUpdateOrCreate()

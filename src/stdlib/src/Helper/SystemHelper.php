@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Stdlib\Helper;
 
@@ -119,12 +127,12 @@ class SystemHelper extends EnvHelper
             system($command, $exitStatus);
             $output = ob_get_clean();
 
-            //exec
+        //exec
         } elseif (function_exists('exec')) {
             exec($command, $output, $exitStatus);
             $output = implode("\n", $output);
 
-            //shell_exec
+        //shell_exec
         } elseif (function_exists('shell_exec')) {
             $output = shell_exec($command);
         } else {

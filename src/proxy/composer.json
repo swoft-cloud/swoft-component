@@ -1,7 +1,7 @@
 {
   "name": "swoft/proxy",
   "type": "library",
-  "version": "v2.0.10",
+  "version": "v2.0.11",
   "keywords": [
     "php",
     "swoole",
@@ -16,7 +16,7 @@
     "swoft/stdlib": "~2.0.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "^7.5"
+    "phpunit/phpunit": "^7.5 || ^8.0"
   },
   "autoload": {
     "psr-4": {

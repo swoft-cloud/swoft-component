@@ -330,7 +330,7 @@ class Container implements ContainerInterface
      * @param string $name
      * @param string $id Usually is coroutine ID
      *
-     * @return object
+     * @return object|mixed
      */
     public function getRequest(string $name, string $id)
     {
@@ -437,7 +437,6 @@ class Container implements ContainerInterface
             throw new InvalidArgumentException(sprintf('The bean of %s is not defined', $id));
         }
 
-        /* @var ObjectDefinition $objectDefinition */
         $objectDefinition = $this->objectDefinitions[$id];
 
         // Prototype bean
@@ -1054,7 +1053,6 @@ class Container implements ContainerInterface
                 continue;
             }
 
-            /** @noinspection PhpUnhandledExceptionInspection */
             $reflectProperty = $reflectionClass->getProperty($propertyName);
 
             if ($reflectProperty->isStatic()) {

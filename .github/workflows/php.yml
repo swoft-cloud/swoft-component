@@ -24,21 +24,22 @@ jobs:
         ports:
           - 3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+      # https://docs.github.com/en/actions/guides/creating-redis-service-containers
       redis:
         image: redis
         ports:
-          - 6379/tcp
+          - 16379:6379 # export 16379 the port
         options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
     strategy:
       fail-fast: true # fast fail
       matrix:
-        php: [7.2, 7.3, 7.4]
+        php: [7.2, 7.3, 7.4, 8.0]
         os: [ubuntu-latest] # , macOS-latest, windows-latest
         swoole-versions: [''] # latest
         include:
         - os: 'ubuntu-latest'
           php: '7.1'
-          swoole-versions: '-4.5.10'   
+          swoole-versions: '-4.5.11'
 
     steps:
       - uses: actions/checkout@v2
@@ -54,7 +55,7 @@ jobs:
 
       - name: Display swoole extensions
         timeout-minutes: 1
-        run: php --ri swoole && php --re swoole | grep class
+        run: php --ri swoole
       #    sudo pecl install -f swoole
       # echo 'no' | pecl install -f redis
       # sudo pecl update-channels && pecl install -f msgpack && pecl install -f igbinary && php -m
@@ -67,4 +68,4 @@ jobs:
 
       - name: Run test suite
         run: | # && composer run test
-         pwd && ./phpunit.sh nodb
+         pwd && ./phpunit.sh nodb && ./phpunit.sh redis

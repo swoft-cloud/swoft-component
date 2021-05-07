@@ -323,7 +323,8 @@ class Logger extends \Monolog\Logger
             if (!isset($profile['cost'], $profile['total'])) {
                 continue;
             }
-            $cost         = sprintf('%.2f', $profile['cost'] * 1000);
+
+            $cost = sprintf('%.2f', $profile['cost'] * 1000);
 
             $profileAry[] = "$key=" . $cost . '(ms)/' . $profile['total'];
         }

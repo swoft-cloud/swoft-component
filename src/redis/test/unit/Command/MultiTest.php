@@ -1,43 +1,49 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\Redis\Unit\Command;
 
-
 use Swoft\Redis\Redis;
-use SwoftTest\Redis\Unit\TestCase;
+use SwoftTest\Redis\Unit\RedisTestCase;
+use function count;
 
 /**
  * Class MultiTest
  *
  * @since 2.0
  */
-class MultiTest extends TestCase
+class MultiTest extends RedisTestCase
 {
-    public function testPipeline()
+    public function testPipeline(): void
     {
         $count = 100;
 
         for ($i = 0; $i < $count; $i++) {
-            $result = Redis::pipeline(function (\Redis $redis) use ($count) {
+            $result = Redis::pipeline(function (\Redis $redis) use ($count): void {
                 for ($i = 0; $i < $count; $i++) {
                     $redis->set("key:$i", $i);
                 }
             });
 
-            $this->assertEquals(\count($result), $count);
+            $this->assertEquals(count($result), $count);
 
             foreach ($result as $index => $value) {
                 $this->assertTrue($value);
             }
         }
-
     }
 
-    public function testTransaction()
+    public function testTransaction(): void
     {
         $count  = 2;
-        $result = Redis::transaction(function (\Redis $redis) use ($count) {
+        $result = Redis::transaction(function (\Redis $redis) use ($count): void {
             for ($i = 0; $i < $count; $i++) {
                 $key = "key:$i";
                 $redis->set($key, $i);
@@ -58,7 +64,7 @@ class MultiTest extends TestCase
          * }
          */
 
-        $this->assertEquals(\count($result), $count * 2);
+        $this->assertEquals(count($result), $count * 2);
 
         foreach ($result as $index => $value) {
             if ($index % 2 == 0) {

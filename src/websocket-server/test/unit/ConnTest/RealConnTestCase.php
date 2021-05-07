@@ -27,7 +27,7 @@ abstract class RealConnTestCase extends TestCase
 
     protected $port = 28308;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

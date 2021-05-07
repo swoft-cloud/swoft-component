@@ -1,4 +1,13 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
+
 if (!function_exists('value')) {
     /**
      * Return the callback value
@@ -53,7 +62,7 @@ if (!function_exists('printr')) {
      *
      * @param mixed ...$vars
      */
-    function printr(...$vars)
+    function printr(...$vars): void
     {
         $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
 
@@ -78,7 +87,7 @@ if (!function_exists('vdump')) {
      *
      * @param mixed ...$vars
      */
-    function vdump(...$vars)
+    function vdump(...$vars): void
     {
         $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
 

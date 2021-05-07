@@ -57,7 +57,7 @@ class RouterTest extends TestCase
         $this->assertContains('name', $r1->getPathVars());
         $this->assertContains('age', $r1->getPathVars());
         $this->assertArrayHasKey('age', $r1->getBindVars());
-        $this->assertContains('GET     /my[/{name}[/{age}]]', (string)$r1);
+        $this->assertStringContainsString('GET     /my[/{name}[/{age}]]', (string)$r1);
 
         foreach (Router::METHODS_ARRAY as $method) {
             $r->$method("/$method", "handle_$method");
@@ -66,14 +66,14 @@ class RouterTest extends TestCase
         $string = (string)$r;
         foreach (Router::METHODS_ARRAY as $method) {
             $s = sprintf('%-7s %-25s --> %s', $method, "/$method", "handle_$method");
-            $this->assertContains($s, $string);
+            $this->assertStringContainsString($s, $string);
         }
 
         $r->add('ANY', '/any', 'handler_any');
         $string = $r->toString();
         foreach (Router::METHODS_ARRAY as $method) {
             $s = sprintf('%-7s %-25s --> %s', $method, '/any', 'handler_any');
-            $this->assertContains($s, $string);
+            $this->assertStringContainsString($s, $string);
         }
 
         $this->expectExceptionMessage('The method and route handler is not allow empty.');
@@ -82,7 +82,7 @@ class RouterTest extends TestCase
         try {
             $r->add('invalid', '/path', '/handler');
         } catch (Throwable $e) {
-            $this->assertContains('The method [INVALID] is not supported', $e->getMessage());
+            $this->assertStringContainsString('The method [INVALID] is not supported', $e->getMessage());
         }
     }
 

@@ -1,7 +1,7 @@
 {
   "name": "swoft/log",
   "type": "library",
-  "version": "v2.0.10",
+  "version": "v2.0.11",
   "keywords": [
     "php",
     "swoole",
@@ -26,7 +26,7 @@
   },
   "require-dev": {
     "swoft/swoole-ide-helper": "dev-master",
-    "phpunit/phpunit": "^7.5"
+    "phpunit/phpunit": "^7.5 || ^8.0"
   },
   "autoload-dev": {
     "psr-4": {

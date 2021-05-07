@@ -23,27 +23,17 @@ use SwoftTest\Validator\Testing\Validator\UserValidator;
  */
 class UserValidatorTest extends TestCase
 {
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage Start(fb5566f7d8580b4162f38d3c232582ae) must less than end
-     *
-     * @throws ValidatorException
-     */
     public function testUserFail(): void
     {
         $data = [
             'start' => 123,
             'end'   => 121
         ];
+        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectExceptionMessage('Start(fb5566f7d8580b4162f38d3c232582ae) must less than end');
         (new Validator())->validateRequest($data, $this->getValidates(ValidateUser::class, 'testUser'));
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage Start(fb5566f7d8580b4162f38d3c232582ae) must less than end
-     *
-     * @throws ValidatorException
-     */
     public function testUserFail2(): void
     {
         $data = [
@@ -57,6 +47,9 @@ class UserValidatorTest extends TestCase
                 'name'
             ]
         ];
+
+        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
+        $this->expectExceptionMessage('Start(fb5566f7d8580b4162f38d3c232582ae) must less than end');
         (new Validator())->validate($data, UserBaseValidate::class, [], $users);
     }
 

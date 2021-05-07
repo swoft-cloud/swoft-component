@@ -47,8 +47,9 @@ class PropertyInjection
      */
     public function __construct(string $propertyName, $value, bool $isRef)
     {
-        $this->isRef        = $isRef;
-        $this->value        = $value;
+        $this->isRef = $isRef;
+        $this->value = $value;
+
         $this->propertyName = $propertyName;
     }
 

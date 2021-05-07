@@ -29,111 +29,89 @@ class ValidatorTypeTest extends TestCase
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testArray'));
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage int must exist!
-     *
-     * @throws ValidatorException
-     */
     public function testIntType(): void
     {
         $data = [];
+
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('int must exist!');
+
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testInt'));
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage bool must exist!
-     *
-     * @throws ValidatorException
-     */
     public function testBoolType(): void
     {
         $data = [];
+
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('bool must exist!');
+
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testBool'));
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage string must exist!
-     *
-     * @throws ValidatorException
-     */
     public function testStringType(): void
     {
         $data = [];
+
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('string must exist!');
+
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testString'));
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage float must exist!
-     *
-     * @throws ValidatorException
-     */
     public function testFloatType(): void
     {
         $data = [];
+
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('float must exist!');
+
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testFloat'));
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage array message
-     *
-     * @throws ValidatorException
-     */
     public function testArrayTypeMessage(): void
     {
         $data = [];
+
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('array message');
+
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testArrayMessage'));
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage int message
-     *
-     * @throws ValidatorException
-     */
     public function testIntTypeMessage(): void
     {
         $data = [];
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('int message');
+
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testIntMessage'));
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage bool message
-     *
-     * @throws ValidatorException
-     */
     public function testBoolTypeMessage(): void
     {
         $data = [];
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('bool message');
+
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testBoolMessage'));
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage string message
-     *
-     * @throws ValidatorException
-     */
     public function testStringTypeMessage(): void
     {
         $data = [];
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('string message');
+
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testStringMessage'));
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage float message
-     *
-     * @throws ValidatorException
-     */
     public function testFloatTypeMessage(): void
     {
         $data = [];
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('float message');
+
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testFloatMessage'));
     }
 
@@ -166,73 +144,59 @@ class ValidatorTypeTest extends TestCase
         $this->assertEquals(['swoftName' => 'swoft'], $result);
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage swoftName must string!
-     *
-     * @throws ValidatorException
-     */
     public function testFailName(): void
     {
         $data = [
             'swoftName' => 12
         ];
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('swoftName must string!');
+
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testName'));
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage int must exist!
-     *
-     * @throws ValidatorException
-     */
     public function testIntTypeQuery(): void
     {
         $data = [
             'int' => 1,
         ];
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('int must exist!');
+
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testIntQuery'));
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage bool must exist!
-     *
-     * @throws ValidatorException
-     */
     public function testBoolTypeQuery(): void
     {
         $data = [
             'bool' => false
         ];
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('bool must exist!');
+
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testBoolQuery'));
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage string must exist!
-     *
-     * @throws ValidatorException
-     */
     public function testStringTypeQuery(): void
     {
         $data = [
             'string' => 'string'
         ];
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('string must exist!');
+
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testStringQuery'));
     }
 
-    /**
-     * @expectedException Swoft\Validator\Exception\ValidatorException
-     * @expectedExceptionMessage float must exist!
-     *
-     * @throws ValidatorException
-     */
     public function testFloatTypeQuery(): void
     {
         $data = [
             'float' => 1.1
         ];
+
+        $this->expectException(ValidatorException::class);
+        $this->expectExceptionMessage('float must exist!');
+
         (new Validator())->validateRequest($data, $this->getValidates(ValidateDemo::class, 'testFloatQuery'));
     }
 

@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Redis\Connector;
 
@@ -37,12 +44,13 @@ class PhpRedisConnector implements ConnectorInterface
             $client->auth($config['password']);
         }
 
-        if (!empty($config['database'])) {
+        if (isset($config['database'])) {
             $client->select($config['database']);
         }
 
+        // - read_timeout: float, value in seconds (optional, default is 0 meaning unlimited)
         if (!empty($config['read_timeout'])) {
-            $client->setOption(Redis::OPT_READ_TIMEOUT, (string)$config['read_timeout']);
+            $client->setOption(Redis::OPT_READ_TIMEOUT, (float)$config['read_timeout']);
         }
 
         if (!empty($option['prefix'])) {
@@ -50,14 +58,50 @@ class PhpRedisConnector implements ConnectorInterface
         }
 
         if (!empty($option['serializer'])) {
-            $client->setOption(Redis::OPT_SERIALIZER, (string)$option['serializer']);
+            $client->setOption(Redis::OPT_SERIALIZER, (int)$option['serializer']);
         }
 
-        if (!empty($option['scan'])) {
-            $client->setOption(Redis::OPT_SCAN, (string)$option['scan']);
+        if (!empty($option['tcp_keepalive'])) {
+            $client->setOption(Redis::OPT_TCP_KEEPALIVE, $option['tcp_keepalive']);
+        }
+
+        if (isset($option['scan'])) {
+            $client->setOption(Redis::OPT_SCAN, (int)$option['scan']);
         }
 
         return $client;
+    }
+
+    /**
+     * Establish a connection with the Redis host.
+     *
+     * @param Redis $client
+     * @param array $config
+     *
+     * @return void
+     * @throws RedisException
+     */
+    protected function establishConnection(Redis $client, array $config): void
+    {
+        $parameters = [
+            $config['host'],
+            $config['port'],
+            (float)$config['timeout'], // timeout: float, value in seconds (optional, default is 0 meaning unlimited)
+            '',
+            $config['retry_interval'],
+        ];
+
+        // - read_timeout: float, value in seconds (optional, default is 0 meaning unlimited)
+        if (version_compare(phpversion('redis'), '3.1.3', '>=')) {
+            $parameters[] = (float)$config['read_timeout'];
+        }
+
+        $result = $client->connect(...$parameters);
+        if ($result === false) {
+            throw new RedisException(
+                sprintf('Redis connect error(%s)', JsonHelper::encode($parameters, JSON_UNESCAPED_UNICODE))
+            );
+        }
     }
 
     /**
@@ -71,13 +115,15 @@ class PhpRedisConnector implements ConnectorInterface
      */
     public function connectToCluster(array $config, array $option): RedisCluster
     {
-        $servers     = array_map([$this, 'buildClusterConnectionString'], $config);
-        $servers     = array_values($servers);         // Create a cluster setting two nodes as seeds
+        $servers = array_map([$this, 'buildClusterConnectionString'], $config);
+        $servers = array_values($servers); // Create a cluster setting two nodes as seeds
+
         $readTimeout = $option['read_timeout'] ?? 0;
-        $timeout     = $option['timeout'] ?? 0;
         $persistent  = $option['persistent'] ?? false; // persistent connections to each node
-        $name        = $option['name'] ?? null;
-        $auth        = $option['auth'] ?? '';          // Connect with cluster using password.
+
+        $timeout = $option['timeout'] ?? 0;
+        $name    = $option['name'] ?? null;
+        $auth    = $option['auth'] ?? ''; // Connect with cluster using password.
 
         $parameters = compact('name', 'servers', 'timeout', 'readTimeout', 'persistent');
         $parameters = array_values($parameters);
@@ -105,8 +151,8 @@ class PhpRedisConnector implements ConnectorInterface
             $redisCluster->setOption(RedisCluster::OPT_PREFIX, $option['prefix']);
         }
 
-        if (!empty($option['serializer'])) {
-            $redisCluster->setOption(RedisCluster::OPT_SERIALIZER, (string)$option['serializer']);
+        if (isset($option['serializer'])) {
+            $redisCluster->setOption(RedisCluster::OPT_SERIALIZER, (int)$option['serializer']);
         }
 
         if (!empty($option['scan'])) {
@@ -142,36 +188,5 @@ class PhpRedisConnector implements ConnectorInterface
         }
 
         return $base;
-    }
-
-    /**
-     * Establish a connection with the Redis host.
-     *
-     * @param Redis $client
-     * @param array $config
-     *
-     * @return void
-     * @throws RedisException
-     */
-    protected function establishConnection(Redis $client, array $config): void
-    {
-        $parameters = [
-            $config['host'],
-            $config['port'],
-            $config['timeout'],
-            '',
-            $config['retry_interval'],
-        ];
-
-        if (version_compare(phpversion('redis'), '3.1.3', '>=')) {
-            $parameters[] = $config['read_timeout'];
-        }
-
-        $result = $client->connect(...$parameters);
-        if ($result === false) {
-            throw new RedisException(
-                sprintf('Redis connect error(%s)', JsonHelper::encode($parameters, JSON_UNESCAPED_UNICODE))
-            );
-        }
     }
 }

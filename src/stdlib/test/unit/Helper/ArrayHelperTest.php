@@ -1,20 +1,28 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\Stdlib\Unit\Helper;
 
 use PHPUnit\Framework\TestCase;
 use Swoft\Stdlib\Helper\ArrayHelper;
+use stdClass;
 
 /**
  * Class FileHelperTest
  */
 class ArrayHelperTest extends TestCase
 {
-
     public function testToArray(): void
     {
-        $obj              = new \stdClass();
-        $objSub           = new \stdClass();
+        $obj              = new stdClass();
+        $objSub           = new stdClass();
         $objSub->version  = '2.0';
         $objSub->url      = 'https://www.swoft.org';
         $obj->name        = 'swoft';
@@ -117,7 +125,6 @@ class ArrayHelperTest extends TestCase
         $rs2 = ArrayHelper::pull($arr, 'g', 9);
         $this->assertSame(9, $rs2);
     }
-
 
     public function testIndex(): void
     {
@@ -224,7 +231,6 @@ class ArrayHelperTest extends TestCase
             ['id' => 3],
             ['id' => 5],
         ], $arr);
-
     }
 
     public function testIsAssociative(): void
@@ -394,7 +400,6 @@ class ArrayHelperTest extends TestCase
         $this->assertSame(['a'], $arr2);
     }
 
-
     public function testIsArrayable(): void
     {
         $arr = ['a'];
@@ -559,6 +564,4 @@ class ArrayHelperTest extends TestCase
         $rs  = ArrayHelper::shuffle($arr);
         $this->assertTrue(count($arr) === count($rs));
     }
-
-
 }

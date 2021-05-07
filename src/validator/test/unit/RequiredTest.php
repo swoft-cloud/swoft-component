@@ -15,14 +15,12 @@ use SwoftTest\Validator\Testing\ValidatorRequired;
 
 class RequiredTest extends TestCase
 {
-    /**
-     * @expectedException \Swoft\Validator\Exception\ValidatorException
-     */
     public function testRequiredFailed(): void
     {
         // 断言异常出现
         $validator = new Validator();
         $validates = $this->getValidates(ValidatorRequired::class, 'testRequired');
+        $this->expectException(\Swoft\Validator\Exception\ValidatorException::class);
         $validator->validateRequest([], $validates);
     }
 

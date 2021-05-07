@@ -33,7 +33,7 @@ final class Swoft
     /**
      * Swoft version
      */
-    public const VERSION = '2.0.10';
+    public const VERSION = '2.0.11';
 
     /**
      * Swoft terminal logo
