@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Stdlib\Helper;
 
@@ -42,7 +50,7 @@ class PhpHelper
             // className::method
             if (strpos($cb, '::') > 0) {
                 $cb = explode('::', $cb, 2);
-                // function
+            // function
             } elseif (function_exists($cb)) {
                 return $cb(...$args);
             }
@@ -154,8 +162,15 @@ class PhpHelper
             return sprintf('%s %s(code:%d) %s', $title, $errClass, $e->getCode(), $e->getMessage());
         }
 
-        return sprintf('%s%s(code:%d): %s At %s line %d', $title ? $title . ' - ' : '', $errClass, $e->getCode(),
-            $e->getMessage(), $e->getFile(), $e->getLine());
+        return sprintf(
+            '%s%s(code:%d): %s At %s line %d',
+            $title ? $title . ' - ' : '',
+            $errClass,
+            $e->getCode(),
+            $e->getMessage(),
+            $e->getFile(),
+            $e->getLine()
+        );
     }
 
     /**

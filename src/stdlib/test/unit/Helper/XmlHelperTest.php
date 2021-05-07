@@ -1,4 +1,12 @@
-<?php declare (strict_types=1);
+<?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\Stdlib\Unit\Helper;
 
@@ -7,43 +15,43 @@ use Swoft\Stdlib\Helper\XmlHelper;
 
 class XmlHelperTest extends TestCase
 {
-    public function testArrayToXml()
+    public function testArrayToXml(): void
     {
         $arr = [];
-        $xml = "";
+        $xml = '';
         $res = XmlHelper::arrayToXml($arr);
         $this->assertTrue(is_string($res));
         $this->assertSame($xml, $res);
 
-        $arr = ['a' => 'aaa', 'b' => ['c' => '1234', 'd' => ""]];
-        $xml = "<a><![CDATA[aaa]]></a><b><c>1234</c><d><![CDATA[]]></d></b>";
+        $arr = ['a' => 'aaa', 'b' => ['c' => '1234', 'd' => '']];
+        $xml = '<a><![CDATA[aaa]]></a><b><c>1234</c><d><![CDATA[]]></d></b>';
         $res = XmlHelper::arrayToXml($arr);
         $this->assertTrue(is_string($res));
         $this->assertSame($xml, $res);
     }
 
-    public function testXmlToArray()
+    public function testXmlToArray(): void
     {
-        $xml = "";
+        $xml = '';
         $res = XmlHelper::xmlToArray($xml);
         $this->assertEquals(0, count($res));
 
         $arr = [
-            "note" => [
-                "to"      => "Tove",
-                "form"    => "Jani",
-                "heading" => "Reminder",
-                "body"    => "Don't forget me this weekend!"
+            'note' => [
+                'to'      => 'Tove',
+                'form'    => 'Jani',
+                'heading' => 'Reminder',
+                'body'    => "Don't forget me this weekend!"
             ]
         ];
         $xml = "<xml><note><to>Tove</to><from>Jani</from><heading>Reminder</heading><body>Don't forget me this weekend!</body></note></xml>";
         $res = XmlHelper::xmlToArray($xml);
         $this->assertTrue(isset($res['note']));
         $this->assertEquals(count($arr['note']), count($res['note']));
-        $this->assertSame("Tove", $res['note']['to']);
+        $this->assertSame('Tove', $res['note']['to']);
     }
 
-    public function testXmlExample2()
+    public function testXmlExample2(): void
     {
         $xml = '<xml><ToUserName><![CDATA[gh_43428a37b583]]></ToUserName>
 <FromUserName><![CDATA[ou41P1fSXSdAkgzqgbfIITaTE9SY]]></FromUserName>

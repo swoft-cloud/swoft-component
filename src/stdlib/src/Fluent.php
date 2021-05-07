@@ -1,8 +1,14 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Stdlib;
-
 
 use ArrayAccess;
 use JsonSerializable;
@@ -19,7 +25,6 @@ use function json_encode;
  */
 class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
 {
-
     /**
      * All of the attributes set on the fluent instance.
      *
@@ -184,7 +189,7 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
      *
      * @return void
      */
-    public function __set($key, $value)
+    public function __set($key, $value): void
     {
         $this->offsetSet($key, $value);
     }
@@ -208,7 +213,7 @@ class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
      *
      * @return void
      */
-    public function __unset($key)
+    public function __unset($key): void
     {
         $this->offsetUnset($key);
     }

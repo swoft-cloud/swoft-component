@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Stdlib\Helper;
 
@@ -957,8 +965,10 @@ class ArrayHelper
         }
 
         foreach (explode('.', $key) as $segment) {
-            if ((is_array($array) && array_key_exists($segment,
-                        $array)) || ($array instanceof ArrayAccess && $array->offsetExists($segment))
+            if ((is_array($array) && array_key_exists(
+                $segment,
+                $array
+            )) || ($array instanceof ArrayAccess && $array->offsetExists($segment))
             ) {
                 $array = $array[$segment];
             } else {
