@@ -1,4 +1,15 @@
-<?php
+<?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
+
+const TEST_RDS_HOST = '127.0.0.1';
+const TEST_RDS_PORT = 16379;
 
 return [
     'config'              => [
@@ -6,8 +17,8 @@ return [
     ],
     'redis'               => [
         'class'         => \Swoft\Redis\RedisDb::class,
-        'host'          => '127.0.0.1',
-        'port'          => 16379,
+        'host'          => TEST_RDS_HOST,
+        'port'          => TEST_RDS_PORT,
         'database'      => 0,
         'retryInterval' => 10,
         'readTimeout'   => 0,
@@ -64,8 +75,8 @@ return [
     // inc redis
     'inc'                 => [
         'class'         => \Swoft\Redis\RedisDb::class,
-        'host'          => '127.0.0.1',
-        'port'          => 16379,
+        'host'          => TEST_RDS_HOST,
+        'port'          => TEST_RDS_PORT,
         'database'      => 0,
         'retryInterval' => 10,
         'readTimeout'   => 0,

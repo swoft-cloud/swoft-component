@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Redis;
 
@@ -49,7 +57,7 @@ use Throwable;
  * @method static float incrByFloat(string $key, float $increment)
  * @method static array info(string $option = null)
  * @method static string|bool lGet(string $key, int $index)
- * @method static int lInsert(string $key, int $position, string $pivot, string $value)
+ * @method static int lInsert(string $key, int|string $position, string $pivot, string $value)
  * @method static string|bool lPop(string $key)
  * @method static int|bool lPush(string $key, string $value1, string $value2 = null, string $valueN = null)
  * @method static int|bool lPushx(string $key, string $value)

@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Redis\Connection;
 
@@ -265,7 +273,7 @@ abstract class Connection extends AbstractConnection implements ConnectionInterf
             $this->release();
         } catch (Throwable $e) {
             if (!$reconnect && $this->reconnect()) {
-                \vdump($e->getMessage(),  $this->client->getLastError());
+                vdump($e->getMessage(), $this->client->getLastError());
                 return $this->command($method, $parameters, true);
             }
 

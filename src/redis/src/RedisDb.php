@@ -1,4 +1,12 @@
 <?php declare(strict_types=1);
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace Swoft\Redis;
 
@@ -63,6 +71,9 @@ class RedisDb
     private $retryInterval = 10;
 
     /**
+     * read timeout
+     * - float, value in seconds (optional, default is 0 meaning unlimited)
+     *
      * @var int
      */
     private $readTimeout = 0;
@@ -76,6 +87,7 @@ class RedisDb
      * [
      *     'serializer ' => Redis::SERIALIZER_PHP/Redis::SERIALIZER_NONE/Redis::SERIALIZER_IGBINARY,
      *     'prefix' => 'xxx',
+     *     'tcp_keepalive' => , // see Redis::TCP_KEEPALIVE
      * ]
      */
     private $option = [];
@@ -133,7 +145,7 @@ class RedisDb
         $connector  = $connectors[$this->driver] ?? null;
 
         if (!$connector instanceof ConnectorInterface) {
-            throw new RedisException(sprintf('Connector(dirver=%s) is not exist', $this->driver));
+            throw new RedisException(sprintf('Connector(driver=%s) is not exist', $this->driver));
         }
 
         return $connector;
@@ -196,7 +208,7 @@ class RedisDb
      */
     public function getPort(): int
     {
-        return (int)$this->port;
+        return $this->port;
     }
 
     /**
@@ -204,7 +216,7 @@ class RedisDb
      */
     public function getDatabase(): int
     {
-        return (int)$this->database;
+        return $this->database;
     }
 
     /**
@@ -212,7 +224,7 @@ class RedisDb
      */
     public function getTimeout(): float
     {
-        return (int)$this->timeout;
+        return $this->timeout;
     }
 
     /**

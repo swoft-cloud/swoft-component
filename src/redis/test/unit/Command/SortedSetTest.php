@@ -1,22 +1,29 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\Redis\Unit\Command;
 
-
 use Swoft\Redis\Redis;
-use SwoftTest\Redis\Unit\TestCase;
+use SwoftTest\Redis\Unit\RedisTestCase;
+use function uniqid;
 
 /**
  * Class SortedSetTest
  *
  * @since 2.0
  */
-class SortedSetTest extends TestCase
+class SortedSetTest extends RedisTestCase
 {
-    public function testZadd()
+    public function testZadd(): void
     {
-        $key    = \uniqid();
+        $key    = $this->uniqId();
         $scores = [
             'key1' => 11,
             'key3' => 11,
@@ -28,12 +35,10 @@ class SortedSetTest extends TestCase
         $result = Redis::zAdd($key, $scores);
 
         $this->assertEquals($result, \count($scores));
-
     }
 
-    public function testKeyScoresAdd()
+    public function testKeyScoresAdd(): void
     {
-
         $key    = __FUNCTION__;
         Redis::del($key);
 
@@ -50,7 +55,7 @@ class SortedSetTest extends TestCase
         $this->assertEquals($result1, count($scores1));
     }
 
-    public function testZrem()
+    public function testZrem(): void
     {
         $key    = __FUNCTION__;
         Redis::del($key);
@@ -62,11 +67,11 @@ class SortedSetTest extends TestCase
         ];
 
         Redis::zAdd($key, $scores);
-        $res = Redis::zRem($key,  'key22');
+        $res = Redis::zRem($key, 'key22');
         $this->assertEquals(1, $res);
     }
 
-    public function testRange()
+    public function testRange(): void
     {
         $key = __FUNCTION__ . 'hah';
         Redis::del($key);

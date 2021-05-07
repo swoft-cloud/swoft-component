@@ -1,28 +1,34 @@
 <?php declare(strict_types=1);
-
+/**
+ * This file is part of Swoft.
+ *
+ * @link     https://swoft.org
+ * @document https://swoft.org/docs
+ * @contact  group@swoft.org
+ * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
+ */
 
 namespace SwoftTest\Redis\Unit\Command;
 
-
 use Swoft\Redis\Redis;
-use SwoftTest\Redis\Unit\TestCase;
+use SwoftTest\Redis\Unit\RedisTestCase;
 
 /**
  * Class StringTest
  *
  * @since 2.0
  */
-class StringTest extends TestCase
+class StringTest extends RedisTestCase
 {
-    public function testSet()
+    public function testSet(): void
     {
-        $key    = \uniqid();
-        $result = Redis::set($key, \uniqid());
+        $key    = $this->uniqId();
+        $result = Redis::set($key, $this->uniqId());
         $this->assertTrue($result);
 
         $ttl    = 100;
-        $ttlKey = \uniqid();
-        Redis::set($ttlKey, uniqid(), $ttl);
+        $ttlKey = $this->uniqId();
+        Redis::set($ttlKey, $this->uniqId(), $ttl);
 
         $getTtl = Redis::ttl($ttlKey);
         $this->assertGreaterThan($ttl / 2, $getTtl);
@@ -31,9 +37,9 @@ class StringTest extends TestCase
         Redis::get($key);
     }
 
-    public function testGet()
+    public function testGet(): void
     {
-        $value = \uniqid();
+        $value = $this->uniqId();
         $key   = $this->setKey($value);
 
         $getValue = Redis::get($key);
@@ -41,9 +47,9 @@ class StringTest extends TestCase
         $this->assertEquals($value, $getValue);
     }
 
-    public function testArray()
+    public function testArray(): void
     {
-        $key = \uniqid();
+        $key = $this->uniqId();
 
         $setData = [
             'goods' => ['goods_id' => 1, 'goods_name' => 'iPhone xx']
@@ -53,9 +59,9 @@ class StringTest extends TestCase
         $this->assertEquals($setData, Redis::get($key));
     }
 
-    public function testInc()
+    public function testInc(): void
     {
-        $key = \uniqid();
+        $key = $this->uniqId();
 
         $redis = Redis::connection('redis.inc.pool');
 
@@ -65,12 +71,12 @@ class StringTest extends TestCase
         $this->assertEquals(3, $redis->get($key));
     }
 
-    public function testMsetAndMget()
+    public function testMsetAndMget(): void
     {
-        $key    = ':mset:' . \uniqid();
-        $value  = [\uniqid()];
-        $key2   = ':mset:' . \uniqid();
-        $value2 = [\uniqid()];
+        $key    = ':mset:' . $this->uniqId();
+        $value  = [$this->uniqId()];
+        $key2   = ':mset:' . $this->uniqId();
+        $value2 = [$this->uniqId()];
 
         $keys = [
             $key  => $value,
@@ -93,7 +99,7 @@ class StringTest extends TestCase
         $this->assertEquals($values, $keys);
     }
 
-    public function testBit()
+    public function testBit(): void
     {
         Redis::setBit('user:sign' . date('ymd'), 16, false);
         $this->assertTrue(true);
