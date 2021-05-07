@@ -34,7 +34,7 @@ $rules = [
     'void_return' => true, // add :void for method
 ];
 
-return PhpCsFixer\Config::create()
+return (new PhpCsFixer\Config())
     ->setRiskyAllowed(true)
     ->setRules($rules)
     ->setFinder(
