@@ -2,7 +2,9 @@
 
 namespace SwoftTest\Rpc\Client\Testing\Lib;
 
-
+/**
+ * interface RpcReadOldCallInterface
+ */
 interface RpcReadOldCallInterface
 {
     /**
