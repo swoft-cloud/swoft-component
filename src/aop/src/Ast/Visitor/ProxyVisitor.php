@@ -86,10 +86,15 @@ class ProxyVisitor extends Visitor
      *
      * @param Node $node
      *
-     * @return int|Node|null]
+     * @return int|Node|null
      */
     public function enterNode(Node $node)
     {
+        // Anonymous classes
+        if(!isset($node->name)) {
+            return null;
+        }
+        
         // Namespace for proxy class name
         if ($node instanceof Node\Stmt\Namespace_) {
             $this->namespace = $node->name->toString();
