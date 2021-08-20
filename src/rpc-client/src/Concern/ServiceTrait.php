@@ -130,6 +130,11 @@ trait ServiceTrait
         if ($result === false || empty($result)) {
             // Has been reconnected OR receive date timeout
             if ($reconnect || $connection->getErrCode() === SOCKET_ETIMEDOUT) {
+                // fix: reusing use the connection will read old response data.
+                if ($connection->getErrCode() === SOCKET_ETIMEDOUT) {
+                    $connection->reconnect();
+                }
+
                 $message = sprintf($message, $connection->getErrCode(), $connection->getErrMsg());
                 throw new RpcClientException($message);
             }
