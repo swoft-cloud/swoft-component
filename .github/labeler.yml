@@ -73,3 +73,7 @@ kind/validator:
 # add label for 'websocket-server' component
 kind/websocket-server:
   - src/websocket-server/**/*
+# add label for update deps
+kind/deps:
+  - composer.json
+  - composer.lock
