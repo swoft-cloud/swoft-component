@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php declare (strict_types = 1);
 
 namespace Swoft\Db\Connection;
 
@@ -20,10 +20,9 @@ use Swoft\Db\Pool;
 use Swoft\Db\Query\Expression;
 use Swoft\Db\Query\Grammar\Grammar;
 use Swoft\Db\Query\Processor\Processor;
-use Swoft\Stdlib\Helper\StringHelper;
 use Swoft\Log\Helper\CLog;
+use Swoft\Stdlib\Helper\StringHelper;
 use Throwable;
-use function bean;
 
 /**
  * Class Connection
@@ -122,7 +121,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      */
     public function initialize(Pool $pool, Database $database): void
     {
-        $this->pool     = $pool;
+        $this->pool = $pool;
         $this->database = $database;
         $this->lastTime = time();
 
@@ -215,7 +214,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     {
         try {
             switch ($this->pdoType) {
-                case  self::TYPE_WRITE;
+                case self::TYPE_WRITE;
                     $this->createPdo();
                     break;
                 case self::TYPE_READ;
@@ -533,12 +532,13 @@ class Connection extends AbstractConnection implements ConnectionInterface
     public function insertGetIdStatement(string $query, array $bindings = [], string $sequence = null): string
     {
         return $this->run($query, $bindings, function ($query, $bindings) use ($sequence) {
-            $statement = $this->getPdo()->prepare($query);
+            $pdo = $this->getPdo();
+            $statement = $pdo->prepare($query);
 
             $this->bindValues($statement, $this->prepareBindings($bindings));
             $statement->execute();
 
-            return $this->getPdo()->lastInsertId($sequence);
+            return $pdo->lastInsertId($sequence);
         });
     }
 
@@ -580,7 +580,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
      */
     public function unprepared(string $query): bool
     {
-        return (bool)$this->run($query, [], function ($query) {
+        return (bool) $this->run($query, [], function ($query) {
 
             return $this->getPdo()->exec($query);
         });
@@ -604,7 +604,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
             if ($value instanceof DateTimeInterface) {
                 $bindings[$key] = $value->format($grammar->getDateFormat());
             } elseif (is_bool($value)) {
-                $bindings[$key] = (int)$value;
+                $bindings[$key] = (int) $value;
             }
         }
 
@@ -680,7 +680,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
                 $this->releaseOrRemove();
 
                 // Throw exception
-                throw new DbException($e->getMessage(), (int)$e->getCode(), $e);
+                throw new DbException($e->getMessage(), (int) $e->getCode(), $e);
             }
 
             // If an exception occurs when attempting to run a query, we'll format the error
@@ -698,7 +698,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
             CLog::error('Fail err=<error>%s</error> sql=%s', $e->getMessage(), $rawSql);
 
             // Throw exception
-            throw new DbException($e->getMessage(), (int)$e->getCode(), $e);
+            throw new DbException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
         $this->pdoType = self::TYPE_DEFAULT;
@@ -732,7 +732,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
             } elseif ($value === null) {
                 $param = 'NULL';
             } else {
-                $param = (string)$value;
+                $param = (string) $value;
             }
 
             $sql = StringHelper::replaceFirst($name, $param, $sql);
@@ -740,7 +740,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
 
         return $sql;
     }
-
 
     /**
      * Whether to reconnect
@@ -774,7 +773,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     protected function prepared(PDOStatement $statement): PDOStatement
     {
         if (!$this->fetchMode) {
-            $config          = $this->database->getConfig();
+            $config = $this->database->getConfig();
             $this->fetchMode = $config['fetchMode'] ?? self::DEFAULT_FETCH_MODE;
         }
 
@@ -932,6 +931,12 @@ class Connection extends AbstractConnection implements ConnectionInterface
     public function getPdo(): PDO
     {
         $this->pdoType = self::TYPE_WRITE;
+
+        // check pdo connection is alive or not
+        if (false === $this->pingPdo($this->pdo)) {
+            $this->reconnect();
+        }
+
         return $this->pdo;
     }
 
@@ -952,7 +957,35 @@ class Connection extends AbstractConnection implements ConnectionInterface
         }
 
         $this->pdoType = self::TYPE_READ;
+
+        // check pdo connection is alive or not
+        if (false === $this->pingPdo($this->readPdo)) {
+            $this->reconnect();
+        }
+
         return $this->readPdo;
+    }
+
+    /**
+     * Check PDO connection is alive or not
+     *
+     * @param PDO $pdo
+     * @return boolean
+     */
+    private function pingPdo(PDO $pdo): bool
+    {
+        try {
+            if (!is_object($pdo) || !method_exists($pdo, 'query')) {
+                return false;
+            }
+
+            // do ping
+            $pdo->query('do 1');
+        } catch (\Throwable $th) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -1063,7 +1096,6 @@ class Connection extends AbstractConnection implements ConnectionInterface
         return BeanFactory::getBean(ConnectionManager::class);
     }
 
-
     /**
      * Create pdo
      *
@@ -1072,7 +1104,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     private function createPdo()
     {
         $writes = $this->database->getWrites();
-        $write  = $writes[array_rand($writes)];
+        $write = $writes[array_rand($writes)];
 
         $dsn = $write['dsn'];
         $this->parseDbName($dsn);
@@ -1128,7 +1160,7 @@ class Connection extends AbstractConnection implements ConnectionInterface
     private function selectDb(PDO $pdo, string $dbname): void
     {
         $useStmt = sprintf('use %s', $dbname);
-        $result  = $pdo->exec($useStmt);
+        $result = $pdo->exec($useStmt);
         if ($result !== false) {
             return;
         }
