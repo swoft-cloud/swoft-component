@@ -78,7 +78,7 @@ trait HasAttributes
      */
     public function getArrayableAttributes(): array
     {
-        return array_merge($this->modelAttributes, $this->getModelAttributes());
+        return array_merge($this->getModelAttributes(), $this->modelAttributes);
     }
 
     /**
@@ -186,7 +186,7 @@ trait HasAttributes
      * Get the value of an attribute using its mutator.
      *
      * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @return mixed
      */
@@ -242,7 +242,7 @@ trait HasAttributes
      * Set the value of an attribute using its mutator.
      *
      * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @return mixed
      */
@@ -258,7 +258,7 @@ trait HasAttributes
      * Set a given JSON attribute on the model.
      *
      * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @return $this
      */
@@ -278,7 +278,7 @@ trait HasAttributes
      *
      * @param string $path
      * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
      *
      * @return array
      */
@@ -321,7 +321,7 @@ trait HasAttributes
      * Decode the given JSON back into an array or object.
      *
      * @param string $value
-     * @param bool   $asObject
+     * @param bool $asObject
      *
      * @return mixed
      */
@@ -390,7 +390,7 @@ trait HasAttributes
      * Set the array of model attributes. No checking is done.
      *
      * @param array $attributes
-     * @param bool  $sync
+     * @param bool $sync
      *
      * @return $this
      * @throws DbException
@@ -417,7 +417,7 @@ trait HasAttributes
      * Get safe model attributes
      *
      * @param array $attributes
-     * @param bool  $encode
+     * @param bool $encode
      *
      * @return array
      */
@@ -478,7 +478,7 @@ trait HasAttributes
      * Get the model's original attribute values.
      *
      * @param string|null $key
-     * @param mixed       $default
+     * @param mixed $default
      *
      * @return mixed|array
      */
@@ -606,7 +606,7 @@ trait HasAttributes
     /**
      * Determine if the given attributes were changed.
      *
-     * @param array             $changes
+     * @param array $changes
      * @param array|string|null $attributes
      *
      * @return bool
@@ -660,7 +660,7 @@ trait HasAttributes
      * Determine if the new and old values for a given key are equivalent.
      *
      * @param string $key
-     * @param mixed  $current
+     * @param mixed $current
      *
      * @return bool
      */
@@ -670,7 +670,7 @@ trait HasAttributes
             return false;
         }
 
-        $original = $this->getModelOriginal($key);
+        $original = $this->getModelAttribute($key);
 
         if ($current === $original) {
             return true;
