@@ -939,6 +939,22 @@ class Grammar extends BaseGrammar
         // Take the first value as columns
         $columns = array_keys(current($values));
 
+        $quoteValue = function ($value) use ($query) {
+            if (is_null($value)) {
+                return 'NULL';
+            }
+
+            if (is_bool($value)) {
+                return (int) $value;
+            }
+
+            if (is_int($value)) {
+                return $value;
+            }
+
+            return $query->getConnection()->getPdo()->quote($value);
+        };
+
         $setStr = '';
         foreach ($columns as $column) {
             if ($column === $primary) {
@@ -950,8 +966,8 @@ class Grammar extends BaseGrammar
                 $value = $row[$column];
                 $id    = $row[$primary];
 
-                $rowValue = is_string($value) ? "'$value'" : $value;
-                $rowId    = is_string($id) ? "'$id'" : $id;
+                $rowValue = $quoteValue($value);
+                $rowId = $quoteValue($id);
 
                 $setStr .= " when $rowId then $rowValue ";
             }
