@@ -95,6 +95,7 @@ trait ServiceTrait
         } catch (Throwable $e) {
             throw $e;
         } finally { // NOTICE: always release resource
+            $connection->reconnect();
             $connection->release();
         }
 
