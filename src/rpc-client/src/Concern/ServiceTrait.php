@@ -93,6 +93,7 @@ trait ServiceTrait
 
             $result = $response->getResult();
         } catch (Throwable $e) {
+            $connection->reconnect();
             throw $e;
         } finally { // NOTICE: always release resource
             $connection->release();
